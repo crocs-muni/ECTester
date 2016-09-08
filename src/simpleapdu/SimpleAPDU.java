@@ -115,7 +115,7 @@ public class SimpleAPDU {
         bufferOffset++;
         short resCode = getShort(buffer, bufferOffset);
         bufferOffset += 2;
-        System.out.println(String.format("%-40s%s", message, getPrintError(resCode)));
+        System.out.println(String.format("%-50s%s", message, getPrintError(resCode)));
         return bufferOffset;
     }
     static void PrintECSupport(ResponseAPDU resp) {
@@ -132,18 +132,18 @@ public class SimpleAPDU {
             if (buffer[bufferOffset] == KeyPair.ALG_EC_F2M) {
                 ecType = "ALG_EC_F2M";
             }
-            System.out.println(String.format("%-40s%s", "EC type:", ecType));
+            System.out.println(String.format("%-50s%s", "EC type:", ecType));
             bufferOffset++;
             short keyLen = getShort(buffer, bufferOffset);
-            System.out.println(String.format("%-40s%d bits", "EC key length (bits):", keyLen));
+            System.out.println(String.format("%-50s%d bits", "EC key length (bits):", keyLen));
             bufferOffset += 2;
 
             bufferOffset = VerifyPrintResult("KeyPair object allocation:", SimpleECCApplet.ECTEST_ALLOCATE_KEYPAIR, buffer, bufferOffset);
-            bufferOffset = VerifyPrintResult("Generate key with def curve:", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_DEFCURVE, buffer, bufferOffset);
+            bufferOffset = VerifyPrintResult("Generate key with def curve (fails if no def):", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_DEFCURVE, buffer, bufferOffset);
             bufferOffset = VerifyPrintResult("Set valid custom curve:", SimpleECCApplet.ECTEST_SET_VALIDCURVE, buffer, bufferOffset);
             bufferOffset = VerifyPrintResult("Generate key with valid curve:", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_CUSTOMCURVE, buffer, bufferOffset);
-            bufferOffset = VerifyPrintResult("Set invalid custom curve:", SimpleECCApplet.ECTEST_SET_INVALIDCURVE, buffer, bufferOffset);
-            bufferOffset = VerifyPrintResult("Generate key with invalid curve:", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE, buffer, bufferOffset);
+            bufferOffset = VerifyPrintResult("Set invalid custom curve (fail is good):", SimpleECCApplet.ECTEST_SET_INVALIDCURVE, buffer, bufferOffset);
+            bufferOffset = VerifyPrintResult("Generate key with invalid curve (fail is good):", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE, buffer, bufferOffset);
             
             System.out.println();
         }
