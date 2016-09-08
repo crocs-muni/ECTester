@@ -1,0 +1,71 @@
+public interface ISO7816 {
+
+  // Fields
+  public static final byte INS_EXTERNAL_AUTHENTICATE = -126;
+  public static final byte INS_SELECT = -92;
+  public static final byte CLA_ISO7816 = 0;
+  public static final byte OFFSET_CDATA = 5;
+  public static final byte OFFSET_LC = 4;
+  public static final byte OFFSET_P2 = 3;
+  public static final byte OFFSET_P1 = 2;
+  public static final byte OFFSET_INS = 1;
+  public static final byte OFFSET_CLA = 0;
+  public static final short SW_FILE_FULL = 27268;			0x6A84
+  public static final short SW_UNKNOWN = 28416;				0x6F00
+  public static final short SW_CLA_NOT_SUPPORTED = 28160;		0x6E00
+  public static final short SW_INS_NOT_SUPPORTED = 27904;		0x6D00
+  public static final short SW_CORRECT_LENGTH_00 = 27648;		0x6C00
+  public static final short SW_WRONG_P1P2 = 27392;			0x6B00
+  public static final short SW_INCORRECT_P1P2 = 27270;			0x6A86
+  public static final short SW_RECORD_NOT_FOUND = 27267;		0x6A83	
+  public static final short SW_FILE_NOT_FOUND = 27266;			0x6A82
+  public static final short SW_FUNC_NOT_SUPPORTED = 27265;		0x6A81
+  public static final short SW_WRONG_DATA = 27264;			0x6A80
+  public static final short SW_APPLET_SELECT_FAILED = 27033;		0x6999
+  public static final short SW_COMMAND_NOT_ALLOWED = 27014;		0x6986
+  public static final short SW_CONDITIONS_NOT_SATISFIED = 27013;	0x6985
+  public static final short SW_DATA_INVALID = 27012;			0x6984
+  public static final short SW_FILE_INVALID = 27011;			0x6983
+  public static final short SW_SECURITY_STATUS_NOT_SATISFIED = 27010;   0x6982
+  public static final short SW_WRONG_LENGTH = 26368;			0x6700
+  public static final short SW_BYTES_REMAINING_00 = 24832;		0x6100
+  public static final short SW_NO_ERROR = -28672;			0x9000	
+}
+
+public interface JCStatus {
+static int 	ALGORITHM_NOT_SUPPORTED = 				0x9484;
+static int 	APPLET_INVALIDATED = 					0x6283;
+static int 	APPLET_SELECT_FAILED = 					0x6999
+static int 	AUTHENTICATION_FAILED =         		        0x6300
+static int 	AUTHORIZATION_FAILED = 					0x9482
+static int 	CHECKSUM_FAILED = 					0x9584
+static int 	CLA_NOT_SUPPORTED = 					0x6E00
+static int 	COMMAND_NOT_ALLOWED = 					0x6986
+static int 	CONDITIONS_NOT_SATISFIED = 				0x6985
+static int 	CORRECT_LENGTH_00 = 					0x6C00
+static int 	DATA_INVALID = 						0x6984
+static int 	DECRYPTION_FAILED = 					0x9583
+static int 	FILE_FULL = 						0x6A84
+static int 	FILE_INVALID = 						0x6983
+static int 	FILE_NOT_FOUND	= 					0x6A82
+static int 	FUNC_NOT_SUPPORTED =     				0x6A81
+static int 	INCORRECT_P1P2 = 					0x6A86
+static int 	INS_NOT_SUPPORTED = 					0x6D00
+static int 	INSTALLATION_FAILED = 					0x9585
+static int 	INVALID_STATE = 					0x9481
+static int 	NO_ERROR = 						0x9000
+static int 	NO_SPECIFIC_DIAGNOSIS = 				0x6400
+static int 	PIN_REQUIRED = 						0x6982
+static int 	RECORD_NOT_FOUND = 					0x6A83
+static int 	REFERENCE_DATA_NOT_FOUND = 				0x6A88
+static int 	REGISTRATION_FAILED = 					0x9586
+static int 	SECURITY_STATUS_NOT_SATISFIED = 			0x6982
+static int 	SIGNATURE_CHECK_FAILED = 				0x9582
+static int 	SM_INCORRECT = 						0x6988
+static int 	SM_MISSING = 						0x6987
+static int 	TRUNCATED_DATA = 					0x6100
+static int 	UNKNOWN = 						0x6F00
+static int 	WRONG_DATA = 						0x6A80
+static int 	WRONG_LENGTH = 						0x6700
+static int 	WRONG_P1P2 = 						0x6B00
+}

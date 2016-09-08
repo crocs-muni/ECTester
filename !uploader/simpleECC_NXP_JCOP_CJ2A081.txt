@@ -1,0 +1,54 @@
+# Usable for: NXP_JCOP_CJ2A081
+mode_211
+enable_trace
+establish_context
+card_connect 
+select -AID a000000003000000
+open_sc -security 1 -keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f
+
+delete -AID 010203040506070809
+delete -AID 010203040506
+delete -AID e1e2e3e4e5e6e7e8e9
+delete -AID e1e2e3e4e5e6
+delete -AID d1d2d3d4d5d6d7d8d9
+delete -AID d1d2d3d4d5d6
+delete -AID d1d2d3d4d5
+delete -AID b1b2b3b4b5b6b7b8b9
+delete -AID b1b2b3b4b5b6
+delete -AID a1a2a3a4a5a6a7a8a9
+delete -AID a1a2a3a4a5a6
+delete -AID 6D7970616330303031
+delete -AID 6D797061636B616731
+delete -AID a1a2a3a4a5a6a7a8a9
+delete -AID F1F2F3F4F5F6F7F8F9
+delete -AID F1F2F3F4F5F6
+delete -AID 313233343536373839
+delete -AID 313233343536
+
+delete -AID 4c6162616b4170706c6574
+delete -AID 4c6162616b
+delete -AID 4C6162616B4170706C6574
+delete -AID 4C6162616B417070
+
+install -file simpleECC.cap -nvDataLimit 2000 -instParam 00a2a3a40002000000000000 
+
+select -AID 4C6162616B4170706C6574
+
+send_apdu -APDU B05c0000020080
+
+send_apdu -APDU B05c00000200A0
+
+send_apdu -APDU B05c00000200c0
+
+send_apdu -APDU B05c0000020100
+
+
+
+
+send_apdu -APDU B05b0000
+
+send_apdu -APDU B05a0000
+
+
+card_disconnect
+release_context
