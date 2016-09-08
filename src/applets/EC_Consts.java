@@ -279,7 +279,97 @@ public class EC_Consts {
     // cofactor of G
     public static final short EC256_FP_K = 1;    
     
-    // TODO: add parameters for longer lengths
+    // secp384r1 from http://www.secg.org/sec2-v2.pdf
+    public static final byte[] EC384_FP_P = new byte[]{
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+        (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+    
+    public static final byte[] EC384_FP_A = new byte[]{
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFE,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+        (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFC};
+    
+    public static final byte[] EC384_FP_B = new byte[]{
+        (byte) 0xB3, (byte) 0x31, (byte) 0x2F, (byte) 0xA7, 
+        (byte) 0xE2, (byte) 0x3E, (byte) 0xE7, (byte) 0xE4, 
+        (byte) 0x98, (byte) 0x8E, (byte) 0x05, (byte) 0x6B, 
+        (byte) 0xE3, (byte) 0xF8, (byte) 0x2D, (byte) 0x19, 
+        (byte) 0x18, (byte) 0x1D, (byte) 0x9C, (byte) 0x6E, 
+        (byte) 0xFE, (byte) 0x81, (byte) 0x41, (byte) 0x12, 
+        (byte) 0x03, (byte) 0x14, (byte) 0x08, (byte) 0x8F, 
+        (byte) 0x50, (byte) 0x13, (byte) 0x87, (byte) 0x5A, 
+        (byte) 0xC6, (byte) 0x56, (byte) 0x39, (byte) 0x8D, 
+        (byte) 0x8A, (byte) 0x2E, (byte) 0xD1, (byte) 0x9D, 
+        (byte) 0x2A, (byte) 0x85, (byte) 0xC8, (byte) 0xED, 
+        (byte) 0xD3, (byte) 0xEC, (byte) 0x2A, (byte) 0xEF};
+    
+    // G in compressed form / first part of ucompressed
+    public static final byte[] EC384_FP_G_X = new byte[]{
+        (byte) 0xAA, (byte) 0x87, (byte) 0xCA, (byte) 0x22, 
+        (byte) 0xBE, (byte) 0x8B, (byte) 0x05, (byte) 0x37,
+        (byte) 0x8E, (byte) 0xB1, (byte) 0xC7, (byte) 0x1E,
+        (byte) 0xF3, (byte) 0x20, (byte) 0xAD, (byte) 0x74,
+        (byte) 0x6E, (byte) 0x1D, (byte) 0x3B, (byte) 0x62,
+        (byte) 0x8B, (byte) 0xA7, (byte) 0x9B, (byte) 0x98,
+        (byte) 0x59, (byte) 0xF7, (byte) 0x41, (byte) 0xE0,
+        (byte) 0x82, (byte) 0x54, (byte) 0x2A, (byte) 0x38,
+        (byte) 0x55, (byte) 0x02, (byte) 0xF2, (byte) 0x5D,
+        (byte) 0xBF, (byte) 0x55, (byte) 0x29, (byte) 0x6C,
+        (byte) 0x3A, (byte) 0x54, (byte) 0x5E, (byte) 0x38, 
+        (byte) 0x72, (byte) 0x76, (byte) 0x0A, (byte) 0xB7};
+    // second part of G uncompressed
+    public static final byte[] EC384_FP_G_Y = new byte[]{
+        (byte) 0x36, (byte) 0x17, (byte) 0xDE, (byte) 0x4A,
+        (byte) 0x96, (byte) 0x26, (byte) 0x2C, (byte) 0x6F,
+        (byte) 0x5D, (byte) 0x9E, (byte) 0x98, (byte) 0xBF,
+        (byte) 0x92, (byte) 0x92, (byte) 0xDC, (byte) 0x29,
+        (byte) 0xF8, (byte) 0xF4, (byte) 0x1D, (byte) 0xBD,
+        (byte) 0x28, (byte) 0x9A, (byte) 0x14, (byte) 0x7C,
+        (byte) 0xE9, (byte) 0xDA, (byte) 0x31, (byte) 0x13,
+        (byte) 0xB5, (byte) 0xF0, (byte) 0xB8, (byte) 0xC0,
+        (byte) 0x0A, (byte) 0x60, (byte) 0xB1, (byte) 0xCE,
+        (byte) 0x1D, (byte) 0x7E, (byte) 0x81, (byte) 0x9D,
+        (byte) 0x7A, (byte) 0x43, (byte) 0x1D, (byte) 0x7C,
+        (byte) 0x90, (byte) 0xEA, (byte) 0x0E, (byte) 0x5F};
+    
+    // Order of G
+    public static final byte[] EC384_FP_R = new byte[]{
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xC7, (byte) 0x63, (byte) 0x4D, (byte) 0x81, 
+        (byte) 0xF4, (byte) 0x37, (byte) 0x2D, (byte) 0xDF, 
+        (byte) 0x58, (byte) 0x1A, (byte) 0x0D, (byte) 0xB2,
+        (byte) 0x48, (byte) 0xB0, (byte) 0xA7, (byte) 0x7A,
+        (byte) 0xEC, (byte) 0xEC, (byte) 0x19, (byte) 0x6A,
+        (byte) 0xCC, (byte) 0xC5, (byte) 0x29, (byte) 0x73};
+    // cofactor of G
+    public static final short EC384_FP_K = 1;            
+    
+    // TODO: secp521r1
+    
     
     public static void setValidECKeyParams(ECPublicKey ecPubKey, ECPrivateKey ecPrivKey, byte ecClass, short ecLength, byte[] auxBuffer) {
         setECKeyParams(ecPubKey, ecPrivKey, ecClass, ecLength, auxBuffer, false);
@@ -341,6 +431,16 @@ public class EC_Consts {
                     EC_FP_K = EC256_FP_K;
                     break;
                 }            
+                case (short) 384: {
+                    EC_FP_P = EC384_FP_P;
+                    EC_FP_A = EC384_FP_A;
+                    EC_FP_B = EC384_FP_B;
+                    EC_FP_G_X = EC384_FP_G_X;
+                    EC_FP_G_Y = EC384_FP_G_Y;
+                    EC_FP_R = EC384_FP_R;
+                    EC_FP_K = EC384_FP_K;
+                    break;
+                }                
                 default: {
                     ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
                 }

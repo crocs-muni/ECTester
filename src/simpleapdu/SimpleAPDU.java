@@ -110,17 +110,37 @@ public class SimpleAPDU {
             return String.format("fail\t(%s,\t0x%4x)", codeStr, code);
         }    
     }
-    static int VerifyPrintResult(String message, byte expectedTag, byte[] buffer, int bufferOffset) {
+    
+    enum ExpResult {
+        SHOULD_SUCCEDD,
+        MAY_FAIL,
+        MUST_FAIL
+    }
+    static int VerifyPrintResult(String message, byte expectedTag, byte[] buffer, int bufferOffset, ExpResult expRes) {
         assert (buffer[bufferOffset] == expectedTag);
         bufferOffset++;
         short resCode = getShort(buffer, bufferOffset);
         bufferOffset += 2;
-        System.out.println(String.format("%-50s%s", message, getPrintError(resCode)));
+        
+        boolean bHiglight = false;
+        if ((expRes == ExpResult.MUST_FAIL) && (resCode == ISO7816.SW_NO_ERROR)) {
+            bHiglight = true;
+        }
+        if ((expRes == ExpResult.SHOULD_SUCCEDD) && (resCode != ISO7816.SW_NO_ERROR)) {
+            bHiglight = true;
+        }
+        if (bHiglight) {
+            System.out.println(String.format("!! %-50s%s", message, getPrintError(resCode)));
+        }
+        else {
+            System.out.println(String.format("   %-50s%s", message, getPrintError(resCode)));
+        }
         return bufferOffset;
     }
     static void PrintECSupport(ResponseAPDU resp) {
         byte[] buffer = resp.getData();
 
+        System.out.println();System.out.println();
         int bufferOffset = 0;
         while (bufferOffset < buffer.length) {
             assert(buffer[bufferOffset] == SimpleECCApplet.ECTEST_SEPARATOR);
@@ -132,18 +152,20 @@ public class SimpleAPDU {
             if (buffer[bufferOffset] == KeyPair.ALG_EC_F2M) {
                 ecType = "ALG_EC_F2M";
             }
-            System.out.println(String.format("%-50s%s", "EC type:", ecType));
+            System.out.println(String.format("%-53s%s", "EC type:", ecType));
             bufferOffset++;
             short keyLen = getShort(buffer, bufferOffset);
-            System.out.println(String.format("%-50s%d bits", "EC key length (bits):", keyLen));
+            System.out.println(String.format("%-53s%d bits", "EC key length (bits):", keyLen));
             bufferOffset += 2;
 
-            bufferOffset = VerifyPrintResult("KeyPair object allocation:", SimpleECCApplet.ECTEST_ALLOCATE_KEYPAIR, buffer, bufferOffset);
-            bufferOffset = VerifyPrintResult("Generate key with def curve (fails if no def):", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_DEFCURVE, buffer, bufferOffset);
-            bufferOffset = VerifyPrintResult("Set valid custom curve:", SimpleECCApplet.ECTEST_SET_VALIDCURVE, buffer, bufferOffset);
-            bufferOffset = VerifyPrintResult("Generate key with valid curve:", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_CUSTOMCURVE, buffer, bufferOffset);
-            bufferOffset = VerifyPrintResult("Set invalid custom curve (fail is good):", SimpleECCApplet.ECTEST_SET_INVALIDCURVE, buffer, bufferOffset);
-            bufferOffset = VerifyPrintResult("Generate key with invalid curve (fail is good):", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE, buffer, bufferOffset);
+            bufferOffset = VerifyPrintResult("KeyPair object allocation:", SimpleECCApplet.ECTEST_ALLOCATE_KEYPAIR, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
+            bufferOffset = VerifyPrintResult("Generate key with def curve (fails if no def):", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_DEFCURVE, buffer, bufferOffset, ExpResult.MAY_FAIL);
+            bufferOffset = VerifyPrintResult("Set valid custom curve:", SimpleECCApplet.ECTEST_SET_VALIDCURVE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
+            bufferOffset = VerifyPrintResult("Generate key with valid curve:", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_CUSTOMCURVE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
+            bufferOffset = VerifyPrintResult("ECDH agreement with valid point:", SimpleECCApplet.ECTEST_ECDH_AGREEMENT_VALID_POINT, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
+            bufferOffset = VerifyPrintResult("ECDH agreement with invalid point (fail is good):", SimpleECCApplet.ECTEST_ECDH_AGREEMENT_INVALID_POINT, buffer, bufferOffset, ExpResult.MUST_FAIL);
+            bufferOffset = VerifyPrintResult("Set invalid custom curve (fail is good):", SimpleECCApplet.ECTEST_SET_INVALIDCURVE, buffer, bufferOffset, ExpResult.MUST_FAIL);
+            bufferOffset = VerifyPrintResult("Generate key with invalid curve (fail is good):", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE, buffer, bufferOffset, ExpResult.MUST_FAIL);
             
             System.out.println();
         }
