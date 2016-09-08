@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir="." default="toys" name="SmartHSM build">
+<project basedir="." default="all" name="ECTester">
   <!-- Based on Martin Paljak's applets playground -->
   <!-- Applet building dependencies -->
   <property name="JC222" value="ext/java_card_kit-2_2_2"/>
