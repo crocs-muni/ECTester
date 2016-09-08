@@ -165,6 +165,7 @@ public class CardMngr {
         return buf.toString();
     }
 
+
     public char toHexChar(int i) {
         if ((0 <= i) && (i <= 9)) {
             return (char) ('0' + i);

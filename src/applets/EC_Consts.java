@@ -3,11 +3,13 @@
  */
 package applets;
 
+import javacard.framework.ISO7816;
 import javacard.framework.ISOException;
 import javacard.framework.Util;
 import javacard.security.ECPrivateKey;
 import javacard.security.ECPublicKey;
 import javacard.security.KeyBuilder;
+import javacard.security.KeyPair;
 
 public class EC_Consts {
     public static byte[] EC_FP_P = null;
@@ -130,55 +132,76 @@ public class EC_Consts {
     
     // TODO: add parameters for longer lengths
     
-    public static void setECKeyParams(ECPublicKey ecPubKey, ECPrivateKey ecPrivKey, short ecLength, byte[] auxBuffer) {
-        // Select proper courve parameters
-        switch (ecLength) {
-            case (short) 192: {
-                EC_FP_P = EC192_FP_P;
-                EC_FP_A = EC192_FP_A;
-                EC_FP_B = EC192_FP_B;
-                EC_FP_G_X = EC192_FP_G_X;
-                EC_FP_G_Y = EC192_FP_G_Y;
-                EC_FP_R = EC192_FP_R;
-                EC_FP_K = EC192_FP_K;     
-                break;
+    public static void setValidECKeyParams(ECPublicKey ecPubKey, ECPrivateKey ecPrivKey, byte ecClass, short ecLength, byte[] auxBuffer) {
+        setECKeyParams(ecPubKey, ecPrivKey, ecClass, ecLength, auxBuffer, false);
+    }
+    public static void setInValidECKeyParams(ECPublicKey ecPubKey, ECPrivateKey ecPrivKey, byte ecClass, short ecLength, byte[] auxBuffer) {
+        setECKeyParams(ecPubKey, ecPrivKey, ecClass, ecLength, auxBuffer, true);
+    }
+    private static void setECKeyParams(ECPublicKey ecPubKey, ECPrivateKey ecPrivKey, byte ecClass, short ecLength, byte[] auxBuffer, boolean bInvalidCurve) {
+        if (ecClass == KeyPair.ALG_EC_FP) {
+            // Select proper courve parameters
+            switch (ecLength) {
+                case (short) 192: {
+                    EC_FP_P = EC192_FP_P;
+                    EC_FP_A = EC192_FP_A;
+                    EC_FP_B = EC192_FP_B;
+                    EC_FP_G_X = EC192_FP_G_X;
+                    EC_FP_G_Y = EC192_FP_G_Y;
+                    EC_FP_R = EC192_FP_R;
+                    EC_FP_K = EC192_FP_K;     
+                    break;
+                }
+                case (short) 256: {
+                    EC_FP_P = EC256_FP_P;
+                    EC_FP_A = EC256_FP_A;
+                    EC_FP_B = EC256_FP_B;
+                    EC_FP_G_X = EC256_FP_G_X;
+                    EC_FP_G_Y = EC256_FP_G_Y;
+                    EC_FP_R = EC256_FP_R;
+                    EC_FP_K = EC256_FP_K;
+                    break;
+                }            
+                default: {
+                    ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+                }
             }
-            case (short) 256: {
-                EC_FP_P = EC256_FP_P;
-                EC_FP_A = EC256_FP_A;
-                EC_FP_B = EC256_FP_B;
-                EC_FP_G_X = EC256_FP_G_X;
-                EC_FP_G_Y = EC256_FP_G_Y;
-                EC_FP_R = EC256_FP_R;
-                EC_FP_K = EC256_FP_K;
-                break;
-            }            
-            default: {
-                ISOException.throwIt((short) -1);
-            }
-        }
-        // prepare an ANSI X9.62 uncompressed EC point representation for G
-        short gSize = (short) 1;
-        gSize += (short) EC_FP_G_X.length;
-        gSize += (short) EC_FP_G_Y.length;
-        auxBuffer[0] = 0x04;
-        short off = 1;
-        off = Util.arrayCopy(EC_FP_G_X, (short) 0, auxBuffer, off, (short) EC_FP_G_X.length);
-        Util.arrayCopy(EC_FP_G_Y, (short) 0, auxBuffer, off, (short) EC_FP_G_Y.length);
+            
+            // prepare an ANSI X9.62 uncompressed EC point representation for G
+            short gSize = (short) 1;
+            gSize += (short) EC_FP_G_X.length;
+            gSize += (short) EC_FP_G_Y.length;
+            auxBuffer[0] = 0x04;
+            short off = 1;
+            off = Util.arrayCopyNonAtomic(EC_FP_G_X, (short) 0, auxBuffer, off, (short) EC_FP_G_X.length);
+            Util.arrayCopyNonAtomic(EC_FP_G_Y, (short) 0, auxBuffer, off, (short) EC_FP_G_Y.length);
 
-        // pre-set basic EC parameters:
-        ecPubKey.setFieldFP(EC_FP_P, (short) 0, (short) EC_FP_P.length);
-        ecPubKey.setA(EC_FP_A, (short) 0, (short) EC_FP_A.length);
-        ecPubKey.setB(EC_FP_B, (short) 0, (short) EC_FP_B.length);
-        ecPubKey.setG(auxBuffer, (short) 0, gSize);
-        ecPubKey.setR(EC_FP_R, (short) 0, (short) EC_FP_R.length);
-        ecPubKey.setK(EC_FP_K);
+            // pre-set basic EC parameters:
+            ecPubKey.setFieldFP(EC_FP_P, (short) 0, (short) EC_FP_P.length);
+            ecPubKey.setA(EC_FP_A, (short) 0, (short) EC_FP_A.length);
+            ecPubKey.setB(EC_FP_B, (short) 0, (short) EC_FP_B.length);
+            if (bInvalidCurve) { // corrupt curve
+                Util.arrayCopyNonAtomic(EC_FP_B, (short) 0, auxBuffer, (short) 0, (short) EC_FP_B.length);                
+                auxBuffer[(byte) 10] = (byte) 0xcc;
+                auxBuffer[(byte) 11] = (byte) 0xcc;
+                ecPubKey.setB(auxBuffer, (short) 0, (short) EC_FP_B.length);
+            }
+            
+            ecPubKey.setG(auxBuffer, (short) 0, gSize);
+            ecPubKey.setR(EC_FP_R, (short) 0, (short) EC_FP_R.length);
+            ecPubKey.setK(EC_FP_K);
+
+            ecPrivKey.setFieldFP(EC_FP_P, (short) 0, (short) EC_FP_P.length);
+            ecPrivKey.setA(EC_FP_A, (short) 0, (short) EC_FP_A.length);
+            ecPrivKey.setB(EC_FP_B, (short) 0, (short) EC_FP_B.length);
+            ecPrivKey.setG(auxBuffer, (short) 0, gSize);
+            ecPrivKey.setR(EC_FP_R, (short) 0, (short) EC_FP_R.length);
+            ecPrivKey.setK(EC_FP_K);        
+        }
+        if (ecClass == KeyPair.ALG_EC_F2M) {
+            // Not supported yet
+            ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+        }
         
-        ecPrivKey.setFieldFP(EC_FP_P, (short) 0, (short) EC_FP_P.length);
-        ecPrivKey.setA(EC_FP_A, (short) 0, (short) EC_FP_A.length);
-        ecPrivKey.setB(EC_FP_B, (short) 0, (short) EC_FP_B.length);
-        ecPrivKey.setG(auxBuffer, (short) 0, gSize);
-        ecPrivKey.setR(EC_FP_R, (short) 0, (short) EC_FP_R.length);
-        ecPrivKey.setK(EC_FP_K);        
     }    
 }
