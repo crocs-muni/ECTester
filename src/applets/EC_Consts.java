@@ -1,6 +1,3 @@
-/**
- * 
- */
 package applets;
 
 import javacard.framework.ISO7816;
@@ -8,7 +5,6 @@ import javacard.framework.ISOException;
 import javacard.framework.Util;
 import javacard.security.ECPrivateKey;
 import javacard.security.ECPublicKey;
-import javacard.security.KeyBuilder;
 import javacard.security.KeyPair;
 
 public class EC_Consts {

@@ -145,16 +145,18 @@ public class SimpleECCApplet extends javacard.framework.Applet
                 case INS_ALLOCATEKEYPAIR:
                     AllocateKeyPairReturnDefCourve(apdu);
                     break;
+                case INS_DERIVEECDHSECRET:
+                    DeriveECDHSecret(apdu);
+                    break;
+
+/*                    
                 case INS_ALLOCATEKEYPAIRS:
                     AllocateKeyPairs(apdu);
                     break;
                 case INS_GENERATEKEY:
                     GenerateKey(apdu);
                     break;
-                case INS_DERIVEECDHSECRET:
-                    DeriveECDHSecret(apdu);
-                    break;
-                    
+*/                    
                 default :
                     // The INS code is not supported by the dispatcher
                     ISOException.throwIt( ISO7816.SW_INS_NOT_SUPPORTED ) ;
@@ -165,100 +167,6 @@ public class SimpleECCApplet extends javacard.framework.Applet
         else ISOException.throwIt( ISO7816.SW_CLA_NOT_SUPPORTED);
     }
 
-    
-    void AllocateKeyPairReturnDefCourve(APDU apdu) {
-        byte[] apdubuf = apdu.getBuffer();
-        apdu.setIncomingAndReceive();
-
-        short bitLen = Util.getShort(apdubuf, ISO7816.OFFSET_CDATA);
-
-        // Note: all locations shoudl happen in constructor. But here it is intentional
-        // as we like to test for result of allocation
-        ecKeyPair = new KeyPair(KeyPair.ALG_EC_FP, bitLen);
-
-        // If required, generate also new key pair
-        if (apdubuf[ISO7816.OFFSET_P1] == (byte) 1) {
-            ecPubKey = (ECPublicKey) ecKeyPair.getPublic();
-            ecPrivKey = (ECPrivateKey) ecKeyPair.getPrivate();
-            // Some implementation wil not return valid pub key until ecKeyPair.genKeyPair() is called
-            // Other implementation will fail with exception if same is called => try catch 
-            try {
-                if (ecPubKey == null) {
-                    ecKeyPair.genKeyPair();
-                }
-            } catch (Exception e) {
-            } // do nothing
-
-            // If required, initialize curve parameters first
-            if (apdubuf[ISO7816.OFFSET_P2] == (byte) 2) {
-                EC_Consts.setValidECKeyParams(ecPubKey, ecPrivKey, KeyPair.ALG_EC_FP, bitLen, m_ramArray);
-            }
-
-            // Now generate new keypair with either default or custom curve
-            ecKeyPair.genKeyPair();
-            ecPubKey = (ECPublicKey) ecKeyPair.getPublic();
-            ecPrivKey = (ECPrivateKey) ecKeyPair.getPrivate();
-
-            short len = 0;
-            short offset = 0;
-
-            // Export curve public parameters
-            offset += 2; // reserve space for length
-            len = ecPubKey.getField(apdubuf, offset);
-            Util.setShort(apdubuf, (short) (offset - 2), len);
-            offset += len;
-            offset += 2; // reserve space for length
-            len = ecPubKey.getA(apdubuf, offset);
-            Util.setShort(apdubuf, (short) (offset - 2), len);
-            offset += len;
-
-            offset += 2; // reserve space for length
-            len = ecPubKey.getB(apdubuf, offset);
-            Util.setShort(apdubuf, (short) (offset - 2), len);
-            offset += len;
-            offset += 2; // reserve space for length
-            len = ecPubKey.getR(apdubuf, offset);
-            Util.setShort(apdubuf, (short) (offset - 2), len);
-            offset += len;
-            /*
-             offset += 2; // reserve space for length
-             len = ecPubKey.getW(apdubuf, offset);
-             Util.setShort(apdubuf, (short) (offset - 2), len);
-             offset += len;
-             */
-            apdu.setOutgoingAndSend((short) 0, offset);
-        }
-    }
-    
-    
-    
-    void DeriveECDHSecret(APDU apdu) {
-        byte[] apdubuf = apdu.getBuffer();
-        short len = apdu.setIncomingAndReceive();
-
-        // Assumption: proper EC keyPair is already allocated
-        // If public key point is provided, then use it 
-        if (len == 0) {
-            // if not provided, use build-in one (valid for for 192 only)
-            Util.arrayCopyNonAtomic(EC192_FP_PUBLICW, (short) 0, apdubuf, ISO7816.OFFSET_CDATA, (short) EC192_FP_PUBLICW.length);
-            len = (short) EC192_FP_PUBLICW.length;
-        }
-
-        // Generate fresh EC keypair
-        ecKeyPair.genKeyPair();
-        ecPrivKey = (ECPrivateKey) ecKeyPair.getPrivate();
-
-        if (dhKeyAgreement == null) {
-            dhKeyAgreement = KeyAgreement.getInstance(KeyAgreement.ALG_EC_SVDP_DH, false);
-        }        
-        dhKeyAgreement.init(ecPrivKey);
-        short secretLen = 0;
-        // Generate and export secret 
-        secretLen = dhKeyAgreement.generateSecret(apdubuf, ISO7816.OFFSET_CDATA, len, m_ramArray, (short) 0);
-        Util.arrayCopyNonAtomic(m_ramArray, (short) 0, apdubuf, (short) 0, secretLen);
-
-        apdu.setOutgoingAndSend((short) 0, secretLen);
-    }
     
     short TestECSupport(byte keyClass, short keyLen, byte[] buffer, short bufferOffset) {
         short baseOffset = bufferOffset;
@@ -487,6 +395,98 @@ public class SimpleECCApplet extends javacard.framework.Applet
         apdu.setOutgoingAndSend((short) 0, dataOffset);
     }
     
+        void AllocateKeyPairReturnDefCourve(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        apdu.setIncomingAndReceive();
+
+        short bitLen = Util.getShort(apdubuf, ISO7816.OFFSET_CDATA);
+
+        // Note: all locations shoudl happen in constructor. But here it is intentional
+        // as we like to test for result of allocation
+        ecKeyPair = new KeyPair(KeyPair.ALG_EC_FP, bitLen);
+
+        // If required, generate also new key pair
+        if (apdubuf[ISO7816.OFFSET_P1] == (byte) 1) {
+            ecPubKey = (ECPublicKey) ecKeyPair.getPublic();
+            ecPrivKey = (ECPrivateKey) ecKeyPair.getPrivate();
+            // Some implementation wil not return valid pub key until ecKeyPair.genKeyPair() is called
+            // Other implementation will fail with exception if same is called => try catch 
+            try {
+                if (ecPubKey == null) {
+                    ecKeyPair.genKeyPair();
+                }
+            } catch (Exception e) {
+            } // do nothing
+
+            // If required, initialize curve parameters first
+            if (apdubuf[ISO7816.OFFSET_P2] == (byte) 2) {
+                EC_Consts.setValidECKeyParams(ecPubKey, ecPrivKey, KeyPair.ALG_EC_FP, bitLen, m_ramArray);
+            }
+
+            // Now generate new keypair with either default or custom curve
+            ecKeyPair.genKeyPair();
+            ecPubKey = (ECPublicKey) ecKeyPair.getPublic();
+            ecPrivKey = (ECPrivateKey) ecKeyPair.getPrivate();
+
+            short len = 0;
+            short offset = 0;
+
+            // Export curve public parameters
+            offset += 2; // reserve space for length
+            len = ecPubKey.getField(apdubuf, offset);
+            Util.setShort(apdubuf, (short) (offset - 2), len);
+            offset += len;
+            offset += 2; // reserve space for length
+            len = ecPubKey.getA(apdubuf, offset);
+            Util.setShort(apdubuf, (short) (offset - 2), len);
+            offset += len;
+
+            offset += 2; // reserve space for length
+            len = ecPubKey.getB(apdubuf, offset);
+            Util.setShort(apdubuf, (short) (offset - 2), len);
+            offset += len;
+            offset += 2; // reserve space for length
+            len = ecPubKey.getR(apdubuf, offset);
+            Util.setShort(apdubuf, (short) (offset - 2), len);
+            offset += len;
+            /*
+             offset += 2; // reserve space for length
+             len = ecPubKey.getW(apdubuf, offset);
+             Util.setShort(apdubuf, (short) (offset - 2), len);
+             offset += len;
+             */
+            apdu.setOutgoingAndSend((short) 0, offset);
+        }
+    }
+
+    void DeriveECDHSecret(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        short len = apdu.setIncomingAndReceive();
+
+        // Assumption: proper EC keyPair is already allocated
+        // If public key point is provided, then use it 
+        if (len == 0) {
+            // if not provided, use build-in one (valid only for 192 only)
+            Util.arrayCopyNonAtomic(EC192_FP_PUBLICW, (short) 0, apdubuf, ISO7816.OFFSET_CDATA, (short) EC192_FP_PUBLICW.length);
+            len = (short) EC192_FP_PUBLICW.length;
+        }
+
+        // Generate fresh EC keypair
+        ecKeyPair.genKeyPair();
+        ecPrivKey = (ECPrivateKey) ecKeyPair.getPrivate();
+
+        if (dhKeyAgreement == null) {
+            dhKeyAgreement = KeyAgreement.getInstance(KeyAgreement.ALG_EC_SVDP_DH, false);
+        }
+        dhKeyAgreement.init(ecPrivKey);
+        short secretLen = 0;
+        // Generate and export secret 
+        secretLen = dhKeyAgreement.generateSecret(apdubuf, ISO7816.OFFSET_CDATA, len, m_ramArray, (short) 0);
+        Util.arrayCopyNonAtomic(m_ramArray, (short) 0, apdubuf, (short) 0, secretLen);
+
+        apdu.setOutgoingAndSend((short) 0, secretLen);
+    }
+
     
     
     
@@ -503,8 +503,7 @@ public class SimpleECCApplet extends javacard.framework.Applet
     
     
     
-    
-    
+/*    
     void AllocateKeyPair(byte algorithm, short bitLen) {
         // Select proper attributes
         switch (bitLen) {
@@ -552,39 +551,7 @@ public class SimpleECCApplet extends javacard.framework.Applet
         EC_Consts.setValidECKeyParams(ecPubKey, ecPrivKey, KeyPair.ALG_EC_FP, bitLen, m_ramArray);
     }
     
-    short TryAllocateKeyPair(byte algorithm, short bitLen, byte[] buffer, short offset) {
-        // Try allocation, log result
-        try {
-            offset = Util.setShort(buffer, offset, bitLen);
-            AllocateKeyPair(KeyPair.ALG_EC_FP, bitLen);
-            buffer[offset] = 1;
-            offset++;
-        } catch (Exception e) {
-            buffer[offset] = 0;
-            offset++;
-        }        
-        return offset;
-    }
-    void AllocateKeyPairs(APDU apdu) {
-        byte[] apdubuf = apdu.getBuffer();
-        apdu.setIncomingAndReceive();
-
-        short offset = 0;
-
-        //offset = TryAllocateKeyPair(KeyPair.ALG_EC_FP, (short) 128, apdubuf, offset);
-        //offset = TryAllocateKeyPair(KeyPair.ALG_EC_FP, (short) 160, apdubuf, offset);
-        //offset = TryAllocateKeyPair(KeyPair.ALG_EC_FP, (short) 192, apdubuf, offset);
-        //offset = TryAllocateKeyPair(KeyPair.ALG_EC_FP, (short) 256, apdubuf, offset);
-        
-        apdu.setOutgoingAndSend((short) 0, offset);
-    }    
-    
-
-    
- 
-    
-    
-    void GenerateKey(APDU apdu) {
+    void GenerateAndReturnKey(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
         apdu.setIncomingAndReceive();
         
@@ -606,5 +573,6 @@ public class SimpleECCApplet extends javacard.framework.Applet
 
         apdu.setOutgoingAndSend((short) 0, offset);
     }
+*/    
 }
 
