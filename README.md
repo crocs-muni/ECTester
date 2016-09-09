@@ -4,10 +4,9 @@ ECTester
 Tests support and behavior of smartcards with JavaCard platform with focus on Eliptic curves (TYPE_EC_FP and TYPE_EC_F2M).
 
 Usage:
+
 1. Upload simpleECC.cap using your favorite tool (e.g., GlobalPlatformPro tool https://github.com/martinpaljak/GlobalPlatform)
-
 2. Run java -jar SimpleAPDU.jar
-
 3. Inspect output log with annotated results
 
 Following operations are tested:
