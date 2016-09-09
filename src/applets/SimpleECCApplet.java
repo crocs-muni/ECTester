@@ -41,6 +41,17 @@ public class SimpleECCApplet extends javacard.framework.Applet
     public final static byte ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE = (byte) 0xc6;
     public final static byte ECTEST_ECDH_AGREEMENT_VALID_POINT = (byte) 0xc7;
     public final static byte ECTEST_ECDH_AGREEMENT_INVALID_POINT = (byte) 0xc8;
+
+    public final static short FLAG_ECTEST_ALLOCATE_KEYPAIR          = (short) 0x0001;
+    public final static short FLAG_ECTEST_GENERATE_KEYPAIR_DEFCURVE = (short) 0x0002;
+    public final static short FLAG_ECTEST_SET_VALIDCURVE            = (short) 0x0004;
+    public final static short FLAG_ECTEST_GENERATE_KEYPAIR_CUSTOMCURVE = (short) 0x0008;
+    public final static short FLAG_ECTEST_SET_INVALIDCURVE          = (short) 0x0010;
+    public final static short FLAG_ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE = (short) 0x0020;
+    public final static short FLAG_ECTEST_ECDH_AGREEMENT_VALID_POINT = (short) 0x0040;
+    public final static short FLAG_ECTEST_ECDH_AGREEMENT_INVALID_POINT = (short) 0x0080;
+    
+    public final static short FLAG_ECTEST_ALL = (short) 0x00ff;
     
     public final static short SW_SKIPPED = (short) 0x0ee1; 
 /*    
@@ -170,6 +181,8 @@ public class SimpleECCApplet extends javacard.framework.Applet
     
     short TestECSupport(byte keyClass, short keyLen, byte[] buffer, short bufferOffset) {
         short baseOffset = bufferOffset;
+   
+        short testFlags = FLAG_ECTEST_ALL;
 
         ecKeyPair = null;
         ecPubKey = null;
@@ -178,68 +191,85 @@ public class SimpleECCApplet extends javacard.framework.Applet
         buffer[bufferOffset] = ECTEST_SEPARATOR; bufferOffset++;
         buffer[bufferOffset] = keyClass; bufferOffset++;
         Util.setShort(buffer, bufferOffset, keyLen); bufferOffset += 2;
+        
         //
         // 1. Allocate KeyPair object
         //
         buffer[bufferOffset] = ECTEST_ALLOCATE_KEYPAIR; bufferOffset++;
-        try { 
-            ecKeyPair = new KeyPair(keyClass, keyLen); 
-            Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR); bufferOffset += 2;
-        }
-        catch (CryptoException e) { 
-            Util.setShort(buffer, bufferOffset, e.getReason()); bufferOffset += 2;
-        }
-        catch (Exception e) {
-            Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
+        if ((testFlags & FLAG_ECTEST_ALLOCATE_KEYPAIR) != (short) 0) {
+            try { 
+                ecKeyPair = new KeyPair(keyClass, keyLen); 
+                Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR); bufferOffset += 2;
+            }
+            catch (CryptoException e) { 
+                Util.setShort(buffer, bufferOffset, e.getReason()); bufferOffset += 2;
+                testFlags = 0; // Can't continue if keypair was not allocated
+            }
+            catch (Exception e) {
+                Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
+                bufferOffset += 2;
+                testFlags = 0; // Can't continue if keypair was not allocated
+            }
+        } else {
+            Util.setShort(buffer, bufferOffset, SW_SKIPPED);
             bufferOffset += 2;
-        }
-        
+        }        
         //
         // 2. Test keypair generation without explicit curve (=> default curve preset)    
         //
-        buffer[bufferOffset] = ECTEST_GENERATE_KEYPAIR_DEFCURVE; bufferOffset++;
-        try {
-            ecKeyPair.genKeyPair();
-            Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
+        buffer[bufferOffset] = ECTEST_GENERATE_KEYPAIR_DEFCURVE;
+        bufferOffset++;
+        if ((testFlags & FLAG_ECTEST_GENERATE_KEYPAIR_DEFCURVE) != (short) 0) {
+            try {
+                ecKeyPair.genKeyPair();
+                Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
+                bufferOffset += 2;
+            } catch (CryptoException e) {
+                Util.setShort(buffer, bufferOffset, e.getReason());
+                bufferOffset += 2;
+            }  
+            catch (Exception e) {
+                Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
+                bufferOffset += 2;
+            }        
+        } else {
+            Util.setShort(buffer, bufferOffset, SW_SKIPPED);
             bufferOffset += 2;
-        } catch (CryptoException e) {
-            Util.setShort(buffer, bufferOffset, e.getReason());
-            bufferOffset += 2;
-        }  
-        catch (Exception e) {
-            Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
-            bufferOffset += 2;
-        }        
+        }
 
         //
         // 3. Set valid custom curve
         //
         buffer[bufferOffset] = ECTEST_SET_VALIDCURVE;
         bufferOffset++;
-        boolean bGenerateKey = false;
-        try {
-            ecPubKey = (ECPublicKey) ecKeyPair.getPublic();
-            ecPrivKey = (ECPrivateKey) ecKeyPair.getPrivate();
-            // Some implementation wil not return valid pub key until ecKeyPair.genKeyPair() is called
-            // Other implementation will fail with exception if same is called => try catch 
+        if ((testFlags & FLAG_ECTEST_SET_VALIDCURVE) != (short) 0) {
             try {
-                if (ecPubKey == null) {
-                    ecKeyPair.genKeyPair();
-                }
-            } catch (Exception e) {} // do intentionally nothing
+                ecPubKey = (ECPublicKey) ecKeyPair.getPublic();
+                ecPrivKey = (ECPrivateKey) ecKeyPair.getPrivate();
+                // Some implementation wil not return valid pub key until ecKeyPair.genKeyPair() is called
+                // Other implementation will fail with exception if same is called => try catch 
+                try {
+                    if (ecPubKey == null) {
+                        ecKeyPair.genKeyPair();
+                    }
+                } catch (Exception e) {} // do intentionally nothing
 
-            // Initialize curve parameters 
-            EC_Consts.setValidECKeyParams(ecPubKey, ecPrivKey, keyClass, keyLen, m_ramArray);
-            Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
-            bufferOffset += 2;
-            
-            bGenerateKey = true;
-        } catch (CryptoException e) {
-            Util.setShort(buffer, bufferOffset, e.getReason());
-            bufferOffset += 2;
-        }
-        catch (Exception e) {
-            Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
+                // Initialize curve parameters 
+                EC_Consts.setValidECKeyParams(ecPubKey, ecPrivKey, keyClass, keyLen, m_ramArray);
+                Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
+                bufferOffset += 2;
+            } catch (CryptoException e) {
+                Util.setShort(buffer, bufferOffset, e.getReason());
+                bufferOffset += 2;
+                testFlags &= ~FLAG_ECTEST_GENERATE_KEYPAIR_CUSTOMCURVE; // Don't try generate keypair if valid custom curve was not set
+            }
+            catch (Exception e) {
+                Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
+                bufferOffset += 2;
+                testFlags &= ~FLAG_ECTEST_GENERATE_KEYPAIR_CUSTOMCURVE; // Don't try generate keypair if valid custom curve was not set
+            }
+        } else {
+            Util.setShort(buffer, bufferOffset, SW_SKIPPED);
             bufferOffset += 2;
         }
 
@@ -248,7 +278,7 @@ public class SimpleECCApplet extends javacard.framework.Applet
         //
         buffer[bufferOffset] = ECTEST_GENERATE_KEYPAIR_CUSTOMCURVE;
         bufferOffset++;
-        if (bGenerateKey) {
+        if ((testFlags & FLAG_ECTEST_GENERATE_KEYPAIR_CUSTOMCURVE) != (short) 0) {
             try {
                 ecKeyPair.genKeyPair();
                 Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
@@ -260,8 +290,7 @@ public class SimpleECCApplet extends javacard.framework.Applet
                 Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
                 bufferOffset += 2;
             }      
-        }
-        else {
+        } else {
             Util.setShort(buffer, bufferOffset, SW_SKIPPED);
             bufferOffset += 2;            
         }
@@ -271,73 +300,88 @@ public class SimpleECCApplet extends javacard.framework.Applet
         //
         buffer[bufferOffset] = ECTEST_ECDH_AGREEMENT_VALID_POINT;
         bufferOffset++;
-        try {
-            // Generate fresh EC keypair
-            ecKeyPair.genKeyPair();
-            ecPubKey = (ECPublicKey) ecKeyPair.getPublic();
-            ecPrivKey = (ECPrivateKey) ecKeyPair.getPrivate();
-            if (dhKeyAgreement == null) {
-                dhKeyAgreement = KeyAgreement.getInstance(KeyAgreement.ALG_EC_SVDP_DH, false);
-            }
-            dhKeyAgreement.init(ecPrivKey);
-            
-            short pubKeyLen = ecPubKey.getW(m_ramArray, (short) 0);
-            short secretLen = dhKeyAgreement.generateSecret(m_ramArray, (short) 0, pubKeyLen, m_ramArray2, (short) 0);
+        if ((testFlags & FLAG_ECTEST_ECDH_AGREEMENT_VALID_POINT) != (short) 0) {
+            try {
+                // Generate fresh EC keypair
+                ecKeyPair.genKeyPair();
+                ecPubKey = (ECPublicKey) ecKeyPair.getPublic();
+                ecPrivKey = (ECPrivateKey) ecKeyPair.getPrivate();
+                if (dhKeyAgreement == null) {
+                    dhKeyAgreement = KeyAgreement.getInstance(KeyAgreement.ALG_EC_SVDP_DH, false);
+                }
+                dhKeyAgreement.init(ecPrivKey);
 
-            Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
-            bufferOffset += 2;
-        } catch (CryptoException e) {
-            Util.setShort(buffer, bufferOffset, e.getReason());
-            bufferOffset += 2;
-        } catch (Exception e) {
-            Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
+                short pubKeyLen = ecPubKey.getW(m_ramArray, (short) 0);
+                short secretLen = dhKeyAgreement.generateSecret(m_ramArray, (short) 0, pubKeyLen, m_ramArray2, (short) 0);
+
+                Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
+                bufferOffset += 2;
+            } catch (CryptoException e) {
+                Util.setShort(buffer, bufferOffset, e.getReason());
+                bufferOffset += 2;
+            } catch (Exception e) {
+                Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
+                bufferOffset += 2;
+            }
+        } else {
+            Util.setShort(buffer, bufferOffset, SW_SKIPPED);
             bufferOffset += 2;
         }
         
         //
         // 6. ECDH agreement with invalid public key
         //
-        buffer[bufferOffset] = ECTEST_ECDH_AGREEMENT_VALID_POINT;
+        buffer[bufferOffset] = ECTEST_ECDH_AGREEMENT_INVALID_POINT;
         bufferOffset++;
-        try {
-            // Generate fresh EC keypair
-            ecKeyPair.genKeyPair();
-            ecPubKey = (ECPublicKey) ecKeyPair.getPublic();
-            ecPrivKey = (ECPrivateKey) ecKeyPair.getPrivate();
-            dhKeyAgreement.init(ecPrivKey);
+        if ((testFlags & FLAG_ECTEST_ECDH_AGREEMENT_INVALID_POINT) != (short) 0) {
+            try {
+                // Generate fresh EC keypair
+                ecKeyPair.genKeyPair();
+                ecPubKey = (ECPublicKey) ecKeyPair.getPublic();
+                ecPrivKey = (ECPrivateKey) ecKeyPair.getPrivate();
+                dhKeyAgreement.init(ecPrivKey);
 
-            short pubKeyLen = ecPubKey.getW(m_ramArray, (short) 0);
-            m_ramArray[(byte) 10] = (byte) 0xcc; // Corrupt public key
-            m_ramArray[(byte) 11] = (byte) 0xcc;
-            short secretLen = dhKeyAgreement.generateSecret(m_ramArray, (short) 0, pubKeyLen, m_ramArray2, (short) 0);
+                short pubKeyLen = ecPubKey.getW(m_ramArray, (short) 0);
+                m_ramArray[(byte) 10] = (byte) 0xcc; // Corrupt public key
+                m_ramArray[(byte) 11] = (byte) 0xcc;
+                short secretLen = dhKeyAgreement.generateSecret(m_ramArray, (short) 0, pubKeyLen, m_ramArray2, (short) 0);
 
-            Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
-            bufferOffset += 2;
-        } catch (CryptoException e) {
-            Util.setShort(buffer, bufferOffset, e.getReason());
-            bufferOffset += 2;
-        } catch (Exception e) {
-            Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
+                Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
+                bufferOffset += 2;
+            } catch (CryptoException e) {
+                Util.setShort(buffer, bufferOffset, e.getReason());
+                bufferOffset += 2;
+            } catch (Exception e) {
+                Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
+                bufferOffset += 2;
+            }
+        } else {
+            Util.setShort(buffer, bufferOffset, SW_SKIPPED);
             bufferOffset += 2;
         }
-
+        
         //
         // 7. Set invalid custom curve
         //
         buffer[bufferOffset] = ECTEST_SET_INVALIDCURVE;
         bufferOffset++;
-        bGenerateKey = false;
-        try {
-            // Initialize curve parameters 
-            EC_Consts.setInValidECKeyParams(ecPubKey, ecPrivKey, keyClass, keyLen, m_ramArray);
-            Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
-            bufferOffset += 2;
-            bGenerateKey = true;
-        } catch (CryptoException e) {
-            Util.setShort(buffer, bufferOffset, e.getReason());
-            bufferOffset += 2;
-        } catch (Exception e) {
-            Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
+        if ((testFlags & FLAG_ECTEST_SET_INVALIDCURVE) != (short) 0) {
+            try {
+                // Initialize curve parameters 
+                EC_Consts.setInValidECKeyParams(ecPubKey, ecPrivKey, keyClass, keyLen, m_ramArray);
+                Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
+                bufferOffset += 2;
+            } catch (CryptoException e) {
+                Util.setShort(buffer, bufferOffset, e.getReason());
+                bufferOffset += 2;
+                testFlags &= ~FLAG_ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE; // Don't try generate keypair if invalid custom curve was not set
+            } catch (Exception e) {
+                Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
+                bufferOffset += 2;
+                testFlags &= ~FLAG_ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE; // Don't try generate keypair if invalid custom curve was not set
+            }
+        } else {
+            Util.setShort(buffer, bufferOffset, SW_SKIPPED);
             bufferOffset += 2;
         }
         
@@ -346,7 +390,7 @@ public class SimpleECCApplet extends javacard.framework.Applet
         //
         buffer[bufferOffset] = ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE;
         bufferOffset++;
-        if (bGenerateKey) {
+        if ((testFlags & FLAG_ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE) != (short) 0) {
             try {
                 ecKeyPair.genKeyPair();
                 Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
@@ -365,6 +409,7 @@ public class SimpleECCApplet extends javacard.framework.Applet
         
         return (short) (bufferOffset - baseOffset);
     }
+    
     void TestEC_FP_SupportAllLengths(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
         short len = apdu.setIncomingAndReceive();
