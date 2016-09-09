@@ -27,7 +27,8 @@ public class SimpleAPDU {
     
     private static byte GENERATEKEY[] = {(byte) 0xB0, (byte) 0x5A, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x00};
     private static byte RESPONDDATA[] = {(byte) 0xB0, (byte) 0x5B, (byte) 0x00, (byte) 0x00, (byte) 0x02, (byte) 0x00, (byte) 0x30};
-    private static byte TESTECSUPPORTALL[] = {(byte) 0xB0, (byte) 0x5E, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+    private static byte TESTECSUPPORTALL_FP[] = {(byte) 0xB0, (byte) 0x5E, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+    private static byte TESTECSUPPORTALL_F2M[] = {(byte) 0xB0, (byte) 0x5F, (byte) 0x00, (byte) 0x00, (byte) 0x00};
     
     static short getShort(byte[] array, int offset) {
         return (short) (((array[offset] & 0xFF) << 8) | (array[offset + 1] & 0xFF));        
@@ -71,8 +72,10 @@ public class SimpleAPDU {
                 // Select our application on card
                 cardManager.sendAPDU(SELECT_SIMPLEAPPLET);
                 
-                ResponseAPDU resp = cardManager.sendAPDU(TESTECSUPPORTALL);
-                PrintECSupport(resp);
+                ResponseAPDU resp_fp = cardManager.sendAPDU(TESTECSUPPORTALL_FP);
+                ResponseAPDU resp_f2m = cardManager.sendAPDU(TESTECSUPPORTALL_F2M);
+                PrintECSupport(resp_fp);
+                PrintECSupport(resp_f2m);
                 
                 cardManager.DisconnectFromCard();
             } else {

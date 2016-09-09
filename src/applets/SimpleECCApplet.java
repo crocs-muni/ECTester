@@ -20,7 +20,8 @@ public class SimpleECCApplet extends javacard.framework.Applet
     final static byte INS_ALLOCATEKEYPAIR            = (byte) 0x5c;
     final static byte INS_DERIVEECDHSECRET           = (byte) 0x5d;
     
-    final static byte INS_TESTECSUPPORTALL          = (byte) 0x5e;
+    final static byte INS_TESTECSUPPORTALL_FP        = (byte) 0x5e;
+    final static byte INS_TESTECSUPPORTALL_F2M       = (byte) 0x5f;
     
     
 
@@ -135,8 +136,11 @@ public class SimpleECCApplet extends javacard.framework.Applet
 
         if (apduBuffer[ISO7816.OFFSET_CLA] == CLA_SIMPLEECCAPPLET) {
             switch ( apduBuffer[ISO7816.OFFSET_INS] ) {
-                case INS_TESTECSUPPORTALL: 
-                    TestECSupportAllLengths(apdu);
+                case INS_TESTECSUPPORTALL_FP:
+                    TestEC_FP_SupportAllLengths(apdu);
+                    break;
+                case INS_TESTECSUPPORTALL_F2M:
+                    TestEC_F2M_SupportAllLengths(apdu);
                     break;
                 case INS_ALLOCATEKEYPAIR:
                     AllocateKeyPairReturnDefCourve(apdu);
@@ -453,12 +457,12 @@ public class SimpleECCApplet extends javacard.framework.Applet
         
         return (short) (bufferOffset - baseOffset);
     }
-    void TestECSupportAllLengths(APDU apdu) {
+    void TestEC_FP_SupportAllLengths(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
         short len = apdu.setIncomingAndReceive();
 
         short dataOffset = 0;
-        // FP - 
+        // FP  
         dataOffset += TestECSupport(KeyPair.ALG_EC_FP, (short) 128, apdubuf, dataOffset);
         dataOffset += TestECSupport(KeyPair.ALG_EC_FP, (short) 160, apdubuf, dataOffset);
         dataOffset += TestECSupport(KeyPair.ALG_EC_FP, (short) 192, apdubuf, dataOffset);
@@ -469,6 +473,19 @@ public class SimpleECCApplet extends javacard.framework.Applet
 
         apdu.setOutgoingAndSend((short) 0, dataOffset);
     }    
+    void TestEC_F2M_SupportAllLengths(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        short len = apdu.setIncomingAndReceive();
+
+        short dataOffset = 0;
+        // F2M
+        dataOffset += TestECSupport(KeyPair.ALG_EC_F2M, (short) 113, apdubuf, dataOffset);
+        dataOffset += TestECSupport(KeyPair.ALG_EC_F2M, (short) 131, apdubuf, dataOffset);
+        dataOffset += TestECSupport(KeyPair.ALG_EC_F2M, (short) 163, apdubuf, dataOffset);
+        dataOffset += TestECSupport(KeyPair.ALG_EC_F2M, (short) 193, apdubuf, dataOffset);
+        
+        apdu.setOutgoingAndSend((short) 0, dataOffset);
+    }
     
     
     
