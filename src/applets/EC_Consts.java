@@ -6,6 +6,7 @@ import javacard.framework.Util;
 import javacard.security.ECPrivateKey;
 import javacard.security.ECPublicKey;
 import javacard.security.KeyPair;
+import javacard.security.RandomData;
 
 public class EC_Consts {
     public static byte[] EC_FP_P = null;
@@ -16,7 +17,7 @@ public class EC_Consts {
     public static byte[] EC_FP_R = null;
     public static short EC_FP_K = 1;
     
-
+    public static RandomData  m_random = null;
 
     // secp128r1 
     public static final byte[] EC128_FP_P = new byte[]{
@@ -487,14 +488,21 @@ public class EC_Consts {
     public static final short EC521_FP_K = 1;    
 
     
+    public static final byte VALID_KEY = 1;
+    public static final byte INVALIDB_FIXED = 2;
+    public static final byte INVALIDB_RANDOM = 3;
+    
     
     public static void setValidECKeyParams(ECPublicKey ecPubKey, ECPrivateKey ecPrivKey, byte ecClass, short ecLength, byte[] auxBuffer) {
-        setECKeyParams(ecPubKey, ecPrivKey, ecClass, ecLength, auxBuffer, false);
+        setECKeyParams(ecPubKey, ecPrivKey, ecClass, ecLength, auxBuffer, VALID_KEY);
     }
     public static void setInValidECKeyParams(ECPublicKey ecPubKey, ECPrivateKey ecPrivKey, byte ecClass, short ecLength, byte[] auxBuffer) {
-        setECKeyParams(ecPubKey, ecPrivKey, ecClass, ecLength, auxBuffer, true);
+        setECKeyParams(ecPubKey, ecPrivKey, ecClass, ecLength, auxBuffer, INVALIDB_FIXED);
     }
-    private static void setECKeyParams(ECPublicKey ecPubKey, ECPrivateKey ecPrivKey, byte ecClass, short ecLength, byte[] auxBuffer, boolean bInvalidCurve) {
+    public static void setInValidECKeyParamsRandomB(ECPublicKey ecPubKey, ECPrivateKey ecPrivKey, byte ecClass, short ecLength, byte[] auxBuffer) {
+        setECKeyParams(ecPubKey, ecPrivKey, ecClass, ecLength, auxBuffer, INVALIDB_RANDOM);
+    }  
+    private static void setECKeyParams(ECPublicKey ecPubKey, ECPrivateKey ecPrivKey, byte ecClass, short ecLength, byte[] auxBuffer, byte bInvalidKeyType) {
         if (ecClass == KeyPair.ALG_EC_FP) {
             // Select proper courve parameters
             switch (ecLength) {
@@ -581,28 +589,38 @@ public class EC_Consts {
             short off = 1;
             off = Util.arrayCopyNonAtomic(EC_FP_G_X, (short) 0, auxBuffer, off, (short) EC_FP_G_X.length);
             Util.arrayCopyNonAtomic(EC_FP_G_Y, (short) 0, auxBuffer, off, (short) EC_FP_G_Y.length);
+            ecPubKey.setG(auxBuffer, (short) 0, gSize);
+            ecPrivKey.setG(auxBuffer, (short) 0, gSize);
 
             // pre-set basic EC parameters:
             ecPubKey.setFieldFP(EC_FP_P, (short) 0, (short) EC_FP_P.length);
+            ecPrivKey.setFieldFP(EC_FP_P, (short) 0, (short) EC_FP_P.length);
             ecPubKey.setA(EC_FP_A, (short) 0, (short) EC_FP_A.length);
-            ecPubKey.setB(EC_FP_B, (short) 0, (short) EC_FP_B.length);
-            if (bInvalidCurve) { // corrupt curve if required for testing
-                Util.arrayCopyNonAtomic(EC_FP_B, (short) 0, auxBuffer, (short) 0, (short) EC_FP_B.length);                
+            ecPrivKey.setA(EC_FP_A, (short) 0, (short) EC_FP_A.length);
+
+            if (bInvalidKeyType == VALID_KEY) { 
+                // No corruption
+                ecPubKey.setB(EC_FP_B, (short) 0, (short) EC_FP_B.length);
+            }
+            if (bInvalidKeyType == INVALIDB_FIXED) {
+                // corrupt curve if required for testing
+                Util.arrayCopyNonAtomic(EC_FP_B, (short) 0, auxBuffer, (short) 0, (short) EC_FP_B.length);
                 auxBuffer[(byte) 10] = (byte) 0xcc;
                 auxBuffer[(byte) 11] = (byte) 0xcc;
                 ecPubKey.setB(auxBuffer, (short) 0, (short) EC_FP_B.length);
             }
-            
-            ecPubKey.setG(auxBuffer, (short) 0, gSize);
-            ecPubKey.setR(EC_FP_R, (short) 0, (short) EC_FP_R.length);
-            ecPubKey.setK(EC_FP_K);
-
-            ecPrivKey.setFieldFP(EC_FP_P, (short) 0, (short) EC_FP_P.length);
-            ecPrivKey.setA(EC_FP_A, (short) 0, (short) EC_FP_A.length);
+            if (bInvalidKeyType == INVALIDB_RANDOM) {
+                // corrupt curve if required for testing
+                m_random.generateData(auxBuffer, (short) 0, (short) EC_FP_B.length);
+                ecPubKey.setB(auxBuffer, (short) 0, (short) EC_FP_B.length);
+            }
             ecPrivKey.setB(EC_FP_B, (short) 0, (short) EC_FP_B.length);
-            ecPrivKey.setG(auxBuffer, (short) 0, gSize);
+            
+            ecPubKey.setR(EC_FP_R, (short) 0, (short) EC_FP_R.length);
             ecPrivKey.setR(EC_FP_R, (short) 0, (short) EC_FP_R.length);
-            ecPrivKey.setK(EC_FP_K);        
+
+            ecPubKey.setK(EC_FP_K);
+            ecPrivKey.setK(EC_FP_K);
         }
         if (ecClass == KeyPair.ALG_EC_F2M) {
             // Not supported yet
@@ -610,4 +628,16 @@ public class EC_Consts {
         }
         
     }    
+/*    
+    void setFPCurveParams(ECPublicKey ecPubKey, byte[] EC_FP_P, byte[] EC_FP_A, EC_FP_B) {
+        ecPubKey.setFieldFP(EC_FP_P, (short) 0, (short) EC_FP_P.length);
+        ecPrivKey.setA(EC_FP_A, (short) 0, (short) EC_FP_A.length);
+        ecPrivKey.setB(EC_FP_B, (short) 0, (short) EC_FP_B.length);
+        ecPrivKey.setG(auxBuffer, (short) 0, gSize);
+        ecPrivKey.setR(EC_FP_R, (short) 0, (short) EC_FP_R.length);
+        ecPrivKey.setK(EC_FP_K);
+    }
+    
+    , ECPrivateKey ecPrivKey ,
+*/    
 }
