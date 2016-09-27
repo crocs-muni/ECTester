@@ -22,6 +22,8 @@ public class SimpleECCApplet extends javacard.framework.Applet
     
     final static byte INS_TESTECSUPPORTALL_FP        = (byte) 0x5e;
     final static byte INS_TESTECSUPPORTALL_F2M       = (byte) 0x5f;
+    final static byte INS_TESTEC_GENERATEINVALID_FP  = (byte) 0x70;
+    
     
     
 
@@ -53,7 +55,8 @@ public class SimpleECCApplet extends javacard.framework.Applet
     
     public final static short FLAG_ECTEST_ALL = (short) 0x00ff;
     
-    public final static short SW_SKIPPED = (short) 0x0ee1; 
+    public final static short SW_SKIPPED = (short) 0x0ee1;
+    public final static short SW_KEYPAIR_GENERATED_INVALID = (short) 0x0ee2;
 /*    
     public static final byte[] EC192_FP_PUBLICW = new byte[]{
         (byte) 0x04, (byte) 0xC9, (byte) 0xC0, (byte) 0xED, (byte) 0xFB, (byte) 0x27,
@@ -95,6 +98,7 @@ public class SimpleECCApplet extends javacard.framework.Applet
     private ECPrivateKey ecPrivKey256 = null;
     
     private KeyAgreement dhKeyAgreement = null;
+    private RandomData randomData = null;
     
     // TEMPORARRY ARRAY IN RAM
     private byte m_ramArray[] = null;
@@ -118,6 +122,8 @@ public class SimpleECCApplet extends javacard.framework.Applet
             
             m_dataArray = new byte[ARRAY_LENGTH];
             Util.arrayFillNonAtomic(m_dataArray, (short) 0, ARRAY_LENGTH, (byte) 0);
+            
+            randomData = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
         } 
 
         register();
@@ -158,6 +164,9 @@ public class SimpleECCApplet extends javacard.framework.Applet
                     break;
                 case INS_DERIVEECDHSECRET:
                     DeriveECDHSecret(apdu);
+                    break;
+                case INS_TESTEC_GENERATEINVALID_FP:
+                    TestEC_FP_GenerateInvalidCurve(apdu);
                     break;
 
 /*                    
@@ -406,7 +415,7 @@ public class SimpleECCApplet extends javacard.framework.Applet
             Util.setShort(buffer, bufferOffset, SW_SKIPPED);
             bufferOffset += 2;
         }
-        
+
         return (short) (bufferOffset - baseOffset);
     }
     
@@ -440,7 +449,150 @@ public class SimpleECCApplet extends javacard.framework.Applet
         apdu.setOutgoingAndSend((short) 0, dataOffset);
     }
     
-        void AllocateKeyPairReturnDefCourve(APDU apdu) {
+    void TestEC_FP_GenerateInvalidCurve(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        short len = apdu.setIncomingAndReceive();
+
+        short dataOffset = 0;
+
+        // FP
+        dataOffset += TestECSupportInvalidCurve(KeyPair.ALG_EC_FP, (short) 160, apdubuf, dataOffset, apdubuf[ISO7816.OFFSET_P1]);
+
+        apdu.setOutgoingAndSend((short) 0, dataOffset);
+    }
+    
+    short TestECSupportInvalidCurve(byte keyClass, short keyLen, byte[] buffer, short bufferOffset, short repeats) {
+        short baseOffset = bufferOffset;
+
+        short testFlags = FLAG_ECTEST_ALL;
+
+        ecKeyPair = null;
+        ecPubKey = null;
+        ecPrivKey = null;
+
+        buffer[bufferOffset] = ECTEST_SEPARATOR;
+        bufferOffset++;
+        buffer[bufferOffset] = keyClass;
+        bufferOffset++;
+        Util.setShort(buffer, bufferOffset, keyLen);
+        bufferOffset += 2;
+
+        //
+        // 1. Allocate KeyPair object
+        //
+        buffer[bufferOffset] = ECTEST_ALLOCATE_KEYPAIR;
+        bufferOffset++;
+        if ((testFlags & FLAG_ECTEST_ALLOCATE_KEYPAIR) != (short) 0) {
+            try {
+                ecKeyPair = new KeyPair(keyClass, keyLen);
+                ecPrivKey = (ECPrivateKey) ecKeyPair.getPrivate();
+                ecPubKey = (ECPublicKey) ecKeyPair.getPublic();
+                // Some implementation wil not return valid pub key until ecKeyPair.genKeyPair() is called
+                // Other implementation will fail with exception if same is called => try catch 
+                try { 
+                    if (ecPubKey == null) {
+                        ecKeyPair.genKeyPair();
+                    }
+                } catch (Exception e) {
+                } // do intentionally nothing
+                Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
+                bufferOffset += 2;
+            } catch (CryptoException e) {
+                Util.setShort(buffer, bufferOffset, e.getReason());
+                bufferOffset += 2;
+                testFlags = 0; // Can't continue if keypair was not allocated
+            } catch (Exception e) {
+                Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
+                bufferOffset += 2;
+                testFlags = 0; // Can't continue if keypair was not allocated
+            }
+        } else {
+            Util.setShort(buffer, bufferOffset, SW_SKIPPED);
+            bufferOffset += 2;
+        }
+
+        //
+        // 2. Set invalid custom curve (many times)
+        //
+        EC_Consts.m_random = randomData;
+        EC_Consts.setValidECKeyParams(ecPubKey, ecPrivKey, keyClass, keyLen, m_ramArray);
+        short lenB = ecPubKey.getB(m_ramArray, (short) 0); // store valid B
+        
+        short startOffset = bufferOffset;
+//        for (short i = 0; i < repeats; i++) {
+        for (short i = 0; i < (short) 1000; i++) {
+            if ((testFlags & FLAG_ECTEST_SET_INVALIDCURVE) != (short) 0) {
+                bufferOffset = startOffset;
+                
+                // set invalid curve
+                buffer[bufferOffset] = ECTEST_SET_INVALIDCURVE;
+                bufferOffset++;
+                randomData.generateData(m_ramArray2, (short) 0, lenB);
+                ecPubKey.setB(m_ramArray2, (short) 0, lenB);
+                Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
+                bufferOffset += 2;
+                
+                // Gen key pair with invalid curve
+                try {
+                    buffer[bufferOffset] = ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE;
+                    bufferOffset++;
+                    // Should fail
+                    ecKeyPair.genKeyPair();
+                    // If this line is reached, we generated valid key pair - what should not happen
+                    Util.setShort(buffer, bufferOffset, SW_KEYPAIR_GENERATED_INVALID);
+                    bufferOffset += 2;
+                    // if we reach this line, we are interested in value of B
+                    Util.arrayCopyNonAtomic(m_ramArray2, (short) 0, buffer, bufferOffset, lenB);
+                    bufferOffset += lenB;
+                    break; // stop execution, return B
+                } catch (CryptoException e) {
+                    Util.setShort(buffer, bufferOffset, e.getReason());
+                    bufferOffset += 2;
+                } catch (Exception e) {
+                    Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
+                    bufferOffset += 2;
+                }
+                
+                //
+                // Generate keypair with valid curve
+                //
+                // set valid curve
+                buffer[bufferOffset] = ECTEST_SET_VALIDCURVE;
+                bufferOffset++;
+                ecPubKey.setB(m_ramArray, (short) 0, lenB); // valid B
+                Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
+                bufferOffset += 2;
+
+                // Gen key pair with valid curve
+                try {
+                    buffer[bufferOffset] = ECTEST_GENERATE_KEYPAIR_CUSTOMCURVE;
+                    bufferOffset++;
+                    // Should succeed
+                    ecKeyPair.genKeyPair();
+                    // If this line is reached, we generated valid key pair 
+                    Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
+                    bufferOffset += 2;
+                } catch (CryptoException e) {
+                    Util.setShort(buffer, bufferOffset, e.getReason());
+                    bufferOffset += 2;
+                } catch (Exception e) {
+                    Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
+                    bufferOffset += 2;
+                }
+                
+                // If we reach this line => everything was as expected
+                // Rewind offset in array back (no storage of info about expected runs)
+                // bufferOffset = startOffset; done at beginning
+            } else {
+                Util.setShort(buffer, bufferOffset, SW_SKIPPED);
+                bufferOffset += 2;
+            }
+        }
+        
+        return (short) (bufferOffset - baseOffset);
+    }
+    
+    void AllocateKeyPairReturnDefCourve(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
         apdu.setIncomingAndReceive();
 
