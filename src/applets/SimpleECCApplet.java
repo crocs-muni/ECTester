@@ -529,6 +529,7 @@ public class SimpleECCApplet extends javacard.framework.Applet
                 bufferOffset++;
                 randomData.generateData(m_ramArray2, (short) 0, lenB);
                 ecPubKey.setB(m_ramArray2, (short) 0, lenB);
+                ecPrivKey.setB(m_ramArray2, (short) 0, lenB); 
                 Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
                 bufferOffset += 2;
                 
@@ -560,6 +561,7 @@ public class SimpleECCApplet extends javacard.framework.Applet
                 buffer[bufferOffset] = ECTEST_SET_VALIDCURVE;
                 bufferOffset++;
                 ecPubKey.setB(m_ramArray, (short) 0, lenB); // valid B
+                ecPrivKey.setB(m_ramArray, (short) 0, lenB);
                 Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
                 bufferOffset += 2;
 
