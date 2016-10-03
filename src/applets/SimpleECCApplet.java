@@ -23,6 +23,7 @@ public class SimpleECCApplet extends javacard.framework.Applet
     final static byte INS_TESTECSUPPORTALL_FP        = (byte) 0x5e;
     final static byte INS_TESTECSUPPORTALL_F2M       = (byte) 0x5f;
     final static byte INS_TESTEC_GENERATEINVALID_FP  = (byte) 0x70;
+    final static byte INS_TESTEC_LASTUSEDPARAMS      = (byte) 0x40;
     
     
     
@@ -43,6 +44,8 @@ public class SimpleECCApplet extends javacard.framework.Applet
     public final static byte ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE = (byte) 0xc6;
     public final static byte ECTEST_ECDH_AGREEMENT_VALID_POINT = (byte) 0xc7;
     public final static byte ECTEST_ECDH_AGREEMENT_INVALID_POINT = (byte) 0xc8;
+    public final static byte ECTEST_EXECUTED_REPEATS = (byte) 0xc9;
+    public final static byte ECTEST_DH_GENERATESECRET = (byte) 0xca;
 
     public final static short FLAG_ECTEST_ALLOCATE_KEYPAIR          = (short) 0x0001;
     public final static short FLAG_ECTEST_GENERATE_KEYPAIR_DEFCURVE = (short) 0x0002;
@@ -55,8 +58,15 @@ public class SimpleECCApplet extends javacard.framework.Applet
     
     public final static short FLAG_ECTEST_ALL = (short) 0x00ff;
     
+    public final static short CORRUPT_B_FULLRANDOM = (short) 0x0001;
+    public final static short CORRUPT_B_ONEBYTERANDOM = (short) 0x0002;
+    public final static short CORRUPT_B_LASTBYTEINCREMENT = (short) 0x0003;
+    
+    
+    
     public final static short SW_SKIPPED = (short) 0x0ee1;
     public final static short SW_KEYPAIR_GENERATED_INVALID = (short) 0x0ee2;
+    public final static short SW_INVALID_CORRUPTION_TYPE = (short) 0x0ee3;
 /*    
     public static final byte[] EC192_FP_PUBLICW = new byte[]{
         (byte) 0x04, (byte) 0xC9, (byte) 0xC0, (byte) 0xED, (byte) 0xFB, (byte) 0x27,
@@ -105,6 +115,8 @@ public class SimpleECCApplet extends javacard.framework.Applet
     private byte m_ramArray2[] = null;
     // PERSISTENT ARRAY IN EEPROM
     private   byte       m_dataArray[] = null;
+    
+    short       m_lenB = 0;
 
     protected SimpleECCApplet(byte[] buffer, short offset, byte length) {
         short dataOffset = offset;
@@ -168,7 +180,9 @@ public class SimpleECCApplet extends javacard.framework.Applet
                 case INS_TESTEC_GENERATEINVALID_FP:
                     TestEC_FP_GenerateInvalidCurve(apdu);
                     break;
-
+                case INS_TESTEC_LASTUSEDPARAMS: 
+                    TestECSupportInvalidCurve_lastUsedParams(apdu);
+                    break;
 /*                    
                 case INS_ALLOCATEKEYPAIRS:
                     AllocateKeyPairs(apdu);
@@ -453,15 +467,23 @@ public class SimpleECCApplet extends javacard.framework.Applet
         byte[] apdubuf = apdu.getBuffer();
         short len = apdu.setIncomingAndReceive();
 
+        short offset = ISO7816.OFFSET_CDATA;
+        short repeats = Util.getShort(apdubuf, offset);
+        offset += 2;
+        short corruptionType = Util.getShort(apdubuf, offset);
+        offset += 2;
+        byte bRewindOnSuccess = apdubuf[offset];
+        offset++;
+        
         short dataOffset = 0;
 
         // FP
-        dataOffset += TestECSupportInvalidCurve(KeyPair.ALG_EC_FP, (short) 160, apdubuf, dataOffset, apdubuf[ISO7816.OFFSET_P1]);
+        dataOffset += TestECSupportInvalidCurve(KeyPair.ALG_EC_FP, (short) 160, apdubuf, dataOffset, repeats, corruptionType, bRewindOnSuccess);
 
         apdu.setOutgoingAndSend((short) 0, dataOffset);
     }
     
-    short TestECSupportInvalidCurve(byte keyClass, short keyLen, byte[] buffer, short bufferOffset, short repeats) {
+    short TestECSupportInvalidCurve(byte keyClass, short keyLen, byte[] buffer, short bufferOffset, short repeats, short corruptionType, byte bRewindOnSuccess) {
         short baseOffset = bufferOffset;
 
         short testFlags = FLAG_ECTEST_ALL;
@@ -475,6 +497,9 @@ public class SimpleECCApplet extends javacard.framework.Applet
         buffer[bufferOffset] = keyClass;
         bufferOffset++;
         Util.setShort(buffer, bufferOffset, keyLen);
+        bufferOffset += 2;
+        
+        short numExecutionsOffset = bufferOffset; // num executions to be stored later
         bufferOffset += 2;
 
         //
@@ -516,35 +541,112 @@ public class SimpleECCApplet extends javacard.framework.Applet
         //
         EC_Consts.m_random = randomData;
         EC_Consts.setValidECKeyParams(ecPubKey, ecPrivKey, keyClass, keyLen, m_ramArray);
-        short lenB = ecPubKey.getB(m_ramArray, (short) 0); // store valid B
-        
-        short startOffset = bufferOffset;
-//        for (short i = 0; i < repeats; i++) {
-        for (short i = 0; i < (short) 1000; i++) {
-            if ((testFlags & FLAG_ECTEST_SET_INVALIDCURVE) != (short) 0) {
-                bufferOffset = startOffset;
+
+        m_lenB = ecPubKey.getB(m_ramArray, (short) 0); // store valid B
+        Util.arrayCopyNonAtomic(m_ramArray, (short) 0, m_ramArray2, (short) 0, m_lenB); // also in  m_ramArray2       
                 
+        short startOffset = bufferOffset;
+        short i;
+        for (i = 0; i < repeats; i++) {
+            if ((testFlags & FLAG_ECTEST_SET_INVALIDCURVE) != (short) 0) {
+                if (bRewindOnSuccess == 1) {
+                    // if nothing unexpected happened, rewind bufferOffset back again 
+                    bufferOffset = startOffset;
+                } 
+
+                // Store valid curve B param
+                ecPubKey.getB(m_ramArray, (short) 0); // store valid B
+                Util.arrayCopyNonAtomic(m_ramArray, (short) 0, m_ramArray2, (short) 0, m_lenB); // also in  m_ramArray2       
+
                 // set invalid curve
                 buffer[bufferOffset] = ECTEST_SET_INVALIDCURVE;
                 bufferOffset++;
-                randomData.generateData(m_ramArray2, (short) 0, lenB);
-                ecPubKey.setB(m_ramArray2, (short) 0, lenB);
-                ecPrivKey.setB(m_ramArray2, (short) 0, lenB); 
-                Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
-                bufferOffset += 2;
                 
+                // Supported types of invalid curve:
+                // 1. Completely random B
+                // 2. Valid B but with one random byte randomly changed 
+                // 3. Valid B but with last byte incremented 
+                switch (corruptionType) {
+                    case CORRUPT_B_FULLRANDOM: 
+                        randomData.generateData(m_ramArray2, (short) 0, m_lenB); 
+                        break;
+                    case CORRUPT_B_ONEBYTERANDOM:
+                        // Copy valid B into m_ramArray2
+                        Util.arrayCopyNonAtomic(m_ramArray, (short) 0, m_ramArray2, (short) 0, m_lenB);
+                        // Generate random position and one random byte for subsequent change  
+                        // Note - we are using same array m_ramArray2, but in area unsued by stored B
+                        randomData.generateData(m_ramArray2, m_lenB, (short) 2); 
+
+                        short rngPos = m_ramArray2[m_lenB]; // random position (within B)
+                        if (rngPos < 0) { rngPos = (short) -rngPos; } // make it positive
+                        rngPos %= m_lenB;
+                        m_ramArray2[rngPos] = m_ramArray2[(short) (m_lenB + 1)]; // set random byte on random position
+                        // Make sure its not the valid byte again
+                        if (m_ramArray[rngPos] == m_ramArray2[rngPos]) {
+                            m_ramArray2[rngPos] += 1; // if yes, just increment 
+                        }
+                        
+                        break;
+                    case CORRUPT_B_LASTBYTEINCREMENT:
+                        m_ramArray2[(short) (m_lenB - 1)] += 1;
+                        // Make sure its not the valid byte again
+                        if (m_ramArray[(short) (m_lenB - 1)] == m_ramArray2[(short) (m_lenB - 1)]) {
+                            m_ramArray2[(short) (m_lenB - 1)] += 1; // if yes, increment once more
+                        }
+                        break;
+                    default:
+                        ISOException.throwIt(SW_INVALID_CORRUPTION_TYPE);
+                        break;
+                }
+                
+                
+                // Set corrupted B parameter
+                try {
+                    ecPubKey.setB(m_ramArray2, (short) 0, m_lenB);
+                    ecPrivKey.setB(m_ramArray2, (short) 0, m_lenB); 
+                    Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR); // ok if setB itself will not emit exception
+                    bufferOffset += 2;
+                }catch (CryptoException e) {
+                    Util.setShort(buffer, bufferOffset, e.getReason());
+                    bufferOffset += 2;
+                    // if we reach this line, we are interested in value of B that caused incorrect response
+                    break; // stop execution, return B
+                }catch (Exception e) {
+                    Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
+                    bufferOffset += 2;
+                    // if we reach this line, we are interested in value of B that caused incorrect response
+                    break; // stop execution, return B
+                }
+
                 // Gen key pair with invalid curve
                 try {
                     buffer[bufferOffset] = ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE;
                     bufferOffset++;
                     // Should fail
                     ecKeyPair.genKeyPair();
-                    // If this line is reached, we generated valid key pair - what should not happen
-                    Util.setShort(buffer, bufferOffset, SW_KEYPAIR_GENERATED_INVALID);
+                    // If this line is reached, we generated key pair - what should not happen
+                    Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
                     bufferOffset += 2;
+                    
                     // if we reach this line, we are interested in value of B
-                    Util.arrayCopyNonAtomic(m_ramArray2, (short) 0, buffer, bufferOffset, lenB);
-                    bufferOffset += lenB;
+                    try {                    
+                        buffer[bufferOffset] = ECTEST_DH_GENERATESECRET;
+                        bufferOffset++;
+                        ecPrivKey = (ECPrivateKey) ecKeyPair.getPrivate();
+                        if (dhKeyAgreement == null) {
+                            dhKeyAgreement = KeyAgreement.getInstance(KeyAgreement.ALG_EC_SVDP_DH, false);
+                        }
+                        dhKeyAgreement.init(ecPrivKey);
+                        short lenW = ecPubKey.getW(m_ramArray2, (short) 0); // store valid B
+                        dhKeyAgreement.generateSecret(m_ramArray2, (short) 0, lenW, m_ramArray, (short) 0);
+                    } catch (CryptoException e) {
+                        Util.setShort(buffer, bufferOffset, e.getReason());
+                        bufferOffset += 2;
+                    } catch (Exception e) {
+                        Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
+                        bufferOffset += 2;
+                    }                    
+                    
                     break; // stop execution, return B
                 } catch (CryptoException e) {
                     Util.setShort(buffer, bufferOffset, e.getReason());
@@ -555,13 +657,14 @@ public class SimpleECCApplet extends javacard.framework.Applet
                 }
                 
                 //
-                // Generate keypair with valid curve
+                // Generate keypair with valid curve - to check that whole engine is not somehow blocked
+                //   after previous attempt with invalid curve
                 //
                 // set valid curve
                 buffer[bufferOffset] = ECTEST_SET_VALIDCURVE;
                 bufferOffset++;
-                ecPubKey.setB(m_ramArray, (short) 0, lenB); // valid B
-                ecPrivKey.setB(m_ramArray, (short) 0, lenB);
+                EC_Consts.setValidECKeyParams(ecPubKey, ecPrivKey, keyClass, keyLen, m_ramArray);
+                
                 Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
                 bufferOffset += 2;
 
@@ -571,15 +674,19 @@ public class SimpleECCApplet extends javacard.framework.Applet
                     bufferOffset++;
                     // Should succeed
                     ecKeyPair.genKeyPair();
-                    // If this line is reached, we generated valid key pair 
+                    // If this line is reached, we generated valid key pair (expected)
                     Util.setShort(buffer, bufferOffset, ISO7816.SW_NO_ERROR);
                     bufferOffset += 2;
                 } catch (CryptoException e) {
                     Util.setShort(buffer, bufferOffset, e.getReason());
                     bufferOffset += 2;
+                    // if we reach this line, we are interested in value of B that caused incorrect response
+                    break; // stop execution, return B
                 } catch (Exception e) {
                     Util.setShort(buffer, bufferOffset, ISO7816.SW_UNKNOWN);
                     bufferOffset += 2;
+                    // if we reach this line, we are interested in value of B that caused incorrect response
+                    break; // stop execution, return B
                 }
                 
                 // If we reach this line => everything was as expected
@@ -591,7 +698,21 @@ public class SimpleECCApplet extends javacard.framework.Applet
             }
         }
         
+        // Set number of executed repeats
+        Util.setShort(buffer, numExecutionsOffset, i);
+        
         return (short) (bufferOffset - baseOffset);
+    }
+    
+    void TestECSupportInvalidCurve_lastUsedParams(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        apdu.setIncomingAndReceive();
+        
+        short offset = 0;
+        Util.arrayCopyNonAtomic(m_ramArray2, (short) 0, apdubuf, offset, m_lenB);
+        offset += m_lenB;
+        
+        apdu.setOutgoingAndSend((short) 0, offset);
     }
     
     void AllocateKeyPairReturnDefCourve(APDU apdu) {
