@@ -15,7 +15,7 @@
   <target name="all" depends="SimpleECC" />
   
   <target name="SimpleECC">
-    <javacard jckit="${JC222}">
+    <javacard jckit="${JC221}">
       <cap output="!uploader\simpleECC.cap" sources="src\applets" aid="4543546573746572" >
         <applet class="applets.SimpleECCApplet" aid="45435465737465723031"/>
       </cap>
