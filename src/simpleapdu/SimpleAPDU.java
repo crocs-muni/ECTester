@@ -21,6 +21,10 @@ public class SimpleAPDU {
 
     private static final byte TESTECSUPPORTALL_FP[] = {(byte) 0xB0, (byte) 0x5E, (byte) 0x00, (byte) 0x00, (byte) 0x00};
     private static final byte TESTECSUPPORTALL_F2M[] = {(byte) 0xB0, (byte) 0x5F, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+    private static final byte TESTECSUPPORT_GIVENALG[] = {(byte) 0xB0, (byte) 0x71, (byte) 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+    private static final short TESTECSUPPORT_ALG_OFFSET = 5;
+    private static final short TESTECSUPPORT_KEYLENGTH_OFFSET = 6;
+    
     private static final byte TESTECSUPPORTALL_LASTUSEDPARAMS[] = {(byte) 0xB0, (byte) 0x40, (byte) 0x00, (byte) 0x00, (byte) 0x00};
     
     private static final byte TESTECSUPPORTALL_FP_KEYGEN_INVALIDCURVEB[] = {(byte) 0xB0, (byte) 0x70, (byte) 0x00, (byte) 0x00, (byte) 0x05, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
@@ -45,34 +49,81 @@ public class SimpleAPDU {
         apduArray[INVALIDCURVEB_REWINDONSUCCESS_OFFSET] = bRewind ? (byte) 1 : (byte) 0;
     }
 
+    static CardMngr ReconnnectToCard() throws Exception {
+        cardManager.DisconnectFromCard();
+        if (cardManager.ConnectToCard()) {
+            // Select our application on card
+            cardManager.sendAPDU(SELECT_ECTESTERAPPLET);
+        }
+        return cardManager;
+    }
+    
+    static void testSupportECGivenAlg(byte[] apdu, CardMngr cardManager) throws Exception {
+        ReconnnectToCard();
+        ResponseAPDU resp = cardManager.sendAPDU(apdu);
+        PrintECSupport(resp);
+    }
+    static void testSupportECAll(CardMngr cardManager) throws Exception {
+        byte[] testAPDU = Arrays.clone(TESTECSUPPORT_GIVENALG);
+
+        testAPDU[TESTECSUPPORT_ALG_OFFSET] = KeyPair.ALG_EC_FP; 
+        setShort(testAPDU, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 128);
+        testSupportECGivenAlg(testAPDU, cardManager);
+        setShort(testAPDU, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 160);
+        testSupportECGivenAlg(testAPDU, cardManager);
+        setShort(testAPDU, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 192);
+        testSupportECGivenAlg(testAPDU, cardManager);
+        setShort(testAPDU, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 224);
+        testSupportECGivenAlg(testAPDU, cardManager);
+        setShort(testAPDU, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 256);
+        testSupportECGivenAlg(testAPDU, cardManager);
+        setShort(testAPDU, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 384);
+        testSupportECGivenAlg(testAPDU, cardManager);
+        setShort(testAPDU, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 521);
+        testSupportECGivenAlg(testAPDU, cardManager);
+        
+        testAPDU[TESTECSUPPORT_ALG_OFFSET] = KeyPair.ALG_EC_F2M;
+        setShort(testAPDU, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 113);
+        testSupportECGivenAlg(testAPDU, cardManager);
+        setShort(testAPDU, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 131);
+        testSupportECGivenAlg(testAPDU, cardManager);
+        setShort(testAPDU, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 163);
+        testSupportECGivenAlg(testAPDU, cardManager);
+        setShort(testAPDU, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 193);
+        testSupportECGivenAlg(testAPDU, cardManager);
+        
+    }
     public static void main(String[] args) {
         try {
             //
             // REAL CARDS
             //
             if (cardManager.ConnectToCard()) {
-                // Select our application on card
-                cardManager.sendAPDU(SELECT_ECTESTERAPPLET);
 
-                // Test setting invalid parameter B of curev   
+                testSupportECAll(cardManager);
+                
+                // Test setting invalid parameter B of curve   
                 byte[] testAPDU = Arrays.clone(TESTECSUPPORTALL_FP_KEYGEN_INVALIDCURVEB);
                 //testFPkeyGen_setCorruptionType(testAPDU, SimpleECCApplet.CORRUPT_B_LASTBYTEINCREMENT);
                 testFPkeyGen_setCorruptionType(testAPDU, SimpleECCApplet.CORRUPT_B_ONEBYTERANDOM);
                 //testFPkeyGen_setCorruptionType(testAPDU, SimpleECCApplet.CORRUPT_B_FULLRANDOM);
                 testFPkeyGen_setNumRepeats(testAPDU, (short) 10);
                 testFPkeyGen_rewindOnSuccess(testAPDU, true);
+                ReconnnectToCard();
                 ResponseAPDU resp_fp_keygen = cardManager.sendAPDU(testAPDU);
                 ResponseAPDU resp_keygen_params = cardManager.sendAPDU(TESTECSUPPORTALL_LASTUSEDPARAMS);
                 PrintECKeyGenInvalidCurveB(resp_fp_keygen);
                 PrintECKeyGenInvalidCurveB_lastUserParams(resp_keygen_params);
-                
-                // Test support for different types of curves
-                ResponseAPDU resp_fp = cardManager.sendAPDU(TESTECSUPPORTALL_FP);
-                ResponseAPDU resp_f2m = cardManager.sendAPDU(TESTECSUPPORTALL_F2M);
-                PrintECSupport(resp_fp);
-                PrintECSupport(resp_f2m);
-                
 
+                /*                
+                 // Test support for different types of curves
+                 ReconnnectToCard();
+                 ResponseAPDU resp_fp = cardManager.sendAPDU(TESTECSUPPORTALL_FP);
+                 ReconnnectToCard();
+                 ResponseAPDU resp_f2m = cardManager.sendAPDU(TESTECSUPPORTALL_F2M);
+                 PrintECSupport(resp_fp);
+                 PrintECSupport(resp_f2m);
+                 */
                 
                 cardManager.DisconnectFromCard();
             } else {
@@ -209,7 +260,7 @@ public class SimpleAPDU {
 
             short numRepeats = getShort(buffer, bufferOffset);
             bufferOffset += 2;
-            System.out.println(String.format("Executed repeats before unexpected error: %d times", numRepeats));
+            System.out.println(String.format("%-53s%d times", "Executed repeats before unexpected error: ", numRepeats));
             
             
             bufferOffset = VerifyPrintResult("KeyPair object allocation:", SimpleECCApplet.ECTEST_ALLOCATE_KEYPAIR, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);

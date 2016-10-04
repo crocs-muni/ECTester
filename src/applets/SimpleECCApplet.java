@@ -23,6 +23,7 @@ public class SimpleECCApplet extends javacard.framework.Applet
     final static byte INS_TESTECSUPPORTALL_FP        = (byte) 0x5e;
     final static byte INS_TESTECSUPPORTALL_F2M       = (byte) 0x5f;
     final static byte INS_TESTEC_GENERATEINVALID_FP  = (byte) 0x70;
+    final static byte INS_TESTECSUPPORT_GIVENALG     = (byte) 0x71;
     final static byte INS_TESTEC_LASTUSEDPARAMS      = (byte) 0x40;
     
     
@@ -165,6 +166,10 @@ public class SimpleECCApplet extends javacard.framework.Applet
 
         if (apduBuffer[ISO7816.OFFSET_CLA] == CLA_SIMPLEECCAPPLET) {
             switch ( apduBuffer[ISO7816.OFFSET_INS] ) {
+                
+                case INS_TESTECSUPPORT_GIVENALG:
+                    TestEC_SupportGivenLength(apdu);
+                    break;
                 case INS_TESTECSUPPORTALL_FP:
                     TestEC_FP_SupportAllLengths(apdu);
                     break;
@@ -433,11 +438,26 @@ public class SimpleECCApplet extends javacard.framework.Applet
         return (short) (bufferOffset - baseOffset);
     }
     
-    void TestEC_FP_SupportAllLengths(APDU apdu) {
+    void TestEC_SupportGivenLength(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
         short len = apdu.setIncomingAndReceive();
 
+        short dataOffset = ISO7816.OFFSET_CDATA;
+        byte algType = apdubuf[dataOffset]; dataOffset++;
+        short keyLength = Util.getShort(apdubuf, dataOffset);
+        dataOffset += 2;
+
+        dataOffset = 0;
+        dataOffset += TestECSupport(algType, keyLength, apdubuf, dataOffset);
+ 
+        apdu.setOutgoingAndSend((short) 0, dataOffset);
+    }
+    
+    void TestEC_FP_SupportAllLengths(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        short len = apdu.setIncomingAndReceive();
         short dataOffset = 0;
+
         // FP  
         dataOffset += TestECSupport(KeyPair.ALG_EC_FP, (short) 128, apdubuf, dataOffset);
         dataOffset += TestECSupport(KeyPair.ALG_EC_FP, (short) 160, apdubuf, dataOffset);
