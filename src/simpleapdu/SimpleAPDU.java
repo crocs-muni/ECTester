@@ -19,11 +19,14 @@ public class SimpleAPDU {
     private final static byte SELECT_ECTESTERAPPLET[] = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x0a, 
         (byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x65, (byte) 0x72, (byte) 0x30, (byte) 0x31};
 
-    private static byte TESTECSUPPORTALL_FP[] = {(byte) 0xB0, (byte) 0x5E, (byte) 0x00, (byte) 0x00, (byte) 0x00};
-    private static byte TESTECSUPPORTALL_F2M[] = {(byte) 0xB0, (byte) 0x5F, (byte) 0x00, (byte) 0x00, (byte) 0x00};
-    private static byte TESTECSUPPORTALL_LASTUSEDPARAMS[] = {(byte) 0xB0, (byte) 0x40, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+    private static final byte TESTECSUPPORTALL_FP[] = {(byte) 0xB0, (byte) 0x5E, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+    private static final byte TESTECSUPPORTALL_F2M[] = {(byte) 0xB0, (byte) 0x5F, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+    private static final byte TESTECSUPPORTALL_LASTUSEDPARAMS[] = {(byte) 0xB0, (byte) 0x40, (byte) 0x00, (byte) 0x00, (byte) 0x00};
     
-    private static byte TESTECSUPPORTALL_FP_KEYGEN_INVALIDCURVEB[] = {(byte) 0xB0, (byte) 0x70, (byte) 0x00, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+    private static final byte TESTECSUPPORTALL_FP_KEYGEN_INVALIDCURVEB[] = {(byte) 0xB0, (byte) 0x70, (byte) 0x00, (byte) 0x00, (byte) 0x05, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+    private static final short INVALIDCURVEB_NUMREPEATS_OFFSET = 5;
+    private static final short INVALIDCURVEB_CORRUPTIONTYPE_OFFSET = 7;
+    private static final short INVALIDCURVEB_REWINDONSUCCESS_OFFSET = 9;
     
     static short getShort(byte[] array, int offset) {
         return (short) (((array[offset] & 0xFF) << 8) | (array[offset + 1] & 0xFF));        
@@ -33,17 +36,13 @@ public class SimpleAPDU {
         array[offset] = (byte) ((value >> 8) & 0xFF);
     }    
     static void testFPkeyGen_setNumRepeats(byte[] apduArray, short numRepeats) {
-        // num repeats starts at index 5
-        setShort(apduArray, 5, numRepeats);
+        setShort(apduArray, INVALIDCURVEB_NUMREPEATS_OFFSET, numRepeats);
+    }
+    static void testFPkeyGen_setCorruptionType(byte[] apduArray, short corruptionType) {
+        setShort(apduArray, INVALIDCURVEB_CORRUPTIONTYPE_OFFSET, corruptionType);
     }
     static void testFPkeyGen_rewindOnSuccess(byte[] apduArray, boolean bRewind) {
-        // rewind info at index 7
-        apduArray[7] = bRewind ? (byte) 1 : (byte) 0;
-    }
-    
-    static void testFPkeyGen_setCorruptionType(byte[] apduArray, short corruptionType) {
-        // corruptionType starts at index 7
-        setShort(apduArray, 7, corruptionType);
+        apduArray[INVALIDCURVEB_REWINDONSUCCESS_OFFSET] = bRewind ? (byte) 1 : (byte) 0;
     }
 
     public static void main(String[] args) {
@@ -60,8 +59,8 @@ public class SimpleAPDU {
                 //testFPkeyGen_setCorruptionType(testAPDU, SimpleECCApplet.CORRUPT_B_LASTBYTEINCREMENT);
                 testFPkeyGen_setCorruptionType(testAPDU, SimpleECCApplet.CORRUPT_B_ONEBYTERANDOM);
                 //testFPkeyGen_setCorruptionType(testAPDU, SimpleECCApplet.CORRUPT_B_FULLRANDOM);
-                testFPkeyGen_setNumRepeats(testAPDU, (short) 1000);
-                testFPkeyGen_rewindOnSuccess(testAPDU, false);
+                testFPkeyGen_setNumRepeats(testAPDU, (short) 10);
+                testFPkeyGen_rewindOnSuccess(testAPDU, true);
                 ResponseAPDU resp_fp_keygen = cardManager.sendAPDU(testAPDU);
                 ResponseAPDU resp_keygen_params = cardManager.sendAPDU(TESTECSUPPORTALL_LASTUSEDPARAMS);
                 PrintECKeyGenInvalidCurveB(resp_fp_keygen);
@@ -125,11 +124,11 @@ public class SimpleAPDU {
     }
     static int VerifyPrintResult(String message, byte expectedTag, byte[] buffer, int bufferOffset, ExpResult expRes) {
         if (bufferOffset >= buffer.length) {
-            System.out.println("No more data returned");
+            System.out.println("   No more data returned");
         }
         else {
             if (buffer[bufferOffset] != expectedTag) {
-                System.out.println("ERROR: mismatched tag");
+                System.out.println("   ERROR: mismatched tag");
                 assert(buffer[bufferOffset] == expectedTag);
             }
             bufferOffset++;
@@ -155,7 +154,8 @@ public class SimpleAPDU {
     static void PrintECSupport(ResponseAPDU resp) {
         byte[] buffer = resp.getData();
 
-        System.out.println();System.out.println();
+        System.out.println();
+        System.out.println("### Test for support and with valid and invalid EC curves");
         int bufferOffset = 0;
         while (bufferOffset < buffer.length) {
             assert(buffer[bufferOffset] == SimpleECCApplet.ECTEST_SEPARATOR);
@@ -189,7 +189,7 @@ public class SimpleAPDU {
         byte[] buffer = resp.getData();
 
         System.out.println();
-        System.out.println();
+        System.out.println("### Test for computation with invalid parameter B for EC curve");
         int bufferOffset = 0;
         while (bufferOffset < buffer.length) {
             assert (buffer[bufferOffset] == SimpleECCApplet.ECTEST_SEPARATOR);
@@ -216,6 +216,9 @@ public class SimpleAPDU {
             while (bufferOffset < buffer.length) {
                 bufferOffset = VerifyPrintResult("Set invalid custom curve:", SimpleECCApplet.ECTEST_SET_INVALIDCURVE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
                 bufferOffset = VerifyPrintResult("Generate key with invalid curve (fail is good):", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE, buffer, bufferOffset, ExpResult.MUST_FAIL);
+                if (buffer[bufferOffset] == SimpleECCApplet.ECTEST_DH_GENERATESECRET) {
+                    bufferOffset = VerifyPrintResult("ECDH agreement with invalid point (fail is good):", SimpleECCApplet.ECTEST_DH_GENERATESECRET, buffer, bufferOffset, ExpResult.MUST_FAIL);
+                }
                 bufferOffset = VerifyPrintResult("Set valid custom curve:", SimpleECCApplet.ECTEST_SET_VALIDCURVE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
                 bufferOffset = VerifyPrintResult("Generate key with valid curve:", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_CUSTOMCURVE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
             }
