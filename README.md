@@ -25,7 +25,7 @@ Example output
       Generate key with def curve (fails if no def):    fail  (ILLEGAL_VALUE,	0x1)
       Set valid custom curve:                           OK	  (0x9000)
       Generate key with valid curve:                    OK	  (0x9000)
-    !!ECDH agreement with valid point:                  fail	(0x9000)
+    !!ECDH agreement with valid point:                  fail  (0x6f00)
       ECDH agreement with invalid point (fail is good): fail  (unknown,	0x6f00)
       Set invalid custom curve (fail is good):          fail  (ILLEGAL_VALUE,	0x1)
       Generate key with invalid curve (fail is good):   fail  (skipped,	0xee1)
