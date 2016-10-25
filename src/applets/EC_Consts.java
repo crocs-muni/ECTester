@@ -485,14 +485,15 @@ public class EC_Consts {
         (byte) 0x91, (byte) 0x38, (byte) 0x64, (byte) 0x09};
     
     // cofactor of G
-    public static final short EC521_FP_K = 1;    
+    public static final short EC521_FP_K = 1;
+
+
 
     
     public static final byte VALID_KEY = 1;
     public static final byte INVALIDB_FIXED = 2;
     public static final byte INVALIDB_RANDOM = 3;
-    
-    
+
     public static void setValidECKeyParams(ECPublicKey ecPubKey, ECPrivateKey ecPrivKey, byte ecClass, short ecLength, byte[] auxBuffer) {
         setECKeyParams(ecPubKey, ecPrivKey, ecClass, ecLength, auxBuffer, VALID_KEY);
     }
