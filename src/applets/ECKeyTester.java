@@ -13,6 +13,7 @@ public class ECKeyTester {
     private KeyAgreement ecdhcKeyAgreement = null;
     private Signature ecdsaSignature = null;
 
+    //TODO: move these SW definitions to the main applet class.
     public final static short SW_SIG_LENGTH_MISMATCH = (short) 0xee4;
     public final static short SW_SIG_VERIFY_FAIL = (short) 0xee5;
 

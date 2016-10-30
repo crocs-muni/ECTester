@@ -1,50 +1,53 @@
 package simpleapdu;
 
+import applets.EC_Consts;
 import applets.SimpleECCApplet;
-import static applets.SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_CUSTOMCURVE;
-import static applets.SimpleECCApplet.ECTEST_SET_INVALIDCURVE;
 import javacard.framework.ISO7816;
 import javacard.security.CryptoException;
 import javacard.security.KeyPair;
-import javax.smartcardio.ResponseAPDU;
 import org.bouncycastle.util.Arrays;
 
+import javax.smartcardio.ResponseAPDU;
+
 /**
- *
  * @author Petr Svenda petr@svenda.com
  */
 public class SimpleAPDU {
     static CardMngr cardManager = new CardMngr();
 
-    private final static byte SELECT_ECTESTERAPPLET[] = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x0a, 
-        (byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x65, (byte) 0x72, (byte) 0x30, (byte) 0x31};
+    private final static byte SELECT_ECTESTERAPPLET[] = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x0a,
+            (byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x65, (byte) 0x72, (byte) 0x30, (byte) 0x31};
 
     private static final byte TESTECSUPPORTALL_FP[] = {(byte) 0xB0, (byte) 0x5E, (byte) 0x00, (byte) 0x00, (byte) 0x00};
     private static final byte TESTECSUPPORTALL_F2M[] = {(byte) 0xB0, (byte) 0x5F, (byte) 0x00, (byte) 0x00, (byte) 0x00};
     private static final byte TESTECSUPPORT_GIVENALG[] = {(byte) 0xB0, (byte) 0x71, (byte) 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x00, (byte) 0x00, (byte) 0x00};
     private static final short TESTECSUPPORT_ALG_OFFSET = 5;
     private static final short TESTECSUPPORT_KEYLENGTH_OFFSET = 6;
-    
+
     private static final byte TESTECSUPPORTALL_LASTUSEDPARAMS[] = {(byte) 0xB0, (byte) 0x40, (byte) 0x00, (byte) 0x00, (byte) 0x00};
-    
+
     private static final byte TESTECSUPPORTALL_FP_KEYGEN_INVALIDCURVEB[] = {(byte) 0xB0, (byte) 0x70, (byte) 0x00, (byte) 0x00, (byte) 0x05, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
     private static final short INVALIDCURVEB_NUMREPEATS_OFFSET = 5;
     private static final short INVALIDCURVEB_CORRUPTIONTYPE_OFFSET = 7;
     private static final short INVALIDCURVEB_REWINDONSUCCESS_OFFSET = 9;
-    
+
     static short getShort(byte[] array, int offset) {
-        return (short) (((array[offset] & 0xFF) << 8) | (array[offset + 1] & 0xFF));        
+        return (short) (((array[offset] & 0xFF) << 8) | (array[offset + 1] & 0xFF));
     }
+
     static void setShort(byte[] array, int offset, short value) {
         array[offset + 1] = (byte) (value & 0xFF);
         array[offset] = (byte) ((value >> 8) & 0xFF);
-    }    
+    }
+
     static void testFPkeyGen_setNumRepeats(byte[] apduArray, short numRepeats) {
         setShort(apduArray, INVALIDCURVEB_NUMREPEATS_OFFSET, numRepeats);
     }
+
     static void testFPkeyGen_setCorruptionType(byte[] apduArray, short corruptionType) {
         setShort(apduArray, INVALIDCURVEB_CORRUPTIONTYPE_OFFSET, corruptionType);
     }
+
     static void testFPkeyGen_rewindOnSuccess(byte[] apduArray, boolean bRewind) {
         apduArray[INVALIDCURVEB_REWINDONSUCCESS_OFFSET] = bRewind ? (byte) 1 : (byte) 0;
     }
@@ -57,16 +60,17 @@ public class SimpleAPDU {
         }
         return cardManager;
     }
-    
+
     static void testSupportECGivenAlg(byte[] apdu, CardMngr cardManager) throws Exception {
         ReconnnectToCard();
         ResponseAPDU resp = cardManager.sendAPDU(apdu);
         PrintECSupport(resp);
     }
+
     static void testSupportECAll(CardMngr cardManager) throws Exception {
         byte[] testAPDU = Arrays.clone(TESTECSUPPORT_GIVENALG);
 
-        testAPDU[TESTECSUPPORT_ALG_OFFSET] = KeyPair.ALG_EC_FP; 
+        testAPDU[TESTECSUPPORT_ALG_OFFSET] = KeyPair.ALG_EC_FP;
         setShort(testAPDU, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 128);
         testSupportECGivenAlg(testAPDU, cardManager);
         setShort(testAPDU, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 160);
@@ -81,7 +85,7 @@ public class SimpleAPDU {
         testSupportECGivenAlg(testAPDU, cardManager);
         setShort(testAPDU, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 521);
         testSupportECGivenAlg(testAPDU, cardManager);
-        
+
         testAPDU[TESTECSUPPORT_ALG_OFFSET] = KeyPair.ALG_EC_F2M;
         setShort(testAPDU, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 113);
         testSupportECGivenAlg(testAPDU, cardManager);
@@ -91,8 +95,9 @@ public class SimpleAPDU {
         testSupportECGivenAlg(testAPDU, cardManager);
         setShort(testAPDU, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 193);
         testSupportECGivenAlg(testAPDU, cardManager);
-        
+
     }
+
     public static void main(String[] args) {
         try {
             //
@@ -101,11 +106,11 @@ public class SimpleAPDU {
             if (cardManager.ConnectToCard()) {
 
                 testSupportECAll(cardManager);
-                
+
                 // Test setting invalid parameter B of curve   
                 byte[] testAPDU = Arrays.clone(TESTECSUPPORTALL_FP_KEYGEN_INVALIDCURVEB);
                 //testFPkeyGen_setCorruptionType(testAPDU, SimpleECCApplet.CORRUPT_B_LASTBYTEINCREMENT);
-                testFPkeyGen_setCorruptionType(testAPDU, SimpleECCApplet.CORRUPT_B_ONEBYTERANDOM);
+                testFPkeyGen_setCorruptionType(testAPDU, EC_Consts.CORRUPTION_ONEBYTERANDOM);
                 //testFPkeyGen_setCorruptionType(testAPDU, SimpleECCApplet.CORRUPT_B_FULLRANDOM);
                 testFPkeyGen_setNumRepeats(testAPDU, (short) 10);
                 testFPkeyGen_rewindOnSuccess(testAPDU, true);
@@ -124,7 +129,7 @@ public class SimpleAPDU {
                  PrintECSupport(resp_fp);
                  PrintECSupport(resp_f2m);
                  */
-                
+
                 cardManager.DisconnectFromCard();
             } else {
                 System.out.println("Failed to connect to card");
@@ -133,12 +138,11 @@ public class SimpleAPDU {
             System.out.println("Exception : " + ex);
         }
     }
-    
+
     static String getPrintError(short code) {
         if (code == ISO7816.SW_NO_ERROR) {
             return "OK\t(0x9000)";
-        }
-        else {
+        } else {
             String codeStr = "unknown";
             if (code == CryptoException.ILLEGAL_VALUE) {
                 codeStr = "ILLEGAL_VALUE";
@@ -165,22 +169,22 @@ public class SimpleAPDU {
                 codeStr = "SW_INVALID_CORRUPTION_TYPE";
             }
             return String.format("fail\t(%s,\t0x%4x)", codeStr, code);
-        }    
+        }
     }
-    
+
     enum ExpResult {
         SHOULD_SUCCEDD,
         MAY_FAIL,
         MUST_FAIL
     }
+
     static int VerifyPrintResult(String message, byte expectedTag, byte[] buffer, int bufferOffset, ExpResult expRes) {
         if (bufferOffset >= buffer.length) {
             System.out.println("   No more data returned");
-        }
-        else {
+        } else {
             if (buffer[bufferOffset] != expectedTag) {
                 System.out.println("   ERROR: mismatched tag");
-                assert(buffer[bufferOffset] == expectedTag);
+                assert (buffer[bufferOffset] == expectedTag);
             }
             bufferOffset++;
             short resCode = getShort(buffer, bufferOffset);
@@ -195,13 +199,13 @@ public class SimpleAPDU {
             }
             if (bHiglight) {
                 System.out.println(String.format("!! %-50s%s", message, getPrintError(resCode)));
-            }
-            else {
+            } else {
                 System.out.println(String.format("   %-50s%s", message, getPrintError(resCode)));
             }
         }
         return bufferOffset;
     }
+
     static void PrintECSupport(ResponseAPDU resp) {
         byte[] buffer = resp.getData();
 
@@ -209,7 +213,7 @@ public class SimpleAPDU {
         System.out.println("### Test for support and with valid and invalid EC curves");
         int bufferOffset = 0;
         while (bufferOffset < buffer.length) {
-            assert(buffer[bufferOffset] == SimpleECCApplet.ECTEST_SEPARATOR);
+            assert (buffer[bufferOffset] == SimpleECCApplet.ECTEST_SEPARATOR);
             bufferOffset++;
             String ecType = "unknown";
             if (buffer[bufferOffset] == KeyPair.ALG_EC_FP) {
@@ -232,10 +236,11 @@ public class SimpleAPDU {
             bufferOffset = VerifyPrintResult("ECDH agreement with invalid point (fail is good):", SimpleECCApplet.ECTEST_ECDH_AGREEMENT_INVALID_POINT, buffer, bufferOffset, ExpResult.MUST_FAIL);
             bufferOffset = VerifyPrintResult("Set invalid custom curve (may fail):", SimpleECCApplet.ECTEST_SET_INVALIDCURVE, buffer, bufferOffset, ExpResult.MAY_FAIL);
             bufferOffset = VerifyPrintResult("Generate key with invalid curve (fail is good):", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE, buffer, bufferOffset, ExpResult.MUST_FAIL);
-            
+
             System.out.println();
         }
     }
+
     static void PrintECKeyGenInvalidCurveB(ResponseAPDU resp) {
         byte[] buffer = resp.getData();
 
@@ -261,8 +266,8 @@ public class SimpleAPDU {
             short numRepeats = getShort(buffer, bufferOffset);
             bufferOffset += 2;
             System.out.println(String.format("%-53s%d times", "Executed repeats before unexpected error: ", numRepeats));
-            
-            
+
+
             bufferOffset = VerifyPrintResult("KeyPair object allocation:", SimpleECCApplet.ECTEST_ALLOCATE_KEYPAIR, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
             while (bufferOffset < buffer.length) {
                 bufferOffset = VerifyPrintResult("Set invalid custom curve:", SimpleECCApplet.ECTEST_SET_INVALIDCURVE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
@@ -277,7 +282,7 @@ public class SimpleAPDU {
             System.out.println();
         }
     }
-    
+
     static void PrintECKeyGenInvalidCurveB_lastUserParams(ResponseAPDU resp) {
         byte[] buffer = resp.getData();
         short offset = 0;
@@ -286,6 +291,6 @@ public class SimpleAPDU {
             System.out.print(String.format("%x ", buffer[offset]));
             offset++;
         }
-        
-    }    
+
+    }
 }
