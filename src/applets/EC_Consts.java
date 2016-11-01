@@ -17,18 +17,14 @@ public class EC_Consts {
 
     private static byte[] EC_F2M_F2M = null; //[short ii, short i2, short i3], f = x^m + x^i1 + x^i2 + x^i3 + 1
 
-    public static final byte PARAMETER_FP = 1;
-    public static final byte PARAMETER_F2M = 2;
+    public static final byte PARAMETER_FP = 0x01;
+    public static final byte PARAMETER_F2M = 0x02;
 
-    public static final byte PARAMETER_A = 3;
-    public static final byte PARAMETER_B = 4;
-    public static final byte PARAMETER_G = 5;
-    public static final byte PARAMETER_R = 6;
-    public static final byte PARAMETER_K = 7;
-
-    //TODO make params maskable, to allow for PARAMETER_A | PARAMETER_B passed to for example ECKeyGenerator.setInvalidCustomCurve
-    public static final byte PARAMETER_S = 8; //private key
-    public static final byte PARAMETER_W = 9; //public key
+    public static final byte PARAMETER_A = 0x04;
+    public static final byte PARAMETER_B = 0x08;
+    public static final byte PARAMETER_G = 0x10;
+    public static final byte PARAMETER_R = 0x20;
+    public static final byte PARAMETER_K = 0x40;
 
 
     public static RandomData m_random = null;

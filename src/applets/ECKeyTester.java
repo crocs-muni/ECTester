@@ -13,10 +13,6 @@ public class ECKeyTester {
     private KeyAgreement ecdhcKeyAgreement = null;
     private Signature ecdsaSignature = null;
 
-    //TODO: move these SW definitions to the main applet class.
-    public final static short SW_SIG_LENGTH_MISMATCH = (short) 0xee4;
-    public final static short SW_SIG_VERIFY_FAIL = (short) 0xee5;
-
     public short allocateECDH() {
         short result = ISO7816.SW_NO_ERROR;
         try {
@@ -150,12 +146,12 @@ public class ECKeyTester {
 
             short sigLength = ecdsaSignature.sign(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset);
             if (sigLength != 20) { // per javacard.security.Signature an ALG_ECDSA_SHA should be 20 bytes.
-                result =  ECKeyTester.SW_SIG_LENGTH_MISMATCH;
+                result =  SimpleECCApplet.SW_SIG_LENGTH_MISMATCH;
             } else {
                 ecdsaSignature.init(verifyKey, Signature.MODE_VERIFY);
                 boolean correct = ecdsaSignature.verify(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset, sigLength);
                 if (!correct) {
-                    result = ECKeyTester.SW_SIG_VERIFY_FAIL;
+                    result = SimpleECCApplet.SW_SIG_VERIFY_FAIL;
                 }
             }
         } catch (CryptoException ce) {

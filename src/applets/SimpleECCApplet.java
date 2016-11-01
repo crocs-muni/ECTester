@@ -7,24 +7,24 @@ package applets;
 import javacard.framework.*;
 import javacard.security.*;
 
-import javax.print.attribute.standard.MediaSize;
 
 public class SimpleECCApplet extends javacard.framework.Applet {
+
     // MAIN INSTRUCTION CLASS
-    final static byte CLA_SIMPLEECCAPPLET = (byte) 0xB0;
+    final static byte CLA_SIMPLEECCAPPLET =         (byte) 0xB0;
 
     // INSTRUCTIONS
-    final static byte INS_GENERATEKEY = (byte) 0x5a;
-    final static byte INS_ALLOCATEKEYPAIRS = (byte) 0x5b;
+    final static byte INS_GENERATEKEY =             (byte) 0x5a;
+    final static byte INS_ALLOCATEKEYPAIRS =        (byte) 0x5b;
 
-    final static byte INS_ALLOCATEKEYPAIR = (byte) 0x5c;
-    final static byte INS_DERIVEECDHSECRET = (byte) 0x5d;
+    final static byte INS_ALLOCATEKEYPAIR =         (byte) 0x5c;
+    final static byte INS_DERIVEECDHSECRET =        (byte) 0x5d;
 
-    final static byte INS_TESTECSUPPORTALL_FP = (byte) 0x5e;
-    final static byte INS_TESTECSUPPORTALL_F2M = (byte) 0x5f;
+    final static byte INS_TESTECSUPPORTALL_FP =     (byte) 0x5e;
+    final static byte INS_TESTECSUPPORTALL_F2M =    (byte) 0x5f;
     final static byte INS_TESTEC_GENERATEINVALID_FP = (byte) 0x70;
     final static byte INS_TESTECSUPPORT_GIVENALG = (byte) 0x71;
-    final static byte INS_TESTEC_LASTUSEDPARAMS = (byte) 0x40;
+    final static byte INS_TESTEC_LASTUSEDPARAMS =   (byte) 0x40;
 
 
     final static short ARRAY_LENGTH = (short) 0xff;
@@ -61,6 +61,8 @@ public class SimpleECCApplet extends javacard.framework.Applet {
     public final static short SW_SKIPPED = (short) 0x0ee1;
     public final static short SW_KEYPAIR_GENERATED_INVALID = (short) 0x0ee2;
     public final static short SW_INVALID_CORRUPTION_TYPE = (short) 0x0ee3;
+    public final static short SW_SIG_LENGTH_MISMATCH = (short) 0xee4;
+    public final static short SW_SIG_VERIFY_FAIL = (short) 0xee5;
     /*
         public static final byte[] EC192_FP_PUBLICW = new byte[]{
             (byte) 0x04, (byte) 0xC9, (byte) 0xC0, (byte) 0xED, (byte) 0xFB, (byte) 0x27,
@@ -454,6 +456,7 @@ public class SimpleECCApplet extends javacard.framework.Applet {
         ecPrivKey = ecKeyGenerator.getPrivateKey();
         ecPubKey = ecKeyGenerator.getPublicKey();
 
+        m_lenB = ecPubKey.getB(m_ramArray2, (short) 0); //store valid B
 
         short startOffset = bufferOffset;
         short i;
@@ -511,6 +514,7 @@ public class SimpleECCApplet extends javacard.framework.Applet {
                     ecPubKey = ecKeyGenerator.getPublicKey();
 
                     sw = ecKeyTester.testECDH_validPoint(ecPrivKey, ecPubKey, m_ramArray, (short) 0, m_ramArray2, (short) 0);
+                    m_lenB = ecPubKey.getB(m_ramArray2, (short) 0); //store B
                     Util.setShort(buffer, bufferOffset, sw);
                     bufferOffset += 2;
                     break; //stop execution, return B
@@ -553,6 +557,7 @@ public class SimpleECCApplet extends javacard.framework.Applet {
         return (short) (bufferOffset - baseOffset);
     }
 
+    //TODO: generalize invalid B setting to all curve params
     void TestECSupportInvalidCurve_lastUsedParams(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
         apdu.setIncomingAndReceive();

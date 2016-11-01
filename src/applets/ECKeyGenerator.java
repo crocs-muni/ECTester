@@ -70,7 +70,7 @@ public class ECKeyGenerator {
         }
         if (sw != ISO7816.SW_NO_ERROR) return sw;
 
-        for (byte param = EC_Consts.PARAMETER_A; param < EC_Consts.PARAMETER_K; ++param) {
+        for (byte param = EC_Consts.PARAMETER_A; param <= EC_Consts.PARAMETER_K; param = (byte)(param << 1)) {
             length = EC_Consts.getCurveParameter(curve, param, buffer, offset);
             sw = setExternalParameter(KEY_BOTH, param, buffer, offset, length);
             if (sw != ISO7816.SW_NO_ERROR) break;
@@ -86,8 +86,17 @@ public class ECKeyGenerator {
         short sw = setCustomCurve(curve, buffer, offset);
         if (sw != ISO7816.SW_NO_ERROR) return sw;
 
-        short length = EC_Consts.getCorruptCurveParameter(curve, param, buffer, offset, corruptionType);
-        sw = setExternalParameter(key, param, buffer, offset, length);
+        //go through param bit by bit, and invalidate all selected params
+        byte paramMask = 0x01;
+        while (paramMask <= EC_Consts.PARAMETER_K) {
+            byte masked = (byte)(paramMask & param);
+            if (masked != 0){
+                short length = EC_Consts.getCorruptCurveParameter(curve, masked, buffer, offset, corruptionType);
+                sw = setExternalParameter(key, masked, buffer, offset, length);
+                if (sw != ISO7816.SW_NO_ERROR) return sw;
+            }
+            paramMask = (byte)(paramMask << 1);
+        }
         return sw;
     }
 
@@ -139,12 +148,6 @@ public class ECKeyGenerator {
                         if ((key & KEY_PUBLIC) != 0) ecPublicKey.setK(k);
                     }
                     break;
-                case EC_Consts.PARAMETER_S:
-                    if ((key & KEY_PRIVATE) != 0) ecPrivateKey.setS(data, offset, length);
-                    break;
-                case EC_Consts.PARAMETER_W:
-                    if ((key & KEY_PUBLIC) != 0) ecPublicKey.setW(data, offset, length);
-                    break;
                 default:
                     result = ISO7816.SW_UNKNOWN;
             }
@@ -188,12 +191,6 @@ public class ECKeyGenerator {
                     if ((key & KEY_PUBLIC) != 0) Util.setShort(outputBuffer, outputOffset, ecPublicKey.getK());
                     if ((key & KEY_PRIVATE) != 0) Util.setShort(outputBuffer, outputOffset, ecPrivateKey.getK());
                     length = 2;
-                    break;
-                case EC_Consts.PARAMETER_S:
-                    if ((key & KEY_PRIVATE) != 0) length = ecPrivateKey.getS(outputBuffer, outputOffset);
-                    break;
-                case EC_Consts.PARAMETER_W:
-                    if ((key & KEY_PUBLIC) != 0) length = ecPublicKey.getW(outputBuffer, outputOffset);
                     break;
                 default:
                     length = -1;
