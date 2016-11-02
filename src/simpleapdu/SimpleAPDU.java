@@ -168,6 +168,12 @@ public class SimpleAPDU {
             if (code == SimpleECCApplet.SW_INVALID_CORRUPTION_TYPE) {
                 codeStr = "SW_INVALID_CORRUPTION_TYPE";
             }
+            if (code == SimpleECCApplet.SW_SIG_LENGTH_MISMATCH) {
+                codeStr = "SW_SIG_LENGTH_MISMATCH";
+            }
+            if (code == SimpleECCApplet.SW_SIG_VERIFY_FAIL) {
+                codeStr = "SW_SIG_VERIFY_FAIL";
+            }
             return String.format("fail\t(%s,\t0x%4x)", codeStr, code);
         }
     }

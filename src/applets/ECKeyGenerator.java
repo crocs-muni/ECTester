@@ -70,6 +70,7 @@ public class ECKeyGenerator {
         }
         if (sw != ISO7816.SW_NO_ERROR) return sw;
 
+        //go through all params
         for (byte param = EC_Consts.PARAMETER_A; param <= EC_Consts.PARAMETER_K; param = (byte)(param << 1)) {
             length = EC_Consts.getCurveParameter(curve, param, buffer, offset);
             sw = setExternalParameter(KEY_BOTH, param, buffer, offset, length);
@@ -157,6 +158,38 @@ public class ECKeyGenerator {
             result = ISO7816.SW_UNKNOWN;
         }
         return result;
+    }
+
+    public short setExternalCurve(byte key, byte keyClass, byte[] buffer, short offset, short fieldLength, short aLength, short bLength, short gxLength, short gyLength, short rLength){
+        short sw = ISO7816.SW_NO_ERROR;
+        if (keyClass == KeyPair.ALG_EC_FP) {
+            sw = setExternalParameter(key, EC_Consts.PARAMETER_FP, buffer, offset, fieldLength);
+        } else if (keyClass == KeyPair.ALG_EC_F2M) {
+            sw = setExternalParameter(key, EC_Consts.PARAMETER_F2M, buffer, offset, fieldLength);
+        }
+        if (sw != ISO7816.SW_NO_ERROR) return sw;
+
+        offset += fieldLength;
+
+        //go through all params
+        sw = setExternalParameter(key, EC_Consts.PARAMETER_A, buffer, offset, aLength);
+        if (sw != ISO7816.SW_NO_ERROR) return sw;
+        offset += aLength;
+        sw = setExternalParameter(key, EC_Consts.PARAMETER_B, buffer, offset, bLength);
+        if (sw != ISO7816.SW_NO_ERROR) return sw;
+        offset += bLength;
+
+        sw = setExternalParameter(key, EC_Consts.PARAMETER_G, buffer, offset, (short) (gxLength + gyLength));
+        if (sw != ISO7816.SW_NO_ERROR) return sw;
+        offset += gxLength + gyLength;
+
+
+        sw = setExternalParameter(key, EC_Consts.PARAMETER_R, buffer, offset, aLength);
+        if (sw != ISO7816.SW_NO_ERROR) return sw;
+        offset += rLength;
+
+        sw = setExternalParameter(key, EC_Consts.PARAMETER_K, buffer, offset, (short) 2);
+        return sw;
     }
 
     public short exportParameter(byte key, short param, byte[] outputBuffer, short outputOffset) {

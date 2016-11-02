@@ -11,20 +11,21 @@ import javacard.security.*;
 public class SimpleECCApplet extends javacard.framework.Applet {
 
     // MAIN INSTRUCTION CLASS
-    final static byte CLA_SIMPLEECCAPPLET =         (byte) 0xB0;
+    final static byte CLA_SIMPLEECCAPPLET = (byte) 0xB0;
 
     // INSTRUCTIONS
-    final static byte INS_GENERATEKEY =             (byte) 0x5a;
-    final static byte INS_ALLOCATEKEYPAIRS =        (byte) 0x5b;
+    final static byte INS_GENERATEKEY = (byte) 0x5a;
+    final static byte INS_ALLOCATEKEYPAIRS = (byte) 0x5b;
 
-    final static byte INS_ALLOCATEKEYPAIR =         (byte) 0x5c;
-    final static byte INS_DERIVEECDHSECRET =        (byte) 0x5d;
+    final static byte INS_ALLOCATEKEYPAIR = (byte) 0x5c;
+    final static byte INS_DERIVEECDHSECRET = (byte) 0x5d;
 
-    final static byte INS_TESTECSUPPORTALL_FP =     (byte) 0x5e;
-    final static byte INS_TESTECSUPPORTALL_F2M =    (byte) 0x5f;
+    final static byte INS_TESTECSUPPORTALL_FP = (byte) 0x5e;
+    final static byte INS_TESTECSUPPORTALL_F2M = (byte) 0x5f;
     final static byte INS_TESTEC_GENERATEINVALID_FP = (byte) 0x70;
     final static byte INS_TESTECSUPPORT_GIVENALG = (byte) 0x71;
-    final static byte INS_TESTEC_LASTUSEDPARAMS =   (byte) 0x40;
+    final static byte INS_TESTECSUPPORT_EXTERNAL = (byte) 0x72;
+    final static byte INS_TESTEC_LASTUSEDPARAMS = (byte) 0x40;
 
 
     final static short ARRAY_LENGTH = (short) 0xff;
@@ -45,6 +46,9 @@ public class SimpleECCApplet extends javacard.framework.Applet {
     public final static byte ECTEST_ECDH_AGREEMENT_INVALID_POINT = (byte) 0xc8;
     public final static byte ECTEST_EXECUTED_REPEATS = (byte) 0xc9;
     public final static byte ECTEST_DH_GENERATESECRET = (byte) 0xca;
+    public final static byte ECTEST_SET_EXTERNALCURVE = (byte) 0xcb;
+    public final static byte ECTEST_GENERATE_KEYPAIR_EXTERNALCURVE = (byte) 0xcc;
+    public final static byte ECTEST_ECDSA_SIGNATURE = (byte) 0xcd;
 
     public final static short FLAG_ECTEST_ALLOCATE_KEYPAIR = (short) 0x0001;
     public final static short FLAG_ECTEST_GENERATE_KEYPAIR_DEFCURVE = (short) 0x0002;
@@ -187,6 +191,9 @@ public class SimpleECCApplet extends javacard.framework.Applet {
                     break;
                 case INS_TESTEC_LASTUSEDPARAMS:
                     TestECSupportInvalidCurve_lastUsedParams(apdu);
+                    break;
+                case INS_TESTECSUPPORT_EXTERNAL:
+                    TestEC_SupportExternal(apdu);
                     break;
 /*                    
                 case INS_ALLOCATEKEYPAIRS:
@@ -390,6 +397,152 @@ public class SimpleECCApplet extends javacard.framework.Applet {
 
         apdu.setOutgoingAndSend((short) 0, dataOffset);
     }
+
+    short TestECSupportExternalCurve(byte keyClass, short keyLength, byte[] buffer, short bufferOffset, short outputOffset) {
+        short startOffset = outputOffset;
+
+        short fieldLength = Util.getShort(buffer, bufferOffset);
+        bufferOffset += 2;
+        short aLength = Util.getShort(buffer, bufferOffset);
+        bufferOffset += 2;
+        short bLength = Util.getShort(buffer, bufferOffset);
+        bufferOffset += 2;
+        short gxLength = Util.getShort(buffer, bufferOffset);
+        bufferOffset += 2;
+        short gyLength = Util.getShort(buffer, bufferOffset);
+        bufferOffset += 2;
+        short rLength = Util.getShort(buffer, bufferOffset);
+        bufferOffset += 2;
+
+        buffer[outputOffset] = ECTEST_SEPARATOR;
+        outputOffset++;
+
+        // allocatePair
+        buffer[outputOffset] = ECTEST_ALLOCATE_KEYPAIR;
+        outputOffset++;
+        short sw = ecKeyGenerator.allocatePair(keyClass, keyLength);
+        Util.setShort(buffer, outputOffset, sw);
+        outputOffset += 2;
+        if (sw != ISO7816.SW_NO_ERROR) {
+            return (short) (outputOffset - startOffset);
+        }
+
+        // setExternalParam -> forall in {field, a, b, g, r, k}
+        buffer[outputOffset] = ECTEST_SET_EXTERNALCURVE;
+        outputOffset++;
+        sw = ecKeyGenerator.setExternalCurve(ECKeyGenerator.KEY_BOTH, keyClass, buffer, bufferOffset, fieldLength, aLength, bLength, gxLength, gyLength, rLength);
+        Util.setShort(buffer, outputOffset, sw);
+        outputOffset += 2;
+        if (sw != ISO7816.SW_NO_ERROR) {
+            return (short) (outputOffset - startOffset);
+        }
+
+        // generatePair
+        buffer[outputOffset] = ECTEST_GENERATE_KEYPAIR_EXTERNALCURVE;
+        outputOffset++;
+        sw = ecKeyGenerator.generatePair();
+        Util.setShort(buffer, outputOffset, sw);
+        outputOffset += 2;
+        if (sw != ISO7816.SW_NO_ERROR) {
+            return (short) (outputOffset - startOffset);
+        }
+
+        ecPubKey = ecKeyGenerator.getPublicKey();
+        ecPrivKey = ecKeyGenerator.getPrivateKey();
+
+        // test_ECDH
+        buffer[outputOffset] = ECTEST_ECDH_AGREEMENT_VALID_POINT;
+        outputOffset++;
+        sw = ecKeyTester.testECDH_validPoint(ecPrivKey, ecPubKey, m_ramArray, (short) 0, m_ramArray2, (short) 0);
+        Util.setShort(buffer, outputOffset, sw);
+        outputOffset += 2;
+        if (sw != ISO7816.SW_NO_ERROR) {
+            return (short) (outputOffset - startOffset);
+        }
+
+        // test_ECDH invalid
+        buffer[outputOffset] = ECTEST_ECDH_AGREEMENT_INVALID_POINT;
+        outputOffset++;
+        sw = ecKeyTester.testECDH_invalidPoint(ecPrivKey, ecPubKey, m_ramArray, (short) 0, m_ramArray2, (short) 0);
+        Util.setShort(buffer, outputOffset, sw);
+        outputOffset += 2;
+        if (sw != ISO7816.SW_NO_ERROR) {
+            return (short) (outputOffset - startOffset);
+        }
+
+        // test_ECDSA
+        buffer[outputOffset] = ECTEST_ECDSA_SIGNATURE;
+        outputOffset++;
+        randomData.generateData(m_ramArray, (short) 0, (short) (ARRAY_LENGTH / 2));
+        sw = ecKeyTester.testECDSA(ecPrivKey, ecPubKey, m_ramArray, (short) 0, (short) (ARRAY_LENGTH / 2), m_ramArray2, (short) 0);
+        Util.setShort(buffer, outputOffset, sw);
+        outputOffset += 2;
+        if (sw != ISO7816.SW_NO_ERROR) {
+            return (short) (outputOffset - startOffset);
+        }
+
+        return (short) (outputOffset - startOffset);
+    }
+
+    /**
+     * Receives an FP or F2M elliptic curve parameters in the APDU.
+     * Then allocates a new keypair, sets said curve and tries ECDH, ECDSA.
+     * APDU format:
+     * byte CLA = CLA_SIMPLEECCAPPLET
+     * byte INS = INS_TESTECSUPPORT_EXTERNAL
+     * byte P0
+     * byte P1
+     * <p>
+     * CDATA:
+     * byte keyClass -> KeyPair.ALG_EC_FP or KeyPair.ALG_EC_F2\M
+     * short keyLength
+     * short fieldLength
+     * short aLength
+     * short bLength
+     * short gxLength
+     * short gyLength
+     * short rLength
+     * field -> FP: prime / F2M: three or one short representing the reduction polynomial
+     * a
+     * b
+     * gx
+     * gy
+     * r
+     * short k
+     * <p>
+     * Response APDU format:
+     * CDATA:
+     * byte ECTEST_SEPARATOR
+     * byte ECTEST_ALLOCATE_KEYPAIR
+     * short sw
+     * byte ECTEST_SET_EXTERNALCURVE
+     * short sw
+     * byte ECTEST_GENERATE_KEYPAIR_EXTERNALCURVE
+     * short sw
+     * byte ECTEST_ECDH_AGREEMENT_VALID_POINT
+     * short sw
+     * byte ECTEST_ECDH_AGREEMENT_INVALID_POINT
+     * short sw
+     * byte ECTEST_ECDSA_SIGNATURE
+     * short sw
+     *
+     * @param apdu
+     */
+    void TestEC_SupportExternal(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        short len = apdu.setIncomingAndReceive();
+
+        short offset = ISO7816.OFFSET_CDATA;
+        byte keyClass = apdubuf[offset];
+        ++offset;
+        short keyLength = Util.getShort(apdubuf, offset);
+        offset += 2;
+
+        short dataLength = TestECSupportExternalCurve(keyClass, keyLength, apdubuf, offset, (short) 0);
+
+        apdu.setOutgoingAndSend((short) 0, dataLength);
+    }
+
 
     void TestEC_FP_GenerateInvalidCurve(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
