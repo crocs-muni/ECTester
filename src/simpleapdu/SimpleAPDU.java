@@ -106,7 +106,7 @@ public class SimpleAPDU {
             if (cardManager.ConnectToCard()) {
 
                 testSupportECAll(cardManager);
-
+                //
                 // Test setting invalid parameter B of curve   
                 byte[] testAPDU = Arrays.clone(TESTECSUPPORTALL_FP_KEYGEN_INVALIDCURVEB);
                 //testFPkeyGen_setCorruptionType(testAPDU, SimpleECCApplet.CORRUPT_B_LASTBYTEINCREMENT);

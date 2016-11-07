@@ -70,7 +70,7 @@ public class EC_Consts {
     // cofactor of G
     public static final short EC128_FP_K = 1;
 
-    // secp160r1 
+    // secp160r1
     public static final byte[] EC160_FP_P = new byte[]{
             (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
             (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
@@ -1108,32 +1108,32 @@ public class EC_Consts {
         switch (param) {
             case PARAMETER_FP:
                 if (alg == KeyPair.ALG_EC_FP) {
-                    length = Util.arrayCopyNonAtomic(outputBuffer, outputOffset, EC_FP_P, (short) 0, (short) EC_FP_P.length);
+                    length = Util.arrayCopyNonAtomic(EC_FP_P, (short) 0, outputBuffer, outputOffset, (short) EC_FP_P.length);
                 }
                 break;
             case PARAMETER_F2M:
                 if (alg == KeyPair.ALG_EC_F2M) {
-                    length = Util.arrayCopyNonAtomic(outputBuffer, outputOffset, EC_F2M_F2M, (short) 0, (short) EC_F2M_F2M.length);
+                    length = Util.arrayCopyNonAtomic(EC_F2M_F2M, (short) 0, outputBuffer, outputOffset,  (short) EC_F2M_F2M.length);
                 }
                 break;
             case PARAMETER_A:
-                length = Util.arrayCopyNonAtomic(outputBuffer, outputOffset, EC_A, (short) 0, (short) EC_A.length);
+                length = Util.arrayCopyNonAtomic(EC_A, (short) 0, outputBuffer, outputOffset,  (short) EC_A.length);
                 break;
             case PARAMETER_B:
-                length = Util.arrayCopyNonAtomic(outputBuffer, outputOffset, EC_B, (short) 0, (short) EC_B.length);
+                length = Util.arrayCopyNonAtomic(EC_B, (short) 0, outputBuffer, outputOffset,  (short) EC_B.length);
                 break;
             case PARAMETER_G:
                 length = decompressG(outputBuffer, outputOffset, EC_G_X, (short) 0, (short) EC_G_X.length, EC_G_Y, (short) 0, (short) EC_G_Y.length);
                 break;
             case PARAMETER_R:
-                length = Util.arrayCopyNonAtomic(outputBuffer, outputOffset, EC_R, (short) 0, (short) EC_R.length);
+                length = Util.arrayCopyNonAtomic(EC_R, (short) 0, outputBuffer, outputOffset, (short) EC_R.length);
                 break;
             case PARAMETER_K:
                 length = 2;
                 Util.setShort(outputBuffer, outputOffset, EC_K);
                 break;
             default:
-                length = -1;
+                ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
         }
         return length;
     }
@@ -1169,9 +1169,9 @@ public class EC_Consts {
                 rngPos %= length; // make < param length
 
                 byte original = outputBuffer[rngPos];
-                while (original != outputBuffer[rngPos]) {
+                do {
                     m_random.generateData(outputBuffer, rngPos, (short) 1);
-                }
+                } while (original == outputBuffer[rngPos]);
                 break;
             case CORRUPTION_ZERO:
                 Util.arrayFillNonAtomic(outputBuffer, outputOffset, length, (byte) 0);
@@ -1181,6 +1181,16 @@ public class EC_Consts {
                 break;
             default:
                 ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+            /* //TODO implement CORRUPT_B_LASTBYTEINCREMENT somehow
+                    case CORRUPT_B_LASTBYTEINCREMENT:
+                        m_ramArray2[(short) (m_lenB - 1)] += 1;
+                        // Make sure its not the valid byte again
+                        if (m_ramArray[(short) (m_lenB - 1)] == m_ramArray2[(short) (m_lenB - 1)]) {
+                            m_ramArray2[(short) (m_lenB - 1)] += 1; // if yes, increment once more
+                        }
+                        break;
+                }
+                */
         }
         return length;
     }
@@ -1193,10 +1203,11 @@ public class EC_Consts {
         short size = 1;
         size += gxLength;
         size += gyLength;
+
         short offset = outputOffset;
+        outputBuffer[offset] = 0x04;
         offset += 1;
 
-        outputBuffer[offset] = 0x04;
         offset = Util.arrayCopyNonAtomic(gx, gxOffset, outputBuffer, offset, gxLength);
         Util.arrayCopyNonAtomic(gy, gyOffset, outputBuffer, offset, gyLength);
         return size;

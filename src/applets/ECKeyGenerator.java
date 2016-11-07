@@ -1,6 +1,7 @@
 package applets;
 
 import javacard.framework.ISO7816;
+import javacard.framework.ISOException;
 import javacard.framework.Util;
 import javacard.security.CryptoException;
 import javacard.security.ECPrivateKey;
@@ -16,17 +17,18 @@ public class ECKeyGenerator {
     private ECPrivateKey ecPrivateKey = null;
     private ECPublicKey ecPublicKey = null;
 
-    public static final byte KEY_PUBLIC = 0x1;
-    public static final byte KEY_PRIVATE = 0x2;
-    public static final byte KEY_BOTH = KEY_PUBLIC & KEY_PRIVATE;
+    public static final byte KEY_PUBLIC = 0x01;
+    public static final byte KEY_PRIVATE = 0x02;
+    public static final byte KEY_BOTH = KEY_PUBLIC | KEY_PRIVATE;
 
 
-    public short allocatePair(byte algorithm, short keyLength) {
+    //TODO: add something like allocateGenerate, or modify allocate to auto-generate a key-pair if it returns null key references after allocating
+    public short allocatePair(byte keyClass, short keyLength) {
         short result = ISO7816.SW_NO_ERROR;
         try {
-            ecKeyPair = new KeyPair(algorithm, keyLength);
-            ecPrivateKey = (ECPrivateKey) ecKeyPair.getPrivate();
+            ecKeyPair = new KeyPair(keyClass, keyLength);
             ecPublicKey = (ECPublicKey) ecKeyPair.getPublic();
+            ecPrivateKey = (ECPrivateKey) ecKeyPair.getPrivate();
         } catch (CryptoException ce) {
             result = ce.getReason();
         } catch (Exception e) {
@@ -36,15 +38,15 @@ public class ECKeyGenerator {
     }
 
     public boolean isAllocated() {
-        return ecKeyPair != null && ecPrivateKey != null && ecPublicKey != null;
+        return ecKeyPair != null;
     }
 
     public short generatePair() {
         short result = ISO7816.SW_NO_ERROR;
         try {
             ecKeyPair.genKeyPair();
-            ecPrivateKey = (ECPrivateKey) ecKeyPair.getPrivate();
             ecPublicKey = (ECPublicKey) ecKeyPair.getPublic();
+            ecPrivateKey = (ECPrivateKey) ecKeyPair.getPrivate();
         } catch (CryptoException ce) {
             result = ce.getReason();
         } catch (Exception e) {
@@ -63,18 +65,20 @@ public class ECKeyGenerator {
         short length;
         if (alg == KeyPair.ALG_EC_FP) {
             length = EC_Consts.getCurveParameter(curve, EC_Consts.PARAMETER_FP, buffer, offset);
-            sw = setExternalParameter(KEY_BOTH, EC_Consts.PARAMETER_FP, buffer, offset, length);
+            sw = setParameter(KEY_BOTH, EC_Consts.PARAMETER_FP, buffer, offset, length);
         } else if (alg == KeyPair.ALG_EC_F2M) {
             length = EC_Consts.getCurveParameter(curve, EC_Consts.PARAMETER_F2M, buffer, offset);
-            sw = setExternalParameter(KEY_BOTH, EC_Consts.PARAMETER_F2M, buffer, offset, length);
+            sw = setParameter(KEY_BOTH, EC_Consts.PARAMETER_F2M, buffer, offset, length);
         }
         if (sw != ISO7816.SW_NO_ERROR) return sw;
 
         //go through all params
-        for (byte param = EC_Consts.PARAMETER_A; param <= EC_Consts.PARAMETER_K; param = (byte)(param << 1)) {
+        byte param = EC_Consts.PARAMETER_A;
+        while (param > 0) {
             length = EC_Consts.getCurveParameter(curve, param, buffer, offset);
-            sw = setExternalParameter(KEY_BOTH, param, buffer, offset, length);
+            sw = setParameter(KEY_BOTH, param, buffer, offset, length);
             if (sw != ISO7816.SW_NO_ERROR) break;
+            param = (byte) (param << 1);
         }
         return sw;
     }
@@ -89,68 +93,76 @@ public class ECKeyGenerator {
 
         //go through param bit by bit, and invalidate all selected params
         byte paramMask = 0x01;
-        while (paramMask <= EC_Consts.PARAMETER_K) {
-            byte masked = (byte)(paramMask & param);
-            if (masked != 0){
+        while (paramMask > 0) {
+            byte masked = (byte) (paramMask & param);
+            if (masked != 0) {
                 short length = EC_Consts.getCorruptCurveParameter(curve, masked, buffer, offset, corruptionType);
-                sw = setExternalParameter(key, masked, buffer, offset, length);
+                sw = setParameter(key, masked, buffer, offset, length);
                 if (sw != ISO7816.SW_NO_ERROR) return sw;
             }
-            paramMask = (byte)(paramMask << 1);
+            paramMask = (byte) (paramMask << 1);
         }
         return sw;
     }
 
-    public short setExternalParameter(byte key, byte param, byte[] data, short offset, short length) {
+    public short setParameter(byte key, byte param, byte[] data, short offset, short length) {
         short result = ISO7816.SW_NO_ERROR;
         try {
             switch (param) {
-                case EC_Consts.PARAMETER_FP:
-                    if ((key & KEY_PRIVATE) != 0) ecPrivateKey.setFieldFP(data, offset, length);
+                case EC_Consts.PARAMETER_FP: {
                     if ((key & KEY_PUBLIC) != 0) ecPublicKey.setFieldFP(data, offset, length);
+                    if ((key & KEY_PRIVATE) != 0) ecPrivateKey.setFieldFP(data, offset, length);
                     break;
-                case EC_Consts.PARAMETER_F2M:
+                }
+                case EC_Consts.PARAMETER_F2M: {
                     if (length == 2) {
                         short i = Util.makeShort(data[offset], data[(short) (offset + 1)]);
-                        if ((key & KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i);
                         if ((key & KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i);
+                        if ((key & KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i);
                     } else if (length == 6) {
                         short i1 = Util.makeShort(data[offset], data[(short) (offset + 1)]);
                         short i2 = Util.makeShort(data[(short) (offset + 2)], data[(short) (offset + 3)]);
                         short i3 = Util.makeShort(data[(short) (offset + 4)], data[(short) (offset + 5)]);
-                        if ((key & KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i1, i2, i3);
                         if ((key & KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i1, i2, i3);
+                        if ((key & KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i1, i2, i3);
                     } else {
                         result = ISO7816.SW_UNKNOWN;
                     }
                     break;
-                case EC_Consts.PARAMETER_A:
-                    if ((key & KEY_PRIVATE) != 0) ecPrivateKey.setA(data, offset, length);
+                }
+                case EC_Consts.PARAMETER_A: {
                     if ((key & KEY_PUBLIC) != 0) ecPublicKey.setA(data, offset, length);
+                    if ((key & KEY_PRIVATE) != 0) ecPrivateKey.setA(data, offset, length);
                     break;
-                case EC_Consts.PARAMETER_B:
-                    if ((key & KEY_PRIVATE) != 0) ecPrivateKey.setB(data, offset, length);
+                }
+                case EC_Consts.PARAMETER_B: {
                     if ((key & KEY_PUBLIC) != 0) ecPublicKey.setB(data, offset, length);
+                    if ((key & KEY_PRIVATE) != 0) ecPrivateKey.setB(data, offset, length);
                     break;
-                case EC_Consts.PARAMETER_G:
-                    if ((key & KEY_PRIVATE) != 0) ecPrivateKey.setG(data, offset, length);
+                }
+                case EC_Consts.PARAMETER_G: {
                     if ((key & KEY_PUBLIC) != 0) ecPublicKey.setG(data, offset, length);
+                    if ((key & KEY_PRIVATE) != 0) ecPrivateKey.setG(data, offset, length);
                     break;
-                case EC_Consts.PARAMETER_R:
-                    if ((key & KEY_PRIVATE) != 0) ecPrivateKey.setR(data, offset, length);
+                }
+                case EC_Consts.PARAMETER_R: {
                     if ((key & KEY_PUBLIC) != 0) ecPublicKey.setR(data, offset, length);
+                    if ((key & KEY_PRIVATE) != 0) ecPrivateKey.setR(data, offset, length);
                     break;
-                case EC_Consts.PARAMETER_K:
+                }
+                case EC_Consts.PARAMETER_K: {
                     if (length != 2) {
                         result = ISO7816.SW_UNKNOWN;
                     } else {
-                        short k = Util.makeShort(data[offset], data[(short) (offset + 1)]);
-                        if ((key & KEY_PRIVATE) != 0) ecPrivateKey.setK(k);
+                        short k = Util.getShort(data, offset);
                         if ((key & KEY_PUBLIC) != 0) ecPublicKey.setK(k);
+                        if ((key & KEY_PRIVATE) != 0) ecPrivateKey.setK(k);
                     }
                     break;
-                default:
-                    result = ISO7816.SW_UNKNOWN;
+                }
+                default: {
+                    ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+                }
             }
         } catch (CryptoException ce) {
             result = ce.getReason();
@@ -160,35 +172,35 @@ public class ECKeyGenerator {
         return result;
     }
 
-    public short setExternalCurve(byte key, byte keyClass, byte[] buffer, short offset, short fieldLength, short aLength, short bLength, short gxLength, short gyLength, short rLength){
+    public short setExternalCurve(byte key, byte keyClass, byte[] buffer, short offset, short fieldLength, short aLength, short bLength, short gxLength, short gyLength, short rLength) {
         short sw = ISO7816.SW_NO_ERROR;
         if (keyClass == KeyPair.ALG_EC_FP) {
-            sw = setExternalParameter(key, EC_Consts.PARAMETER_FP, buffer, offset, fieldLength);
+            sw = setParameter(key, EC_Consts.PARAMETER_FP, buffer, offset, fieldLength);
         } else if (keyClass == KeyPair.ALG_EC_F2M) {
-            sw = setExternalParameter(key, EC_Consts.PARAMETER_F2M, buffer, offset, fieldLength);
+            sw = setParameter(key, EC_Consts.PARAMETER_F2M, buffer, offset, fieldLength);
         }
         if (sw != ISO7816.SW_NO_ERROR) return sw;
 
         offset += fieldLength;
 
         //go through all params
-        sw = setExternalParameter(key, EC_Consts.PARAMETER_A, buffer, offset, aLength);
+        sw = setParameter(key, EC_Consts.PARAMETER_A, buffer, offset, aLength);
         if (sw != ISO7816.SW_NO_ERROR) return sw;
         offset += aLength;
-        sw = setExternalParameter(key, EC_Consts.PARAMETER_B, buffer, offset, bLength);
+        sw = setParameter(key, EC_Consts.PARAMETER_B, buffer, offset, bLength);
         if (sw != ISO7816.SW_NO_ERROR) return sw;
         offset += bLength;
 
-        sw = setExternalParameter(key, EC_Consts.PARAMETER_G, buffer, offset, (short) (gxLength + gyLength));
+        sw = setParameter(key, EC_Consts.PARAMETER_G, buffer, offset, (short) (gxLength + gyLength));
         if (sw != ISO7816.SW_NO_ERROR) return sw;
         offset += gxLength + gyLength;
 
 
-        sw = setExternalParameter(key, EC_Consts.PARAMETER_R, buffer, offset, aLength);
+        sw = setParameter(key, EC_Consts.PARAMETER_R, buffer, offset, aLength);
         if (sw != ISO7816.SW_NO_ERROR) return sw;
         offset += rLength;
 
-        sw = setExternalParameter(key, EC_Consts.PARAMETER_K, buffer, offset, (short) 2);
+        sw = setParameter(key, EC_Consts.PARAMETER_K, buffer, offset, (short) 2);
         return sw;
     }
 
@@ -226,7 +238,7 @@ public class ECKeyGenerator {
                     length = 2;
                     break;
                 default:
-                    length = -1;
+                    ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
             }
         } catch (CryptoException ce) {
             length = -1;

@@ -8,7 +8,7 @@ import javacard.framework.*;
 import javacard.security.*;
 
 
-public class SimpleECCApplet extends javacard.framework.Applet {
+public class SimpleECCApplet extends Applet {
 
     // MAIN INSTRUCTION CLASS
     final static byte CLA_SIMPLEECCAPPLET = (byte) 0xB0;
@@ -297,7 +297,7 @@ public class SimpleECCApplet extends javacard.framework.Applet {
             ecPubKey = ecKeyGenerator.getPublicKey();
             ecPrivKey = ecKeyGenerator.getPrivateKey();
             if (sw == ISO7816.SW_NO_ERROR) {
-                sw = ecKeyTester.testECDH_validPoint(ecPrivKey, ecPubKey, m_ramArray, (short) 0, m_ramArray2, (short) 1);
+                sw = ecKeyTester.testECDH_validPoint(ecPrivKey, ecPubKey, m_ramArray, (short) 0, m_ramArray2, (short) 0);
             }
         }
         Util.setShort(buffer, bufferOffset, sw);
@@ -427,7 +427,7 @@ public class SimpleECCApplet extends javacard.framework.Applet {
             return (short) (outputOffset - startOffset);
         }
 
-        // setExternalParam -> forall in {field, a, b, g, r, k}
+        // setExternalCurve
         buffer[outputOffset] = ECTEST_SET_EXTERNALCURVE;
         outputOffset++;
         sw = ecKeyGenerator.setExternalCurve(ECKeyGenerator.KEY_BOTH, keyClass, buffer, bufferOffset, fieldLength, aLength, bLength, gxLength, gyLength, rLength);
@@ -598,9 +598,17 @@ public class SimpleECCApplet extends javacard.framework.Applet {
             } else {
                 testFlags = 0;
             }
+
+            if (ecPubKey == null || ecPrivKey == null) {
+                ecKeyGenerator.generatePair();
+                ecPrivKey = ecKeyGenerator.getPrivateKey();
+                ecPubKey = ecKeyGenerator.getPublicKey();
+            }
         }
         Util.setShort(buffer, bufferOffset, sw);
         bufferOffset += 2;
+
+
 
         //
         // 2. Set invalid custom curve (many times)
@@ -620,6 +628,8 @@ public class SimpleECCApplet extends javacard.framework.Applet {
                     bufferOffset = startOffset;
                 }
 
+                ecPubKey.getB(m_ramArray2, (short) 0); //store valid B
+
                 // set invalid curve
                 buffer[bufferOffset] = ECTEST_SET_INVALIDCURVE;
                 bufferOffset++;
@@ -631,23 +641,13 @@ public class SimpleECCApplet extends javacard.framework.Applet {
                 // CORRUPTION_ONEBYTERANDOM = 0x04, one random byte randomly changed
                 // CORRUPTION_ZERO = 0x05, parameter competely zero
                 // CORRUPTION_ONE = 0x06, parameter completely one
-                sw = ecKeyGenerator.setCustomInvalidCurve(keyClass, keyClass, ECKeyGenerator.KEY_PUBLIC, EC_Consts.PARAMETER_B, corruptionType, m_ramArray, (short) 0);
+                sw = ecKeyGenerator.setCustomInvalidCurve(keyClass, keyLen, ECKeyGenerator.KEY_BOTH, EC_Consts.PARAMETER_B, corruptionType, m_ramArray, (short) 0);
                 Util.setShort(buffer, bufferOffset, sw);
                 bufferOffset += 2;
                 if (sw != ISO7816.SW_NO_ERROR) {
                     // if we reach this line, we are interested in value of B that caused incorrect response
                     break; // stop execution, return B
                 }
-                /* //TODO implement CORRUPT_B_LASTBYTEINCREMENT somehow
-                    case CORRUPT_B_LASTBYTEINCREMENT:
-                        m_ramArray2[(short) (m_lenB - 1)] += 1;
-                        // Make sure its not the valid byte again
-                        if (m_ramArray[(short) (m_lenB - 1)] == m_ramArray2[(short) (m_lenB - 1)]) {
-                            m_ramArray2[(short) (m_lenB - 1)] += 1; // if yes, increment once more
-                        }
-                        break;
-                }
-                */
 
                 // Gen key pair with invalid curve
 
@@ -668,6 +668,7 @@ public class SimpleECCApplet extends javacard.framework.Applet {
 
                     sw = ecKeyTester.testECDH_validPoint(ecPrivKey, ecPubKey, m_ramArray, (short) 0, m_ramArray2, (short) 0);
                     m_lenB = ecPubKey.getB(m_ramArray2, (short) 0); //store B
+                    //TODO: note, according to the previous version of this method, sw should get appended to the buffer only if sw != SW_NO_ERROR
                     Util.setShort(buffer, bufferOffset, sw);
                     bufferOffset += 2;
                     break; //stop execution, return B
