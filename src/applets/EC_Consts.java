@@ -9,6 +9,9 @@ import javacard.security.KeyPair;
 import javacard.security.RandomData;
 
 public class EC_Consts {
+    public static final byte TAG_ECPUBKEY = (byte) 0x41;
+    public static final byte TAG_ECPRIVKEY = (byte) 0x42;
+    
     public static byte[] EC_FP_P = null;
     public static byte[] EC_FP_A = null;
     public static byte[] EC_FP_B = null;
