@@ -14,18 +14,22 @@ public class SimpleECCApplet extends Applet {
     final static byte CLA_SIMPLEECCAPPLET = (byte) 0xB0;
 
     // INSTRUCTIONS
-    final static byte INS_GENERATEKEY = (byte) 0x5a;
-    final static byte INS_ALLOCATEKEYPAIRS = (byte) 0x5b;
-
-    final static byte INS_ALLOCATEKEYPAIR = (byte) 0x5c;
-    final static byte INS_DERIVEECDHSECRET = (byte) 0x5d;
-
-    final static byte INS_TESTECSUPPORTALL_FP = (byte) 0x5e;
-    final static byte INS_TESTECSUPPORTALL_F2M = (byte) 0x5f;
-    final static byte INS_TESTEC_GENERATEINVALID_FP = (byte) 0x70;
-    final static byte INS_TESTECSUPPORT_GIVENALG = (byte) 0x71;
-    final static byte INS_TESTECSUPPORT_EXTERNAL = (byte) 0x72;
-    final static byte INS_TESTEC_LASTUSEDPARAMS = (byte) 0x40;
+    final static byte INS_GENERATEKEY                = (byte) 0x5a;
+    final static byte INS_ALLOCATEKEYPAIRS           = (byte) 0x5b;
+    
+    final static byte INS_ALLOCATEKEYPAIR            = (byte) 0x5c;
+    final static byte INS_DERIVEECDHSECRET           = (byte) 0x5d;
+    
+    final static byte INS_TESTECSUPPORTALL_FP        = (byte) 0x5e;
+    final static byte INS_TESTECSUPPORTALL_F2M       = (byte) 0x5f;
+    final static byte INS_TESTEC_GENERATEINVALID_FP  = (byte) 0x70;
+    final static byte INS_TESTECSUPPORT_GIVENALG     = (byte) 0x71;
+    final static byte INS_TESTECSUPPORT_EXTERNAL     = (byte) 0x72;
+    final static byte INS_TESTEC_LASTUSEDPARAMS      = (byte) 0x40;
+    
+    
+    public final static byte P1_SETCURVE            = (byte) 0x01;
+    public final static byte P1_GENERATEKEYPAIR     = (byte) 0x02;
 
 
     final static short ARRAY_LENGTH = (short) 0xff;
@@ -199,11 +203,11 @@ public class SimpleECCApplet extends Applet {
                 case INS_ALLOCATEKEYPAIRS:
                     AllocateKeyPairs(apdu);
                     break;
+*/                    
                 case INS_GENERATEKEY:
-                    GenerateKey(apdu);
+                    GenerateAndReturnKey(apdu);
                     break;
-*/
-                default:
+                default :
                     // The INS code is not supported by the dispatcher
                     ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);
                     break;
@@ -802,6 +806,55 @@ public class SimpleECCApplet extends Applet {
 
         apdu.setOutgoingAndSend((short) 0, secretLen);
     }
+
+    void GenerateAndReturnKey(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        apdu.setIncomingAndReceive();
+        
+        short bitLen = Util.getShort(apdubuf, ISO7816.OFFSET_CDATA);
+
+        short offset = 0;
+        
+        switch (apdubuf[ISO7816.OFFSET_P1]) {
+            case P1_SETCURVE: {
+                ecKeyGenerator.allocatePair(KeyPair.ALG_EC_FP, bitLen);
+
+                ecKeyGenerator.generatePair();
+                ecPubKey = ecKeyGenerator.getPublicKey();
+                ecPrivKey = ecKeyGenerator.getPrivateKey();
+
+                // If required, initialize curve parameters first
+                ecKeyGenerator.setCustomCurve(KeyPair.ALG_EC_FP, bitLen, m_ramArray, (short) 0);
+                break;
+            }
+            case P1_GENERATEKEYPAIR: {
+                // Assumption: proper EC keyPair is already allocated and initialized
+                ecKeyGenerator.generatePair();
+                ecPubKey = ecKeyGenerator.getPublicKey();
+                ecPrivKey = ecKeyGenerator.getPrivateKey();
+
+                offset = 0;
+                apdubuf[offset] = EC_Consts.TAG_ECPUBKEY;
+                offset++;
+                offset += 2; // reserve space for length
+                short len = ecPubKey.getW(apdubuf, offset);
+                Util.setShort(apdubuf, (short) (offset - 2), len);
+                offset += len;
+                apdubuf[offset] = EC_Consts.TAG_ECPRIVKEY;
+                offset++;
+                offset += 2; // reserve space for length
+                len = ecPrivKey.getS(apdubuf, offset);
+                Util.setShort(apdubuf, (short) (offset - 2), len);
+                offset += len;
+
+                break;
+            }
+            default: 
+                ISOException.throwIt(ISO7816.SW_INCORRECT_P1P2);
+        }
+
+        apdu.setOutgoingAndSend((short) 0, offset);
+    }
     
 /*    
     void AllocateKeyPair(byte algorithm, short bitLen) {
@@ -851,28 +904,8 @@ public class SimpleECCApplet extends Applet {
         EC_Consts.setValidECKeyParams(ecPubKey, ecPrivKey, KeyPair.ALG_EC_FP, bitLen, m_ramArray);
     }
     
-    void GenerateAndReturnKey(APDU apdu) {
-        byte[] apdubuf = apdu.getBuffer();
-        apdu.setIncomingAndReceive();
-        
-        // Assumption: proper EC keyPair is already allocated and initialized
-        
-        ecKeyPair.genKeyPair();
-        ecPubKey = (ECPublicKey) ecKeyPair.getPrivate();
-        ecPrivKey = (ECPrivateKey) ecKeyPair.getPrivate();
-        
-        short offset = 0;
-        offset += 2; // reserve space for length
-        short len = ecPubKey.getW(apdubuf, offset);
-        Util.setShort(apdubuf, (short) (offset - 2), len);
-        offset += len;
-        offset += 2; // reserve space for length
-        len = ecPrivKey.getS(apdubuf, offset);
-        Util.setShort(apdubuf, (short) (offset - 2), len);
-        offset += len;
 
-        apdu.setOutgoingAndSend((short) 0, offset);
-    }
-*/
+*/    
+
 }
 

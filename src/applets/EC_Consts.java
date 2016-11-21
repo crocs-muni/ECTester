@@ -7,6 +7,7 @@ import javacard.security.KeyPair;
 import javacard.security.RandomData;
 
 public class EC_Consts {
+
     private static byte[] EC_FP_P = null;    //p
     private static byte[] EC_A = null;    //a
     private static byte[] EC_B = null;    //b
@@ -26,8 +27,11 @@ public class EC_Consts {
     public static final byte PARAMETER_R = 0x20;
     public static final byte PARAMETER_K = 0x40;
 
-
     public static RandomData m_random = null;
+
+    public static final byte TAG_ECPUBKEY = (byte) 0x41;
+    public static final byte TAG_ECPRIVKEY = (byte) 0x42;
+
 
     // secp128r1 
     public static final byte[] EC128_FP_P = new byte[]{

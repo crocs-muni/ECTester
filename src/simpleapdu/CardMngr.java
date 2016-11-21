@@ -3,6 +3,7 @@ package simpleapdu;
 import com.licel.jcardsim.io.CAD;
 import com.licel.jcardsim.io.JavaxSmartCardInterface;
 import java.util.List;
+import java.util.Scanner;
 import javacard.framework.AID;
 import javax.smartcardio.*;
 
@@ -11,9 +12,9 @@ import javax.smartcardio.*;
  * @author xsvenda
  */
 public class CardMngr {
-    CardTerminal m_terminal = null;
-    CardChannel m_channel = null;
-    Card m_card = null;
+    static CardTerminal m_terminal = null;
+    static CardChannel m_channel = null;
+    static Card m_card = null;
     
     // Simulator related attributes
     private static CAD m_cad = null;
@@ -62,6 +63,49 @@ public class CardMngr {
 
         return cardFound;
     }
+    
+    static boolean ConnectToCardSelect() throws CardException {
+        // Test available card - if more present, let user to select one
+        List<CardTerminal> terminalList = CardMngr.GetReaderList();
+        if (terminalList.isEmpty()) {
+            System.out.println("ERROR: No suitable reader with card detected. Please check your reader connection");
+            return false;
+        } else {
+            if (terminalList.size() == 1) {
+                m_terminal = terminalList.get(0); // return first and only reader
+            } else {
+                int terminalIndex = 1;
+                // Let user select target terminal
+                for (CardTerminal terminal : terminalList) {
+                    Card card;
+                    try {
+                        card = terminal.connect("*");
+                        ATR atr = card.getATR();
+                        System.out.println(terminalIndex + " : " + terminal.getName() + " - " + CardMngr.bytesToHex(atr.getBytes()));
+                        terminalIndex++;
+                    } catch (CardException ex) {
+                        System.out.println(ex);
+                    }
+                }
+                System.out.print("Select index of target reader you like to use 1.." + (terminalIndex - 1) + ": ");
+                Scanner sc = new Scanner(System.in);
+                int answ = sc.nextInt();
+                System.out.println(String.format("%d", answ));
+                answ--; // is starting with 0 
+                // BUGBUG; verify allowed index range
+                m_terminal = terminalList.get(answ);
+            }
+        }
+        
+        if (m_terminal != null) {
+            m_card = m_terminal.connect("*");
+            System.out.println("card: " + m_card);
+            m_channel = m_card.getBasicChannel();
+        }
+
+        return true;
+    }
+    
 
     public void DisconnectFromCard() throws Exception {
         if (m_card != null) {
@@ -116,7 +160,7 @@ public class CardMngr {
         }
     }
     
-    public List GetReaderList() {
+    public static List GetReaderList() {
         try {
             TerminalFactory factory = TerminalFactory.getDefault();
             List readersList = factory.terminals().list();
@@ -158,7 +202,7 @@ public class CardMngr {
         return (responseAPDU);
     }
 
-    public String byteToHex(byte data) {
+    public static String byteToHex(byte data) {
         StringBuilder buf = new StringBuilder();
         buf.append(toHexChar((data >>> 4) & 0x0F));
         buf.append(toHexChar(data & 0x0F));
@@ -166,7 +210,7 @@ public class CardMngr {
     }
 
 
-    public char toHexChar(int i) {
+    public static char toHexChar(int i) {
         if ((0 <= i) && (i <= 9)) {
             return (char) ('0' + i);
         } else {
@@ -174,15 +218,18 @@ public class CardMngr {
         }
     }
 
-    public String bytesToHex(byte[] data) {
+    public static String bytesToHex(byte[] data) {
+        return bytesToHex(data, 0, data.length, true);
+    }
+    
+    public static String bytesToHex(byte[] data, int offset, int len, boolean bAddSpace) {
         StringBuilder buf = new StringBuilder();
-        for (int i = 0; i < data.length; i++) {
+        for (int i = offset; i < (offset + len); i++) {
             buf.append(byteToHex(data[i]));
-            buf.append(" ");
+            if (bAddSpace) { buf.append(" "); }
         }
         return (buf.toString());
     }
-    
     
     public boolean prepareLocalSimulatorApplet(byte[] appletAIDArray, byte[] installData, Class appletClass) {
         System.setProperty("com.licel.jcardsim.terminal.type", "2");

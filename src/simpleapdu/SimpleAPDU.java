@@ -5,9 +5,13 @@ import applets.SimpleECCApplet;
 import javacard.framework.ISO7816;
 import javacard.security.CryptoException;
 import javacard.security.KeyPair;
-import org.bouncycastle.util.Arrays;
-
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
 import javax.smartcardio.ResponseAPDU;
+
+
 
 /**
  * @author Petr Svenda petr@svenda.com
@@ -17,6 +21,8 @@ public class SimpleAPDU {
 
     private final static byte SELECT_ECTESTERAPPLET[] = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x0a,
             (byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x65, (byte) 0x72, (byte) 0x30, (byte) 0x31};
+
+    static DirtyLogger m_SystemOutLogger = null;
 
     private static final byte TESTECSUPPORTALL_FP[] = {(byte) 0xB0, (byte) 0x5E, (byte) 0x00, (byte) 0x00, (byte) 0x00};
     private static final byte TESTECSUPPORTALL_F2M[] = {(byte) 0xB0, (byte) 0x5F, (byte) 0x00, (byte) 0x00, (byte) 0x00};
@@ -30,6 +36,8 @@ public class SimpleAPDU {
     private static final short INVALIDCURVEB_NUMREPEATS_OFFSET = 5;
     private static final short INVALIDCURVEB_CORRUPTIONTYPE_OFFSET = 7;
     private static final short INVALIDCURVEB_REWINDONSUCCESS_OFFSET = 9;
+
+    private static final byte TESTECSUPPORT_GENERATEECCKEY[] = {(byte) 0xB0, (byte) 0x5a, (byte) 0x00, (byte) 0x00, (byte) 0x02, (byte) 0x00, (byte) 0x00};
 
     static short getShort(byte[] array, int offset) {
         return (short) (((array[offset] & 0xFF) << 8) | (array[offset + 1] & 0xFF));
@@ -68,7 +76,7 @@ public class SimpleAPDU {
     }
 
     static void testSupportECAll(CardMngr cardManager) throws Exception {
-        byte[] testAPDU = Arrays.clone(TESTECSUPPORT_GIVENALG);
+        byte[] testAPDU = Arrays.copyOf(TESTECSUPPORT_GIVENALG, TESTECSUPPORT_GIVENALG.length);
 
         testAPDU[TESTECSUPPORT_ALG_OFFSET] = KeyPair.ALG_EC_FP;
         setShort(testAPDU, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 128);
@@ -98,17 +106,73 @@ public class SimpleAPDU {
 
     }
 
-    public static void main(String[] args) {
-        try {
-            //
-            // REAL CARDS
-            //
-            if (cardManager.ConnectToCard()) {
+    public static void main(String[] args) throws FileNotFoundException, IOException {
+        String logFileName = String.format("ECTESTER_log_%d.log", System.currentTimeMillis());
+        FileOutputStream systemOutLogger = new FileOutputStream(logFileName);    
+        m_SystemOutLogger = new DirtyLogger(systemOutLogger, true);
 
+        try {
+            // Gather large number of ECC keypairs
+            if (cardManager.ConnectToCardSelect()) {
+                cardManager.sendAPDU(SELECT_ECTESTERAPPLET);
+                
+                String keyFileName = String.format("ECKEYS_%d.log", System.currentTimeMillis());
+                FileOutputStream keysFile = new FileOutputStream(keyFileName);
+
+                String message = "index;pubW;privS\n";
+                keysFile.write(message.getBytes());
+                byte[] gatherKeyAPDU = Arrays.copyOf(TESTECSUPPORT_GENERATEECCKEY, TESTECSUPPORT_GENERATEECCKEY.length);
+                // Prepare keypair object
+                gatherKeyAPDU[ISO7816.OFFSET_P1] = SimpleECCApplet.P1_SETCURVE;
+                setShort(gatherKeyAPDU, (short) 5, (short) 192);    // ecc length
+                ResponseAPDU respGather = cardManager.sendAPDU(gatherKeyAPDU);
+
+                // Generate new keypair
+                gatherKeyAPDU[ISO7816.OFFSET_P1] = SimpleECCApplet.P1_GENERATEKEYPAIR;
+                int counter = 0;
+                while (true) {
+                    counter++;
+                    long elapsed = -System.nanoTime();
+                    respGather = cardManager.sendAPDU(gatherKeyAPDU);
+                    elapsed += System.nanoTime();
+                    
+                    byte[] data = respGather.getData();
+                    int offset = 0;
+                    String pubKeyW = "";
+                    String privKeyS = "";
+                    if (data[offset] == EC_Consts.TAG_ECPUBKEY) {
+                        offset++;
+                        short len = getShort(data, offset);
+                        offset += 2;
+                        pubKeyW = CardMngr.bytesToHex(data, offset, len, false);
+                        offset += len;
+                    }
+                    if (data[offset] == EC_Consts.TAG_ECPRIVKEY) {
+                        offset++;
+                        short len = getShort(data, offset);
+                        offset += 2;
+                        privKeyS = CardMngr.bytesToHex(data, offset, len, false);
+                        offset += len;
+                    }
+                    
+                    message = String.format("%d;%d;%s;%s\n", counter, elapsed / 1000000, pubKeyW, privKeyS);
+                    keysFile.write(message.getBytes());
+
+                    m_SystemOutLogger.flush();
+                    keysFile.flush();
+                }
+            }
+
+            if (cardManager.ConnectToCard()) {
+                byte[] testAPDU2 = Arrays.copyOf(TESTECSUPPORT_GIVENALG, TESTECSUPPORT_GIVENALG.length);
+                testAPDU2[TESTECSUPPORT_ALG_OFFSET] = KeyPair.ALG_EC_FP;
+                setShort(testAPDU2, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 384);
+                testSupportECGivenAlg(testAPDU2, cardManager);
+                
                 testSupportECAll(cardManager);
                 //
                 // Test setting invalid parameter B of curve   
-                byte[] testAPDU = Arrays.clone(TESTECSUPPORTALL_FP_KEYGEN_INVALIDCURVEB);
+                byte[] testAPDU = Arrays.copyOf(TESTECSUPPORTALL_FP_KEYGEN_INVALIDCURVEB, TESTECSUPPORTALL_FP_KEYGEN_INVALIDCURVEB.length);
                 //testFPkeyGen_setCorruptionType(testAPDU, SimpleECCApplet.CORRUPT_B_LASTBYTEINCREMENT);
                 testFPkeyGen_setCorruptionType(testAPDU, EC_Consts.CORRUPTION_ONEBYTERANDOM);
                 //testFPkeyGen_setCorruptionType(testAPDU, SimpleECCApplet.CORRUPT_B_FULLRANDOM);
@@ -132,11 +196,13 @@ public class SimpleAPDU {
 
                 cardManager.DisconnectFromCard();
             } else {
-                System.out.println("Failed to connect to card");
+                m_SystemOutLogger.println("Failed to connect to card");
             }
         } catch (Exception ex) {
-            System.out.println("Exception : " + ex);
+            m_SystemOutLogger.println("Exception : " + ex);
         }
+        
+        systemOutLogger.close();
     }
 
     static String getPrintError(short code) {
@@ -186,11 +252,12 @@ public class SimpleAPDU {
 
     static int VerifyPrintResult(String message, byte expectedTag, byte[] buffer, int bufferOffset, ExpResult expRes) {
         if (bufferOffset >= buffer.length) {
-            System.out.println("   No more data returned");
-        } else {
+            m_SystemOutLogger.println("   No more data returned");
+        }
+        else {
             if (buffer[bufferOffset] != expectedTag) {
-                System.out.println("   ERROR: mismatched tag");
-                assert (buffer[bufferOffset] == expectedTag);
+                m_SystemOutLogger.println("   ERROR: mismatched tag");
+                assert(buffer[bufferOffset] == expectedTag);
             }
             bufferOffset++;
             short resCode = getShort(buffer, bufferOffset);
@@ -204,9 +271,10 @@ public class SimpleAPDU {
                 bHiglight = true;
             }
             if (bHiglight) {
-                System.out.println(String.format("!! %-50s%s", message, getPrintError(resCode)));
-            } else {
-                System.out.println(String.format("   %-50s%s", message, getPrintError(resCode)));
+                m_SystemOutLogger.println(String.format("!! %-50s%s", message, getPrintError(resCode)));
+            }
+            else {
+                m_SystemOutLogger.println(String.format("   %-50s%s", message, getPrintError(resCode)));
             }
         }
         return bufferOffset;
@@ -215,8 +283,8 @@ public class SimpleAPDU {
     static void PrintECSupport(ResponseAPDU resp) {
         byte[] buffer = resp.getData();
 
-        System.out.println();
-        System.out.println("### Test for support and with valid and invalid EC curves");
+        m_SystemOutLogger.println();
+        m_SystemOutLogger.println("### Test for support and with valid and invalid EC curves");
         int bufferOffset = 0;
         while (bufferOffset < buffer.length) {
             assert (buffer[bufferOffset] == SimpleECCApplet.ECTEST_SEPARATOR);
@@ -228,10 +296,10 @@ public class SimpleAPDU {
             if (buffer[bufferOffset] == KeyPair.ALG_EC_F2M) {
                 ecType = "ALG_EC_F2M";
             }
-            System.out.println(String.format("%-53s%s", "EC type:", ecType));
+            m_SystemOutLogger.println(String.format("%-53s%s", "EC type:", ecType));
             bufferOffset++;
             short keyLen = getShort(buffer, bufferOffset);
-            System.out.println(String.format("%-53s%d bits", "EC key length (bits):", keyLen));
+            m_SystemOutLogger.println(String.format("%-53s%d bits", "EC key length (bits):", keyLen));
             bufferOffset += 2;
 
             bufferOffset = VerifyPrintResult("KeyPair object allocation:", SimpleECCApplet.ECTEST_ALLOCATE_KEYPAIR, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
@@ -243,15 +311,15 @@ public class SimpleAPDU {
             bufferOffset = VerifyPrintResult("Set invalid custom curve (may fail):", SimpleECCApplet.ECTEST_SET_INVALIDCURVE, buffer, bufferOffset, ExpResult.MAY_FAIL);
             bufferOffset = VerifyPrintResult("Generate key with invalid curve (fail is good):", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE, buffer, bufferOffset, ExpResult.MUST_FAIL);
 
-            System.out.println();
+            m_SystemOutLogger.println();
         }
     }
 
     static void PrintECKeyGenInvalidCurveB(ResponseAPDU resp) {
         byte[] buffer = resp.getData();
 
-        System.out.println();
-        System.out.println("### Test for computation with invalid parameter B for EC curve");
+        m_SystemOutLogger.println();
+        m_SystemOutLogger.println("### Test for computation with invalid parameter B for EC curve");
         int bufferOffset = 0;
         while (bufferOffset < buffer.length) {
             assert (buffer[bufferOffset] == SimpleECCApplet.ECTEST_SEPARATOR);
@@ -263,16 +331,15 @@ public class SimpleAPDU {
             if (buffer[bufferOffset] == KeyPair.ALG_EC_F2M) {
                 ecType = "ALG_EC_F2M";
             }
-            System.out.println(String.format("%-53s%s", "EC type:", ecType));
+            m_SystemOutLogger.println(String.format("%-53s%s", "EC type:", ecType));
             bufferOffset++;
             short keyLen = getShort(buffer, bufferOffset);
-            System.out.println(String.format("%-53s%d bits", "EC key length (bits):", keyLen));
+            m_SystemOutLogger.println(String.format("%-53s%d bits", "EC key length (bits):", keyLen));
             bufferOffset += 2;
 
             short numRepeats = getShort(buffer, bufferOffset);
             bufferOffset += 2;
-            System.out.println(String.format("%-53s%d times", "Executed repeats before unexpected error: ", numRepeats));
-
+            m_SystemOutLogger.println(String.format("%-53s%d times", "Executed repeats before unexpected error: ", numRepeats));
 
             bufferOffset = VerifyPrintResult("KeyPair object allocation:", SimpleECCApplet.ECTEST_ALLOCATE_KEYPAIR, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
             while (bufferOffset < buffer.length) {
@@ -285,16 +352,16 @@ public class SimpleAPDU {
                 bufferOffset = VerifyPrintResult("Generate key with valid curve:", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_CUSTOMCURVE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
             }
 
-            System.out.println();
+            m_SystemOutLogger.println();
         }
     }
 
     static void PrintECKeyGenInvalidCurveB_lastUserParams(ResponseAPDU resp) {
         byte[] buffer = resp.getData();
         short offset = 0;
-        System.out.print("Last used value of B: ");
+        m_SystemOutLogger.print("Last used value of B: ");
         while (offset < buffer.length) {
-            System.out.print(String.format("%x ", buffer[offset]));
+            m_SystemOutLogger.print(String.format("%x ", buffer[offset]));
             offset++;
         }
 
