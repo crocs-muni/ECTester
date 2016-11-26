@@ -5,12 +5,12 @@ import applets.SimpleECCApplet;
 import javacard.framework.ISO7816;
 import javacard.security.CryptoException;
 import javacard.security.KeyPair;
+
+import javax.smartcardio.ResponseAPDU;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import javax.smartcardio.ResponseAPDU;
-
 
 
 /**
@@ -38,6 +38,7 @@ public class SimpleAPDU {
     private static final short INVALIDCURVEB_REWINDONSUCCESS_OFFSET = 9;
 
     private static final byte TESTECSUPPORT_GENERATEECCKEY[] = {(byte) 0xB0, (byte) 0x5a, (byte) 0x00, (byte) 0x00, (byte) 0x02, (byte) 0x00, (byte) 0x00};
+
 
     static short getShort(byte[] array, int offset) {
         return (short) (((array[offset] & 0xFF) << 8) | (array[offset + 1] & 0xFF));
@@ -106,85 +107,65 @@ public class SimpleAPDU {
 
     }
 
+
     public static void main(String[] args) throws FileNotFoundException, IOException {
+
+        boolean genKeys = false;
+        int genAmount = 0;
+        boolean testAll = false;
+        if (args.length > 0) {
+            for (int i = 0; i < args.length; i++) {
+                if (args[i].equals("-g")) {
+                    genKeys = true;
+                    if (args.length >= i + 1) {
+                        try {
+                            genAmount = Integer.parseInt(args[i + 1]);
+                        }catch (NumberFormatException ignored) {
+                            //is another param, genAmount = 0 by default
+                            genAmount = 0;
+                        }
+
+                    }
+                } else if (args[i].equals("-a")) {
+                    testAll = true;
+                }
+            }
+        }
+
+        //by default do the test
+        if (!genKeys && !testAll) {
+            testAll = true;
+        }
+
+
         String logFileName = String.format("ECTESTER_log_%d.log", System.currentTimeMillis());
-        FileOutputStream systemOutLogger = new FileOutputStream(logFileName);    
+        FileOutputStream systemOutLogger = new FileOutputStream(logFileName);
         m_SystemOutLogger = new DirtyLogger(systemOutLogger, true);
 
         try {
-            // Gather large number of ECC keypairs
-            if (cardManager.ConnectToCardSelect()) {
-                cardManager.sendAPDU(SELECT_ECTESTERAPPLET);
-                
-                String keyFileName = String.format("ECKEYS_%d.log", System.currentTimeMillis());
-                FileOutputStream keysFile = new FileOutputStream(keyFileName);
+            if (testAll) {
+                if (cardManager.ConnectToCard()) {
+                    byte[] testAPDU2 = Arrays.copyOf(TESTECSUPPORT_GIVENALG, TESTECSUPPORT_GIVENALG.length);
+                    testAPDU2[TESTECSUPPORT_ALG_OFFSET] = KeyPair.ALG_EC_FP;
+                    setShort(testAPDU2, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 384);
+                    testSupportECGivenAlg(testAPDU2, cardManager);
 
-                String message = "index;pubW;privS\n";
-                keysFile.write(message.getBytes());
-                byte[] gatherKeyAPDU = Arrays.copyOf(TESTECSUPPORT_GENERATEECCKEY, TESTECSUPPORT_GENERATEECCKEY.length);
-                // Prepare keypair object
-                gatherKeyAPDU[ISO7816.OFFSET_P1] = SimpleECCApplet.P1_SETCURVE;
-                setShort(gatherKeyAPDU, (short) 5, (short) 192);    // ecc length
-                ResponseAPDU respGather = cardManager.sendAPDU(gatherKeyAPDU);
+                    testSupportECAll(cardManager);
+                    //
+                    // Test setting invalid parameter B of curve
+                    byte[] testAPDU = Arrays.copyOf(TESTECSUPPORTALL_FP_KEYGEN_INVALIDCURVEB, TESTECSUPPORTALL_FP_KEYGEN_INVALIDCURVEB.length);
+                    //testFPkeyGen_setCorruptionType(testAPDU, SimpleECCApplet.CORRUPT_B_LASTBYTEINCREMENT);
+                    testFPkeyGen_setCorruptionType(testAPDU, EC_Consts.CORRUPTION_ONEBYTERANDOM);
+                    //testFPkeyGen_setCorruptionType(testAPDU, SimpleECCApplet.CORRUPT_B_FULLRANDOM);
+                    testFPkeyGen_setNumRepeats(testAPDU, (short) 10);
+                    testFPkeyGen_rewindOnSuccess(testAPDU, true);
+                    ReconnnectToCard();
+                    ResponseAPDU resp_fp_keygen = cardManager.sendAPDU(testAPDU);
+                    ResponseAPDU resp_keygen_params = cardManager.sendAPDU(TESTECSUPPORTALL_LASTUSEDPARAMS);
+                    PrintECKeyGenInvalidCurveB(resp_fp_keygen);
+                    PrintECKeyGenInvalidCurveB_lastUserParams(resp_keygen_params);
 
-                // Generate new keypair
-                gatherKeyAPDU[ISO7816.OFFSET_P1] = SimpleECCApplet.P1_GENERATEKEYPAIR;
-                int counter = 0;
-                while (true) {
-                    counter++;
-                    long elapsed = -System.nanoTime();
-                    respGather = cardManager.sendAPDU(gatherKeyAPDU);
-                    elapsed += System.nanoTime();
-                    
-                    byte[] data = respGather.getData();
-                    int offset = 0;
-                    String pubKeyW = "";
-                    String privKeyS = "";
-                    if (data[offset] == EC_Consts.TAG_ECPUBKEY) {
-                        offset++;
-                        short len = getShort(data, offset);
-                        offset += 2;
-                        pubKeyW = CardMngr.bytesToHex(data, offset, len, false);
-                        offset += len;
-                    }
-                    if (data[offset] == EC_Consts.TAG_ECPRIVKEY) {
-                        offset++;
-                        short len = getShort(data, offset);
-                        offset += 2;
-                        privKeyS = CardMngr.bytesToHex(data, offset, len, false);
-                        offset += len;
-                    }
-                    
-                    message = String.format("%d;%d;%s;%s\n", counter, elapsed / 1000000, pubKeyW, privKeyS);
-                    keysFile.write(message.getBytes());
-
-                    m_SystemOutLogger.flush();
-                    keysFile.flush();
-                }
-            }
-
-            if (cardManager.ConnectToCard()) {
-                byte[] testAPDU2 = Arrays.copyOf(TESTECSUPPORT_GIVENALG, TESTECSUPPORT_GIVENALG.length);
-                testAPDU2[TESTECSUPPORT_ALG_OFFSET] = KeyPair.ALG_EC_FP;
-                setShort(testAPDU2, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 384);
-                testSupportECGivenAlg(testAPDU2, cardManager);
-                
-                testSupportECAll(cardManager);
-                //
-                // Test setting invalid parameter B of curve   
-                byte[] testAPDU = Arrays.copyOf(TESTECSUPPORTALL_FP_KEYGEN_INVALIDCURVEB, TESTECSUPPORTALL_FP_KEYGEN_INVALIDCURVEB.length);
-                //testFPkeyGen_setCorruptionType(testAPDU, SimpleECCApplet.CORRUPT_B_LASTBYTEINCREMENT);
-                testFPkeyGen_setCorruptionType(testAPDU, EC_Consts.CORRUPTION_ONEBYTERANDOM);
-                //testFPkeyGen_setCorruptionType(testAPDU, SimpleECCApplet.CORRUPT_B_FULLRANDOM);
-                testFPkeyGen_setNumRepeats(testAPDU, (short) 10);
-                testFPkeyGen_rewindOnSuccess(testAPDU, true);
-                ReconnnectToCard();
-                ResponseAPDU resp_fp_keygen = cardManager.sendAPDU(testAPDU);
-                ResponseAPDU resp_keygen_params = cardManager.sendAPDU(TESTECSUPPORTALL_LASTUSEDPARAMS);
-                PrintECKeyGenInvalidCurveB(resp_fp_keygen);
-                PrintECKeyGenInvalidCurveB_lastUserParams(resp_keygen_params);
-
-                /*                
+                /*
                  // Test support for different types of curves
                  ReconnnectToCard();
                  ResponseAPDU resp_fp = cardManager.sendAPDU(TESTECSUPPORTALL_FP);
@@ -194,14 +175,74 @@ public class SimpleAPDU {
                  PrintECSupport(resp_f2m);
                  */
 
-                cardManager.DisconnectFromCard();
-            } else {
-                m_SystemOutLogger.println("Failed to connect to card");
+                    cardManager.DisconnectFromCard();
+                } else {
+                    m_SystemOutLogger.println("Failed to connect to card");
+                }
             }
+
+            if (genKeys) {
+                // Gather large number of ECC keypairs
+                if (cardManager.ConnectToCardSelect()) {
+                    cardManager.sendAPDU(SELECT_ECTESTERAPPLET);
+
+                    String keyFileName = String.format("ECKEYS_%d.log", System.currentTimeMillis());
+                    FileOutputStream keysFile = new FileOutputStream(keyFileName);
+
+                    String message = "index;time;pubW;privS\n";
+                    keysFile.write(message.getBytes());
+                    byte[] gatherKeyAPDU = Arrays.copyOf(TESTECSUPPORT_GENERATEECCKEY, TESTECSUPPORT_GENERATEECCKEY.length);
+                    // Prepare keypair object
+                    gatherKeyAPDU[ISO7816.OFFSET_P1] = SimpleECCApplet.P1_SETCURVE;
+                    setShort(gatherKeyAPDU, (short) 5, (short) 192);    // ecc length
+                    ResponseAPDU respGather = cardManager.sendAPDU(gatherKeyAPDU);
+
+                    // Generate new keypair
+                    gatherKeyAPDU[ISO7816.OFFSET_P1] = SimpleECCApplet.P1_GENERATEKEYPAIR;
+                    int counter = 0;
+                    while (true) {
+                        counter++;
+                        long elapsed = -System.nanoTime();
+                        respGather = cardManager.sendAPDU(gatherKeyAPDU);
+                        elapsed += System.nanoTime();
+
+                        byte[] data = respGather.getData();
+                        int offset = 0;
+                        String pubKeyW = "";
+                        String privKeyS = "";
+                        if (data[offset] == EC_Consts.TAG_ECPUBKEY) {
+                            offset++;
+                            short len = getShort(data, offset);
+                            offset += 2;
+                            pubKeyW = CardMngr.bytesToHex(data, offset, len, false);
+                            offset += len;
+                        }
+                        if (data[offset] == EC_Consts.TAG_ECPRIVKEY) {
+                            offset++;
+                            short len = getShort(data, offset);
+                            offset += 2;
+                            privKeyS = CardMngr.bytesToHex(data, offset, len, false);
+                            offset += len;
+                        }
+
+                        message = String.format("%d;%d;%s;%s\n", counter, elapsed / 1000000, pubKeyW, privKeyS);
+                        keysFile.write(message.getBytes());
+
+                        m_SystemOutLogger.flush();
+                        keysFile.flush();
+
+                        //stop when we have enough keys, go on forever with 0
+                        if (counter >= genAmount && genAmount != 0)
+                            break;
+                    }
+                }
+            }
+
+
         } catch (Exception ex) {
             m_SystemOutLogger.println("Exception : " + ex);
         }
-        
+
         systemOutLogger.close();
     }
 
@@ -253,11 +294,10 @@ public class SimpleAPDU {
     static int VerifyPrintResult(String message, byte expectedTag, byte[] buffer, int bufferOffset, ExpResult expRes) {
         if (bufferOffset >= buffer.length) {
             m_SystemOutLogger.println("   No more data returned");
-        }
-        else {
+        } else {
             if (buffer[bufferOffset] != expectedTag) {
                 m_SystemOutLogger.println("   ERROR: mismatched tag");
-                assert(buffer[bufferOffset] == expectedTag);
+                assert (buffer[bufferOffset] == expectedTag);
             }
             bufferOffset++;
             short resCode = getShort(buffer, bufferOffset);
@@ -272,8 +312,7 @@ public class SimpleAPDU {
             }
             if (bHiglight) {
                 m_SystemOutLogger.println(String.format("!! %-50s%s", message, getPrintError(resCode)));
-            }
-            else {
+            } else {
                 m_SystemOutLogger.println(String.format("   %-50s%s", message, getPrintError(resCode)));
             }
         }
