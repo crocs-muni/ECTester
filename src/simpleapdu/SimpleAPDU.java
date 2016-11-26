@@ -107,9 +107,8 @@ public class SimpleAPDU {
 
     }
 
-
     public static void main(String[] args) throws FileNotFoundException, IOException {
-
+        //parse cli args. Should be replaced with some cli parsing library code in the future.
         boolean genKeys = false;
         int genAmount = 0;
         boolean testAll = false;
@@ -120,7 +119,7 @@ public class SimpleAPDU {
                     if (args.length >= i + 1) {
                         try {
                             genAmount = Integer.parseInt(args[i + 1]);
-                        }catch (NumberFormatException ignored) {
+                        }catch (NumberFormatException ignored) {
                             //is another param, genAmount = 0 by default
                             genAmount = 0;
                         }
@@ -145,35 +144,20 @@ public class SimpleAPDU {
         try {
             if (testAll) {
                 if (cardManager.ConnectToCard()) {
-                    byte[] testAPDU2 = Arrays.copyOf(TESTECSUPPORT_GIVENALG, TESTECSUPPORT_GIVENALG.length);
-                    testAPDU2[TESTECSUPPORT_ALG_OFFSET] = KeyPair.ALG_EC_FP;
-                    setShort(testAPDU2, TESTECSUPPORT_KEYLENGTH_OFFSET, (short) 384);
-                    testSupportECGivenAlg(testAPDU2, cardManager);
-
+                    // Test all default curves for both fields
                     testSupportECAll(cardManager);
-                    //
+
                     // Test setting invalid parameter B of curve
                     byte[] testAPDU = Arrays.copyOf(TESTECSUPPORTALL_FP_KEYGEN_INVALIDCURVEB, TESTECSUPPORTALL_FP_KEYGEN_INVALIDCURVEB.length);
-                    //testFPkeyGen_setCorruptionType(testAPDU, SimpleECCApplet.CORRUPT_B_LASTBYTEINCREMENT);
                     testFPkeyGen_setCorruptionType(testAPDU, EC_Consts.CORRUPTION_ONEBYTERANDOM);
-                    //testFPkeyGen_setCorruptionType(testAPDU, SimpleECCApplet.CORRUPT_B_FULLRANDOM);
                     testFPkeyGen_setNumRepeats(testAPDU, (short) 10);
                     testFPkeyGen_rewindOnSuccess(testAPDU, true);
+
                     ReconnnectToCard();
                     ResponseAPDU resp_fp_keygen = cardManager.sendAPDU(testAPDU);
                     ResponseAPDU resp_keygen_params = cardManager.sendAPDU(TESTECSUPPORTALL_LASTUSEDPARAMS);
                     PrintECKeyGenInvalidCurveB(resp_fp_keygen);
                     PrintECKeyGenInvalidCurveB_lastUserParams(resp_keygen_params);
-
-                /*
-                 // Test support for different types of curves
-                 ReconnnectToCard();
-                 ResponseAPDU resp_fp = cardManager.sendAPDU(TESTECSUPPORTALL_FP);
-                 ReconnnectToCard();
-                 ResponseAPDU resp_f2m = cardManager.sendAPDU(TESTECSUPPORTALL_F2M);
-                 PrintECSupport(resp_fp);
-                 PrintECSupport(resp_f2m);
-                 */
 
                     cardManager.DisconnectFromCard();
                 } else {
@@ -275,9 +259,6 @@ public class SimpleAPDU {
             if (code == SimpleECCApplet.SW_INVALID_CORRUPTION_TYPE) {
                 codeStr = "SW_INVALID_CORRUPTION_TYPE";
             }
-            if (code == SimpleECCApplet.SW_SIG_LENGTH_MISMATCH) {
-                codeStr = "SW_SIG_LENGTH_MISMATCH";
-            }
             if (code == SimpleECCApplet.SW_SIG_VERIFY_FAIL) {
                 codeStr = "SW_SIG_VERIFY_FAIL";
             }
@@ -286,7 +267,7 @@ public class SimpleAPDU {
     }
 
     enum ExpResult {
-        SHOULD_SUCCEDD,
+        SHOULD_SUCCEED,
         MAY_FAIL,
         MUST_FAIL
     }
@@ -307,7 +288,7 @@ public class SimpleAPDU {
             if ((expRes == ExpResult.MUST_FAIL) && (resCode == ISO7816.SW_NO_ERROR)) {
                 bHiglight = true;
             }
-            if ((expRes == ExpResult.SHOULD_SUCCEDD) && (resCode != ISO7816.SW_NO_ERROR)) {
+            if ((expRes == ExpResult.SHOULD_SUCCEED) && (resCode != ISO7816.SW_NO_ERROR)) {
                 bHiglight = true;
             }
             if (bHiglight) {
@@ -341,14 +322,17 @@ public class SimpleAPDU {
             m_SystemOutLogger.println(String.format("%-53s%d bits", "EC key length (bits):", keyLen));
             bufferOffset += 2;
 
-            bufferOffset = VerifyPrintResult("KeyPair object allocation:", SimpleECCApplet.ECTEST_ALLOCATE_KEYPAIR, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
+            bufferOffset = VerifyPrintResult("KeyPair object allocation:", SimpleECCApplet.ECTEST_ALLOCATE_KEYPAIR, buffer, bufferOffset, ExpResult.SHOULD_SUCCEED);
             bufferOffset = VerifyPrintResult("Generate key with def curve (fails if no def):", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_DEFCURVE, buffer, bufferOffset, ExpResult.MAY_FAIL);
-            bufferOffset = VerifyPrintResult("Set valid custom curve:", SimpleECCApplet.ECTEST_SET_VALIDCURVE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
-            bufferOffset = VerifyPrintResult("Generate key with valid curve:", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_CUSTOMCURVE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
-            bufferOffset = VerifyPrintResult("ECDH agreement with valid point:", SimpleECCApplet.ECTEST_ECDH_AGREEMENT_VALID_POINT, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
+            bufferOffset = VerifyPrintResult("Set valid custom curve:", SimpleECCApplet.ECTEST_SET_VALIDCURVE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEED);
+            bufferOffset = VerifyPrintResult("Generate key with valid curve:", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_CUSTOMCURVE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEED);
+            bufferOffset = VerifyPrintResult("ECDH agreement with valid point:", SimpleECCApplet.ECTEST_ECDH_AGREEMENT_VALID_POINT, buffer, bufferOffset, ExpResult.SHOULD_SUCCEED);
             bufferOffset = VerifyPrintResult("ECDH agreement with invalid point (fail is good):", SimpleECCApplet.ECTEST_ECDH_AGREEMENT_INVALID_POINT, buffer, bufferOffset, ExpResult.MUST_FAIL);
+            bufferOffset = VerifyPrintResult("ECDSA signature on random data:", SimpleECCApplet.ECTEST_ECDSA_SIGNATURE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEED);
             bufferOffset = VerifyPrintResult("Set invalid custom curve (may fail):", SimpleECCApplet.ECTEST_SET_INVALIDCURVE, buffer, bufferOffset, ExpResult.MAY_FAIL);
             bufferOffset = VerifyPrintResult("Generate key with invalid curve (fail is good):", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE, buffer, bufferOffset, ExpResult.MUST_FAIL);
+            bufferOffset = VerifyPrintResult("Set invalid field (may fail):", SimpleECCApplet.ECTEST_SET_INVALIDFIELD, buffer, bufferOffset, ExpResult.MAY_FAIL);
+            bufferOffset = VerifyPrintResult("Generate key with invalid field (fail si good):", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_INVALIDFIELD, buffer, bufferOffset, ExpResult.MUST_FAIL);
 
             m_SystemOutLogger.println();
         }
@@ -380,15 +364,15 @@ public class SimpleAPDU {
             bufferOffset += 2;
             m_SystemOutLogger.println(String.format("%-53s%d times", "Executed repeats before unexpected error: ", numRepeats));
 
-            bufferOffset = VerifyPrintResult("KeyPair object allocation:", SimpleECCApplet.ECTEST_ALLOCATE_KEYPAIR, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
+            bufferOffset = VerifyPrintResult("KeyPair object allocation:", SimpleECCApplet.ECTEST_ALLOCATE_KEYPAIR, buffer, bufferOffset, ExpResult.SHOULD_SUCCEED);
             while (bufferOffset < buffer.length) {
-                bufferOffset = VerifyPrintResult("Set invalid custom curve:", SimpleECCApplet.ECTEST_SET_INVALIDCURVE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
+                bufferOffset = VerifyPrintResult("Set invalid custom curve:", SimpleECCApplet.ECTEST_SET_INVALIDCURVE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEED);
                 bufferOffset = VerifyPrintResult("Generate key with invalid curve (fail is good):", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE, buffer, bufferOffset, ExpResult.MUST_FAIL);
                 if (buffer[bufferOffset] == SimpleECCApplet.ECTEST_DH_GENERATESECRET) {
                     bufferOffset = VerifyPrintResult("ECDH agreement with invalid point (fail is good):", SimpleECCApplet.ECTEST_DH_GENERATESECRET, buffer, bufferOffset, ExpResult.MUST_FAIL);
                 }
-                bufferOffset = VerifyPrintResult("Set valid custom curve:", SimpleECCApplet.ECTEST_SET_VALIDCURVE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
-                bufferOffset = VerifyPrintResult("Generate key with valid curve:", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_CUSTOMCURVE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEDD);
+                bufferOffset = VerifyPrintResult("Set valid custom curve:", SimpleECCApplet.ECTEST_SET_VALIDCURVE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEED);
+                bufferOffset = VerifyPrintResult("Generate key with valid curve:", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_CUSTOMCURVE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEED);
             }
 
             m_SystemOutLogger.println();

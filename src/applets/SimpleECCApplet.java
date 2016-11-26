@@ -53,6 +53,8 @@ public class SimpleECCApplet extends Applet {
     public final static byte ECTEST_SET_EXTERNALCURVE = (byte) 0xcb;
     public final static byte ECTEST_GENERATE_KEYPAIR_EXTERNALCURVE = (byte) 0xcc;
     public final static byte ECTEST_ECDSA_SIGNATURE = (byte) 0xcd;
+    public final static byte ECTEST_SET_INVALIDFIELD = (byte) 0xce;
+    public final static byte ECTEST_GENERATE_KEYPAIR_INVALIDFIELD = (byte) 0xcf;
 
     public final static short FLAG_ECTEST_ALLOCATE_KEYPAIR = (short) 0x0001;
     public final static short FLAG_ECTEST_GENERATE_KEYPAIR_DEFCURVE = (short) 0x0002;
@@ -62,15 +64,17 @@ public class SimpleECCApplet extends Applet {
     public final static short FLAG_ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE = (short) 0x0020;
     public final static short FLAG_ECTEST_ECDH_AGREEMENT_VALID_POINT = (short) 0x0040;
     public final static short FLAG_ECTEST_ECDH_AGREEMENT_INVALID_POINT = (short) 0x0080;
+    public final static short FLAG_ECTEST_ECDSA_SIGNATURE = (short) 0x0100;
+    public final static short FLAG_ECTEST_SET_INVALIDFIELD = (short) 0x0200;
+    public final static short FLAG_ECTEST_GENERATE_KEYPAIR_INVALIDFIELD = (short) 0x0400;
 
-    public final static short FLAG_ECTEST_ALL = (short) 0x00ff;
+    public final static short FLAG_ECTEST_ALL = (short) 0xffff;
 
 
     public final static short SW_SKIPPED = (short) 0x0ee1;
     public final static short SW_KEYPAIR_GENERATED_INVALID = (short) 0x0ee2;
     public final static short SW_INVALID_CORRUPTION_TYPE = (short) 0x0ee3;
-    public final static short SW_SIG_LENGTH_MISMATCH = (short) 0xee4;
-    public final static short SW_SIG_VERIFY_FAIL = (short) 0xee5;
+    public final static short SW_SIG_VERIFY_FAIL = (short) 0xee4;
     /*
         public static final byte[] EC192_FP_PUBLICW = new byte[]{
             (byte) 0x04, (byte) 0xC9, (byte) 0xC0, (byte) 0xED, (byte) 0xFB, (byte) 0x27,
@@ -325,7 +329,25 @@ public class SimpleECCApplet extends Applet {
         bufferOffset += 2;
 
         //
-        // 7. Set invalid custom curve
+        // 7. ECDSA test
+        //
+        buffer[bufferOffset] = ECTEST_ECDSA_SIGNATURE;
+        bufferOffset++;
+        sw = SW_SKIPPED;
+        if ((testFlags & FLAG_ECTEST_ECDSA_SIGNATURE) != (short) 0) {
+            sw = ecKeyGenerator.generatePair();
+            ecPubKey = ecKeyGenerator.getPublicKey();
+            ecPrivKey = ecKeyGenerator.getPrivateKey();
+            if (sw == ISO7816.SW_NO_ERROR) {
+                sw = ecKeyTester.testECDSA(ecPrivKey, ecPubKey, m_ramArray2, (short) 0, (short) m_ramArray2.length, m_ramArray, (short) 0);
+            }
+
+        }
+        Util.setShort(buffer, bufferOffset, sw);
+        bufferOffset += 2;
+
+        //
+        // 8. Set invalid custom curve
         //
         buffer[bufferOffset] = ECTEST_SET_INVALIDCURVE;
         bufferOffset++;
@@ -341,12 +363,41 @@ public class SimpleECCApplet extends Applet {
         bufferOffset += 2;
 
         //
-        // 8. Generate keypair with invalid custom curve       
+        // 9. Generate keypair with invalid custom curve
         //
         buffer[bufferOffset] = ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE;
         bufferOffset++;
         sw = SW_SKIPPED;
         if ((testFlags & FLAG_ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE) != (short) 0) {
+            sw = ecKeyGenerator.generatePair();
+        }
+        Util.setShort(buffer, bufferOffset, sw);
+        bufferOffset += 2;
+
+        //
+        // 10. Set invalid field
+        //
+        buffer[bufferOffset] = ECTEST_SET_INVALIDFIELD;
+        bufferOffset++;
+        sw = SW_SKIPPED;
+        if ((testFlags & FLAG_ECTEST_SET_INVALIDFIELD) != (short) 0) {
+            if (keyClass == KeyPair.ALG_EC_FP)
+                sw = ecKeyGenerator.setCustomInvalidCurve(keyClass, keyLen, ECKeyGenerator.KEY_BOTH, EC_Consts.PARAMETER_FP, EC_Consts.CORRUPTION_FULLRANDOM, m_ramArray, (short) 0);
+            else
+                sw = ecKeyGenerator.setCustomInvalidCurve(keyClass, keyLen, ECKeyGenerator.KEY_BOTH, EC_Consts.PARAMETER_F2M, EC_Consts.CORRUPTION_FULLRANDOM, m_ramArray, (short) 0);
+
+            if (sw != ISO7816.SW_NO_ERROR) {
+                testFlags &= ~FLAG_ECTEST_GENERATE_KEYPAIR_INVALIDFIELD;
+            }
+        }
+        Util.setShort(buffer, bufferOffset, sw);
+        bufferOffset += 2;
+
+        // 11. Generate key with invalid field
+        buffer[bufferOffset] = ECTEST_GENERATE_KEYPAIR_INVALIDFIELD;
+        bufferOffset++;
+        sw = SW_SKIPPED;
+        if ((testFlags & FLAG_ECTEST_GENERATE_KEYPAIR_INVALIDFIELD) != (short) 0) {
             sw = ecKeyGenerator.generatePair();
         }
         Util.setShort(buffer, bufferOffset, sw);
