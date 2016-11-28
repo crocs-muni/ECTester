@@ -308,9 +308,9 @@ public class SimpleECCApplet extends Applet {
         sw = SW_SKIPPED;
         if ((testFlags & FLAG_ECTEST_ECDH_AGREEMENT_VALID_POINT) != (short) 0) {
             sw = ecKeyGenerator.generatePair();
-            ecPubKey = ecKeyGenerator.getPublicKey();
-            ecPrivKey = ecKeyGenerator.getPrivateKey();
             if (sw == ISO7816.SW_NO_ERROR) {
+                ecPubKey = ecKeyGenerator.getPublicKey();
+                ecPrivKey = ecKeyGenerator.getPrivateKey();
                 sw = ecKeyTester.testECDH_validPoint(ecPrivKey, ecPubKey, m_ramArray, (short) 0, m_ramArray2, (short) 0);
             }
         }
@@ -325,9 +325,9 @@ public class SimpleECCApplet extends Applet {
         sw = SW_SKIPPED;
         if ((testFlags & FLAG_ECTEST_ECDH_AGREEMENT_INVALID_POINT) != (short) 0) {
             sw = ecKeyGenerator.generatePair();
-            ecPubKey = ecKeyGenerator.getPublicKey();
-            ecPrivKey = ecKeyGenerator.getPrivateKey();
             if (sw == ISO7816.SW_NO_ERROR) {
+                ecPubKey = ecKeyGenerator.getPublicKey();
+                ecPrivKey = ecKeyGenerator.getPrivateKey();
                 sw = ecKeyTester.testECDH_invalidPoint(ecPrivKey, ecPubKey, m_ramArray, (short) 0, m_ramArray2, (short) 1);
             }
         }
@@ -342,9 +342,9 @@ public class SimpleECCApplet extends Applet {
         sw = SW_SKIPPED;
         if ((testFlags & FLAG_ECTEST_ECDSA_SIGNATURE) != (short) 0) {
             sw = ecKeyGenerator.generatePair();
-            ecPubKey = ecKeyGenerator.getPublicKey();
-            ecPrivKey = ecKeyGenerator.getPrivateKey();
             if (sw == ISO7816.SW_NO_ERROR) {
+                ecPubKey = ecKeyGenerator.getPublicKey();
+                ecPrivKey = ecKeyGenerator.getPrivateKey();
                 sw = ecKeyTester.testECDSA(ecPrivKey, ecPubKey, m_ramArray2, (short) 0, (short) m_ramArray2.length, m_ramArray, (short) 0);
             }
         }
@@ -387,6 +387,9 @@ public class SimpleECCApplet extends Applet {
         bufferOffset++;
         sw = SW_SKIPPED;
         if ((testFlags & FLAG_ECTEST_ECDH_AGREEMENT_SMALL_DEGREE_POINT) != (short) 0) {
+            //TODO: this needs refactor, just quickly to see if it works
+            short pubLength = EC_Consts.getCurveParameter(EC_Consts.getAnomalousCurve(keyClass,keyLen), EC_Consts.PARAMETER_W, m_ramArray, (short) 0);
+            ecKeyGenerator.setParameter(ECKeyGenerator.KEY_PUBLIC, EC_Consts.PARAMETER_W, m_ramArray, (short)0, pubLength);
             ecPubKey = ecKeyGenerator.getPublicKey();
             ecPrivKey = ecKeyGenerator.getPrivateKey();
             sw = ecKeyTester.testECDH_validPoint(ecPrivKey, ecPubKey, m_ramArray, (short) 0, m_ramArray2, (short) 1);

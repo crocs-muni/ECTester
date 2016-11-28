@@ -16,8 +16,9 @@ public class EC_Consts {
     private static byte[] EC_R = null;    //n
     private static short EC_K = 1;        //h
 
-    private static byte[] EC_P_X = null;    //Pubkey[x,y]
-    private static byte[] EC_P_Y = null;
+    private static byte[] EC_W_X = null;    //Pubkey[x,y]
+    private static byte[] EC_W_Y = null;
+    private static byte[] EC_S = null;    //Private
 
     private static byte[] EC_F2M_F2M = null; //[short i1, short i2, short i3], f = x^m + x^i1 + x^i2 + x^i3 + 1
 
@@ -962,14 +963,14 @@ public class EC_Consts {
 
     public static final short ECSP128_FP_K = 1;
 
-    public static final byte[] ECSP128_FP_P_X = {
+    public static final byte[] ECSP128_FP_W_X = {
             (byte) 0x63, (byte) 0x90, (byte) 0x1e, (byte) 0x12,
             (byte) 0x27, (byte) 0x61, (byte) 0xd9, (byte) 0xc1,
             (byte) 0x65, (byte) 0x65, (byte) 0xb2, (byte) 0xf3,
             (byte) 0x8e, (byte) 0x99, (byte) 0x1f, (byte) 0x71
     };
 
-    public static final byte[] ECSP128_FP_P_Y = {
+    public static final byte[] ECSP128_FP_W_Y = {
             (byte) 0xb9, (byte) 0xd9, (byte) 0x9f, (byte) 0xbc,
             (byte) 0x31, (byte) 0x54, (byte) 0xa9, (byte) 0x6c,
             (byte) 0xa2, (byte) 0x3e, (byte) 0xcf, (byte) 0xf7,
@@ -1028,7 +1029,7 @@ public class EC_Consts {
 
     public static final short ECSP160_FP_K = 1;
 
-    public static final byte[] ECSP160_FP_P_X = {
+    public static final byte[] ECSP160_FP_W_X = {
             (byte) 0x59, (byte) 0xc9, (byte) 0xc3, (byte) 0xc8,
             (byte) 0xae, (byte) 0xf2, (byte) 0x9f, (byte) 0x1c,
             (byte) 0x1c, (byte) 0x50, (byte) 0x0c, (byte) 0xaf,
@@ -1036,7 +1037,7 @@ public class EC_Consts {
             (byte) 0x08, (byte) 0x6e, (byte) 0x6e, (byte) 0xb0
     };
 
-    public static final byte[] ECSP160_FP_P_Y = {
+    public static final byte[] ECSP160_FP_W_Y = {
             (byte) 0xd6, (byte) 0x95, (byte) 0xa7, (byte) 0x60,
             (byte) 0x05, (byte) 0xed, (byte) 0xdb, (byte) 0x26,
             (byte) 0xaf, (byte) 0xd4, (byte) 0x0e, (byte) 0xe2,
@@ -1102,7 +1103,7 @@ public class EC_Consts {
 
     public static final short ECSP192_FP_K = 1;
 
-    public static final byte[] ECSP192_FP_P_X = {
+    public static final byte[] ECSP192_FP_W_X = {
             (byte) 0xaa, (byte) 0xd0, (byte) 0xdb, (byte) 0xf8,
             (byte) 0xad, (byte) 0x1c, (byte) 0x2c, (byte) 0x4e,
             (byte) 0xf0, (byte) 0x67, (byte) 0xda, (byte) 0x63,
@@ -1111,7 +1112,7 @@ public class EC_Consts {
             (byte) 0xb7, (byte) 0x7a, (byte) 0x59, (byte) 0x9c
     };
 
-    public static final byte[] ECSP192_FP_P_Y = {
+    public static final byte[] ECSP192_FP_W_Y = {
             (byte) 0xae, (byte) 0x28, (byte) 0xd7, (byte) 0xea,
             (byte) 0xde, (byte) 0xba, (byte) 0x10, (byte) 0x48,
             (byte) 0x40, (byte) 0x64, (byte) 0x0d, (byte) 0x9b,
@@ -1184,7 +1185,7 @@ public class EC_Consts {
 
     public static final short ECSP224_FP_K = 1;
 
-    public static final byte[] ECSP224_FP_P_X = {
+    public static final byte[] ECSP224_FP_W_X = {
             (byte) 0xcf, (byte) 0xd9, (byte) 0x2a, (byte) 0xea,
             (byte) 0x0f, (byte) 0x79, (byte) 0x19, (byte) 0x0c,
             (byte) 0x48, (byte) 0xca, (byte) 0x70, (byte) 0x3e,
@@ -1194,7 +1195,7 @@ public class EC_Consts {
             (byte) 0xfe, (byte) 0x4d, (byte) 0x0f, (byte) 0x04
     };
 
-    public static final byte[] ECSP224_FP_P_Y = {
+    public static final byte[] ECSP224_FP_W_Y = {
             (byte) 0x25, (byte) 0x7a, (byte) 0x3d, (byte) 0x98,
             (byte) 0xde, (byte) 0x44, (byte) 0xbd, (byte) 0x25,
             (byte) 0x40, (byte) 0x49, (byte) 0x77, (byte) 0xa4,
@@ -1274,7 +1275,7 @@ public class EC_Consts {
 
     public static final short ECSP256_FP_K = 1;
 
-    public static final byte[] ECSP256_FP_P_X = {
+    public static final byte[] ECSP256_FP_W_X = {
             (byte) 0x75, (byte) 0xfc, (byte) 0xe7, (byte) 0x09,
             (byte) 0x68, (byte) 0x86, (byte) 0x2d, (byte) 0x53,
             (byte) 0xe2, (byte) 0x95, (byte) 0x48, (byte) 0xaa,
@@ -1285,7 +1286,7 @@ public class EC_Consts {
             (byte) 0xf8, (byte) 0xda, (byte) 0xd6, (byte) 0x53
     };
 
-    public static final byte[] ECSP256_FP_P_Y = {
+    public static final byte[] ECSP256_FP_W_Y = {
             (byte) 0x55, (byte) 0xaa, (byte) 0x4b, (byte) 0x7d,
             (byte) 0x38, (byte) 0x82, (byte) 0xfb, (byte) 0x0a,
             (byte) 0x83, (byte) 0xbd, (byte) 0x00, (byte) 0xc9,
@@ -1390,7 +1391,7 @@ public class EC_Consts {
 
     public static final short ECSP384_FP_K = 1;
 
-    public static final byte[] ECSP384_FP_P_X = {
+    public static final byte[] ECSP384_FP_W_X = {
             (byte) 0xa4, (byte) 0xbd, (byte) 0x57, (byte) 0x5b,
             (byte) 0xf2, (byte) 0x03, (byte) 0x00, (byte) 0xb0,
             (byte) 0xcf, (byte) 0x8a, (byte) 0x2f, (byte) 0x41,
@@ -1405,7 +1406,7 @@ public class EC_Consts {
             (byte) 0x34, (byte) 0x83, (byte) 0x4e, (byte) 0xf1
     };
 
-    public static final byte[] ECSP384_FP_P_Y = {
+    public static final byte[] ECSP384_FP_W_Y = {
             (byte) 0x38, (byte) 0xd5, (byte) 0x1c, (byte) 0x8f,
             (byte) 0x9e, (byte) 0x90, (byte) 0x59, (byte) 0x2f,
             (byte) 0x56, (byte) 0x7e, (byte) 0x81, (byte) 0xd0,
@@ -1544,7 +1545,7 @@ public class EC_Consts {
 
     public static final short ECSP521_FP_K = 1;
 
-    public static final byte[] ECSP521_FP_P_X = {
+    public static final byte[] ECSP521_FP_W_X = {
             (byte) 0xfc,   (byte) 0xcf,   (byte) 0x5c,   (byte) 0x11,
             (byte) 0x3b,   (byte) 0xec,   (byte) 0x94,   (byte) 0x61,
             (byte) 0xdb,   (byte) 0x3e,   (byte) 0x56,   (byte) 0x73,
@@ -1564,7 +1565,7 @@ public class EC_Consts {
             (byte) 0xde
     };
 
-    public static final byte[] ECSP521_FP_P_Y = {
+    public static final byte[] ECSP521_FP_W_Y = {
             (byte) 0xc3,   (byte) 0x6d,   (byte) 0x08,   (byte) 0x8f,
             (byte) 0xc2,   (byte) 0xfe,   (byte) 0x3b,   (byte) 0x42,
             (byte) 0x90,   (byte) 0x7b,   (byte) 0xbf,   (byte) 0x8a,
@@ -1822,8 +1823,8 @@ public class EC_Consts {
                 EC_G_Y = ECSP128_FP_G_Y;
                 EC_R = ECSP128_FP_R;
                 EC_K = ECSP128_FP_K;
-                EC_P_X = ECSP128_FP_P_X;
-                EC_P_Y = ECSP128_FP_P_Y;
+                EC_W_X = ECSP128_FP_W_X;
+                EC_W_Y = ECSP128_FP_W_Y;
                 break;
             }
             case CURVE_sp160: {
@@ -1834,8 +1835,8 @@ public class EC_Consts {
                 EC_G_Y = ECSP160_FP_G_Y;
                 EC_R = ECSP160_FP_R;
                 EC_K = ECSP160_FP_K;
-                EC_P_X = ECSP160_FP_P_X;
-                EC_P_Y = ECSP160_FP_P_Y;
+                EC_W_X = ECSP160_FP_W_X;
+                EC_W_Y = ECSP160_FP_W_Y;
                 break;
             }
             case CURVE_sp192: {
@@ -1846,8 +1847,8 @@ public class EC_Consts {
                 EC_G_Y = ECSP192_FP_G_Y;
                 EC_R = ECSP192_FP_R;
                 EC_K = ECSP192_FP_K;
-                EC_P_X = ECSP192_FP_P_X;
-                EC_P_Y = ECSP192_FP_P_Y;
+                EC_W_X = ECSP192_FP_W_X;
+                EC_W_Y = ECSP192_FP_W_Y;
                 break;
             }
             case CURVE_sp224: {
@@ -1858,8 +1859,8 @@ public class EC_Consts {
                 EC_G_Y = ECSP224_FP_G_Y;
                 EC_R = ECSP224_FP_R;
                 EC_K = ECSP224_FP_K;
-                EC_P_X = ECSP224_FP_P_X;
-                EC_P_Y = ECSP224_FP_P_Y;
+                EC_W_X = ECSP224_FP_W_X;
+                EC_W_Y = ECSP224_FP_W_Y;
                 break;
             }
             case CURVE_sp256: {
@@ -1870,8 +1871,8 @@ public class EC_Consts {
                 EC_G_Y = ECSP256_FP_G_Y;
                 EC_R = ECSP256_FP_R;
                 EC_K = ECSP256_FP_K;
-                EC_P_X = ECSP256_FP_P_X;
-                EC_P_Y = ECSP256_FP_P_Y;
+                EC_W_X = ECSP256_FP_W_X;
+                EC_W_Y = ECSP256_FP_W_Y;
                 break;
             }
             case CURVE_sp384: {
@@ -1882,8 +1883,8 @@ public class EC_Consts {
                 EC_G_Y = ECSP384_FP_G_Y;
                 EC_R = ECSP384_FP_R;
                 EC_K = ECSP384_FP_K;
-                EC_P_X = ECSP384_FP_P_X;
-                EC_P_Y = ECSP384_FP_P_Y;
+                EC_W_X = ECSP384_FP_W_X;
+                EC_W_Y = ECSP384_FP_W_Y;
                 break;
             }
             case CURVE_sp521: {
@@ -1894,8 +1895,8 @@ public class EC_Consts {
                 EC_G_Y = ECSP521_FP_G_Y;
                 EC_R = ECSP521_FP_R;
                 EC_K = ECSP521_FP_K;
-                EC_P_X = ECSP521_FP_P_X;
-                EC_P_Y = ECSP521_FP_P_Y;
+                EC_W_X = ECSP521_FP_W_X;
+                EC_W_Y = ECSP521_FP_W_Y;
                 break;
             }
             default:
@@ -1928,6 +1929,12 @@ public class EC_Consts {
             case PARAMETER_K:
                 length = 2;
                 Util.setShort(outputBuffer, outputOffset, EC_K);
+                break;
+            case PARAMETER_W:
+                length = toX962(outputBuffer, outputOffset, EC_W_X, (short) 0, (short) EC_W_X.length, EC_W_Y, (short) 0, (short) EC_W_Y.length);
+                break;
+            case PARAMETER_S:
+                length = Util.arrayCopyNonAtomic(EC_S, (short) 0, outputBuffer, outputOffset, (short) EC_S.length);
                 break;
             default:
                 ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
