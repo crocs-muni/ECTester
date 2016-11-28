@@ -53,8 +53,11 @@ public class SimpleECCApplet extends Applet {
     public final static byte ECTEST_SET_EXTERNALCURVE = (byte) 0xcb;
     public final static byte ECTEST_GENERATE_KEYPAIR_EXTERNALCURVE = (byte) 0xcc;
     public final static byte ECTEST_ECDSA_SIGNATURE = (byte) 0xcd;
-    public final static byte ECTEST_SET_INVALIDFIELD = (byte) 0xce;
-    public final static byte ECTEST_GENERATE_KEYPAIR_INVALIDFIELD = (byte) 0xcf;
+    public final static byte ECTEST_SET_ANOMALOUSCURVE = (byte) 0xce;
+    public final static byte ECTEST_GENERATE_KEYPAIR_ANOMALOUSCURVE = (byte) 0xcf;
+    public final static byte ECTEST_ECDH_AGREEMENT_SMALL_DEGREE_POINT = (byte) 0xd0;
+    public final static byte ECTEST_SET_INVALIDFIELD = (byte) 0xd1;
+    public final static byte ECTEST_GENERATE_KEYPAIR_INVALIDFIELD = (byte) 0xd2;
 
     public final static short FLAG_ECTEST_ALLOCATE_KEYPAIR = (short) 0x0001;
     public final static short FLAG_ECTEST_GENERATE_KEYPAIR_DEFCURVE = (short) 0x0002;
@@ -65,8 +68,11 @@ public class SimpleECCApplet extends Applet {
     public final static short FLAG_ECTEST_ECDH_AGREEMENT_VALID_POINT = (short) 0x0040;
     public final static short FLAG_ECTEST_ECDH_AGREEMENT_INVALID_POINT = (short) 0x0080;
     public final static short FLAG_ECTEST_ECDSA_SIGNATURE = (short) 0x0100;
-    public final static short FLAG_ECTEST_SET_INVALIDFIELD = (short) 0x0200;
-    public final static short FLAG_ECTEST_GENERATE_KEYPAIR_INVALIDFIELD = (short) 0x0400;
+    public final static short FLAG_ECTEST_SET_ANOMALOUSCURVE = (short) 0x0200;
+    public final static short FLAG_ECTEST_GENERATE_KEYPAIR_ANOMALOUSCUVE = (short) 0x0400;
+    public final static short FLAG_ECTEST_ECDH_AGREEMENT_SMALL_DEGREE_POINT = (short) 0x0800;
+    public final static short FLAG_ECTEST_SET_INVALIDFIELD = (short) 0x1000;
+    public final static short FLAG_ECTEST_GENERATE_KEYPAIR_INVALIDFIELD = (short) 0x2000;
 
     public final static short FLAG_ECTEST_ALL = (short) 0xffff;
 
@@ -341,13 +347,55 @@ public class SimpleECCApplet extends Applet {
             if (sw == ISO7816.SW_NO_ERROR) {
                 sw = ecKeyTester.testECDSA(ecPrivKey, ecPubKey, m_ramArray2, (short) 0, (short) m_ramArray2.length, m_ramArray, (short) 0);
             }
-
         }
         Util.setShort(buffer, bufferOffset, sw);
         bufferOffset += 2;
 
         //
-        // 8. Set invalid custom curve
+        // 8. Set anomalous custom curve
+        //
+        buffer[bufferOffset] = ECTEST_SET_ANOMALOUSCURVE;
+        bufferOffset++;
+        sw = SW_SKIPPED;
+        if ((testFlags & FLAG_ECTEST_SET_ANOMALOUSCURVE) != (short) 0) {
+            sw = ecKeyGenerator.setCustomCurve(EC_Consts.getAnomalousCurve(keyClass, keyLen), m_ramArray, (short) 0);
+            if (sw != ISO7816.SW_NO_ERROR) {
+                testFlags &= ~FLAG_ECTEST_GENERATE_KEYPAIR_ANOMALOUSCUVE;
+            }
+        }
+        Util.setShort(buffer, bufferOffset, sw);
+        bufferOffset += 2;
+
+        //
+        // 9. Generate keypair with anomalous custom curve
+        //
+
+        buffer[bufferOffset] = ECTEST_GENERATE_KEYPAIR_ANOMALOUSCURVE;
+        bufferOffset++;
+        sw = SW_SKIPPED;
+        if ((testFlags & FLAG_ECTEST_GENERATE_KEYPAIR_ANOMALOUSCUVE) != (short) 0) {
+            sw = ecKeyGenerator.generatePair();
+        }
+        Util.setShort(buffer, bufferOffset, sw);
+        bufferOffset += 2;
+
+        //
+        // 10. Test small degree pubkey
+        //
+
+        buffer[bufferOffset] = ECTEST_ECDH_AGREEMENT_SMALL_DEGREE_POINT;
+        bufferOffset++;
+        sw = SW_SKIPPED;
+        if ((testFlags & FLAG_ECTEST_ECDH_AGREEMENT_SMALL_DEGREE_POINT) != (short) 0) {
+            ecPubKey = ecKeyGenerator.getPublicKey();
+            ecPrivKey = ecKeyGenerator.getPrivateKey();
+            sw = ecKeyTester.testECDH_validPoint(ecPrivKey, ecPubKey, m_ramArray, (short) 0, m_ramArray2, (short) 1);
+        }
+        Util.setShort(buffer, bufferOffset, sw);
+        bufferOffset += 2;
+
+        //
+        // 11. Set invalid custom curve
         //
         buffer[bufferOffset] = ECTEST_SET_INVALIDCURVE;
         bufferOffset++;
@@ -363,7 +411,7 @@ public class SimpleECCApplet extends Applet {
         bufferOffset += 2;
 
         //
-        // 9. Generate keypair with invalid custom curve
+        // 12. Generate keypair with invalid custom curve
         //
         buffer[bufferOffset] = ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE;
         bufferOffset++;
@@ -375,7 +423,7 @@ public class SimpleECCApplet extends Applet {
         bufferOffset += 2;
 
         //
-        // 10. Set invalid field
+        // 13. Set invalid field
         //
         buffer[bufferOffset] = ECTEST_SET_INVALIDFIELD;
         bufferOffset++;
@@ -393,7 +441,7 @@ public class SimpleECCApplet extends Applet {
         Util.setShort(buffer, bufferOffset, sw);
         bufferOffset += 2;
 
-        // 11. Generate key with invalid field
+        // 14. Generate key with invalid field
         buffer[bufferOffset] = ECTEST_GENERATE_KEYPAIR_INVALIDFIELD;
         bufferOffset++;
         sw = SW_SKIPPED;

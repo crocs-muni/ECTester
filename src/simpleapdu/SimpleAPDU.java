@@ -5,6 +5,7 @@ import applets.SimpleECCApplet;
 import javacard.framework.ISO7816;
 import javacard.security.CryptoException;
 import javacard.security.KeyPair;
+import sun.java2d.pipe.SpanShapeRenderer;
 
 import javax.smartcardio.ResponseAPDU;
 import java.io.FileNotFoundException;
@@ -73,6 +74,7 @@ public class SimpleAPDU {
     static void testSupportECGivenAlg(byte[] apdu, CardMngr cardManager) throws Exception {
         ReconnnectToCard();
         ResponseAPDU resp = cardManager.sendAPDU(apdu);
+        //byte[] resp = cardManager.sendAPDUSimulator(apdu);
         PrintECSupport(resp);
     }
 
@@ -143,7 +145,11 @@ public class SimpleAPDU {
 
         try {
             if (testAll) {
+                //byte[] installData = new byte[10];
+                //byte[] AID = {(byte) 0x4C, (byte) 0x61, (byte) 0x62, (byte) 0x61, (byte) 0x6B, (byte) 0x41, (byte) 0x70, (byte) 0x70, (byte) 0x6C, (byte) 0x65, (byte) 0x74};
+                //cardManager.prepareLocalSimulatorApplet(AID, installData, SimpleECCApplet.class);
                 if (cardManager.ConnectToCard()) {
+
                     // Test all default curves for both fields
                     testSupportECAll(cardManager);
 
@@ -301,7 +307,10 @@ public class SimpleAPDU {
     }
 
     static void PrintECSupport(ResponseAPDU resp) {
-        byte[] buffer = resp.getData();
+        PrintECSupport(resp.getData());
+    }
+
+    static void PrintECSupport(byte[] buffer) {
 
         m_SystemOutLogger.println();
         m_SystemOutLogger.println("### Test for support and with valid and invalid EC curves");
@@ -329,6 +338,9 @@ public class SimpleAPDU {
             bufferOffset = VerifyPrintResult("ECDH agreement with valid point:", SimpleECCApplet.ECTEST_ECDH_AGREEMENT_VALID_POINT, buffer, bufferOffset, ExpResult.SHOULD_SUCCEED);
             bufferOffset = VerifyPrintResult("ECDH agreement with invalid point (fail is good):", SimpleECCApplet.ECTEST_ECDH_AGREEMENT_INVALID_POINT, buffer, bufferOffset, ExpResult.MUST_FAIL);
             bufferOffset = VerifyPrintResult("ECDSA signature on random data:", SimpleECCApplet.ECTEST_ECDSA_SIGNATURE, buffer, bufferOffset, ExpResult.SHOULD_SUCCEED);
+            bufferOffset = VerifyPrintResult("Set anomalous custom curve (may fail):", SimpleECCApplet.ECTEST_SET_ANOMALOUSCURVE, buffer, bufferOffset, ExpResult.MAY_FAIL);
+            bufferOffset = VerifyPrintResult("Generate key with anomalous curve (may fail):", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_ANOMALOUSCURVE, buffer, bufferOffset, ExpResult.MAY_FAIL);
+            bufferOffset = VerifyPrintResult("ECDH agreement with small order point (fail is good):", SimpleECCApplet.ECTEST_ECDH_AGREEMENT_SMALL_DEGREE_POINT, buffer, bufferOffset, ExpResult.MUST_FAIL);
             bufferOffset = VerifyPrintResult("Set invalid custom curve (may fail):", SimpleECCApplet.ECTEST_SET_INVALIDCURVE, buffer, bufferOffset, ExpResult.MAY_FAIL);
             bufferOffset = VerifyPrintResult("Generate key with invalid curve (fail is good):", SimpleECCApplet.ECTEST_GENERATE_KEYPAIR_INVALIDCUSTOMCURVE, buffer, bufferOffset, ExpResult.MUST_FAIL);
             bufferOffset = VerifyPrintResult("Set invalid field (may fail):", SimpleECCApplet.ECTEST_SET_INVALIDFIELD, buffer, bufferOffset, ExpResult.MAY_FAIL);
@@ -339,7 +351,10 @@ public class SimpleAPDU {
     }
 
     static void PrintECKeyGenInvalidCurveB(ResponseAPDU resp) {
-        byte[] buffer = resp.getData();
+        PrintECKeyGenInvalidCurveB(resp.getData());
+    }
+
+    static void PrintECKeyGenInvalidCurveB(byte[] buffer) {
 
         m_SystemOutLogger.println();
         m_SystemOutLogger.println("### Test for computation with invalid parameter B for EC curve");

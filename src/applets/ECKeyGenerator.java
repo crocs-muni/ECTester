@@ -73,39 +73,39 @@ public class ECKeyGenerator {
         if (sw != ISO7816.SW_NO_ERROR) return sw;
 
         //go through all params
-        byte param = EC_Consts.PARAMETER_A;
-        while (param > 0) {
+        short param = EC_Consts.PARAMETER_A;
+        while (param <= EC_Consts.PARAMETER_K) {
             length = EC_Consts.getCurveParameter(curve, param, buffer, offset);
             sw = setParameter(KEY_BOTH, param, buffer, offset, length);
             if (sw != ISO7816.SW_NO_ERROR) break;
-            param = (byte) (param << 1);
+            param = (short) (param << 1);
         }
         return sw;
     }
 
-    public short setCustomInvalidCurve(short keyClass, short keyLength, byte key, byte param, short corruptionType, byte[] buffer, short offset) {
+    public short setCustomInvalidCurve(short keyClass, short keyLength, byte key, short param, short corruptionType, byte[] buffer, short offset) {
         return setCustomInvalidCurve(EC_Consts.getCurve(keyClass, keyLength), key, param, corruptionType, buffer, offset);
     }
 
-    public short setCustomInvalidCurve(byte curve, byte key, byte param, short corruptionType, byte[] buffer, short offset) {
+    public short setCustomInvalidCurve(byte curve, byte key, short param, short corruptionType, byte[] buffer, short offset) {
         short sw = setCustomCurve(curve, buffer, offset);
         if (sw != ISO7816.SW_NO_ERROR) return sw;
 
         //go through param bit by bit, and invalidate all selected params
-        byte paramMask = 0x01;
-        while (paramMask > 0) {
-            byte masked = (byte) (paramMask & param);
+        short paramMask = 0x01;
+        while (paramMask <= EC_Consts.PARAMETER_K) {
+            short masked = (short) (paramMask & param);
             if (masked != 0) {
                 short length = EC_Consts.getCorruptCurveParameter(curve, masked, buffer, offset, corruptionType);
                 sw = setParameter(key, masked, buffer, offset, length);
                 if (sw != ISO7816.SW_NO_ERROR) return sw;
             }
-            paramMask = (byte) (paramMask << 1);
+            paramMask = (short) (paramMask << 1);
         }
         return sw;
     }
 
-    public short setParameter(byte key, byte param, byte[] data, short offset, short length) {
+    public short setParameter(byte key, short param, byte[] data, short offset, short length) {
         short result = ISO7816.SW_NO_ERROR;
         try {
             switch (param) {
@@ -160,6 +160,12 @@ public class ECKeyGenerator {
                     }
                     break;
                 }
+                case EC_Consts.PARAMETER_S:
+                    if ((key & KEY_PRIVATE) != 0) ecPrivateKey.setS(data, offset, length);
+                    break;
+                case EC_Consts.PARAMETER_W:
+                    if ((key & KEY_PUBLIC) != 0) ecPublicKey.setW(data, offset, length);
+                    break;
                 default: {
                     ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
                 }
@@ -237,6 +243,11 @@ public class ECKeyGenerator {
                     if ((key & KEY_PRIVATE) != 0) Util.setShort(outputBuffer, outputOffset, ecPrivateKey.getK());
                     length = 2;
                     break;
+                case EC_Consts.PARAMETER_S:
+                    if ((key & KEY_PRIVATE) != 0) length = ecPrivateKey.getS(outputBuffer, outputOffset);
+                    break;
+                case EC_Consts.PARAMETER_W:
+                    if ((key & KEY_PUBLIC) != 0) length = ecPublicKey.getW(outputBuffer, outputOffset);
                 default:
                     ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
             }

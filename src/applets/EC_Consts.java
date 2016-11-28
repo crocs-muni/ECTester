@@ -21,14 +21,16 @@ public class EC_Consts {
 
     private static byte[] EC_F2M_F2M = null; //[short i1, short i2, short i3], f = x^m + x^i1 + x^i2 + x^i3 + 1
 
-    public static final byte PARAMETER_FP = 0x01;
-    public static final byte PARAMETER_F2M = 0x02;
+    public static final short PARAMETER_FP = 0x0001;
+    public static final short PARAMETER_F2M = 0x0002;
 
-    public static final byte PARAMETER_A = 0x04;
-    public static final byte PARAMETER_B = 0x08;
-    public static final byte PARAMETER_G = 0x10;
-    public static final byte PARAMETER_R = 0x20;
-    public static final byte PARAMETER_K = 0x40;
+    public static final short PARAMETER_A = 0x0004;
+    public static final short PARAMETER_B = 0x0008;
+    public static final short PARAMETER_G = 0x0010;
+    public static final short PARAMETER_R = 0x0020;
+    public static final short PARAMETER_K = 0x0040;
+    public static final short PARAMETER_S = 0x0080;
+    public static final short PARAMETER_W = 0x0100;
 
     public static RandomData m_random = null;
 
@@ -1658,10 +1660,38 @@ public class EC_Consts {
         } else {
             ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
         }
-        return 0; //will not be reached
+        return 0;
     }
 
-    public static short getCurveParameter(byte curve, byte param, byte[] outputBuffer, short outputOffset) {
+    public static byte getAnomalousCurve(short keyClass, short keyLength) {
+        if (keyClass == KeyPair.ALG_EC_FP) {
+            switch (keyLength) {
+                case (short) 128:
+                    return CURVE_sp128;
+                case (short) 160:
+                    return CURVE_sp160;
+                case (short) 192:
+                    return CURVE_sp192;
+                case (short) 224:
+                    return CURVE_sp224;
+                case (short) 256:
+                    return CURVE_sp256;
+                case (short) 384:
+                    return CURVE_sp384;
+                case (short) 521:
+                    return CURVE_sp521;
+                default:
+                    ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+            }
+        } else if (keyClass == KeyPair.ALG_EC_F2M) {
+            return 0;
+        } else {
+            ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+        }
+        return 0;
+    }
+
+    public static short getCurveParameter(byte curve, short param, byte[] outputBuffer, short outputOffset) {
         byte alg = getCurveType(curve);
         switch (curve) {
             case CURVE_secp128r1: {
@@ -1905,7 +1935,7 @@ public class EC_Consts {
         return length;
     }
 
-    public static short getCorruptCurveParameter(byte curve, byte param, byte[] outputBuffer, short outputOffset, short corruptionType) {
+    public static short getCorruptCurveParameter(byte curve, short param, byte[] outputBuffer, short outputOffset, short corruptionType) {
         short length = getCurveParameter(curve, param, outputBuffer, outputOffset);
         if (length <= 0) {
             return length;
