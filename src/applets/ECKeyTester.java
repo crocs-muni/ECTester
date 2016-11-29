@@ -49,7 +49,7 @@ public class ECKeyTester {
         return result;
     }
 
-    private short testDH(KeyAgreement ka, ECPrivateKey privateKey, byte[] pubkeyBuffer, short pubkeyOffset, short pubkeyLength, byte[] outputBuffer, short outputOffset) {
+    private short testKA(KeyAgreement ka, ECPrivateKey privateKey, byte[] pubkeyBuffer, short pubkeyOffset, short pubkeyLength, byte[] outputBuffer, short outputOffset) {
         short result = ISO7816.SW_NO_ERROR;
         try {
             ka.init(privateKey);
@@ -64,17 +64,21 @@ public class ECKeyTester {
         return result;
     }
 
-    private short testDH_validPoint(KeyAgreement ka, ECPrivateKey privateKey, byte[] pubkeyBuffer, short pubkeyOffset, short pubkeyLength, byte[] outputBuffer, short outputOffset) {
-        return testDH(ka, privateKey, pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);
+    private short testKA_validPoint(KeyAgreement ka, ECPrivateKey privateKey, byte[] pubkeyBuffer, short pubkeyOffset, short pubkeyLength, byte[] outputBuffer, short outputOffset) {
+        return testKA(ka, privateKey, pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);
     }
 
-    private short testDH_invalidPoint(KeyAgreement ka, ECPrivateKey privateKey, byte[] pubkeyBuffer, short pubkeyOffset, short pubkeyLength, byte[] outputBuffer, short outputOffset) {
+    private short testKA_invalidPoint(KeyAgreement ka, ECPrivateKey privateKey, byte[] pubkeyBuffer, short pubkeyOffset, short pubkeyLength, byte[] outputBuffer, short outputOffset) {
         pubkeyBuffer[(short)(pubkeyLength - 2)] += 0xcc;
         pubkeyBuffer[(short)(pubkeyLength - 3)] += 0xcc;
-        short result = testDH(ka, privateKey, pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);
+        short result = testKA(ka, privateKey, pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);
         pubkeyBuffer[(short)(pubkeyLength - 2)] -= 0xcc;
         pubkeyBuffer[(short)(pubkeyLength - 3)] -= 0xcc;
         return result;
+    }
+
+    public short testECDH(ECPrivateKey privateKey, byte[] pubkeyBuffer, short pubkeyOffset, short pubkeyLength, byte[] outputBuffer, short outputOffset) {
+        return testKA(ecdhKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);
     }
 
     /**
@@ -92,12 +96,12 @@ public class ECKeyTester {
      **/
     public short testECDH_validPoint(ECPrivateKey privateKey, ECPublicKey publicKey, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset) {
         short length = publicKey.getW(pubkeyBuffer, pubkeyOffset);
-        return testDH_validPoint(ecdhKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, length, outputBuffer, outputOffset);
+        return testKA_validPoint(ecdhKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, length, outputBuffer, outputOffset);
     }
 
     public short testECDH_invalidPoint(ECPrivateKey privateKey, ECPublicKey publicKey, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset) {
         short length = publicKey.getW(pubkeyBuffer, pubkeyOffset);
-        return testDH_invalidPoint(ecdhKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, length, outputBuffer, outputOffset);
+        return testKA_invalidPoint(ecdhKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, length, outputBuffer, outputOffset);
     }
 
 
@@ -116,12 +120,12 @@ public class ECKeyTester {
      */
     public short testECDHC_validPoint(ECPrivateKey privateKey, ECPublicKey publicKey, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset) {
         short length = publicKey.getW(pubkeyBuffer, pubkeyOffset);
-        return testDH_validPoint(ecdhcKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, length, outputBuffer, outputOffset);
+        return testKA_validPoint(ecdhcKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, length, outputBuffer, outputOffset);
     }
 
     public short testECDHC_invalidPoint(ECPrivateKey privateKey, ECPublicKey publicKey, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset) {
         short length = publicKey.getW(pubkeyBuffer, pubkeyOffset);
-        return testDH_invalidPoint(ecdhcKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, length, outputBuffer, outputOffset);
+        return testKA_invalidPoint(ecdhcKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, length, outputBuffer, outputOffset);
     }
 
     /**

@@ -358,7 +358,9 @@ public class SimpleECCApplet extends Applet {
         bufferOffset++;
         sw = SW_SKIPPED;
         if ((testFlags & FLAG_ECTEST_SET_ANOMALOUSCURVE) != (short) 0) {
-            sw = ecKeyGenerator.setCustomCurve(EC_Consts.getAnomalousCurve(keyClass, keyLen), m_ramArray, (short) 0);
+            if (keyClass == KeyPair.ALG_EC_FP) { //Only FP supported at the moment
+                sw = ecKeyGenerator.setCustomCurve(EC_Consts.getAnomalousCurve(keyClass, keyLen), m_ramArray, (short) 0);
+            }
             if (sw != ISO7816.SW_NO_ERROR) {
                 testFlags &= ~FLAG_ECTEST_GENERATE_KEYPAIR_ANOMALOUSCUVE;
             }
@@ -375,6 +377,9 @@ public class SimpleECCApplet extends Applet {
         sw = SW_SKIPPED;
         if ((testFlags & FLAG_ECTEST_GENERATE_KEYPAIR_ANOMALOUSCUVE) != (short) 0) {
             sw = ecKeyGenerator.generatePair();
+            if (sw != ISO7816.SW_NO_ERROR) {
+                testFlags &= ~FLAG_ECTEST_ECDH_AGREEMENT_SMALL_DEGREE_POINT;
+            }
         }
         Util.setShort(buffer, bufferOffset, sw);
         bufferOffset += 2;
@@ -387,12 +392,9 @@ public class SimpleECCApplet extends Applet {
         bufferOffset++;
         sw = SW_SKIPPED;
         if ((testFlags & FLAG_ECTEST_ECDH_AGREEMENT_SMALL_DEGREE_POINT) != (short) 0) {
-            //TODO: this needs refactor, just quickly to see if it works
             short pubLength = EC_Consts.getCurveParameter(EC_Consts.getAnomalousCurve(keyClass,keyLen), EC_Consts.PARAMETER_W, m_ramArray, (short) 0);
-            ecKeyGenerator.setParameter(ECKeyGenerator.KEY_PUBLIC, EC_Consts.PARAMETER_W, m_ramArray, (short)0, pubLength);
-            ecPubKey = ecKeyGenerator.getPublicKey();
             ecPrivKey = ecKeyGenerator.getPrivateKey();
-            sw = ecKeyTester.testECDH_validPoint(ecPrivKey, ecPubKey, m_ramArray, (short) 0, m_ramArray2, (short) 1);
+            sw = ecKeyTester.testECDH(ecPrivKey, m_ramArray, (short) 0, pubLength, m_ramArray2, (short) 1);
         }
         Util.setShort(buffer, bufferOffset, sw);
         bufferOffset += 2;
