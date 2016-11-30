@@ -363,6 +363,7 @@ public class SimpleECCApplet extends Applet {
             }
             if (sw != ISO7816.SW_NO_ERROR) {
                 testFlags &= ~FLAG_ECTEST_GENERATE_KEYPAIR_ANOMALOUSCUVE;
+                testFlags &= ~FLAG_ECTEST_ECDH_AGREEMENT_SMALL_DEGREE_POINT;
             }
         }
         Util.setShort(buffer, bufferOffset, sw);
