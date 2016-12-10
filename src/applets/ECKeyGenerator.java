@@ -22,7 +22,6 @@ public class ECKeyGenerator {
     public static final byte KEY_BOTH = KEY_PUBLIC | KEY_PRIVATE;
 
 
-    //TODO: add something like allocateGenerate, or modify allocate to auto-generate a key-pair if it returns null key references after allocating
     public short allocatePair(byte keyClass, short keyLength) {
         short result = ISO7816.SW_NO_ERROR;
         try {
@@ -103,6 +102,10 @@ public class ECKeyGenerator {
             paramMask = (short) (paramMask << 1);
         }
         return sw;
+    }
+
+    public short setCustomAnomalousCurve(short keyClass, short keyLength, byte[] buffer, short offset) {
+        return setCustomCurve(EC_Consts.getAnomalousCurve(keyClass, keyLength), buffer, offset);
     }
 
     public short setParameter(byte key, short param, byte[] data, short offset, short length) {

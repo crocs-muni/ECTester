@@ -359,7 +359,7 @@ public class SimpleECCApplet extends Applet {
         sw = SW_SKIPPED;
         if ((testFlags & FLAG_ECTEST_SET_ANOMALOUSCURVE) != (short) 0) {
             if (keyClass == KeyPair.ALG_EC_FP) { //Only FP supported at the moment
-                sw = ecKeyGenerator.setCustomCurve(EC_Consts.getAnomalousCurve(keyClass, keyLen), m_ramArray, (short) 0);
+                sw = ecKeyGenerator.setCustomAnomalousCurve(keyClass, keyLen, m_ramArray, (short) 0);
             }
             if (sw != ISO7816.SW_NO_ERROR) {
                 testFlags &= ~FLAG_ECTEST_GENERATE_KEYPAIR_ANOMALOUSCUVE;
@@ -915,21 +915,30 @@ public class SimpleECCApplet extends Applet {
     void GenerateAndReturnKey(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
         apdu.setIncomingAndReceive();
-        
-        short bitLen = Util.getShort(apdubuf, ISO7816.OFFSET_CDATA);
 
-        short offset = 0;
+        short offset = ISO7816.OFFSET_CDATA;
+        byte keyClass = apdubuf[offset];
+        offset++;
+        
+        short keyLength = Util.getShort(apdubuf, offset);
+        offset+=2;
+
+        byte anomalous = apdubuf[offset];
+
+        offset = 0;
         
         switch (apdubuf[ISO7816.OFFSET_P1]) {
             case P1_SETCURVE: {
-                ecKeyGenerator.allocatePair(KeyPair.ALG_EC_FP, bitLen);
+                ecKeyGenerator.allocatePair(keyClass, keyLength);
+                if(anomalous != 0) {
+                    ecKeyGenerator.setCustomAnomalousCurve(keyClass, keyLength, m_ramArray, (short) 0);
+                } else {
+                    ecKeyGenerator.setCustomCurve(keyClass, keyLength, m_ramArray, (short) 0);
+                }
 
                 ecKeyGenerator.generatePair();
                 ecPubKey = ecKeyGenerator.getPublicKey();
                 ecPrivKey = ecKeyGenerator.getPrivateKey();
-
-                // If required, initialize curve parameters first
-                ecKeyGenerator.setCustomCurve(KeyPair.ALG_EC_FP, bitLen, m_ramArray, (short) 0);
                 break;
             }
             case P1_GENERATEKEYPAIR: {
