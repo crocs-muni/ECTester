@@ -215,8 +215,8 @@ public class ECKeyGenerator {
 
     public short exportParameter(byte key, short param, byte[] outputBuffer, short outputOffset) {
         if (key == KEY_BOTH) {
-            return -1;
-        }//TODO: change error handling.
+            ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+        }
         short length = 0;
         try {
             switch (param) {
@@ -255,9 +255,9 @@ public class ECKeyGenerator {
                     ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
             }
         } catch (CryptoException ce) {
-            length = -1;
+            ISOException.throwIt(ce.getReason());
         } catch (Exception e) {
-            length = -1;
+            ISOException.throwIt(ISO7816.SW_UNKNOWN);
         }
         return length;
     }

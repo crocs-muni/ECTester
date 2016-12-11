@@ -234,7 +234,13 @@ public class SimpleAPDU {
             gatherKeyAPDU[GENERATEECKEY_ALG_OFFSET] = keyClass;
             setShort(gatherKeyAPDU, GENERATEECKEY_KEYLENGTH_OFFSET, keyLength);
             gatherKeyAPDU[GENERATEECKEY_ANOMALOUS_OFFSET] = anomalous ? (byte) 1 : (byte) 0;
+
             ResponseAPDU respGather = cardManager.sendAPDU(gatherKeyAPDU);
+            if (respGather.getSW() != ISO7816.SW_NO_ERROR) {
+                systemOutLogger.println(String.format("Card error: %x", respGather.getSW()));
+                keysFile.close();
+                return;
+            }
 
             // Generate new keypair
             gatherKeyAPDU[ISO7816.OFFSET_P1] = SimpleECCApplet.P1_GENERATEKEYPAIR;
@@ -245,6 +251,10 @@ public class SimpleAPDU {
                 respGather = cardManager.sendAPDU(gatherKeyAPDU);
                 elapsed += System.nanoTime();
 
+                if (respGather.getSW() != ISO7816.SW_NO_ERROR) {
+                    systemOutLogger.println(String.format("Card error: %x", respGather.getSW()));
+                    break;
+                }
                 byte[] data = respGather.getData();
                 int offset = 0;
                 String pubKeyW = "";
@@ -274,6 +284,7 @@ public class SimpleAPDU {
                 if (counter >= amount && amount != 0)
                     break;
             }
+            keysFile.close();
         }
     }
 
