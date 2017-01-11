@@ -12,13 +12,13 @@ import javax.smartcardio.*;
  * @author xsvenda
  */
 public class CardMngr {
-    static CardTerminal m_terminal = null;
-    static CardChannel m_channel = null;
-    static Card m_card = null;
+    private CardTerminal m_terminal = null;
+    private CardChannel m_channel = null;
+    private Card m_card = null;
     
     // Simulator related attributes
-    private static CAD m_cad = null;
-    private static JavaxSmartCardInterface m_simulator = null;
+    private CAD m_cad = null;
+    private JavaxSmartCardInterface m_simulator = null;
 
     
     private final byte selectCM[] = {
@@ -37,10 +37,11 @@ public class CardMngr {
 
     public boolean ConnectToCard() throws Exception {
         // TRY ALL READERS, FIND FIRST SELECTABLE
-        List terminalList = GetReaderList();
+        List<CardTerminal> terminalList = GetReaderList();
 
-        if (terminalList.isEmpty()) {
+        if (terminalList == null || terminalList.isEmpty()) {
             System.out.println("No terminals found");
+            return false;
         }
 
         //List numbers of Card readers
@@ -64,10 +65,10 @@ public class CardMngr {
         return cardFound;
     }
     
-    static boolean ConnectToCardSelect() throws CardException {
+    public boolean ConnectToCardSelect() throws CardException {
         // Test available card - if more present, let user to select one
         List<CardTerminal> terminalList = CardMngr.GetReaderList();
-        if (terminalList.isEmpty()) {
+        if (terminalList == null || terminalList.isEmpty()) {
             System.out.println("ERROR: No suitable reader with card detected. Please check your reader connection");
             return false;
         } else {
@@ -163,11 +164,10 @@ public class CardMngr {
         }
     }
     
-    public static List GetReaderList() {
+    public static List<CardTerminal> GetReaderList() {
         try {
             TerminalFactory factory = TerminalFactory.getDefault();
-            List readersList = factory.terminals().list();
-            return readersList;
+            return factory.terminals().list();
         } catch (Exception ex) {
             System.out.println("Exception : " + ex);
             return null;

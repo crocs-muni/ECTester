@@ -14,7 +14,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import javax.smartcardio.ResponseAPDU;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -54,7 +53,7 @@ public class SimpleAPDU {
     private static final short GENERATEECKEY_ANOMALOUS_OFFSET = 8;
 
 
-    public void run(String[] args) {
+    private void run(String[] args) {
         try {
             //parse cmd args
             CommandLine cli = parseArgs(args);
@@ -91,7 +90,7 @@ public class SimpleAPDU {
                         generateECKeys(genAmount, KeyPair.ALG_EC_F2M, (short) keyLength, cli.hasOption("anomalous"));
                     }
                 } else if (cli.hasOption("test")) {
-                    if (cli.hasOption("bit-length")) {
+                    if (cli.hasOption("bit-size")) {
                         //test only one bitsize
                         if (fp) {
                             testSupportECFp((short) keyLength);
@@ -132,7 +131,7 @@ public class SimpleAPDU {
                 .desc("generate EC keys").build());
         opts.addOption("t", "test", false, "test EC support (default)");
         opts.addOption(Option.builder("b")
-                .longOpt("bit-length")
+                .longOpt("bit-size")
                 .hasArg()
                 .argName("bits")
                 .desc("set EC bit size").build());
@@ -288,7 +287,7 @@ public class SimpleAPDU {
         }
     }
 
-    static String getPrintError(short code) {
+    private static String getPrintError(short code) {
         if (code == ISO7816.SW_NO_ERROR) {
             return "OK\t(0x9000)";
         } else {
@@ -454,7 +453,7 @@ public class SimpleAPDU {
         }
     }
 
-    public static void main(String[] args) throws FileNotFoundException, IOException {
+    public static void main(String[] args) throws IOException {
         SimpleAPDU app = new SimpleAPDU();
         app.run(args);
     }
