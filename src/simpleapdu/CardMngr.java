@@ -105,7 +105,10 @@ public class CardMngr {
 
         return true;
     }
-    
+
+    public boolean isConnected() {
+        return m_card != null;
+    }
 
     public void DisconnectFromCard() throws Exception {
         if (m_card != null) {
@@ -191,7 +194,7 @@ public class CardMngr {
         if (responseAPDU.getSW1() == (byte) 0x61) {
             CommandAPDU apduToSend = new CommandAPDU((byte) 0x00,
                     (byte) 0xC0, (byte) 0x00, (byte) 0x00,
-                    (int) responseAPDU.getSW1());
+                    responseAPDU.getSW1());
 
             responseAPDU = m_channel.transmit(apduToSend);
             System.out.println(bytesToHex(responseAPDU.getBytes()));
