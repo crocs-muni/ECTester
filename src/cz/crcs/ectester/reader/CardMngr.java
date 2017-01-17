@@ -13,13 +13,13 @@ import javax.smartcardio.*;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class CardMngr {
-    private CardTerminal m_terminal = null;
-    private CardChannel m_channel = null;
-    private Card m_card = null;
+    private CardTerminal terminal = null;
+    private CardChannel channel = null;
+    private Card card = null;
     
     // Simulator related attributes
-    private CAD m_cad = null;
-    private JavaxSmartCardInterface m_simulator = null;
+    private CAD cad = null;
+    private JavaxSmartCardInterface simulator = null;
 
     private boolean simulate = false;
     
@@ -62,14 +62,14 @@ public class CardMngr {
         boolean cardFound = false;
         for (int i = 0; i < terminalList.size(); i++) {
             System.out.println(i + " : " + terminalList.get(i));
-            m_terminal = terminalList.get(i);
-            if (m_terminal.isCardPresent()) {
-                m_card = m_terminal.connect("*");
-                System.out.println("card: " + m_card);
-                m_channel = m_card.getBasicChannel();
+            terminal = terminalList.get(i);
+            if (terminal.isCardPresent()) {
+                card = terminal.connect("*");
+                System.out.println("card: " + card);
+                channel = card.getBasicChannel();
 
                 //reset the card
-                System.out.println(Util.bytesToHex(m_card.getATR().getBytes()));
+                System.out.println(Util.bytesToHex(card.getATR().getBytes()));
                 
                 cardFound = true;
             }
@@ -89,7 +89,7 @@ public class CardMngr {
             return false;
         } else {
             if (terminalList.size() == 1) {
-                m_terminal = terminalList.get(0); // return first and only reader
+                terminal = terminalList.get(0); // return first and only reader
             } else {
                 int terminalIndex = 1;
                 // Let user select target terminal
@@ -110,14 +110,14 @@ public class CardMngr {
                 System.out.println(String.format("%d", answ));
                 answ--; // is starting with 0 
                 // BUGBUG; verify allowed index range
-                m_terminal = terminalList.get(answ);
+                terminal = terminalList.get(answ);
             }
         }
         
-        if (m_terminal != null) {
-            m_card = m_terminal.connect("*");
-            System.out.println("card: " + m_card);
-            m_channel = m_card.getBasicChannel();
+        if (terminal != null) {
+            card = terminal.connect("*");
+            System.out.println("card: " + card);
+            channel = card.getBasicChannel();
         }
 
         return true;
@@ -140,16 +140,16 @@ public class CardMngr {
     }
 
     public boolean connected() {
-        return simulate || m_card != null;
+        return simulate || card != null;
     }
 
     public void disconnectFromCard() throws CardException {
         if (simulate)
             return;
 
-        if (m_card != null) {
-            m_card.disconnect(false);
-            m_card = null;
+        if (card != null) {
+            card.disconnect(false);
+            card = null;
         }
     }
 
@@ -217,7 +217,7 @@ public class CardMngr {
 
         long elapsed = -System.nanoTime();
 
-        ResponseAPDU responseAPDU = m_channel.transmit(apdu);
+        ResponseAPDU responseAPDU = channel.transmit(apdu);
 
         elapsed += System.nanoTime();
 
@@ -229,7 +229,7 @@ public class CardMngr {
                     (byte) 0xC0, (byte) 0x00, (byte) 0x00,
                     responseAPDU.getSW1());
 
-            responseAPDU = m_channel.transmit(apduToSend);
+            responseAPDU = channel.transmit(apduToSend);
             System.out.println(Util.bytesToHex(responseAPDU.getBytes()));
         }
 
@@ -245,19 +245,19 @@ public class CardMngr {
     
     public boolean prepareLocalSimulatorApplet(byte[] appletAIDArray, byte[] installData, Class appletClass) {
         System.setProperty("com.licel.jcardsim.terminal.type", "2");
-        m_cad = new CAD(System.getProperties());
-        m_simulator = (JavaxSmartCardInterface) m_cad.getCardInterface();
+        cad = new CAD(System.getProperties());
+        simulator = (JavaxSmartCardInterface) cad.getCardInterface();
         AID appletAID = new AID(appletAIDArray, (short) 0, (byte) appletAIDArray.length);
 
-        AID appletAIDRes =  m_simulator.installApplet(appletAID, appletClass, installData, (short) 0, (byte) installData.length);
-        return m_simulator.selectApplet(appletAID);
+        AID appletAIDRes =  simulator.installApplet(appletAID, appletClass, installData, (short) 0, (byte) installData.length);
+        return simulator.selectApplet(appletAID);
     }
 
     public ResponseAPDU sendAPDUSimulator(CommandAPDU apdu) {
         System.out.println(">>>>");
         System.out.println(Util.bytesToHex(apdu.getBytes()));
 
-        ResponseAPDU response = m_simulator.transmitCommand(apdu);
+        ResponseAPDU response = simulator.transmitCommand(apdu);
         byte[] responseBytes = response.getBytes();
 
         System.out.println(Util.bytesToHex(responseBytes));
@@ -284,6 +284,14 @@ public class CardMngr {
     public ResponseAPDU send(byte[] apdu) throws CardException {
         CommandAPDU commandAPDU = new CommandAPDU(apdu);
         return send(commandAPDU);
+    }
+
+    public ResponseAPDU[] send(CommandAPDU... apdus) throws CardException {
+        ResponseAPDU[] result = new ResponseAPDU[apdus.length];
+        for (int i = 0; i < apdus.length; i++) {
+            result[i] = send(apdus[i]);
+        }
+        return result;
     }
 
 }

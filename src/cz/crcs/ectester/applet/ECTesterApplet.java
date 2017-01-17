@@ -30,6 +30,7 @@ public class ECTesterApplet extends Applet {
     public static final byte KEYPAIR_LOCAL = (byte) 0x01;
     public static final byte KEYPAIR_REMOTE = (byte) 0x02;
     public static final byte KEYPAIR_BOTH = KEYPAIR_LOCAL | KEYPAIR_REMOTE;
+    public static final byte EXPORT_NONE = (byte) 0x00;
     public static final byte EXPORT_PUBLIC = (byte) 0x04;
     public static final byte EXPORT_PRIVATE = (byte) 0x08;
     public static final byte EXPORT_BOTH = EXPORT_PUBLIC | EXPORT_PRIVATE;

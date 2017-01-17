@@ -72,7 +72,7 @@ public class Util {
         byte[] out = new byte[len];
         int offset = 0;
         for (byte[] array : arrays) {
-            if (array == null)
+            if (array == null || array.length == 0)
                 continue;
             System.arraycopy(array, 0, out, offset, array.length);
             offset += array.length;

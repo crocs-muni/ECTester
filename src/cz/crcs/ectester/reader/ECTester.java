@@ -12,6 +12,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Petr Svenda petr@svenda.com
@@ -185,11 +187,10 @@ public class ECTester {
          * -dsa / --ecdsa [data_file]
          *
          * Options:
-         * -b / --bit-size [b] / -a / --all
+         * -b / --bit-size [b] // -a / --all
          * -fp / --prime-field
          * -f2m / --binary-field
-         * -n / --named
-         * -c / --curve [curve_file] field,a,b,gx,gy,r,k
+         * -n / --named // -c / --curve [curve_file] field,a,b,gx,gy,r,k
          * --public [pubkey_file] wx,wy
          * --private [privkey_file] s
          * -k / --key [key_file] wx,wy,s
@@ -206,14 +207,18 @@ public class ECTester {
         opts.addOptionGroup(actions);
 
         OptionGroup size = new OptionGroup();
+        size.setRequired(true);
         size.addOption(Option.builder("b").longOpt("bit-size").desc("Set curve size.").hasArg().argName("b").build());
         size.addOption(Option.builder("a").longOpt("all").desc("Test all curve sizes.").build());
         opts.addOptionGroup(size);
 
+        OptionGroup curve = new OptionGroup();
+        curve.addOption(Option.builder("n").longOpt("named").desc("Use a named curve.").build());
+        curve.addOption(Option.builder("c").longOpt("curve").desc("Use curve from file [curve_file] (field,a,b,gx,gy,r,k).").hasArg().argName("curve_file").build());
+        opts.addOptionGroup(curve);
+
         opts.addOption(Option.builder("fp").longOpt("prime-field").desc("Use prime field curve.").build());
         opts.addOption(Option.builder("f2m").longOpt("binary-field").desc("Use binary field curve.").build());
-        opts.addOption(Option.builder("n").longOpt("named").desc("Use a named curve.").build());
-        opts.addOption(Option.builder("c").longOpt("curve").desc("Use curve from file [curve_file] (field,a,b,gx,gy,r,k).").hasArg().argName("curve_file").build());
         opts.addOption(Option.builder("pub").longOpt("public").desc("Use public key from file [pubkey_file] (wx,wy).").hasArg().argName("pubkey_file").build());
         opts.addOption(Option.builder("priv").longOpt("private").desc("Use private key from file [privkey_file] (s).").hasArg().argName("privkey_file").build());
         opts.addOption(Option.builder("k").longOpt("key").desc("Use keypair from file [key_file] (wx,wy,s).").hasArg().argName("key_file").build());
@@ -226,7 +231,7 @@ public class ECTester {
     }
 
     /**
-     * Reads and validates options.
+     * Reads and validates options, also sets defaults.
      *
      * @param cli cli object, with parsed args
      * @return whether the options are valid.
@@ -255,14 +260,6 @@ public class ECTester {
             System.err.println("Bit-size must not be negative.");
             return false;
         }
-        if (optNamed && optCurve != null) {
-            System.err.println("Can only specify a named curve with --named or an external curve with --curve. (not both)");
-            return false;
-        }
-        if (optBits == 0 || optAll) {
-            System.err.println("You have to specify curve bit-size.");
-            return false;
-        }
 
         if (cli.hasOption("generate")) {
             if (optPrimeField == optBinaryField) {
@@ -273,9 +270,12 @@ public class ECTester {
                 System.err.println("Keys should not be specified when generating keys.");
                 return false;
             }
-
             if (optOutput == null) {
                 System.err.println("You have to specify an output file for the key generation process.");
+                return false;
+            }
+            if (optAll) {
+                System.err.println("You have to specify curve bit-size with -b");
                 return false;
             }
 
@@ -291,6 +291,15 @@ public class ECTester {
             }
 
         } else if (cli.hasOption("ecdh")) {
+            if (optPrimeField == optBinaryField) {
+                System.err.print("Need to specify field with -fp or -f2m. (not both)");
+                return false;
+            }
+            if (optAll) {
+                System.err.println("You have to specify curve bit-size with -b");
+                return false;
+            }
+
         } else if (cli.hasOption("ecdsa")) {
             optECDSASign = cli.getOptionValue("ecdsa");
         }
@@ -307,23 +316,14 @@ public class ECTester {
     }
 
     /**
-     * Generates EC keypairs and outputs them to log.
+     * Generates EC keypairs and outputs them to output file.
+     * @throws CardException
+     * @throws IOException
      */
     private void generate() throws CardException, IOException {
-        /////
-        short keyLength = (short) optBits;
         byte keyClass = optPrimeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
-        short params = optPrimeField ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
-
-        cmdAllocate(ECTesterApplet.KEYPAIR_LOCAL, keyLength, keyClass);
-
-        if (optNamed) {
-            cmdSet(ECTesterApplet.KEYPAIR_LOCAL, (byte) 0, EC_Consts.getCurve(keyLength, keyClass), params, EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, null);
-        } else if (optCurve != null) {
-            byte[] external = ParamReader.flatten(params, ParamReader.readFile(optCurve));
-            cmdSet(ECTesterApplet.KEYPAIR_LOCAL, (byte) 0, EC_Consts.CURVE_external, params, EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, external);
-        }
-        /////
+        CommandAPDU[] prepare = prepareCurve(ECTesterApplet.KEYPAIR_LOCAL, (short) optBits, keyClass);
+        cardManager.send(prepare);
 
         FileWriter keysFile = new FileWriter(optOutput);
         keysFile.write("index;time;pubW;privS\n");
@@ -331,8 +331,9 @@ public class ECTester {
         int generated = 0;
         int retry = 0;
         while (generated < optGenerateAmount || optGenerateAmount == 0) {
+            CommandAPDU generate = insGenerate(ECTesterApplet.KEYPAIR_LOCAL, (byte) (ECTesterApplet.EXPORT_BOTH | ECTesterApplet.KEYPAIR_LOCAL));
             long elapsed = -System.nanoTime();
-            ResponseAPDU response = cmdGenerate(ECTesterApplet.KEYPAIR_LOCAL, (byte) (ECTesterApplet.EXPORT_BOTH | ECTesterApplet.KEYPAIR_LOCAL));
+            ResponseAPDU response = cardManager.send(generate);
             elapsed += System.nanoTime();
 
             byte[] bytes = response.getData();
@@ -359,27 +360,72 @@ public class ECTester {
     }
 
     /**
-     *
+     * Tests
      */
     private void test() {
-        //TODO
-        //  allocate
-        //  set custom
-        //  generate
-        //  ecdh local, local, valid
-        //  ecdh local, local, invalid
-        //  ecdsa local, local, 00?
+        if (optAll) {
+            if (optPrimeField) {
+                //iterate over prime curve sizes used: EC_Consts.FP_SIZES
+                for (short keyLength : EC_Consts.FP_SIZES) {
+                    //prepareCurve(KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_FP);
+                    //insGenerate(KEYPAIR_BOTH, EXPORT_NONE);
+                    //insECDH(KEYPAIR_LOCAL, KEYPAIR_REMOTE, EXPORT_NONE, 00);
+                    //insECDH(KEYPAIR_LOCAL, KEYPAIR_REMOTE, EXPORT_NONE, 01);
+                    //insECDSA(KEYPAIR_LOCAL, EXPORT_NONE, null);
+                }
+            }
+            if (optBinaryField) {
+                //iterate over binary curve sizes used: EC_Consts.F2M_SIZES
+                for (short keyLength : EC_Consts.F2M_SIZES) {
+                    //prepareCurve(KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_F2M);
+                    //insGenerate(KEYPAIR_BOTH, EXPORT_NONE);
+                    //insECDH(KEYPAIR_LOCAL, KEYPAIR_REMOTE, EXPORT_NONE, 00);
+                    //insECDH(KEYPAIR_LOCAL, KEYPAIR_REMOTE, EXPORT_NONE, 01);
+                    //insECDSA(KEYPAIR_LOCAL, EXPORT_NONE, null);
+                }
+            }
+        } else {
+            if (optPrimeField) {
+                //test with prepareCurve(KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_FP)
+                //insGenerate(KEYPAIR_BOTH, EXPORT_NONE);
+                //insECDH(KEYPAIR_LOCAL, KEYPAIR_REMOTE, EXPORT_NONE, 00);
+                //insECDH(KEYPAIR_LOCAL, KEYPAIR_REMOTE, EXPORT_NONE, 01);
+                //insECDSA(KEYPAIR_LOCAL, EXPORT_NONE, null);
+            }
 
+            if (optBinaryField) {
+                //test with prepareCurve(KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_F2M)
+                //insGenerate(KEYPAIR_BOTH, EXPORT_NONE);
+                //insECDH(KEYPAIR_LOCAL, KEYPAIR_REMOTE, EXPORT_NONE, 00);
+                //insECDH(KEYPAIR_LOCAL, KEYPAIR_REMOTE, EXPORT_NONE, 01);
+                //insECDSA(KEYPAIR_LOCAL, EXPORT_NONE, null);
+            }
+        }
     }
 
     /**
      *
+     * @throws IOException
+     * @throws CardException
      */
-    private void ecdh() {
-        //TODO
-        //allocate local + remote
-        //set curve if specified
-        //
+    private void ecdh() throws IOException, CardException {
+        byte keyClass = optPrimeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
+        CommandAPDU[] curve = prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, keyClass);
+        cardManager.send(curve);
+
+        if (optPublic != null || optPrivate != null || optKey != null) {
+            CommandAPDU local = insGenerate(ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_NONE);
+            cardManager.send(local);
+            CommandAPDU remote = prepareKey(ECTesterApplet.KEYPAIR_REMOTE);
+            cardManager.send(remote);
+        } else {
+            CommandAPDU both = insGenerate(ECTesterApplet.KEYPAIR_BOTH, ECTesterApplet.EXPORT_NONE);
+            cardManager.send(both);
+        }
+
+        CommandAPDU ecdh = insECDH(ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_ECDH, (byte) 0);
+        ResponseAPDU response = cardManager.send(ecdh);
+        //TODO output ecdh
     }
 
     /**
@@ -389,36 +435,33 @@ public class ECTester {
     }
 
     /**
-     * Sends the INS_ALLOCATE instruction to the card/simulation.
+     * Creates the INS_ALLOCATE instruction.
      *
-     * @param keypair
+     * @param keyPair
      * @param keyLength
      * @param keyClass
-     * @return card response
-     * @throws CardException
+     * @return apdu to send
      */
-    private ResponseAPDU cmdAllocate(byte keypair, short keyLength, byte keyClass) throws CardException {
+    private CommandAPDU insAllocate(byte keyPair, short keyLength, byte keyClass) throws CardException {
         byte[] data = new byte[]{0, 0, keyClass};
         Util.setShort(data, 0, keyLength);
 
-        CommandAPDU allocate = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ALLOCATE, keypair, 0x00, data);
-        return cardManager.send(allocate);
+        return new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ALLOCATE, keyPair, 0x00, data);
     }
 
     /**
-     * Sends the INS_SET instruction to the card/simulation.
+     * Creates the INS_SET instruction.
      *
-     * @param keypair
+     * @param keyPair
      * @param export
      * @param curve
      * @param params
      * @param corrupted
      * @param corruption
      * @param external
-     * @return card response
-     * @throws CardException
+     * @return apdu to send
      */
-    private ResponseAPDU cmdSet(byte keypair, byte export, byte curve, short params, short corrupted, byte corruption, byte[] external) throws CardException {
+    private CommandAPDU insSet(byte keyPair, byte export, byte curve, short params, short corrupted, byte corruption, byte[] external) {
         int len = external != null ? 6 + 2 + external.length : 6;
         byte[] data = new byte[len];
         data[0] = curve;
@@ -429,48 +472,44 @@ public class ECTester {
             System.arraycopy(external, 0, data, 6, external.length);
         }
 
-        CommandAPDU set = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_SET, keypair, export, data);
-        return cardManager.send(set);
+        return new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_SET, keyPair, export, data);
     }
 
     /**
-     * Sends the INS_GENERATE instruction to the card/simulation.
+     * Creates the INS_GENERATE instruction.
      *
-     * @param keypair
+     * @param keyPair
      * @param export
-     * @return card response
+     * @return apdu to send
      */
-    private ResponseAPDU cmdGenerate(byte keypair, byte export) throws CardException {
-        CommandAPDU generate = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_GENERATE, keypair, export);
-        return cardManager.send(generate);
+    private CommandAPDU insGenerate(byte keyPair, byte export) {
+        return new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_GENERATE, keyPair, export);
     }
 
     /**
-     * Sends the INS_ECDH instruction to the card/simulation.
+     * Creates the INS_ECDH instruction.
      *
-     * @param keypair
+     * @param pubkey
+     * @param privkey
      * @param export
-     * @param valid
-     * @return card response
-     * @throws CardException
+     * @param invalid
+     * @return apdu to send
      */
-    private ResponseAPDU cmdECDH(byte keypair, byte export, byte valid) throws CardException {
-        byte[] data = new byte[1];
-        data[0] = valid;
+    private CommandAPDU insECDH(byte pubkey, byte privkey, byte export, byte invalid) {
+        byte[] data = new byte[]{export, invalid};
 
-        CommandAPDU ecdh = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ECDH, keypair, export, data);
-        return cardManager.send(ecdh);
+        return new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ECDH, pubkey, privkey, data);
     }
 
     /**
-     * Sends the INS_ECDSA instruction to the card/simulation.
+     * Creates the INS_ECDSA instruction.
      *
-     * @param keypair
+     * @param keyPair
      * @param export
      * @param raw
-     * @return card response
+     * @return apdu to send
      */
-    private ResponseAPDU cmdECDSA(byte keypair, byte export, byte[] raw) throws CardException {
+    private CommandAPDU insECDSA(byte keyPair, byte export, byte[] raw) {
         int len = raw != null ? raw.length : 0;
         byte[] data = new byte[2 + len];
         Util.setShort(data, 0, (short) len);
@@ -478,8 +517,62 @@ public class ECTester {
             System.arraycopy(raw, 0, data, 2, len);
         }
 
-        CommandAPDU ecdsa = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ECDSA, keypair, export, data);
-        return cardManager.send(ecdsa);
+        return new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ECDSA, keyPair, export, data);
+    }
+
+    /**
+     * @param keyPair
+     * @param keyLength
+     * @param keyClass
+     * @return
+     * @throws CardException
+     * @throws FileNotFoundException
+     */
+    private CommandAPDU[] prepareCurve(byte keyPair, short keyLength, byte keyClass) throws CardException, IOException {
+        List<CommandAPDU> commands = new ArrayList<>();
+        commands.add(insAllocate(keyPair, keyLength, keyClass));
+
+        short domainParams = keyClass == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
+        if (optNamed) {
+            commands.add(insSet(keyPair, ECTesterApplet.EXPORT_NONE, EC_Consts.getCurve(keyLength, keyClass), domainParams, EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, null));
+        }
+        if (optCurve != null) {
+            byte[] external = ParamReader.flatten(domainParams, ParamReader.readFile(optCurve));
+            if (external == null) {
+                throw new IOException("Couldn't read the curve file correctly.");
+            }
+            commands.add(insSet(keyPair, ECTesterApplet.EXPORT_NONE, EC_Consts.CURVE_external, domainParams, EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, external));
+        }
+
+        return commands.toArray(new CommandAPDU[commands.size()]);
+    }
+
+    /**
+     * @param keypair
+     * @return
+     * @throws IOException
+     */
+    private CommandAPDU prepareKey(byte keypair) throws IOException {
+        short params = EC_Consts.PARAMETERS_NONE;
+        byte[] data = null;
+        if (optKey != null) {
+            params |= EC_Consts.PARAMETERS_KEYPAIR;
+            data = ParamReader.flatten(EC_Consts.PARAMETERS_KEYPAIR, ParamReader.readFile(optKey));
+        }
+
+        if (optPublic != null) {
+            params |= EC_Consts.PARAMETER_W;
+            data = ParamReader.flatten(EC_Consts.PARAMETER_W, ParamReader.readFile(optPublic));
+        }
+        if (optPrivate != null) {
+            params |= EC_Consts.PARAMETER_S;
+            data = Util.concatenate(data, ParamReader.flatten(EC_Consts.PARAMETER_S, ParamReader.readFile(optPrivate)));
+        }
+
+        if (data == null && params != EC_Consts.PARAMETERS_NONE) {
+            throw new IOException("Couldn't read the key file correctly.");
+        }
+        return insSet(keypair, ECTesterApplet.EXPORT_NONE, EC_Consts.CURVE_external, params, EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, data);
     }
 
     public static void main(String[] args) {
