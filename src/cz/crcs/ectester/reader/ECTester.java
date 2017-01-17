@@ -35,6 +35,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -237,7 +238,6 @@ public class ECTester {
         opts.addOptionGroup(actions);
 
         OptionGroup size = new OptionGroup();
-        size.setRequired(true);
         size.addOption(Option.builder("b").longOpt("bit-size").desc("Set curve size.").hasArg().argName("b").build());
         size.addOption(Option.builder("a").longOpt("all").desc("Test all curve sizes.").build());
         opts.addOptionGroup(size);
@@ -288,6 +288,10 @@ public class ECTester {
         }
         if (optBits < 0) {
             System.err.println("Bit-size must not be negative.");
+            return false;
+        }
+        if (optBits == 0 && !optAll) {
+            System.err.println("You must specify either bit-size with -b or all bit-sizes with -a.");
             return false;
         }
 
@@ -355,7 +359,7 @@ public class ECTester {
      */
     private void help() {
         HelpFormatter help = new HelpFormatter();
-        help.printHelp("ECTester.jar", CLI_HEADER, opts, CLI_FOOTER);
+        help.printHelp("ECTester.jar", CLI_HEADER, opts, CLI_FOOTER, true);
     }
 
     /**
