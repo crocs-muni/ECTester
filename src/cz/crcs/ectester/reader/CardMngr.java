@@ -2,11 +2,11 @@ package cz.crcs.ectester.reader;
 
 import com.licel.jcardsim.io.CAD;
 import com.licel.jcardsim.io.JavaxSmartCardInterface;
-import java.util.List;
-import java.util.Scanner;
 import javacard.framework.AID;
 
 import javax.smartcardio.*;
+import java.util.List;
+import java.util.Scanner;
 
 /**
  * @author Petr Svenda petr@svenda.com
@@ -16,16 +16,16 @@ public class CardMngr {
     private CardTerminal terminal = null;
     private CardChannel channel = null;
     private Card card = null;
-    
+
     // Simulator related attributes
     private CAD cad = null;
     private JavaxSmartCardInterface simulator = null;
 
     private boolean simulate = false;
-    
+
     private final byte selectCM[] = {
-        (byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x07, (byte) 0xa0, (byte) 0x00, (byte) 0x00,
-        (byte) 0x00, (byte) 0x18, (byte) 0x43, (byte) 0x4d};
+            (byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x07, (byte) 0xa0, (byte) 0x00, (byte) 0x00,
+            (byte) 0x00, (byte) 0x18, (byte) 0x43, (byte) 0x4d};
 
     public static final byte OFFSET_CLA = 0x00;
     public static final byte OFFSET_INS = 0x01;
@@ -42,7 +42,7 @@ public class CardMngr {
         this(false);
     }
 
-    public CardMngr(boolean simulate)  {
+    public CardMngr(boolean simulate) {
         this.simulate = simulate;
     }
 
@@ -70,14 +70,14 @@ public class CardMngr {
 
                 //reset the card
                 System.out.println(Util.bytesToHex(card.getATR().getBytes()));
-                
+
                 cardFound = true;
             }
         }
 
         return cardFound;
     }
-    
+
     public boolean connectToCardSelect() throws CardException {
         if (simulate)
             return true;
@@ -113,7 +113,7 @@ public class CardMngr {
                 terminal = terminalList.get(answ);
             }
         }
-        
+
         if (terminal != null) {
             card = terminal.connect("*");
             System.out.println("card: " + card);
@@ -190,15 +190,15 @@ public class CardMngr {
             apdu[OFFSET_LC] = (byte) 0x00;
 
             ResponseAPDU resp = send(apdu);
-            
-            System.out.println("Response: " + Integer.toHexString(resp.getSW()));  
-            
+
+            System.out.println("Response: " + Integer.toHexString(resp.getSW()));
+
             if (resp.getSW() != 0x6D00) { // Note: 0x6D00 is SW_INS_NOT_SUPPORTED
                 // something?
             }
         }
     }
-    
+
     public static List<CardTerminal> getReaderList() {
         try {
             TerminalFactory factory = TerminalFactory.getDefault();
@@ -242,14 +242,14 @@ public class CardMngr {
         CommandAPDU commandAPDU = new CommandAPDU(apdu);
         return sendAPDU(commandAPDU);
     }
-    
+
     public boolean prepareLocalSimulatorApplet(byte[] appletAIDArray, byte[] installData, Class appletClass) {
         System.setProperty("com.licel.jcardsim.terminal.type", "2");
         cad = new CAD(System.getProperties());
         simulator = (JavaxSmartCardInterface) cad.getCardInterface();
         AID appletAID = new AID(appletAIDArray, (short) 0, (byte) appletAIDArray.length);
 
-        AID appletAIDRes =  simulator.installApplet(appletAID, appletClass, installData, (short) 0, (byte) installData.length);
+        AID appletAIDRes = simulator.installApplet(appletAID, appletClass, installData, (short) 0, (byte) installData.length);
         return simulator.selectApplet(appletAID);
     }
 

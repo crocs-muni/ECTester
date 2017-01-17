@@ -9,6 +9,7 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 /**
+ *
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class ParamReader {
@@ -18,7 +19,7 @@ public class ParamReader {
      * Flattens params read from String[] data into a byte[] with their lengths prepended as short entries.
      * @param params (EC_Consts.PARAMETER_* | ...)
      * @param data data read by readString, readFile, readResource
-     * @return byte[] with params flattened
+     * @return byte[] with params flattened, or null
      */
     public static byte[] flatten(short params, String[] data) {
         if (!validate(data)) {
@@ -42,7 +43,7 @@ public class ParamReader {
                 if (masked == EC_Consts.PARAMETER_G || masked == EC_Consts.PARAMETER_W) {
                     //read another param (the y coord) and put into X962 format.
                     byte[] y = parse(data[i + 1]);
-                    param = Util.concatenate(new byte[]{4}, param, y);
+                    param = Util.concatenate(new byte[]{4}, param, y);//<- ugly but works!
                     i++;
                 }
                 if (param.length == 0)

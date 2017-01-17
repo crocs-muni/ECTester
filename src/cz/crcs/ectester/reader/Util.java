@@ -1,6 +1,12 @@
 package cz.crcs.ectester.reader;
 
+import cz.crcs.ectester.applet.ECTesterApplet;
+import javacard.framework.ISO7816;
+import javacard.security.CryptoException;
+
 /**
+ * Utility class, some byte/hex manipulation, convenient byte[] methods.
+ *
  * @author Petr Svenda petr@svenda.com
  * @author Jan Jancar johny@neuromancer.sk
  */
@@ -78,5 +84,34 @@ public class Util {
             offset += array.length;
         }
         return out;
+    }
+
+    public static String getPrintError(short code) {
+        if (code == ISO7816.SW_NO_ERROR) {
+            return "OK\t(0x9000)";
+        } else {
+            String codeStr = "unknown";
+            switch (code) {
+                case CryptoException.ILLEGAL_VALUE:
+                    codeStr = "ILLEGAL_VALUE";
+                    break;
+                case CryptoException.UNINITIALIZED_KEY:
+                    codeStr = "UNINITIALIZED_KEY";
+                    break;
+                case CryptoException.NO_SUCH_ALGORITHM:
+                    codeStr = "NO_SUCH_ALG";
+                    break;
+                case CryptoException.INVALID_INIT:
+                    codeStr = "INVALID_INIT";
+                    break;
+                case CryptoException.ILLEGAL_USE:
+                    codeStr = "ILLEGAL_USE";
+                    break;
+                case ECTesterApplet.SW_SIG_VERIFY_FAIL:
+                    codeStr = "SIG_VERIFY_FAIL";
+                    break;
+            }
+            return String.format("fail\t(%s,\t0x%4x)", codeStr, code);
+        }
     }
 }

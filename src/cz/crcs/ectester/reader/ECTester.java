@@ -1,3 +1,24 @@
+/*
+ * Copyright (c) 2016-2017 Petr Svenda <petr@svenda.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package cz.crcs.ectester.reader;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
@@ -8,14 +29,17 @@ import org.apache.commons.cli.*;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Reader part of ECTester, a tool for testing Elliptic curve support on javacards.
+ *
  * @author Petr Svenda petr@svenda.com
  * @author Jan Jancar johny@neuromancer.sk
  */
@@ -23,7 +47,6 @@ public class ECTester {
 
     private CardMngr cardManager = null;
     private DirtyLogger systemOutLogger = null;
-    private FileOutputStream outputFile = null;
 
     //Options
     private int optBits;
@@ -56,7 +79,7 @@ public class ECTester {
     private static final byte[] ALLOCATE = {
             (byte) 0xB0,
             (byte) 0x5a, //INS  ALLOCATE
-            (byte) 0x00, //P1   *byte keypair
+            (byte) 0x00, //P1   *byte keyPair
             (byte) 0x00, //P2
             (byte) 0x03, //LC
             (byte) 0x00, //DATA *short keyLength
@@ -67,7 +90,7 @@ public class ECTester {
     private static final byte[] SET = {
             (byte) 0xB0,
             (byte) 0x5B, //INS  SET
-            (byte) 0x00, //P1   *byte keypair
+            (byte) 0x00, //P1   *byte keyPair
             (byte) 0x00, //P2   *byte export
             (byte) 0x06, //LC
             (byte) 0x00, //DATA *byte curve
@@ -82,7 +105,7 @@ public class ECTester {
     private static final byte[] GENERATE = {
             (byte) 0xB0,
             (byte) 0x5C, //INS  GENERATE
-            (byte) 0x00, //P1   *byte keypair
+            (byte) 0x00, //P1   *byte keyPair
             (byte) 0x00, //P2   *byte export
             (byte) 0x00  //LC
     };
@@ -90,7 +113,7 @@ public class ECTester {
     private static final byte[] ECDH = {
             (byte) 0xB0,
             (byte) 0x5D, //INS  ECDH
-            (byte) 0x00, //P1   *byte keypair
+            (byte) 0x00, //P1   *byte keyPair
             (byte) 0x00, //P2   *byte export
             (byte) 0x01, //LC
             (byte) 0x00  //DATA *byte valid
@@ -99,7 +122,7 @@ public class ECTester {
     private static final byte[] ECDSA = {
             (byte) 0xB0,
             (byte) 0x5E, //INS ECDSA
-            (byte) 0x00, //P1   *byte keypair
+            (byte) 0x00, //P1   *byte keyPair
             (byte) 0x00, //P2   *byte export
             (byte) 0x00, //LC
             //DATA [*short dataLength, byte[] data]
@@ -177,6 +200,13 @@ public class ECTester {
         }
     }
 
+    /**
+     * Parses command-line options.
+     *
+     * @param args cli arguments
+     * @return parsed CommandLine object
+     * @throws ParseException if there are any problems encountered while parsing the command line tokens
+     */
     private CommandLine parseArgs(String[] args) throws ParseException {
         /*
          * Actions:
@@ -221,7 +251,7 @@ public class ECTester {
         opts.addOption(Option.builder("f2m").longOpt("binary-field").desc("Use binary field curve.").build());
         opts.addOption(Option.builder("pub").longOpt("public").desc("Use public key from file [pubkey_file] (wx,wy).").hasArg().argName("pubkey_file").build());
         opts.addOption(Option.builder("priv").longOpt("private").desc("Use private key from file [privkey_file] (s).").hasArg().argName("privkey_file").build());
-        opts.addOption(Option.builder("k").longOpt("key").desc("Use keypair from file [key_file] (wx,wy,s).").hasArg().argName("key_file").build());
+        opts.addOption(Option.builder("k").longOpt("key").desc("Use keyPair from file [key_file] (wx,wy,s).").hasArg().argName("key_file").build());
         opts.addOption(Option.builder("o").longOpt("output").desc("Output into file [output_file].").hasArg().argName("output_file").build());
         opts.addOption(Option.builder("l").longOpt("log").desc("Log output into file [log_file].").hasArg().argName("log_file").optionalArg(true).build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
@@ -301,6 +331,19 @@ public class ECTester {
             }
 
         } else if (cli.hasOption("ecdsa")) {
+            if (optPrimeField == optBinaryField) {
+                System.err.print("Need to specify field with -fp or -f2m. (not both)");
+                return false;
+            }
+            if (optAll) {
+                System.err.println("You have to specify curve bit-size with -b");
+                return false;
+            }
+            if ((optPublic == null) != (optPrivate == null)) {
+                System.err.println("You have cannot only specify a part of a keypair.");
+                return false;
+            }
+
             optECDSASign = cli.getOptionValue("ecdsa");
         }
 
@@ -316,9 +359,10 @@ public class ECTester {
     }
 
     /**
-     * Generates EC keypairs and outputs them to output file.
-     * @throws CardException
-     * @throws IOException
+     * Generates EC keyPairs and outputs them to output file.
+     *
+     * @throws CardException if APDU transmission fails
+     * @throws IOException   if an IO error occurs when writing to key file.
      */
     private void generate() throws CardException, IOException {
         byte keyClass = optPrimeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
@@ -360,9 +404,10 @@ public class ECTester {
     }
 
     /**
-     * Tests
+     * Tests Elliptic curve support for a given curve/curves.
      */
     private void test() {
+        //TODO
         if (optAll) {
             if (optPrimeField) {
                 //iterate over prime curve sizes used: EC_Consts.FP_SIZES
@@ -404,9 +449,10 @@ public class ECTester {
     }
 
     /**
+     * Performs ECDH key exchange.
      *
-     * @throws IOException
-     * @throws CardException
+     * @throws CardException if APDU transmission fails
+     * @throws IOException   if an IO error occurs when writing to key file.
      */
     private void ecdh() throws IOException, CardException {
         byte keyClass = optPrimeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
@@ -425,24 +471,55 @@ public class ECTester {
 
         CommandAPDU ecdh = insECDH(ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_ECDH, (byte) 0);
         ResponseAPDU response = cardManager.send(ecdh);
-        //TODO output ecdh
+        //TODO print response SWs/error codes
+        //TODO output to file
     }
 
     /**
+     * Performs ECDSA signature, on random or provided data.
+     *
+     * @throws CardException if APDU transmission fails
+     * @throws IOException   if an IO error occurs when writing to key file.
      */
-    private void ecdsa() {
-        //TODO
+    private void ecdsa() throws CardException, IOException {
+        byte keyClass = optPrimeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
+        CommandAPDU[] curve = prepareCurve(ECTesterApplet.KEYPAIR_LOCAL, (short) optBits, keyClass);
+        cardManager.send(curve);
+
+        if (optKey != null || (optPublic != null && optPrivate != null)) {
+            CommandAPDU set = prepareKey(ECTesterApplet.KEYPAIR_LOCAL);
+            cardManager.send(set);
+        } else {
+            CommandAPDU generate = insGenerate(ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_NONE);
+            cardManager.send(generate);
+        }
+
+        //read file, if asked to sign
+        byte[] data = null;
+        if (optECDSASign != null) {
+            File in = new File(optECDSASign);
+            long len = in.length();
+            if (len == 0) {
+                throw new FileNotFoundException("File " + optECDSASign + " not found.");
+            }
+            data = Files.readAllBytes(in.toPath());
+        }
+
+        CommandAPDU ecdsa = insECDSA(ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_SIG, data);
+        ResponseAPDU response = cardManager.send(ecdsa);
+        //TODO print response SWs/error codes
+        //TODO output to file
     }
 
     /**
      * Creates the INS_ALLOCATE instruction.
      *
-     * @param keyPair
-     * @param keyLength
-     * @param keyClass
+     * @param keyPair   which keyPair to use, local/remote (KEYPAIR_* | ...)
+     * @param keyLength key length to set
+     * @param keyClass  key class to allocate
      * @return apdu to send
      */
-    private CommandAPDU insAllocate(byte keyPair, short keyLength, byte keyClass) throws CardException {
+    private CommandAPDU insAllocate(byte keyPair, short keyLength, byte keyClass) {
         byte[] data = new byte[]{0, 0, keyClass};
         Util.setShort(data, 0, keyLength);
 
@@ -452,13 +529,13 @@ public class ECTester {
     /**
      * Creates the INS_SET instruction.
      *
-     * @param keyPair
-     * @param export
-     * @param curve
-     * @param params
-     * @param corrupted
-     * @param corruption
-     * @param external
+     * @param keyPair    which keyPair to set params on, local/remote (KEYPAIR_* || ...)
+     * @param export     whether to export set params from keyPair
+     * @param curve      curve to set (EC_Consts.CURVE_*)
+     * @param params     parameters to set (EC_Consts.PARAMETER_* | ...)
+     * @param corrupted  parameters to corrupt (EC_Consts.PARAMETER_* | ...)
+     * @param corruption corruption type (EC_Consts.CORRUPTION_*)
+     * @param external   external curve data, can be null
      * @return apdu to send
      */
     private CommandAPDU insSet(byte keyPair, byte export, byte curve, short params, short corrupted, byte corruption, byte[] external) {
@@ -478,8 +555,8 @@ public class ECTester {
     /**
      * Creates the INS_GENERATE instruction.
      *
-     * @param keyPair
-     * @param export
+     * @param keyPair which keyPair to generate, local/remote (KEYPAIR_* || ...)
+     * @param export  whether to export generated keys from keyPair
      * @return apdu to send
      */
     private CommandAPDU insGenerate(byte keyPair, byte export) {
@@ -489,10 +566,10 @@ public class ECTester {
     /**
      * Creates the INS_ECDH instruction.
      *
-     * @param pubkey
-     * @param privkey
-     * @param export
-     * @param invalid
+     * @param pubkey  keyPair to use for public key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
+     * @param privkey keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
+     * @param export  whether to export ECDH secret
+     * @param invalid whether to invalidate the pubkey before ECDH
      * @return apdu to send
      */
     private CommandAPDU insECDH(byte pubkey, byte privkey, byte export, byte invalid) {
@@ -504,9 +581,9 @@ public class ECTester {
     /**
      * Creates the INS_ECDSA instruction.
      *
-     * @param keyPair
-     * @param export
-     * @param raw
+     * @param keyPair keyPair to use for signing and verification (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
+     * @param export  whether to export ECDSA signature
+     * @param raw     data to sign, can be null, in which case random data is signed.
      * @return apdu to send
      */
     private CommandAPDU insECDSA(byte keyPair, byte export, byte[] raw) {
@@ -521,14 +598,13 @@ public class ECTester {
     }
 
     /**
-     * @param keyPair
-     * @param keyLength
-     * @param keyClass
-     * @return
-     * @throws CardException
-     * @throws FileNotFoundException
+     * @param keyPair   which keyPair/s (local/remote) to set curve domain parameters on
+     * @param keyLength key length to allocate
+     * @param keyClass  key class to allocate
+     * @return an array of CommandAPDUs to send in order to prepare the keypair/s.
+     * @throws IOException if curve file cannot be found/opened
      */
-    private CommandAPDU[] prepareCurve(byte keyPair, short keyLength, byte keyClass) throws CardException, IOException {
+    private CommandAPDU[] prepareCurve(byte keyPair, short keyLength, byte keyClass) throws IOException {
         List<CommandAPDU> commands = new ArrayList<>();
         commands.add(insAllocate(keyPair, keyLength, keyClass));
 
@@ -548,11 +624,11 @@ public class ECTester {
     }
 
     /**
-     * @param keypair
-     * @return
-     * @throws IOException
+     * @param keyPair which keyPair/s to set the key params on
+     * @return a CommandAPDU setting params loaded on the keyPair/s
+     * @throws IOException if any of the key files cannot be found/opened
      */
-    private CommandAPDU prepareKey(byte keypair) throws IOException {
+    private CommandAPDU prepareKey(byte keyPair) throws IOException {
         short params = EC_Consts.PARAMETERS_NONE;
         byte[] data = null;
         if (optKey != null) {
@@ -570,9 +646,13 @@ public class ECTester {
         }
 
         if (data == null && params != EC_Consts.PARAMETERS_NONE) {
+            /*
+            TODO: this is not correct, in case (optPublic != null) and (optPrivate != null),
+            only one can actually load(return not null from ParamReader.flatten) and an exception will not be thrown
+             */
             throw new IOException("Couldn't read the key file correctly.");
         }
-        return insSet(keypair, ECTesterApplet.EXPORT_NONE, EC_Consts.CURVE_external, params, EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, data);
+        return insSet(keyPair, ECTesterApplet.EXPORT_NONE, EC_Consts.CURVE_external, params, EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, data);
     }
 
     public static void main(String[] args) {
