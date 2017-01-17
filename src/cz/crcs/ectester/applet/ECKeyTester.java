@@ -1,4 +1,4 @@
-package applets;
+package cz.crcs.ectester.applet;
 
 
 import javacard.framework.ISO7816;
@@ -7,61 +7,65 @@ import javacard.security.*;
 /**
  * Class capable of testing ECDH/C and ECDSA.
  * Note that ECDH and ECDHC output should equal, only the algorithm is different.
+ *
+ * @author Jan Jancar johny@neuromancer.sk
  */
 public class ECKeyTester {
+
     private KeyAgreement ecdhKeyAgreement = null;
     private KeyAgreement ecdhcKeyAgreement = null;
     private Signature ecdsaSignature = null;
 
+    private short sw = ISO7816.SW_NO_ERROR;
+
     public short allocateECDH() {
-        short result = ISO7816.SW_NO_ERROR;
+        sw = ISO7816.SW_NO_ERROR;
         try {
             ecdhKeyAgreement = KeyAgreement.getInstance(KeyAgreement.ALG_EC_SVDP_DH, false);
         } catch (CryptoException ce) {
-            result = ce.getReason();
+            sw = ce.getReason();
         } catch (Exception e) {
-            result = ISO7816.SW_UNKNOWN;
+            sw = ISO7816.SW_UNKNOWN;
         }
-        return result;
+        return sw;
     }
 
     public short allocateECDHC() {
-        short result = ISO7816.SW_NO_ERROR;
+        sw = ISO7816.SW_NO_ERROR;
         try {
             ecdhcKeyAgreement = KeyAgreement.getInstance(KeyAgreement.ALG_EC_SVDP_DHC, false);
         } catch (CryptoException ce) {
-            result = ce.getReason();
+            sw = ce.getReason();
         } catch (Exception e) {
-            result = ISO7816.SW_UNKNOWN;
+            sw = ISO7816.SW_UNKNOWN;
         }
-        return result;
+        return sw;
     }
 
     public short allocateECDSA() {
-        short result = ISO7816.SW_NO_ERROR;
+        sw = ISO7816.SW_NO_ERROR;
         try {
             ecdsaSignature = Signature.getInstance(Signature.ALG_ECDSA_SHA, false);
         } catch (CryptoException ce) {
-            result = ce.getReason();
+            sw = ce.getReason();
         } catch (Exception e) {
-            result = ISO7816.SW_UNKNOWN;
+            sw = ISO7816.SW_UNKNOWN;
         }
-        return result;
+        return sw;
     }
 
     private short testKA(KeyAgreement ka, ECPrivateKey privateKey, byte[] pubkeyBuffer, short pubkeyOffset, short pubkeyLength, byte[] outputBuffer, short outputOffset) {
-        short result = ISO7816.SW_NO_ERROR;
+        sw = ISO7816.SW_NO_ERROR;
+        short length = 0;
         try {
             ka.init(privateKey);
-
-            short secretLength = ka.generateSecret(pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);
-            //TODO, figure out how to separate the return value of this method (short) error, and return the secretLenght..
+            length = ka.generateSecret(pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);
         } catch (CryptoException ce) {
-            result = ce.getReason();
+            sw = ce.getReason();
         } catch (Exception e) {
-            result = ISO7816.SW_UNKNOWN;
+            sw = ISO7816.SW_UNKNOWN;
         }
-        return result;
+        return length;
     }
 
     private short testKA_validPoint(KeyAgreement ka, ECPrivateKey privateKey, byte[] pubkeyBuffer, short pubkeyOffset, short pubkeyLength, byte[] outputBuffer, short outputOffset) {
@@ -91,8 +95,8 @@ public class ECKeyTester {
      * @param pubkeyOffset
      * @param outputBuffer
      * @param outputOffset
-     * @return  ISO7816.SW_NO_ERROR on correct operation,
-     *          exception reason otherwise
+     * @return derived secret length
+     *
      **/
     public short testECDH_validPoint(ECPrivateKey privateKey, ECPublicKey publicKey, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset) {
         short length = publicKey.getW(pubkeyBuffer, pubkeyOffset);
@@ -139,27 +143,26 @@ public class ECKeyTester {
      * @param inputLength
      * @param sigBuffer
      * @param sigOffset
-     * @return  ISO7816.SW_NO_ERROR on correct operation,
-     *          SW_SIG_VERIFY_FAIL,
-     *          SW_SIG_LENGTH_MISMATCH
+     * @return  signature length
      */
     public short testECDSA(ECPrivateKey signKey, ECPublicKey verifyKey, byte[] inputBuffer, short inputOffset, short inputLength, byte[] sigBuffer, short sigOffset) {
-        short result = ISO7816.SW_NO_ERROR;
+        sw = ISO7816.SW_NO_ERROR;
+        short length = 0;
         try {
             ecdsaSignature.init(signKey, Signature.MODE_SIGN);
-            short sigLength = ecdsaSignature.sign(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset);
+            length = ecdsaSignature.sign(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset);
 
             ecdsaSignature.init(verifyKey, Signature.MODE_VERIFY);
-            boolean correct = ecdsaSignature.verify(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset, sigLength);
+            boolean correct = ecdsaSignature.verify(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset, length);
             if (!correct) {
-                result = SimpleECCApplet.SW_SIG_VERIFY_FAIL;
+                sw = ECTesterApplet.SW_SIG_VERIFY_FAIL;
             }
         } catch (CryptoException ce) {
-            result = ce.getReason();
+            sw = ce.getReason();
         } catch (Exception e) {
-            result = ISO7816.SW_UNKNOWN;
+            sw = ISO7816.SW_UNKNOWN;
         }
-        return result;
+        return length;
     }
 
     public KeyAgreement getECDH() {
@@ -172,6 +175,10 @@ public class ECKeyTester {
 
     public Signature getECDSA() {
         return ecdsaSignature;
+    }
+
+    public short getSW() {
+        return sw;
     }
 
 }

@@ -1,15 +1,16 @@
-package simpleapdu;
+package cz.crcs.ectester.reader;
 
 import com.licel.jcardsim.io.CAD;
 import com.licel.jcardsim.io.JavaxSmartCardInterface;
 import java.util.List;
 import java.util.Scanner;
 import javacard.framework.AID;
+
 import javax.smartcardio.*;
 
 /**
- *
- * @author xsvenda
+ * @author Petr Svenda petr@svenda.com
+ * @author Jan Jancar johny@neuromancer.sk
  */
 public class CardMngr {
     private CardTerminal m_terminal = null;
@@ -20,6 +21,7 @@ public class CardMngr {
     private CAD m_cad = null;
     private JavaxSmartCardInterface m_simulator = null;
 
+    private boolean simulate = false;
     
     private final byte selectCM[] = {
         (byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x07, (byte) 0xa0, (byte) 0x00, (byte) 0x00,
@@ -32,12 +34,24 @@ public class CardMngr {
     public static final byte OFFSET_LC = 0x04;
     public static final byte OFFSET_DATA = 0x05;
     public static final byte HEADER_LENGTH = 0x05;
-    public final static short DATA_RECORD_LENGTH = (short) 0x80; // 128B per record
-    public final static short NUMBER_OF_RECORDS = (short) 0x0a; // 10 records
 
-    public boolean ConnectToCard() throws Exception {
+    public static final short DATA_RECORD_LENGTH = (short) 0x80; // 128B per record
+    public static final short NUMBER_OF_RECORDS = (short) 0x0a; // 10 records
+
+    public CardMngr() {
+        this(false);
+    }
+
+    public CardMngr(boolean simulate)  {
+        this.simulate = simulate;
+    }
+
+    public boolean connectToCard() throws CardException {
+        if (simulate)
+            return true;
+
         // TRY ALL READERS, FIND FIRST SELECTABLE
-        List<CardTerminal> terminalList = GetReaderList();
+        List<CardTerminal> terminalList = getReaderList();
 
         if (terminalList == null || terminalList.isEmpty()) {
             System.out.println("No terminals found");
@@ -48,15 +62,14 @@ public class CardMngr {
         boolean cardFound = false;
         for (int i = 0; i < terminalList.size(); i++) {
             System.out.println(i + " : " + terminalList.get(i));
-            m_terminal = (CardTerminal) terminalList.get(i);
+            m_terminal = terminalList.get(i);
             if (m_terminal.isCardPresent()) {
                 m_card = m_terminal.connect("*");
                 System.out.println("card: " + m_card);
                 m_channel = m_card.getBasicChannel();
 
                 //reset the card
-                ATR atr = m_card.getATR();
-                System.out.println(bytesToHex(m_card.getATR().getBytes()));
+                System.out.println(Util.bytesToHex(m_card.getATR().getBytes()));
                 
                 cardFound = true;
             }
@@ -65,9 +78,12 @@ public class CardMngr {
         return cardFound;
     }
     
-    public boolean ConnectToCardSelect() throws CardException {
+    public boolean connectToCardSelect() throws CardException {
+        if (simulate)
+            return true;
+
         // Test available card - if more present, let user to select one
-        List<CardTerminal> terminalList = CardMngr.GetReaderList();
+        List<CardTerminal> terminalList = CardMngr.getReaderList();
         if (terminalList == null || terminalList.isEmpty()) {
             System.out.println("ERROR: No suitable reader with card detected. Please check your reader connection");
             return false;
@@ -82,10 +98,10 @@ public class CardMngr {
                     try {
                         card = terminal.connect("*");
                         ATR atr = card.getATR();
-                        System.out.println(terminalIndex + " : " + terminal.getName() + " - " + CardMngr.bytesToHex(atr.getBytes()));
+                        System.out.println(terminalIndex + " : " + terminal.getName() + " - " + Util.bytesToHex(atr.getBytes()));
                         terminalIndex++;
                     } catch (CardException ex) {
-                        System.out.println(ex);
+                        ex.printStackTrace(System.out);
                     }
                 }
                 System.out.print("Select index of target reader you like to use 1.." + (terminalIndex - 1) + ": ");
@@ -107,18 +123,37 @@ public class CardMngr {
         return true;
     }
 
-    public boolean isConnected() {
-        return m_card != null;
+    public boolean reconnectToCard(byte[] selectAPDU) throws CardException {
+        if (simulate)
+            return true;
+
+        if (connected()) {
+            disconnectFromCard();
+        }
+
+        boolean result = connectToCard();
+        if (result) {
+            // Select our application on card
+            send(selectAPDU);
+        }
+        return result;
     }
 
-    public void DisconnectFromCard() throws Exception {
+    public boolean connected() {
+        return simulate || m_card != null;
+    }
+
+    public void disconnectFromCard() throws CardException {
+        if (simulate)
+            return;
+
         if (m_card != null) {
             m_card.disconnect(false);
             m_card = null;
         }
     }
 
-    public byte[] GetCPLCData() throws Exception {
+    public byte[] getCPLCData() throws Exception {
         byte[] data;
 
         // TODO: Modify to obtain CPLC data
@@ -129,7 +164,7 @@ public class CardMngr {
         apdu[OFFSET_P2] = (byte) 0x00;
         apdu[OFFSET_LC] = (byte) 0x00;
 
-        ResponseAPDU resp = sendAPDU(apdu);
+        ResponseAPDU resp = send(apdu);
         if (resp.getSW() != 0x9000) { // 0x9000 is "OK"
             System.out.println("Fail to obtain card's response data");
             data = null;
@@ -144,7 +179,7 @@ public class CardMngr {
         return data;
     }
 
-    public void ProbeCardCommands() throws Exception {
+    public void probeCardCommands() throws Exception {
         // TODO: modify to probe for instruction
         for (int i = 0; i <= 0; i++) {
             byte apdu[] = new byte[HEADER_LENGTH];
@@ -154,7 +189,7 @@ public class CardMngr {
             apdu[OFFSET_P2] = (byte) 0x00;
             apdu[OFFSET_LC] = (byte) 0x00;
 
-            ResponseAPDU resp = sendAPDU(apdu);
+            ResponseAPDU resp = send(apdu);
             
             System.out.println("Response: " + Integer.toHexString(resp.getSW()));  
             
@@ -164,32 +199,30 @@ public class CardMngr {
         }
     }
     
-    public static List<CardTerminal> GetReaderList() {
+    public static List<CardTerminal> getReaderList() {
         try {
             TerminalFactory factory = TerminalFactory.getDefault();
             return factory.terminals().list();
-        } catch (Exception ex) {
+        } catch (CardException ex) {
             System.out.println("Exception : " + ex);
             return null;
         }
     }
 
-    public ResponseAPDU sendAPDU(byte apdu[]) throws Exception {
-        CommandAPDU commandAPDU = new CommandAPDU(apdu);
-
+    public ResponseAPDU sendAPDU(CommandAPDU apdu) throws CardException {
         System.out.println(">>>>");
-        System.out.println(commandAPDU);
+        System.out.println(apdu);
 
-        System.out.println(bytesToHex(commandAPDU.getBytes()));
-        
+        System.out.println(Util.bytesToHex(apdu.getBytes()));
+
         long elapsed = -System.nanoTime();
 
-        ResponseAPDU responseAPDU = m_channel.transmit(commandAPDU);
-        
+        ResponseAPDU responseAPDU = m_channel.transmit(apdu);
+
         elapsed += System.nanoTime();
 
         System.out.println(responseAPDU);
-        System.out.println(bytesToHex(responseAPDU.getBytes()));
+        System.out.println(Util.bytesToHex(responseAPDU.getBytes()));
 
         if (responseAPDU.getSW1() == (byte) 0x61) {
             CommandAPDU apduToSend = new CommandAPDU((byte) 0x00,
@@ -197,41 +230,17 @@ public class CardMngr {
                     responseAPDU.getSW1());
 
             responseAPDU = m_channel.transmit(apduToSend);
-            System.out.println(bytesToHex(responseAPDU.getBytes()));
+            System.out.println(Util.bytesToHex(responseAPDU.getBytes()));
         }
 
         System.out.println("<<<<");
         System.out.println("Elapsed time (ms): " + elapsed / 1000000);
-        return (responseAPDU);
+        return responseAPDU;
     }
 
-    public static String byteToHex(byte data) {
-        StringBuilder buf = new StringBuilder();
-        buf.append(toHexChar((data >>> 4) & 0x0F));
-        buf.append(toHexChar(data & 0x0F));
-        return buf.toString();
-    }
-
-
-    public static char toHexChar(int i) {
-        if ((0 <= i) && (i <= 9)) {
-            return (char) ('0' + i);
-        } else {
-            return (char) ('a' + (i - 10));
-        }
-    }
-
-    public static String bytesToHex(byte[] data) {
-        return bytesToHex(data, 0, data.length, true);
-    }
-    
-    public static String bytesToHex(byte[] data, int offset, int len, boolean bAddSpace) {
-        StringBuilder buf = new StringBuilder();
-        for (int i = offset; i < (offset + len); i++) {
-            buf.append(byteToHex(data[i]));
-            if (bAddSpace) { buf.append(" "); }
-        }
-        return (buf.toString());
+    public ResponseAPDU sendAPDU(byte apdu[]) throws CardException {
+        CommandAPDU commandAPDU = new CommandAPDU(apdu);
+        return sendAPDU(commandAPDU);
     }
     
     public boolean prepareLocalSimulatorApplet(byte[] appletAIDArray, byte[] installData, Class appletClass) {
@@ -243,18 +252,38 @@ public class CardMngr {
         AID appletAIDRes =  m_simulator.installApplet(appletAID, appletClass, installData, (short) 0, (byte) installData.length);
         return m_simulator.selectApplet(appletAID);
     }
-    
-    public byte[] sendAPDUSimulator(byte apdu[]) throws Exception {
+
+    public ResponseAPDU sendAPDUSimulator(CommandAPDU apdu) {
         System.out.println(">>>>");
-        System.out.println(bytesToHex(apdu));
+        System.out.println(Util.bytesToHex(apdu.getBytes()));
 
-        byte[] responseBytes = m_simulator.transmitCommand(apdu);
+        ResponseAPDU response = m_simulator.transmitCommand(apdu);
+        byte[] responseBytes = response.getBytes();
 
-        System.out.println(bytesToHex(responseBytes));
+        System.out.println(Util.bytesToHex(responseBytes));
         System.out.println("<<<<");
 
-        return responseBytes;
+        return response;
     }
-    
-    
+
+    public ResponseAPDU sendAPDUSimulator(byte[] apdu) {
+        CommandAPDU commandAPDU = new CommandAPDU(apdu);
+        return sendAPDUSimulator(commandAPDU);
+    }
+
+    public ResponseAPDU send(CommandAPDU apdu) throws CardException {
+        ResponseAPDU response;
+        if (simulate) {
+            response = sendAPDUSimulator(apdu);
+        } else {
+            response = sendAPDU(apdu);
+        }
+        return response;
+    }
+
+    public ResponseAPDU send(byte[] apdu) throws CardException {
+        CommandAPDU commandAPDU = new CommandAPDU(apdu);
+        return send(commandAPDU);
+    }
+
 }

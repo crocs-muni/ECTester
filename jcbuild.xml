@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir="." default="all" name="ECTester">
+<project basedir="." default="build" name="ECTesterApplet">
   <!-- Based on Martin Paljak's applets playground -->
   <!-- Applet building dependencies -->
   <property name="JC222" value="ext/java_card_kit-2_2_2"/>
@@ -10,15 +10,17 @@
   
   <!-- ant-javacard task from javacard.pro -->
   <taskdef name="javacard" classname="pro.javacard.ant.JavaCard" classpath="ext/ant-javacard.jar"/>
- 
-  <!-- All included applets -->
-  <target name="all" depends="SimpleECC" />
-  
-  <target name="SimpleECC">
+
+  <target name="build" description="Builds the CAP file.">
     <javacard jckit="${JC221}">
-      <cap output="!uploader/simpleECC.cap" sources="src/applets" aid="4543546573746572" >
-        <applet class="applets.SimpleECCApplet" aid="45435465737465723031"/>
+      <cap output="!uploader/ectester.cap" sources="src/cz/crcs/ectester/applet" aid="4543546573746572" >
+        <applet class="cz.crcs.ectester.applet.ECTesterApplet" aid="45435465737465723031"/>
       </cap>
-   </javacard>
+    </javacard>
+  </target>
+
+  <target name="upload" depends="build" description="Uploads the CAP file to the card, using gp.jar">
+    <exec dir="!uploader" executable="./gppro_upload.sh" osfamily="unix"/>
+    <exec dir="!uploader" executable="./gppro_upload.bat" osfamily="windows"/>
   </target>
 </project>

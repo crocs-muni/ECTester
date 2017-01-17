@@ -5,8 +5,8 @@ Tests support and behavior of smartcards with JavaCard platform with focus on El
 
 Usage
 ------
-1. Upload simpleECC.cap using your favorite tool (e.g., [GlobalPlatformPro tool](https://github.com/martinpaljak/GlobalPlatform))
-2. Run `java -jar SimpleAPDU.jar`
+1. Upload ectester.cap using your favorite tool (e.g., [GlobalPlatformPro tool](https://github.com/martinpaljak/GlobalPlatform))
+2. Run `java -jar ectester.jar`
 3. Inspect output log with annotated results
 
 Following operations are tested:
@@ -17,7 +17,7 @@ Following operations are tested:
 - Signature via ECDSA
 - Behavior of card when invalid curves/points are provided (should fail)
 
-See `java -jar SimpleAPDU.jar -h` for more. 
+See `java -jar ectester.jar -h` for more. 
 
 Example output
 --------------

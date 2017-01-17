@@ -1,7 +1,6 @@
-package simpleapdu;
+package cz.crcs.ectester.reader;
 
-import applets.EC_Consts;
-import applets.SimpleECCApplet;
+import cz.crcs.ectester.applet.EC_Consts;
 import javacard.framework.ISO7816;
 import javacard.security.CryptoException;
 import javacard.security.KeyPair;
@@ -112,7 +111,7 @@ public class SimpleAPDU {
             }
 
             //disconnect
-            cardManager.DisconnectFromCard();
+            cardManager.disconnectFromCard();
         } catch (Exception ex) {
             if (systemOutLogger != null) {
                 systemOutLogger.println("Exception : " + ex);
@@ -156,11 +155,11 @@ public class SimpleAPDU {
     }
 
     private boolean ReconnnectToCard() throws Exception {
-        if (cardManager.isConnected()) {
-            cardManager.DisconnectFromCard();
+        if (cardManager.connected()) {
+            cardManager.disconnectFromCard();
         }
 
-        boolean result = cardManager.ConnectToCard();
+        boolean result = cardManager.connectToCard();
         if (result) {
             // Select our application on card
             cardManager.sendAPDU(SELECT_ECTESTERAPPLET);
@@ -219,7 +218,7 @@ public class SimpleAPDU {
     }
 
     private void generateECKeys(int amount, byte keyClass, short keyLength, boolean anomalous) throws Exception {
-        if (cardManager.ConnectToCardSelect()) {
+        if (cardManager.connectToCardSelect()) {
             cardManager.sendAPDU(SELECT_ECTESTERAPPLET);
 
             String keyFileName = String.format("ECKEYS_%s_%d.log", keyClass == KeyPair.ALG_EC_FP ? "fp" : "f2m", System.currentTimeMillis());
@@ -262,14 +261,14 @@ public class SimpleAPDU {
                     offset++;
                     short len = getShort(data, offset);
                     offset += 2;
-                    pubKeyW = CardMngr.bytesToHex(data, offset, len, false);
+                    pubKeyW = Util.bytesToHex(data, offset, len, false);
                     offset += len;
                 }
                 if (data[offset] == EC_Consts.TAG_ECPRIVKEY) {
                     offset++;
                     short len = getShort(data, offset);
                     offset += 2;
-                    privKeyS = CardMngr.bytesToHex(data, offset, len, false);
+                    privKeyS = Util.bytesToHex(data, offset, len, false);
                     offset += len;
                 }
 
