@@ -50,18 +50,22 @@ public class Util {
     }
 
     public static String bytesToHex(byte[] data) {
-        return bytesToHex(data, 0, data.length, true);
+        return bytesToHex(data, true);
+    }
+
+    public static String bytesToHex(byte[] data, boolean addSpace) {
+        return bytesToHex(data, 0, data.length, addSpace);
     }
 
     public static String bytesToHex(byte[] data, int offset, int len) {
         return bytesToHex(data, offset, len, true);
     }
 
-    public static String bytesToHex(byte[] data, int offset, int len, boolean bAddSpace) {
+    public static String bytesToHex(byte[] data, int offset, int len, boolean addSpace) {
         StringBuilder buf = new StringBuilder();
         for (int i = offset; i < (offset + len); i++) {
             buf.append(byteToHex(data[i]));
-            if (bAddSpace && i != (offset + len - 1)) {
+            if (addSpace && i != (offset + len - 1)) {
                 buf.append(" ");
             }
         }

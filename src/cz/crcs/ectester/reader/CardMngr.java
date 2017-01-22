@@ -255,11 +255,13 @@ public class CardMngr {
 
     public ResponseAPDU sendAPDUSimulator(CommandAPDU apdu) {
         System.out.println(">>>>");
+        System.out.println(apdu);
         System.out.println(Util.bytesToHex(apdu.getBytes()));
 
         ResponseAPDU response = simulator.transmitCommand(apdu);
         byte[] responseBytes = response.getBytes();
 
+        System.out.println(response);
         System.out.println(Util.bytesToHex(responseBytes));
         System.out.println("<<<<");
 
@@ -285,13 +287,4 @@ public class CardMngr {
         CommandAPDU commandAPDU = new CommandAPDU(apdu);
         return send(commandAPDU);
     }
-
-    public ResponseAPDU[] send(CommandAPDU... apdus) throws CardException {
-        ResponseAPDU[] result = new ResponseAPDU[apdus.length];
-        for (int i = 0; i < apdus.length; i++) {
-            result[i] = send(apdus[i]);
-        }
-        return result;
-    }
-
 }

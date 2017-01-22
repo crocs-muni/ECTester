@@ -2,6 +2,7 @@ package cz.crcs.ectester.reader;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * @author Petr Svenda petr@svenda.com

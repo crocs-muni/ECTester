@@ -170,31 +170,6 @@ public class ECTesterApplet extends Applet {
     }
 
     /**
-     * @param keyPair   which keyPair to use, local/remote (KEYPAIR_* | ...)
-     * @param keyLength key length to set
-     * @param keyClass  key class to allocate
-     * @param buffer    apdu buffer
-     * @param offset    offset into apdu buffer
-     * @return length of data written to the buffer
-     */
-    private short allocate(byte keyPair, short keyLength, byte keyClass, byte[] buffer, short offset) {
-        short length = 0;
-        if ((keyPair & KEYPAIR_LOCAL) != 0) {
-            localKeypair = keyGenerator.allocatePair(keyClass, keyLength);
-            Util.setShort(buffer, offset, keyGenerator.getSW());
-            length += 2;
-        }
-
-        if ((keyPair & KEYPAIR_REMOTE) != 0) {
-            remoteKeypair = keyGenerator.allocatePair(keyClass, keyLength);
-            Util.setShort(buffer, (short) (offset + length), keyGenerator.getSW());
-            length += 2;
-        }
-
-        return length;
-    }
-
-    /**
      * Sets curve parameters on local and remote keyPairs.
      * returns setCurve SWs, set params if export
      *
@@ -236,6 +211,102 @@ public class ECTesterApplet extends Applet {
     }
 
     /**
+     * Generates the local and remote keyPairs.
+     * returns generate SWs, pubkey and privkey if export
+     *
+     * @param apdu P1   = byte keyPair (KEYPAIR_* | ...)
+     *             P2   = byte export (EXPORT_* | KEYPAIR_*)
+     */
+    private void insGenerate(APDU apdu) {
+        apdu.setIncomingAndReceive();
+        byte[] apdubuf = apdu.getBuffer();
+
+        byte keyPair = apdubuf[ISO7816.OFFSET_P1];
+        byte export = apdubuf[ISO7816.OFFSET_P2];
+
+        short len = 0;
+        if ((keyPair & KEYPAIR_LOCAL) != 0)
+            len += generate(localKeypair, apdubuf, (short) 0);
+        if ((keyPair & KEYPAIR_REMOTE) != 0)
+            len += generate(remoteKeypair, apdubuf, len);
+        if ((export & KEYPAIR_LOCAL) != 0)
+            len += export(localKeypair, export, (short) (EC_Consts.PARAMETER_W | EC_Consts.PARAMETER_S), apdubuf, len);
+        if ((export & KEYPAIR_REMOTE) != 0)
+            len += export(remoteKeypair, export, (short) (EC_Consts.PARAMETER_W | EC_Consts.PARAMETER_S), apdubuf, len);
+
+        apdu.setOutgoingAndSend((short) 0, len);
+    }
+
+    /**
+     * Performs ECDH, between the pubkey specified in P1(local/remote) and the privkey specified in P2(local/remote).
+     * returns deriveSecret SW, if export != 0 => short secretlen, byte[] secret
+     *
+     * @param apdu P1   = byte pubkey (KEYPAIR_*)
+     *             P2   = byte privkey (KEYPAIR_*)
+     *             DATA = byte export (EXPORT_ECDH || 0)
+     *             byte invalid (00 = valid, !00 = invalid)
+     */
+    private void insECDH(APDU apdu) {
+        apdu.setIncomingAndReceive();
+        byte[] apdubuf = apdu.getBuffer();
+
+        byte pubkey = apdubuf[ISO7816.OFFSET_P1];
+        byte privkey = apdubuf[ISO7816.OFFSET_P2];
+        byte export = apdubuf[ISO7816.OFFSET_CDATA];
+        byte invalid = apdubuf[(short) (ISO7816.OFFSET_CDATA + 1)];
+
+        short len = ecdh(pubkey, privkey, export, invalid, apdubuf, (short) 0);
+
+        apdu.setOutgoingAndSend((short) 0, len);
+    }
+
+    /**
+     * Performs ECDSA signature and verification on data provided or random, using the keyPair in P1(local/remote).
+     * returns ecdsa SW, if export != 0 => short signature_length, byte[] signature
+     *
+     * @param apdu P1   = byte keyPair (KEYPAIR_*)
+     *             P2   = byte export (EXPORT_SIG || 0)
+     *             DATA = short dataLength (00 = random data generated, !00 = data length)
+     *             byte[] data
+     */
+    private void insECDSA(APDU apdu) {
+        apdu.setIncomingAndReceive();
+        byte[] apdubuf = apdu.getBuffer();
+
+        byte keyPair = apdubuf[ISO7816.OFFSET_P1];
+        byte export = apdubuf[ISO7816.OFFSET_P2];
+
+        short len = ecdsa(keyPair, export, apdubuf, ISO7816.OFFSET_CDATA, (short) 0);
+
+        apdu.setOutgoingAndSend((short) 0, len);
+    }
+
+    /**
+     * @param keyPair   which keyPair to use, local/remote (KEYPAIR_* | ...)
+     * @param keyLength key length to set
+     * @param keyClass  key class to allocate
+     * @param buffer    apdu buffer
+     * @param offset    offset into apdu buffer
+     * @return length of data written to the buffer
+     */
+    private short allocate(byte keyPair, short keyLength, byte keyClass, byte[] buffer, short offset) {
+        short length = 0;
+        if ((keyPair & KEYPAIR_LOCAL) != 0) {
+            localKeypair = keyGenerator.allocatePair(keyClass, keyLength);
+            Util.setShort(buffer, offset, keyGenerator.getSW());
+            length += 2;
+        }
+
+        if ((keyPair & KEYPAIR_REMOTE) != 0) {
+            remoteKeypair = keyGenerator.allocatePair(keyClass, keyLength);
+            Util.setShort(buffer, (short) (offset + length), keyGenerator.getSW());
+            length += 2;
+        }
+
+        return length;
+    }
+
+    /**
      * @param keyPair    KeyPair to set params on
      * @param curve      curve to set (EC_Consts.CURVE_*)
      * @param params     parameters to set (EC_Consts.PARAMETER_* | ...)
@@ -267,33 +338,6 @@ public class ECTesterApplet extends Applet {
             sw = keyGenerator.corruptCurve(keyPair, corrupted, corruption, ramArray, (short) 0);
         Util.setShort(buffer, outOffset, sw);
         return 2;
-    }
-
-    /**
-     * Generates the local and remote keyPairs.
-     * returns generate SWs, pubkey and privkey if export
-     *
-     * @param apdu P1   = byte keyPair (KEYPAIR_* | ...)
-     *             P2   = byte export (EXPORT_* | KEYPAIR_*)
-     */
-    private void insGenerate(APDU apdu) {
-        apdu.setIncomingAndReceive();
-        byte[] apdubuf = apdu.getBuffer();
-
-        byte keyPair = apdubuf[ISO7816.OFFSET_P1];
-        byte export = apdubuf[ISO7816.OFFSET_P2];
-
-        short len = 0;
-        if ((keyPair & KEYPAIR_LOCAL) != 0)
-            len += generate(localKeypair, apdubuf, (short) 0);
-        if ((keyPair & KEYPAIR_REMOTE) != 0)
-            len += generate(remoteKeypair, apdubuf, len);
-        if ((export & KEYPAIR_LOCAL) != 0)
-            len += export(localKeypair, export, (short) (EC_Consts.PARAMETER_W | EC_Consts.PARAMETER_S), apdubuf, len);
-        if ((export & KEYPAIR_REMOTE) != 0)
-            len += export(remoteKeypair, export, (short) (EC_Consts.PARAMETER_W | EC_Consts.PARAMETER_S), apdubuf, len);
-
-        apdu.setOutgoingAndSend((short) 0, len);
     }
 
     /**
@@ -334,29 +378,6 @@ public class ECTesterApplet extends Applet {
     }
 
     /**
-     * Performs ECDH, between the pubkey specified in P1(local/remote) and the privkey specified in P2(local/remote).
-     * returns deriveSecret SW, if export != 0 => short secretlen, byte[] secret
-     *
-     * @param apdu P1   = byte pubkey (KEYPAIR_*)
-     *             P2   = byte privkey (KEYPAIR_*)
-     *             DATA = byte export (EXPORT_ECDH || 0)
-     *             byte invalid (00 = valid, !00 = invalid)
-     */
-    private void insECDH(APDU apdu) {
-        apdu.setIncomingAndReceive();
-        byte[] apdubuf = apdu.getBuffer();
-
-        byte pubkey = apdubuf[ISO7816.OFFSET_P1];
-        byte privkey = apdubuf[ISO7816.OFFSET_P2];
-        byte export = apdubuf[ISO7816.OFFSET_CDATA];
-        byte invalid = apdubuf[(short) (ISO7816.OFFSET_CDATA + 1)];
-
-        short len = ecdh(pubkey, privkey, export, invalid, apdubuf, (short) 0);
-
-        apdu.setOutgoingAndSend((short) 0, len);
-    }
-
-    /**
      * @param pubkey  keyPair to use for public key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
      * @param privkey keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
      * @param export  whether to export ECDH secret
@@ -389,27 +410,6 @@ public class ECTesterApplet extends Applet {
         }
 
         return length;
-    }
-
-    /**
-     * Performs ECDSA signature and verification on data provided or random, using the keyPair in P1(local/remote).
-     * returns ecdsa SW, if export != 0 => short signature_length, byte[] signature
-     *
-     * @param apdu P1   = byte keyPair (KEYPAIR_*)
-     *             P2   = byte export (EXPORT_SIG || 0)
-     *             DATA = short dataLength (00 = random data generated, !00 = data length)
-     *             byte[] data
-     */
-    private void insECDSA(APDU apdu) {
-        apdu.setIncomingAndReceive();
-        byte[] apdubuf = apdu.getBuffer();
-
-        byte keyPair = apdubuf[ISO7816.OFFSET_P1];
-        byte export = apdubuf[ISO7816.OFFSET_P2];
-
-        short len = ecdsa(keyPair, export, apdubuf, ISO7816.OFFSET_CDATA, (short) 0);
-
-        apdu.setOutgoingAndSend((short) 0, len);
     }
 
     /**

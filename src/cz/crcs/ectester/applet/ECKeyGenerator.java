@@ -72,6 +72,10 @@ public class ECKeyGenerator {
         byte alg = EC_Consts.getCurveType(curve);
         sw = ISO7816.SW_NO_ERROR;
 
+        if (params == EC_Consts.PARAMETERS_NONE) {
+        	return sw;
+       	}
+
         short length;
         if (alg == KeyPair.ALG_EC_FP && (params & EC_Consts.PARAMETER_FP) != 0) {
             length = EC_Consts.getCurveParameter(curve, EC_Consts.PARAMETER_FP, buffer, offset);
@@ -119,6 +123,9 @@ public class ECKeyGenerator {
      */
     public short corruptCurve(KeyPair keypair, byte key, short corruptParams, byte corruption, byte[] buffer, short offset) {
         sw = ISO7816.SW_NO_ERROR;
+		if (corruptParams == EC_Consts.PARAMETERS_NONE) {
+			return sw;
+		}
 
         //go through param bit by bit, and invalidate all selected params
         short paramMask = EC_Consts.PARAMETER_FP;
@@ -244,6 +251,9 @@ public class ECKeyGenerator {
      */
     public short setExternalCurve(KeyPair keypair, byte key, short params, byte[] inBuffer, short inOffset) {
         sw = ISO7816.SW_NO_ERROR;
+        if (params == EC_Consts.PARAMETERS_NONE) {
+        	return sw;
+        }
 
         short paramMask = EC_Consts.PARAMETER_FP;
         while (paramMask <= EC_Consts.PARAMETER_S) {
@@ -261,11 +271,14 @@ public class ECKeyGenerator {
     }
 
     /**
-     * @param key
-     * @param param
-     * @param outputBuffer
-     * @param outputOffset
-     * @return
+     * Exports a selected parameter from a given keyPairs key.
+     *
+     * @param keypair	   keypair to export from
+     * @param key		   key to export from (KEY_PUBLIC | KEY_PRIVATE)
+     * @param param		   parameter to export (EC_Consts.PARAMETER_* || ...)
+     * @param outputBuffer buffer to write to
+     * @param outputOffset offset to start writing in buffer
+     * @return length of data written
      */
     public short exportParameter(KeyPair keypair, byte key, short param, byte[] outputBuffer, short outputOffset) {
         sw = ISO7816.SW_NO_ERROR;
@@ -319,18 +332,25 @@ public class ECKeyGenerator {
     }
 
     /**
-     * @param keypair
-     * @param key
-     * @param params
-     * @param buffer
-     * @param offset
-     * @return
+     * Exports selected parameters from a given keyPairs key.
+     * Raw parameter data is always prepended by its length as a
+     * short value. The order of parameters is the usual one from
+     * EC_Consts: field,a,b,g,r,k,w,s.
+     *
+     * @param keypair keyPair to export from
+     * @param key     key to export from (KEY_PUBLIC || KEY_PRIVATE)
+     * @param params  params to export (EC_Consts.PARAMETER_* | ...)
+     * @param buffer  buffer to export to
+     * @param offset  offset to start writing in buffer
+     * @return length of data written
      */
     public short exportParameters(KeyPair keypair, byte key, short params, byte[] buffer, short offset) {
         sw = ISO7816.SW_NO_ERROR;
+		if (params == EC_Consts.PARAMETERS_NONE) {
+			return sw;
+		}
 
         short length = 0;
-
         short paramMask = EC_Consts.PARAMETER_FP;
         while (paramMask <= EC_Consts.PARAMETER_S) {
             short masked = (short) (paramMask & params);
@@ -352,11 +372,11 @@ public class ECKeyGenerator {
     /**
      * Copies this KeyPairs curve parameters to another ECKeyGenerator.
      *
-     * @param from
-     * @param to
-     * @param buffer
-     * @param offset
-     * @return
+     * @param from 	 keyPair to copy from
+     * @param to	 keyPair to copy to
+     * @param buffer buffer to use for copying
+     * @param offset offset to use in buffer
+     * @return sw
      */
     public short copyCurve(KeyPair from, KeyPair to, byte[] buffer, short offset) {
         sw = ISO7816.SW_NO_ERROR;

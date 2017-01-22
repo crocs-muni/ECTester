@@ -27,15 +27,12 @@ import javacard.security.KeyPair;
 import org.apache.commons.cli.*;
 
 import javax.smartcardio.CardException;
-import javax.smartcardio.CommandAPDU;
-import javax.smartcardio.ResponseAPDU;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -187,10 +184,8 @@ public class ECTester {
             }
         } catch (MissingArgumentException maex) {
             System.err.println("Option, " + maex.getOption().getOpt() + " requires an argument: " + maex.getOption().getArgName());
-        } catch (AlreadySelectedException asex) {
-            System.err.println(asex.getMessage());
         } catch (ParseException | CardException pex) {
-            pex.printStackTrace();
+            System.err.println(pex.getMessage());
         } catch (NumberFormatException nfex) {
             System.err.println("Not a number. " + nfex.getMessage());
             nfex.printStackTrace(System.err);
@@ -370,8 +365,7 @@ public class ECTester {
      */
     private void generate() throws CardException, IOException {
         byte keyClass = optPrimeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
-        CommandAPDU[] prepare = prepareCurve(ECTesterApplet.KEYPAIR_LOCAL, (short) optBits, keyClass);
-        cardManager.send(prepare);
+        List<Response> prepare = Command.sendAll(prepareCurve(ECTesterApplet.KEYPAIR_LOCAL, (short) optBits, keyClass));
 
         FileWriter keysFile = new FileWriter(optOutput);
         keysFile.write("index;time;pubW;privS\n");
@@ -379,30 +373,27 @@ public class ECTester {
         int generated = 0;
         int retry = 0;
         while (generated < optGenerateAmount || optGenerateAmount == 0) {
-            CommandAPDU generate = insGenerate(ECTesterApplet.KEYPAIR_LOCAL, (byte) (ECTesterApplet.EXPORT_BOTH | ECTesterApplet.KEYPAIR_LOCAL));
-            long elapsed = -System.nanoTime();
-            ResponseAPDU response = cardManager.send(generate);
-            elapsed += System.nanoTime();
+            Command.Generate generate = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (byte) (ECTesterApplet.EXPORT_BOTH | ECTesterApplet.KEYPAIR_LOCAL));
+            Response.Generate response = generate.send();
+            long elapsed = response.getDuration();
 
-            byte[] bytes = response.getData();
-            if (bytes.length <= 2) {
-                //error, retry 10 times
+            if (!response.successful()) {
                 if (retry < 10) {
                     retry++;
+                    continue;
                 } else {
                     System.err.println("Keys could not be generated.");
                     break;
                 }
-            } else {
-                short publicLength = Util.getShort(bytes, 2);
-                String pubkey = Util.bytesToHex(bytes, 4, publicLength, false);
-                short privateLength = Util.getShort(bytes, 4 + publicLength);
-                String privkey = Util.bytesToHex(bytes, 6 + publicLength, privateLength, false);
-
-                keysFile.write(String.format("%d;%d;%s;%s\n", generated, elapsed / 1000000, pubkey, privkey));
-                keysFile.flush();
-                generated++;
             }
+            systemOutLogger.println(response.toString());
+
+            String pub = Util.bytesToHex(response.getPublic(ECTesterApplet.KEYPAIR_LOCAL), false);
+            String priv = Util.bytesToHex(response.getPrivate(ECTesterApplet.KEYPAIR_LOCAL), false);
+            String line = String.format("%d;%d;%s;%s\n", generated, elapsed / 1000000, pub, priv);
+            keysFile.write(line);
+            keysFile.flush();
+            generated++;
         }
         keysFile.close();
     }
@@ -460,23 +451,24 @@ public class ECTester {
      */
     private void ecdh() throws IOException, CardException {
         byte keyClass = optPrimeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
-        CommandAPDU[] curve = prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, keyClass);
-        cardManager.send(curve);
+        List<Response> ecdh = Command.sendAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, keyClass));
 
         if (optPublic != null || optPrivate != null || optKey != null) {
-            CommandAPDU local = insGenerate(ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_NONE);
-            cardManager.send(local);
-            CommandAPDU remote = prepareKey(ECTesterApplet.KEYPAIR_REMOTE);
-            cardManager.send(remote);
+            Response local = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_NONE).send();
+            Response remote = prepareKey(ECTesterApplet.KEYPAIR_REMOTE).send();
+            ecdh.add(local);
+            ecdh.add(remote);
         } else {
-            CommandAPDU both = insGenerate(ECTesterApplet.KEYPAIR_BOTH, ECTesterApplet.EXPORT_NONE);
-            cardManager.send(both);
+            Response both = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH, ECTesterApplet.EXPORT_NONE).send();
+            ecdh.add(both);
         }
 
-        CommandAPDU ecdh = insECDH(ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_ECDH, (byte) 0);
-        ResponseAPDU response = cardManager.send(ecdh);
-        //TODO print response SWs/error codes
-        //TODO output to file
+        Response.ECDH perform = new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_ECDH, (byte) 0).send();
+        ecdh.add(perform);
+        for (Response r : ecdh) {
+            systemOutLogger.println(r.toString());
+        }
+        //TODO check perform.hasSecret(), write perform.getSecret to file if -o
     }
 
     /**
@@ -487,16 +479,15 @@ public class ECTester {
      */
     private void ecdsa() throws CardException, IOException {
         byte keyClass = optPrimeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
-        CommandAPDU[] curve = prepareCurve(ECTesterApplet.KEYPAIR_LOCAL, (short) optBits, keyClass);
-        cardManager.send(curve);
+        List<Response> ecdsa = Command.sendAll(prepareCurve(ECTesterApplet.KEYPAIR_LOCAL, (short) optBits, keyClass));
 
+        Response keys;
         if (optKey != null || (optPublic != null && optPrivate != null)) {
-            CommandAPDU set = prepareKey(ECTesterApplet.KEYPAIR_LOCAL);
-            cardManager.send(set);
+            keys = prepareKey(ECTesterApplet.KEYPAIR_LOCAL).send();
         } else {
-            CommandAPDU generate = insGenerate(ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_NONE);
-            cardManager.send(generate);
+            keys = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_NONE).send();
         }
+        ecdsa.add(keys);
 
         //read file, if asked to sign
         byte[] data = null;
@@ -509,96 +500,12 @@ public class ECTester {
             data = Files.readAllBytes(in.toPath());
         }
 
-        CommandAPDU ecdsa = insECDSA(ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_SIG, data);
-        ResponseAPDU response = cardManager.send(ecdsa);
-        //TODO print response SWs/error codes
+        Response.ECDSA perform = new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_SIG, data).send();
+        ecdsa.add(perform);
+        for (Response r : ecdsa) {
+            systemOutLogger.println(r.toString());
+        }
         //TODO output to file
-    }
-
-    /**
-     * Creates the INS_ALLOCATE instruction.
-     *
-     * @param keyPair   which keyPair to use, local/remote (KEYPAIR_* | ...)
-     * @param keyLength key length to set
-     * @param keyClass  key class to allocate
-     * @return apdu to send
-     */
-    private CommandAPDU insAllocate(byte keyPair, short keyLength, byte keyClass) {
-        byte[] data = new byte[]{0, 0, keyClass};
-        Util.setShort(data, 0, keyLength);
-
-        return new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ALLOCATE, keyPair, 0x00, data);
-    }
-
-    /**
-     * Creates the INS_SET instruction.
-     *
-     * @param keyPair    which keyPair to set params on, local/remote (KEYPAIR_* || ...)
-     * @param export     whether to export set params from keyPair
-     * @param curve      curve to set (EC_Consts.CURVE_*)
-     * @param params     parameters to set (EC_Consts.PARAMETER_* | ...)
-     * @param corrupted  parameters to corrupt (EC_Consts.PARAMETER_* | ...)
-     * @param corruption corruption type (EC_Consts.CORRUPTION_*)
-     * @param external   external curve data, can be null
-     * @return apdu to send
-     */
-    private CommandAPDU insSet(byte keyPair, byte export, byte curve, short params, short corrupted, byte corruption, byte[] external) {
-        int len = external != null ? 6 + 2 + external.length : 6;
-        byte[] data = new byte[len];
-        data[0] = curve;
-        Util.setShort(data, 1, params);
-        Util.setShort(data, 3, corrupted);
-        data[5] = corruption;
-        if (external != null) {
-            System.arraycopy(external, 0, data, 6, external.length);
-        }
-
-        return new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_SET, keyPair, export, data);
-    }
-
-    /**
-     * Creates the INS_GENERATE instruction.
-     *
-     * @param keyPair which keyPair to generate, local/remote (KEYPAIR_* || ...)
-     * @param export  whether to export generated keys from keyPair
-     * @return apdu to send
-     */
-    private CommandAPDU insGenerate(byte keyPair, byte export) {
-        return new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_GENERATE, keyPair, export);
-    }
-
-    /**
-     * Creates the INS_ECDH instruction.
-     *
-     * @param pubkey  keyPair to use for public key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
-     * @param privkey keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
-     * @param export  whether to export ECDH secret
-     * @param invalid whether to invalidate the pubkey before ECDH
-     * @return apdu to send
-     */
-    private CommandAPDU insECDH(byte pubkey, byte privkey, byte export, byte invalid) {
-        byte[] data = new byte[]{export, invalid};
-
-        return new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ECDH, pubkey, privkey, data);
-    }
-
-    /**
-     * Creates the INS_ECDSA instruction.
-     *
-     * @param keyPair keyPair to use for signing and verification (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
-     * @param export  whether to export ECDSA signature
-     * @param raw     data to sign, can be null, in which case random data is signed.
-     * @return apdu to send
-     */
-    private CommandAPDU insECDSA(byte keyPair, byte export, byte[] raw) {
-        int len = raw != null ? raw.length : 0;
-        byte[] data = new byte[2 + len];
-        Util.setShort(data, 0, (short) len);
-        if (raw != null) {
-            System.arraycopy(raw, 0, data, 2, len);
-        }
-
-        return new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ECDSA, keyPair, export, data);
     }
 
     /**
@@ -608,23 +515,23 @@ public class ECTester {
      * @return an array of CommandAPDUs to send in order to prepare the keypair/s.
      * @throws IOException if curve file cannot be found/opened
      */
-    private CommandAPDU[] prepareCurve(byte keyPair, short keyLength, byte keyClass) throws IOException {
-        List<CommandAPDU> commands = new ArrayList<>();
-        commands.add(insAllocate(keyPair, keyLength, keyClass));
+    private List<Command> prepareCurve(byte keyPair, short keyLength, byte keyClass) throws IOException {
+        List<Command> commands = new ArrayList<>();
+        commands.add(new Command.Allocate(cardManager, keyPair, keyLength, keyClass));
 
         short domainParams = keyClass == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
         if (optNamed) {
-            commands.add(insSet(keyPair, ECTesterApplet.EXPORT_NONE, EC_Consts.getCurve(keyLength, keyClass), domainParams, EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, null));
+            commands.add(new Command.Set(cardManager, keyPair, ECTesterApplet.EXPORT_NONE, EC_Consts.getCurve(keyLength, keyClass), domainParams, EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, null));
         }
         if (optCurve != null) {
             byte[] external = ParamReader.flatten(domainParams, ParamReader.readFile(optCurve));
             if (external == null) {
                 throw new IOException("Couldn't read the curve file correctly.");
             }
-            commands.add(insSet(keyPair, ECTesterApplet.EXPORT_NONE, EC_Consts.CURVE_external, domainParams, EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, external));
+            commands.add(new Command.Set(cardManager, keyPair, ECTesterApplet.EXPORT_NONE, EC_Consts.CURVE_external, domainParams, EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, external));
         }
 
-        return commands.toArray(new CommandAPDU[commands.size()]);
+        return commands;
     }
 
     /**
@@ -632,7 +539,7 @@ public class ECTester {
      * @return a CommandAPDU setting params loaded on the keyPair/s
      * @throws IOException if any of the key files cannot be found/opened
      */
-    private CommandAPDU prepareKey(byte keyPair) throws IOException {
+    private Command prepareKey(byte keyPair) throws IOException {
         short params = EC_Consts.PARAMETERS_NONE;
         byte[] data = null;
         if (optKey != null) {
@@ -656,7 +563,7 @@ public class ECTester {
              */
             throw new IOException("Couldn't read the key file correctly.");
         }
-        return insSet(keyPair, ECTesterApplet.EXPORT_NONE, EC_Consts.CURVE_external, params, EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, data);
+        return new Command.Set(cardManager, keyPair, ECTesterApplet.EXPORT_NONE, EC_Consts.CURVE_external, params, EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, data);
     }
 
     public static void main(String[] args) {
