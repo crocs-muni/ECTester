@@ -23,7 +23,7 @@ public class CardMngr {
 
     private boolean simulate = false;
 
-    private final byte selectCM[] = {
+    private final byte[] selectCM = {
             (byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x07, (byte) 0xa0, (byte) 0x00, (byte) 0x00,
             (byte) 0x00, (byte) 0x18, (byte) 0x43, (byte) 0x4d};
 

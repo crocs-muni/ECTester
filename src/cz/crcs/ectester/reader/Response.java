@@ -6,17 +6,19 @@ import javacard.framework.ISO7816;
 import javacard.security.KeyPair;
 
 import javax.smartcardio.ResponseAPDU;
+import java.util.List;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
 public abstract class Response {
-    protected ResponseAPDU resp;
-    protected long time;
-    protected short sw1 = 0;
-    protected short sw2 = 0;
-    protected byte[][] params;
-    protected boolean success = true;
+    private ResponseAPDU resp;
+    private long time;
+    private short sw1 = 0;
+    private short sw2 = 0;
+    private int numSW = 0;
+    private byte[][] params;
+    private boolean success = true;
 
     protected Response(ResponseAPDU response, long time) {
         this.resp = response;
@@ -24,6 +26,8 @@ public abstract class Response {
     }
 
     protected void parse(int numSW, int numParams) {
+        this.numSW = numSW;
+
         byte[] data = resp.getData();
         int offset = 0;
 
@@ -31,14 +35,16 @@ public abstract class Response {
         if (--numSW >= 0 && getLength() >= 2) {
             sw1 = Util.getShort(data, offset);
             offset += 2;
-            if (sw1 != ISO7816.SW_NO_ERROR)
+            if (sw1 != ISO7816.SW_NO_ERROR) {
                 success = false;
+            }
         }
         if (--numSW >= 0 && getLength() >= 4) {
             sw2 = Util.getShort(data, offset);
             offset += 2;
-            if (sw2 != ISO7816.SW_NO_ERROR)
+            if (sw2 != ISO7816.SW_NO_ERROR) {
                 success = false;
+            }
         }
 
         //try to parse numParams..
@@ -58,18 +64,6 @@ public abstract class Response {
             System.arraycopy(data, offset, params[i], 0, paramLength);
             offset += paramLength;
         }
-    }
-
-    protected boolean hasParam(int index) {
-        return params.length >= index + 1 && params[index] != null;
-    }
-
-    protected int getParamLength(int index) {
-        return params[index].length;
-    }
-
-    protected byte[] getParam(int index) {
-        return params[index];
     }
 
     public ResponseAPDU getAPDU() {
@@ -92,6 +86,22 @@ public abstract class Response {
         return sw2;
     }
 
+    public int getNumSW() {
+        return numSW;
+    }
+
+    protected boolean hasParam(int index) {
+        return params.length >= index + 1 && params[index] != null;
+    }
+
+    protected int getParamLength(int index) {
+        return params[index].length;
+    }
+
+    protected byte[] getParam(int index) {
+        return params[index];
+    }
+
     public int getLength() {
         return resp.getNr();
     }
@@ -103,6 +113,21 @@ public abstract class Response {
     @Override
     public abstract String toString();
 
+
+    public static String toString(List<Response> responses) {
+        StringBuilder out = new StringBuilder();
+        for (Response r : responses) {
+            String message = r.toString();
+            String suffix;
+            if (r.getNumSW() == 1) {
+                suffix = String.format("%s", Util.getPrintError(r.getSW1()));
+            } else {
+                suffix = String.format("%s %s", Util.getPrintError(r.getSW1()), Util.getPrintError(r.getSW2()));
+            }
+            out.append(String.format("%-55s: %s\n", message, suffix));
+        }
+        return out.toString();
+    }
 
     /**
      *
@@ -133,8 +158,32 @@ public abstract class Response {
             } else {
                 key = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
             }
-            //TODO general response.toString alignment + 2 SWs
-            return String.format("Allocated %s %db %s: %#x", key, keyLength, field, getSW1());
+            return String.format("Allocated %s %db %s", key, keyLength, field);
+        }
+    }
+
+    public static class Clear extends Response {
+        private byte keyPair;
+
+        public Clear(ResponseAPDU response, long time, byte keyPair) {
+            super(response, time);
+            this.keyPair = keyPair;
+
+            int pairs = 0;
+            if ((keyPair & ECTesterApplet.KEYPAIR_LOCAL) != 0) pairs++;
+            if ((keyPair & ECTesterApplet.KEYPAIR_REMOTE) != 0) pairs++;
+            parse(pairs, 0);
+        }
+
+        @Override
+        public String toString() {
+            String key;
+            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
+                key = "both keypairs";
+            } else {
+                key = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
+            }
+            return String.format("Cleared %s", key);
         }
     }
 
@@ -145,15 +194,15 @@ public abstract class Response {
         private byte keyPair;
         private byte export;
         private byte curve;
-        private short params;
+        private short parameters;
         private short corrupted;
 
-        protected Set(ResponseAPDU response, long time, byte keyPair, byte export, byte curve, short params, short corrupted) {
+        protected Set(ResponseAPDU response, long time, byte keyPair, byte export, byte curve, short parameters, short corrupted) {
             super(response, time);
             this.keyPair = keyPair;
             this.export = export;
             this.curve = curve;
-            this.params = params;
+            this.parameters = parameters;
             this.corrupted = corrupted;
 
             int pairs = 0;
@@ -168,14 +217,14 @@ public abstract class Response {
             int paramCount = 0;
             short mask = EC_Consts.PARAMETER_FP;
             while (mask <= EC_Consts.PARAMETER_K) {
-                if ((mask & params) != 0) {
+                if ((mask & parameters) != 0) {
                     paramCount++;
                 }
                 mask = (short) (mask << 1);
             }
             int other = 0;
-            if ((export & ECTesterApplet.EXPORT_PUBLIC) != 0 && (params & EC_Consts.PARAMETER_W) != 0) other++;
-            if ((export & ECTesterApplet.EXPORT_PRIVATE) != 0 && (params & EC_Consts.PARAMETER_S) != 0) other++;
+            if ((export & ECTesterApplet.EXPORT_PUBLIC) != 0 && (parameters & EC_Consts.PARAMETER_W) != 0) other++;
+            if ((export & ECTesterApplet.EXPORT_PRIVATE) != 0 && (parameters & EC_Consts.PARAMETER_S) != 0) other++;
 
             parse(pairs, exported * keys * paramCount + exported * other);
         }
@@ -189,7 +238,7 @@ public abstract class Response {
                     if (key == keyPair && param == mask) {
                         return index;
                     }
-                    if ((params & mask) != 0 && (key & export) != 0) {
+                    if ((parameters & mask) != 0 && (key & export) != 0) {
                         if (mask == EC_Consts.PARAMETER_W) {
                             if ((export & ECTesterApplet.EXPORT_PUBLIC) != 0)
                                 index++;
@@ -209,7 +258,11 @@ public abstract class Response {
         }
 
         public boolean hasParameter(byte keyPair, short param) {
-            return !((export & keyPair) == 0 || (params & param) == 0) && getIndex(keyPair, param) != -1;
+            if ((export & keyPair) == 0 || (parameters & param) == 0) {
+                return false;
+            }
+            int index = getIndex(keyPair, param);
+            return index != -1 && hasParam(index);
         }
 
         public byte[] getParameter(byte keyPair, short param) {
@@ -236,8 +289,7 @@ public abstract class Response {
             } else {
                 key = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
             }
-            //TODO general response.toString alignment + 2 SWs
-            return String.format("Set %s curve parameters on %s: %#x", name, key, getSW1());
+            return String.format("Set %s curve parameters on %s", name, key);
         }
 
     }
@@ -301,13 +353,15 @@ public abstract class Response {
         public boolean hasPublic(byte keyPair) {
             if ((export & ECTesterApplet.EXPORT_PUBLIC) == 0 || (export & keyPair) == 0)
                 return false;
-            return getIndex((byte) (keyPair | ECTesterApplet.EXPORT_PUBLIC)) != -1;
+            int index = getIndex((byte) (keyPair | ECTesterApplet.EXPORT_PUBLIC));
+            return index != -1 && hasParam(index);
         }
 
         public boolean hasPrivate(byte keyPair) {
             if ((export & ECTesterApplet.EXPORT_PRIVATE) == 0 || (export & keyPair) == 0)
                 return false;
-            return getIndex((byte) (keyPair | ECTesterApplet.EXPORT_PRIVATE)) != -1;
+            int index = getIndex((byte) (keyPair | ECTesterApplet.EXPORT_PRIVATE));
+            return index != -1 && hasParam(index);
         }
 
         public byte[] getPublic(byte keyPair) {
@@ -330,8 +384,7 @@ public abstract class Response {
             } else {
                 key = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
             }
-            //TODO general response.toString alignment + 2 SWs
-            return String.format("Generated %s: %#x", key, getSW1());
+            return String.format("Generated %s", key);
         }
 
     }
@@ -368,8 +421,7 @@ public abstract class Response {
             String pub = pubkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
             String priv = privkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
             String validity = invalid != 0 ? "invalid" : "valid";
-            //TODO general response.toString alignment + 2SWs
-            return String.format("ECDH of %s pubkey and %s privkey(%s point): %#x", pub, priv, validity, getSW1());
+            return String.format("ECDH of %s pubkey and %s privkey(%s point)", pub, priv, validity);
         }
     }
 
@@ -402,8 +454,7 @@ public abstract class Response {
         public String toString() {
             String key = keyPair == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
             String data = raw == null ? "random" : "provided";
-            //TODO general response.toString alignment + 2 SWs
-            return String.format("ECDSA with %s keypair(%s data): %#x", key, data, getSW1());
+            return String.format("ECDSA with %s keypair(%s data)", key, data);
         }
 
     }

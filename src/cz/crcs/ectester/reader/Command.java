@@ -23,11 +23,6 @@ public abstract class Command {
         return cmd;
     }
 
-    /**
-     *
-     * @return
-     * @throws CardException
-     */
     public abstract Response send() throws CardException;
 
     public static List<Response> sendAll(List<Command> commands) throws CardException {
@@ -71,6 +66,28 @@ public abstract class Command {
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
             return new Response.Allocate(response, elapsed, keyPair, keyLength, keyClass);
+        }
+    }
+
+    /**
+     *
+     */
+    public static class Clear extends Command {
+        private byte keyPair;
+
+        public Clear(CardMngr cardManager, byte keyPair) {
+            super(cardManager);
+            this.keyPair = keyPair;
+
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_CLEAR, keyPair, 0x00);
+        }
+
+        @Override
+        public Response.Clear send() throws CardException {
+            long elapsed = -System.nanoTime();
+            ResponseAPDU response = cardManager.send(cmd);
+            elapsed += System.nanoTime();
+            return new Response.Clear(response, elapsed, keyPair);
         }
     }
 

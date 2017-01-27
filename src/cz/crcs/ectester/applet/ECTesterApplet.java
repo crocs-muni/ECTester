@@ -44,10 +44,11 @@ public class ECTesterApplet extends Applet {
 
     //INSTRUCTIONS
     public static final byte INS_ALLOCATE = (byte) 0x5a;
-    public static final byte INS_SET = (byte) 0x5b;
-    public static final byte INS_GENERATE = (byte) 0x5c;
-    public static final byte INS_ECDH = (byte) 0x5d;
-    public static final byte INS_ECDSA = (byte) 0x5e;
+    public static final byte INS_CLEAR = (byte) 0x5b;
+    public static final byte INS_SET = (byte) 0x5c;
+    public static final byte INS_GENERATE = (byte) 0x5d;
+    public static final byte INS_ECDH = (byte) 0x5e;
+    public static final byte INS_ECDSA = (byte) 0x5f;
 
     //PARAMETERS for P1 and P2
     public static final byte KEYPAIR_LOCAL = (byte) 0x01;
@@ -127,6 +128,9 @@ public class ECTesterApplet extends Applet {
                 case INS_ALLOCATE:
                     insAllocate(apdu);
                     break;
+                case INS_CLEAR:
+                    insClear(apdu);
+                    break;
                 case INS_SET:
                     insSet(apdu);
                     break;
@@ -165,6 +169,25 @@ public class ECTesterApplet extends Applet {
         byte keyClass = apdubuf[ISO7816.OFFSET_CDATA + 2];
 
         short len = allocate(keyPair, keyLength, keyClass, apdubuf, (short) 0);
+
+        apdu.setOutgoingAndSend((short) 0, len);
+    }
+
+    /**
+     *
+     * @param apdu P1   = byte keyPair (KEYPAIR_* | ...)
+     *             P2   =
+     */
+    private void insClear(APDU apdu) {
+        apdu.setIncomingAndReceive();
+        byte[] apdubuf = apdu.getBuffer();
+        byte keyPair = apdubuf[ISO7816.OFFSET_P1];
+
+        short len = 0;
+        if ((keyPair & KEYPAIR_LOCAL) != 0)
+            len += clear(localKeypair, apdubuf, (short) 0);
+        if ((keyPair & KEYPAIR_REMOTE) != 0)
+            len += clear(remoteKeypair, apdubuf, len);
 
         apdu.setOutgoingAndSend((short) 0, len);
     }
@@ -304,6 +327,13 @@ public class ECTesterApplet extends Applet {
         }
 
         return length;
+    }
+
+    private short clear(KeyPair keyPair, byte[] buffer, short offset) {
+        short sw = keyGenerator.clearPair(keyPair, ECKeyGenerator.KEY_BOTH);
+        Util.setShort(buffer, offset, sw);
+
+        return 2;
     }
 
     /**
