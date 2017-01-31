@@ -39,21 +39,28 @@ public class EC_Consts {
     public static final short PARAMETER_S = 0x0100;
 
     public static final short PARAMETERS_NONE = 0x0000;
-    public static final short PARAMETERS_DOMAIN_FP = 0x007d;
     /**
      * FP,A,B,G,R,K
      */
-    public static final short PARAMETERS_DOMAIN_F2M = 0x007e;
+    public static final short PARAMETERS_DOMAIN_FP = 0x007d;
     /**
      * F2M,A,B,G,R,K
+     */
+    public static final short PARAMETERS_DOMAIN_F2M = 0x007e;
+    /**
+     * W,S
      */
     public static final short PARAMETERS_KEYPAIR = 0x0180;
     public static final short PARAMETERS_ALL = 0x01ff;
 
+    public static final byte KEY_PUBLIC = 0x01;
+    public static final byte KEY_PRIVATE = 0x02;
+    public static final byte KEY_BOTH = KEY_PUBLIC | KEY_PRIVATE;
+
     public static RandomData randomData = null;
 
 
-    // secp128r1 
+    // secp128r1 from http://www.secg.org/sec2-v2.pdf
     public static final byte[] EC128_FP_P = new byte[]{
             (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFD,
             (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
@@ -94,7 +101,7 @@ public class EC_Consts {
     // cofactor of G
     public static final short EC128_FP_K = 1;
 
-    // secp160r1
+    // secp160r1 from http://www.secg.org/sec2-v2.pdf
     public static final byte[] EC160_FP_P = new byte[]{
             (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
             (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,

@@ -73,22 +73,19 @@ public class ECKeyTester {
     }
 
     private short testKA_invalidPoint(KeyAgreement ka, ECPrivateKey privateKey, byte[] pubkeyBuffer, short pubkeyOffset, short pubkeyLength, byte[] outputBuffer, short outputOffset) {
-        pubkeyBuffer[(short)(pubkeyLength - 2)] += 0xcc;
-        pubkeyBuffer[(short)(pubkeyLength - 3)] += 0xcc;
+        pubkeyBuffer[(short) (pubkeyLength - 2)] += 0xcc;
+        pubkeyBuffer[(short) (pubkeyLength - 3)] += 0xcc;
         short result = testKA(ka, privateKey, pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);
-        pubkeyBuffer[(short)(pubkeyLength - 2)] -= 0xcc;
-        pubkeyBuffer[(short)(pubkeyLength - 3)] -= 0xcc;
+        pubkeyBuffer[(short) (pubkeyLength - 2)] -= 0xcc;
+        pubkeyBuffer[(short) (pubkeyLength - 3)] -= 0xcc;
         return result;
-    }
-
-    public short testECDH(ECPrivateKey privateKey, byte[] pubkeyBuffer, short pubkeyOffset, short pubkeyLength, byte[] outputBuffer, short outputOffset) {
-        return testKA(ecdhKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);
     }
 
     /**
      * Tests ECDH secret generation with given {@code privateKey} and {@code publicKey}.
      * Uses {@code pubkeyBuffer} at {@code pubkeyOffset} for computations.
      * Output should equal with ECDHC output.
+     *
      * @param privateKey
      * @param publicKey
      * @param pubkeyBuffer
@@ -96,7 +93,6 @@ public class ECKeyTester {
      * @param outputBuffer
      * @param outputOffset
      * @return derived secret length
-     *
      **/
     public short testECDH_validPoint(ECPrivateKey privateKey, ECPublicKey publicKey, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset) {
         short length = publicKey.getW(pubkeyBuffer, pubkeyOffset);
@@ -113,14 +109,15 @@ public class ECKeyTester {
      * Tests ECDHC secret generation with given {@code privateKey} and {@code publicKey}.
      * Uses {@code pubkeyBuffer} at {@code pubkeyOffset} for computations.
      * Output should equal to ECDH output.
+     *
      * @param privateKey
      * @param publicKey
      * @param pubkeyBuffer
      * @param pubkeyOffset
      * @param outputBuffer
      * @param outputOffset
-     * @return  ISO7816.SW_NO_ERROR on correct operation,
-     *          exception reason otherwise
+     * @return ISO7816.SW_NO_ERROR on correct operation,
+     * exception reason otherwise
      */
     public short testECDHC_validPoint(ECPrivateKey privateKey, ECPublicKey publicKey, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset) {
         short length = publicKey.getW(pubkeyBuffer, pubkeyOffset);
@@ -136,6 +133,7 @@ public class ECKeyTester {
      * Uses {@code signKey} to sign data from {@code inputBuffer} at {@code inputOffset} with {@code inputOffset}.
      * Then checks for correct signature length.
      * Then tries verifying the data with {@code verifyKey}.
+     *
      * @param signKey
      * @param verifyKey
      * @param inputBuffer
@@ -143,7 +141,7 @@ public class ECKeyTester {
      * @param inputLength
      * @param sigBuffer
      * @param sigOffset
-     * @return  signature length
+     * @return signature length
      */
     public short testECDSA(ECPrivateKey signKey, ECPublicKey verifyKey, byte[] inputBuffer, short inputOffset, short inputLength, byte[] sigBuffer, short sigOffset) {
         sw = ISO7816.SW_NO_ERROR;

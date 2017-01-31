@@ -96,7 +96,6 @@ public abstract class Command {
      */
     public static class Set extends Command {
         private byte keyPair;
-        private byte export;
         private byte curve;
         private short params;
         private short corrupted;
@@ -108,34 +107,31 @@ public abstract class Command {
          *
          * @param cardManager
          * @param keyPair     which keyPair to set params on, local/remote (KEYPAIR_* || ...)
-         * @param export      whether to export set params from keyPair
          * @param curve       curve to set (EC_Consts.CURVE_*)
          * @param params      parameters to set (EC_Consts.PARAMETER_* | ...)
          * @param corrupted   parameters to corrupt (EC_Consts.PARAMETER_* | ...)
          * @param corruption  corruption type (EC_Consts.CORRUPTION_*)
          * @param external    external curve data, can be null
          */
-        public Set(CardMngr cardManager, byte keyPair, byte export, byte curve, short params, short corrupted, byte corruption, byte[] external) {
+        public Set(CardMngr cardManager, byte keyPair, byte curve, short params, short corrupted, byte corruption, byte[] external) {
             super(cardManager);
             this.keyPair = keyPair;
-            this.export = export;
             this.curve = curve;
             this.params = params;
             this.corrupted = corrupted;
             this.corruption = corruption;
             this.external = external;
 
-            int len = external != null ? 6 + 2 + external.length : 6;
+            int len = external != null ? 5 + 2 + external.length : 5;
             byte[] data = new byte[len];
-            data[0] = curve;
-            Util.setShort(data, 1, params);
-            Util.setShort(data, 3, corrupted);
-            data[5] = corruption;
+            Util.setShort(data, 0, params);
+            Util.setShort(data, 2, corrupted);
+            data[4] = corruption;
             if (external != null) {
-                System.arraycopy(external, 0, data, 6, external.length);
+                System.arraycopy(external, 0, data, 5, external.length);
             }
 
-            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_SET, keyPair, export, data);
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_SET, keyPair, curve, data);
         }
 
         @Override
@@ -143,7 +139,7 @@ public abstract class Command {
             long elapsed = -System.nanoTime();
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
-            return new Response.Set(response, elapsed, keyPair, export, curve, params, corrupted);
+            return new Response.Set(response, elapsed, keyPair, curve, params, corrupted);
         }
     }
 
@@ -152,21 +148,18 @@ public abstract class Command {
      */
     public static class Generate extends Command {
         private byte keyPair;
-        private byte export;
 
         /**
          * Creates the INS_GENERATE instruction.
          *
          * @param cardManager
          * @param keyPair     which keyPair to generate, local/remote (KEYPAIR_* || ...)
-         * @param export      whether to export generated keys from keyPair
          */
-        public Generate(CardMngr cardManager, byte keyPair, byte export) {
+        public Generate(CardMngr cardManager, byte keyPair) {
             super(cardManager);
             this.keyPair = keyPair;
-            this.export = export;
 
-            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_GENERATE, keyPair, export);
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_GENERATE, keyPair, 0);
         }
 
         @Override
@@ -174,7 +167,44 @@ public abstract class Command {
             long elapsed = -System.nanoTime();
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
-            return new Response.Generate(response, elapsed, keyPair, export);
+            return new Response.Generate(response, elapsed, keyPair);
+        }
+    }
+
+    /**
+     *
+     */
+    public static class Export extends Command {
+        private byte keyPair;
+        private byte key;
+        private short params;
+
+        /**
+         * Creates the INS_EXPORT instruction.
+         *
+         * @param cardManager
+         * @param keyPair     keyPair to export from (KEYPAIR_* | ...)
+         * @param key         key to export from (EC_Consts.KEY_* | ...)
+         * @param params      params to export (EC_Consts.PARAMETER_* | ...)
+         */
+        public Export(CardMngr cardManager, byte keyPair, byte key, short params) {
+            super(cardManager);
+            this.keyPair = keyPair;
+            this.key = key;
+            this.params = params;
+
+            byte[] data = new byte[2];
+            Util.setShort(data, 0, params);
+
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_EXPORT, keyPair, key, data);
+        }
+
+        @Override
+        public Response.Export send() throws CardException {
+            long elapsed = -System.nanoTime();
+            ResponseAPDU response = cardManager.send(cmd);
+            elapsed += System.nanoTime();
+            return new Response.Export(response, elapsed, keyPair, key, params);
         }
     }
 

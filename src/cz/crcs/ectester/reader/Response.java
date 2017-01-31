@@ -102,6 +102,10 @@ public abstract class Response {
         return params[index];
     }
 
+    public byte[][] getParams() {
+        return params;
+    }
+
     public int getLength() {
         return resp.getNr();
     }
@@ -192,15 +196,13 @@ public abstract class Response {
      */
     public static class Set extends Response {
         private byte keyPair;
-        private byte export;
         private byte curve;
         private short parameters;
         private short corrupted;
 
-        protected Set(ResponseAPDU response, long time, byte keyPair, byte export, byte curve, short parameters, short corrupted) {
+        protected Set(ResponseAPDU response, long time, byte keyPair, byte curve, short parameters, short corrupted) {
             super(response, time);
             this.keyPair = keyPair;
-            this.export = export;
             this.curve = curve;
             this.parameters = parameters;
             this.corrupted = corrupted;
@@ -208,65 +210,8 @@ public abstract class Response {
             int pairs = 0;
             if ((keyPair & ECTesterApplet.KEYPAIR_LOCAL) != 0) pairs++;
             if ((keyPair & ECTesterApplet.KEYPAIR_REMOTE) != 0) pairs++;
-            int exported = 0;
-            if ((export & ECTesterApplet.KEYPAIR_LOCAL) != 0) exported++;
-            if ((export & ECTesterApplet.KEYPAIR_REMOTE) != 0) exported++;
-            int keys = 0;
-            if ((export & ECTesterApplet.EXPORT_PUBLIC) != 0) keys++;
-            if ((export & ECTesterApplet.EXPORT_PRIVATE) != 0) keys++;
-            int paramCount = 0;
-            short mask = EC_Consts.PARAMETER_FP;
-            while (mask <= EC_Consts.PARAMETER_K) {
-                if ((mask & parameters) != 0) {
-                    paramCount++;
-                }
-                mask = (short) (mask << 1);
-            }
-            int other = 0;
-            if ((export & ECTesterApplet.EXPORT_PUBLIC) != 0 && (parameters & EC_Consts.PARAMETER_W) != 0) other++;
-            if ((export & ECTesterApplet.EXPORT_PRIVATE) != 0 && (parameters & EC_Consts.PARAMETER_S) != 0) other++;
 
-            parse(pairs, exported * keys * paramCount + exported * other);
-        }
-
-        private int getIndex(byte keyPair, short param) {
-            byte key = ECTesterApplet.KEYPAIR_LOCAL;
-            int index = 0;
-            while (key <= ECTesterApplet.KEYPAIR_REMOTE) {
-                short mask = EC_Consts.PARAMETER_FP;
-                while (mask <= EC_Consts.PARAMETER_S) {
-                    if (key == keyPair && param == mask) {
-                        return index;
-                    }
-                    if ((parameters & mask) != 0 && (key & export) != 0) {
-                        if (mask == EC_Consts.PARAMETER_W) {
-                            if ((export & ECTesterApplet.EXPORT_PUBLIC) != 0)
-                                index++;
-                        } else if (mask == EC_Consts.PARAMETER_S) {
-                            if ((export & ECTesterApplet.EXPORT_PRIVATE) != 0)
-                                index++;
-                        } else {
-                            index++;
-                        }
-                    }
-                    mask = (short) (mask << 1);
-                }
-
-                key = (byte) (key << 1);
-            }
-            return -1;
-        }
-
-        public boolean hasParameter(byte keyPair, short param) {
-            if ((export & keyPair) == 0 || (parameters & param) == 0) {
-                return false;
-            }
-            int index = getIndex(keyPair, param);
-            return index != -1 && hasParam(index);
-        }
-
-        public byte[] getParameter(byte keyPair, short param) {
-            return getParam(getIndex(keyPair, param));
+            parse(pairs, 0);
         }
 
         @Override
@@ -299,49 +244,18 @@ public abstract class Response {
      */
     public static class Generate extends Response {
         private byte keyPair;
-        private byte export;
-        private short[] contents;
 
-        protected Generate(ResponseAPDU response, long time, byte keyPair, byte export) {
+        protected Generate(ResponseAPDU response, long time, byte keyPair) {
             super(response, time);
             this.keyPair = keyPair;
-            this.export = export;
 
-            int keys = 0;
-            if ((export & ECTesterApplet.EXPORT_PUBLIC) != 0) keys++;
-            if ((export & ECTesterApplet.EXPORT_PRIVATE) != 0) keys++;
-            int pairs = 0;
-            if ((export & ECTesterApplet.KEYPAIR_LOCAL) != 0) pairs++;
-            if ((export & ECTesterApplet.KEYPAIR_REMOTE) != 0) pairs++;
             int generated = 0;
             if ((keyPair & ECTesterApplet.KEYPAIR_LOCAL) != 0) generated++;
             if ((keyPair & ECTesterApplet.KEYPAIR_REMOTE) != 0) generated++;
-            parse(generated, keys * pairs);
-
-            this.contents = new short[4];
-            int offset = 0;
-            if ((export & ECTesterApplet.KEYPAIR_LOCAL) != 0) {
-                if ((export & ECTesterApplet.EXPORT_PUBLIC) != 0) {
-                    this.contents[offset] = ECTesterApplet.KEYPAIR_LOCAL | ECTesterApplet.EXPORT_PUBLIC;
-                    offset++;
-                }
-                if ((export & ECTesterApplet.EXPORT_PRIVATE) != 0) {
-                    this.contents[offset] = ECTesterApplet.KEYPAIR_LOCAL | ECTesterApplet.EXPORT_PRIVATE;
-                    offset++;
-                }
-            }
-            if ((export & ECTesterApplet.KEYPAIR_REMOTE) != 0) {
-                if ((export & ECTesterApplet.EXPORT_PUBLIC) != 0) {
-                    this.contents[offset] = ECTesterApplet.KEYPAIR_REMOTE | ECTesterApplet.EXPORT_PUBLIC;
-                    offset++;
-                }
-                if ((export & ECTesterApplet.EXPORT_PRIVATE) != 0) {
-                    this.contents[offset] = ECTesterApplet.KEYPAIR_REMOTE | ECTesterApplet.EXPORT_PRIVATE;
-                    offset++;
-                }
-            }
+            parse(generated, 0);
         }
 
+        /*
         private int getIndex(byte key) {
             for (int i = 0; i < contents.length; i++) {
                 if (key == contents[i])
@@ -375,6 +289,7 @@ public abstract class Response {
             int index = getIndex((byte) (keyPair | ECTesterApplet.EXPORT_PRIVATE));
             return getParam(index);
         }
+        */
 
         @Override
         public String toString() {
@@ -387,6 +302,114 @@ public abstract class Response {
             return String.format("Generated %s", key);
         }
 
+    }
+
+    /**
+     *
+     */
+    public static class Export extends Response {
+        private byte keyPair;
+        private byte key;
+        private short parameters;
+
+        public Export(ResponseAPDU response, long time, byte keyPair, byte key, short parameters) {
+            super(response, time);
+            this.keyPair = keyPair;
+            this.key = key;
+            this.parameters = parameters;
+
+            int exported = 0;
+            if ((keyPair & ECTesterApplet.KEYPAIR_LOCAL) != 0) exported++;
+            if ((keyPair & ECTesterApplet.KEYPAIR_REMOTE) != 0) exported++;
+            int keys = 0;
+            if ((key & EC_Consts.KEY_PUBLIC) != 0) keys++;
+            if ((key & EC_Consts.KEY_PRIVATE) != 0) keys++;
+            int paramCount = 0;
+            short mask = EC_Consts.PARAMETER_FP;
+            while (mask <= EC_Consts.PARAMETER_K) {
+                if ((mask & parameters) != 0) {
+                    paramCount++;
+                }
+                mask = (short) (mask << 1);
+            }
+            int other = 0;
+            if ((key & EC_Consts.KEY_PUBLIC) != 0 && (parameters & EC_Consts.PARAMETER_W) != 0) other++;
+            if ((key & EC_Consts.KEY_PRIVATE) != 0 && (parameters & EC_Consts.PARAMETER_S) != 0) other++;
+
+            parse(exported, exported * keys * paramCount + exported * other);
+        }
+
+        private int getIndex(byte keyPair, short param) {
+            byte pair = ECTesterApplet.KEYPAIR_LOCAL;
+            int index = 0;
+            while (pair <= ECTesterApplet.KEYPAIR_REMOTE) {
+                short mask = EC_Consts.PARAMETER_FP;
+                while (mask <= EC_Consts.PARAMETER_S) {
+                    if (pair == keyPair && param == mask) {
+                        return index;
+                    }
+                    if ((parameters & mask) != 0 && (pair & keyPair) != 0) {
+                        if (mask == EC_Consts.PARAMETER_W) {
+                            if ((key & EC_Consts.KEY_PUBLIC) != 0)
+                                index++;
+                        } else if (mask == EC_Consts.PARAMETER_S) {
+                            if ((key & EC_Consts.KEY_PRIVATE) != 0)
+                                index++;
+                        } else {
+                            index++;
+                        }
+                    }
+                    mask = (short) (mask << 1);
+                }
+
+                pair = (byte) (pair << 1);
+            }
+            return -1;
+        }
+
+        public boolean hasParameters(byte keyPair, short params) {
+            if ((keyPair & this.keyPair) == 0 || (params ^ parameters) != 0) {
+                return false;
+            }
+            short param = EC_Consts.PARAMETER_FP;
+            while (param <= EC_Consts.PARAMETER_S) {
+                short masked = (short) (param & params);
+                if (masked != 0 && !hasParameter(keyPair, masked)) {
+                    return false;
+                }
+                param = (short) (param << 1);
+            }
+            return true;
+        }
+
+        public boolean hasParameter(byte keyPair, short param) {
+            if ((keyPair & this.keyPair) == 0 || (parameters & param) == 0) {
+                return false;
+            }
+            int index = getIndex(keyPair, param);
+            return index != -1 && hasParam(index);
+        }
+
+        public byte[] getParameter(byte keyPair, short param) {
+            return getParam(getIndex(keyPair, param));
+        }
+
+        @Override
+        public String toString() {
+            String source;
+            if (key == EC_Consts.KEY_BOTH) {
+                source = "both keys";
+            } else {
+                source = ((key == EC_Consts.KEY_PUBLIC) ? "public" : "private") + " key";
+            }
+            String pair;
+            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
+                pair = "both keypairs";
+            } else {
+                pair = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
+            }
+            return String.format("Exported params from %s of %s", source, pair);
+        }
     }
 
     /**
@@ -405,7 +428,7 @@ public abstract class Response {
             this.export = export;
             this.invalid = invalid;
 
-            parse(1, (export & ECTesterApplet.EXPORT_ECDH) != 0 ? 1 : 0);
+            parse(1, (export == ECTesterApplet.EXPORT_TRUE) ? 1 : 0);
         }
 
         public boolean hasSecret() {
@@ -439,7 +462,7 @@ public abstract class Response {
             this.export = export;
             this.raw = raw;
 
-            parse(1, (export & ECTesterApplet.EXPORT_SIG) != 0 ? 1 : 0);
+            parse(1, (export == ECTesterApplet.EXPORT_TRUE) ? 1 : 0);
         }
 
         public boolean hasSignature() {

@@ -115,7 +115,7 @@ public class Util {
                     codeStr = "SIG_VERIFY_FAIL";
                     break;
             }
-            return String.format("fail\t(%s,\t0x%4x)", codeStr, code);
+            return String.format("fail\t(%s,\t0x%04x)", codeStr, code);
         }
     }
 }
