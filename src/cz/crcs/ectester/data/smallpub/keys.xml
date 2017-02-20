@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<keys xmlns="http://crcs.cz/ectester/curves"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://crcs.cz/ectester/curves ../schema.xsd"
+      category="smallpub"
+      desc="Points on the Non-prime smallpub curves, very small point orders(3-5).">
+    <pubkey>
+        <file>ecsp128_pub.csv</file>
+        <curve>ecsp128</curve>
+    </pubkey>
+    <pubkey>
+        <file>ecsp160_pub.csv</file>
+        <curve>ecsp160</curve>
+    </pubkey>
+    <pubkey>
+        <file>ecsp192_pub.csv</file>
+        <curve>ecsp192</curve>
+    </pubkey>
+    <pubkey>
+        <file>ecsp224_pub.csv</file>
+        <curve>ecsp224</curve>
+    </pubkey>
+    <pubkey>
+        <file>ecsp256_pub.csv</file>
+        <curve>ecsp256</curve>
+    </pubkey>
+    <pubkey>
+        <file>ecsp384_pub.csv</file>
+        <curve>ecsp384</curve>
+    </pubkey>
+    <pubkey>
+        <file>ecsp521_pub.csv</file>
+        <curve>ecsp521</curve>
+    </pubkey>
+</keys>

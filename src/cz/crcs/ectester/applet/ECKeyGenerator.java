@@ -172,14 +172,14 @@ public class ECKeyGenerator {
                     if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldFP(data, offset, length);
                     break;
                 case EC_Consts.PARAMETER_F2M:
-                    if (length == 2) {
-                        short i = Util.makeShort(data[offset], data[(short) (offset + 1)]);
+                    if (length == 4) {
+                        short i = Util.makeShort(data[(short) (offset + 2)], data[(short) (offset + 3)]);
                         if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i);
                         if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i);
-                    } else if (length == 6) {
-                        short i1 = Util.makeShort(data[offset], data[(short) (offset + 1)]);
-                        short i2 = Util.makeShort(data[(short) (offset + 2)], data[(short) (offset + 3)]);
-                        short i3 = Util.makeShort(data[(short) (offset + 4)], data[(short) (offset + 5)]);
+                    } else if (length == 8){
+                        short i1 = Util.makeShort(data[(short) (offset + 2)], data[(short) (offset + 3)]);
+                        short i2 = Util.makeShort(data[(short) (offset + 4)], data[(short) (offset + 5)]);
+                        short i3 = Util.makeShort(data[(short) (offset + 6)], data[(short) (offset + 7)]);
                         if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i1, i2, i3);
                         if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i1, i2, i3);
                     } else {
@@ -276,7 +276,7 @@ public class ECKeyGenerator {
      * Exports a selected parameter from a given keyPairs key.
      *
      * @param keypair      keypair to export from
-     * @param key          key to export from (KEY_PUBLIC | KEY_PRIVATE)
+     * @param key          key to export from (KEY_PUBLIC || KEY_PRIVATE)
      * @param param        parameter to export (EC_Consts.PARAMETER_* || ...)
      * @param outputBuffer buffer to write to
      * @param outputOffset offset to start writing in buffer
@@ -291,9 +291,20 @@ public class ECKeyGenerator {
         try {
             switch (param) {
                 case EC_Consts.PARAMETER_FP:
-                case EC_Consts.PARAMETER_F2M:
                     if ((key & EC_Consts.KEY_PUBLIC) != 0) length = ecPublicKey.getField(outputBuffer, outputOffset);
                     if ((key & EC_Consts.KEY_PRIVATE) != 0) length = ecPrivateKey.getField(outputBuffer, outputOffset);
+                    break;
+                case EC_Consts.PARAMETER_F2M:
+                    if ((key & EC_Consts.KEY_PUBLIC) != 0) {
+                        Util.setShort(outputBuffer, outputOffset, ecPublicKey.getSize());
+                        length = 2;
+                        length += ecPublicKey.getField(outputBuffer, (short) (outputOffset + 2));
+                    }
+                    if ((key & EC_Consts.KEY_PRIVATE) != 0) {
+                        Util.setShort(outputBuffer, outputOffset, ecPrivateKey.getSize());
+                        length = 2;
+                        length += ecPrivateKey.getField(outputBuffer, (short) (outputOffset + 2));
+                    }
                     break;
                 case EC_Consts.PARAMETER_A:
                     if ((key & EC_Consts.KEY_PUBLIC) != 0) length = ecPublicKey.getA(outputBuffer, outputOffset);

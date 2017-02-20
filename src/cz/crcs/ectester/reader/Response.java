@@ -117,7 +117,6 @@ public abstract class Response {
     @Override
     public abstract String toString();
 
-
     public static String toString(List<Response> responses) {
         StringBuilder out = new StringBuilder();
         for (Response r : responses) {

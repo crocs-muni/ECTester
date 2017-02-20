@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<curves xmlns="http://crcs.cz/ectester/curves"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://crcs.cz/ectester/curves ../schema.xsd">
+    <curve>
+        <id>ecsp128</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>ecsp128.csv</file>
+    </curve>
+    <curve>
+        <id>ecsp160</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>ecsp160.csv</file>
+    </curve>
+    <curve>
+        <id>ecsp192</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>ecsp192.csv</file>
+    </curve>
+    <curve>
+        <id>ecsp224</id>
+        <bits>224</bits>
+        <field>prime</field>
+        <file>ecsp224.csv</file>
+    </curve>
+    <curve>
+        <id>ecsp256</id>
+        <bits>256</bits>
+        <field>prime</field>
+        <file>ecsp256.csv</file>
+    </curve>
+    <curve>
+        <id>ecsp384</id>
+        <bits>384</bits>
+        <field>prime</field>
+        <file>ecsp384.csv</file>
+    </curve>
+    <curve>
+        <id>ecsp521</id>
+        <bits>521</bits>
+        <field>prime</field>
+        <file>ecsp521.csv</file>
+    </curve>
+</curves>

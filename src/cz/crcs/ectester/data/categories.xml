@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<categories xmlns="http://crcs.cz/ectester/curves"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://crcs.cz/ectester/curves schema.xsd">
+    <category>
+        <name>anomalous</name>
+        <directory>anomalous</directory>
+        <desc>These prime field curves have the same order as the field order, and are susceptible to attacks reducing ECDLP over a multiplicative group of the curve, to DLP over an additive group of the underlying field, which is easy.</desc>
+    </category>
+    <category>
+        <name>brainpool</name>
+        <directory>brainpool</directory>
+        <desc>ECC Brainpool Standard Curves and Curve Generation v. 1.0  19.10.2005"</desc>
+    </category>
+    <category>
+        <name>nist</name>
+        <directory>nist</directory>
+        <desc>RECOMMENDED ELLIPTIC CURVES FOR FEDERAL GOVERNMENT USE  July 1999"</desc>
+    </category>
+    <category>
+        <name>secg</name>
+        <directory>secg</directory>
+        <desc>SEC 2: Recommended Elliptic Curve Domain Parameters version 2.0  January 27, 2010 </desc>
+    </category>
+    <category>
+        <name>smallpub</name>
+        <directory>smallpub</directory>
+        <desc>Non-prime order curves, with points of very small order pregenerated. Useful for testing in ECDH.</desc>
+    </category>
+    <category>
+        <name>wrong</name>
+        <directory>wrong</directory>
+        <desc>Wrong field curves. These should definitely give an error when used. Since the "prime" used for the field are not prime, and the field polynomials are also not irreducible. Simply put these parameters don't specify a valid elliptic curve.</desc>
+    </category>
+</categories>

@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class ECParams {
-    private static final Pattern hex = Pattern.compile("[a-fA-F\\d]+");
+    private static final Pattern hex = Pattern.compile("(0x|0X)?[a-fA-F\\d]+");
 
     /**
      * Flattens params read from String[] data into a byte[] with their lengths prepended as short entries.
@@ -34,12 +34,12 @@ public class ECParams {
             short masked = (short) (params & paramMask);
             if (masked != 0) {
                 byte[] param = parse(data[i]);
-                if (masked == EC_Consts.PARAMETER_F2M && data.length == 9) {
-                    //read and pad and append e_2, e_3
-                    param = Util.concatenate(param, parse(data[i + 1]), parse(data[i + 2]));
-                    i += 2;
-                    if (param.length != 6)
-                        throw new RuntimeException("PARAMETER_F2M length is not 6.(should be)");
+                if (masked == EC_Consts.PARAMETER_F2M) {
+                    //add m, e_1, e_2, e_3
+                    param = Util.concatenate(param, parse(data[i + 1]), parse(data[i + 2]), parse(data[i + 3]));
+                    i += 3;
+                    if (param.length != 8)
+                        throw new RuntimeException("PARAMETER_F2M length is not 8.(should be)");
                 }
                 if (masked == EC_Consts.PARAMETER_G || masked == EC_Consts.PARAMETER_W) {
                     //read another param (the y coord) and put into X962 format.
@@ -80,12 +80,13 @@ public class ECParams {
                 byte[] param = data[index];
 
                 if (masked == EC_Consts.PARAMETER_F2M) {
-                    //split into three shorts
-                    if (param.length != 6) {
-                        throw new RuntimeException("PARAMETER_F2M length is not 6.(should be)");
+                    //split into m, e1, [e2, e3]
+                    if (!((param.length == 4) || (param.length == 8))) {
+                        throw new RuntimeException("PARAMETER_F2M length is not 4 or 8.(should be)");
                     }
-                    for (int i = 0; i < 3; ++i) {
-                        out.add(String.format("%04x", Util.getShort(param, i*2)));
+                    int max = param.length == 4 ? 2 : 4;
+                    for (int i = 0; i < max; ++i) {
+                        out.add(String.format("%04x", Util.getShort(param, i * 2)));
                     }
 
                 } else if (masked == EC_Consts.PARAMETER_G || masked == EC_Consts.PARAMETER_W) {
@@ -171,8 +172,13 @@ public class ECParams {
         return true;
     }
 
-    private static byte[] parse(String hex) {
-        byte[] data = Util.hexToBytes(hex);
+    private static byte[] parse(String param) {
+        byte[] data;
+        if (param.startsWith("0x") || param.startsWith("0X")) {
+            data = Util.hexToBytes(param.substring(2));
+        } else {
+            data = Util.hexToBytes(param);
+        }
         if (data == null)
             return new byte[0];
         if (data.length < 2)

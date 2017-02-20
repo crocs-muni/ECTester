@@ -52,11 +52,20 @@ public class ECTester {
     private boolean optAll;
     private boolean optPrimeField = false;
     private boolean optBinaryField = false;
-    private boolean optNamed = false;
-    private String optCurve = null;
+
+    private String optNamedCurve = null;
+    private String optCurveFile = null;
+    private boolean optCustomCurve = false;
+
+    private String optNamedPublic = null;
     private String optPublic = null;
+
+    private String optNamedPrivate = null;
     private String optPrivate = null;
+
+    private String optNamedKey = null;
     private String optKey = null;
+
     private String optLog = null;
     private String optOutput = null;
     private boolean optFresh = false;
@@ -77,6 +86,7 @@ public class ECTester {
 
     private void run(String[] args) {
         try {
+
             CommandLine cli = parseArgs(args);
 
             //if help, print and quit
@@ -138,7 +148,6 @@ public class ECTester {
             System.err.println("Option, " + maex.getOption().getOpt() + " requires an argument: " + maex.getOption().getArgName());
         } catch (NumberFormatException nfex) {
             System.err.println("Not a number. " + nfex.getMessage());
-            nfex.printStackTrace(System.err);
         } catch (FileNotFoundException fnfe) {
             System.err.println("File " + fnfe.getMessage() + " not found.");
         } catch (ParseException | IOException | CardException ex) {
@@ -165,12 +174,18 @@ public class ECTester {
          *
          * Options:
          * -b / --bit-size [b] // -a / --all
+         *
          * -fp / --prime-field
          * -f2m / --binary-field
-         * -n / --named // -c / --curve [curve_file] field,a,b,gx,gy,r,k
-         * --public [pubkey_file] wx,wy
-         * --private [privkey_file] s
+         *
+         * -u / --custom
+         * -n / --named [cat/id|id|cat]
+         * -c / --curve [curve_file] field,a,b,gx,gy,r,k
+         *
+         * -pub / --public [pubkey_file] wx,wy
+         * -priv / --private [privkey_file] s
          * -k / --key [key_file] wx,wy,s
+         *
          * -o / --output [output_file]
          * -s / --simulate
          */
@@ -190,16 +205,28 @@ public class ECTester {
         opts.addOptionGroup(size);
 
         OptionGroup curve = new OptionGroup();
-        curve.addOption(Option.builder("n").longOpt("named").desc("Use a named curve.").build());
+        curve.addOption(Option.builder("n").longOpt("named").desc("Use a named curve.").hasArg().argName("[cat/id|id|cat]").build());
         curve.addOption(Option.builder("c").longOpt("curve").desc("Use curve from file [curve_file] (field,a,b,gx,gy,r,k).").hasArg().argName("curve_file").build());
+        curve.addOption(Option.builder("u").longOpt("custom").desc("Use a custom curve(applet-side embedded, SECG curves).").build());
         opts.addOptionGroup(curve);
 
         opts.addOption(Option.builder("fp").longOpt("prime-field").desc("Use prime field curve.").build());
         opts.addOption(Option.builder("f2m").longOpt("binary-field").desc("Use binary field curve.").build());
 
-        opts.addOption(Option.builder("pub").longOpt("public").desc("Use public key from file [pubkey_file] (wx,wy).").hasArg().argName("pubkey_file").build());
-        opts.addOption(Option.builder("priv").longOpt("private").desc("Use private key from file [privkey_file] (s).").hasArg().argName("privkey_file").build());
-        opts.addOption(Option.builder("k").longOpt("key").desc("Use keyPair from file [key_file] (wx,wy,s).").hasArg().argName("key_file").build());
+        OptionGroup pub = new OptionGroup();
+        pub.addOption(Option.builder("npub").longOpt("named-public").desc("Use public key from KeyDB: [cat/id|cat|id]").hasArg().argName("[cat/id|id|cat]").build());
+        pub.addOption(Option.builder("pub").longOpt("public").desc("Use public key from file [pubkey_file] (wx,wy).").hasArg().argName("pubkey_file").build());
+        opts.addOptionGroup(pub);
+
+        OptionGroup priv = new OptionGroup();
+        priv.addOption(Option.builder("npriv").longOpt("named-private").desc("Use private key from KeyDB: [cat/id|id|cat]").hasArg().argName("[cat/id|id|cat]").build());
+        priv.addOption(Option.builder("priv").longOpt("private").desc("Use private key from file [privkey_file] (s).").hasArg().argName("privkey_file").build());
+        opts.addOptionGroup(priv);
+
+        OptionGroup key = new OptionGroup();
+        key.addOption(Option.builder("nk").longOpt("named-key").desc("Use keyPair from KeyDB: [cat/id|id|cat]").hasArg().argName("[cat/id|id|cat]").build());
+        key.addOption(Option.builder("k").longOpt("key").desc("Use keyPair from file [key_file] (wx,wy,s).").hasArg().argName("key_file").build());
+        opts.addOptionGroup(key);
 
         opts.addOption(Option.builder("o").longOpt("output").desc("Output into file [output_file].").hasArg().argName("output_file").build());
         opts.addOption(Option.builder("l").longOpt("log").desc("Log output into file [log_file].").hasArg().argName("log_file").optionalArg(true).build());
@@ -222,10 +249,18 @@ public class ECTester {
         optAll = cli.hasOption("all");
         optPrimeField = cli.hasOption("fp");
         optBinaryField = cli.hasOption("f2m");
-        optNamed = cli.hasOption("named");
-        optCurve = cli.getOptionValue("curve");
+
+        optNamedCurve = cli.getOptionValue("named");
+        optCustomCurve = cli.hasOption("custom");
+        optCurveFile = cli.getOptionValue("curve");
+
+        optNamedPublic = cli.getOptionValue("named-public");
         optPublic = cli.getOptionValue("public");
+
+        optNamedPrivate = cli.getOptionValue("named-private");
         optPrivate = cli.getOptionValue("private");
+
+        optNamedKey = cli.getOptionValue("named-key");
         optKey = cli.getOptionValue("key");
         if (cli.hasOption("log")) {
             optLog = cli.getOptionValue("log", String.format("ECTESTER_log_%d.log", System.currentTimeMillis() / 1000));
@@ -234,8 +269,8 @@ public class ECTester {
         optFresh = cli.hasOption("fresh");
         optSimulate = cli.hasOption("simulate");
 
-        if (optKey != null && (optPublic != null || optPrivate != null)) {
-            System.err.print("Can only specify the whole key with --key or pubkey and privkey with --public and --private.");
+        if ((optKey != null || optNamedKey != null) && (optPublic != null || optPrivate != null || optNamedPublic != null || optNamedPrivate != null)) {
+            System.err.print("Can only specify the whole key with --key/--named-key or pubkey and privkey with --public/--named-public and --private/--named-private.");
             return false;
         }
         if (optBits < 0) {
@@ -253,8 +288,8 @@ public class ECTester {
                 System.err.print("Need to specify field with -fp or -f2m. (not both)");
                 return false;
             }
-            if (optKey != null || optPublic != null || optPrivate != null) {
-                System.err.println("Keys should not be specified when generating keys.");
+            if (optKey != null || optPublic != null || optPrivate != null || optNamedKey != null || optNamedPublic != null || optNamedPrivate != null) {
+                System.err.println("Keys should not be specified when exporting curve params.");
                 return false;
             }
             if (optOutput == null) {
@@ -271,7 +306,7 @@ public class ECTester {
                 System.err.print("Need to specify field with -fp or -f2m. (not both)");
                 return false;
             }
-            if (optKey != null || optPublic != null || optPrivate != null) {
+            if (optKey != null || optPublic != null || optPrivate != null || optNamedKey != null || optNamedPublic != null || optNamedPrivate != null) {
                 System.err.println("Keys should not be specified when generating keys.");
                 return false;
             }
@@ -314,7 +349,11 @@ public class ECTester {
                 System.err.println("You have to specify curve bit-size with -b");
                 return false;
             }
-            if ((optPublic == null) != (optPrivate == null)) {
+
+            boolean hasPublic = (optPublic != null) || (optNamedPublic != null);
+            boolean hasPrivate = (optPrivate != null) || (optNamedPrivate != null);
+            boolean hasKey = (optKey != null) || (optNamedKey != null);
+            if ((hasPublic) != (hasPrivate) && !hasKey) {
                 System.err.println("You have cannot only specify a part of a keypair.");
                 return false;
             }
@@ -541,12 +580,15 @@ public class ECTester {
         List<Command> commands = new ArrayList<>();
 
         short domainParams = keyClass == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
-        if (optNamed) {
-            // Set named curve (one of the SECG curves embedded applet-side)
+        if (optCustomCurve) {
+            // Set custom curve (one of the SECG curves embedded applet-side)
             commands.add(new Command.Set(cardManager, keyPair, EC_Consts.getCurve(keyLength, keyClass), domainParams, EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, null));
-        } else if (optCurve != null) {
+        } else if (optNamedCurve != null) {
+            // Set a named curve.
+            // parse optNamedCurve -> cat / id | cat | id
+        } else if (optCurveFile != null) {
             // Set curve loaded from a file
-            byte[] external = ECParams.flatten(domainParams, ECParams.readFile(optCurve));
+            byte[] external = ECParams.flatten(domainParams, ECParams.readFile(optCurveFile));
             if (external == null) {
                 throw new IOException("Couldn't read the curve file correctly.");
             }

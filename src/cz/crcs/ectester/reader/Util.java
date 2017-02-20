@@ -26,14 +26,26 @@ public class Util {
     }
 
     public static byte[] hexToBytes(String hex, boolean bigEndian) {
-        StringBuilder sb = new StringBuilder(hex.replace(" ", ""));
-        if (!bigEndian) {
-            sb.reverse();
-        }
-        int len = sb.length();
+        hex = hex.replace(" ", "");
+        int len = hex.length();
+        StringBuilder sb = new StringBuilder();
+
         if (len % 2 == 1) {
-            sb.insert(0, "0");
+            sb.append("0");
             ++len;
+        }
+
+        if (bigEndian) {
+            sb.append(hex);
+        } else {
+            for (int i = 0; i < len / 2; ++i) {
+                if (sb.length() >= 2) {
+                    sb.insert(sb.length() - 2, hex.substring(2 * i, 2 * i + 2));
+                } else {
+                    sb.append(hex.substring(2 * i, 2 * i + 2));
+                }
+
+            }
         }
 
         String data = sb.toString();
