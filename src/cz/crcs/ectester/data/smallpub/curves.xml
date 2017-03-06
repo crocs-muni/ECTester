@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<curves xmlns="http://crcs.cz/ectester/curves"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://crcs.cz/ectester/curves ../schema.xsd">
+<curves xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../schema.xsd">
     <curve>
         <id>ecsp128</id>
         <bits>128</bits>

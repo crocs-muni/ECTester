@@ -225,10 +225,10 @@ public class ECTesterApplet extends Applet {
         short len = 0;
 
         if ((keyPair & KEYPAIR_LOCAL) != 0) {
-            len += set(localKeypair, curve, params, corruptedParams, corruptionType, apdubuf, (short) (ISO7816.OFFSET_CDATA + 6), (short) 0);
+            len += set(localKeypair, curve, params, corruptedParams, corruptionType, apdubuf, (short) (ISO7816.OFFSET_CDATA + 5), (short) 0);
         }
         if ((keyPair & KEYPAIR_REMOTE) != 0) {
-            len += set(remoteKeypair, curve, params, corruptedParams, corruptionType, apdubuf, (short) (ISO7816.OFFSET_CDATA + 6), len);
+            len += set(remoteKeypair, curve, params, corruptedParams, corruptionType, apdubuf, (short) (ISO7816.OFFSET_CDATA + 5), len);
         }
 
         apdu.setOutgoingAndSend((short) 0, len);

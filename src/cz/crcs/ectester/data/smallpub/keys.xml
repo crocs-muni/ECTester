@@ -1,35 +1,48 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<keys xmlns="http://crcs.cz/ectester/curves"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://crcs.cz/ectester/curves ../schema.xsd"
+<keys xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../schema.xsd"
       category="smallpub"
       desc="Points on the Non-prime smallpub curves, very small point orders(3-5).">
     <pubkey>
+        <id>ecsp128-pub</id>
         <file>ecsp128_pub.csv</file>
         <curve>ecsp128</curve>
+        <desc>order = 5</desc>
     </pubkey>
     <pubkey>
+        <id>ecsp160-pub</id>
         <file>ecsp160_pub.csv</file>
         <curve>ecsp160</curve>
+        <desc>order = 3</desc>
     </pubkey>
     <pubkey>
+        <id>ecsp192-pub</id>
         <file>ecsp192_pub.csv</file>
         <curve>ecsp192</curve>
+        <desc>order = 3</desc>
     </pubkey>
     <pubkey>
+        <id>ecsp224-pub</id>
         <file>ecsp224_pub.csv</file>
         <curve>ecsp224</curve>
+        <desc>order = 5</desc>
     </pubkey>
     <pubkey>
+        <id>ecsp256-pub</id>
         <file>ecsp256_pub.csv</file>
         <curve>ecsp256</curve>
+        <desc>order = 3</desc>
     </pubkey>
     <pubkey>
+        <id>ecsp384-pub</id>
         <file>ecsp384_pub.csv</file>
         <curve>ecsp384</curve>
+        <desc>order = 3</desc>
     </pubkey>
     <pubkey>
+        <id>ecsp521-pub</id>
         <file>ecsp521_pub.csv</file>
         <curve>ecsp521</curve>
+        <desc>order = 5</desc>
     </pubkey>
 </keys>
