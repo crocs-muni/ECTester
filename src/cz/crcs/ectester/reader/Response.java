@@ -119,7 +119,9 @@ public abstract class Response {
 
     public static String toString(List<Response> responses) {
         StringBuilder out = new StringBuilder();
-        for (Response r : responses) {
+        for (int i = 0; i < responses.size(); ++i) {
+            Response r = responses.get(i);
+
             String message = r.toString();
             String suffix;
             if (r.getNumSW() == 1) {
@@ -127,7 +129,10 @@ public abstract class Response {
             } else {
                 suffix = String.format("%s %s", Util.getPrintError(r.getSW1()), Util.getPrintError(r.getSW2()));
             }
-            out.append(String.format("%-55s: %5d ms : %s\n", message, r.time/1000000, suffix));
+            out.append(String.format("%-55s: %5d ms : %s", message, r.time/1000000, suffix));
+            if (i < responses.size() - 1) {
+                out.append("\n");
+            }
         }
         return out.toString();
     }

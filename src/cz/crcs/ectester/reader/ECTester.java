@@ -73,7 +73,8 @@ public class ECTester {
 
     private String optLog = null;
 
-    private String optInput;
+    private boolean optVerbose = false;
+    private String optInput = null;
     private String optOutput = null;
     private boolean optFresh = false;
     private boolean optSimulate = false;
@@ -119,7 +120,7 @@ public class ECTester {
             }
 
             //init CardManager
-            cardManager = new CardMngr(optSimulate);
+            cardManager = new CardMngr(optVerbose, optSimulate);
 
             //connect or simulate connection
             if (optSimulate) {
@@ -213,6 +214,9 @@ public class ECTester {
          * -k / --key [key_file] wx,wy,s
          * -nk / --named-key [cat/id]
          *
+         * -v / --verbose
+         *
+         * -i / --input [input_file]
          * -o / --output [output_file]
          * -f / --fresh
          * -s / --simulate
@@ -260,6 +264,7 @@ public class ECTester {
         opts.addOption(Option.builder("i").longOpt("input").desc("Input from file [input_file], for ecdsa signing.").hasArg().argName("input_file").build());
         opts.addOption(Option.builder("o").longOpt("output").desc("Output into file [output_file].").hasArg().argName("output_file").build());
         opts.addOption(Option.builder("l").longOpt("log").desc("Log output into file [log_file].").hasArg().argName("log_file").optionalArg(true).build());
+        opts.addOption(Option.builder("v").longOpt("verbose").desc("Turn on verbose logging.").build());
 
         opts.addOption(Option.builder("f").longOpt("fresh").desc("Generate fresh keys(set domain parameters before every generation).").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
@@ -295,6 +300,8 @@ public class ECTester {
         if (cli.hasOption("log")) {
             optLog = cli.getOptionValue("log", String.format("ECTESTER_log_%d.log", System.currentTimeMillis() / 1000));
         }
+
+        optVerbose = cli.hasOption("verbose");
         optInput = cli.getOptionValue("input");
         optOutput = cli.getOptionValue("output");
         optFresh = cli.hasOption("fresh");

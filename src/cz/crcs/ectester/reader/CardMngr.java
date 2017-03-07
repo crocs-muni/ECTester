@@ -22,6 +22,7 @@ public class CardMngr {
     private JavaxSmartCardInterface simulator = null;
 
     private boolean simulate = false;
+    private boolean verbose = true;
 
     private final byte[] selectCM = {
             (byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x07, (byte) 0xa0, (byte) 0x00, (byte) 0x00,
@@ -39,10 +40,14 @@ public class CardMngr {
     public static final short NUMBER_OF_RECORDS = (short) 0x0a; // 10 records
 
     public CardMngr() {
-        this(false);
     }
 
-    public CardMngr(boolean simulate) {
+    public CardMngr(boolean verbose) {
+        this.verbose = verbose;
+    }
+
+    public CardMngr(boolean verbose, boolean simulate) {
+        this(verbose);
         this.simulate = simulate;
     }
 
@@ -54,22 +59,27 @@ public class CardMngr {
         List<CardTerminal> terminalList = getReaderList();
 
         if (terminalList == null || terminalList.isEmpty()) {
-            System.out.println("No terminals found");
+            System.err.println("No terminals found");
             return false;
         }
 
         //List numbers of Card readers
         boolean cardFound = false;
         for (int i = 0; i < terminalList.size(); i++) {
-            System.out.println(i + " : " + terminalList.get(i));
+
+            if (verbose)
+                System.out.println(i + " : " + terminalList.get(i));
+
             terminal = terminalList.get(i);
             if (terminal.isCardPresent()) {
                 card = terminal.connect("*");
-                System.out.println("card: " + card);
+                if (verbose)
+                    System.out.println("card: " + card);
                 channel = card.getBasicChannel();
 
                 //reset the card
-                System.out.println(Util.bytesToHex(card.getATR().getBytes()));
+                if (verbose)
+                    System.out.println(Util.bytesToHex(card.getATR().getBytes()));
 
                 cardFound = true;
             }
@@ -85,7 +95,7 @@ public class CardMngr {
         // Test available card - if more present, let user to select one
         List<CardTerminal> terminalList = CardMngr.getReaderList();
         if (terminalList == null || terminalList.isEmpty()) {
-            System.out.println("ERROR: No suitable reader with card detected. Please check your reader connection");
+            System.err.println("ERROR: No suitable reader with card detected. Please check your reader connection");
             return false;
         } else {
             if (terminalList.size() == 1) {
@@ -116,7 +126,8 @@ public class CardMngr {
 
         if (terminal != null) {
             card = terminal.connect("*");
-            System.out.println("card: " + card);
+            if (verbose)
+                System.out.println("card: " + card);
             channel = card.getBasicChannel();
         }
 
@@ -166,7 +177,7 @@ public class CardMngr {
 
         ResponseAPDU resp = send(apdu);
         if (resp.getSW() != 0x9000) { // 0x9000 is "OK"
-            System.out.println("Fail to obtain card's response data");
+            System.err.println("Fail to obtain card's response data");
             data = null;
         } else {
             byte temp[] = resp.getBytes();
@@ -191,7 +202,8 @@ public class CardMngr {
 
             ResponseAPDU resp = send(apdu);
 
-            System.out.println("Response: " + Integer.toHexString(resp.getSW()));
+            if (verbose)
+                System.out.println("Response: " + Integer.toHexString(resp.getSW()));
 
             if (resp.getSW() != 0x6D00) { // Note: 0x6D00 is SW_INS_NOT_SUPPORTED
                 // something?
@@ -204,16 +216,18 @@ public class CardMngr {
             TerminalFactory factory = TerminalFactory.getDefault();
             return factory.terminals().list();
         } catch (CardException ex) {
-            System.out.println("Exception : " + ex);
+            System.err.println("Exception : " + ex);
             return null;
         }
     }
 
     public ResponseAPDU sendAPDU(CommandAPDU apdu) throws CardException {
-        System.out.println(">>>>");
-        System.out.println(apdu);
+        if (verbose) {
+            System.out.println(">>>>");
+            System.out.println(apdu);
 
-        System.out.println(Util.bytesToHex(apdu.getBytes()));
+            System.out.println(Util.bytesToHex(apdu.getBytes()));
+        }
 
         long elapsed = -System.nanoTime();
 
@@ -221,8 +235,10 @@ public class CardMngr {
 
         elapsed += System.nanoTime();
 
-        System.out.println(responseAPDU);
-        System.out.println(Util.bytesToHex(responseAPDU.getBytes()));
+        if (verbose) {
+            System.out.println(responseAPDU);
+            System.out.println(Util.bytesToHex(responseAPDU.getBytes()));
+        }
 
         if (responseAPDU.getSW1() == (byte) 0x61) {
             CommandAPDU apduToSend = new CommandAPDU((byte) 0x00,
@@ -230,11 +246,14 @@ public class CardMngr {
                     responseAPDU.getSW1());
 
             responseAPDU = channel.transmit(apduToSend);
-            System.out.println(Util.bytesToHex(responseAPDU.getBytes()));
+            if (verbose)
+                System.out.println(Util.bytesToHex(responseAPDU.getBytes()));
         }
 
-        System.out.println("<<<<");
-        System.out.println("Elapsed time (ms): " + elapsed / 1000000);
+        if (verbose) {
+            System.out.println("<<<<");
+            System.out.println("Elapsed time (ms): " + elapsed / 1000000);
+        }
         return responseAPDU;
     }
 
@@ -254,16 +273,20 @@ public class CardMngr {
     }
 
     public ResponseAPDU sendAPDUSimulator(CommandAPDU apdu) {
-        System.out.println(">>>>");
-        System.out.println(apdu);
-        System.out.println(Util.bytesToHex(apdu.getBytes()));
+        if (verbose) {
+            System.out.println(">>>>");
+            System.out.println(apdu);
+            System.out.println(Util.bytesToHex(apdu.getBytes()));
+        }
 
         ResponseAPDU response = simulator.transmitCommand(apdu);
         byte[] responseBytes = response.getBytes();
 
-        System.out.println(response);
-        System.out.println(Util.bytesToHex(responseBytes));
-        System.out.println("<<<<");
+        if (verbose) {
+            System.out.println(response);
+            System.out.println(Util.bytesToHex(responseBytes));
+            System.out.println("<<<<");
+        }
 
         return response;
     }
