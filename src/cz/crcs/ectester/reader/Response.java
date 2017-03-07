@@ -127,7 +127,7 @@ public abstract class Response {
             } else {
                 suffix = String.format("%s %s", Util.getPrintError(r.getSW1()), Util.getPrintError(r.getSW2()));
             }
-            out.append(String.format("%-55s: %s\n", message, suffix));
+            out.append(String.format("%-55s: %5d ms : %s\n", message, r.time/1000000, suffix));
         }
         return out.toString();
     }

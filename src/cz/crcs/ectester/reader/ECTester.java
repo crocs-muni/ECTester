@@ -72,13 +72,17 @@ public class ECTester {
     private String optKey = null;
 
     private String optLog = null;
+
+    private String optInput;
     private String optOutput = null;
     private boolean optFresh = false;
     private boolean optSimulate = false;
 
     //Action-related options
     private int optGenerateAmount;
-    private String optECDSASign;
+    private int optECDHCount;
+    private int optECDSACount;
+
 
     private Options opts = new Options();
     private static final String CLI_HEADER = "\nECTester, a javacard Elliptic Curve Cryptograhy support tester/utility.\n\n";
@@ -220,8 +224,8 @@ public class ECTester {
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate [amount] of EC keys.").hasArg().argName("amount").optionalArg(true).build());
         actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support.").build());
-        actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do ECDH.").build());
-        actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA.").hasArg().argName("data_file").optionalArg(true).build());
+        actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do ECDH, [count] times.").hasArg().argName("count").optionalArg(true).build());
+        actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
         opts.addOptionGroup(actions);
 
         OptionGroup size = new OptionGroup();
@@ -253,6 +257,7 @@ public class ECTester {
         key.addOption(Option.builder("k").longOpt("key").desc("Use keyPair from file [key_file] (wx,wy,s).").hasArg().argName("key_file").build());
         opts.addOptionGroup(key);
 
+        opts.addOption(Option.builder("i").longOpt("input").desc("Input from file [input_file], for ecdsa signing.").hasArg().argName("input_file").build());
         opts.addOption(Option.builder("o").longOpt("output").desc("Output into file [output_file].").hasArg().argName("output_file").build());
         opts.addOption(Option.builder("l").longOpt("log").desc("Log output into file [log_file].").hasArg().argName("log_file").optionalArg(true).build());
 
@@ -290,6 +295,7 @@ public class ECTester {
         if (cli.hasOption("log")) {
             optLog = cli.getOptionValue("log", String.format("ECTESTER_log_%d.log", System.currentTimeMillis() / 1000));
         }
+        optInput = cli.getOptionValue("input");
         optOutput = cli.getOptionValue("output");
         optFresh = cli.hasOption("fresh");
         optSimulate = cli.hasOption("simulate");
@@ -373,6 +379,12 @@ public class ECTester {
                 return false;
             }
 
+            optECDHCount = Integer.parseInt(cli.getOptionValue("ecdh", "1"));
+            if (optECDHCount <= 0) {
+                System.err.println("ECDH count cannot be <= 0.");
+                return false;
+            }
+
         } else if (cli.hasOption("ecdsa")) {
             if (optPrimeField == optBinaryField) {
                 System.err.print("Need to specify field with -fp or -f2m. (not both)");
@@ -391,7 +403,11 @@ public class ECTester {
                 return false;
             }
 
-            optECDSASign = cli.getOptionValue("ecdsa");
+            optECDSACount = Integer.parseInt(cli.getOptionValue("ecdsa", "1"));
+            if (optECDSACount <= 0) {
+                System.err.println("ECDSA count cannot be <= 0.");
+                return false;
+            }
         }
 
         return true;
@@ -507,7 +523,7 @@ public class ECTester {
                             commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), KeyPair.ALG_EC_FP));
                             byte[] external = curve.flatten();
                             commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, external));
-                            commands.addAll(testCurve(curve.getBits(), KeyPair.ALG_EC_FP));
+                            commands.addAll(testCurve());
                         }
                     }
                 }
@@ -518,7 +534,7 @@ public class ECTester {
                             commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), KeyPair.ALG_EC_F2M));
                             byte[] external = curve.flatten();
                             commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, external));
-                            commands.addAll(testCurve(curve.getBits(), KeyPair.ALG_EC_F2M));
+                            commands.addAll(testCurve());
                         }
                     }
                 }
@@ -528,7 +544,7 @@ public class ECTester {
                     for (short keyLength : EC_Consts.FP_SIZES) {
                         commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_FP));
                         commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_FP));
-                        commands.addAll(testCurve(keyLength, KeyPair.ALG_EC_FP));
+                        commands.addAll(testCurve());
                     }
                 }
                 if (optBinaryField) {
@@ -536,7 +552,7 @@ public class ECTester {
                     for (short keyLength : EC_Consts.F2M_SIZES) {
                         commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_F2M));
                         commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_F2M));
-                        commands.addAll(testCurve(keyLength, KeyPair.ALG_EC_F2M));
+                        commands.addAll(testCurve());
                     }
                 }
             }
@@ -544,13 +560,13 @@ public class ECTester {
             if (optPrimeField) {
                 commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_FP));
                 commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_FP));
-                commands.addAll(testCurve((short) optBits, KeyPair.ALG_EC_FP));
+                commands.addAll(testCurve());
             }
 
             if (optBinaryField) {
                 commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_F2M));
                 commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_F2M));
-                commands.addAll(testCurve((short) optBits, KeyPair.ALG_EC_F2M));
+                commands.addAll(testCurve());
             }
         }
         List<Response> test = Command.sendAll(commands);
@@ -565,29 +581,45 @@ public class ECTester {
      */
     private void ecdh() throws IOException, CardException {
         byte keyClass = optPrimeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
-        List<Response> ecdh = new LinkedList<>();
-        ecdh.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) optBits, keyClass).send());
-        ecdh.addAll(Command.sendAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, keyClass)));
+        List<Response> prepare = new LinkedList<>();
+        prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) optBits, keyClass).send());
+        prepare.addAll(Command.sendAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, keyClass)));
 
+        systemOutLogger.println(Response.toString(prepare));
+
+        List<Command> generate = new LinkedList<>();
         if (optPublic != null || optPrivate != null || optKey != null) {
-            ecdh.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL).send());
-            ecdh.add(prepareKey(ECTesterApplet.KEYPAIR_REMOTE).send());
+            generate.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL));
+            generate.add(prepareKey(ECTesterApplet.KEYPAIR_REMOTE));
         } else {
-            ecdh.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH).send());
+            generate.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH));
         }
 
-        Response.ECDH perform = new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_TRUE, (byte) 0).send();
-        ecdh.add(perform);
-        systemOutLogger.println(Response.toString(ecdh));
+        int retry = 0;
+        int done = 0;
+        while (done < optECDHCount) {
+            List<Response> ecdh = Command.sendAll(generate);
 
-        if (!perform.hasSecret()) {
-            System.err.println("Couldn't obtain ECDH secret from card response.");
-        } else {
+            Response.ECDH perform = new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_TRUE, (byte) 0).send();
+            ecdh.add(perform);
+            systemOutLogger.println(Response.toString(ecdh));
+
+            if (!perform.successful() || !perform.hasSecret()) {
+                if (retry < 10) {
+                    retry++;
+                    continue;
+                } else {
+                    System.err.println("Couldn't obtain ECDH secret from card response.");
+                    break;
+                }
+            }
+
             if (optOutput != null) {
                 FileWriter out = new FileWriter(optOutput);
                 out.write(Util.bytesToHex(perform.getSecret(), false));
                 out.close();
             }
+            ++done;
         }
     }
 
@@ -598,42 +630,57 @@ public class ECTester {
      * @throws IOException   if an IO error occurs when writing to key file.
      */
     private void ecdsa() throws CardException, IOException {
-        byte keyClass = optPrimeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
-        List<Response> ecdsa = new LinkedList<>();
-        ecdsa.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) optBits, keyClass).send());
-        ecdsa.addAll(Command.sendAll(prepareCurve(ECTesterApplet.KEYPAIR_LOCAL, (short) optBits, keyClass)));
-
-        Response keys;
-        if (optKey != null || (optPublic != null && optPrivate != null)) {
-            keys = prepareKey(ECTesterApplet.KEYPAIR_LOCAL).send();
-        } else {
-            keys = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL).send();
-        }
-        ecdsa.add(keys);
-
         //read file, if asked to sign
         byte[] data = null;
-        if (optECDSASign != null) {
-            File in = new File(optECDSASign);
+        if (optInput != null) {
+            File in = new File(optInput);
             long len = in.length();
             if (len == 0) {
-                throw new FileNotFoundException("File " + optECDSASign + " not found.");
+                throw new FileNotFoundException(optInput);
             }
             data = Files.readAllBytes(in.toPath());
         }
 
-        Response.ECDSA perform = new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, data).send();
-        ecdsa.add(perform);
-        systemOutLogger.println(Response.toString(ecdsa));
-
-        if (!perform.hasSignature()) {
-            System.err.println("Couldn't obtain ECDSA signature from card response.");
+        Command generate;
+        if (optKey != null || (optPublic != null && optPrivate != null)) {
+            generate = prepareKey(ECTesterApplet.KEYPAIR_LOCAL);
         } else {
+            generate = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL);
+        }
+
+        byte keyClass = optPrimeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
+        List<Response> prepare = new LinkedList<>();
+        prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) optBits, keyClass).send());
+        prepare.addAll(Command.sendAll(prepareCurve(ECTesterApplet.KEYPAIR_LOCAL, (short) optBits, keyClass)));
+
+        systemOutLogger.println(Response.toString(prepare));
+
+        int retry = 0;
+        int done = 0;
+        while (done < optECDSACount) {
+            List<Response> ecdsa = new LinkedList<>();
+            ecdsa.add(generate.send());
+
+            Response.ECDSA perform = new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, data).send();
+            ecdsa.add(perform);
+            systemOutLogger.println(Response.toString(ecdsa));
+
+            if (!perform.successful() || !perform.hasSignature()) {
+                if (retry < 10) {
+                    retry++;
+                    continue;
+                } else {
+                    System.err.println("Couldn't obtain ECDSA signature from card response.");
+                    break;
+                }
+            }
+
             if (optOutput != null) {
                 FileWriter out = new FileWriter(optOutput);
                 out.write(Util.bytesToHex(perform.getSignature(), false));
                 out.close();
             }
+            ++done;
         }
     }
 
@@ -758,12 +805,10 @@ public class ECTester {
     }
 
     /**
-     * @param keyLength
-     * @param keyClass
      * @return
      * @throws IOException
      */
-    private List<Command> testCurve(short keyLength, byte keyClass) throws IOException {
+    private List<Command> testCurve() throws IOException {
         List<Command> commands = new LinkedList<>();
         commands.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH));
         commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, (byte) 0));
