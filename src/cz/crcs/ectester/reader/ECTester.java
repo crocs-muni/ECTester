@@ -602,6 +602,12 @@ public class ECTester {
             generate.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH));
         }
 
+        FileWriter out = null;
+        if (optOutput != null) {
+            out = new FileWriter(optOutput);
+            out.write("index;time;secret\n");
+        }
+
         int retry = 0;
         int done = 0;
         while (done < optECDHCount) {
@@ -621,13 +627,15 @@ public class ECTester {
                 }
             }
 
-            if (optOutput != null) {
-                FileWriter out = new FileWriter(optOutput);
-                out.write(Util.bytesToHex(perform.getSecret(), false));
-                out.close();
+            if (out != null) {
+                out.write(String.format("%d;%d;%s\n", done, perform.getDuration() / 1000000, Util.bytesToHex(perform.getSecret(), false)));
             }
+
             ++done;
         }
+
+        if (out != null)
+            out.close();
     }
 
     /**
@@ -662,6 +670,12 @@ public class ECTester {
 
         systemOutLogger.println(Response.toString(prepare));
 
+        FileWriter out = null;
+        if (optOutput != null) {
+            out = new FileWriter(optOutput);
+            out.write("index;time;signature\n");
+        }
+
         int retry = 0;
         int done = 0;
         while (done < optECDSACount) {
@@ -682,13 +696,14 @@ public class ECTester {
                 }
             }
 
-            if (optOutput != null) {
-                FileWriter out = new FileWriter(optOutput);
-                out.write(Util.bytesToHex(perform.getSignature(), false));
-                out.close();
+            if (out != null) {
+                out.write(String.format("%d;%d;%s\n", done, perform.getDuration() / 1000000, Util.bytesToHex(perform.getSignature(), false)));
             }
+
             ++done;
         }
+        if (out != null)
+            out.close();
     }
 
     /**

@@ -10,7 +10,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -29,12 +31,12 @@ import java.util.Map;
  */
 public class EC_Data {
 
-    private DocumentBuilderFactory dbf;
+    private DocumentBuilder db;
 
     private Map<String, EC_Category> categories;
 
     public EC_Data() {
-        dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
         try {
             SchemaFactory scf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -43,6 +45,23 @@ public class EC_Data {
             dbf.setNamespaceAware(true);
             dbf.setIgnoringComments(true);
             dbf.setIgnoringElementContentWhitespace(true);
+            db = dbf.newDocumentBuilder();
+            db.setErrorHandler(new ErrorHandler() {
+                @Override
+                public void warning(SAXParseException exception) throws SAXException {
+                    System.err.println("EC_Data | Warning : " + exception);
+                }
+
+                @Override
+                public void error(SAXParseException exception) throws SAXException {
+                    System.err.println("EC_Data | Error : " + exception);
+                }
+
+                @Override
+                public void fatalError(SAXParseException exception) throws SAXException {
+                    System.err.println("EC_Data | Fatal : " + exception);
+                }
+            });
 
             parse();
         } catch (ParserConfigurationException | IOException | SAXException e) {
@@ -51,7 +70,6 @@ public class EC_Data {
     }
 
     private void parse() throws SAXException, ParserConfigurationException, IOException {
-        DocumentBuilder db = dbf.newDocumentBuilder();
 
         Document categoriesDoc = db.parse(this.getClass().getResourceAsStream("/cz/crcs/ectester/data/categories.xml"));
         categoriesDoc.normalize();
@@ -76,7 +94,6 @@ public class EC_Data {
     }
 
     private EC_Category parseCategory(String name, String dir, String desc) throws ParserConfigurationException, IOException, SAXException {
-        DocumentBuilder db = dbf.newDocumentBuilder();
 
         Map<String, EC_Params> objMap = new HashMap<>();
 

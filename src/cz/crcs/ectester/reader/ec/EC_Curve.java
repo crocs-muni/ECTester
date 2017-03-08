@@ -20,6 +20,8 @@ public class EC_Curve extends EC_Params {
     public EC_Curve(short bits, byte field) {
         super(field == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M);
         this.bits = bits;
+
+        this.field = field;
     }
 
     public EC_Curve(short bits, byte field, String desc) {
