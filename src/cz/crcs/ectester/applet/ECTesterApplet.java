@@ -46,10 +46,11 @@ public class ECTesterApplet extends Applet {
     public static final byte INS_ALLOCATE = (byte) 0x5a;
     public static final byte INS_CLEAR = (byte) 0x5b;
     public static final byte INS_SET = (byte) 0x5c;
-    public static final byte INS_GENERATE = (byte) 0x5d;
-    public static final byte INS_EXPORT = (byte) 0x5e;
-    public static final byte INS_ECDH = (byte) 0x5f;
-    public static final byte INS_ECDSA = (byte) 0x60;
+    public static final byte INS_CORRUPT = (byte) 0x5d;
+    public static final byte INS_GENERATE = (byte) 0x5e;
+    public static final byte INS_EXPORT = (byte) 0x5f;
+    public static final byte INS_ECDH = (byte) 0x60;
+    public static final byte INS_ECDSA = (byte) 0x61;
 
     // PARAMETERS for P1 and P2
     public static final byte KEYPAIR_LOCAL = (byte) 0x01;
@@ -132,6 +133,9 @@ public class ECTesterApplet extends Applet {
                 case INS_SET:
                     insSet(apdu);
                     break;
+                case INS_CORRUPT:
+                    insCorrupt(apdu);
+                    break;
                 case INS_GENERATE:
                     insGenerate(apdu);
                     break;
@@ -199,13 +203,11 @@ public class ECTesterApplet extends Applet {
 
     /**
      * Sets curve parameters on local and remote keyPairs.
-     * returns setCurve SWs, set params if export
+     * returns setCurve SWs
      *
      * @param apdu P1   = byte keyPair (KEYPAIR_* | ...)
      *             P2   = byte curve (EC_Consts.CURVE_*)
      *             DATA = short params (EC_Consts.PARAMETER_* | ...)
-     *             short corruptedParams (EC_Consts.PARAMETER_* | ...)
-     *             byte corruptionType (EC_Consts.CORRUPTION_*)
      *             <p>
      *             if curveID = CURVE_EXTERNAL:
      *             [short paramLength, byte[] param],
@@ -219,16 +221,44 @@ public class ECTesterApplet extends Applet {
         byte keyPair = apdubuf[ISO7816.OFFSET_P1];
         byte curve = apdubuf[ISO7816.OFFSET_P2];
         short params = Util.getShort(apdubuf, ISO7816.OFFSET_CDATA);
-        short corruptedParams = Util.getShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + 2));
-        byte corruptionType = apdubuf[(short) (ISO7816.OFFSET_CDATA + 4)];
 
         short len = 0;
 
         if ((keyPair & KEYPAIR_LOCAL) != 0) {
-            len += set(localKeypair, curve, params, corruptedParams, corruptionType, apdubuf, (short) (ISO7816.OFFSET_CDATA + 5), (short) 0);
+            len += set(localKeypair, curve, params, apdubuf, (short) (ISO7816.OFFSET_CDATA + 2), (short) 0);
         }
         if ((keyPair & KEYPAIR_REMOTE) != 0) {
-            len += set(remoteKeypair, curve, params, corruptedParams, corruptionType, apdubuf, (short) (ISO7816.OFFSET_CDATA + 5), len);
+            len += set(remoteKeypair, curve, params, apdubuf, (short) (ISO7816.OFFSET_CDATA + 2), len);
+        }
+
+        apdu.setOutgoingAndSend((short) 0, len);
+    }
+
+    /**
+     * Corrupts curve paramaters of local and remote keyPairs.
+     * returns corruptCurve SWs
+     *
+     * @param apdu P1 = byte keyPair (KEYPAIR_* | ...)
+     *             P2 = byte key (EC_Consts.KEY_* | ...)
+     *             DATA = short params (EC_Consts.PARAMETER_* | ...)
+     *             byte corruption (EC_Consts.CORRUPTION_* || ...)
+     */
+    private void insCorrupt(APDU apdu) {
+        apdu.setIncomingAndReceive();
+        byte[] apdubuf = apdu.getBuffer();
+
+        byte keyPair = apdubuf[ISO7816.OFFSET_P1];
+        byte key = apdubuf[ISO7816.OFFSET_P2];
+        short params = Util.getShort(apdubuf, ISO7816.OFFSET_CDATA);
+        byte corruption = apdubuf[(short) (ISO7816.OFFSET_CDATA + 2)];
+
+        short len = 0;
+        if ((keyPair & KEYPAIR_LOCAL) != 0) {
+            len += corrupt(localKeypair, key, params, corruption, apdubuf, (short) 0);
+        }
+
+        if ((keyPair & KEYPAIR_REMOTE) != 0) {
+            len += corrupt(remoteKeypair, key, params, corruption, apdubuf, len);
         }
 
         apdu.setOutgoingAndSend((short) 0, len);
@@ -236,7 +266,7 @@ public class ECTesterApplet extends Applet {
 
     /**
      * Generates the local and remote keyPairs.
-     * returns generate SWs, pubkey and privkey if export
+     * returns generate SWs
      *
      * @param apdu P1   = byte keyPair (KEYPAIR_* | ...)
      *             P2   =
@@ -376,17 +406,15 @@ public class ECTesterApplet extends Applet {
     }
 
     /**
-     * @param keyPair    KeyPair to set params on
-     * @param curve      curve to set (EC_Consts.CURVE_*)
-     * @param params     parameters to set (EC_Consts.PARAMETER_* | ...)
-     * @param corrupted  parameters to corrupt (EC_Consts.PARAMETER_* | ...)
-     * @param corruption corruption type (EC_Consts.CORRUPTION_*)
-     * @param buffer     buffer to read params from and write sw to
-     * @param inOffset   input offset in buffer
-     * @param outOffset  output offset in buffer
+     * @param keyPair   KeyPair to set params on
+     * @param curve     curve to set (EC_Consts.CURVE_*)
+     * @param params    parameters to set (EC_Consts.PARAMETER_* | ...)
+     * @param buffer    buffer to read params from and write sw to
+     * @param inOffset  input offset in buffer
+     * @param outOffset output offset in buffer
      * @return length of data written to the buffer
      */
-    private short set(KeyPair keyPair, byte curve, short params, short corrupted, byte corruption, byte[] buffer, short inOffset, short outOffset) {
+    private short set(KeyPair keyPair, byte curve, short params, byte[] buffer, short inOffset, short outOffset) {
         short sw = ISO7816.SW_NO_ERROR;
 
         switch (curve) {
@@ -403,9 +431,23 @@ public class ECTesterApplet extends Applet {
                 break;
         }
 
-        if (sw == ISO7816.SW_NO_ERROR)
-            sw = keyGenerator.corruptCurve(keyPair, corrupted, corruption, ramArray, (short) 0);
         Util.setShort(buffer, outOffset, sw);
+        return 2;
+    }
+
+    /**
+     *
+     * @param keyPair    KeyPair to corrupt
+     * @param key        key to corrupt (EC_Consts.KEY_* | ...)
+     * @param params     parameters to corrupt (EC_Consts.PARAMETER_* | ...)
+     * @param corruption corruption type (EC_Consts.CORRUPTION_*)
+     * @param buffer     buffer to output sw to
+     * @param offset     output offset in buffer
+     * @return length of data written to the buffer
+     */
+    private short corrupt(KeyPair keyPair, byte key, short params, byte corruption, byte[] buffer, short offset) {
+        short sw = keyGenerator.corruptCurve(keyPair, key, params, corruption, ramArray, (short) 0);
+        Util.setShort(buffer, offset, sw);
         return 2;
     }
 

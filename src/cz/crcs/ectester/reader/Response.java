@@ -129,7 +129,7 @@ public abstract class Response {
             } else {
                 suffix = String.format("%s %s", Util.getPrintError(r.getSW1()), Util.getPrintError(r.getSW2()));
             }
-            out.append(String.format("%-55s:%5d ms : %s", message, r.time/1000000, suffix));
+            out.append(String.format("%-55s:%5d ms : %s", message, r.time / 1000000, suffix));
             if (i < responses.size() - 1) {
                 out.append("\n");
             }
@@ -202,14 +202,12 @@ public abstract class Response {
         private byte keyPair;
         private byte curve;
         private short parameters;
-        private short corrupted;
 
-        protected Set(ResponseAPDU response, long time, byte keyPair, byte curve, short parameters, short corrupted) {
+        protected Set(ResponseAPDU response, long time, byte keyPair, byte curve, short parameters) {
             super(response, time);
             this.keyPair = keyPair;
             this.curve = curve;
             this.parameters = parameters;
-            this.corrupted = corrupted;
 
             int pairs = 0;
             if ((keyPair & ECTesterApplet.KEYPAIR_LOCAL) != 0) pairs++;
@@ -232,15 +230,52 @@ public abstract class Response {
                     name = "custom";
                     break;
             }
-            String key;
+            String pair;
             if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
-                key = "both keypairs";
+                pair = "both keypairs";
             } else {
-                key = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
+                pair = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
             }
-            return String.format("Set %s curve parameters on %s", name, key);
+            return String.format("Set %s curve parameters on %s", name, pair);
         }
 
+    }
+
+    /**
+     *
+     */
+    public static class Corrupt extends Response {
+        private byte keyPair;
+        private byte key;
+        private short params;
+        private byte corruption;
+
+        protected Corrupt(ResponseAPDU response, long time, byte keyPair, byte key, short params, byte corruption) {
+            super(response, time);
+            this.keyPair = keyPair;
+            this.key = key;
+            this.params = params;
+            this.corruption = corruption;
+
+            int pairs = 0;
+            if ((keyPair & ECTesterApplet.KEYPAIR_LOCAL) != 0) pairs++;
+            if ((keyPair & ECTesterApplet.KEYPAIR_REMOTE) != 0) pairs++;
+
+            parse(pairs, 0);
+        }
+
+        @Override
+        public String toString() {
+            String corrupt = Util.getCorruption(corruption);
+
+            String pair;
+            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
+                pair = "both keypairs";
+            } else {
+                pair = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
+            }
+            return String.format("Corrupted params of %s, %s", pair, corrupt);
+        }
     }
 
     /**

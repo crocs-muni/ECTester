@@ -75,6 +75,10 @@ public abstract class Command {
     public static class Clear extends Command {
         private byte keyPair;
 
+        /**
+         * @param cardManager
+         * @param keyPair     which keyPair clear, local/remote (KEYPAIR_* || ...)
+         */
         public Clear(CardMngr cardManager, byte keyPair) {
             super(cardManager);
             this.keyPair = keyPair;
@@ -98,8 +102,6 @@ public abstract class Command {
         private byte keyPair;
         private byte curve;
         private short params;
-        private short corrupted;
-        private byte corruption;
         private byte[] external;
 
         /**
@@ -109,26 +111,20 @@ public abstract class Command {
          * @param keyPair     which keyPair to set params on, local/remote (KEYPAIR_* || ...)
          * @param curve       curve to set (EC_Consts.CURVE_*)
          * @param params      parameters to set (EC_Consts.PARAMETER_* | ...)
-         * @param corrupted   parameters to corrupt (EC_Consts.PARAMETER_* | ...)
-         * @param corruption  corruption type (EC_Consts.CORRUPTION_*)
          * @param external    external curve data, can be null
          */
-        public Set(CardMngr cardManager, byte keyPair, byte curve, short params, short corrupted, byte corruption, byte[] external) {
+        public Set(CardMngr cardManager, byte keyPair, byte curve, short params, byte[] external) {
             super(cardManager);
             this.keyPair = keyPair;
             this.curve = curve;
             this.params = params;
-            this.corrupted = corrupted;
-            this.corruption = corruption;
             this.external = external;
 
-            int len = external != null ? 5 + 2 + external.length : 5;
+            int len = external != null ? 2 + external.length : 2;
             byte[] data = new byte[len];
             Util.setShort(data, 0, params);
-            Util.setShort(data, 2, corrupted);
-            data[4] = corruption;
             if (external != null) {
-                System.arraycopy(external, 0, data, 5, external.length);
+                System.arraycopy(external, 0, data, 2, external.length);
             }
 
             this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_SET, keyPair, curve, data);
@@ -139,7 +135,46 @@ public abstract class Command {
             long elapsed = -System.nanoTime();
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
-            return new Response.Set(response, elapsed, keyPair, curve, params, corrupted);
+            return new Response.Set(response, elapsed, keyPair, curve, params);
+        }
+    }
+
+    /**
+     *
+     */
+    public static class Corrupt extends Command {
+        private byte keyPair;
+        private byte key;
+        private short params;
+        private byte corruption;
+
+        /**
+         * @param cardManager
+         * @param keyPair     which keyPair to corrupt, local/remote (KEYPAIR_* || ...)
+         * @param key
+         * @param params      parameters to corrupt (EC_Consts.PARAMETER_* | ...)
+         * @param corruption  corruption type (EC_Consts.CORRUPTION_*)
+         */
+        protected Corrupt(CardMngr cardManager, byte keyPair, byte key, short params, byte corruption) {
+            super(cardManager);
+            this.keyPair = keyPair;
+            this.key = key;
+            this.params = params;
+            this.corruption = corruption;
+
+            byte[] data = new byte[3];
+            Util.setShort(data, 0, params);
+            data[2] = corruption;
+
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_CORRUPT, keyPair, key, data);
+        }
+
+        @Override
+        public Response.Corrupt send() throws CardException {
+            long elapsed = -System.nanoTime();
+            ResponseAPDU response = cardManager.send(cmd);
+            elapsed += System.nanoTime();
+            return new Response.Corrupt(response, elapsed, keyPair, key, params, corruption);
         }
     }
 

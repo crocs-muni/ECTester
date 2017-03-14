@@ -233,14 +233,14 @@ public class ECTester {
         opts.addOptionGroup(actions);
 
         OptionGroup size = new OptionGroup();
-        size.addOption(Option.builder("b").longOpt("bit-size").desc("Set curve size.").hasArg().argName("b").build());
+        size.addOption(Option.builder("b").longOpt("bit-size").desc("Set curve size.").hasArg().argName("bits").build());
         size.addOption(Option.builder("a").longOpt("all").desc("Test all curve sizes.").build());
         opts.addOptionGroup(size);
 
         OptionGroup curve = new OptionGroup();
         curve.addOption(Option.builder("n").longOpt("named").desc("Use a named curve.").hasArg().argName("cat/id").build());
         curve.addOption(Option.builder("c").longOpt("curve").desc("Use curve from file [curve_file] (field,a,b,gx,gy,r,k).").hasArg().argName("curve_file").build());
-        curve.addOption(Option.builder("u").longOpt("custom").desc("Use a custom curve(applet-side embedded, SECG curves).").build());
+        curve.addOption(Option.builder("u").longOpt("custom").desc("Use a custom curve(applet-side embedded, SECG curvgites).").build());
         opts.addOptionGroup(curve);
 
         opts.addOption(Option.builder("fp").longOpt("prime-field").desc("Use prime field curve.").build());
@@ -257,7 +257,7 @@ public class ECTester {
         opts.addOptionGroup(priv);
 
         OptionGroup key = new OptionGroup();
-        key.addOption(Option.builder("nk").longOpt("named-key").desc("Use keyPair from KeyDB: [cat/id|id|cat]").hasArg().argName("[cat/id|id|cat]").build());
+        key.addOption(Option.builder("nk").longOpt("named-key").desc("Use keyPair from KeyDB: [cat/id]").hasArg().argName("cat/id").build());
         key.addOption(Option.builder("k").longOpt("key").desc("Use keyPair from file [key_file] (wx,wy,s).").hasArg().argName("key_file").build());
         opts.addOptionGroup(key);
 
@@ -529,7 +529,7 @@ public class ECTester {
                         if (curve.getField() == KeyPair.ALG_EC_FP) {
                             commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), KeyPair.ALG_EC_FP));
                             byte[] external = curve.flatten();
-                            commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, external));
+                            commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), external));
                             commands.addAll(testCurve());
                         }
                     }
@@ -540,7 +540,7 @@ public class ECTester {
                         if (curve.getField() == KeyPair.ALG_EC_F2M) {
                             commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), KeyPair.ALG_EC_F2M));
                             byte[] external = curve.flatten();
-                            commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, external));
+                            commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), external));
                             commands.addAll(testCurve());
                         }
                     }
@@ -719,7 +719,7 @@ public class ECTester {
         short domainParams = keyClass == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
         if (optCustomCurve) {
             // Set custom curve (one of the SECG curves embedded applet-side)
-            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.getCurve(keyLength, keyClass), domainParams, EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, null));
+            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.getCurve(keyLength, keyClass), domainParams, null));
         } else if (optNamedCurve != null) {
             // Set a named curve.
             // parse optNamedCurve -> cat / id | cat | id
@@ -735,7 +735,7 @@ public class ECTester {
             if (external == null) {
                 throw new IOException("Couldn't read named curve data.");
             }
-            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, domainParams, EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, external));
+            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, domainParams, external));
         } else if (optCurveFile != null) {
             // Set curve loaded from a file
             EC_Params params = new EC_Params(domainParams);
@@ -748,7 +748,7 @@ public class ECTester {
             if (external == null) {
                 throw new IOException("Couldn't read the curve file correctly.");
             }
-            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, domainParams, EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, external));
+            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, domainParams, external));
         } else {
             // Set default curve
             commands.add(new Command.Clear(cardManager, keyPair));
@@ -823,7 +823,7 @@ public class ECTester {
             }
             data = Util.concatenate(data, privkey);
         }
-        return new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, params, EC_Consts.PARAMETERS_NONE, EC_Consts.CORRUPTION_NONE, data);
+        return new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, params, data);
     }
 
     /**

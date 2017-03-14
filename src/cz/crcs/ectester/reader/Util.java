@@ -1,6 +1,7 @@
 package cz.crcs.ectester.reader;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
+import cz.crcs.ectester.applet.EC_Consts;
 import javacard.framework.ISO7816;
 import javacard.security.CryptoException;
 
@@ -129,5 +130,36 @@ public class Util {
             }
             return String.format("fail\t(%s,\t0x%04x)", codeStr, code);
         }
+    }
+
+    public static String getCorruption(byte corruptionType) {
+        String corrupt;
+        switch (corruptionType) {
+            case EC_Consts.CORRUPTION_NONE:
+                corrupt = "NONE";
+                break;
+            case EC_Consts.CORRUPTION_FIXED:
+                corrupt = "FIXED";
+                break;
+            case EC_Consts.CORRUPTION_ONE:
+                corrupt = "ONE";
+                break;
+            case EC_Consts.CORRUPTION_ZERO:
+                corrupt = "ZERO";
+                break;
+            case EC_Consts.CORRUPTION_ONEBYTERANDOM:
+                corrupt = "ONE_BYTE_RANDOM";
+                break;
+            case EC_Consts.CORRUPTION_FULLRANDOM:
+                corrupt = "FULL_RANDOM";
+                break;
+            case EC_Consts.CORRUPTION_INCREMENT:
+                corrupt = "INCREMENT";
+                break;
+            default:
+                corrupt = "UNKNOWN";
+                break;
+        }
+        return corrupt;
     }
 }

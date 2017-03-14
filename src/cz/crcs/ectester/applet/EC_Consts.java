@@ -947,6 +947,7 @@ public class EC_Consts {
     public static final byte CORRUPTION_ONEBYTERANDOM = (byte) 0x03;
     public static final byte CORRUPTION_ZERO = (byte) 0x04;
     public static final byte CORRUPTION_ONE = (byte) 0x05;
+    public static final byte CORRUPTION_INCREMENT = (byte) 0x06;
 
 
     // Supported embedded curves, getCurveParameter
@@ -1269,18 +1270,16 @@ public class EC_Consts {
             case CORRUPTION_ONE:
                 Util.arrayFillNonAtomic(buffer, offset, length, (byte) 1);
                 break;
+            case CORRUPTION_INCREMENT:
+                short index = (short) (offset + length - 1);
+                byte value;
+                do {
+                    value = buffer[index];
+                    buffer[index--] = ++value;
+                } while (value == (byte) 0 && index >= offset);
+                break;
             default:
                 ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
-            /* //TODO implement CORRUPT_B_LASTBYTEINCREMENT somehow
-                    case CORRUPT_B_LASTBYTEINCREMENT:
-                        m_ramArray2[(short) (m_lenB - 1)] += 1;
-                        // Make sure its not the valid byte again
-                        if (m_ramArray[(short) (m_lenB - 1)] == m_ramArray2[(short) (m_lenB - 1)]) {
-                            m_ramArray2[(short) (m_lenB - 1)] += 1; // if yes, increment once more
-                        }
-                        break;
-                }
-                */
         }
     }
 
