@@ -240,7 +240,7 @@ public class ECTester {
         OptionGroup curve = new OptionGroup();
         curve.addOption(Option.builder("n").longOpt("named").desc("Use a named curve.").hasArg().argName("cat/id").build());
         curve.addOption(Option.builder("c").longOpt("curve").desc("Use curve from file [curve_file] (field,a,b,gx,gy,r,k).").hasArg().argName("curve_file").build());
-        curve.addOption(Option.builder("u").longOpt("custom").desc("Use a custom curve(applet-side embedded, SECG curvgites).").build());
+        curve.addOption(Option.builder("u").longOpt("custom").desc("Use a custom curve(applet-side embedded, SECG curves).").build());
         opts.addOptionGroup(curve);
 
         opts.addOption(Option.builder("fp").longOpt("prime-field").desc("Use prime field curve.").build());
