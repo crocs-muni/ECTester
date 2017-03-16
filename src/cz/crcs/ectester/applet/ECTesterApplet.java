@@ -324,7 +324,7 @@ public class ECTesterApplet extends Applet {
      * @param apdu P1   = byte pubkey (KEYPAIR_*)
      *             P2   = byte privkey (KEYPAIR_*)
      *             DATA = byte export (EXPORT_TRUE || EXPORT_FALSE)
-     *             byte invalid (00 = valid, !00 = invalid)
+     *             byte corruption (00 = valid, !00 = invalid)
      */
     private void insECDH(APDU apdu) {
         apdu.setIncomingAndReceive();
@@ -333,9 +333,9 @@ public class ECTesterApplet extends Applet {
         byte pubkey = apdubuf[ISO7816.OFFSET_P1];
         byte privkey = apdubuf[ISO7816.OFFSET_P2];
         byte export = apdubuf[ISO7816.OFFSET_CDATA];
-        byte invalid = apdubuf[(short) (ISO7816.OFFSET_CDATA + 1)];
+        byte corruption = apdubuf[(short) (ISO7816.OFFSET_CDATA + 1)];
 
-        short len = ecdh(pubkey, privkey, export, invalid, apdubuf, (short) 0);
+        short len = ecdh(pubkey, privkey, export, corruption, apdubuf, (short) 0);
 
         apdu.setOutgoingAndSend((short) 0, len);
     }
@@ -436,7 +436,6 @@ public class ECTesterApplet extends Applet {
     }
 
     /**
-     *
      * @param keyPair    KeyPair to corrupt
      * @param key        key to corrupt (EC_Consts.KEY_* | ...)
      * @param params     parameters to corrupt (EC_Consts.PARAMETER_* | ...)
@@ -494,26 +493,21 @@ public class ECTesterApplet extends Applet {
     }
 
     /**
-     * @param pubkey  keyPair to use for public key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
-     * @param privkey keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
-     * @param export  whether to export ECDH secret
-     * @param invalid whether to invalidate the pubkey before ECDH
-     * @param buffer  buffer to write sw to, and export ECDH secret {@code if(export == EXPORT_TRUE)}
-     * @param offset  output offset in buffer
+     * @param pubkey     keyPair to use for public key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
+     * @param privkey    keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
+     * @param export     whether to export ECDH secret
+     * @param corruption whether to invalidate the pubkey before ECDH
+     * @param buffer     buffer to write sw to, and export ECDH secret {@code if(export == EXPORT_TRUE)}
+     * @param offset     output offset in buffer
      * @return length of data written to the buffer
      */
-    private short ecdh(byte pubkey, byte privkey, byte export, byte invalid, byte[] buffer, short offset) {
+    private short ecdh(byte pubkey, byte privkey, byte export, byte corruption, byte[] buffer, short offset) {
         short length = 0;
 
         KeyPair pub = ((pubkey & KEYPAIR_LOCAL) != 0) ? localKeypair : remoteKeypair;
         KeyPair priv = ((privkey & KEYPAIR_LOCAL) != 0) ? localKeypair : remoteKeypair;
 
-        short secretLength;
-        if (invalid != 0) {
-            secretLength = keyTester.testECDH_invalidPoint((ECPrivateKey) priv.getPrivate(), (ECPublicKey) pub.getPublic(), ramArray, (short) 0, ramArray2, (short) 0);
-        } else {
-            secretLength = keyTester.testECDH_validPoint((ECPrivateKey) priv.getPrivate(), (ECPublicKey) pub.getPublic(), ramArray, (short) 0, ramArray2, (short) 0);
-        }
+        short secretLength = keyTester.testECDH((ECPrivateKey) priv.getPrivate(), (ECPublicKey) pub.getPublic(), ramArray, (short) 0, ramArray2, (short) 0, corruption);
 
         Util.setShort(buffer, offset, keyTester.getSW());
         length += 2;

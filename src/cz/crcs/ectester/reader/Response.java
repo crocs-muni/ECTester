@@ -129,7 +129,7 @@ public abstract class Response {
             } else {
                 suffix = String.format("%s %s", Util.getPrintError(r.getSW1()), Util.getPrintError(r.getSW2()));
             }
-            out.append(String.format("%-55s:%5d ms : %s", message, r.time / 1000000, suffix));
+            out.append(String.format("%-58s:%4d ms : %s", message, r.time / 1000000, suffix));
             if (i < responses.size() - 1) {
                 out.append("\n");
             }
@@ -294,42 +294,6 @@ public abstract class Response {
             parse(generated, 0);
         }
 
-        /*
-        private int getIndex(byte key) {
-            for (int i = 0; i < contents.length; i++) {
-                if (key == contents[i])
-                    return i;
-            }
-            return -1;
-        }
-
-        public boolean hasPublic(byte keyPair) {
-            if ((export & ECTesterApplet.EXPORT_PUBLIC) == 0 || (export & keyPair) == 0)
-                return false;
-            int index = getIndex((byte) (keyPair | ECTesterApplet.EXPORT_PUBLIC));
-            return index != -1 && hasParam(index);
-        }
-
-        public boolean hasPrivate(byte keyPair) {
-            if ((export & ECTesterApplet.EXPORT_PRIVATE) == 0 || (export & keyPair) == 0)
-                return false;
-            int index = getIndex((byte) (keyPair | ECTesterApplet.EXPORT_PRIVATE));
-            return index != -1 && hasParam(index);
-        }
-
-        public byte[] getPublic(byte keyPair) {
-            //calculate index and getParam
-            int index = getIndex((byte) (keyPair | ECTesterApplet.EXPORT_PUBLIC));
-            return getParam(index);
-        }
-
-        public byte[] getPrivate(byte keyPair) {
-            //calculate index and getParam
-            int index = getIndex((byte) (keyPair | ECTesterApplet.EXPORT_PRIVATE));
-            return getParam(index);
-        }
-        */
-
         @Override
         public String toString() {
             String key;
@@ -458,14 +422,14 @@ public abstract class Response {
         private byte pubkey;
         private byte privkey;
         private byte export;
-        private byte invalid;
+        private byte corruption;
 
-        protected ECDH(ResponseAPDU response, long time, byte pubkey, byte privkey, byte export, byte invalid) {
+        protected ECDH(ResponseAPDU response, long time, byte pubkey, byte privkey, byte export, byte corruption) {
             super(response, time);
             this.pubkey = pubkey;
             this.privkey = privkey;
             this.export = export;
-            this.invalid = invalid;
+            this.corruption = corruption;
 
             parse(1, (export == ECTesterApplet.EXPORT_TRUE) ? 1 : 0);
         }
@@ -482,7 +446,13 @@ public abstract class Response {
         public String toString() {
             String pub = pubkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
             String priv = privkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
-            String validity = invalid != 0 ? "invalid" : "valid";
+            String validity;
+
+            if (corruption == EC_Consts.CORRUPTION_NONE) {
+                validity = "valid";
+            } else {
+                validity = Util.getCorruption(corruption);
+            }
             return String.format("ECDH of %s pubkey and %s privkey(%s point)", pub, priv, validity);
         }
     }

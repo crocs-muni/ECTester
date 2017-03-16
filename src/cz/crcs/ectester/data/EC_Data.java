@@ -139,7 +139,7 @@ public class EC_Data {
             }
         }
 
-        InputStream keysStream = this.getClass().getResourceAsStream("/cz/crcs/ectester/data" + dir + "/keys.xml");
+        InputStream keysStream = this.getClass().getResourceAsStream("/cz/crcs/ectester/data/" + dir + "/keys.xml");
         if (keysStream != null) {
             Document keysDoc = db.parse(keysStream);
             keysDoc.normalize();
@@ -149,7 +149,6 @@ public class EC_Data {
                 Node direct = directs.item(i);
                 if (direct instanceof Element) {
                     Element elem = (Element) direct;
-                    String tag = elem.getTagName();
 
                     NodeList childs = elem.getChildNodes();
                     String id = null;

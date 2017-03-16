@@ -250,7 +250,7 @@ public abstract class Command {
         private byte pubkey;
         private byte privkey;
         private byte export;
-        private byte invalid;
+        private byte corruption;
 
         /**
          * Creates the INS_ECDH instruction.
@@ -259,16 +259,16 @@ public abstract class Command {
          * @param pubkey      keyPair to use for public key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
          * @param privkey     keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
          * @param export      whether to export ECDH secret
-         * @param invalid     whether to invalidate the pubkey before ECDH
+         * @param corruption  whether to invalidate the pubkey before ECDH (EC_Consts.CORRUPTION_* || ...)
          */
-        public ECDH(CardMngr cardManager, byte pubkey, byte privkey, byte export, byte invalid) {
+        public ECDH(CardMngr cardManager, byte pubkey, byte privkey, byte export, byte corruption) {
             super(cardManager);
             this.pubkey = pubkey;
             this.privkey = privkey;
             this.export = export;
-            this.invalid = invalid;
+            this.corruption = corruption;
 
-            byte[] data = new byte[]{export, invalid};
+            byte[] data = new byte[]{export, corruption};
 
             this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ECDH, pubkey, privkey, data);
         }
@@ -278,7 +278,7 @@ public abstract class Command {
             long elapsed = -System.nanoTime();
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
-            return new Response.ECDH(response, elapsed, pubkey, privkey, export, invalid);
+            return new Response.ECDH(response, elapsed, pubkey, privkey, export, corruption);
         }
     }
 

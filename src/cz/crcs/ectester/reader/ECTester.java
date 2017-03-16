@@ -62,14 +62,19 @@ public class ECTester {
     private String optCurveFile = null;
     private boolean optCustomCurve = false;
 
+    private boolean optAnyPublic = false;
     private String optNamedPublic = null;
     private String optPublic = null;
 
+    private boolean optAnyPrivate = false;
     private String optNamedPrivate = null;
     private String optPrivate = null;
 
+    private boolean optAnyKey = false;
     private String optNamedKey = null;
     private String optKey = null;
+
+    private boolean optAnyKeypart = false;
 
     private String optLog = null;
 
@@ -107,10 +112,7 @@ public class ECTester {
             dataDB = new EC_Data();
             //if list, print and quit
             if (cli.hasOption("list-named")) {
-                Map<String, EC_Category> categories = dataDB.getCategories();
-                for (EC_Category cat : categories.values()) {
-                    System.out.println("\t- " + cat.getName() + ": " + (cat.getDesc() == null ? "" : cat.getDesc()));
-                }
+                list();
                 return;
             }
 
@@ -193,7 +195,7 @@ public class ECTester {
          * -t / --test
          * -dh / --ecdh
          * -dsa / --ecdsa [data_file]
-         * --list-named
+         * -ln / --list-named
          *
          * Options:
          * -b / --bit-size [b] // -a / --all
@@ -224,7 +226,7 @@ public class ECTester {
         OptionGroup actions = new OptionGroup();
         actions.setRequired(true);
         actions.addOption(Option.builder("h").longOpt("help").desc("Print help.").build());
-        actions.addOption(Option.builder().longOpt("list-named").desc("Print the list of supported named curves and keys.").build());
+        actions.addOption(Option.builder("ln").longOpt("list-named").desc("Print the list of supported named curves and keys.").build());
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate [amount] of EC keys.").hasArg().argName("amount").optionalArg(true).build());
         actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support.").build());
@@ -238,7 +240,7 @@ public class ECTester {
         opts.addOptionGroup(size);
 
         OptionGroup curve = new OptionGroup();
-        curve.addOption(Option.builder("n").longOpt("named").desc("Use a named curve.").hasArg().argName("cat/id").build());
+        curve.addOption(Option.builder("nc").longOpt("named-curve").desc("Use a named curve.").hasArg().argName("cat/id").build());
         curve.addOption(Option.builder("c").longOpt("curve").desc("Use curve from file [curve_file] (field,a,b,gx,gy,r,k).").hasArg().argName("curve_file").build());
         curve.addOption(Option.builder("u").longOpt("custom").desc("Use a custom curve(applet-side embedded, SECG curves).").build());
         opts.addOptionGroup(curve);
@@ -291,12 +293,17 @@ public class ECTester {
 
         optNamedPublic = cli.getOptionValue("named-public");
         optPublic = cli.getOptionValue("public");
+        optAnyPublic = (optPublic != null) || (optNamedPublic != null);
 
         optNamedPrivate = cli.getOptionValue("named-private");
         optPrivate = cli.getOptionValue("private");
+        optAnyPrivate = (optPrivate != null) || (optNamedPrivate != null);
 
         optNamedKey = cli.getOptionValue("named-key");
         optKey = cli.getOptionValue("key");
+        optAnyKey = (optKey != null) || (optNamedKey != null);
+        optAnyKeypart = optAnyKey || optAnyPublic || optAnyPrivate;
+
         if (cli.hasOption("log")) {
             optLog = cli.getOptionValue("log", String.format("ECTESTER_log_%d.log", System.currentTimeMillis() / 1000));
         }
@@ -330,7 +337,7 @@ public class ECTester {
                 System.err.print("Need to specify field with -fp or -f2m. (not both)");
                 return false;
             }
-            if (optKey != null || optPublic != null || optPrivate != null || optNamedKey != null || optNamedPublic != null || optNamedPrivate != null) {
+            if (optAnyKeypart) {
                 System.err.println("Keys should not be specified when exporting curve params.");
                 return false;
             }
@@ -352,7 +359,7 @@ public class ECTester {
                 System.err.print("Need to specify field with -fp or -f2m. (not both)");
                 return false;
             }
-            if (optKey != null || optPublic != null || optPrivate != null || optNamedKey != null || optNamedPublic != null || optNamedPrivate != null) {
+            if (optAnyKeypart) {
                 System.err.println("Keys should not be specified when generating keys.");
                 return false;
             }
@@ -402,11 +409,8 @@ public class ECTester {
                 return false;
             }
 
-            boolean hasPublic = (optPublic != null) || (optNamedPublic != null);
-            boolean hasPrivate = (optPrivate != null) || (optNamedPrivate != null);
-            boolean hasKey = (optKey != null) || (optNamedKey != null);
-            if ((hasPublic) != (hasPrivate) && !hasKey) {
-                System.err.println("You have cannot only specify a part of a keypair.");
+            if ((optAnyPublic) != (optAnyPrivate) && !optAnyKey) {
+                System.err.println("You cannot only specify a part of a keypair.");
                 return false;
             }
 
@@ -418,6 +422,43 @@ public class ECTester {
         }
 
         return true;
+    }
+
+    /**
+     * List categories and named curves.
+     */
+    private void list() {
+        Map<String, EC_Category> categories = dataDB.getCategories();
+        for (EC_Category cat : categories.values()) {
+            System.out.println("\t- " + cat.getName() + ": " + (cat.getDesc() == null ? "" : cat.getDesc()));
+
+            Map<String, EC_Curve> curves = cat.getObjects(EC_Curve.class);
+            int size = curves.size();
+            if (size > 0) {
+                System.out.print("\t\tCurves: ");
+                for (Map.Entry<String, EC_Curve> curve : curves.entrySet()) {
+                    System.out.print(curve.getKey());
+                    size--;
+                    if (size > 0)
+                        System.out.print(", ");
+                }
+                System.out.println();
+            }
+
+            Map<String, EC_Key> keys = cat.getObjects(EC_Key.class);
+            size = keys.size();
+            if (size > 0) {
+                System.out.print("\t\tKeys: ");
+                for (Map.Entry<String, EC_Key> key : keys.entrySet()) {
+                    System.out.print(key.getKey());
+                    size--;
+                    if (size > 0)
+                        System.out.print(", ");
+                }
+                System.out.println();
+            }
+            System.out.println();
+        }
     }
 
     /**
@@ -595,12 +636,14 @@ public class ECTester {
         systemOutLogger.println(Response.toString(prepare));
 
         List<Command> generate = new LinkedList<>();
-        if (optPublic != null || optPrivate != null || optKey != null) {
+        if (optAnyPublic || optAnyPrivate || optAnyKey) {
             generate.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL));
             generate.add(prepareKey(ECTesterApplet.KEYPAIR_REMOTE));
         } else {
             generate.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH));
         }
+        byte pubkey = (optAnyPublic || optAnyKey) ? ECTesterApplet.KEYPAIR_REMOTE : ECTesterApplet.KEYPAIR_LOCAL;
+        byte privkey = (optAnyPrivate || optAnyKey) ? ECTesterApplet.KEYPAIR_REMOTE : ECTesterApplet.KEYPAIR_LOCAL;
 
         FileWriter out = null;
         if (optOutput != null) {
@@ -613,13 +656,13 @@ public class ECTester {
         while (done < optECDHCount) {
             List<Response> ecdh = Command.sendAll(generate);
 
-            Response.ECDH perform = new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_TRUE, (byte) 0).send();
+            Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, (byte) 0).send();
             ecdh.add(perform);
             systemOutLogger.println(Response.toString(ecdh));
 
             if (!perform.successful() || !perform.hasSecret()) {
                 if (retry < 10) {
-                    retry++;
+                    ++retry;
                     continue;
                 } else {
                     System.err.println("Couldn't obtain ECDH secret from card response.");
@@ -657,7 +700,7 @@ public class ECTester {
         }
 
         Command generate;
-        if (optKey != null || (optPublic != null && optPrivate != null)) {
+        if (optAnyKeypart) {
             generate = prepareKey(ECTesterApplet.KEYPAIR_LOCAL);
         } else {
             generate = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL);
@@ -688,7 +731,7 @@ public class ECTester {
 
             if (!perform.successful() || !perform.hasSignature()) {
                 if (retry < 10) {
-                    retry++;
+                    ++retry;
                     continue;
                 } else {
                     System.err.println("Couldn't obtain ECDSA signature from card response.");
@@ -751,7 +794,11 @@ public class ECTester {
             commands.add(new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, domainParams, external));
         } else {
             // Set default curve
-            commands.add(new Command.Clear(cardManager, keyPair));
+            /* This command was generally causing problems for simulating on jcardsim.
+             * Since there, .clearKey() resets all the keys values, even the domain.
+             * This might break some other stuff.. But should not.
+             */
+            //commands.add(new Command.Clear(cardManager, keyPair));
         }
 
         return commands;
@@ -833,8 +880,10 @@ public class ECTester {
     private List<Command> testCurve() throws IOException {
         List<Command> commands = new LinkedList<>();
         commands.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH));
-        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, (byte) 0));
-        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, (byte) 1));
+        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE));
+        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_FULLRANDOM));
+        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ONE));
+        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ZERO));
         commands.add(new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, null));
         return commands;
     }

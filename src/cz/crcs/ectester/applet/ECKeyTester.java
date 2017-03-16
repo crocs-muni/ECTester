@@ -68,19 +68,6 @@ public class ECKeyTester {
         return length;
     }
 
-    private short testKA_validPoint(KeyAgreement ka, ECPrivateKey privateKey, byte[] pubkeyBuffer, short pubkeyOffset, short pubkeyLength, byte[] outputBuffer, short outputOffset) {
-        return testKA(ka, privateKey, pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);
-    }
-
-    private short testKA_invalidPoint(KeyAgreement ka, ECPrivateKey privateKey, byte[] pubkeyBuffer, short pubkeyOffset, short pubkeyLength, byte[] outputBuffer, short outputOffset) {
-        pubkeyBuffer[(short) (pubkeyLength - 2)] += 0xcc;
-        pubkeyBuffer[(short) (pubkeyLength - 3)] += 0xcc;
-        short result = testKA(ka, privateKey, pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);
-        pubkeyBuffer[(short) (pubkeyLength - 2)] -= 0xcc;
-        pubkeyBuffer[(short) (pubkeyLength - 3)] -= 0xcc;
-        return result;
-    }
-
     /**
      * Tests ECDH secret generation with given {@code privateKey} and {@code publicKey}.
      * Uses {@code pubkeyBuffer} at {@code pubkeyOffset} for computations.
@@ -92,18 +79,14 @@ public class ECKeyTester {
      * @param pubkeyOffset
      * @param outputBuffer
      * @param outputOffset
+     * @param corruption
      * @return derived secret length
      **/
-    public short testECDH_validPoint(ECPrivateKey privateKey, ECPublicKey publicKey, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset) {
+    public short testECDH(ECPrivateKey privateKey, ECPublicKey publicKey, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, byte corruption) {
         short length = publicKey.getW(pubkeyBuffer, pubkeyOffset);
-        return testKA_validPoint(ecdhKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, length, outputBuffer, outputOffset);
+        EC_Consts.corruptParameter(corruption, pubkeyBuffer, pubkeyOffset, length);
+        return testKA(ecdhKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, length, outputBuffer, outputOffset);
     }
-
-    public short testECDH_invalidPoint(ECPrivateKey privateKey, ECPublicKey publicKey, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset) {
-        short length = publicKey.getW(pubkeyBuffer, pubkeyOffset);
-        return testKA_invalidPoint(ecdhKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, length, outputBuffer, outputOffset);
-    }
-
 
     /**
      * Tests ECDHC secret generation with given {@code privateKey} and {@code publicKey}.
@@ -116,17 +99,14 @@ public class ECKeyTester {
      * @param pubkeyOffset
      * @param outputBuffer
      * @param outputOffset
+     * @param corruption
      * @return ISO7816.SW_NO_ERROR on correct operation,
      * exception reason otherwise
      */
-    public short testECDHC_validPoint(ECPrivateKey privateKey, ECPublicKey publicKey, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset) {
+    public short testECDHC(ECPrivateKey privateKey, ECPublicKey publicKey, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, byte corruption) {
         short length = publicKey.getW(pubkeyBuffer, pubkeyOffset);
-        return testKA_validPoint(ecdhcKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, length, outputBuffer, outputOffset);
-    }
-
-    public short testECDHC_invalidPoint(ECPrivateKey privateKey, ECPublicKey publicKey, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset) {
-        short length = publicKey.getW(pubkeyBuffer, pubkeyOffset);
-        return testKA_invalidPoint(ecdhcKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, length, outputBuffer, outputOffset);
+        EC_Consts.corruptParameter(corruption, pubkeyBuffer, pubkeyOffset, length);
+        return testKA(ecdhcKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, length, outputBuffer, outputOffset);
     }
 
     /**

@@ -1,26 +1,75 @@
-ECTester
-========
+# ECTester
 
-Tests support and behavior of smartcards with JavaCard platform with focus on Eliptic curves (TYPE_EC_FP and TYPE_EC_F2M).
+Tests support and behavior of smartcards with JavaCard platform with focus on Eliptic curves (`TYPE_EC_FP` and `TYPE_EC_F2M`).
 
-Usage
-------
-1. Upload ectester.cap using your favorite tool (e.g., [GlobalPlatformPro tool](https://github.com/martinpaljak/GlobalPlatform))
-2. Run `java -jar ectester.jar`
+## Usage
+
+1. Upload `!uploader/ectester.cap` using your favorite tool (e.g., [GlobalPlatformPro tool](https://github.com/martinpaljak/GlobalPlatform))
+2. Run `java -jar dist/ECTester.jar -t -a`
 3. Inspect output log with annotated results
 
 Following operations are tested:
 - Allocation of new KeyPair class for specified parameters
-- Generation of keypair with default curve 
-- Setting of custom curve and keypair generation
+- Generation of KeyPair with default curve
+- Setting of custom curve and KeyPair generation
 - Generation of shared secret via ECDH
 - Signature via ECDSA
 - Behavior of card when invalid curves/points are provided (should fail)
 
-See `java -jar ectester.jar -h` for more. 
+See `java -jar ectester.jar -h` for more.
 
-Example output
---------------
+### Options
+
+```
+ -ln,--list-named                  Print the list of supported named
+                                   curves, keys and keypairs.
+ -dsa,--ecdsa <count>              Sign data with ECDSA, [count] times.
+ -t,--test                         Test ECC support.
+ -dh,--ecdh <count>                Do ECDH, [count] times.
+ -e,--export                       Export the defaut curve parameters of
+                                   the card(if any).
+ -g,--generate <amount>            Generate [amount] of EC keys.
+ -h,--help                         Print help.
+ 
+ -a,--all                          Test all curve sizes.
+ -b,--bit-size <bits>              Set curve size.
+ 
+ -c,--curve <curve_file>           Use curve from file [curve_file]
+                                   (field,a,b,gx,gy,r,k).
+ -nc,--named-curve <cat/id>        Use a named curve.
+ -u,--custom                       Use a custom curve(applet-side
+                                   embedded, SECG curves).
+
+ -fp,--prime-field                 Use prime field curve.
+ -f2m,--binary-field               Use binary field curve.
+ 
+ -npub,--named-public <cat/id>     Use public key from KeyDB: [cat/id]
+ -pub,--public <pubkey_file>       Use public key from file [pubkey_file]
+                                   (wx,wy).
+
+ -priv,--private <privkey_file>    Use private key from file
+                                   [privkey_file] (s).
+ -npriv,--named-private <cat/id>   Use private key from KeyDB: [cat/id]
+ 
+ -k,--key <key_file>               Use keyPair from file [key_file]
+                                   (wx,wy,s).
+ -nk,--named-key <cat/id>          Use keyPair from KeyDB: [cat/id]
+ 
+ -i,--input <input_file>           Input from file [input_file], for ecdsa
+                                   signing.
+ -o,--output <output_file>         Output into file [output_file].
+ -l,--log <log_file>               Log output into file [log_file].
+ -v,--verbose                      Turn on verbose logging.
+ 
+ -f,--fresh                        Generate fresh keys(set domain
+                                   parameters before every generation).
+ -s,--simulate                     Simulate a card with jcardsim instead
+                                   of using a terminal.
+
+```
+
+### Example
+
 
     ### Test for support and with valid and invalid EC curves
     EC type:                                             ALG_EC_FP

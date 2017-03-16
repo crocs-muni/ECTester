@@ -1224,15 +1224,6 @@ public class EC_Consts {
         return length;
     }
 
-    public static short getCorruptCurveParameter(byte curve, short param, byte[] outputBuffer, short outputOffset, byte corruptionType) {
-        short length = getCurveParameter(curve, param, outputBuffer, outputOffset);
-        if (length <= 0) {
-            return length;
-        }
-        corruptParameter(corruptionType, outputBuffer, outputOffset, length);
-        return length;
-    }
-
     public static void corruptParameter(byte corruption, byte[] buffer, short offset, short length) {
         switch (corruption) {
             case CORRUPTION_NONE:
