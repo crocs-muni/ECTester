@@ -319,5 +319,25 @@ public abstract class Command {
             return new Response.ECDSA(response, elapsed, keyPair, export, raw);
         }
     }
+
+    /**
+     *
+     */
+    public static class Cleanup extends Command {
+
+        protected Cleanup(CardMngr cardManager) {
+            super(cardManager);
+
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_CLEANUP, 0, 0);
+        }
+
+        @Override
+        public Response.Cleanup send() throws CardException {
+            long elapsed = -System.nanoTime();
+            ResponseAPDU response = cardManager.send(cmd);
+            elapsed += System.nanoTime();
+            return new Response.Cleanup(response, elapsed);
+        }
+    }
 }
 

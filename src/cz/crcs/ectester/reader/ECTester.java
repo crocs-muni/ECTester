@@ -45,9 +45,9 @@ import java.util.*;
  */
 public class ECTester {
 
-    private CardMngr cardManager = null;
-    private DirtyLogger systemOutLogger = null;
-    private EC_Data dataDB = null;
+    private CardMngr cardManager;
+    private DirtyLogger systemOutLogger;
+    private EC_Data dataDB;
 
     //Options
     private int optBits;
@@ -401,13 +401,10 @@ public class ECTester {
             }
 
             optTestCase = cli.getOptionValue("test", "default");
-            List<String> tests = Arrays.asList("default", "non-prime", "invalid", "wrong");
-            if (!tests.contains(optTestCase)) {
-                System.err.print("Unknown test case. Should be one of: [");
-                for (String test : tests) {
-                    System.err.print("\"" + test + "\",");
-                }
-                System.err.println("]");
+            String[] tests = new String[]{"default", "non-prime", "invalid", "wrong"};
+            List<String> testsList = Arrays.asList(tests);
+            if (!testsList.contains(optTestCase)) {
+                System.err.println("Unknown test case. Should be one of: " + Arrays.toString(tests));
                 return false;
             }
 
@@ -602,6 +599,7 @@ public class ECTester {
                                 byte[] external = curve.flatten();
                                 commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), external));
                                 commands.addAll(testCurve());
+                                commands.add(new Command.Cleanup(cardManager));
                             }
                         }
                     }
@@ -613,6 +611,7 @@ public class ECTester {
                                 byte[] external = curve.flatten();
                                 commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), external));
                                 commands.addAll(testCurve());
+                                commands.add(new Command.Cleanup(cardManager));
                             }
                         }
                     }
@@ -623,6 +622,7 @@ public class ECTester {
                             commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_FP));
                             commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_FP));
                             commands.addAll(testCurve());
+                            commands.add(new Command.Cleanup(cardManager));
                         }
                     }
                     if (optBinaryField) {
@@ -631,6 +631,7 @@ public class ECTester {
                             commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_F2M));
                             commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_F2M));
                             commands.addAll(testCurve());
+                            commands.add(new Command.Cleanup(cardManager));
                         }
                     }
                 }
@@ -639,12 +640,14 @@ public class ECTester {
                     commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_FP));
                     commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_FP));
                     commands.addAll(testCurve());
+                    commands.add(new Command.Cleanup(cardManager));
                 }
 
                 if (optBinaryField) {
                     commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_F2M));
                     commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_F2M));
                     commands.addAll(testCurve());
+                    commands.add(new Command.Cleanup(cardManager));
                 }
             }
         } else if (optTestCase.equalsIgnoreCase("wrong")) {
@@ -654,7 +657,6 @@ public class ECTester {
         } else if (optTestCase.equalsIgnoreCase("invalid")) {
 
         }
-
 
         List<Response> test = Command.sendAll(commands);
         systemOutLogger.println(Response.toString(test));
@@ -920,9 +922,10 @@ public class ECTester {
         List<Command> commands = new LinkedList<>();
         commands.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH));
         commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE));
-        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_FULLRANDOM));
         commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ONE));
         commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ZERO));
+        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_MAX));
+        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_FULLRANDOM));
         commands.add(new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, null));
         return commands;
     }

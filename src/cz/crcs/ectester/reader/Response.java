@@ -488,6 +488,24 @@ public abstract class Response {
             String data = raw == null ? "random" : "provided";
             return String.format("ECDSA with %s keypair(%s data)", key, data);
         }
+    }
+
+    /**
+     *
+     */
+    public static class Cleanup extends Response {
+
+        protected Cleanup(ResponseAPDU response, long time) {
+            super(response, time);
+
+            parse(1, 0);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("Requested JCSystem object deletion");
+        }
+
 
     }
 }

@@ -947,7 +947,8 @@ public class EC_Consts {
     public static final byte CORRUPTION_ONEBYTERANDOM = (byte) 0x03;
     public static final byte CORRUPTION_ZERO = (byte) 0x04;
     public static final byte CORRUPTION_ONE = (byte) 0x05;
-    public static final byte CORRUPTION_INCREMENT = (byte) 0x06;
+    public static final byte CORRUPTION_MAX = (byte) 0x06;
+    public static final byte CORRUPTION_INCREMENT = (byte) 0x07;
 
 
     // Supported embedded curves, getCurveParameter
@@ -1259,6 +1260,10 @@ public class EC_Consts {
                 Util.arrayFillNonAtomic(buffer, offset, length, (byte) 0);
                 break;
             case CORRUPTION_ONE:
+                Util.arrayFillNonAtomic(buffer, offset, length, (byte) 0);
+                buffer[(short) (offset + length)] = (byte) 1;
+                break;
+            case CORRUPTION_MAX:
                 Util.arrayFillNonAtomic(buffer, offset, length, (byte) 1);
                 break;
             case CORRUPTION_INCREMENT:
