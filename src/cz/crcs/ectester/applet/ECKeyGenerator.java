@@ -1,9 +1,9 @@
 package cz.crcs.ectester.applet;
 
+import javacard.framework.CardRuntimeException;
 import javacard.framework.ISO7816;
 import javacard.framework.ISOException;
 import javacard.framework.Util;
-import javacard.security.CryptoException;
 import javacard.security.ECPrivateKey;
 import javacard.security.ECPublicKey;
 import javacard.security.KeyPair;
@@ -32,10 +32,8 @@ public class ECKeyGenerator {
                 } catch (Exception ignored) {
                 }
             }
-        } catch (CryptoException ce) {
+        } catch (CardRuntimeException ce) {
             sw = ce.getReason();
-        } catch (Exception e) {
-            sw = ISO7816.SW_UNKNOWN;
         }
         return ecKeyPair;
     }
@@ -45,10 +43,8 @@ public class ECKeyGenerator {
         try {
             if ((key & EC_Consts.KEY_PUBLIC) != 0) keypair.getPublic().clearKey();
             if ((key & EC_Consts.KEY_PRIVATE) != 0) keypair.getPrivate().clearKey();
-        } catch (CryptoException ce) {
+        } catch (CardRuntimeException ce) {
             sw = ce.getReason();
-        } catch (Exception e) {
-            sw = ISO7816.SW_UNKNOWN;
         }
         return sw;
     }
@@ -61,10 +57,8 @@ public class ECKeyGenerator {
         sw = ISO7816.SW_NO_ERROR;
         try {
             keypair.genKeyPair();
-        } catch (CryptoException ce) {
+        } catch (CardRuntimeException ce) {
             sw = ce.getReason();
-        } catch (Exception e) {
-            sw = ISO7816.SW_UNKNOWN;
         }
         return sw;
     }
@@ -224,10 +218,8 @@ public class ECKeyGenerator {
                 default:
                     ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
             }
-        } catch (CryptoException ce) {
+        } catch (CardRuntimeException ce) {
             sw = ce.getReason();
-        } catch (Exception e) {
-            sw = ISO7816.SW_UNKNOWN;
         }
         return sw;
     }
@@ -338,10 +330,8 @@ public class ECKeyGenerator {
                 default:
                     ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
             }
-        } catch (CryptoException ce) {
+        } catch (CardRuntimeException ce) {
             sw = ce.getReason();
-        } catch (Exception e) {
-            sw = ISO7816.SW_UNKNOWN;
         }
         return length;
     }
@@ -406,10 +396,8 @@ public class ECKeyGenerator {
                 }
                 param = (short) (param << 1);
             }
-        } catch (CryptoException ce) {
+        } catch (CardRuntimeException ce) {
             sw = ce.getReason();
-        } catch (Exception e) {
-            sw = ISO7816.SW_UNKNOWN;
         }
         return sw;
     }

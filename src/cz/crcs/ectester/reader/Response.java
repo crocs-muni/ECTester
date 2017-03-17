@@ -125,9 +125,9 @@ public abstract class Response {
             String message = r.toString();
             String suffix;
             if (r.getNumSW() == 1) {
-                suffix = String.format("%s", Util.getPrintError(r.getSW1()));
+                suffix = String.format("%s", Util.getSWString(r.getSW1()));
             } else {
-                suffix = String.format("%s %s", Util.getPrintError(r.getSW1()), Util.getPrintError(r.getSW2()));
+                suffix = String.format("%s %s", Util.getSWString(r.getSW1()), Util.getSWString(r.getSW2()));
             }
             out.append(String.format("%-58s:%4d ms : %s", message, r.time / 1000000, suffix));
             if (i < responses.size() - 1) {

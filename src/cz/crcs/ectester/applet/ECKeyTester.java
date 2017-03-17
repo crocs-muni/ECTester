@@ -1,6 +1,7 @@
 package cz.crcs.ectester.applet;
 
 
+import javacard.framework.CardRuntimeException;
 import javacard.framework.ISO7816;
 import javacard.security.*;
 
@@ -22,10 +23,8 @@ public class ECKeyTester {
         sw = ISO7816.SW_NO_ERROR;
         try {
             ecdhKeyAgreement = KeyAgreement.getInstance(KeyAgreement.ALG_EC_SVDP_DH, false);
-        } catch (CryptoException ce) {
+        } catch (CardRuntimeException ce) {
             sw = ce.getReason();
-        } catch (Exception e) {
-            sw = ISO7816.SW_UNKNOWN;
         }
         return sw;
     }
@@ -34,10 +33,8 @@ public class ECKeyTester {
         sw = ISO7816.SW_NO_ERROR;
         try {
             ecdhcKeyAgreement = KeyAgreement.getInstance(KeyAgreement.ALG_EC_SVDP_DHC, false);
-        } catch (CryptoException ce) {
+        } catch (CardRuntimeException ce) {
             sw = ce.getReason();
-        } catch (Exception e) {
-            sw = ISO7816.SW_UNKNOWN;
         }
         return sw;
     }
@@ -46,10 +43,8 @@ public class ECKeyTester {
         sw = ISO7816.SW_NO_ERROR;
         try {
             ecdsaSignature = Signature.getInstance(Signature.ALG_ECDSA_SHA, false);
-        } catch (CryptoException ce) {
+        } catch (CardRuntimeException ce) {
             sw = ce.getReason();
-        } catch (Exception e) {
-            sw = ISO7816.SW_UNKNOWN;
         }
         return sw;
     }
@@ -60,10 +55,8 @@ public class ECKeyTester {
         try {
             ka.init(privateKey);
             length = ka.generateSecret(pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);
-        } catch (CryptoException ce) {
+        } catch (CardRuntimeException ce) {
             sw = ce.getReason();
-        } catch (Exception e) {
-            sw = ISO7816.SW_UNKNOWN;
         }
         return length;
     }
@@ -135,10 +128,8 @@ public class ECKeyTester {
             if (!correct) {
                 sw = ECTesterApplet.SW_SIG_VERIFY_FAIL;
             }
-        } catch (CryptoException ce) {
+        } catch (CardRuntimeException ce) {
             sw = ce.getReason();
-        } catch (Exception e) {
-            sw = ISO7816.SW_UNKNOWN;
         }
         return length;
     }

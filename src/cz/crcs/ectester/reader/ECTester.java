@@ -35,10 +35,7 @@ import org.apache.commons.cli.*;
 import javax.smartcardio.CardException;
 import java.io.*;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Reader part of ECTester, a tool for testing Elliptic curve support on javacards.
@@ -85,6 +82,7 @@ public class ECTester {
     private boolean optSimulate = false;
 
     //Action-related options
+    private String optTestCase;
     private int optGenerateAmount;
     private int optECDHCount;
     private int optECDSACount;
@@ -162,7 +160,24 @@ public class ECTester {
             for (Object opt : moex.getMissingOptions().toArray()) {
                 if (opt instanceof OptionGroup) {
                     for (Option o : ((OptionGroup) opt).getOptions()) {
-                        System.err.println(o);
+                        System.err.print("-" + o.getOpt());
+
+                        if (o.hasLongOpt()) {
+                            System.err.print("\t/ --" + o.getLongOpt() + " ");
+                        }
+
+                        if (o.hasArg()) {
+                            if (o.hasOptionalArg()) {
+                                System.err.print("[" + o.getArgName() + "] ");
+                            } else {
+                                System.err.print("<" + o.getArgName() + "> ");
+                            }
+                        }
+
+                        if (o.getDescription() != null) {
+                            System.err.print("\t\t\t" + o.getDescription());
+                        }
+                        System.err.println();
                     }
                 } else if (opt instanceof String) {
                     System.err.println(opt);
@@ -192,34 +207,36 @@ public class ECTester {
          * -h / --help
          * -e / --export
          * -g / --generate [amount]
-         * -t / --test
-         * -dh / --ecdh
-         * -dsa / --ecdsa [data_file]
+         * -t / --test [test_case]
+         * -dh / --ecdh [count]
+         * -dsa / --ecdsa [count]
          * -ln / --list-named
          *
          * Options:
-         * -b / --bit-size [b] // -a / --all
+         * -b / --bit-size <b> // -a / --all
          *
          * -fp / --prime-field
          * -f2m / --binary-field
          *
          * -u / --custom
-         * -n / --named [cat/id]
-         * -c / --curve [curve_file] field,a,b,gx,gy,r,k
+         * -nc / --named-curve <cat/id>
+         * -c / --curve <curve_file> field,a,b,gx,gy,r,k
          *
-         * -pub / --public [pubkey_file] wx,wy
-         * -npub / --named-public [cat/id]
+         * -pub / --public <pubkey_file> wx,wy
+         * -npub / --named-public <cat/id>
          *
-         * -priv / --private [privkey_file] s
-         * -npriv / --named-private [cat/id]
+         * -priv / --private <privkey_file> s
+         * -npriv / --named-private <cat/id>
          *
-         * -k / --key [key_file] wx,wy,s
-         * -nk / --named-key [cat/id]
+         * -k / --key <key_file> wx,wy,s
+         * -nk / --named-key <cat/id>
          *
          * -v / --verbose
          *
-         * -i / --input [input_file]
-         * -o / --output [output_file]
+         * -i / --input <input_file>
+         * -o / --output <output_file>
+         * -l / --log [log_file]
+         *
          * -f / --fresh
          * -s / --simulate
          */
@@ -229,7 +246,7 @@ public class ECTester {
         actions.addOption(Option.builder("ln").longOpt("list-named").desc("Print the list of supported named curves and keys.").build());
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate [amount] of EC keys.").hasArg().argName("amount").optionalArg(true).build());
-        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support.").build());
+        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support.").hasArg().argName("test_case").optionalArg(true).build());
         actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do ECDH, [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
         opts.addOptionGroup(actions);
@@ -240,35 +257,35 @@ public class ECTester {
         opts.addOptionGroup(size);
 
         OptionGroup curve = new OptionGroup();
-        curve.addOption(Option.builder("nc").longOpt("named-curve").desc("Use a named curve.").hasArg().argName("cat/id").build());
-        curve.addOption(Option.builder("c").longOpt("curve").desc("Use curve from file [curve_file] (field,a,b,gx,gy,r,k).").hasArg().argName("curve_file").build());
-        curve.addOption(Option.builder("u").longOpt("custom").desc("Use a custom curve(applet-side embedded, SECG curves).").build());
+        curve.addOption(Option.builder("nc").longOpt("named-curve").desc("Use a named curve, from CurveDB: <cat/id>").hasArg().argName("cat/id").build());
+        curve.addOption(Option.builder("c").longOpt("curve").desc("Use curve from file <curve_file> (field,a,b,gx,gy,r,k).").hasArg().argName("curve_file").build());
+        curve.addOption(Option.builder("u").longOpt("custom").desc("Use a custom curve (applet-side embedded, SECG curves).").build());
         opts.addOptionGroup(curve);
 
         opts.addOption(Option.builder("fp").longOpt("prime-field").desc("Use prime field curve.").build());
         opts.addOption(Option.builder("f2m").longOpt("binary-field").desc("Use binary field curve.").build());
 
         OptionGroup pub = new OptionGroup();
-        pub.addOption(Option.builder("npub").longOpt("named-public").desc("Use public key from KeyDB: [cat/id]").hasArg().argName("cat/id").build());
-        pub.addOption(Option.builder("pub").longOpt("public").desc("Use public key from file [pubkey_file] (wx,wy).").hasArg().argName("pubkey_file").build());
+        pub.addOption(Option.builder("npub").longOpt("named-public").desc("Use public key from KeyDB: <cat/id>").hasArg().argName("cat/id").build());
+        pub.addOption(Option.builder("pub").longOpt("public").desc("Use public key from file <pubkey_file> (wx,wy).").hasArg().argName("pubkey_file").build());
         opts.addOptionGroup(pub);
 
         OptionGroup priv = new OptionGroup();
-        priv.addOption(Option.builder("npriv").longOpt("named-private").desc("Use private key from KeyDB: [cat/id]").hasArg().argName("cat/id").build());
-        priv.addOption(Option.builder("priv").longOpt("private").desc("Use private key from file [privkey_file] (s).").hasArg().argName("privkey_file").build());
+        priv.addOption(Option.builder("npriv").longOpt("named-private").desc("Use private key from KeyDB: <cat/id>").hasArg().argName("cat/id").build());
+        priv.addOption(Option.builder("priv").longOpt("private").desc("Use private key from file <privkey_file> (s).").hasArg().argName("privkey_file").build());
         opts.addOptionGroup(priv);
 
         OptionGroup key = new OptionGroup();
-        key.addOption(Option.builder("nk").longOpt("named-key").desc("Use keyPair from KeyDB: [cat/id]").hasArg().argName("cat/id").build());
-        key.addOption(Option.builder("k").longOpt("key").desc("Use keyPair from file [key_file] (wx,wy,s).").hasArg().argName("key_file").build());
+        key.addOption(Option.builder("nk").longOpt("named-key").desc("Use keyPair from KeyDB: <cat/id>").hasArg().argName("cat/id").build());
+        key.addOption(Option.builder("k").longOpt("key").desc("Use keyPair from file <key_file> (wx,wy,s).").hasArg().argName("key_file").build());
         opts.addOptionGroup(key);
 
-        opts.addOption(Option.builder("i").longOpt("input").desc("Input from file [input_file], for ecdsa signing.").hasArg().argName("input_file").build());
-        opts.addOption(Option.builder("o").longOpt("output").desc("Output into file [output_file].").hasArg().argName("output_file").build());
+        opts.addOption(Option.builder("i").longOpt("input").desc("Input from file <input_file>, for ECDSA signing.").hasArg().argName("input_file").build());
+        opts.addOption(Option.builder("o").longOpt("output").desc("Output into file <output_file>.").hasArg().argName("output_file").build());
         opts.addOption(Option.builder("l").longOpt("log").desc("Log output into file [log_file].").hasArg().argName("log_file").optionalArg(true).build());
         opts.addOption(Option.builder("v").longOpt("verbose").desc("Turn on verbose logging.").build());
 
-        opts.addOption(Option.builder("f").longOpt("fresh").desc("Generate fresh keys(set domain parameters before every generation).").build());
+        opts.addOption(Option.builder("f").longOpt("fresh").desc("Generate fresh keys (set domain parameters before every generation).").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
 
         CommandLineParser parser = new DefaultParser();
@@ -383,6 +400,17 @@ public class ECTester {
                 optPrimeField = true;
             }
 
+            optTestCase = cli.getOptionValue("test", "default");
+            List<String> tests = Arrays.asList("default", "non-prime", "invalid", "wrong");
+            if (!tests.contains(optTestCase)) {
+                System.err.print("Unknown test case. Should be one of: [");
+                for (String test : tests) {
+                    System.err.print("\"" + test + "\",");
+                }
+                System.err.println("]");
+                return false;
+            }
+
         } else if (cli.hasOption("ecdh")) {
             if (optPrimeField == optBinaryField) {
                 System.err.print("Need to specify field with -fp or -f2m. (not both)");
@@ -401,7 +429,7 @@ public class ECTester {
 
         } else if (cli.hasOption("ecdsa")) {
             if (optPrimeField == optBinaryField) {
-                System.err.print("Need to specify field with -fp or -f2m. (not both)");
+                System.err.print("Need to specify field with -fp or -f2m. (but not both)");
                 return false;
             }
             if (optAll) {
@@ -561,62 +589,73 @@ public class ECTester {
      */
     private void test() throws IOException, CardException {
         List<Command> commands = new LinkedList<>();
-        if (optAll) {
-            if (optNamedCurve != null) {
-                Map<String, EC_Curve> curves = dataDB.getObjects(EC_Curve.class, optNamedCurve);
-                if (optPrimeField) {
-                    for (Map.Entry<String, EC_Curve> entry : curves.entrySet()) {
-                        EC_Curve curve = entry.getValue();
-                        if (curve.getField() == KeyPair.ALG_EC_FP) {
-                            commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), KeyPair.ALG_EC_FP));
-                            byte[] external = curve.flatten();
-                            commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), external));
+
+        if (optTestCase.equalsIgnoreCase("default")) {
+            if (optAll) {
+                if (optNamedCurve != null) {
+                    Map<String, EC_Curve> curves = dataDB.getObjects(EC_Curve.class, optNamedCurve);
+                    if (optPrimeField) {
+                        for (Map.Entry<String, EC_Curve> entry : curves.entrySet()) {
+                            EC_Curve curve = entry.getValue();
+                            if (curve.getField() == KeyPair.ALG_EC_FP) {
+                                commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), KeyPair.ALG_EC_FP));
+                                byte[] external = curve.flatten();
+                                commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), external));
+                                commands.addAll(testCurve());
+                            }
+                        }
+                    }
+                    if (optBinaryField) {
+                        for (Map.Entry<String, EC_Curve> entry : curves.entrySet()) {
+                            EC_Curve curve = entry.getValue();
+                            if (curve.getField() == KeyPair.ALG_EC_F2M) {
+                                commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), KeyPair.ALG_EC_F2M));
+                                byte[] external = curve.flatten();
+                                commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), external));
+                                commands.addAll(testCurve());
+                            }
+                        }
+                    }
+                } else {
+                    if (optPrimeField) {
+                        //iterate over prime curve sizes used: EC_Consts.FP_SIZES
+                        for (short keyLength : EC_Consts.FP_SIZES) {
+                            commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_FP));
+                            commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_FP));
                             commands.addAll(testCurve());
                         }
                     }
-                }
-                if (optBinaryField) {
-                    for (Map.Entry<String, EC_Curve> entry : curves.entrySet()) {
-                        EC_Curve curve = entry.getValue();
-                        if (curve.getField() == KeyPair.ALG_EC_F2M) {
-                            commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), KeyPair.ALG_EC_F2M));
-                            byte[] external = curve.flatten();
-                            commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), external));
+                    if (optBinaryField) {
+                        //iterate over binary curve sizes used: EC_Consts.F2M_SIZES
+                        for (short keyLength : EC_Consts.F2M_SIZES) {
+                            commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_F2M));
+                            commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_F2M));
                             commands.addAll(testCurve());
                         }
                     }
                 }
             } else {
                 if (optPrimeField) {
-                    //iterate over prime curve sizes used: EC_Consts.FP_SIZES
-                    for (short keyLength : EC_Consts.FP_SIZES) {
-                        commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_FP));
-                        commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_FP));
-                        commands.addAll(testCurve());
-                    }
+                    commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_FP));
+                    commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_FP));
+                    commands.addAll(testCurve());
                 }
-                if (optBinaryField) {
-                    //iterate over binary curve sizes used: EC_Consts.F2M_SIZES
-                    for (short keyLength : EC_Consts.F2M_SIZES) {
-                        commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_F2M));
-                        commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_F2M));
-                        commands.addAll(testCurve());
-                    }
-                }
-            }
-        } else {
-            if (optPrimeField) {
-                commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_FP));
-                commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_FP));
-                commands.addAll(testCurve());
-            }
 
-            if (optBinaryField) {
-                commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_F2M));
-                commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_F2M));
-                commands.addAll(testCurve());
+                if (optBinaryField) {
+                    commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_F2M));
+                    commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_F2M));
+                    commands.addAll(testCurve());
+                }
             }
+        } else if (optTestCase.equalsIgnoreCase("wrong")) {
+
+        } else if (optTestCase.equalsIgnoreCase("non-prime")) {
+
+        } else if (optTestCase.equalsIgnoreCase("invalid")) {
+
         }
+
+
         List<Response> test = Command.sendAll(commands);
         systemOutLogger.println(Response.toString(test));
     }

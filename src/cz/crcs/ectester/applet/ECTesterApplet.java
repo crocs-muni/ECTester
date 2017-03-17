@@ -51,6 +51,7 @@ public class ECTesterApplet extends Applet {
     public static final byte INS_EXPORT = (byte) 0x5f;
     public static final byte INS_ECDH = (byte) 0x60;
     public static final byte INS_ECDSA = (byte) 0x61;
+    public static final byte INS_CLEANUP = (byte) 0x62;
 
     // PARAMETERS for P1 and P2
     public static final byte KEYPAIR_LOCAL = (byte) 0x01;
@@ -147,6 +148,9 @@ public class ECTesterApplet extends Applet {
                     break;
                 case INS_ECDSA:
                     insECDSA(apdu);
+                    break;
+                case INS_CLEANUP:
+                    insCleanup(apdu);
                     break;
                 default:
                     // The INS code is not supported by the dispatcher
@@ -368,6 +372,18 @@ public class ECTesterApplet extends Applet {
     }
 
     /**
+     *
+     */
+    private void insCleanup(APDU apdu) {
+        apdu.setIncomingAndReceive();
+        byte[] apdubuf = apdu.getBuffer();
+
+        short len = cleanup(apdubuf, (short) 0);
+
+        apdu.setOutgoingAndSend((short) 0, len);
+    }
+
+    /**
      * @param keyPair   which keyPair to use, local/remote (KEYPAIR_* | ...)
      * @param keyLength key length to set
      * @param keyClass  key class to allocate
@@ -555,5 +571,24 @@ public class ECTesterApplet extends Applet {
         }
 
         return length;
+    }
+
+    /**
+     *
+     * @param buffer
+     * @param offset
+     * @return
+     */
+    private short cleanup(byte[] buffer, short offset) {
+        short sw = ISO7816.SW_NO_ERROR;
+        try {
+            if (JCSystem.isObjectDeletionSupported())
+                JCSystem.requestObjectDeletion();
+        } catch (CardRuntimeException crex) {
+            sw = crex.getReason();
+        }
+
+        Util.setShort(buffer, offset, sw);
+        return 2;
     }
 }
