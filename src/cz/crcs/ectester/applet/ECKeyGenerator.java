@@ -137,7 +137,7 @@ public class ECKeyGenerator {
             short masked = (short) (paramMask & corruptParams);
             if (masked != 0) {
                 short length = exportParameter(keypair, key, masked, buffer, offset);
-                EC_Consts.corruptParameter(corruption, buffer, offset, length);
+                length = EC_Consts.corruptParameter(corruption, buffer, offset, length);
                 sw = setParameter(keypair, key, masked, buffer, offset, length);
                 if (sw != ISO7816.SW_NO_ERROR) break;
             }

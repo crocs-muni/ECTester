@@ -256,14 +256,14 @@ public class ECTester {
         size.addOption(Option.builder("a").longOpt("all").desc("Test all curve sizes.").build());
         opts.addOptionGroup(size);
 
+        opts.addOption(Option.builder("fp").longOpt("prime-field").desc("Use a prime field.").build());
+        opts.addOption(Option.builder("f2m").longOpt("binary-field").desc("Use a binary field.").build());
+
         OptionGroup curve = new OptionGroup();
         curve.addOption(Option.builder("nc").longOpt("named-curve").desc("Use a named curve, from CurveDB: <cat/id>").hasArg().argName("cat/id").build());
         curve.addOption(Option.builder("c").longOpt("curve").desc("Use curve from file <curve_file> (field,a,b,gx,gy,r,k).").hasArg().argName("curve_file").build());
         curve.addOption(Option.builder("u").longOpt("custom").desc("Use a custom curve (applet-side embedded, SECG curves).").build());
         opts.addOptionGroup(curve);
-
-        opts.addOption(Option.builder("fp").longOpt("prime-field").desc("Use prime field curve.").build());
-        opts.addOption(Option.builder("f2m").longOpt("binary-field").desc("Use binary field curve.").build());
 
         OptionGroup pub = new OptionGroup();
         pub.addOption(Option.builder("npub").longOpt("named-public").desc("Use public key from KeyDB: <cat/id>").hasArg().argName("cat/id").build());

@@ -77,7 +77,7 @@ public class ECKeyTester {
      **/
     public short testECDH(ECPrivateKey privateKey, ECPublicKey publicKey, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, byte corruption) {
         short length = publicKey.getW(pubkeyBuffer, pubkeyOffset);
-        EC_Consts.corruptParameter(corruption, pubkeyBuffer, pubkeyOffset, length);
+        length = EC_Consts.corruptParameter(corruption, pubkeyBuffer, pubkeyOffset, length);
         return testKA(ecdhKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, length, outputBuffer, outputOffset);
     }
 
@@ -98,7 +98,7 @@ public class ECKeyTester {
      */
     public short testECDHC(ECPrivateKey privateKey, ECPublicKey publicKey, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, byte corruption) {
         short length = publicKey.getW(pubkeyBuffer, pubkeyOffset);
-        EC_Consts.corruptParameter(corruption, pubkeyBuffer, pubkeyOffset, length);
+        length = EC_Consts.corruptParameter(corruption, pubkeyBuffer, pubkeyOffset, length);
         return testKA(ecdhcKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, length, outputBuffer, outputOffset);
     }
 

@@ -225,6 +225,9 @@ public class Util {
             case EC_Consts.CORRUPTION_INCREMENT:
                 corrupt = "INCREMENT";
                 break;
+            case EC_Consts.CORRUPTION_INFINITY:
+                corrupt = "INFINITY";
+                break;
             default:
                 corrupt = "UNKNOWN";
                 break;

@@ -949,7 +949,12 @@ public class EC_Consts {
     public static final byte CORRUPTION_ONE = (byte) 0x05;
     public static final byte CORRUPTION_MAX = (byte) 0x06;
     public static final byte CORRUPTION_INCREMENT = (byte) 0x07;
+    public static final byte CORRUPTION_INFINITY = (byte) 0x08;
 
+    // toX962 FORM types
+    public static final byte X962_UNCOMPRESSED = (byte) 0x00;
+    public static final byte X962_COMPRESSED = (byte) 0x01;
+    public static final byte X962_HYBRID = (byte) 0x02;
 
     // Supported embedded curves, getCurveParameter
     public static final byte CURVE_default = (byte) 0;
@@ -1198,7 +1203,7 @@ public class EC_Consts {
                 length = Util.arrayCopyNonAtomic(EC_B, (short) 0, outputBuffer, outputOffset, (short) EC_B.length);
                 break;
             case PARAMETER_G:
-                length = toX962(outputBuffer, outputOffset, EC_G_X, (short) 0, (short) EC_G_X.length, EC_G_Y, (short) 0, (short) EC_G_Y.length);
+                length = toX962(X962_UNCOMPRESSED, outputBuffer, outputOffset, EC_G_X, (short) 0, (short) EC_G_X.length, EC_G_Y, (short) 0, (short) EC_G_Y.length);
                 break;
             case PARAMETER_R:
                 length = Util.arrayCopyNonAtomic(EC_R, (short) 0, outputBuffer, outputOffset, (short) EC_R.length);
@@ -1211,7 +1216,7 @@ public class EC_Consts {
                 if (EC_W_X == null || EC_W_Y == null) {
                     return 0;
                 }
-                length = toX962(outputBuffer, outputOffset, EC_W_X, (short) 0, (short) EC_W_X.length, EC_W_Y, (short) 0, (short) EC_W_Y.length);
+                length = toX962(X962_UNCOMPRESSED, outputBuffer, outputOffset, EC_W_X, (short) 0, (short) EC_W_X.length, EC_W_Y, (short) 0, (short) EC_W_Y.length);
                 break;
             case PARAMETER_S:
                 if (EC_S == null) {
@@ -1225,7 +1230,7 @@ public class EC_Consts {
         return length;
     }
 
-    public static void corruptParameter(byte corruption, byte[] buffer, short offset, short length) {
+    public static short corruptParameter(byte corruption, byte[] buffer, short offset, short length) {
         switch (corruption) {
             case CORRUPTION_NONE:
                 break;
@@ -1274,26 +1279,52 @@ public class EC_Consts {
                     buffer[index--] = ++value;
                 } while (value == (byte) 0 && index >= offset);
                 break;
+            case CORRUPTION_INFINITY:
+                Util.arrayFillNonAtomic(buffer, offset, length, (byte) 0);
+                return 1;
             default:
                 ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
         }
+
+        return length;
     }
 
     public static byte getCurveType(byte curve) {
         return curve <= FP_CURVES ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
     }
 
-    public static short toX962(byte[] outputBuffer, short outputOffset, byte[] xBuffer, short xOffset, short xLength, byte[] yBuffer, short yOffset, short yLength) {
+    public static short toX962(byte form, byte[] outputBuffer, short outputOffset, byte[] xBuffer, short xOffset, short xLength, byte[] yBuffer, short yOffset, short yLength) {
         short size = 1;
         size += xLength;
-        size += yLength;
 
         short offset = outputOffset;
-        outputBuffer[offset] = 0x04;
+        switch (form) {
+            case X962_UNCOMPRESSED:
+                outputBuffer[offset] = 0x04;
+                break;
+            case X962_COMPRESSED:
+                byte yLSB = yBuffer[(short) (yOffset + yLength)];
+                byte yBit = (byte) (yLSB & 0x01);
+
+                if (yBit == 1) {
+                    outputBuffer[offset] = 3;
+                } else {
+                    outputBuffer[offset] = 2;
+                }
+            case X962_HYBRID:
+                outputBuffer[offset] += 4;
+                break;
+            default:
+                ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+        }
         offset += 1;
 
         offset = Util.arrayCopyNonAtomic(xBuffer, xOffset, outputBuffer, offset, xLength);
-        Util.arrayCopyNonAtomic(yBuffer, yOffset, outputBuffer, offset, yLength);
+        if (form == X962_HYBRID || form == X962_UNCOMPRESSED) {
+            Util.arrayCopyNonAtomic(yBuffer, yOffset, outputBuffer, offset, yLength);
+            size += yLength;
+        }
+
         return size;
     }
 
