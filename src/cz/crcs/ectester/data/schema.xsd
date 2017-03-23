@@ -4,80 +4,48 @@
 
     <!-- /<category>/curves.xml -->
 
-    <xs:element name="id" type="xs:string"/>
-    <xs:element name="desc" type="xs:string"/>
-    <xs:element name="bits" type="xs:positiveInteger"/>
-    <xs:element name="field">
-        <xs:simpleType>
-            <xs:restriction base="xs:string">
-                <xs:enumeration value="prime"/>
-                <xs:enumeration value="binary"/>
-            </xs:restriction>
-        </xs:simpleType>
-    </xs:element>
-    <xs:element name="file" type="xs:string"/>
+    <xs:simpleType name="fieldType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="prime"/>
+            <xs:enumeration value="binary"/>
+        </xs:restriction>
+    </xs:simpleType>
 
-    <xs:element name="curve">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element ref="id"/>
-                <xs:element ref="desc" minOccurs="0"/>
-                <xs:element ref="bits"/>
-                <xs:element ref="field"/>
-                <xs:element ref="file"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
+    <xs:complexType name="curveType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="bits" type="xs:positiveInteger"/>
+            <xs:element name="field" type="fieldType"/>
+            <xs:element name="file" type="xs:string"/>
+            <xs:element name="desc" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
 
     <xs:element name="curves">
         <xs:complexType>
             <xs:sequence>
-                <xs:element ref="curve" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="curve" type="curveType" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
 
     <!-- /<category>/keys.xml -->
 
-    <xs:element name="privkey">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element ref="id" />
-                <xs:element ref="file"/>
-                <xs:element name="curve" type="xs:string"/>
-                <xs:element ref="desc" minOccurs="0"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="pubkey">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element ref="id" />
-                <xs:element ref="file"/>
-                <xs:element name="curve" type="xs:string"/>
-                <xs:element ref="desc" minOccurs="0"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="keypair">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element ref="id" />
-                <xs:element ref="file"/>
-                <xs:element name="curve" type="xs:string"/>
-                <xs:element ref="desc" minOccurs="0"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
+    <xs:complexType name="keyType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="file" type="xs:string"/>
+            <xs:element name="curve" type="xs:string"/>
+            <xs:element name="desc" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
 
     <xs:element name="keys">
         <xs:complexType>
             <xs:sequence>
-                <xs:element ref="keypair" minOccurs="0" maxOccurs="unbounded"/>
-                <xs:element ref="privkey" minOccurs="0" maxOccurs="unbounded"/>
-                <xs:element ref="pubkey" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="keypair" type="keyType" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="privkey" type="keyType" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="pubkey" type="keyType" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
             <xs:attribute name="category" type="xs:string"/>
             <xs:attribute name="desc" type="xs:string"/>
@@ -86,21 +54,20 @@
 
     <!-- /categories.xml -->
 
-    <xs:element name="category">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="name" type="xs:string"/>
-                <xs:element name="directory" type="xs:string"/>
-                <xs:element name="desc" minOccurs="0" type="xs:string"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
+    <xs:complexType name="categoryType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="directory" type="xs:string"/>
+            <xs:element name="desc" minOccurs="0" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
 
     <xs:element name="categories">
         <xs:complexType>
             <xs:sequence>
-                <xs:element ref="category" maxOccurs="unbounded"/>
+                <xs:element name="category" type="categoryType" maxOccurs="unbounded"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+
 </xs:schema>
