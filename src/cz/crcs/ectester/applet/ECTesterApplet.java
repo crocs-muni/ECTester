@@ -329,6 +329,7 @@ public class ECTesterApplet extends Applet {
      *             P2   = byte privkey (KEYPAIR_*)
      *             DATA = byte export (EXPORT_TRUE || EXPORT_FALSE)
      *             byte corruption (00 = valid, !00 = invalid)
+     *             byte type (EC_Consts.KA_* | ...)
      */
     private void insECDH(APDU apdu) {
         apdu.setIncomingAndReceive();
@@ -338,8 +339,9 @@ public class ECTesterApplet extends Applet {
         byte privkey = apdubuf[ISO7816.OFFSET_P2];
         byte export = apdubuf[ISO7816.OFFSET_CDATA];
         byte corruption = apdubuf[(short) (ISO7816.OFFSET_CDATA + 1)];
+        byte type = apdubuf[(short) (ISO7816.OFFSET_CDATA + 2)];
 
-        short len = ecdh(pubkey, privkey, export, corruption, apdubuf, (short) 0);
+        short len = ecdh(pubkey, privkey, export, corruption, type, apdubuf, (short) 0);
 
         apdu.setOutgoingAndSend((short) 0, len);
     }
@@ -513,17 +515,31 @@ public class ECTesterApplet extends Applet {
      * @param privkey    keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
      * @param export     whether to export ECDH secret
      * @param corruption whether to invalidate the pubkey before ECDH
+     * @param type
      * @param buffer     buffer to write sw to, and export ECDH secret {@code if(export == EXPORT_TRUE)}
      * @param offset     output offset in buffer
      * @return length of data written to the buffer
      */
-    private short ecdh(byte pubkey, byte privkey, byte export, byte corruption, byte[] buffer, short offset) {
+    private short ecdh(byte pubkey, byte privkey, byte export, byte corruption, byte type, byte[] buffer, short offset) {
         short length = 0;
 
         KeyPair pub = ((pubkey & KEYPAIR_LOCAL) != 0) ? localKeypair : remoteKeypair;
         KeyPair priv = ((privkey & KEYPAIR_LOCAL) != 0) ? localKeypair : remoteKeypair;
 
-        short secretLength = keyTester.testECDH((ECPrivateKey) priv.getPrivate(), (ECPublicKey) pub.getPublic(), ramArray, (short) 0, ramArray2, (short) 0, corruption);
+        short secretLength = 0;
+        switch (type) {
+            case EC_Consts.KA_ECDH:
+                secretLength = keyTester.testECDH((ECPrivateKey) priv.getPrivate(), (ECPublicKey) pub.getPublic(), ramArray, (short) 0, ramArray2, (short) 0, corruption);
+                break;
+            case EC_Consts.KA_ECDHC:
+                secretLength = keyTester.testECDHC((ECPrivateKey) priv.getPrivate(), (ECPublicKey) pub.getPublic(), ramArray, (short) 0, ramArray2, (short) 0, corruption);
+                break;
+            case EC_Consts.KA_BOTH:
+                // TODO
+                break;
+            default:
+                ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+        }
 
         Util.setShort(buffer, offset, keyTester.getSW());
         length += 2;
@@ -574,7 +590,6 @@ public class ECTesterApplet extends Applet {
     }
 
     /**
-     *
      * @param buffer
      * @param offset
      * @return

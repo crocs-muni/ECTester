@@ -118,6 +118,10 @@ public abstract class Response {
     public abstract String toString();
 
     public static String toString(List<Response> responses) {
+        return toString(responses, null);
+    }
+
+    public static String toString(List<Response> responses, String prefix)  {
         StringBuilder out = new StringBuilder();
         for (int i = 0; i < responses.size(); ++i) {
             Response r = responses.get(i);
@@ -129,6 +133,10 @@ public abstract class Response {
             } else {
                 suffix = String.format("%s %s", Util.getSWString(r.getSW1()), Util.getSWString(r.getSW2()));
             }
+
+            if (prefix != null)
+                out.append(prefix);
+
             out.append(String.format("%-58s:%4d ms : %s", message, r.time / 1000000, suffix));
             if (i < responses.size() - 1) {
                 out.append("\n");
@@ -423,13 +431,15 @@ public abstract class Response {
         private byte privkey;
         private byte export;
         private byte corruption;
+        private byte type;
 
-        protected ECDH(ResponseAPDU response, long time, byte pubkey, byte privkey, byte export, byte corruption) {
+        protected ECDH(ResponseAPDU response, long time, byte pubkey, byte privkey, byte export, byte corruption, byte type) {
             super(response, time);
             this.pubkey = pubkey;
             this.privkey = privkey;
             this.export = export;
             this.corruption = corruption;
+            this.type = type;
 
             parse(1, (export == ECTesterApplet.EXPORT_TRUE) ? 1 : 0);
         }
@@ -444,16 +454,27 @@ public abstract class Response {
 
         @Override
         public String toString() {
+            String algo = "";
+            if ((type & EC_Consts.KA_ECDH) != 0) {
+                algo += "ECDH";
+            }
+            if (type == EC_Consts.KA_BOTH) {
+                algo += "+";
+            }
+            if ((type & EC_Consts.KA_ECDHC) != 0) {
+                algo += "ECDHC";
+            }
+
             String pub = pubkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
             String priv = privkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
-            String validity;
 
+            String validity;
             if (corruption == EC_Consts.CORRUPTION_NONE) {
-                validity = "valid";
+                validity = "unchanged";
             } else {
                 validity = Util.getCorruption(corruption);
             }
-            return String.format("ECDH of %s pubkey and %s privkey(%s point)", pub, priv, validity);
+            return String.format("%s of %s pubkey and %s privkey(%s point)", algo, pub, priv, validity);
         }
     }
 

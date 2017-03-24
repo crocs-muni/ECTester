@@ -26,7 +26,7 @@ public class EC_Consts {
 
     private static byte[] EC_F2M_F2M = null; //[short i1, short i2, short i3], f = x^m + x^i1 + x^i2 + x^i3 + 1
 
-
+    // EC domain parameter identifiers (bit flags)
     public static final short PARAMETER_FP = 0x0001;
     public static final short PARAMETER_F2M = 0x0002;
 
@@ -53,9 +53,17 @@ public class EC_Consts {
     public static final short PARAMETERS_KEYPAIR = 0x0180;
     public static final short PARAMETERS_ALL = 0x01ff;
 
+
+    // EC key identifiers
     public static final byte KEY_PUBLIC = 0x01;
     public static final byte KEY_PRIVATE = 0x02;
     public static final byte KEY_BOTH = KEY_PUBLIC | KEY_PRIVATE;
+
+
+    // Key Agreement test identifiers
+    public static final byte KA_ECDH = 0x01;
+    public static final byte KA_ECDHC = 0x02;
+    public static final byte KA_BOTH = KA_ECDH | KA_ECDHC;
 
     public static RandomData randomData = null;
 
@@ -1298,21 +1306,22 @@ public class EC_Consts {
         size += xLength;
 
         short offset = outputOffset;
+        outputBuffer[offset] = 0;
         switch (form) {
             case X962_UNCOMPRESSED:
-                outputBuffer[offset] = 0x04;
+                outputBuffer[offset] = 4;
                 break;
+            case X962_HYBRID:
+                outputBuffer[offset] = 4;
             case X962_COMPRESSED:
                 byte yLSB = yBuffer[(short) (yOffset + yLength)];
                 byte yBit = (byte) (yLSB & 0x01);
 
                 if (yBit == 1) {
-                    outputBuffer[offset] = 3;
+                    outputBuffer[offset] += 3;
                 } else {
-                    outputBuffer[offset] = 2;
+                    outputBuffer[offset] += 2;
                 }
-            case X962_HYBRID:
-                outputBuffer[offset] += 4;
                 break;
             default:
                 ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);

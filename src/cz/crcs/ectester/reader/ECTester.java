@@ -85,6 +85,7 @@ public class ECTester {
     private String optTestCase;
     private int optGenerateAmount;
     private int optECDHCount;
+    private byte optECDHKA;
     private int optECDSACount;
 
 
@@ -145,7 +146,7 @@ public class ECTester {
                 generate();
             } else if (cli.hasOption("test")) {
                 test();
-            } else if (cli.hasOption("ecdh")) {
+            } else if (cli.hasOption("ecdh") || cli.hasOption("ecdhc")) {
                 ecdh();
             } else if (cli.hasOption("ecdsa")) {
                 ecdsa();
@@ -209,6 +210,7 @@ public class ECTester {
          * -g / --generate [amount]
          * -t / --test [test_case]
          * -dh / --ecdh [count]
+         * -dhc / --ecdhc [count]
          * -dsa / --ecdsa [count]
          * -ln / --list-named
          *
@@ -248,6 +250,7 @@ public class ECTester {
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate [amount] of EC keys.").hasArg().argName("amount").optionalArg(true).build());
         actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support.").hasArg().argName("test_case").optionalArg(true).build());
         actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do ECDH, [count] times.").hasArg().argName("count").optionalArg(true).build());
+        actions.addOption(Option.builder("dhc").longOpt("ecdhc").desc("Do ECDHC, [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
         opts.addOptionGroup(actions);
 
@@ -408,7 +411,7 @@ public class ECTester {
                 return false;
             }
 
-        } else if (cli.hasOption("ecdh")) {
+        } else if (cli.hasOption("ecdh") || cli.hasOption("ecdhc")) {
             if (optPrimeField == optBinaryField) {
                 System.err.print("Need to specify field with -fp or -f2m. (not both)");
                 return false;
@@ -418,7 +421,13 @@ public class ECTester {
                 return false;
             }
 
-            optECDHCount = Integer.parseInt(cli.getOptionValue("ecdh", "1"));
+            if (cli.hasOption("ecdh")) {
+                optECDHCount = Integer.parseInt(cli.getOptionValue("ecdh", "1"));
+                optECDHKA = EC_Consts.KA_ECDH;
+            } else if (cli.hasOption("ecdhc")) {
+                optECDHCount = Integer.parseInt(cli.getOptionValue("ecdhc", "1"));
+                optECDHKA = EC_Consts.KA_ECDHC;
+            }
             if (optECDHCount <= 0) {
                 System.err.println("ECDH count cannot be <= 0.");
                 return false;
@@ -697,7 +706,7 @@ public class ECTester {
         while (done < optECDHCount) {
             List<Response> ecdh = Command.sendAll(generate);
 
-            Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, (byte) 0).send();
+            Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, optECDHKA).send();
             ecdh.add(perform);
             systemOutLogger.println(Response.toString(ecdh));
 
@@ -921,11 +930,11 @@ public class ECTester {
     private List<Command> testCurve() throws IOException {
         List<Command> commands = new LinkedList<>();
         commands.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH));
-        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE));
-        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ONE));
-        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ZERO));
-        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_MAX));
-        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_FULLRANDOM));
+        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDH));
+        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ONE, EC_Consts.KA_ECDH));
+        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ZERO, EC_Consts.KA_ECDH));
+        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_MAX, EC_Consts.KA_ECDH));
+        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_FULLRANDOM, EC_Consts.KA_ECDH));
         commands.add(new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, null));
         return commands;
     }

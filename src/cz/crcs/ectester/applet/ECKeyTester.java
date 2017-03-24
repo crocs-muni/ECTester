@@ -93,8 +93,7 @@ public class ECKeyTester {
      * @param outputBuffer
      * @param outputOffset
      * @param corruption
-     * @return ISO7816.SW_NO_ERROR on correct operation,
-     * exception reason otherwise
+     * @return derived secret length
      */
     public short testECDHC(ECPrivateKey privateKey, ECPublicKey publicKey, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, byte corruption) {
         short length = publicKey.getW(pubkeyBuffer, pubkeyOffset);
