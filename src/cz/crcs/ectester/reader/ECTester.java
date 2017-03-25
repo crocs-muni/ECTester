@@ -904,7 +904,7 @@ public class ECTester {
         if (optPrivate != null || optNamedPrivate != null) {
             params |= EC_Consts.PARAMETER_S;
             EC_Params priv;
-            if (optPublic != null) {
+            if (optPrivate != null) {
                 priv = new EC_Params(EC_Consts.PARAMETER_S);
 
                 FileInputStream in = new FileInputStream(optPrivate);
