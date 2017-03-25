@@ -24,7 +24,7 @@ package cz.crcs.ectester.reader;
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Category;
-import cz.crcs.ectester.data.EC_Data;
+import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.ec.EC_Curve;
 import cz.crcs.ectester.reader.ec.EC_Key;
 import cz.crcs.ectester.reader.ec.EC_Keypair;
@@ -47,7 +47,7 @@ public class ECTester {
 
     private CardMngr cardManager;
     private DirtyLogger systemOutLogger;
-    private EC_Data dataDB;
+    private EC_Store dataStore;
 
     //Options
     private int optBits;
@@ -108,7 +108,7 @@ public class ECTester {
                 return;
             }
 
-            dataDB = new EC_Data();
+            dataStore = new EC_Store();
             //if list, print and quit
             if (cli.hasOption("list-named")) {
                 list();
@@ -462,7 +462,7 @@ public class ECTester {
      * List categories and named curves.
      */
     private void list() {
-        Map<String, EC_Category> categories = dataDB.getCategories();
+        Map<String, EC_Category> categories = dataStore.getCategories();
         for (EC_Category cat : categories.values()) {
             System.out.println("\t- " + cat.getName() + ": " + (cat.getDesc() == null ? "" : cat.getDesc()));
 
@@ -597,34 +597,16 @@ public class ECTester {
         List<Command> commands = new LinkedList<>();
 
         if (optTestCase.equalsIgnoreCase("default")) {
-            if (optAll) {
-                if (optNamedCurve != null) {
-                    Map<String, EC_Curve> curves = dataDB.getObjects(EC_Curve.class, optNamedCurve);
-                    if (optPrimeField) {
-                        for (Map.Entry<String, EC_Curve> entry : curves.entrySet()) {
-                            EC_Curve curve = entry.getValue();
-                            if (curve.getField() == KeyPair.ALG_EC_FP) {
-                                commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), KeyPair.ALG_EC_FP));
-                                byte[] external = curve.flatten();
-                                commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), external));
-                                commands.addAll(testCurve());
-                                commands.add(new Command.Cleanup(cardManager));
-                            }
-                        }
-                    }
-                    if (optBinaryField) {
-                        for (Map.Entry<String, EC_Curve> entry : curves.entrySet()) {
-                            EC_Curve curve = entry.getValue();
-                            if (curve.getField() == KeyPair.ALG_EC_F2M) {
-                                commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), KeyPair.ALG_EC_F2M));
-                                byte[] external = curve.flatten();
-                                commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), external));
-                                commands.addAll(testCurve());
-                                commands.add(new Command.Cleanup(cardManager));
-                            }
-                        }
-                    }
-                } else {
+
+            if (optNamedCurve != null) {
+                if (optPrimeField) {
+                    commands.addAll(testCurves(optNamedCurve, KeyPair.ALG_EC_FP));
+                }
+                if (optBinaryField) {
+                    commands.addAll(testCurves(optNamedCurve, KeyPair.ALG_EC_F2M));
+                }
+            } else {
+                if (optAll) {
                     if (optPrimeField) {
                         //iterate over prime curve sizes used: EC_Consts.FP_SIZES
                         for (short keyLength : EC_Consts.FP_SIZES) {
@@ -643,25 +625,32 @@ public class ECTester {
                             commands.add(new Command.Cleanup(cardManager));
                         }
                     }
-                }
-            } else {
-                if (optPrimeField) {
-                    commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_FP));
-                    commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_FP));
-                    commands.addAll(testCurve());
-                    commands.add(new Command.Cleanup(cardManager));
-                }
+                } else {
+                    if (optPrimeField) {
+                        commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_FP));
+                        commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_FP));
+                        commands.addAll(testCurve());
+                        commands.add(new Command.Cleanup(cardManager));
+                    }
 
-                if (optBinaryField) {
-                    commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_F2M));
-                    commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_F2M));
-                    commands.addAll(testCurve());
-                    commands.add(new Command.Cleanup(cardManager));
+                    if (optBinaryField) {
+                        commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_F2M));
+                        commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_F2M));
+                        commands.addAll(testCurve());
+                        commands.add(new Command.Cleanup(cardManager));
+                    }
                 }
             }
         } else if (optTestCase.equalsIgnoreCase("wrong")) {
-
+            if (optPrimeField) {
+                commands.addAll(testCurves("wrong", KeyPair.ALG_EC_FP));
+            }
+            if (optBinaryField) {
+                commands.addAll(testCurves("wrong", KeyPair.ALG_EC_F2M));
+            }
         } else if (optTestCase.equalsIgnoreCase("non-prime")) {
+
+        } else if (optTestCase.equalsIgnoreCase("smallpub")) {
 
         } else if (optTestCase.equalsIgnoreCase("invalid")) {
 
@@ -669,6 +658,8 @@ public class ECTester {
 
         List<Response> test = Command.sendAll(commands);
         systemOutLogger.println(Response.toString(test));
+
+        //
     }
 
     /**
@@ -685,15 +676,14 @@ public class ECTester {
 
         systemOutLogger.println(Response.toString(prepare));
 
-        List<Command> generate = new LinkedList<>();
-        if (optAnyPublic || optAnyPrivate || optAnyKey) {
-            generate.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL));
-            generate.add(prepareKey(ECTesterApplet.KEYPAIR_REMOTE));
-        } else {
-            generate.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH));
-        }
         byte pubkey = (optAnyPublic || optAnyKey) ? ECTesterApplet.KEYPAIR_REMOTE : ECTesterApplet.KEYPAIR_LOCAL;
         byte privkey = (optAnyPrivate || optAnyKey) ? ECTesterApplet.KEYPAIR_REMOTE : ECTesterApplet.KEYPAIR_LOCAL;
+
+        List<Command> generate = new LinkedList<>();
+        generate.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH));
+        if (optAnyPublic || optAnyPrivate || optAnyKey) {
+            generate.add(prepareKey(ECTesterApplet.KEYPAIR_REMOTE));
+        }
 
         FileWriter out = null;
         if (optOutput != null) {
@@ -816,7 +806,7 @@ public class ECTester {
         } else if (optNamedCurve != null) {
             // Set a named curve.
             // parse optNamedCurve -> cat / id | cat | id
-            EC_Curve curve = dataDB.getObject(EC_Curve.class, optNamedCurve);
+            EC_Curve curve = dataStore.getObject(EC_Curve.class, optNamedCurve);
             if (curve == null) {
                 throw new IOException("Curve could no be found.");
             }
@@ -873,7 +863,7 @@ public class ECTester {
                 keypair.readCSV(in);
                 in.close();
             } else {
-                keypair = dataDB.getObject(EC_Keypair.class, optNamedKey);
+                keypair = dataStore.getObject(EC_Keypair.class, optNamedKey);
             }
 
             data = keypair.flatten();
@@ -892,12 +882,15 @@ public class ECTester {
                 pub.readCSV(in);
                 in.close();
             } else {
-                pub = dataDB.getObject(EC_Key.Public.class, optNamedPublic);
+                pub = dataStore.getObject(EC_Key.Public.class, optNamedPublic);
+                if (pub == null) {
+                    pub = dataStore.getObject(EC_Keypair.class, optNamedPublic);
+                }
             }
 
-            byte[] pubkey = pub.flatten();
+            byte[] pubkey = pub.flatten(EC_Consts.PARAMETER_W);
             if (pubkey == null) {
-                throw new IOException("Couldn't read the key file correctly.");
+                throw new IOException("Couldn't read the public key file correctly.");
             }
             data = pubkey;
         }
@@ -911,12 +904,15 @@ public class ECTester {
                 priv.readCSV(in);
                 in.close();
             } else {
-                priv = dataDB.getObject(EC_Key.Public.class, optNamedPrivate);
+                priv = dataStore.getObject(EC_Key.Public.class, optNamedPrivate);
+                if (priv == null) {
+                    priv = dataStore.getObject(EC_Keypair.class, optNamedPrivate);
+                }
             }
 
-            byte[] privkey = priv.flatten();
+            byte[] privkey = priv.flatten(EC_Consts.PARAMETER_S);
             if (privkey == null) {
-                throw new IOException("Couldn't read the key file correctly.");
+                throw new IOException("Couldn't read the private key file correctly.");
             }
             data = Util.concatenate(data, privkey);
         }
@@ -936,6 +932,31 @@ public class ECTester {
         commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_MAX, EC_Consts.KA_ECDH));
         commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_FULLRANDOM, EC_Consts.KA_ECDH));
         commands.add(new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, null));
+        return commands;
+    }
+
+    /**
+     * @param category
+     * @param field
+     * @return
+     * @throws IOException
+     */
+    private List<Command> testCurves(String category, byte field) throws IOException {
+        List<Command> commands = new LinkedList<>();
+        Map<String, EC_Curve> curves = dataStore.getObjects(EC_Curve.class, category);
+        if (curves == null)
+            return commands;
+        for (Map.Entry<String, EC_Curve> entry : curves.entrySet()) {
+            EC_Curve curve = entry.getValue();
+            if (curve.getField() == field && (curve.getBits() == optBits || optAll)) {
+                commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), field));
+                byte[] external = curve.flatten();
+                commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), external));
+                commands.addAll(testCurve());
+                commands.add(new Command.Cleanup(cardManager));
+            }
+        }
+
         return commands;
     }
 

@@ -29,13 +29,13 @@ import java.util.Map;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class EC_Data {
+public class EC_Store {
 
     private DocumentBuilder db;
 
     private Map<String, EC_Category> categories;
 
-    public EC_Data() {
+    public EC_Store() {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
         try {
@@ -49,17 +49,17 @@ public class EC_Data {
             db.setErrorHandler(new ErrorHandler() {
                 @Override
                 public void warning(SAXParseException exception) throws SAXException {
-                    System.err.println("EC_Data | Warning : " + exception);
+                    System.err.println("EC_Store | Warning : " + exception);
                 }
 
                 @Override
                 public void error(SAXParseException exception) throws SAXException {
-                    System.err.println("EC_Data | Error : " + exception);
+                    System.err.println("EC_Store | Error : " + exception);
                 }
 
                 @Override
                 public void fatalError(SAXParseException exception) throws SAXException {
-                    System.err.println("EC_Data | Fatal : " + exception);
+                    System.err.println("EC_Store | Fatal : " + exception);
                 }
             });
 

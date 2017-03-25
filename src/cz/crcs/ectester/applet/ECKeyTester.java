@@ -3,7 +3,10 @@ package cz.crcs.ectester.applet;
 
 import javacard.framework.CardRuntimeException;
 import javacard.framework.ISO7816;
-import javacard.security.*;
+import javacard.security.ECPrivateKey;
+import javacard.security.ECPublicKey;
+import javacard.security.KeyAgreement;
+import javacard.security.Signature;
 
 /**
  * Class capable of testing ECDH/C and ECDSA.
