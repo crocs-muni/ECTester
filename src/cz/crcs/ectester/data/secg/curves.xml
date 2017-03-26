@@ -2,6 +2,48 @@
 <curves xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="../schema.xsd">
     <curve>
+        <id>secp112r1</id>
+        <bits>112</bits>
+        <field>prime</field>
+        <file>secp112r1.csv</file>
+    </curve>
+    <curve>
+        <id>secp112r2</id>
+        <bits>112</bits>
+        <field>prime</field>
+        <file>secp112r2.csv</file>
+    </curve>
+    <curve>
+        <id>secp128r1</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>secp128r1.csv</file>
+    </curve>
+    <curve>
+        <id>secp128r2</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>secp128r2.csv</file>
+    </curve>
+    <curve>
+        <id>secp160k1</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>secp160k1.csv</file>
+    </curve>
+    <curve>
+        <id>secp160r1</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>secp160r1.csv</file>
+    </curve>
+    <curve>
+        <id>secp160r2</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>secp160r2.csv</file>
+    </curve>
+    <curve>
         <id>secp192k1</id>
         <bits>192</bits>
         <field>prime</field>

@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -95,7 +96,7 @@ public class EC_Store {
 
     private EC_Category parseCategory(String name, String dir, String desc) throws ParserConfigurationException, IOException, SAXException {
 
-        Map<String, EC_Params> objMap = new HashMap<>();
+        Map<String, EC_Params> objMap = new TreeMap<>();
 
         InputStream curvesStream = this.getClass().getResourceAsStream("/cz/crcs/ectester/data/" + dir + "/curves.xml");
         if (curvesStream != null) {

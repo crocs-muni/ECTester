@@ -31,4 +31,65 @@
         <field>prime</field>
         <file>p521.csv</file>
     </curve>
+    
+    <curve>
+        <id>K-163</id>
+        <bits>163</bits>
+        <field>binary</field>
+        <file>k163.csv</file>
+    </curve>
+    <curve>
+        <id>B-163</id>
+        <bits>163</bits>
+        <field>binary</field>
+        <file>b163.csv</file>
+    </curve>
+    <curve>
+        <id>K-233</id>
+        <bits>233</bits>
+        <field>binary</field>
+        <file>k233.csv</file>
+    </curve>
+    <curve>
+        <id>B-233</id>
+        <bits>233</bits>
+        <field>binary</field>
+        <file>b233.csv</file>
+    </curve>
+    <curve>
+        <id>K-283</id>
+        <bits>283</bits>
+        <field>binary</field>
+        <file>k283.csv</file>
+    </curve>
+    <curve>
+        <id>B-283</id>
+        <bits>283</bits>
+        <field>binary</field>
+        <file>b283.csv</file>
+    </curve>
+    <curve>
+        <id>K-409</id>
+        <bits>409</bits>
+        <field>binary</field>
+        <file>k409.csv</file>
+    </curve>
+    <curve>
+        <id>B-409</id>
+        <bits>409</bits>
+        <field>binary</field>
+        <file>b409.csv</file>
+    </curve>
+    <curve>
+        <id>K-571</id>
+        <bits>571</bits>
+        <field>binary</field>
+        <file>k571.csv</file>
+    </curve>
+    <curve>
+        <id>B-571</id>
+        <bits>571</bits>
+        <field>binary</field>
+        <file>b571.csv</file>
+    </curve>
 </curves>

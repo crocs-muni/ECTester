@@ -958,6 +958,9 @@ public class EC_Consts {
     public static final byte CORRUPTION_MAX = (byte) 0x06;
     public static final byte CORRUPTION_INCREMENT = (byte) 0x07;
     public static final byte CORRUPTION_INFINITY = (byte) 0x08;
+    public static final byte CORRUPTION_PREFIX_COMPRESSED = (byte) 0x09;
+    public static final byte CORRUPTION_PREFIX_HYBRID = (byte) 0x0a;
+    public static final byte CORRUPTION_PREFIX_UNCOMPRESSED = (byte) 0x0b;
 
     // toX962 FORM types
     public static final byte X962_UNCOMPRESSED = (byte) 0x00;
@@ -1290,6 +1293,15 @@ public class EC_Consts {
             case CORRUPTION_INFINITY:
                 Util.arrayFillNonAtomic(buffer, offset, length, (byte) 0);
                 return 1;
+            case CORRUPTION_PREFIX_COMPRESSED:
+                buffer[offset] = 2;
+                break;
+            case CORRUPTION_PREFIX_HYBRID:
+                buffer[offset] = 6;
+                break;
+            case CORRUPTION_PREFIX_UNCOMPRESSED:
+                buffer[offset] = 4;
+                break;
             default:
                 ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
         }

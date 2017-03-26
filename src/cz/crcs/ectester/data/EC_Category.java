@@ -3,7 +3,7 @@ package cz.crcs.ectester.data;
 import cz.crcs.ectester.reader.ec.EC_Params;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Map;
 
 /**
@@ -50,7 +50,7 @@ public class EC_Category {
     }
 
     public <T extends EC_Params> Map<String, T> getObjects(Class<T> cls) {
-        Map<String, T> objs = new HashMap<>();
+        Map<String, T> objs = new TreeMap<>();
         for (Map.Entry<String, EC_Params> entry : objects.entrySet()) {
             if (cls.isInstance(entry.getValue())) {
                 objs.put(entry.getKey(), cls.cast(entry.getValue()));

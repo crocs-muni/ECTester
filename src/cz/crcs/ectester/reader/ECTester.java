@@ -82,6 +82,7 @@ public class ECTester {
     private boolean optSimulate = false;
 
     //Action-related options
+    private String optListNamed;
     private String optTestCase;
     private int optGenerateAmount;
     private int optECDHCount;
@@ -107,16 +108,15 @@ public class ECTester {
                 help();
                 return;
             }
+            //if not, read other options first, into attributes, then do action
+            if (!readOptions(cli)) {
+                return;
+            }
 
             dataStore = new EC_Store();
             //if list, print and quit
             if (cli.hasOption("list-named")) {
                 list();
-                return;
-            }
-
-            //if not, read other options first, into attributes, then do action
-            if (!readOptions(cli)) {
                 return;
             }
 
@@ -245,7 +245,7 @@ public class ECTester {
         OptionGroup actions = new OptionGroup();
         actions.setRequired(true);
         actions.addOption(Option.builder("h").longOpt("help").desc("Print help.").build());
-        actions.addOption(Option.builder("ln").longOpt("list-named").desc("Print the list of supported named curves and keys.").build());
+        actions.addOption(Option.builder("ln").longOpt("list-named").desc("Print the list of supported named curves and keys.").hasArg().argName("what").optionalArg(true).build());
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate [amount] of EC keys.").hasArg().argName("amount").optionalArg(true).build());
         actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support.").hasArg().argName("test_case").optionalArg(true).build());
@@ -334,6 +334,11 @@ public class ECTester {
         optFresh = cli.hasOption("fresh");
         optSimulate = cli.hasOption("simulate");
 
+        if (cli.hasOption("list-named")) {
+            optListNamed = cli.getOptionValue("list-named");
+            return true;
+        }
+
         if ((optKey != null || optNamedKey != null) && (optPublic != null || optPrivate != null || optNamedPublic != null || optNamedPrivate != null)) {
             System.err.print("Can only specify the whole key with --key/--named-key or pubkey and privkey with --public/--named-public and --private/--named-private.");
             return false;
@@ -403,8 +408,8 @@ public class ECTester {
                 optPrimeField = true;
             }
 
-            optTestCase = cli.getOptionValue("test", "default");
-            String[] tests = new String[]{"default", "non-prime", "invalid", "wrong"};
+            optTestCase = cli.getOptionValue("test", "default").toLowerCase();
+            String[] tests = new String[]{"default", "non-prime", "invalid", "smallpub", "test-vectors", "wrong"};
             List<String> testsList = Arrays.asList(tests);
             if (!testsList.contains(optTestCase)) {
                 System.err.println("Unknown test case. Should be one of: " + Arrays.toString(tests));
@@ -463,35 +468,54 @@ public class ECTester {
      */
     private void list() {
         Map<String, EC_Category> categories = dataStore.getCategories();
-        for (EC_Category cat : categories.values()) {
-            System.out.println("\t- " + cat.getName() + ": " + (cat.getDesc() == null ? "" : cat.getDesc()));
+        if (optListNamed == null) {
+            // print all categories, briefly
+            for (EC_Category cat : categories.values()) {
+                System.out.println("\t- " + cat.getName() + ": " + (cat.getDesc() == null ? "" : cat.getDesc()));
 
-            Map<String, EC_Curve> curves = cat.getObjects(EC_Curve.class);
-            int size = curves.size();
-            if (size > 0) {
-                System.out.print("\t\tCurves: ");
-                for (Map.Entry<String, EC_Curve> curve : curves.entrySet()) {
-                    System.out.print(curve.getKey());
-                    size--;
-                    if (size > 0)
-                        System.out.print(", ");
+                Map<String, EC_Curve> curves = cat.getObjects(EC_Curve.class);
+                int size = curves.size();
+                if (size > 0) {
+                    System.out.print("\t\tCurves: ");
+                    for (Map.Entry<String, EC_Curve> curve : curves.entrySet()) {
+                        System.out.print(curve.getKey());
+                        size--;
+                        if (size > 0)
+                            System.out.print(", ");
+                    }
+                    System.out.println();
+                }
+
+                Map<String, EC_Key> keys = cat.getObjects(EC_Key.class);
+                size = keys.size();
+                if (size > 0) {
+                    System.out.print("\t\tKeys: ");
+                    for (Map.Entry<String, EC_Key> key : keys.entrySet()) {
+                        System.out.print(key.getKey());
+                        size--;
+                        if (size > 0)
+                            System.out.print(", ");
+                    }
+                    System.out.println();
+                }
+
+                Map<String, EC_Keypair> keypairs = cat.getObjects(EC_Keypair.class);
+                size = keypairs.size();
+                if (size > 0) {
+                    System.out.print("\t\tKeypairs: ");
+                    for (Map.Entry<String, EC_Keypair> key : keypairs.entrySet()) {
+                        System.out.print(key.getKey());
+                        size--;
+                        if (size > 0)
+                            System.out.print(", ");
+                    }
+                    System.out.println();
                 }
                 System.out.println();
             }
-
-            Map<String, EC_Key> keys = cat.getObjects(EC_Key.class);
-            size = keys.size();
-            if (size > 0) {
-                System.out.print("\t\tKeys: ");
-                for (Map.Entry<String, EC_Key> key : keys.entrySet()) {
-                    System.out.print(key.getKey());
-                    size--;
-                    if (size > 0)
-                        System.out.print(", ");
-                }
-                System.out.println();
-            }
-            System.out.println();
+        } else if (categories.containsKey(optListNamed)) {
+            // print given category
+            //TODO
         }
     }
 
@@ -596,8 +620,7 @@ public class ECTester {
     private void test() throws IOException, CardException {
         List<Command> commands = new LinkedList<>();
 
-        if (optTestCase.equalsIgnoreCase("default")) {
-
+        if (optTestCase.equals("default")) {
             if (optNamedCurve != null) {
                 if (optPrimeField) {
                     commands.addAll(testCurves(optNamedCurve, KeyPair.ALG_EC_FP));
@@ -641,20 +664,51 @@ public class ECTester {
                     }
                 }
             }
-        } else if (optTestCase.equalsIgnoreCase("wrong")) {
-            if (optPrimeField) {
-                commands.addAll(testCurves("wrong", KeyPair.ALG_EC_FP));
+        } else if (optTestCase.equals("test-vectors")) {
+            /* Set original curves (secg/nist/brainpool). Set keypairs from test vectors.
+             * Do ECDH both ways, export and verify that the result is correct.
+             *
+             */
+            String category = optNamedCurve == null ? "secg" : optNamedCurve;
+            Map<String, EC_Curve> curves = dataStore.getObjects(EC_Curve.class, category);
+            //TODO
+
+        } else {
+            // These tests are dangerous, prompt before them.
+            System.out.println("The test you selected (" + optTestCase + ") is potentially dangerous.");
+            System.out.println("Some of these tests have caused temporary DoS of some cards.");
+            System.out.print("Do you want to proceed? (y/n):");
+            String confirmation = System.console().readLine();
+            if (!Arrays.asList("yes", "y", "Y").contains(confirmation)) {
+                return;
             }
-            if (optBinaryField) {
-                commands.addAll(testCurves("wrong", KeyPair.ALG_EC_F2M));
+
+            if (optTestCase.equals("wrong") || optTestCase.equals("non-prime")) {
+            /* Just do the default tests on the wrong and non-prime curves.
+             * These should generally fail, the curves aren't safe.
+             */
+                if (optPrimeField) {
+                    commands.addAll(testCurves(optTestCase, KeyPair.ALG_EC_FP));
+                }
+                if (optBinaryField) {
+                    commands.addAll(testCurves(optTestCase, KeyPair.ALG_EC_F2M));
+                }
+            } else if (optTestCase.equals("smallpub")) {
+            /* Do the default tests with the public keys set to provided smallpub keys.
+             * These should fail, the curves aren't safe so that if the computation with
+             * a small order public key succeeds the private key modulo the public key order
+             * is revealed.
+             */
+                //TODO
+            } else if (optTestCase.equals("invalid")) {
+            /* Set original curves (secg/nist/brainpool). Generate local.
+             * Try ECDH with invalid public keys of increasing (or decreasing) order.
+             *
+             */
+                //TODO
             }
-        } else if (optTestCase.equalsIgnoreCase("non-prime")) {
-
-        } else if (optTestCase.equalsIgnoreCase("smallpub")) {
-
-        } else if (optTestCase.equalsIgnoreCase("invalid")) {
-
         }
+
 
         List<Response> test = Command.sendAll(commands);
         systemOutLogger.println(Response.toString(test));
