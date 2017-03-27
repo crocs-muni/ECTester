@@ -6,43 +6,43 @@
     <pubkey>
         <id>ecsp128-pub</id>
         <file>ecsp128_pub.csv</file>
-        <curve>ecsp128</curve>
+        <curve>smallpub/ecsp128</curve>
         <desc>order = 5</desc>
     </pubkey>
     <pubkey>
         <id>ecsp160-pub</id>
         <file>ecsp160_pub.csv</file>
-        <curve>ecsp160</curve>
+        <curve>smallpub/ecsp160</curve>
         <desc>order = 3</desc>
     </pubkey>
     <pubkey>
         <id>ecsp192-pub</id>
         <file>ecsp192_pub.csv</file>
-        <curve>ecsp192</curve>
+        <curve>smallpub/ecsp192</curve>
         <desc>order = 3</desc>
     </pubkey>
     <pubkey>
         <id>ecsp224-pub</id>
         <file>ecsp224_pub.csv</file>
-        <curve>ecsp224</curve>
+        <curve>smallpub/ecsp224</curve>
         <desc>order = 5</desc>
     </pubkey>
     <pubkey>
         <id>ecsp256-pub</id>
         <file>ecsp256_pub.csv</file>
-        <curve>ecsp256</curve>
+        <curve>smallpub/ecsp256</curve>
         <desc>order = 3</desc>
     </pubkey>
     <pubkey>
         <id>ecsp384-pub</id>
         <file>ecsp384_pub.csv</file>
-        <curve>ecsp384</curve>
+        <curve>smallpub/ecsp384</curve>
         <desc>order = 3</desc>
     </pubkey>
     <pubkey>
         <id>ecsp521-pub</id>
         <file>ecsp521_pub.csv</file>
-        <curve>ecsp521</curve>
+        <curve>smallpub/ecsp521</curve>
         <desc>order = 5</desc>
     </pubkey>
 </keys>

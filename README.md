@@ -21,51 +21,44 @@ See `java -jar ectester.jar -h` for more.
 ### Options
 
 ```
- -ln,--list-named                  Print the list of supported named
-                                   curves, keys and keypairs.
+ -ln,--list-named <what>           Print the list of supported named
+                                   curves and keys.
  -dsa,--ecdsa <count>              Sign data with ECDSA, [count] times.
- -t,--test                         Test ECC support.
+ -t,--test <test_case>             Test ECC support.
  -dh,--ecdh <count>                Do ECDH, [count] times.
  -e,--export                       Export the defaut curve parameters of
                                    the card(if any).
  -g,--generate <amount>            Generate [amount] of EC keys.
  -h,--help                         Print help.
- 
+ -dhc,--ecdhc <count>              Do ECDHC, [count] times.
  -a,--all                          Test all curve sizes.
  -b,--bit-size <bits>              Set curve size.
- 
- -c,--curve <curve_file>           Use curve from file [curve_file]
+ -fp,--prime-field                 Use a prime field.
+ -f2m,--binary-field               Use a binary field.
+ -c,--curve <curve_file>           Use curve from file <curve_file>
                                    (field,a,b,gx,gy,r,k).
- -nc,--named-curve <cat/id>        Use a named curve.
- -u,--custom                       Use a custom curve(applet-side
+ -nc,--named-curve <cat/id>        Use a named curve, from CurveDB:
+                                   <cat/id>
+ -u,--custom                       Use a custom curve (applet-side
                                    embedded, SECG curves).
-
- -fp,--prime-field                 Use prime field curve.
- -f2m,--binary-field               Use binary field curve.
- 
- -npub,--named-public <cat/id>     Use public key from KeyDB: [cat/id]
- -pub,--public <pubkey_file>       Use public key from file [pubkey_file]
+ -npub,--named-public <cat/id>     Use public key from KeyDB: <cat/id>
+ -pub,--public <pubkey_file>       Use public key from file <pubkey_file>
                                    (wx,wy).
-
  -priv,--private <privkey_file>    Use private key from file
-                                   [privkey_file] (s).
- -npriv,--named-private <cat/id>   Use private key from KeyDB: [cat/id]
- 
- -k,--key <key_file>               Use keyPair from file [key_file]
+                                   <privkey_file> (s).
+ -npriv,--named-private <cat/id>   Use private key from KeyDB: <cat/id>
+ -k,--key <key_file>               Use keyPair from file <key_file>
                                    (wx,wy,s).
- -nk,--named-key <cat/id>          Use keyPair from KeyDB: [cat/id]
- 
- -i,--input <input_file>           Input from file [input_file], for ecdsa
+ -nk,--named-key <cat/id>          Use keyPair from KeyDB: <cat/id>
+ -i,--input <input_file>           Input from file <input_file>, for ECDSA
                                    signing.
- -o,--output <output_file>         Output into file [output_file].
+ -o,--output <output_file>         Output into file <output_file>.
  -l,--log <log_file>               Log output into file [log_file].
  -v,--verbose                      Turn on verbose logging.
- 
- -f,--fresh                        Generate fresh keys(set domain
+ -f,--fresh                        Generate fresh keys (set domain
                                    parameters before every generation).
  -s,--simulate                     Simulate a card with jcardsim instead
                                    of using a terminal.
-
 ```
 
 ### Example

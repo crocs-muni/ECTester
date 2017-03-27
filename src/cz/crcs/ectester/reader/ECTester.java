@@ -409,7 +409,7 @@ public class ECTester {
             }
 
             optTestCase = cli.getOptionValue("test", "default").toLowerCase();
-            String[] tests = new String[]{"default", "non-prime", "invalid", "smallpub", "test-vectors", "wrong"};
+            String[] tests = new String[]{"default", "nonprime", "invalid", "smallpub", "test-vectors", "wrong"};
             List<String> testsList = Arrays.asList(tests);
             if (!testsList.contains(optTestCase)) {
                 System.err.println("Unknown test case. Should be one of: " + Arrays.toString(tests));
@@ -669,8 +669,6 @@ public class ECTester {
              * Do ECDH both ways, export and verify that the result is correct.
              *
              */
-            String category = optNamedCurve == null ? "secg" : optNamedCurve;
-            Map<String, EC_Curve> curves = dataStore.getObjects(EC_Curve.class, category);
             //TODO
 
         } else {
@@ -683,7 +681,7 @@ public class ECTester {
                 return;
             }
 
-            if (optTestCase.equals("wrong") || optTestCase.equals("non-prime")) {
+            if (optTestCase.equals("wrong") || optTestCase.equals("nonprime")) {
             /* Just do the default tests on the wrong and non-prime curves.
              * These should generally fail, the curves aren't safe.
              */
@@ -699,7 +697,17 @@ public class ECTester {
              * a small order public key succeeds the private key modulo the public key order
              * is revealed.
              */
-                //TODO
+                Map<String, EC_Key> keys = dataStore.getObjects(EC_Key.class, "smallpub");
+                for (EC_Key key : keys.values()) {
+                    EC_Curve curve = dataStore.getObject(EC_Curve.class, key.getCurve());
+                    if ((curve.getBits() == optBits || optAll)) {
+                        commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()));
+                        commands.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL));
+                        commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()));
+                        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDH));
+                        commands.add(new Command.Cleanup(cardManager));
+                    }
+                }
             } else if (optTestCase.equals("invalid")) {
             /* Set original curves (secg/nist/brainpool). Generate local.
              * Try ECDH with invalid public keys of increasing (or decreasing) order.

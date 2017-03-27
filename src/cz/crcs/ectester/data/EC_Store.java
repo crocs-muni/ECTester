@@ -179,7 +179,7 @@ public class EC_Store {
         return new EC_Category(name, dir, desc, objMap);
     }
 
-    private EC_Params parseKeylike(String dir, Element elem) throws SAXException {
+    private EC_Params parseKeylike(String dir, Element elem) throws SAXException, IOException {
         Node file = elem.getElementsByTagName("file").item(0);
         Node curve = elem.getElementsByTagName("curve").item(0);
 
@@ -199,7 +199,9 @@ public class EC_Store {
         } else {
             throw new SAXException("?");
         }
-        result.readCSV(this.getClass().getResourceAsStream("/cz/crcs/ectester/data/" + dir + "/" + file.getTextContent()));
+        if(!result.readCSV(this.getClass().getResourceAsStream("/cz/crcs/ectester/data/" + dir + "/" + file.getTextContent()))) {
+            throw new IOException("Invalid CSV data.");
+        }
         return result;
     }
 
@@ -242,6 +244,5 @@ public class EC_Store {
         }
         return getObject(objClass, parts[0], parts[1]);
     }
-
 
 }
