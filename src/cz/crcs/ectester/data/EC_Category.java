@@ -1,5 +1,6 @@
 package cz.crcs.ectester.data;
 
+import cz.crcs.ectester.reader.ec.EC_Data;
 import cz.crcs.ectester.reader.ec.EC_Params;
 
 import java.util.Collections;
@@ -15,7 +16,7 @@ public class EC_Category {
     private String directory;
     private String desc;
 
-    private Map<String, EC_Params> objects;
+    private Map<String, EC_Data> objects;
 
 
     public EC_Category(String name, String directory) {
@@ -28,7 +29,7 @@ public class EC_Category {
         this.desc = desc;
     }
 
-    public EC_Category(String name, String directory, String desc, Map<String, EC_Params> objects) {
+    public EC_Category(String name, String directory, String desc, Map<String, EC_Data> objects) {
         this(name, directory, desc);
         this.objects = objects;
     }
@@ -45,13 +46,13 @@ public class EC_Category {
         return desc;
     }
 
-    public Map<String, EC_Params> getObjects() {
+    public Map<String, EC_Data> getObjects() {
         return Collections.unmodifiableMap(objects);
     }
 
-    public <T extends EC_Params> Map<String, T> getObjects(Class<T> cls) {
+    public <T extends EC_Data> Map<String, T> getObjects(Class<T> cls) {
         Map<String, T> objs = new TreeMap<>();
-        for (Map.Entry<String, EC_Params> entry : objects.entrySet()) {
+        for (Map.Entry<String, EC_Data> entry : objects.entrySet()) {
             if (cls.isInstance(entry.getValue())) {
                 objs.put(entry.getKey(), cls.cast(entry.getValue()));
             }
@@ -59,8 +60,8 @@ public class EC_Category {
         return Collections.unmodifiableMap(objs);
     }
 
-    public <T extends EC_Params> T getObject(Class<T> cls, String id) {
-        EC_Params obj = objects.get(id);
+    public <T extends EC_Data> T getObject(Class<T> cls, String id) {
+        EC_Data obj = objects.get(id);
         if (cls.isInstance(obj)) {
             return cls.cast(obj);
         } else {

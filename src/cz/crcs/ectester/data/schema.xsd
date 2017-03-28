@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
            elementFormDefault="qualified">
 
     <!-- /<category>/curves.xml -->
@@ -12,13 +12,13 @@
     </xs:simpleType>
 
     <xs:complexType name="curveType">
-        <xs:sequence>
+        <xs:all>
             <xs:element name="id" type="xs:string"/>
             <xs:element name="bits" type="xs:positiveInteger"/>
             <xs:element name="field" type="fieldType"/>
             <xs:element name="file" type="xs:string"/>
             <xs:element name="desc" type="xs:string" minOccurs="0"/>
-        </xs:sequence>
+        </xs:all>
     </xs:complexType>
 
     <xs:element name="curves">
@@ -32,12 +32,12 @@
     <!-- /<category>/keys.xml -->
 
     <xs:complexType name="keyType">
-        <xs:sequence>
+        <xs:all>
             <xs:element name="id" type="xs:string"/>
             <xs:element name="file" type="xs:string"/>
             <xs:element name="curve" type="xs:string"/>
             <xs:element name="desc" type="xs:string" minOccurs="0"/>
-        </xs:sequence>
+        </xs:all>
     </xs:complexType>
 
     <xs:element name="keys">
@@ -52,14 +52,43 @@
         </xs:complexType>
     </xs:element>
 
+    <!-- /<category>/results.xml -->
+
+    <xs:simpleType name="kaType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="DH"/>
+            <xs:enumeration value="DHC"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="resultType">
+        <xs:all>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="ka" type="kaType"/>
+            <xs:element name="file" type="xs:string"/>
+            <xs:element name="curve" type="xs:string"/>
+            <xs:element name="onekey" type="xs:string"/>
+            <xs:element name="otherkey" type="xs:string"/>
+            <xs:element name="desc" type="xs:string" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:element name="results">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="result" type="resultType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <!-- /categories.xml -->
 
     <xs:complexType name="categoryType">
-        <xs:sequence>
+        <xs:all>
             <xs:element name="name" type="xs:string"/>
             <xs:element name="directory" type="xs:string"/>
             <xs:element name="desc" minOccurs="0" type="xs:string"/>
-        </xs:sequence>
+        </xs:all>
     </xs:complexType>
 
     <xs:element name="categories">

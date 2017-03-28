@@ -25,10 +25,7 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Category;
 import cz.crcs.ectester.data.EC_Store;
-import cz.crcs.ectester.reader.ec.EC_Curve;
-import cz.crcs.ectester.reader.ec.EC_Key;
-import cz.crcs.ectester.reader.ec.EC_Keypair;
-import cz.crcs.ectester.reader.ec.EC_Params;
+import cz.crcs.ectester.reader.ec.*;
 import javacard.security.KeyPair;
 import org.apache.commons.cli.*;
 
@@ -248,7 +245,7 @@ public class ECTester {
         actions.addOption(Option.builder("ln").longOpt("list-named").desc("Print the list of supported named curves and keys.").hasArg().argName("what").optionalArg(true).build());
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate [amount] of EC keys.").hasArg().argName("amount").optionalArg(true).build());
-        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support.").hasArg().argName("test_case").optionalArg(true).build());
+        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. <test_case>:\n- default:\n- invalid:\n- wrong:\n- nonprime:\n- smallpub:\n- test-vectors:").hasArg().argName("test_case").optionalArg(true).build());
         actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do ECDH, [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dhc").longOpt("ecdhc").desc("Do ECDHC, [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
@@ -511,6 +508,20 @@ public class ECTester {
                     }
                     System.out.println();
                 }
+
+                Map<String, EC_KAResult> results = cat.getObjects(EC_KAResult.class);
+                size = results.size();
+                if (size > 0) {
+                    System.out.print("\t\tResults: ");
+                    for (Map.Entry<String, EC_KAResult> result : results.entrySet()) {
+                        System.out.print(result.getKey());
+                        size--;
+                        if (size > 0)
+                            System.out.print(", ");
+                    }
+                    System.out.println();
+                }
+
                 System.out.println();
             }
         } else if (categories.containsKey(optListNamed)) {
@@ -669,7 +680,30 @@ public class ECTester {
              * Do ECDH both ways, export and verify that the result is correct.
              *
              */
-            //TODO
+            Map<String, EC_KAResult> results = dataStore.getObjects(EC_KAResult.class, "test");
+            for (EC_KAResult result : results.values()) {
+                EC_Curve curve = dataStore.getObject(EC_Curve.class, result.getCurve());
+                EC_Params onekey = dataStore.getObject(EC_Keypair.class, result.getOneKey());
+                if (onekey == null) {
+                    onekey = dataStore.getObject(EC_Key.Private.class, result.getOneKey());
+                }
+                EC_Params otherkey = dataStore.getObject(EC_Keypair.class, result.getOtherKey());
+                if (otherkey == null) {
+                    otherkey = dataStore.getObject(EC_Key.Public.class, result.getOtherKey());
+                }
+                if (onekey == null || otherkey == null) {
+                    throw new IOException("Test vector keys not located");
+                }
+
+                commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()));
+                commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()));
+                commands.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH));
+                commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, onekey.flatten(EC_Consts.PARAMETER_S)));
+                commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_W, otherkey.flatten(EC_Consts.PARAMETER_W)));
+                commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, result.getKA()));
+                //TODO add compare with result.getParam(0);
+                commands.add(new Command.Cleanup(cardManager));
+            }
 
         } else {
             // These tests are dangerous, prompt before them.
@@ -721,7 +755,14 @@ public class ECTester {
         List<Response> test = Command.sendAll(commands);
         systemOutLogger.println(Response.toString(test));
 
-        //
+        for (Response response : test) {
+            if (response instanceof Response.ECDH) {
+                Response.ECDH ecdh = (Response.ECDH) response;
+                if (ecdh.hasSecret()) {
+                    System.out.println(Util.bytesToHex(ecdh.getSecret(), false));
+                }
+            }
+        }
     }
 
     /**

@@ -31,12 +31,20 @@ public class EC_Data {
         this.data = data;
     }
 
+    public int getCount() {
+        return count;
+    }
+
     public byte[][] getData() {
         return data;
     }
 
     public boolean hasData() {
         return data != null;
+    }
+
+    public byte[] getParam(int index) {
+        return data[index];
     }
 
     public byte[] flatten() {
