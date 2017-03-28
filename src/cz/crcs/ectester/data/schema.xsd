@@ -42,11 +42,11 @@
 
     <xs:element name="keys">
         <xs:complexType>
-            <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element name="keypair" type="keyType" minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element name="privkey" type="keyType" minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element name="pubkey" type="keyType" minOccurs="0" maxOccurs="unbounded"/>
-            </xs:sequence>
+            </xs:choice>
             <xs:attribute name="category" type="xs:string"/>
             <xs:attribute name="desc" type="xs:string"/>
         </xs:complexType>
