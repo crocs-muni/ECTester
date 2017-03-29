@@ -52,6 +52,7 @@ public class ECTesterApplet extends Applet {
     public static final byte INS_ECDH = (byte) 0x60;
     public static final byte INS_ECDSA = (byte) 0x61;
     public static final byte INS_CLEANUP = (byte) 0x62;
+    public static final byte INS_SUPPORT = (byte) 0x63;
 
     // PARAMETERS for P1 and P2
     public static final byte KEYPAIR_LOCAL = (byte) 0x01;
@@ -74,10 +75,13 @@ public class ECTesterApplet extends Applet {
 
     private RandomData randomData = null;
 
+    private ECKeyTester keyTester = null;
+    private short ecdhSW;
+    private short ecdhcSW;
+    private short ecdsaSW;
+    private ECKeyGenerator keyGenerator = null;
     private KeyPair localKeypair = null;
     private KeyPair remoteKeypair = null;
-    private ECKeyTester keyTester = null;
-    private ECKeyGenerator keyGenerator = null;
 
     protected ECTesterApplet(byte[] buffer, short offset, byte length) {
         if (length > 9) {
@@ -102,9 +106,9 @@ public class ECTesterApplet extends Applet {
 
             keyGenerator = new ECKeyGenerator();
             keyTester = new ECKeyTester();
-            keyTester.allocateECDH();
-            keyTester.allocateECDHC();
-            keyTester.allocateECDSA();
+            ecdhSW = keyTester.allocateECDH();
+            ecdhcSW = keyTester.allocateECDHC();
+            ecdsaSW = keyTester.allocateECDSA();
         }
         register();
     }
@@ -151,6 +155,9 @@ public class ECTesterApplet extends Applet {
                     break;
                 case INS_CLEANUP:
                     insCleanup(apdu);
+                    break;
+                case INS_SUPPORT:
+                    insSupport(apdu);
                     break;
                 default:
                     // The INS code is not supported by the dispatcher
@@ -375,12 +382,26 @@ public class ECTesterApplet extends Applet {
 
     /**
      *
+     * @param apdu
      */
     private void insCleanup(APDU apdu) {
         apdu.setIncomingAndReceive();
         byte[] apdubuf = apdu.getBuffer();
 
         short len = cleanup(apdubuf, (short) 0);
+
+        apdu.setOutgoingAndSend((short) 0, len);
+    }
+
+    /**
+     *
+     * @param apdu
+     */
+    private void insSupport(APDU apdu) {
+        apdu.setIncomingAndReceive();
+        byte[] apdubuf = apdu.getBuffer();
+
+        short len = support(apdubuf, (short) 0);
 
         apdu.setOutgoingAndSend((short) 0, len);
     }
@@ -605,5 +626,20 @@ public class ECTesterApplet extends Applet {
 
         Util.setShort(buffer, offset, sw);
         return 2;
+    }
+
+    /**
+     *
+     * @param buffer
+     * @param offset
+     * @return
+     */
+    private short support(byte[] buffer, short offset) {
+
+        Util.setShort(buffer, offset, ecdhSW);
+        Util.setShort(buffer, (short) (offset+2), ecdhcSW);
+        Util.setShort(buffer, (short) (offset+4), ecdsaSW);
+
+        return 6;
     }
 }

@@ -1,48 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <curves xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="../schema.xsd">
-    <!--
-    <curve>
-        <id>anomalousp128</id>
-        <bits>128</bits>
-        <field>prime</field>
-        <file>anomalousp128.csv</file>
-    </curve>
-    <curve>
-        <id>anomalousp160</id>
-        <bits>160</bits>
-        <field>prime</field>
-        <file>anomalousp160.csv</file>
-    </curve>
-    <curve>
-        <id>anomalousp192</id>
-        <bits>192</bits>
-        <field>prime</field>
-        <file>anomalousp192.csv</file>
-    </curve>
-    <curve>
-        <id>anomalousp224</id>
-        <bits>224</bits>
-        <field>prime</field>
-        <file>anomalousp224.csv</file>
-    </curve>
-    <curve>
-        <id>anomalousp256</id>
-        <bits>256</bits>
-        <field>prime</field>
-        <file>anomalousp256.csv</file>
-    </curve>
-    <curve>
-        <id>anomalousp384</id>
-        <bits>384</bits>
-        <field>prime</field>
-        <file>anomalousp384.csv</file>
-    </curve>
-    <curve>
-        <id>anomalousp521</id>
-        <bits>521</bits>
-        <field>prime</field>
-        <file>anomalousp521.csv</file>
-    </curve>
-    -->
+	<curve>
+		<id>miyaji128a1</id>
+		<bits>128</bits>
+		<field>prime</field>
+		<file>miyaji128a1.csv</file>
+		<desc>First curve in the "Proposed scheme A" section of Atsuko Miyaji's paper.</desc>
+	</curve>
+	<curve>
+		<id>miyaji128a2</id>
+		<bits>128</bits>
+		<field>prime</field>
+		<file>miyaji128a2.csv</file>
+		<desc>Second curve in the "Proposed scheme A" section of Atsuko Miyaji's paper.</desc>
+	</curve>
+	<curve>
+		<id>miyaji128b1</id>
+		<bits>128</bits>
+		<field>prime</field>
+		<file>miyaji128b1.csv</file>
+		<desc>First curve in the "Proposed scheme B" section of Atsuko Miyaji's paper.</desc>
+	</curve>
+	<curve>
+		<id>miyaji128b2</id>
+		<bits>128</bits>
+		<field>prime</field>
+		<file>miyaji128b2.csv</file>
+		<desc>Second curve in the "Proposed scheme B" section of Atsuko Miyaji's paper.</desc>
+	</curve>
 </curves>

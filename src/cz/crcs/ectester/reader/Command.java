@@ -49,7 +49,7 @@ public abstract class Command {
          * @param keyLength   key length to set
          * @param keyClass    key class to allocate
          */
-        public Allocate(CardMngr cardManager, byte keyPair, short keyLength, byte keyClass) {
+        protected Allocate(CardMngr cardManager, byte keyPair, short keyLength, byte keyClass) {
             super(cardManager);
             this.keyPair = keyPair;
             this.keyLength = keyLength;
@@ -79,7 +79,7 @@ public abstract class Command {
          * @param cardManager
          * @param keyPair     which keyPair clear, local/remote (KEYPAIR_* || ...)
          */
-        public Clear(CardMngr cardManager, byte keyPair) {
+        protected Clear(CardMngr cardManager, byte keyPair) {
             super(cardManager);
             this.keyPair = keyPair;
 
@@ -113,7 +113,7 @@ public abstract class Command {
          * @param params      parameters to set (EC_Consts.PARAMETER_* | ...)
          * @param external    external curve data, can be null
          */
-        public Set(CardMngr cardManager, byte keyPair, byte curve, short params, byte[] external) {
+        protected Set(CardMngr cardManager, byte keyPair, byte curve, short params, byte[] external) {
             super(cardManager);
             this.keyPair = keyPair;
             this.curve = curve;
@@ -190,7 +190,7 @@ public abstract class Command {
          * @param cardManager
          * @param keyPair     which keyPair to generate, local/remote (KEYPAIR_* || ...)
          */
-        public Generate(CardMngr cardManager, byte keyPair) {
+        protected Generate(CardMngr cardManager, byte keyPair) {
             super(cardManager);
             this.keyPair = keyPair;
 
@@ -222,7 +222,7 @@ public abstract class Command {
          * @param key         key to export from (EC_Consts.KEY_* | ...)
          * @param params      params to export (EC_Consts.PARAMETER_* | ...)
          */
-        public Export(CardMngr cardManager, byte keyPair, byte key, short params) {
+        protected Export(CardMngr cardManager, byte keyPair, byte key, short params) {
             super(cardManager);
             this.keyPair = keyPair;
             this.key = key;
@@ -263,7 +263,7 @@ public abstract class Command {
          * @param corruption  whether to invalidate the pubkey before ECDH (EC_Consts.CORRUPTION_* || ...)
          * @param type
          */
-        public ECDH(CardMngr cardManager, byte pubkey, byte privkey, byte export, byte corruption, byte type) {
+        protected ECDH(CardMngr cardManager, byte pubkey, byte privkey, byte export, byte corruption, byte type) {
             super(cardManager);
             this.pubkey = pubkey;
             this.privkey = privkey;
@@ -298,7 +298,7 @@ public abstract class Command {
          * @param export      whether to export ECDSA signature
          * @param raw         data to sign, can be null, in which case random data is signed.
          */
-        public ECDSA(CardMngr cardManager, byte keyPair, byte export, byte[] raw) {
+        protected ECDSA(CardMngr cardManager, byte keyPair, byte export, byte[] raw) {
             super(cardManager);
             this.keyPair = keyPair;
             this.export = export;
@@ -340,6 +340,25 @@ public abstract class Command {
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
             return new Response.Cleanup(response, elapsed);
+        }
+    }
+
+    /**
+     *
+     */
+    public static class Support extends Command {
+        protected Support(CardMngr cardManager) {
+            super(cardManager);
+
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_SUPPORT, 0, 0);
+        }
+
+        @Override
+        public Response.Support send() throws CardException {
+            long elapsed = -System.nanoTime();
+            ResponseAPDU response = cardManager.send(cmd);
+            elapsed += System.nanoTime();
+            return new Response.Support(response, elapsed);
         }
     }
 }

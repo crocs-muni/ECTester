@@ -14,8 +14,7 @@ import java.util.List;
 public abstract class Response {
     private ResponseAPDU resp;
     private long time;
-    private short sw1 = 0;
-    private short sw2 = 0;
+    private short[] sws;
     private int numSW = 0;
     private byte[][] params;
     private boolean success = true;
@@ -27,23 +26,20 @@ public abstract class Response {
 
     protected void parse(int numSW, int numParams) {
         this.numSW = numSW;
+        this.sws = new short[numSW];
 
         byte[] data = resp.getData();
         int offset = 0;
 
         //parse SWs in response
-        if (--numSW >= 0 && getLength() >= 2) {
-            sw1 = Util.getShort(data, offset);
-            offset += 2;
-            if (sw1 != ISO7816.SW_NO_ERROR) {
-                success = false;
-            }
-        }
-        if (--numSW >= 0 && getLength() >= 4) {
-            sw2 = Util.getShort(data, offset);
-            offset += 2;
-            if (sw2 != ISO7816.SW_NO_ERROR) {
-                success = false;
+        for (int i = 0; i < numSW; ++i) {
+            if (getLength() >= (offset + 2)) {
+                short sw = Util.getShort(data, offset);
+                offset += 2;
+                sws[i] = sw;
+                if (sw != ISO7816.SW_NO_ERROR) {
+                    success = false;
+                }
             }
         }
 
@@ -79,11 +75,15 @@ public abstract class Response {
     }
 
     public short getSW1() {
-        return sw1;
+        return sws[0];
     }
 
     public short getSW2() {
-        return sw2;
+        return sws[1];
+    }
+
+    public short getSW(int index) {
+        return sws[index];
     }
 
     public int getNumSW() {
@@ -122,16 +122,16 @@ public abstract class Response {
     }
 
     public static String toString(List<Response> responses, String prefix)  {
+        if (prefix != null)
+            prefix += " | ";
         StringBuilder out = new StringBuilder();
         for (int i = 0; i < responses.size(); ++i) {
             Response r = responses.get(i);
 
             String message = r.toString();
-            String suffix;
-            if (r.getNumSW() == 1) {
-                suffix = String.format("%s", Util.getSWString(r.getSW1()));
-            } else {
-                suffix = String.format("%s %s", Util.getSWString(r.getSW1()), Util.getSWString(r.getSW2()));
+            String suffix = "";
+            for (int j = 0; j < r.getNumSW(); ++j) {
+                suffix += " " + Util.getSWString(r.getSW(j));
             }
 
             if (prefix != null)
@@ -153,7 +153,7 @@ public abstract class Response {
         private short keyLength;
         private byte keyClass;
 
-        public Allocate(ResponseAPDU response, long time, byte keyPair, short keyLength, byte keyClass) {
+        protected Allocate(ResponseAPDU response, long time, byte keyPair, short keyLength, byte keyClass) {
             super(response, time);
             this.keyPair = keyPair;
             this.keyLength = keyLength;
@@ -181,7 +181,7 @@ public abstract class Response {
     public static class Clear extends Response {
         private byte keyPair;
 
-        public Clear(ResponseAPDU response, long time, byte keyPair) {
+        protected Clear(ResponseAPDU response, long time, byte keyPair) {
             super(response, time);
             this.keyPair = keyPair;
 
@@ -323,7 +323,7 @@ public abstract class Response {
         private byte key;
         private short parameters;
 
-        public Export(ResponseAPDU response, long time, byte keyPair, byte key, short parameters) {
+        protected Export(ResponseAPDU response, long time, byte keyPair, byte key, short parameters) {
             super(response, time);
             this.keyPair = keyPair;
             this.key = key;
@@ -527,6 +527,22 @@ public abstract class Response {
             return String.format("Requested JCSystem object deletion");
         }
 
+    }
 
+    /**
+     *
+     */
+    public static class Support extends Response {
+
+        protected Support(ResponseAPDU response, long time) {
+            super(response, time);
+
+            parse(3,0);
+        }
+
+        @Override
+        public String toString() {
+            return "Support of ECDH, ECDHC, ECDSA";
+        }
     }
 }

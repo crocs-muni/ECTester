@@ -80,7 +80,7 @@ public class ECTester {
 
     //Action-related options
     private String optListNamed;
-    private String optTestCase;
+    private String optTestSuite;
     private int optGenerateAmount;
     private int optECDHCount;
     private byte optECDHKA;
@@ -205,7 +205,7 @@ public class ECTester {
          * -h / --help
          * -e / --export
          * -g / --generate [amount]
-         * -t / --test [test_case]
+         * -t / --test [test_suite]
          * -dh / --ecdh [count]
          * -dhc / --ecdhc [count]
          * -dsa / --ecdsa [count]
@@ -245,7 +245,7 @@ public class ECTester {
         actions.addOption(Option.builder("ln").longOpt("list-named").desc("Print the list of supported named curves and keys.").hasArg().argName("what").optionalArg(true).build());
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate [amount] of EC keys.").hasArg().argName("amount").optionalArg(true).build());
-        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. <test_case>:\n- default:\n- invalid:\n- wrong:\n- nonprime:\n- smallpub:\n- test-vectors:").hasArg().argName("test_case").optionalArg(true).build());
+        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. [test_suite]:\n- default:\n- invalid:\n- wrong:\n- nonprime:\n- smallpub:\n- test-vectors:").hasArg().argName("test_suite").optionalArg(true).build());
         actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do ECDH, [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dhc").longOpt("ecdhc").desc("Do ECDHC, [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
@@ -304,7 +304,7 @@ public class ECTester {
         optPrimeField = cli.hasOption("fp");
         optBinaryField = cli.hasOption("f2m");
 
-        optNamedCurve = cli.getOptionValue("named");
+        optNamedCurve = cli.getOptionValue("named-curve");
         optCustomCurve = cli.hasOption("custom");
         optCurveFile = cli.getOptionValue("curve");
 
@@ -405,10 +405,10 @@ public class ECTester {
                 optPrimeField = true;
             }
 
-            optTestCase = cli.getOptionValue("test", "default").toLowerCase();
-            String[] tests = new String[]{"default", "nonprime", "invalid", "smallpub", "test-vectors", "wrong"};
+            optTestSuite = cli.getOptionValue("test", "default").toLowerCase();
+            String[] tests = new String[]{"default", "nonprime", "invalid", "test-vectors", "wrong"};
             List<String> testsList = Arrays.asList(tests);
-            if (!testsList.contains(optTestCase)) {
+            if (!testsList.contains(optTestSuite)) {
                 System.err.println("Unknown test case. Should be one of: " + Arrays.toString(tests));
                 return false;
             }
@@ -527,6 +527,9 @@ public class ECTester {
         } else if (categories.containsKey(optListNamed)) {
             // print given category
             //TODO
+        } else {
+            // print given object
+            //TODO
         }
     }
 
@@ -631,7 +634,8 @@ public class ECTester {
     private void test() throws IOException, CardException {
         List<Command> commands = new LinkedList<>();
 
-        if (optTestCase.equals("default")) {
+        if (optTestSuite.equals("default")) {
+            commands.add(new Command.Support(cardManager));
             if (optNamedCurve != null) {
                 if (optPrimeField) {
                     commands.addAll(testCurves(optNamedCurve, KeyPair.ALG_EC_FP));
@@ -675,7 +679,7 @@ public class ECTester {
                     }
                 }
             }
-        } else if (optTestCase.equals("test-vectors")) {
+        } else if (optTestSuite.equals("test-vectors")) {
             /* Set original curves (secg/nist/brainpool). Set keypairs from test vectors.
              * Do ECDH both ways, export and verify that the result is correct.
              *
@@ -683,6 +687,12 @@ public class ECTester {
             Map<String, EC_KAResult> results = dataStore.getObjects(EC_KAResult.class, "test");
             for (EC_KAResult result : results.values()) {
                 EC_Curve curve = dataStore.getObject(EC_Curve.class, result.getCurve());
+                if (optNamedCurve != null && !(result.getCurve().startsWith(optNamedCurve) || result.getCurve().equals(optNamedCurve))) {
+                    continue;
+                }
+                if (curve.getBits() != optBits && !optAll) {
+                    continue;
+                }
                 EC_Params onekey = dataStore.getObject(EC_Keypair.class, result.getOneKey());
                 if (onekey == null) {
                     onekey = dataStore.getObject(EC_Key.Private.class, result.getOneKey());
@@ -707,53 +717,56 @@ public class ECTester {
 
         } else {
             // These tests are dangerous, prompt before them.
-            System.out.println("The test you selected (" + optTestCase + ") is potentially dangerous.");
+            System.out.println("The test you selected (" + optTestSuite + ") is potentially dangerous.");
             System.out.println("Some of these tests have caused temporary DoS of some cards.");
             System.out.print("Do you want to proceed? (y/n):");
-            String confirmation = System.console().readLine();
+            Scanner in = new Scanner(System.in);
+            String confirmation = in.nextLine();
             if (!Arrays.asList("yes", "y", "Y").contains(confirmation)) {
                 return;
             }
 
-            if (optTestCase.equals("wrong") || optTestCase.equals("nonprime")) {
-            /* Just do the default tests on the wrong and non-prime curves.
+            if (optTestSuite.equals("wrong")) {
+            /* Just do the default tests on the wrong curves.
              * These should generally fail, the curves aren't safe.
              */
                 if (optPrimeField) {
-                    commands.addAll(testCurves(optTestCase, KeyPair.ALG_EC_FP));
+                    commands.addAll(testCurves(optTestSuite, KeyPair.ALG_EC_FP));
                 }
                 if (optBinaryField) {
-                    commands.addAll(testCurves(optTestCase, KeyPair.ALG_EC_F2M));
+                    commands.addAll(testCurves(optTestSuite, KeyPair.ALG_EC_F2M));
                 }
-            } else if (optTestCase.equals("smallpub")) {
-            /* Do the default tests with the public keys set to provided smallpub keys.
+            } else if (optTestSuite.equals("nonprime")) {
+            /* Do the default tests with the public keys set to provided nonprime keys.
              * These should fail, the curves aren't safe so that if the computation with
              * a small order public key succeeds the private key modulo the public key order
              * is revealed.
              */
-                Map<String, EC_Key> keys = dataStore.getObjects(EC_Key.class, "smallpub");
+                Map<String, EC_Key> keys = dataStore.getObjects(EC_Key.class, "nonprime");
                 for (EC_Key key : keys.values()) {
                     EC_Curve curve = dataStore.getObject(EC_Curve.class, key.getCurve());
                     if ((curve.getBits() == optBits || optAll)) {
                         commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()));
                         commands.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL));
-                        commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()));
+                        commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()));
+                        commands.add(new Command.Set(cardManager,  ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, key.getParams(), key.flatten()));
                         commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDH));
                         commands.add(new Command.Cleanup(cardManager));
                     }
                 }
-            } else if (optTestCase.equals("invalid")) {
+            } else if (optTestSuite.equals("invalid")) {
             /* Set original curves (secg/nist/brainpool). Generate local.
              * Try ECDH with invalid public keys of increasing (or decreasing) order.
              *
              */
                 //TODO
+                System.err.println("Currently not yet implemented.");
             }
         }
 
 
         List<Response> test = Command.sendAll(commands);
-        systemOutLogger.println(Response.toString(test));
+        systemOutLogger.println(Response.toString(test, optTestSuite));
 
         for (Response response : test) {
             if (response instanceof Response.ECDH) {
@@ -1053,8 +1066,7 @@ public class ECTester {
             EC_Curve curve = entry.getValue();
             if (curve.getField() == field && (curve.getBits() == optBits || optAll)) {
                 commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), field));
-                byte[] external = curve.flatten();
-                commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), external));
+                commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()));
                 commands.addAll(testCurve());
                 commands.add(new Command.Cleanup(cardManager));
             }

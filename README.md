@@ -16,7 +16,7 @@ Following operations are tested:
 - Signature via ECDSA
 - Behavior of card when invalid curves/points are provided (should fail)
 
-See `java -jar ectester.jar -h` for more.
+See `java -jar ECTester.jar -h` for more.
 
 ### Options
 
@@ -60,6 +60,55 @@ See `java -jar ectester.jar -h` for more.
  -s,--simulate                     Simulate a card with jcardsim instead
                                    of using a terminal.
 ```
+
+### Actions
+
+#### Export
+`-e / --export`
+
+Exports the default curves (if any) that are preset on the card.
+Use with `-o / --output [out_file]` to output the curve parameters to a file.
+For format of this file see [FORMAT](FORMAT.md).
+
+#### Test
+`-t / --test [test_suite]`
+
+Perform support and performance tests of ECC.
+
+For more info about the test suites see [TESTS](TESTS.md).
+
+#### Generate
+`-g / --generate [amount]`
+
+Generates batches of EC keypairs and exports them.
+Use with `-o / --output [out_file]` to output the generated keys to a file.
+
+#### ECDH
+`-dh / --ecdh [count]`
+`-dhc / --ecdhc [count]`
+
+Performs ECDH.
+Use with `-o / --output [out_file]` to output into a file.
+
+#### ECDSA
+`-dsa / --ecdsa [count]`
+
+Performs ECDSA.
+Useful with `-i / --input [in_file]` to sign the contents of a file.
+Use with `-o / --output [out_file]` to output into a file.
+
+#### List named curves
+`-ln / --list-named []`
+
+Lists categories of curves, keys and keypairs embedded in ECTester's jar, along with some information about them.
+These can be used as arguments to the `-n[c|k|pub|priv] / --named-[curve|key|public|private]` parameters.
+
+With the format: `category/name`.
+
+For example:
+`secg/secp192r1` identifies the SECG 192 bit prime field curve known as `secp192r1`.
+
+For more info about the curves see [CURVES](CURVES.md).
 
 ### Example
 

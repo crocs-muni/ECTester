@@ -2,45 +2,45 @@
 <curves xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="../schema.xsd">
     <curve>
-        <id>ecsp128</id>
+        <id>nonprime128</id>
         <bits>128</bits>
         <field>prime</field>
-        <file>ecsp128.csv</file>
+        <file>nonprime128.csv</file>
     </curve>
     <curve>
-        <id>ecsp160</id>
+        <id>nonprime160</id>
         <bits>160</bits>
         <field>prime</field>
-        <file>ecsp160.csv</file>
+        <file>nonprime160.csv</file>
     </curve>
     <curve>
-        <id>ecsp192</id>
+        <id>nonprime192</id>
         <bits>192</bits>
         <field>prime</field>
-        <file>ecsp192.csv</file>
+        <file>nonprime192.csv</file>
     </curve>
     <curve>
-        <id>ecsp224</id>
+        <id>nonprime224</id>
         <bits>224</bits>
         <field>prime</field>
-        <file>ecsp224.csv</file>
+        <file>nonprime224.csv</file>
     </curve>
     <curve>
-        <id>ecsp256</id>
+        <id>nonprime256</id>
         <bits>256</bits>
         <field>prime</field>
-        <file>ecsp256.csv</file>
+        <file>nonprime256.csv</file>
     </curve>
     <curve>
-        <id>ecsp384</id>
+        <id>nonprime384</id>
         <bits>384</bits>
         <field>prime</field>
-        <file>ecsp384.csv</file>
+        <file>nonprime384.csv</file>
     </curve>
     <curve>
-        <id>ecsp521</id>
+        <id>nonprime521</id>
         <bits>521</bits>
         <field>prime</field>
-        <file>ecsp521.csv</file>
+        <file>nonprime521.csv</file>
     </curve>
 </curves>

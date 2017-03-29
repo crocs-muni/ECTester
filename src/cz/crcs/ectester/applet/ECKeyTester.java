@@ -148,6 +148,18 @@ public class ECKeyTester {
         return ecdsaSignature;
     }
 
+    public boolean hasECDH() {
+        return ecdhKeyAgreement != null;
+    }
+
+    public boolean hasECDHC() {
+        return ecdhcKeyAgreement != null;
+    }
+
+    public boolean hasECDSA() {
+        return ecdsaSignature != null;
+    }
+
     public short getSW() {
         return sw;
     }
