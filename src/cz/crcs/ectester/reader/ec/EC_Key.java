@@ -37,6 +37,11 @@ public class EC_Key extends EC_Params {
         public Public(String curve, String desc) {
             super(EC_Consts.PARAMETER_W, curve, desc);
         }
+
+        @Override
+        public String toString() {
+            return "EC Public key, over " + getCurve() + ": " + getDesc();
+        }
     }
 
     public static class Private extends EC_Key {
@@ -49,5 +54,9 @@ public class EC_Key extends EC_Params {
             super(EC_Consts.PARAMETER_S, curve, desc);
         }
 
+        @Override
+        public String toString() {
+            return "EC Private key, over " + getCurve() + ": " + getDesc();
+        }
     }
 }

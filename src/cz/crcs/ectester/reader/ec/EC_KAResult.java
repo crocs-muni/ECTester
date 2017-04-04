@@ -1,5 +1,7 @@
 package cz.crcs.ectester.reader.ec;
 
+import cz.crcs.ectester.applet.EC_Consts;
+
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
@@ -43,6 +45,12 @@ public class EC_KAResult extends EC_Data {
 
     public String getDesc() {
         return desc;
+    }
+
+    @Override
+    public String toString() {
+        String agreement = ka == EC_Consts.KA_ECDH ? "ECDH" : "ECDHC";
+        return agreement + " over " + curve + ", " + oneKey + " + " + otherKey + ": " + desc;
     }
 
 }

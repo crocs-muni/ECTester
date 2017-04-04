@@ -40,4 +40,9 @@ public class EC_Curve extends EC_Params {
     public String getDesc() {
         return desc;
     }
+
+    @Override
+    public String toString() {
+        return "Elliptic curve (" + String.valueOf(bits) + "b): " + desc;
+    }
 }

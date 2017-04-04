@@ -529,7 +529,10 @@ public class ECTester {
             //TODO
         } else {
             // print given object
-            //TODO
+            EC_Data object = dataStore.getObject(EC_Data.class, optListNamed);
+            if (object != null) {
+                System.out.println(object);
+            }
         }
     }
 
@@ -628,8 +631,8 @@ public class ECTester {
     /**
      * Tests Elliptic curve support for a given curve/curves.
      *
-     * @throws IOException
-     * @throws CardException
+     * @throws CardException if APDU transmission fails
+     * @throws IOException   if an IO error occurs when writing to key file.
      */
     private void test() throws IOException, CardException {
         List<Command> commands = new LinkedList<>();
@@ -915,9 +918,9 @@ public class ECTester {
     private List<Command> prepareCurve(byte keyPair, short keyLength, byte keyClass) throws IOException {
         List<Command> commands = new ArrayList<>();
 
-        short domainParams = keyClass == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
         if (optCustomCurve) {
             // Set custom curve (one of the SECG curves embedded applet-side)
+            short domainParams = keyClass == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
             commands.add(new Command.Set(cardManager, keyPair, EC_Consts.getCurve(keyLength, keyClass), domainParams, null));
         } else if (optNamedCurve != null) {
             // Set a named curve.
@@ -934,20 +937,20 @@ public class ECTester {
             if (external == null) {
                 throw new IOException("Couldn't read named curve data.");
             }
-            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, domainParams, external));
+            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, curve.getParams(), external));
         } else if (optCurveFile != null) {
             // Set curve loaded from a file
-            EC_Params params = new EC_Params(domainParams);
+            EC_Curve curve = new EC_Curve(keyLength, keyClass);
 
             FileInputStream in = new FileInputStream(optCurveFile);
-            params.readCSV(in);
+            curve.readCSV(in);
             in.close();
 
-            byte[] external = params.flatten();
+            byte[] external = curve.flatten();
             if (external == null) {
                 throw new IOException("Couldn't read the curve file correctly.");
             }
-            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, domainParams, external));
+            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, curve.getParams(), external));
         } else {
             // Set default curve
             /* This command was generally causing problems for simulating on jcardsim.
@@ -1036,8 +1039,9 @@ public class ECTester {
     }
 
     /**
+     *
      * @return
-     * @throws IOException
+     * @throws IOException   if an IO error occurs when writing to key file.
      */
     private List<Command> testCurve() throws IOException {
         List<Command> commands = new LinkedList<>();
@@ -1052,10 +1056,11 @@ public class ECTester {
     }
 
     /**
+     *
      * @param category
      * @param field
      * @return
-     * @throws IOException
+     * @throws IOException   if an IO error occurs when writing to key file.
      */
     private List<Command> testCurves(String category, byte field) throws IOException {
         List<Command> commands = new LinkedList<>();

@@ -44,7 +44,7 @@ public abstract class Command {
         /**
          * Creates the INS_ALLOCATE instruction.
          *
-         * @param cardManager
+         * @param cardManager cardManager to send APDU through
          * @param keyPair     which keyPair to use, local/remote (KEYPAIR_* | ...)
          * @param keyLength   key length to set
          * @param keyClass    key class to allocate
@@ -76,7 +76,7 @@ public abstract class Command {
         private byte keyPair;
 
         /**
-         * @param cardManager
+         * @param cardManager cardManager to send APDU through
          * @param keyPair     which keyPair clear, local/remote (KEYPAIR_* || ...)
          */
         protected Clear(CardMngr cardManager, byte keyPair) {
@@ -107,7 +107,7 @@ public abstract class Command {
         /**
          * Creates the INS_SET instruction.
          *
-         * @param cardManager
+         * @param cardManager cardManager to send APDU through
          * @param keyPair     which keyPair to set params on, local/remote (KEYPAIR_* || ...)
          * @param curve       curve to set (EC_Consts.CURVE_*)
          * @param params      parameters to set (EC_Consts.PARAMETER_* | ...)
@@ -149,9 +149,9 @@ public abstract class Command {
         private byte corruption;
 
         /**
-         * @param cardManager
+         * @param cardManager cardManager to send APDU through
          * @param keyPair     which keyPair to corrupt, local/remote (KEYPAIR_* || ...)
-         * @param key
+         * @param key         key to corrupt (EC_Consts.KEY_* | ...)
          * @param params      parameters to corrupt (EC_Consts.PARAMETER_* | ...)
          * @param corruption  corruption type (EC_Consts.CORRUPTION_*)
          */
@@ -187,7 +187,7 @@ public abstract class Command {
         /**
          * Creates the INS_GENERATE instruction.
          *
-         * @param cardManager
+         * @param cardManager cardManager to send APDU through
          * @param keyPair     which keyPair to generate, local/remote (KEYPAIR_* || ...)
          */
         protected Generate(CardMngr cardManager, byte keyPair) {
@@ -217,7 +217,7 @@ public abstract class Command {
         /**
          * Creates the INS_EXPORT instruction.
          *
-         * @param cardManager
+         * @param cardManager cardManager to send APDU through
          * @param keyPair     keyPair to export from (KEYPAIR_* | ...)
          * @param key         key to export from (EC_Consts.KEY_* | ...)
          * @param params      params to export (EC_Consts.PARAMETER_* | ...)
@@ -256,12 +256,12 @@ public abstract class Command {
         /**
          * Creates the INS_ECDH instruction.
          *
-         * @param cardManager
+         * @param cardManager cardManager to send APDU through
          * @param pubkey      keyPair to use for public key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
          * @param privkey     keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
          * @param export      whether to export ECDH secret
          * @param corruption  whether to invalidate the pubkey before ECDH (EC_Consts.CORRUPTION_* || ...)
-         * @param type
+         * @param type        ECDH algorithm type (EC_Consts.KA_* | ...)
          */
         protected ECDH(CardMngr cardManager, byte pubkey, byte privkey, byte export, byte corruption, byte type) {
             super(cardManager);
@@ -293,7 +293,7 @@ public abstract class Command {
         /**
          * Creates the INS_ECDSA instruction.
          *
-         * @param cardManager
+         * @param cardManager cardManager to send APDU through
          * @param keyPair     keyPair to use for signing and verification (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
          * @param export      whether to export ECDSA signature
          * @param raw         data to sign, can be null, in which case random data is signed.
@@ -328,6 +328,10 @@ public abstract class Command {
      */
     public static class Cleanup extends Command {
 
+        /**
+         *
+         * @param cardManager cardManager to send APDU through
+         */
         protected Cleanup(CardMngr cardManager) {
             super(cardManager);
 
@@ -347,6 +351,11 @@ public abstract class Command {
      *
      */
     public static class Support extends Command {
+
+        /**
+         *
+         * @param cardManager cardManager to send APDU through
+         */
         protected Support(CardMngr cardManager) {
             super(cardManager);
 

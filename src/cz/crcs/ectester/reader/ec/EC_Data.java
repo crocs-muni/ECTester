@@ -21,12 +21,12 @@ public class EC_Data {
     EC_Data() {
     }
 
-    public EC_Data(int count) {
+    EC_Data(int count) {
         this.count = count;
         this.data = new byte[count][];
     }
 
-    public EC_Data(byte[][] data) {
+    EC_Data(byte[][] data) {
         this.count = data.length;
         this.data = data;
     }

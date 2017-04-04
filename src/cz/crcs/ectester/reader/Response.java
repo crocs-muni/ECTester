@@ -524,7 +524,7 @@ public abstract class Response {
 
         @Override
         public String toString() {
-            return String.format("Requested JCSystem object deletion");
+            return "Requested JCSystem object deletion";
         }
 
     }

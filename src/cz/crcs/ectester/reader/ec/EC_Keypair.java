@@ -27,4 +27,9 @@ public class EC_Keypair extends EC_Params {
     public String getDesc() {
         return desc;
     }
+
+    @Override
+    public String toString() {
+        return "EC Keypair, over " + curve + ": " + desc;
+    }
 }
