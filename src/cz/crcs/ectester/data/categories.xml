@@ -32,6 +32,11 @@
         <desc>Wrong field curves. These should definitely give an error when used. Since the "prime" used for the field are not prime, and the field polynomials are also not irreducible. Simply put these parameters don't specify a valid elliptic curve.</desc>
     </category>
     <category>
+        <name>invalid</name>
+        <directory>invalid</directory>
+        <desc></desc>
+    </category>
+    <category>
         <name>test</name>
         <directory>test</directory>
         <desc>Test vectors</desc>

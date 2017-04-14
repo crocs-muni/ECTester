@@ -63,6 +63,7 @@ public class ECTesterApplet extends Applet {
 
     // STATUS WORDS
     public static final short SW_SIG_VERIFY_FAIL = (short) 0x0ee1;
+    public static final short SW_DH_DHC_MISMATCH = (short) 0x0ee2;
 
 
     private static final short ARRAY_LENGTH = (short) 0xff;
@@ -556,7 +557,7 @@ public class ECTesterApplet extends Applet {
                 secretLength = keyTester.testECDHC((ECPrivateKey) priv.getPrivate(), (ECPublicKey) pub.getPublic(), ramArray, (short) 0, ramArray2, (short) 0, corruption);
                 break;
             case EC_Consts.KA_BOTH:
-                // TODO
+                secretLength = keyTester.testKA((ECPrivateKey) priv.getPrivate(), (ECPublicKey) pub.getPublic(), ramArray, (short) 0, ramArray2, (short) 0, corruption);
                 break;
             default:
                 ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
@@ -589,7 +590,7 @@ public class ECTesterApplet extends Applet {
         short dataLength = Util.getShort(buffer, inOffset);
         if (dataLength == 0) { //no data to sign
             //generate random
-            dataLength = 32;
+            dataLength = 64;
             randomData.generateData(ramArray, (short) 0, dataLength);
         } else {
             Util.arrayCopyNonAtomic(buffer, (short) (inOffset + 2), ramArray, (short) 0, dataLength);
@@ -636,9 +637,21 @@ public class ECTesterApplet extends Applet {
      */
     private short support(byte[] buffer, short offset) {
 
-        Util.setShort(buffer, offset, ecdhSW);
-        Util.setShort(buffer, (short) (offset+2), ecdhcSW);
-        Util.setShort(buffer, (short) (offset+4), ecdsaSW);
+        if (keyTester.hasECDH()) {
+            Util.setShort(buffer, offset, ecdhSW);
+        } else {
+            Util.setShort(buffer, offset, ISO7816.SW_INS_NOT_SUPPORTED);
+        }
+        if (keyTester.hasECDHC()) {
+            Util.setShort(buffer, (short) (offset+2), ecdhcSW);
+        } else {
+            Util.setShort(buffer, (short) (offset+2), ISO7816.SW_INS_NOT_SUPPORTED);
+        }
+        if (keyTester.hasECDSA()) {
+            Util.setShort(buffer, (short) (offset+4), ecdsaSW);
+        } else {
+            Util.setShort(buffer, (short) (offset+4), ISO7816.SW_INS_NOT_SUPPORTED);
+        }
 
         return 6;
     }

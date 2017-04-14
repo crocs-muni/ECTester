@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE keys [
+        <!ENTITY brainpool SYSTEM "invalid/brainpool/keys.xml">
+        <!ENTITY nist SYSTEM "invalid/nist/keys.xml">
+        <!ENTITY secg SYSTEM "invalid/secg/keys.xml">
+        ]>
+<keys xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../schema.xsd"
+      category="invalid"
+      desc="">
+    &brainpool;
+    &nist;
+    &secg;
+</keys>

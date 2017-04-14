@@ -50,7 +50,7 @@ public class EC_KAResult extends EC_Data {
     @Override
     public String toString() {
         String agreement = ka == EC_Consts.KA_ECDH ? "ECDH" : "ECDHC";
-        return agreement + " over " + curve + ", " + oneKey + " + " + otherKey + ": " + desc;
+        return agreement + " result over " + curve + ", " + oneKey + " + " + otherKey + (desc == null ? "" : ": " + desc);
     }
 
 }

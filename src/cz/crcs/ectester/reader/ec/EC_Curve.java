@@ -43,6 +43,6 @@ public class EC_Curve extends EC_Params {
 
     @Override
     public String toString() {
-        return "Elliptic curve (" + String.valueOf(bits) + "b): " + desc;
+        return "Elliptic curve (" + String.valueOf(bits) + "b)" + (desc == null ? "" : ": " + desc);
     }
 }

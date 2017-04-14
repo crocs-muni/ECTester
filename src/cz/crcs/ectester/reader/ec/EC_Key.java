@@ -40,7 +40,7 @@ public class EC_Key extends EC_Params {
 
         @Override
         public String toString() {
-            return "EC Public key, over " + getCurve() + ": " + getDesc();
+            return "EC Public key, over " + getCurve() + (getDesc() == null ? "" : ": " + getDesc());
         }
     }
 
@@ -56,7 +56,7 @@ public class EC_Key extends EC_Params {
 
         @Override
         public String toString() {
-            return "EC Private key, over " + getCurve() + ": " + getDesc();
+            return "EC Private key, over " + getCurve() + (getDesc() == null ? "" : ": " + getDesc());
         }
     }
 }

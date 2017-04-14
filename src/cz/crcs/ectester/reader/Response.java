@@ -137,7 +137,7 @@ public abstract class Response {
             if (prefix != null)
                 out.append(prefix);
 
-            out.append(String.format("%-58s:%4d ms : %s", message, r.time / 1000000, suffix));
+            out.append(String.format("%-62s:%4d ms : %s", message, r.time / 1000000, suffix));
             if (i < responses.size() - 1) {
                 out.append("\n");
             }

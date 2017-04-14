@@ -8,8 +8,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import org.xml.sax.ext.EntityResolver2;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -17,10 +19,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -61,6 +63,25 @@ public class EC_Store {
                     throw new SAXException(exception);
                 }
             });
+            db.setEntityResolver(new EntityResolver2() {
+                @Override
+                public InputSource getExternalSubset(String name, String baseURI) throws SAXException, IOException {
+                    return null;
+                }
+
+                @Override
+                public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId) throws SAXException, IOException {
+                    InputSource is = new InputSource();
+                    is.setSystemId(systemId);
+                    is.setByteStream(getClass().getClass().getResourceAsStream("/cz/crcs/ectester/data/" + systemId));
+                    return is;
+                }
+
+                @Override
+                public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+                    return null;
+                }
+            });
 
             parse();
         } catch (ParserConfigurationException | SAXException e) {
@@ -80,7 +101,7 @@ public class EC_Store {
 
         NodeList catList = categoriesDoc.getElementsByTagName("category");
 
-        this.categories = new HashMap<>(catList.getLength());
+        this.categories = new TreeMap<>();
         for (int i = 0; i < catList.getLength(); ++i) {
             Node catNode = catList.item(i);
             if (catNode instanceof Element) {
@@ -115,7 +136,6 @@ public class EC_Store {
                     Node id = curveElem.getElementsByTagName("id").item(0);
                     Node bits = curveElem.getElementsByTagName("bits").item(0);
                     Node field = curveElem.getElementsByTagName("field").item(0);
-                    Node file = curveElem.getElementsByTagName("file").item(0);
 
                     NodeList descc = curveElem.getElementsByTagName("desc");
                     String descs = null;
@@ -132,7 +152,9 @@ public class EC_Store {
                     short bitsize = Short.parseShort(bits.getTextContent());
 
                     EC_Curve curve = new EC_Curve(bitsize, alg, descs);
-                    if (!curve.readCSV(this.getClass().getResourceAsStream("/cz/crcs/ectester/data/" + dir + "/" + file.getTextContent()))) {
+
+                    InputStream csv = parseDataElement(dir, curveElem);
+                    if (!curve.readCSV(csv)) {
                         throw new IOException("Invalid csv data.");
                     }
 
@@ -194,7 +216,6 @@ public class EC_Store {
 
                     Node id = elem.getElementsByTagName("id").item(0);
                     Node ka = elem.getElementsByTagName("ka").item(0);
-                    Node file = elem.getElementsByTagName("file").item(0);
                     Node curve = elem.getElementsByTagName("curve").item(0);
                     Node onekey = elem.getElementsByTagName("onekey").item(0);
                     Node otherkey = elem.getElementsByTagName("otherkey").item(0);
@@ -213,7 +234,9 @@ public class EC_Store {
                     }
 
                     EC_KAResult kaResult = new EC_KAResult(kab, curve.getTextContent(), onekey.getTextContent(), otherkey.getTextContent(), descs);
-                    if (!kaResult.readCSV(this.getClass().getResourceAsStream("/cz/crcs/ectester/data/" + dir + "/" + file.getTextContent()))) {
+
+                    InputStream csv = parseDataElement(dir, elem);
+                    if (!kaResult.readCSV(csv)) {
                         throw new IOException("Invalid csv data.");
                     }
 
@@ -248,10 +271,27 @@ public class EC_Store {
         } else {
             throw new SAXException("?");
         }
-        if (!result.readCSV(this.getClass().getResourceAsStream("/cz/crcs/ectester/data/" + dir + "/" + file.getTextContent()))) {
+
+        InputStream csv = parseDataElement(dir, elem);
+        if (!result.readCSV(csv)) {
             throw new IOException("Invalid CSV data.");
         }
         return result;
+    }
+
+    private InputStream parseDataElement(String dir, Element elem) throws SAXException {
+        NodeList file = elem.getElementsByTagName("file");
+        NodeList inline = elem.getElementsByTagName("inline");
+
+        InputStream csv;
+        if (file.getLength() == 1) {
+            csv = this.getClass().getResourceAsStream("/cz/crcs/ectester/data/" + dir + "/" + file.item(0).getTextContent());
+        } else if (inline.getLength() == 1) {
+            csv = new ByteArrayInputStream(inline.item(0).getTextContent().getBytes());
+        } else {
+            throw new SAXException("?");
+        }
+        return csv;
     }
 
     public Map<String, EC_Category> getCategories() {

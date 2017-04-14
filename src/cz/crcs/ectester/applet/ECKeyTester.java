@@ -3,6 +3,7 @@ package cz.crcs.ectester.applet;
 
 import javacard.framework.CardRuntimeException;
 import javacard.framework.ISO7816;
+import javacard.framework.Util;
 import javacard.security.ECPrivateKey;
 import javacard.security.ECPublicKey;
 import javacard.security.KeyAgreement;
@@ -102,6 +103,34 @@ public class ECKeyTester {
         short length = publicKey.getW(pubkeyBuffer, pubkeyOffset);
         length = EC_Consts.corruptParameter(corruption, pubkeyBuffer, pubkeyOffset, length);
         return testKA(ecdhcKeyAgreement, privateKey, pubkeyBuffer, pubkeyOffset, length, outputBuffer, outputOffset);
+    }
+
+    /**
+     *
+     * @param privateKey
+     * @param publicKey
+     * @param pubkeyBuffer
+     * @param pubkeyOffset
+     * @param outputBuffer
+     * @param outputOffset
+     * @param corruption
+     * @return
+     */
+    public short testKA(ECPrivateKey privateKey, ECPublicKey publicKey, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, byte corruption) {
+        short ecdhLength = testECDH(privateKey, publicKey, pubkeyBuffer, pubkeyOffset, outputBuffer, outputOffset, corruption);
+        if (sw != ISO7816.SW_NO_ERROR) {
+            return ecdhLength;
+        }
+        short ecdhcLength = testECDHC(privateKey, publicKey, pubkeyBuffer, pubkeyOffset, outputBuffer, (short) (outputOffset + ecdhLength), corruption);
+        short length = (short) (ecdhLength + ecdhcLength);
+        if (sw != ISO7816.SW_NO_ERROR) {
+            return length;
+        }
+        if (Util.arrayCompare(outputBuffer, outputOffset, outputBuffer, (short)(outputOffset + ecdhLength), ecdhLength) != 0) {
+            sw = ECTesterApplet.SW_DH_DHC_MISMATCH;
+        }
+        return length;
+
     }
 
     /**

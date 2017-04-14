@@ -30,6 +30,6 @@ public class EC_Keypair extends EC_Params {
 
     @Override
     public String toString() {
-        return "EC Keypair, over " + curve + ": " + desc;
+        return "EC Keypair, over " + curve + (desc == null ? "" : ": " + desc);
     }
 }

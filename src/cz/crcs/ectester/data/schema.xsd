@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            elementFormDefault="qualified">
 
     <!-- /<category>/curves.xml -->
@@ -11,12 +11,16 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:element name="data" abstract="true"/>
+    <xs:element name="file" substitutionGroup="data" type="xs:string"/>
+    <xs:element name="inline" substitutionGroup="data" type="xs:string"/>
+
     <xs:complexType name="curveType">
         <xs:all>
             <xs:element name="id" type="xs:string"/>
             <xs:element name="bits" type="xs:positiveInteger"/>
             <xs:element name="field" type="fieldType"/>
-            <xs:element name="file" type="xs:string"/>
+            <xs:element ref="data" />
             <xs:element name="desc" type="xs:string" minOccurs="0"/>
         </xs:all>
     </xs:complexType>
@@ -34,7 +38,7 @@
     <xs:complexType name="keyType">
         <xs:all>
             <xs:element name="id" type="xs:string"/>
-            <xs:element name="file" type="xs:string"/>
+            <xs:element ref="data" />
             <xs:element name="curve" type="xs:string"/>
             <xs:element name="desc" type="xs:string" minOccurs="0"/>
         </xs:all>
@@ -65,7 +69,7 @@
         <xs:all>
             <xs:element name="id" type="xs:string"/>
             <xs:element name="ka" type="kaType"/>
-            <xs:element name="file" type="xs:string"/>
+            <xs:element ref="data" />
             <xs:element name="curve" type="xs:string"/>
             <xs:element name="onekey" type="xs:string"/>
             <xs:element name="otherkey" type="xs:string"/>

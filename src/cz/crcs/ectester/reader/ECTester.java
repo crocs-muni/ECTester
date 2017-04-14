@@ -23,7 +23,6 @@ package cz.crcs.ectester.reader;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
-import cz.crcs.ectester.data.EC_Category;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.ec.*;
 import javacard.security.KeyPair;
@@ -468,70 +467,18 @@ public class ECTester {
         if (optListNamed == null) {
             // print all categories, briefly
             for (EC_Category cat : categories.values()) {
-                System.out.println("\t- " + cat.getName() + ": " + (cat.getDesc() == null ? "" : cat.getDesc()));
-
-                Map<String, EC_Curve> curves = cat.getObjects(EC_Curve.class);
-                int size = curves.size();
-                if (size > 0) {
-                    System.out.print("\t\tCurves: ");
-                    for (Map.Entry<String, EC_Curve> curve : curves.entrySet()) {
-                        System.out.print(curve.getKey());
-                        size--;
-                        if (size > 0)
-                            System.out.print(", ");
-                    }
-                    System.out.println();
-                }
-
-                Map<String, EC_Key> keys = cat.getObjects(EC_Key.class);
-                size = keys.size();
-                if (size > 0) {
-                    System.out.print("\t\tKeys: ");
-                    for (Map.Entry<String, EC_Key> key : keys.entrySet()) {
-                        System.out.print(key.getKey());
-                        size--;
-                        if (size > 0)
-                            System.out.print(", ");
-                    }
-                    System.out.println();
-                }
-
-                Map<String, EC_Keypair> keypairs = cat.getObjects(EC_Keypair.class);
-                size = keypairs.size();
-                if (size > 0) {
-                    System.out.print("\t\tKeypairs: ");
-                    for (Map.Entry<String, EC_Keypair> key : keypairs.entrySet()) {
-                        System.out.print(key.getKey());
-                        size--;
-                        if (size > 0)
-                            System.out.print(", ");
-                    }
-                    System.out.println();
-                }
-
-                Map<String, EC_KAResult> results = cat.getObjects(EC_KAResult.class);
-                size = results.size();
-                if (size > 0) {
-                    System.out.print("\t\tResults: ");
-                    for (Map.Entry<String, EC_KAResult> result : results.entrySet()) {
-                        System.out.print(result.getKey());
-                        size--;
-                        if (size > 0)
-                            System.out.print(", ");
-                    }
-                    System.out.println();
-                }
-
-                System.out.println();
+                System.out.println(cat);
             }
         } else if (categories.containsKey(optListNamed)) {
             // print given category
-            //TODO
+            System.out.println(categories.get(optListNamed));
         } else {
             // print given object
             EC_Data object = dataStore.getObject(EC_Data.class, optListNamed);
             if (object != null) {
                 System.out.println(object);
+            } else {
+                System.err.println("Named object " + optListNamed + " not found!");
             }
         }
     }
@@ -562,9 +509,9 @@ public class ECTester {
         // Cofactor generally isn't set on the default curve parameters on cards,
         // since its not necessary for ECDH, only ECDHC which not many cards implement
         // TODO: check if its assumend to be == 1?
-        short domain_all = optPrimeField ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
-        short domain = (short) (domain_all ^ EC_Consts.PARAMETER_K);
-        Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_PUBLIC, domain_all).send();
+        short domainAll = optPrimeField ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
+        short domain = (short) (domainAll ^ EC_Consts.PARAMETER_K);
+        Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_PUBLIC, domainAll).send();
         if (!export.successful()) {
             export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_PUBLIC, domain).send();
         }
@@ -722,12 +669,13 @@ public class ECTester {
             // These tests are dangerous, prompt before them.
             System.out.println("The test you selected (" + optTestSuite + ") is potentially dangerous.");
             System.out.println("Some of these tests have caused temporary DoS of some cards.");
-            System.out.print("Do you want to proceed? (y/n):");
+            System.out.print("Do you want to proceed? (y/n): ");
             Scanner in = new Scanner(System.in);
             String confirmation = in.nextLine();
             if (!Arrays.asList("yes", "y", "Y").contains(confirmation)) {
                 return;
             }
+            in.close();
 
             if (optTestSuite.equals("wrong")) {
             /* Just do the default tests on the wrong curves.
@@ -750,20 +698,35 @@ public class ECTester {
                     EC_Curve curve = dataStore.getObject(EC_Curve.class, key.getCurve());
                     if ((curve.getBits() == optBits || optAll)) {
                         commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()));
-                        commands.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL));
                         commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()));
-                        commands.add(new Command.Set(cardManager,  ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, key.getParams(), key.flatten()));
+                        commands.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL));
+                        commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, key.getParams(), key.flatten()));
                         commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDH));
                         commands.add(new Command.Cleanup(cardManager));
                     }
                 }
             } else if (optTestSuite.equals("invalid")) {
-            /* Set original curves (secg/nist/brainpool). Generate local.
-             * Try ECDH with invalid public keys of increasing (or decreasing) order.
-             *
-             */
-                //TODO
-                System.err.println("Currently not yet implemented.");
+                /* Set original curves (secg/nist/brainpool). Generate local.
+                 * Try ECDH with invalid public keys of increasing (or decreasing) order.
+                 */
+                Map<String, EC_Key.Public> pubkeys = dataStore.getObjects(EC_Key.Public.class, "invalid");
+                for (EC_Key.Public key : pubkeys.values()) {
+                    EC_Curve curve = dataStore.getObject(EC_Curve.class, key.getCurve());
+                    if (optNamedCurve != null && !(key.getCurve().startsWith(optNamedCurve) || key.getCurve().equals(optNamedCurve))) {
+                        continue;
+                    }
+                    if (curve.getBits() != optBits && !optAll) {
+                        continue;
+                    }
+                    commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()));
+                    commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()));
+                    commands.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL));
+                    commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, key.getParams(), key.flatten()));
+                    commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_BOTH));
+                    //commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDHC));
+                    commands.add(new Command.Cleanup(cardManager));
+
+                }
             }
         }
 
@@ -771,14 +734,6 @@ public class ECTester {
         List<Response> test = Command.sendAll(commands);
         systemOutLogger.println(Response.toString(test, optTestSuite));
 
-        for (Response response : test) {
-            if (response instanceof Response.ECDH) {
-                Response.ECDH ecdh = (Response.ECDH) response;
-                if (ecdh.hasSecret()) {
-                    System.out.println(Util.bytesToHex(ecdh.getSecret(), false));
-                }
-            }
-        }
     }
 
     /**
@@ -1039,9 +994,8 @@ public class ECTester {
     }
 
     /**
-     *
      * @return
-     * @throws IOException   if an IO error occurs when writing to key file.
+     * @throws IOException if an IO error occurs when writing to key file.
      */
     private List<Command> testCurve() throws IOException {
         List<Command> commands = new LinkedList<>();
@@ -1056,11 +1010,10 @@ public class ECTester {
     }
 
     /**
-     *
      * @param category
      * @param field
      * @return
-     * @throws IOException   if an IO error occurs when writing to key file.
+     * @throws IOException if an IO error occurs when writing to key file.
      */
     private List<Command> testCurves(String category, byte field) throws IOException {
         List<Command> commands = new LinkedList<>();
