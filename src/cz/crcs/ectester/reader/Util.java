@@ -22,6 +22,25 @@ public class Util {
         array[offset] = (byte) ((value >> 8) & 0xFF);
     }
 
+    public static boolean compareBytes(byte[] one, int oneOffset, byte[] other, int otherOffset, int length) {
+        for (int i = 0; i < length; ++i) {
+            byte a = one[i + oneOffset];
+            byte b = other[i + otherOffset];
+            if (a != b) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean allValue(byte[] array, byte value) {
+        for (byte a : array) {
+            if (a != value)
+                return false;
+        }
+        return true;
+    }
+
     public static byte[] hexToBytes(String hex) {
         return hexToBytes(hex, true);
     }
@@ -101,6 +120,47 @@ public class Util {
             offset += array.length;
         }
         return out;
+    }
+
+    public static String getSWSource(short sw) {
+        switch (sw) {
+            case ISO7816.SW_NO_ERROR:
+            case ISO7816.SW_APPLET_SELECT_FAILED:
+            case ISO7816.SW_BYTES_REMAINING_00:
+            case ISO7816.SW_CLA_NOT_SUPPORTED:
+            case ISO7816.SW_COMMAND_NOT_ALLOWED:
+            case ISO7816.SW_CONDITIONS_NOT_SATISFIED:
+            case ISO7816.SW_CORRECT_LENGTH_00:
+            case ISO7816.SW_DATA_INVALID:
+            case ISO7816.SW_FILE_FULL:
+            case ISO7816.SW_FILE_INVALID:
+            case ISO7816.SW_FILE_NOT_FOUND:
+            case ISO7816.SW_FUNC_NOT_SUPPORTED:
+            case ISO7816.SW_INCORRECT_P1P2:
+            case ISO7816.SW_INS_NOT_SUPPORTED:
+            case ISO7816.SW_LOGICAL_CHANNEL_NOT_SUPPORTED:
+            case ISO7816.SW_RECORD_NOT_FOUND:
+            case ISO7816.SW_SECURE_MESSAGING_NOT_SUPPORTED:
+            case ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED:
+            case ISO7816.SW_UNKNOWN:
+            case ISO7816.SW_WARNING_STATE_UNCHANGED:
+            case ISO7816.SW_WRONG_DATA:
+            case ISO7816.SW_WRONG_LENGTH:
+            case ISO7816.SW_WRONG_P1P2:
+                return "ISO";
+            case CryptoException.ILLEGAL_VALUE:
+            case CryptoException.UNINITIALIZED_KEY:
+            case CryptoException.NO_SUCH_ALGORITHM:
+            case CryptoException.INVALID_INIT:
+            case CryptoException.ILLEGAL_USE:
+                return "CryptoException";
+            case ECTesterApplet.SW_SIG_VERIFY_FAIL:
+            case ECTesterApplet.SW_DH_DHC_MISMATCH:
+            case ECTesterApplet.SW_KEYPAIR_NULL:
+                return "ECTesterApplet";
+            default:
+                return "?";
+        }
     }
 
     public static String getSWString(short sw) {
@@ -193,6 +253,12 @@ public class Util {
                 case ECTesterApplet.SW_SIG_VERIFY_FAIL:
                     str = "SIG_VERIFY_FAIL";
                     break;
+                case ECTesterApplet.SW_DH_DHC_MISMATCH:
+                    str = "DH_DHC_MISMATCH";
+                    break;
+                case ECTesterApplet.SW_KEYPAIR_NULL:
+                    str = "KEYPAIR_NULL";
+                    break;
                 default:
                     str = "unknown";
                     break;
@@ -229,9 +295,23 @@ public class Util {
                 corrupt = "INFINITY";
                 break;
             default:
-                corrupt = "UNKNOWN";
+                corrupt = "unknown";
                 break;
         }
         return corrupt;
+    }
+
+    public static String getKA(byte ka) {
+        String algo = "";
+        if ((ka & EC_Consts.KA_ECDH) != 0) {
+            algo += "ECDH";
+        }
+        if (ka == EC_Consts.KA_BOTH) {
+            algo += "+";
+        }
+        if ((ka & EC_Consts.KA_ECDHC) != 0) {
+            algo += "ECDHC";
+        }
+        return algo;
     }
 }

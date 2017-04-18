@@ -2,6 +2,7 @@ package cz.crcs.ectester.reader;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
+import cz.crcs.ectester.reader.ec.EC_Curve;
 import javacard.framework.ISO7816;
 import javacard.security.KeyPair;
 
@@ -12,11 +13,13 @@ import java.util.List;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public abstract class Response {
+
     private ResponseAPDU resp;
     private long time;
     private short[] sws;
     private int numSW = 0;
     private byte[][] params;
+    //TODO replace params with EC_Data?
     private boolean success = true;
 
     protected Response(ResponseAPDU response, long time) {
@@ -40,8 +43,13 @@ public abstract class Response {
                 if (sw != ISO7816.SW_NO_ERROR) {
                     success = false;
                 }
+            } else {
+                success = false;
             }
         }
+
+        if ((short) resp.getSW() != ISO7816.SW_NO_ERROR)
+            success = false;
 
         //try to parse numParams..
         params = new byte[numParams][];
@@ -70,16 +78,8 @@ public abstract class Response {
         return time;
     }
 
-    public int getNaturalSW() {
-        return resp.getSW();
-    }
-
-    public short getSW1() {
-        return sws[0];
-    }
-
-    public short getSW2() {
-        return sws[1];
+    public short getNaturalSW() {
+        return (short) resp.getSW();
     }
 
     public short getSW(int index) {
@@ -90,15 +90,15 @@ public abstract class Response {
         return numSW;
     }
 
-    protected boolean hasParam(int index) {
+    public boolean hasParam(int index) {
         return params.length >= index + 1 && params[index] != null;
     }
 
-    protected int getParamLength(int index) {
+    public int getParamLength(int index) {
         return params[index].length;
     }
 
-    protected byte[] getParam(int index) {
+    public byte[] getParam(int index) {
         return params[index];
     }
 
@@ -117,27 +117,32 @@ public abstract class Response {
     @Override
     public abstract String toString();
 
+    public String toString(String inner) {
+        StringBuilder suffix = new StringBuilder();
+        for (int j = 0; j < getNumSW(); ++j) {
+            suffix.append(" ").append(Util.getSWString(getSW(j)));
+        }
+        return String.format("%-62s:%4d ms : %s", inner, time / 1000000, suffix);
+    }
+
     public static String toString(List<Response> responses) {
         return toString(responses, null);
     }
 
-    public static String toString(List<Response> responses, String prefix)  {
+    public static String toString(List<Response> responses, String prefix) {
         if (prefix != null)
             prefix += " | ";
         StringBuilder out = new StringBuilder();
         for (int i = 0; i < responses.size(); ++i) {
             Response r = responses.get(i);
 
-            String message = r.toString();
-            String suffix = "";
-            for (int j = 0; j < r.getNumSW(); ++j) {
-                suffix += " " + Util.getSWString(r.getSW(j));
-            }
-
             if (prefix != null)
                 out.append(prefix);
 
-            out.append(String.format("%-62s:%4d ms : %s", message, r.time / 1000000, suffix));
+            String message = r.toString();
+            String full = r.toString(message);
+
+            out.append(full);
             if (i < responses.size() - 1) {
                 out.append("\n");
             }
@@ -149,6 +154,7 @@ public abstract class Response {
      *
      */
     public static class Allocate extends Response {
+
         private byte keyPair;
         private short keyLength;
         private byte keyClass;
@@ -174,11 +180,15 @@ public abstract class Response {
             } else {
                 key = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
             }
-            return String.format("Allocated %s %db %s", key, keyLength, field);
+            return super.toString(String.format("Allocated %s %db %s", key, keyLength, field));
         }
     }
 
+    /**
+     *
+     */
     public static class Clear extends Response {
+
         private byte keyPair;
 
         protected Clear(ResponseAPDU response, long time, byte keyPair) {
@@ -199,7 +209,7 @@ public abstract class Response {
             } else {
                 key = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
             }
-            return String.format("Cleared %s", key);
+            return super.toString(String.format("Cleared %s", key));
         }
     }
 
@@ -207,6 +217,7 @@ public abstract class Response {
      *
      */
     public static class Set extends Response {
+
         private byte keyPair;
         private byte curve;
         private short parameters;
@@ -238,13 +249,24 @@ public abstract class Response {
                     name = "custom";
                     break;
             }
+            String what = "";
+            if (parameters == EC_Consts.PARAMETERS_DOMAIN_F2M || parameters == EC_Consts.PARAMETERS_DOMAIN_FP) {
+                what = "curve";
+            } else if (parameters == EC_Consts.PARAMETER_W) {
+                what = "pubkey";
+            } else if (parameters == EC_Consts.PARAMETER_S) {
+                what = "privkey";
+            } else if (parameters == EC_Consts.PARAMETERS_KEYPAIR) {
+                what = "keypair";
+            }
+
             String pair;
             if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
                 pair = "both keypairs";
             } else {
                 pair = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
             }
-            return String.format("Set %s curve parameters on %s", name, pair);
+            return super.toString(String.format("Set %s %s parameters on %s", name, what, pair));
         }
 
     }
@@ -253,6 +275,7 @@ public abstract class Response {
      *
      */
     public static class Corrupt extends Response {
+
         private byte keyPair;
         private byte key;
         private short params;
@@ -282,7 +305,7 @@ public abstract class Response {
             } else {
                 pair = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
             }
-            return String.format("Corrupted params of %s, %s", pair, corrupt);
+            return super.toString(String.format("Corrupted params of %s, %s", pair, corrupt));
         }
     }
 
@@ -290,6 +313,7 @@ public abstract class Response {
      *
      */
     public static class Generate extends Response {
+
         private byte keyPair;
 
         protected Generate(ResponseAPDU response, long time, byte keyPair) {
@@ -310,7 +334,7 @@ public abstract class Response {
             } else {
                 key = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
             }
-            return String.format("Generated %s", key);
+            return super.toString(String.format("Generated %s", key));
         }
 
     }
@@ -319,6 +343,7 @@ public abstract class Response {
      *
      */
     public static class Export extends Response {
+
         private byte keyPair;
         private byte key;
         private short parameters;
@@ -419,7 +444,7 @@ public abstract class Response {
             } else {
                 pair = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
             }
-            return String.format("Exported params from %s of %s", source, pair);
+            return super.toString(String.format("Exported params from %s of %s", source, pair));
         }
     }
 
@@ -427,6 +452,7 @@ public abstract class Response {
      *
      */
     public static class ECDH extends Response {
+
         private byte pubkey;
         private byte privkey;
         private byte export;
@@ -452,18 +478,13 @@ public abstract class Response {
             return getParam(0);
         }
 
+        public int secretLength() {
+            return getParamLength(0);
+        }
+
         @Override
         public String toString() {
-            String algo = "";
-            if ((type & EC_Consts.KA_ECDH) != 0) {
-                algo += "ECDH";
-            }
-            if (type == EC_Consts.KA_BOTH) {
-                algo += "+";
-            }
-            if ((type & EC_Consts.KA_ECDHC) != 0) {
-                algo += "ECDHC";
-            }
+            String algo = Util.getKA(type);
 
             String pub = pubkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
             String priv = privkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
@@ -474,7 +495,7 @@ public abstract class Response {
             } else {
                 validity = Util.getCorruption(corruption);
             }
-            return String.format("%s of %s pubkey and %s privkey(%s point)", algo, pub, priv, validity);
+            return super.toString(String.format("%s of %s pubkey and %s privkey(%s point)", algo, pub, priv, validity));
         }
     }
 
@@ -482,6 +503,7 @@ public abstract class Response {
      *
      */
     public static class ECDSA extends Response {
+
         private byte keyPair;
         private byte export;
         private byte[] raw;
@@ -507,7 +529,7 @@ public abstract class Response {
         public String toString() {
             String key = keyPair == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
             String data = raw == null ? "random" : "provided";
-            return String.format("ECDSA with %s keypair(%s data)", key, data);
+            return super.toString(String.format("ECDSA with %s keypair(%s data)", key, data));
         }
     }
 
@@ -524,7 +546,7 @@ public abstract class Response {
 
         @Override
         public String toString() {
-            return "Requested JCSystem object deletion";
+            return super.toString("Requested JCSystem object deletion");
         }
 
     }
@@ -537,12 +559,12 @@ public abstract class Response {
         protected Support(ResponseAPDU response, long time) {
             super(response, time);
 
-            parse(3,0);
+            parse(3, 0);
         }
 
         @Override
         public String toString() {
-            return "Support of ECDH, ECDHC, ECDSA";
+            return super.toString("Support of ECDH, ECDHC, ECDSA");
         }
     }
 }

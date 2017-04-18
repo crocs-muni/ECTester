@@ -151,12 +151,13 @@ public class EC_Store {
                     }
                     short bitsize = Short.parseShort(bits.getTextContent());
 
-                    EC_Curve curve = new EC_Curve(bitsize, alg, descs);
+                    EC_Curve curve = new EC_Curve(id.getTextContent(), bitsize, alg, descs);
 
                     InputStream csv = parseDataElement(dir, curveElem);
                     if (!curve.readCSV(csv)) {
                         throw new IOException("Invalid csv data.");
                     }
+                    csv.close();
 
                     objMap.put(id.getTextContent(), curve);
                 } else {
@@ -233,12 +234,13 @@ public class EC_Store {
                         kab = EC_Consts.KA_ECDHC;
                     }
 
-                    EC_KAResult kaResult = new EC_KAResult(kab, curve.getTextContent(), onekey.getTextContent(), otherkey.getTextContent(), descs);
+                    EC_KAResult kaResult = new EC_KAResult(id.getTextContent(), kab, curve.getTextContent(), onekey.getTextContent(), otherkey.getTextContent(), descs);
 
                     InputStream csv = parseDataElement(dir, elem);
                     if (!kaResult.readCSV(csv)) {
                         throw new IOException("Invalid csv data.");
                     }
+                    csv.close();
 
                     objMap.put(id.getTextContent(), kaResult);
                 } else {
@@ -276,6 +278,8 @@ public class EC_Store {
         if (!result.readCSV(csv)) {
             throw new IOException("Invalid CSV data.");
         }
+        csv.close();
+
         return result;
     }
 

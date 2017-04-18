@@ -1,6 +1,6 @@
 package cz.crcs.ectester.reader.ec;
 
-import cz.crcs.ectester.applet.EC_Consts;
+import cz.crcs.ectester.reader.Util;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -22,8 +22,13 @@ public class EC_KAResult extends EC_Data {
         this.otherKey = otherKey;
     }
 
-    public EC_KAResult(byte ka, String curve, String oneKey, String otherKey, String desc) {
+    public EC_KAResult(String id, byte ka, String curve, String oneKey, String otherKey) {
         this(ka, curve, oneKey, otherKey);
+        this.id = id;
+    }
+
+    public EC_KAResult(String id, byte ka, String curve, String oneKey, String otherKey, String desc) {
+        this(id, ka, curve, oneKey, otherKey);
         this.desc = desc;
     }
 
@@ -49,8 +54,8 @@ public class EC_KAResult extends EC_Data {
 
     @Override
     public String toString() {
-        String agreement = ka == EC_Consts.KA_ECDH ? "ECDH" : "ECDHC";
-        return agreement + " result over " + curve + ", " + oneKey + " + " + otherKey + (desc == null ? "" : ": " + desc);
+        String algo = Util.getKA(ka);
+        return algo + " result over " + curve + ", " + oneKey + " + " + otherKey + (desc == null ? "" : ": " + desc);
     }
 
 }

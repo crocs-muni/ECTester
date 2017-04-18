@@ -4,6 +4,7 @@ import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.reader.Util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,16 @@ public class EC_Params extends EC_Data {
         this.params = params;
         this.count = data.length;
         this.data = data;
+    }
+
+    public EC_Params(String id, short params) {
+        this(params);
+        this.id = id;
+    }
+
+    public EC_Params(String id, short params, byte[][] data) {
+        this(params, data);
+        this.id = id;
     }
 
     public short getParams() {
@@ -67,8 +78,14 @@ public class EC_Params extends EC_Data {
                 byte[] param = data[i];
                 if (masked == EC_Consts.PARAMETER_F2M) {
                     //add m, e_1, e_2, e_3
-                    param = Util.concatenate(param, data[i + 1], data[i + 2], data[i + 3]);
-                    if (param.length != 8)
+                    param = Util.concatenate(param, data[i + 1]);
+                    if (!Util.allValue(data[i + 2], (byte) 0)) {
+                        param = Util.concatenate(param, data[i + 2]);
+                    }
+                    if (!Util.allValue(data[i + 3], (byte) 0)) {
+                        param = Util.concatenate(param, data[i + 3]);
+                    }
+                    if (!(param.length == 4 || param.length == 8))
                         throw new RuntimeException("PARAMETER_F2M length is not 8.(should be)");
                 }
                 if (masked == EC_Consts.PARAMETER_G || masked == EC_Consts.PARAMETER_W) {
@@ -112,9 +129,6 @@ public class EC_Params extends EC_Data {
 
                 if (masked == EC_Consts.PARAMETER_F2M) {
                     //split into m, e1, e2, e3
-                    if (param.length != 8) {
-                        throw new RuntimeException("PARAMETER_F2M length is not 8.(should be)");
-                    }
                     for (int i = 0; i < 4; ++i) {
                         out.add(String.format("%04x", Util.getShort(param, i * 2)));
                     }
@@ -136,4 +150,8 @@ public class EC_Params extends EC_Data {
         return out.toArray(new String[out.size()]);
     }
 
+    @Override
+    public String toString() {
+        return String.join(",", expand());
+    }
 }

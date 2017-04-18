@@ -13,10 +13,11 @@ import java.util.regex.Pattern;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class EC_Data {
-    private static final Pattern hex = Pattern.compile("(0x|0X)?[a-fA-F\\d]+");
-
+    String id;
     int count;
     byte[][] data;
+
+    private static final Pattern HEX = Pattern.compile("(0x|0X)?[a-fA-F\\d]+");
 
     EC_Data() {
     }
@@ -29,6 +30,20 @@ public class EC_Data {
     EC_Data(byte[][] data) {
         this.count = data.length;
         this.data = data;
+    }
+
+    EC_Data(String id, int count) {
+        this(count);
+        this.id = id;
+    }
+
+    EC_Data(String id, byte[][] data) {
+        this(data);
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public int getCount() {
@@ -117,16 +132,29 @@ public class EC_Data {
             return false;
         }
         for (String param : data) {
-            if (!hex.matcher(param).matches()) {
+            if (!HEX.matcher(param).matches()) {
                 return false;
             }
         }
         return readHex(data.toArray(new String[data.size()]));
     }
 
-    public boolean readBytes(byte[] data) {
-        //TODO
-        return false;
+    public boolean readBytes(byte[] bytes) {
+        int offset = 0;
+        for (int i = 0; i < count; i++) {
+            if (bytes.length - offset < 2) {
+                return false;
+            }
+            short paramLength = Util.getShort(bytes, offset);
+            offset += 2;
+            if (bytes.length < offset + paramLength) {
+                return false;
+            }
+            data[i] = new byte[paramLength];
+            System.arraycopy(bytes, offset, data[i], 0, paramLength);
+            offset += paramLength;
+        }
+        return true;
     }
 
     public void writeCSV(OutputStream out) throws IOException {

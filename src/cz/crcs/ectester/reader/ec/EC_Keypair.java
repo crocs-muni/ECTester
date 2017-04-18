@@ -6,7 +6,6 @@ import cz.crcs.ectester.applet.EC_Consts;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class EC_Keypair extends EC_Params {
-
     private String curve;
     private String desc;
 

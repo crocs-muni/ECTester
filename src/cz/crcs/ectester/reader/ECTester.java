@@ -44,47 +44,7 @@ public class ECTester {
     private CardMngr cardManager;
     private DirtyLogger systemOutLogger;
     private EC_Store dataStore;
-
-    //Options
-    private int optBits;
-    private boolean optAll;
-    private boolean optPrimeField = false;
-    private boolean optBinaryField = false;
-
-    private String optNamedCurve = null;
-    private String optCurveFile = null;
-    private boolean optCustomCurve = false;
-
-    private boolean optAnyPublic = false;
-    private String optNamedPublic = null;
-    private String optPublic = null;
-
-    private boolean optAnyPrivate = false;
-    private String optNamedPrivate = null;
-    private String optPrivate = null;
-
-    private boolean optAnyKey = false;
-    private String optNamedKey = null;
-    private String optKey = null;
-
-    private boolean optAnyKeypart = false;
-
-    private String optLog = null;
-
-    private boolean optVerbose = false;
-    private String optInput = null;
-    private String optOutput = null;
-    private boolean optFresh = false;
-    private boolean optSimulate = false;
-
-    //Action-related options
-    private String optListNamed;
-    private String optTestSuite;
-    private int optGenerateAmount;
-    private int optECDHCount;
-    private byte optECDHKA;
-    private int optECDSACount;
-
+    private Config cfg;
 
     private Options opts = new Options();
     private static final String CLI_HEADER = "\nECTester, a javacard Elliptic Curve Cryptograhy support tester/utility.\n\n";
@@ -104,8 +64,10 @@ public class ECTester {
                 help();
                 return;
             }
+            cfg = new Config();
+
             //if not, read other options first, into attributes, then do action
-            if (!readOptions(cli)) {
+            if (!cfg.readOptions(cli)) {
                 return;
             }
 
@@ -117,10 +79,10 @@ public class ECTester {
             }
 
             //init CardManager
-            cardManager = new CardMngr(optVerbose, optSimulate);
+            cardManager = new CardMngr(cfg.verbose, cfg.simulate);
 
             //connect or simulate connection
-            if (optSimulate) {
+            if (cfg.simulate) {
                 if (!cardManager.prepareLocalSimulatorApplet(AID, INSTALL_DATA, ECTesterApplet.class)) {
                     System.err.println("Failed to establish a simulator.");
                     System.exit(1);
@@ -133,7 +95,7 @@ public class ECTester {
                 cardManager.send(SELECT_ECTESTERAPPLET);
             }
 
-            systemOutLogger = new DirtyLogger(optLog, true);
+            systemOutLogger = new DirtyLogger(cfg.log, true);
 
             //do action
             if (cli.hasOption("export")) {
@@ -208,7 +170,7 @@ public class ECTester {
          * -dh / --ecdh [count]
          * -dhc / --ecdhc [count]
          * -dsa / --ecdsa [count]
-         * -ln / --list-named
+         * -ln / --list-named [obj]
          *
          * Options:
          * -b / --bit-size <b> // -a / --all
@@ -292,193 +254,25 @@ public class ECTester {
     }
 
     /**
-     * Reads and validates options, also sets defaults.
-     *
-     * @param cli cli object, with parsed args
-     * @return whether the options are valid.
-     */
-    private boolean readOptions(CommandLine cli) {
-        optBits = Integer.parseInt(cli.getOptionValue("bit-size", "0"));
-        optAll = cli.hasOption("all");
-        optPrimeField = cli.hasOption("fp");
-        optBinaryField = cli.hasOption("f2m");
-
-        optNamedCurve = cli.getOptionValue("named-curve");
-        optCustomCurve = cli.hasOption("custom");
-        optCurveFile = cli.getOptionValue("curve");
-
-        optNamedPublic = cli.getOptionValue("named-public");
-        optPublic = cli.getOptionValue("public");
-        optAnyPublic = (optPublic != null) || (optNamedPublic != null);
-
-        optNamedPrivate = cli.getOptionValue("named-private");
-        optPrivate = cli.getOptionValue("private");
-        optAnyPrivate = (optPrivate != null) || (optNamedPrivate != null);
-
-        optNamedKey = cli.getOptionValue("named-key");
-        optKey = cli.getOptionValue("key");
-        optAnyKey = (optKey != null) || (optNamedKey != null);
-        optAnyKeypart = optAnyKey || optAnyPublic || optAnyPrivate;
-
-        if (cli.hasOption("log")) {
-            optLog = cli.getOptionValue("log", String.format("ECTESTER_log_%d.log", System.currentTimeMillis() / 1000));
-        }
-
-        optVerbose = cli.hasOption("verbose");
-        optInput = cli.getOptionValue("input");
-        optOutput = cli.getOptionValue("output");
-        optFresh = cli.hasOption("fresh");
-        optSimulate = cli.hasOption("simulate");
-
-        if (cli.hasOption("list-named")) {
-            optListNamed = cli.getOptionValue("list-named");
-            return true;
-        }
-
-        if ((optKey != null || optNamedKey != null) && (optPublic != null || optPrivate != null || optNamedPublic != null || optNamedPrivate != null)) {
-            System.err.print("Can only specify the whole key with --key/--named-key or pubkey and privkey with --public/--named-public and --private/--named-private.");
-            return false;
-        }
-        if (optBits < 0) {
-            System.err.println("Bit-size must not be negative.");
-            return false;
-        }
-        if (optBits == 0 && !optAll) {
-            System.err.println("You must specify either bit-size with -b or all bit-sizes with -a.");
-            return false;
-        }
-
-        if (optKey != null && optNamedKey != null || optPublic != null && optNamedPublic != null || optPrivate != null && optNamedPrivate != null) {
-            System.err.println("You cannot specify both a named key and a key file.");
-            return false;
-        }
-
-        if (cli.hasOption("export")) {
-            if (optPrimeField == optBinaryField) {
-                System.err.print("Need to specify field with -fp or -f2m. (not both)");
-                return false;
-            }
-            if (optAnyKeypart) {
-                System.err.println("Keys should not be specified when exporting curve params.");
-                return false;
-            }
-            if (optNamedCurve != null || optCustomCurve || optCurveFile != null) {
-                System.err.println("Specifying a curve for curve export makes no sense.");
-                return false;
-            }
-            if (optOutput == null) {
-                System.err.println("You have to specify an output file for curve parameter export.");
-                return false;
-            }
-            if (optAll) {
-                System.err.println("You have to specify curve bit-size with -b");
-                return false;
-            }
-
-        } else if (cli.hasOption("generate")) {
-            if (optPrimeField == optBinaryField) {
-                System.err.print("Need to specify field with -fp or -f2m. (not both)");
-                return false;
-            }
-            if (optAnyKeypart) {
-                System.err.println("Keys should not be specified when generating keys.");
-                return false;
-            }
-            if (optOutput == null) {
-                System.err.println("You have to specify an output file for the key generation process.");
-                return false;
-            }
-            if (optAll) {
-                System.err.println("You have to specify curve bit-size with -b");
-                return false;
-            }
-
-            optGenerateAmount = Integer.parseInt(cli.getOptionValue("generate", "0"));
-            if (optGenerateAmount < 0) {
-                System.err.println("Amount of keys generated cant be negative.");
-                return false;
-            }
-        } else if (cli.hasOption("test")) {
-            if (!optBinaryField && !optPrimeField) {
-                optBinaryField = true;
-                optPrimeField = true;
-            }
-
-            optTestSuite = cli.getOptionValue("test", "default").toLowerCase();
-            String[] tests = new String[]{"default", "nonprime", "invalid", "test-vectors", "wrong"};
-            List<String> testsList = Arrays.asList(tests);
-            if (!testsList.contains(optTestSuite)) {
-                System.err.println("Unknown test case. Should be one of: " + Arrays.toString(tests));
-                return false;
-            }
-
-        } else if (cli.hasOption("ecdh") || cli.hasOption("ecdhc")) {
-            if (optPrimeField == optBinaryField) {
-                System.err.print("Need to specify field with -fp or -f2m. (not both)");
-                return false;
-            }
-            if (optAll) {
-                System.err.println("You have to specify curve bit-size with -b");
-                return false;
-            }
-
-            if (cli.hasOption("ecdh")) {
-                optECDHCount = Integer.parseInt(cli.getOptionValue("ecdh", "1"));
-                optECDHKA = EC_Consts.KA_ECDH;
-            } else if (cli.hasOption("ecdhc")) {
-                optECDHCount = Integer.parseInt(cli.getOptionValue("ecdhc", "1"));
-                optECDHKA = EC_Consts.KA_ECDHC;
-            }
-            if (optECDHCount <= 0) {
-                System.err.println("ECDH count cannot be <= 0.");
-                return false;
-            }
-
-        } else if (cli.hasOption("ecdsa")) {
-            if (optPrimeField == optBinaryField) {
-                System.err.print("Need to specify field with -fp or -f2m. (but not both)");
-                return false;
-            }
-            if (optAll) {
-                System.err.println("You have to specify curve bit-size with -b");
-                return false;
-            }
-
-            if ((optAnyPublic) != (optAnyPrivate) && !optAnyKey) {
-                System.err.println("You cannot only specify a part of a keypair.");
-                return false;
-            }
-
-            optECDSACount = Integer.parseInt(cli.getOptionValue("ecdsa", "1"));
-            if (optECDSACount <= 0) {
-                System.err.println("ECDSA count cannot be <= 0.");
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * List categories and named curves.
      */
     private void list() {
         Map<String, EC_Category> categories = dataStore.getCategories();
-        if (optListNamed == null) {
+        if (cfg.listNamed == null) {
             // print all categories, briefly
             for (EC_Category cat : categories.values()) {
                 System.out.println(cat);
             }
-        } else if (categories.containsKey(optListNamed)) {
+        } else if (categories.containsKey(cfg.listNamed)) {
             // print given category
-            System.out.println(categories.get(optListNamed));
+            System.out.println(categories.get(cfg.listNamed));
         } else {
             // print given object
-            EC_Data object = dataStore.getObject(EC_Data.class, optListNamed);
+            EC_Data object = dataStore.getObject(EC_Data.class, cfg.listNamed);
             if (object != null) {
                 System.out.println(object);
             } else {
-                System.err.println("Named object " + optListNamed + " not found!");
+                System.err.println("Named object " + cfg.listNamed + " not found!");
             }
         }
     }
@@ -499,17 +293,17 @@ public class ECTester {
      * @throws IOException   if an IO error occurs when writing to key file.
      */
     private void export() throws CardException, IOException {
-        byte keyClass = optPrimeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
+        byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
 
         List<Response> sent = new LinkedList<>();
-        sent.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) optBits, keyClass).send());
+        sent.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass).send());
         sent.add(new Command.Clear(cardManager, ECTesterApplet.KEYPAIR_LOCAL).send());
         sent.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL).send());
 
         // Cofactor generally isn't set on the default curve parameters on cards,
         // since its not necessary for ECDH, only ECDHC which not many cards implement
         // TODO: check if its assumend to be == 1?
-        short domainAll = optPrimeField ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
+        short domainAll = cfg.primeField ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
         short domain = (short) (domainAll ^ EC_Consts.PARAMETER_K);
         Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_PUBLIC, domainAll).send();
         if (!export.successful()) {
@@ -521,7 +315,7 @@ public class ECTester {
 
         EC_Params exported = new EC_Params(domain, export.getParams());
 
-        FileOutputStream out = new FileOutputStream(optOutput);
+        FileOutputStream out = new FileOutputStream(cfg.output);
         exported.writeCSV(out);
         out.close();
     }
@@ -533,18 +327,18 @@ public class ECTester {
      * @throws IOException   if an IO error occurs when writing to key file.
      */
     private void generate() throws CardException, IOException {
-        byte keyClass = optPrimeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
+        byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
 
-        new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) optBits, keyClass).send();
-        List<Command> curve = prepareCurve(ECTesterApplet.KEYPAIR_LOCAL, (short) optBits, keyClass);
+        new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass).send();
+        List<Command> curve = prepareCurve(ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass);
 
-        FileWriter keysFile = new FileWriter(optOutput);
+        FileWriter keysFile = new FileWriter(cfg.output);
         keysFile.write("index;time;pubW;privS\n");
 
         int generated = 0;
         int retry = 0;
-        while (generated < optGenerateAmount || optGenerateAmount == 0) {
-            if (optFresh || generated == 0) {
+        while (generated < cfg.generateAmount || cfg.generateAmount == 0) {
+            if (cfg.fresh || generated == 0) {
                 Command.sendAll(curve);
             }
 
@@ -583,19 +377,20 @@ public class ECTester {
      */
     private void test() throws IOException, CardException {
         List<Command> commands = new LinkedList<>();
+        TestSuite suite = null;
 
-        if (optTestSuite.equals("default")) {
+        if (cfg.testSuite.equals("default")) {
             commands.add(new Command.Support(cardManager));
-            if (optNamedCurve != null) {
-                if (optPrimeField) {
-                    commands.addAll(testCurves(optNamedCurve, KeyPair.ALG_EC_FP));
+            if (cfg.namedCurve != null) {
+                if (cfg.primeField) {
+                    commands.addAll(testCurves(cfg.namedCurve, KeyPair.ALG_EC_FP));
                 }
-                if (optBinaryField) {
-                    commands.addAll(testCurves(optNamedCurve, KeyPair.ALG_EC_F2M));
+                if (cfg.binaryField) {
+                    commands.addAll(testCurves(cfg.namedCurve, KeyPair.ALG_EC_F2M));
                 }
             } else {
-                if (optAll) {
-                    if (optPrimeField) {
+                if (cfg.all) {
+                    if (cfg.primeField) {
                         //iterate over prime curve sizes used: EC_Consts.FP_SIZES
                         for (short keyLength : EC_Consts.FP_SIZES) {
                             commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_FP));
@@ -604,7 +399,7 @@ public class ECTester {
                             commands.add(new Command.Cleanup(cardManager));
                         }
                     }
-                    if (optBinaryField) {
+                    if (cfg.binaryField) {
                         //iterate over binary curve sizes used: EC_Consts.F2M_SIZES
                         for (short keyLength : EC_Consts.F2M_SIZES) {
                             commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_F2M));
@@ -614,60 +409,31 @@ public class ECTester {
                         }
                     }
                 } else {
-                    if (optPrimeField) {
-                        commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_FP));
-                        commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_FP));
+                    if (cfg.primeField) {
+                        commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, KeyPair.ALG_EC_FP));
+                        commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, KeyPair.ALG_EC_FP));
                         commands.addAll(testCurve());
                         commands.add(new Command.Cleanup(cardManager));
                     }
 
-                    if (optBinaryField) {
-                        commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_F2M));
-                        commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, KeyPair.ALG_EC_F2M));
+                    if (cfg.binaryField) {
+                        commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, KeyPair.ALG_EC_F2M));
+                        commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, KeyPair.ALG_EC_F2M));
                         commands.addAll(testCurve());
                         commands.add(new Command.Cleanup(cardManager));
                     }
                 }
             }
-        } else if (optTestSuite.equals("test-vectors")) {
+        } else if (cfg.testSuite.equals("test-vectors")) {
             /* Set original curves (secg/nist/brainpool). Set keypairs from test vectors.
              * Do ECDH both ways, export and verify that the result is correct.
              *
              */
-            Map<String, EC_KAResult> results = dataStore.getObjects(EC_KAResult.class, "test");
-            for (EC_KAResult result : results.values()) {
-                EC_Curve curve = dataStore.getObject(EC_Curve.class, result.getCurve());
-                if (optNamedCurve != null && !(result.getCurve().startsWith(optNamedCurve) || result.getCurve().equals(optNamedCurve))) {
-                    continue;
-                }
-                if (curve.getBits() != optBits && !optAll) {
-                    continue;
-                }
-                EC_Params onekey = dataStore.getObject(EC_Keypair.class, result.getOneKey());
-                if (onekey == null) {
-                    onekey = dataStore.getObject(EC_Key.Private.class, result.getOneKey());
-                }
-                EC_Params otherkey = dataStore.getObject(EC_Keypair.class, result.getOtherKey());
-                if (otherkey == null) {
-                    otherkey = dataStore.getObject(EC_Key.Public.class, result.getOtherKey());
-                }
-                if (onekey == null || otherkey == null) {
-                    throw new IOException("Test vector keys not located");
-                }
-
-                commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()));
-                commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()));
-                commands.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH));
-                commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, onekey.flatten(EC_Consts.PARAMETER_S)));
-                commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_W, otherkey.flatten(EC_Consts.PARAMETER_W)));
-                commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, result.getKA()));
-                //TODO add compare with result.getParam(0);
-                commands.add(new Command.Cleanup(cardManager));
-            }
+            suite = new TestSuite.TestVectors(dataStore, cfg);
 
         } else {
             // These tests are dangerous, prompt before them.
-            System.out.println("The test you selected (" + optTestSuite + ") is potentially dangerous.");
+            System.out.println("The test you selected (" + cfg.testSuite + ") is potentially dangerous.");
             System.out.println("Some of these tests have caused temporary DoS of some cards.");
             System.out.print("Do you want to proceed? (y/n): ");
             Scanner in = new Scanner(System.in);
@@ -677,62 +443,40 @@ public class ECTester {
             }
             in.close();
 
-            if (optTestSuite.equals("wrong")) {
+            if (cfg.testSuite.equals("wrong")) {
             /* Just do the default tests on the wrong curves.
              * These should generally fail, the curves aren't safe.
              */
-                if (optPrimeField) {
-                    commands.addAll(testCurves(optTestSuite, KeyPair.ALG_EC_FP));
+                if (cfg.primeField) {
+                    commands.addAll(testCurves(cfg.testSuite, KeyPair.ALG_EC_FP));
                 }
-                if (optBinaryField) {
-                    commands.addAll(testCurves(optTestSuite, KeyPair.ALG_EC_F2M));
+                if (cfg.binaryField) {
+                    commands.addAll(testCurves(cfg.testSuite, KeyPair.ALG_EC_F2M));
                 }
-            } else if (optTestSuite.equals("nonprime")) {
+            } else if (cfg.testSuite.equals("nonprime")) {
             /* Do the default tests with the public keys set to provided nonprime keys.
              * These should fail, the curves aren't safe so that if the computation with
              * a small order public key succeeds the private key modulo the public key order
              * is revealed.
              */
-                Map<String, EC_Key> keys = dataStore.getObjects(EC_Key.class, "nonprime");
-                for (EC_Key key : keys.values()) {
-                    EC_Curve curve = dataStore.getObject(EC_Curve.class, key.getCurve());
-                    if ((curve.getBits() == optBits || optAll)) {
-                        commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()));
-                        commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()));
-                        commands.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL));
-                        commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, key.getParams(), key.flatten()));
-                        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDH));
-                        commands.add(new Command.Cleanup(cardManager));
-                    }
-                }
-            } else if (optTestSuite.equals("invalid")) {
+                suite = new TestSuite.NonPrime(dataStore, cfg);
+            } else if (cfg.testSuite.equals("invalid")) {
                 /* Set original curves (secg/nist/brainpool). Generate local.
                  * Try ECDH with invalid public keys of increasing (or decreasing) order.
                  */
-                Map<String, EC_Key.Public> pubkeys = dataStore.getObjects(EC_Key.Public.class, "invalid");
-                for (EC_Key.Public key : pubkeys.values()) {
-                    EC_Curve curve = dataStore.getObject(EC_Curve.class, key.getCurve());
-                    if (optNamedCurve != null && !(key.getCurve().startsWith(optNamedCurve) || key.getCurve().equals(optNamedCurve))) {
-                        continue;
-                    }
-                    if (curve.getBits() != optBits && !optAll) {
-                        continue;
-                    }
-                    commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()));
-                    commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()));
-                    commands.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL));
-                    commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, key.getParams(), key.flatten()));
-                    commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_BOTH));
-                    //commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDHC));
-                    commands.add(new Command.Cleanup(cardManager));
-
-                }
+                suite = new TestSuite.Invalid(dataStore, cfg);
             }
         }
 
 
         List<Response> test = Command.sendAll(commands);
-        systemOutLogger.println(Response.toString(test, optTestSuite));
+        if (suite != null) {
+            List<Test> tests = suite.run(cardManager);
+            for (Test t : tests) {
+                System.out.println(t);
+            }
+        }
+        systemOutLogger.println(Response.toString(test, cfg.testSuite));
 
     }
 
@@ -743,34 +487,34 @@ public class ECTester {
      * @throws IOException   if an IO error occurs when writing to key file.
      */
     private void ecdh() throws IOException, CardException {
-        byte keyClass = optPrimeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
+        byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
         List<Response> prepare = new LinkedList<>();
-        prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) optBits, keyClass).send());
-        prepare.addAll(Command.sendAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) optBits, keyClass)));
+        prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, keyClass).send());
+        prepare.addAll(Command.sendAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, keyClass)));
 
         systemOutLogger.println(Response.toString(prepare));
 
-        byte pubkey = (optAnyPublic || optAnyKey) ? ECTesterApplet.KEYPAIR_REMOTE : ECTesterApplet.KEYPAIR_LOCAL;
-        byte privkey = (optAnyPrivate || optAnyKey) ? ECTesterApplet.KEYPAIR_REMOTE : ECTesterApplet.KEYPAIR_LOCAL;
+        byte pubkey = (cfg.anyPublicKey || cfg.anyKey) ? ECTesterApplet.KEYPAIR_REMOTE : ECTesterApplet.KEYPAIR_LOCAL;
+        byte privkey = (cfg.anyPrivateKey || cfg.anyKey) ? ECTesterApplet.KEYPAIR_REMOTE : ECTesterApplet.KEYPAIR_LOCAL;
 
         List<Command> generate = new LinkedList<>();
         generate.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH));
-        if (optAnyPublic || optAnyPrivate || optAnyKey) {
+        if (cfg.anyPublicKey || cfg.anyPrivateKey || cfg.anyKey) {
             generate.add(prepareKey(ECTesterApplet.KEYPAIR_REMOTE));
         }
 
         FileWriter out = null;
-        if (optOutput != null) {
-            out = new FileWriter(optOutput);
+        if (cfg.output != null) {
+            out = new FileWriter(cfg.output);
             out.write("index;time;secret\n");
         }
 
         int retry = 0;
         int done = 0;
-        while (done < optECDHCount) {
+        while (done < cfg.ECDHCount) {
             List<Response> ecdh = Command.sendAll(generate);
 
-            Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, optECDHKA).send();
+            Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, cfg.ECDHKA).send();
             ecdh.add(perform);
             systemOutLogger.println(Response.toString(ecdh));
 
@@ -804,38 +548,38 @@ public class ECTester {
     private void ecdsa() throws CardException, IOException {
         //read file, if asked to sign
         byte[] data = null;
-        if (optInput != null) {
-            File in = new File(optInput);
+        if (cfg.input != null) {
+            File in = new File(cfg.input);
             long len = in.length();
             if (len == 0) {
-                throw new FileNotFoundException(optInput);
+                throw new FileNotFoundException(cfg.input);
             }
             data = Files.readAllBytes(in.toPath());
         }
 
         Command generate;
-        if (optAnyKeypart) {
+        if (cfg.anyKeypart) {
             generate = prepareKey(ECTesterApplet.KEYPAIR_LOCAL);
         } else {
             generate = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL);
         }
 
-        byte keyClass = optPrimeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
+        byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
         List<Response> prepare = new LinkedList<>();
-        prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) optBits, keyClass).send());
-        prepare.addAll(Command.sendAll(prepareCurve(ECTesterApplet.KEYPAIR_LOCAL, (short) optBits, keyClass)));
+        prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass).send());
+        prepare.addAll(Command.sendAll(prepareCurve(ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass)));
 
         systemOutLogger.println(Response.toString(prepare));
 
         FileWriter out = null;
-        if (optOutput != null) {
-            out = new FileWriter(optOutput);
+        if (cfg.output != null) {
+            out = new FileWriter(cfg.output);
             out.write("index;time;signature\n");
         }
 
         int retry = 0;
         int done = 0;
-        while (done < optECDSACount) {
+        while (done < cfg.ECDSACount) {
             List<Response> ecdsa = new LinkedList<>();
             ecdsa.add(generate.send());
 
@@ -873,14 +617,14 @@ public class ECTester {
     private List<Command> prepareCurve(byte keyPair, short keyLength, byte keyClass) throws IOException {
         List<Command> commands = new ArrayList<>();
 
-        if (optCustomCurve) {
+        if (cfg.customCurve) {
             // Set custom curve (one of the SECG curves embedded applet-side)
             short domainParams = keyClass == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
             commands.add(new Command.Set(cardManager, keyPair, EC_Consts.getCurve(keyLength, keyClass), domainParams, null));
-        } else if (optNamedCurve != null) {
+        } else if (cfg.namedCurve != null) {
             // Set a named curve.
-            // parse optNamedCurve -> cat / id | cat | id
-            EC_Curve curve = dataStore.getObject(EC_Curve.class, optNamedCurve);
+            // parse cfg.namedCurve -> cat / id | cat | id
+            EC_Curve curve = dataStore.getObject(EC_Curve.class, cfg.namedCurve);
             if (curve == null) {
                 throw new IOException("Curve could no be found.");
             }
@@ -893,11 +637,11 @@ public class ECTester {
                 throw new IOException("Couldn't read named curve data.");
             }
             commands.add(new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, curve.getParams(), external));
-        } else if (optCurveFile != null) {
+        } else if (cfg.curveFile != null) {
             // Set curve loaded from a file
-            EC_Curve curve = new EC_Curve(keyLength, keyClass);
+            EC_Curve curve = new EC_Curve(null, keyLength, keyClass);
 
-            FileInputStream in = new FileInputStream(optCurveFile);
+            FileInputStream in = new FileInputStream(cfg.curveFile);
             curve.readCSV(in);
             in.close();
 
@@ -927,17 +671,17 @@ public class ECTester {
         short params = EC_Consts.PARAMETERS_NONE;
         byte[] data = null;
 
-        if (optKey != null || optNamedKey != null) {
+        if (cfg.key != null || cfg.namedKey != null) {
             params |= EC_Consts.PARAMETERS_KEYPAIR;
             EC_Params keypair;
-            if (optKey != null) {
+            if (cfg.key != null) {
                 keypair = new EC_Params(EC_Consts.PARAMETERS_KEYPAIR);
 
-                FileInputStream in = new FileInputStream(optKey);
+                FileInputStream in = new FileInputStream(cfg.key);
                 keypair.readCSV(in);
                 in.close();
             } else {
-                keypair = dataStore.getObject(EC_Keypair.class, optNamedKey);
+                keypair = dataStore.getObject(EC_Keypair.class, cfg.namedKey);
             }
 
             data = keypair.flatten();
@@ -946,19 +690,19 @@ public class ECTester {
             }
         }
 
-        if (optPublic != null || optNamedPublic != null) {
+        if (cfg.publicKey != null || cfg.namedPublicKey != null) {
             params |= EC_Consts.PARAMETER_W;
             EC_Params pub;
-            if (optPublic != null) {
+            if (cfg.publicKey != null) {
                 pub = new EC_Params(EC_Consts.PARAMETER_W);
 
-                FileInputStream in = new FileInputStream(optPublic);
+                FileInputStream in = new FileInputStream(cfg.publicKey);
                 pub.readCSV(in);
                 in.close();
             } else {
-                pub = dataStore.getObject(EC_Key.Public.class, optNamedPublic);
+                pub = dataStore.getObject(EC_Key.Public.class, cfg.namedPublicKey);
                 if (pub == null) {
-                    pub = dataStore.getObject(EC_Keypair.class, optNamedPublic);
+                    pub = dataStore.getObject(EC_Keypair.class, cfg.namedPublicKey);
                 }
             }
 
@@ -968,19 +712,19 @@ public class ECTester {
             }
             data = pubkey;
         }
-        if (optPrivate != null || optNamedPrivate != null) {
+        if (cfg.privateKey != null || cfg.namedPrivateKey != null) {
             params |= EC_Consts.PARAMETER_S;
             EC_Params priv;
-            if (optPrivate != null) {
+            if (cfg.privateKey != null) {
                 priv = new EC_Params(EC_Consts.PARAMETER_S);
 
-                FileInputStream in = new FileInputStream(optPrivate);
+                FileInputStream in = new FileInputStream(cfg.privateKey);
                 priv.readCSV(in);
                 in.close();
             } else {
-                priv = dataStore.getObject(EC_Key.Public.class, optNamedPrivate);
+                priv = dataStore.getObject(EC_Key.Public.class, cfg.namedPrivateKey);
                 if (priv == null) {
-                    priv = dataStore.getObject(EC_Keypair.class, optNamedPrivate);
+                    priv = dataStore.getObject(EC_Keypair.class, cfg.namedPrivateKey);
                 }
             }
 
@@ -1022,7 +766,7 @@ public class ECTester {
             return commands;
         for (Map.Entry<String, EC_Curve> entry : curves.entrySet()) {
             EC_Curve curve = entry.getValue();
-            if (curve.getField() == field && (curve.getBits() == optBits || optAll)) {
+            if (curve.getField() == field && (curve.getBits() == cfg.bits || cfg.all)) {
                 commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), field));
                 commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()));
                 commands.addAll(testCurve());
@@ -1036,5 +780,215 @@ public class ECTester {
     public static void main(String[] args) {
         ECTester app = new ECTester();
         app.run(args);
+    }
+
+    public static class Config {
+
+        //Options
+        public int bits;
+        public boolean all;
+        public boolean primeField = false;
+        public boolean binaryField = false;
+
+        public String namedCurve;
+        public String curveFile;
+        public boolean customCurve = false;
+
+        public boolean anyPublicKey = false;
+        public String namedPublicKey;
+        public String publicKey;
+
+        public boolean anyPrivateKey = false;
+        public String namedPrivateKey;
+        public String privateKey;
+
+        public boolean anyKey = false;
+        public String namedKey;
+        public String key;
+
+        public boolean anyKeypart = false;
+
+        public String log;
+
+        public boolean verbose = false;
+        public String input;
+        public String output;
+        public boolean fresh = false;
+        public boolean simulate = false;
+
+        //Action-related ions
+        public String listNamed;
+        public String testSuite;
+        public int generateAmount;
+        public int ECDHCount;
+        public byte ECDHKA;
+        public int ECDSACount;
+
+        /**
+         * Reads and validates options, also sets defaults.
+         *
+         * @param cli cli object, with parsed args
+         * @return whether the options are valid.
+         */
+        public boolean readOptions(CommandLine cli) {
+            bits = Integer.parseInt(cli.getOptionValue("bit-size", "0"));
+            all = cli.hasOption("all");
+            primeField = cli.hasOption("fp");
+            binaryField = cli.hasOption("f2m");
+
+            namedCurve = cli.getOptionValue("named-curve");
+            customCurve = cli.hasOption("custom");
+            curveFile = cli.getOptionValue("curve");
+
+            namedPublicKey = cli.getOptionValue("named-public");
+            publicKey = cli.getOptionValue("public");
+            anyPublicKey = (publicKey != null) || (namedPublicKey != null);
+
+            namedPrivateKey = cli.getOptionValue("named-private");
+            privateKey = cli.getOptionValue("private");
+            anyPrivateKey = (privateKey != null) || (namedPrivateKey != null);
+
+            namedKey = cli.getOptionValue("named-key");
+            key = cli.getOptionValue("key");
+            anyKey = (key != null) || (namedKey != null);
+            anyKeypart = anyKey || anyPublicKey || anyPrivateKey;
+
+            if (cli.hasOption("log")) {
+                log = cli.getOptionValue("log", String.format("ECTESTER_log_%d.log", System.currentTimeMillis() / 1000));
+            }
+
+            verbose = cli.hasOption("verbose");
+            input = cli.getOptionValue("input");
+            output = cli.getOptionValue("output");
+            fresh = cli.hasOption("fresh");
+            simulate = cli.hasOption("simulate");
+
+            if (cli.hasOption("list-named")) {
+                listNamed = cli.getOptionValue("list-named");
+                return true;
+            }
+
+            if ((key != null || namedKey != null) && (anyPublicKey || anyPrivateKey)) {
+                System.err.print("Can only specify the whole key with --key/--named-key or pubkey and privkey with --public/--named-public and --private/--named-private.");
+                return false;
+            }
+            if (bits < 0) {
+                System.err.println("Bit-size must not be negative.");
+                return false;
+            }
+            if (bits == 0 && !all) {
+                System.err.println("You must specify either bit-size with -b or all bit-sizes with -a.");
+                return false;
+            }
+
+            if (key != null && namedKey != null || publicKey != null && namedPublicKey != null || privateKey != null && namedPrivateKey != null) {
+                System.err.println("You cannot specify both a named key and a key file.");
+                return false;
+            }
+
+            if (cli.hasOption("export")) {
+                if (primeField == binaryField) {
+                    System.err.print("Need to specify field with -fp or -f2m. (not both)");
+                    return false;
+                }
+                if (anyKeypart) {
+                    System.err.println("Keys should not be specified when exporting curve params.");
+                    return false;
+                }
+                if (namedCurve != null || customCurve || curveFile != null) {
+                    System.err.println("Specifying a curve for curve export makes no sense.");
+                    return false;
+                }
+                if (output == null) {
+                    System.err.println("You have to specify an output file for curve parameter export.");
+                    return false;
+                }
+                if (all) {
+                    System.err.println("You have to specify curve bit-size with -b");
+                    return false;
+                }
+
+            } else if (cli.hasOption("generate")) {
+                if (primeField == binaryField) {
+                    System.err.print("Need to specify field with -fp or -f2m. (not both)");
+                    return false;
+                }
+                if (anyKeypart) {
+                    System.err.println("Keys should not be specified when generating keys.");
+                    return false;
+                }
+                if (output == null) {
+                    System.err.println("You have to specify an output file for the key generation process.");
+                    return false;
+                }
+                if (all) {
+                    System.err.println("You have to specify curve bit-size with -b");
+                    return false;
+                }
+
+                generateAmount = Integer.parseInt(cli.getOptionValue("generate", "0"));
+                if (generateAmount < 0) {
+                    System.err.println("Amount of keys generated cant be negative.");
+                    return false;
+                }
+            } else if (cli.hasOption("test")) {
+                if (!binaryField && primeField) {
+                    binaryField = true;
+                    primeField = true;
+                }
+
+                testSuite = cli.getOptionValue("test", "default").toLowerCase();
+                String[] tests = new String[]{"default", "nonprime", "invalid", "test-vectors", "wrong"};
+                List<String> testsList = Arrays.asList(tests);
+                if (!testsList.contains(testSuite)) {
+                    System.err.println("Unknown test case. Should be one of: " + Arrays.toString(tests));
+                    return false;
+                }
+
+            } else if (cli.hasOption("ecdh") || cli.hasOption("ecdhc")) {
+                if (primeField == binaryField) {
+                    System.err.print("Need to specify field with -fp or -f2m. (not both)");
+                    return false;
+                }
+                if (all) {
+                    System.err.println("You have to specify curve bit-size with -b");
+                    return false;
+                }
+
+                if (cli.hasOption("ecdh")) {
+                    ECDHCount = Integer.parseInt(cli.getOptionValue("ecdh", "1"));
+                    ECDHKA = EC_Consts.KA_ECDH;
+                } else if (cli.hasOption("ecdhc")) {
+                    ECDHCount = Integer.parseInt(cli.getOptionValue("ecdhc", "1"));
+                    ECDHKA = EC_Consts.KA_ECDHC;
+                }
+                if (ECDHCount <= 0) {
+                    System.err.println("ECDH count cannot be <= 0.");
+                    return false;
+                }
+
+            } else if (cli.hasOption("ecdsa")) {
+                if (primeField == binaryField) {
+                    System.err.print("Need to specify field with -fp or -f2m. (but not both)");
+                    return false;
+                }
+                if (all) {
+                    System.err.println("You have to specify curve bit-size with -b");
+                    return false;
+                }
+
+                if ((anyPublicKey) != (anyPrivateKey) && !anyKey) {
+                    System.err.println("You cannot only specify a part of a keypair.");
+                    return false;
+                }
+
+                ECDSACount = Integer.parseInt(cli.getOptionValue("ecdsa", "1"));
+                if (ECDSACount <= 0) {
+                    System.err.println("ECDSA count cannot be <= 0.");
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }

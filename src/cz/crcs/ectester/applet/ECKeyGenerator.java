@@ -39,8 +39,8 @@ public class ECKeyGenerator {
     }
 
     public short clearPair(KeyPair keypair, byte key) {
-        sw = ISO7816.SW_NO_ERROR;
         try {
+            sw = ECUtil.nullCheck(keypair);
             if ((key & EC_Consts.KEY_PUBLIC) != 0) keypair.getPublic().clearKey();
             if ((key & EC_Consts.KEY_PRIVATE) != 0) keypair.getPrivate().clearKey();
         } catch (CardRuntimeException ce) {
@@ -54,8 +54,8 @@ public class ECKeyGenerator {
      * @return
      */
     public short generatePair(KeyPair keypair) {
-        sw = ISO7816.SW_NO_ERROR;
         try {
+            sw = ECUtil.nullCheck(keypair);
             keypair.genKeyPair();
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
@@ -155,11 +155,12 @@ public class ECKeyGenerator {
      * @return
      */
     public short setParameter(KeyPair keypair, byte key, short param, byte[] data, short offset, short length) {
-        sw = ISO7816.SW_NO_ERROR;
-        ECPublicKey ecPublicKey = (ECPublicKey) keypair.getPublic();
-        ECPrivateKey ecPrivateKey = (ECPrivateKey) keypair.getPrivate();
-
         try {
+            sw = ECUtil.nullCheck(keypair);
+
+            ECPublicKey ecPublicKey = (ECPublicKey) keypair.getPublic();
+            ECPrivateKey ecPrivateKey = (ECPrivateKey) keypair.getPrivate();
+
             switch (param) {
                 case EC_Consts.PARAMETER_FP:
                     if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldFP(data, offset, length);
@@ -174,8 +175,11 @@ public class ECKeyGenerator {
                         short i1 = Util.makeShort(data[(short) (offset + 2)], data[(short) (offset + 3)]);
                         short i2 = Util.makeShort(data[(short) (offset + 4)], data[(short) (offset + 5)]);
                         short i3 = Util.makeShort(data[(short) (offset + 6)], data[(short) (offset + 7)]);
-                        if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i1, i2, i3);
-                        if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i1, i2, i3);
+//                        if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i1, i2, i3);
+//                        if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i1, i2, i3);
+                        // TODO fix this
+                        if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i3, i2, i1);
+                        if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i3, i2, i1);
                     } else {
                         sw = ISO7816.SW_UNKNOWN;
                     }
@@ -275,12 +279,12 @@ public class ECKeyGenerator {
      * @return length of data written
      */
     public short exportParameter(KeyPair keypair, byte key, short param, byte[] outputBuffer, short outputOffset) {
-        sw = ISO7816.SW_NO_ERROR;
-        ECPublicKey ecPublicKey = (ECPublicKey) keypair.getPublic();
-        ECPrivateKey ecPrivateKey = (ECPrivateKey) keypair.getPrivate();
-
         short length = 0;
         try {
+            sw = ECUtil.nullCheck(keypair);
+            ECPublicKey ecPublicKey = (ECPublicKey) keypair.getPublic();
+            ECPrivateKey ecPrivateKey = (ECPrivateKey) keypair.getPrivate();
+
             switch (param) {
                 case EC_Consts.PARAMETER_FP:
                     if ((key & EC_Consts.KEY_PUBLIC) != 0) length = ecPublicKey.getField(outputBuffer, outputOffset);
@@ -385,8 +389,10 @@ public class ECKeyGenerator {
      * @return sw
      */
     public short copyCurve(KeyPair from, KeyPair to, short params, byte[] buffer, short offset) {
-        sw = ISO7816.SW_NO_ERROR;
         try {
+            sw = ECUtil.nullCheck(from);
+            sw = ECUtil.nullCheck(to);
+
             short param = EC_Consts.PARAMETER_FP;
             while (param <= EC_Consts.PARAMETER_K) {
                 short masked = (short) (param & params);

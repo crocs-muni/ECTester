@@ -20,6 +20,16 @@ public class EC_Key extends EC_Params {
         this.desc = desc;
     }
 
+    private EC_Key(String id, short mask, String curve) {
+        this(mask, curve);
+        this.id = id;
+    }
+
+    private EC_Key(String id, short mask, String curve, String desc) {
+        this(mask, curve, desc);
+        this.id = id;
+    }
+
     public String getCurve() {
         return curve;
     }

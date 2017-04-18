@@ -64,6 +64,7 @@ public class ECTesterApplet extends Applet {
     // STATUS WORDS
     public static final short SW_SIG_VERIFY_FAIL = (short) 0x0ee1;
     public static final short SW_DH_DHC_MISMATCH = (short) 0x0ee2;
+    public static final short SW_KEYPAIR_NULL = (short) 0x0ee3;
 
 
     private static final short ARRAY_LENGTH = (short) 0xff;
@@ -551,13 +552,13 @@ public class ECTesterApplet extends Applet {
         short secretLength = 0;
         switch (type) {
             case EC_Consts.KA_ECDH:
-                secretLength = keyTester.testECDH((ECPrivateKey) priv.getPrivate(), (ECPublicKey) pub.getPublic(), ramArray, (short) 0, ramArray2, (short) 0, corruption);
+                secretLength = keyTester.testECDH(priv, pub, ramArray, (short) 0, ramArray2, (short) 0, corruption);
                 break;
             case EC_Consts.KA_ECDHC:
-                secretLength = keyTester.testECDHC((ECPrivateKey) priv.getPrivate(), (ECPublicKey) pub.getPublic(), ramArray, (short) 0, ramArray2, (short) 0, corruption);
+                secretLength = keyTester.testECDHC(priv, pub, ramArray, (short) 0, ramArray2, (short) 0, corruption);
                 break;
             case EC_Consts.KA_BOTH:
-                secretLength = keyTester.testKA((ECPrivateKey) priv.getPrivate(), (ECPublicKey) pub.getPublic(), ramArray, (short) 0, ramArray2, (short) 0, corruption);
+                secretLength = keyTester.testECDH_ECDHC(priv, pub, ramArray, (short) 0, ramArray2, (short) 0, corruption);
                 break;
             default:
                 ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
