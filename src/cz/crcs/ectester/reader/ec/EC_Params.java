@@ -126,32 +126,22 @@ public class EC_Params extends EC_Data {
             short masked = (short) (params & paramMask);
             if (masked != 0) {
                 byte[] param = data[index];
-
                 if (masked == EC_Consts.PARAMETER_F2M) {
-                    //split into m, e1, e2, e3
                     for (int i = 0; i < 4; ++i) {
-                        out.add(String.format("%04x", Util.getShort(param, i * 2)));
+                        out.add(Util.bytesToHex(data[index + i], false));
                     }
-
+                    index += 4;
                 } else if (masked == EC_Consts.PARAMETER_G || masked == EC_Consts.PARAMETER_W) {
-                    //split from X962 format into X and Y
-                    //disregard the first 04 and then split into half(uncompress)
-                    int half = (param.length - 1) / 2;
-                    out.add(Util.bytesToHex(param, 1, half, false));
-                    out.add(Util.bytesToHex(param, half + 1, half, false));
+                    out.add(Util.bytesToHex(param, false));
+                    out.add(Util.bytesToHex(data[index + 1], false));
+                    index += 2;
                 } else {
-                    //read raw
-                    out.add(Util.bytesToHex(data[index], false));
+                    out.add(Util.bytesToHex(param, false));
+                    index++;
                 }
-                index++;
             }
             paramMask = (short) (paramMask << 1);
         }
         return out.toArray(new String[out.size()]);
-    }
-
-    @Override
-    public String toString() {
-        return String.join(",", expand());
     }
 }

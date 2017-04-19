@@ -158,14 +158,13 @@ public class EC_Data {
     }
 
     public void writeCSV(OutputStream out) throws IOException {
-        String[] hex = expand();
         Writer w = new OutputStreamWriter(out);
-        for (int i = 0; i < hex.length; ++i) {
-            w.write(hex[i]);
-            if (i < hex.length - 1) {
-                w.write(",");
-            }
-        }
+        w.write(String.join(",", expand()));
         w.flush();
+    }
+
+    @Override
+    public String toString() {
+        return String.join(",", expand());
     }
 }

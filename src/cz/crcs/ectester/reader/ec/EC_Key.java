@@ -66,7 +66,7 @@ public class EC_Key extends EC_Params {
 
         @Override
         public String toString() {
-            return "EC Private key, over " + getCurve() + (getDesc() == null ? "" : ": " + getDesc());
+            return "<" + getId() + "> EC Private key, over " + getCurve() + (getDesc() == null ? "" : ": " + getDesc());
         }
     }
 }

@@ -55,7 +55,7 @@ public class EC_KAResult extends EC_Data {
     @Override
     public String toString() {
         String algo = Util.getKA(ka);
-        return algo + " result over " + curve + ", " + oneKey + " + " + otherKey + (desc == null ? "" : ": " + desc);
+        return "<" + getId() + "> " + algo + " result over " + curve + ", " + oneKey + " + " + otherKey + (desc == null ? "" : ": " + desc);
     }
 
 }
