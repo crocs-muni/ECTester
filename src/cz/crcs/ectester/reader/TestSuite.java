@@ -63,6 +63,7 @@ public abstract class TestSuite {
     }
 
     public static class TestVectors extends TestSuite {
+
         public TestVectors(EC_Store dataStore, ECTester.Config cfg) {
             super(dataStore, cfg, "test");
         }

@@ -471,10 +471,7 @@ public class ECTester {
 
         List<Response> test = Command.sendAll(commands);
         if (suite != null) {
-            List<Test> tests = suite.run(cardManager);
-            for (Test t : tests) {
-                System.out.println(t);
-            }
+            suite.run(cardManager);
         }
         systemOutLogger.println(Response.toString(test, cfg.testSuite));
 

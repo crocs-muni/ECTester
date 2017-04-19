@@ -227,11 +227,22 @@ public class EC_Store {
                         descs = descc.item(0).getTextContent();
                     }
 
-                    byte kab;
-                    if (ka.getTextContent().equals("DH")) {
-                        kab = EC_Consts.KA_ECDH;
-                    } else {
-                        kab = EC_Consts.KA_ECDHC;
+                    byte kab = EC_Consts.KA_ANY;
+                    switch (ka.getTextContent()) {
+                        case "DH":
+                        case "ECDH":
+                            kab = EC_Consts.KA_ECDH;
+                            break;
+                        case "DHC":
+                        case "ECDHC":
+                            kab = EC_Consts.KA_ECDHC;
+                            break;
+                        case "ANY":
+                            kab = EC_Consts.KA_ANY;
+                            break;
+                        case "BOTH":
+                            kab = EC_Consts.KA_BOTH;
+                            break;
                     }
 
                     EC_KAResult kaResult = new EC_KAResult(id.getTextContent(), kab, curve.getTextContent(), onekey.getTextContent(), otherkey.getTextContent(), descs);
@@ -254,7 +265,7 @@ public class EC_Store {
     }
 
     private EC_Params parseKeylike(String dir, Element elem) throws SAXException, IOException {
-        Node file = elem.getElementsByTagName("file").item(0);
+        Node id = elem.getElementsByTagName("id").item(0);
         Node curve = elem.getElementsByTagName("curve").item(0);
 
         NodeList desc = elem.getElementsByTagName("desc");

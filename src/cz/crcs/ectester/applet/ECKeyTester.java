@@ -53,8 +53,9 @@ public class ECKeyTester {
     private short testKA(KeyAgreement ka, KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, byte corruption) {
         short length = 0;
         try {
-            sw = ECUtil.nullCheck(privatePair);
-            sw = ECUtil.nullCheck(publicPair);
+            sw = ECUtil.kaCheck(ka);
+            sw = ECUtil.keypairCheck(privatePair);
+            sw = ECUtil.keypairCheck(publicPair);
 
             ka.init(privatePair.getPrivate());
             short pubkeyLength = ((ECPublicKey) publicPair.getPublic()).getW(pubkeyBuffer, pubkeyOffset);
@@ -113,7 +114,7 @@ public class ECKeyTester {
      * @param corruption
      * @return
      */
-    public short testECDH_ECDHC(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, byte corruption) {
+    public short testBOTH(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, byte corruption) {
         short ecdhLength = testECDH(privatePair, publicPair, pubkeyBuffer, pubkeyOffset, outputBuffer, outputOffset, corruption);
         if (sw != ISO7816.SW_NO_ERROR) {
             return ecdhLength;
@@ -131,6 +132,23 @@ public class ECKeyTester {
     }
 
     /**
+     *
+     * @param privatePair
+     * @param publicPair
+     * @param pubkeyBuffer
+     * @param pubkeyOffset
+     * @param outputBuffer
+     * @param outputOffset
+     * @param corruption
+     * @return
+     */
+    public short testANY(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[]outputBuffer, short outputOffset, byte corruption) {
+        short ecdhLength = testECDH(privatePair, publicPair, pubkeyBuffer, pubkeyOffset, outputBuffer, outputOffset, corruption);
+        if (sw == ISO7816.SW_NO_ERROR)
+            return ecdhLength;
+        return testECDHC(privatePair, publicPair, pubkeyBuffer, pubkeyOffset, outputBuffer, outputOffset, corruption);
+    }
+    /**
      * Uses {@code signKey} to sign data from {@code inputBuffer} at {@code inputOffset} with {@code inputOffset}.
      * Then checks for correct signature length.
      * Then tries verifying the data with {@code verifyKey}.
@@ -145,9 +163,10 @@ public class ECKeyTester {
      * @return signature length
      */
     public short testECDSA(ECPrivateKey signKey, ECPublicKey verifyKey, byte[] inputBuffer, short inputOffset, short inputLength, byte[] sigBuffer, short sigOffset) {
-        sw = ISO7816.SW_NO_ERROR;
         short length = 0;
         try {
+            sw = ECUtil.signCheck(ecdsaSignature);
+
             ecdsaSignature.init(signKey, Signature.MODE_SIGN);
             length = ecdsaSignature.sign(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset);
 

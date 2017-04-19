@@ -133,7 +133,7 @@
     </result>
     <result>
         <id>p192-dhc</id>
-        <ka>DHC</ka>
+        <ka>ANY</ka>
         <file>nist/p192-dhc-sha1.csv</file>
         <curve>nist/P-192</curve>
         <onekey>test/p192-A</onekey>
@@ -141,7 +141,7 @@
     </result>
     <result>
         <id>p224-dhc</id>
-        <ka>DHC</ka>
+        <ka>ANY</ka>
         <file>nist/p224-dhc-sha1.csv</file>
         <curve>nist/P-224</curve>
         <onekey>test/p224-A</onekey>
@@ -149,7 +149,7 @@
     </result>
     <result>
         <id>p256-dhc</id>
-        <ka>DHC</ka>
+        <ka>ANY</ka>
         <file>nist/p256-dhc-sha1.csv</file>
         <curve>nist/P-256</curve>
         <onekey>test/p256-A</onekey>
@@ -157,7 +157,7 @@
     </result>
     <result>
         <id>p384-dhc</id>
-        <ka>DHC</ka>
+        <ka>ANY</ka>
         <file>nist/p384-dhc-sha1.csv</file>
         <curve>nist/P-384</curve>
         <onekey>test/p384-A</onekey>
@@ -165,7 +165,7 @@
     </result>
     <result>
         <id>p521-dhc</id>
-        <ka>DHC</ka>
+        <ka>ANY</ka>
         <file>nist/p521-dhc-sha1.csv</file>
         <curve>nist/P-521</curve>
         <onekey>test/p521-A</onekey>

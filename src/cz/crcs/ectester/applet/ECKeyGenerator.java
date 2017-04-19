@@ -40,7 +40,7 @@ public class ECKeyGenerator {
 
     public short clearPair(KeyPair keypair, byte key) {
         try {
-            sw = ECUtil.nullCheck(keypair);
+            sw = ECUtil.keypairCheck(keypair);
             if ((key & EC_Consts.KEY_PUBLIC) != 0) keypair.getPublic().clearKey();
             if ((key & EC_Consts.KEY_PRIVATE) != 0) keypair.getPrivate().clearKey();
         } catch (CardRuntimeException ce) {
@@ -55,7 +55,7 @@ public class ECKeyGenerator {
      */
     public short generatePair(KeyPair keypair) {
         try {
-            sw = ECUtil.nullCheck(keypair);
+            sw = ECUtil.keypairCheck(keypair);
             keypair.genKeyPair();
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
@@ -156,7 +156,7 @@ public class ECKeyGenerator {
      */
     public short setParameter(KeyPair keypair, byte key, short param, byte[] data, short offset, short length) {
         try {
-            sw = ECUtil.nullCheck(keypair);
+            sw = ECUtil.keypairCheck(keypair);
 
             ECPublicKey ecPublicKey = (ECPublicKey) keypair.getPublic();
             ECPrivateKey ecPrivateKey = (ECPrivateKey) keypair.getPrivate();
@@ -281,7 +281,7 @@ public class ECKeyGenerator {
     public short exportParameter(KeyPair keypair, byte key, short param, byte[] outputBuffer, short outputOffset) {
         short length = 0;
         try {
-            sw = ECUtil.nullCheck(keypair);
+            sw = ECUtil.keypairCheck(keypair);
             ECPublicKey ecPublicKey = (ECPublicKey) keypair.getPublic();
             ECPrivateKey ecPrivateKey = (ECPrivateKey) keypair.getPrivate();
 
@@ -390,8 +390,8 @@ public class ECKeyGenerator {
      */
     public short copyCurve(KeyPair from, KeyPair to, short params, byte[] buffer, short offset) {
         try {
-            sw = ECUtil.nullCheck(from);
-            sw = ECUtil.nullCheck(to);
+            sw = ECUtil.keypairCheck(from);
+            sw = ECUtil.keypairCheck(to);
 
             short param = EC_Consts.PARAMETER_FP;
             while (param <= EC_Consts.PARAMETER_K) {

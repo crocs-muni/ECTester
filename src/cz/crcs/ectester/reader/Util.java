@@ -157,6 +157,9 @@ public class Util {
             case ECTesterApplet.SW_SIG_VERIFY_FAIL:
             case ECTesterApplet.SW_DH_DHC_MISMATCH:
             case ECTesterApplet.SW_KEYPAIR_NULL:
+            case ECTesterApplet.SW_KA_NULL:
+            case ECTesterApplet.SW_SIGNATURE_NULL:
+            case ECTesterApplet.SW_OBJECT_NULL:
                 return "ECTesterApplet";
             default:
                 return "?";
@@ -259,6 +262,15 @@ public class Util {
                 case ECTesterApplet.SW_KEYPAIR_NULL:
                     str = "KEYPAIR_NULL";
                     break;
+                case ECTesterApplet.SW_KA_NULL:
+                    str = "KA_NULL";
+                    break;
+                case ECTesterApplet.SW_SIGNATURE_NULL:
+                    str = "SIGNATURE_NULL";
+                    break;
+                case ECTesterApplet.SW_OBJECT_NULL:
+                    str = "OBJECT_NULL";
+                    break;
                 default:
                     str = "unknown";
                     break;
@@ -303,13 +315,15 @@ public class Util {
 
     public static String getKA(byte ka) {
         String algo = "";
-        if ((ka & EC_Consts.KA_ECDH) != 0) {
+        if ((ka & EC_Consts.KA_ECDH) != 0 || ka == EC_Consts.KA_ANY) {
             algo += "ECDH";
         }
         if (ka == EC_Consts.KA_BOTH) {
             algo += "+";
+        } else if (ka == EC_Consts.KA_ANY) {
+            algo += "/";
         }
-        if ((ka & EC_Consts.KA_ECDHC) != 0) {
+        if ((ka & EC_Consts.KA_ECDHC) != 0 || ka == EC_Consts.KA_ANY) {
             algo += "ECDHC";
         }
         return algo;

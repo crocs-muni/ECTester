@@ -140,9 +140,7 @@ public abstract class Response {
                 out.append(prefix);
 
             String message = r.toString();
-            String full = r.toString(message);
-
-            out.append(full);
+            out.append(message);
             if (i < responses.size() - 1) {
                 out.append("\n");
             }

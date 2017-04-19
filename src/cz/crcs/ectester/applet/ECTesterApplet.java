@@ -65,6 +65,9 @@ public class ECTesterApplet extends Applet {
     public static final short SW_SIG_VERIFY_FAIL = (short) 0x0ee1;
     public static final short SW_DH_DHC_MISMATCH = (short) 0x0ee2;
     public static final short SW_KEYPAIR_NULL = (short) 0x0ee3;
+    public static final short SW_KA_NULL = (short) 0x0ee4;
+    public static final short SW_SIGNATURE_NULL = (short) 0x0ee5;
+    public static final short SW_OBJECT_NULL = (short) 0x0ee6;
 
 
     private static final short ARRAY_LENGTH = (short) 0xff;
@@ -558,7 +561,10 @@ public class ECTesterApplet extends Applet {
                 secretLength = keyTester.testECDHC(priv, pub, ramArray, (short) 0, ramArray2, (short) 0, corruption);
                 break;
             case EC_Consts.KA_BOTH:
-                secretLength = keyTester.testECDH_ECDHC(priv, pub, ramArray, (short) 0, ramArray2, (short) 0, corruption);
+                secretLength = keyTester.testBOTH(priv, pub, ramArray, (short) 0, ramArray2, (short) 0, corruption);
+                break;
+            case EC_Consts.KA_ANY:
+                secretLength = keyTester.testANY(priv, pub, ramArray, (short) 0, ramArray2, (short)0, corruption);
                 break;
             default:
                 ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);

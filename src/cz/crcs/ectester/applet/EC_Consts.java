@@ -64,6 +64,7 @@ public class EC_Consts {
     public static final byte KA_ECDH = 0x01;
     public static final byte KA_ECDHC = 0x02;
     public static final byte KA_BOTH = KA_ECDH | KA_ECDHC;
+    public static final byte KA_ANY = 0x04;
 
     public static RandomData randomData = null;
 
