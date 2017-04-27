@@ -4,6 +4,7 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.ec.*;
+import javacard.security.KeyPair;
 
 import javax.smartcardio.CardException;
 import java.io.IOException;
@@ -23,7 +24,7 @@ public abstract class TestSuite {
     boolean hasRun;
     List<Test> tests = new LinkedList<>();
 
-    public TestSuite(EC_Store dataStore, ECTester.Config cfg, String name) {
+    TestSuite(EC_Store dataStore, ECTester.Config cfg, String name) {
         this.dataStore = dataStore;
         this.cfg = cfg;
         this.name = name;
@@ -50,6 +51,46 @@ public abstract class TestSuite {
         return name;
     }
 
+    /**
+     * @return
+     * @throws IOException if an IO error occurs when writing to key file.
+     */
+    List<Command> testCurve(CardMngr cardManager) throws IOException {
+        List<Command> commands = new LinkedList<>();
+        commands.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH));
+        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDH));
+        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ONE, EC_Consts.KA_ECDH));
+        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ZERO, EC_Consts.KA_ECDH));
+        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_MAX, EC_Consts.KA_ECDH));
+        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_FULLRANDOM, EC_Consts.KA_ECDH));
+        commands.add(new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, null));
+        return commands;
+    }
+
+    /**
+     * @param category
+     * @param field
+     * @return
+     * @throws IOException if an IO error occurs when writing to key file.
+     */
+    List<Command> testCurves(CardMngr cardManager, String category, byte field) throws IOException {
+        List<Command> commands = new LinkedList<>();
+        Map<String, EC_Curve> curves = dataStore.getObjects(EC_Curve.class, category);
+        if (curves == null)
+            return commands;
+        for (Map.Entry<String, EC_Curve> entry : curves.entrySet()) {
+            EC_Curve curve = entry.getValue();
+            if (curve.getField() == field && (curve.getBits() == cfg.bits || cfg.all)) {
+                commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), field));
+                commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()));
+                commands.addAll(testCurve(cardManager));
+                commands.add(new Command.Cleanup(cardManager));
+            }
+        }
+
+        return commands;
+    }
+
     public static class Default extends TestSuite {
 
         public Default(EC_Store dataStore, ECTester.Config cfg) {
@@ -57,7 +98,55 @@ public abstract class TestSuite {
         }
 
         @Override
-        public List<Test> run(CardMngr cardManager) {
+        public List<Test> run(CardMngr cardManager) throws IOException, CardException {
+            //TODO: Convert TestSuire.Default to Tests
+            List<Command> commands = new LinkedList<>();
+            commands.add(new Command.Support(cardManager));
+            if (cfg.namedCurve != null) {
+                if (cfg.primeField) {
+                    commands.addAll(testCurves(cardManager, cfg.namedCurve, KeyPair.ALG_EC_FP));
+                }
+                if (cfg.binaryField) {
+                    commands.addAll(testCurves(cardManager, cfg.namedCurve, KeyPair.ALG_EC_F2M));
+                }
+            } else {
+                if (cfg.all) {
+                    if (cfg.primeField) {
+                        //iterate over prime curve sizes used: EC_Consts.FP_SIZES
+                        for (short keyLength : EC_Consts.FP_SIZES) {
+                            commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_FP));
+                            commands.addAll(Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_FP));
+                            commands.addAll(testCurve(cardManager));
+                            commands.add(new Command.Cleanup(cardManager));
+                        }
+                    }
+                    if (cfg.binaryField) {
+                        //iterate over binary curve sizes used: EC_Consts.F2M_SIZES
+                        for (short keyLength : EC_Consts.F2M_SIZES) {
+                            commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_F2M));
+                            commands.addAll(Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_F2M));
+                            commands.addAll(testCurve(cardManager));
+                            commands.add(new Command.Cleanup(cardManager));
+                        }
+                    }
+                } else {
+                    if (cfg.primeField) {
+                        commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, KeyPair.ALG_EC_FP));
+                        commands.addAll(Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, KeyPair.ALG_EC_FP));
+                        commands.addAll(testCurve(cardManager));
+                        commands.add(new Command.Cleanup(cardManager));
+                    }
+
+                    if (cfg.binaryField) {
+                        commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, KeyPair.ALG_EC_F2M));
+                        commands.addAll(Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, KeyPair.ALG_EC_F2M));
+                        commands.addAll(testCurve(cardManager));
+                        commands.add(new Command.Cleanup(cardManager));
+                    }
+                }
+            }
+            List<Response> test = Command.sendAll(commands);
+            System.out.println(Response.toString(test));
             return null;
         }
     }
@@ -70,7 +159,9 @@ public abstract class TestSuite {
 
         @Override
         public List<Test> run(CardMngr cardManager) throws IOException, CardException {
-
+            /* Set original curves (secg/nist/brainpool). Set keypairs from test vectors.
+             * Do ECDH both ways, export and verify that the result is correct.
+             */
             Map<String, EC_KAResult> results = dataStore.getObjects(EC_KAResult.class, "test");
             for (EC_KAResult result : results.values()) {
                 EC_Curve curve = dataStore.getObject(EC_Curve.class, result.getCurve());
@@ -122,6 +213,12 @@ public abstract class TestSuite {
 
         @Override
         public List<Test> run(CardMngr cardManager) throws IOException, CardException {
+            /* Do the default tests with the public keys set to provided smallorder keys
+             * over non-prime order curves. Essentially small subgroup attacks.
+             * These should fail, the curves aren't safe so that if the computation with
+             * a small order public key succeeds the private key modulo the public key order
+             * is revealed.
+             */
             Map<String, EC_Key> keys = dataStore.getObjects(EC_Key.class, "nonprime");
             for (EC_Key key : keys.values()) {
                 EC_Curve curve = dataStore.getObject(EC_Curve.class, key.getCurve());
@@ -146,6 +243,9 @@ public abstract class TestSuite {
 
         @Override
         public List<Test> run(CardMngr cardManager) throws IOException, CardException {
+            /* Set original curves (secg/nist/brainpool). Generate local.
+             * Try ECDH with invalid public keys of increasing (or decreasing) order.
+             */
             Map<String, EC_Key.Public> pubkeys = dataStore.getObjects(EC_Key.Public.class, "invalid");
             for (EC_Key.Public key : pubkeys.values()) {
                 EC_Curve curve = dataStore.getObject(EC_Curve.class, key.getCurve());
@@ -163,6 +263,31 @@ public abstract class TestSuite {
                 tests.add(new Test(new Command.Cleanup(cardManager), Test.Result.ANY));
             }
             return super.run(cardManager);
+        }
+    }
+
+    public static class Wrong extends TestSuite {
+
+        public Wrong(EC_Store dataStore, ECTester.Config cfg) {
+            super(dataStore, cfg, "wrong");
+        }
+
+        @Override
+        public List<Test> run(CardMngr cardManager) throws IOException, CardException {
+            /* Just do the default tests on the wrong curves.
+             * These should generally fail, the curves aren't curves.
+             */
+            //TODO: Convert TestSuire.Wrong to Tests
+            List<Command> commands = new LinkedList<>();
+            if (cfg.primeField) {
+                commands.addAll(testCurves(cardManager, cfg.testSuite, KeyPair.ALG_EC_FP));
+            }
+            if (cfg.binaryField) {
+                commands.addAll(testCurves(cardManager, cfg.testSuite, KeyPair.ALG_EC_F2M));
+            }
+            List<Response> test = Command.sendAll(commands);
+            System.out.println(Response.toString(test));
+            return null;
         }
     }
 }

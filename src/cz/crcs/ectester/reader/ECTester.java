@@ -24,7 +24,9 @@ package cz.crcs.ectester.reader;
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Store;
-import cz.crcs.ectester.reader.ec.*;
+import cz.crcs.ectester.reader.ec.EC_Category;
+import cz.crcs.ectester.reader.ec.EC_Data;
+import cz.crcs.ectester.reader.ec.EC_Params;
 import javacard.security.KeyPair;
 import org.apache.commons.cli.*;
 
@@ -45,6 +47,7 @@ public class ECTester {
     private DirtyLogger systemOutLogger;
     private EC_Store dataStore;
     private Config cfg;
+    private TestSuite[] testSuites;
 
     private Options opts = new Options();
     private static final String CLI_HEADER = "\nECTester, a javacard Elliptic Curve Cryptograhy support tester/utility.\n\n";
@@ -254,6 +257,15 @@ public class ECTester {
     }
 
     /**
+     * Prints help.
+     */
+    private void help() {
+        HelpFormatter help = new HelpFormatter();
+        help.setOptionComparator(null);
+        help.printHelp("ECTester.jar", CLI_HEADER, opts, CLI_FOOTER, true);
+    }
+
+    /**
      * List categories and named curves.
      */
     private void list() {
@@ -275,15 +287,6 @@ public class ECTester {
                 System.err.println("Named object " + cfg.listNamed + " not found!");
             }
         }
-    }
-
-    /**
-     * Prints help.
-     */
-    private void help() {
-        HelpFormatter help = new HelpFormatter();
-        help.setOptionComparator(null);
-        help.printHelp("ECTester.jar", CLI_HEADER, opts, CLI_FOOTER, true);
     }
 
     /**
@@ -330,7 +333,7 @@ public class ECTester {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
 
         new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass).send();
-        List<Command> curve = prepareCurve(ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass);
+        List<Command> curve = Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass);
 
         FileWriter keysFile = new FileWriter(cfg.output);
         keysFile.write("index;time;pubW;privS\n");
@@ -376,105 +379,44 @@ public class ECTester {
      * @throws IOException   if an IO error occurs when writing to key file.
      */
     private void test() throws IOException, CardException {
-        List<Command> commands = new LinkedList<>();
-        TestSuite suite = null;
+        TestSuite suite;
 
-        if (cfg.testSuite.equals("default")) {
-            commands.add(new Command.Support(cardManager));
-            if (cfg.namedCurve != null) {
-                if (cfg.primeField) {
-                    commands.addAll(testCurves(cfg.namedCurve, KeyPair.ALG_EC_FP));
+        switch (cfg.testSuite) {
+            case "default":
+                suite = new TestSuite.Default(dataStore, cfg);
+                break;
+            case "test-vectors":
+                suite = new TestSuite.TestVectors(dataStore, cfg);
+                break;
+            default:
+                // These tests are dangerous, prompt before them.
+                System.out.println("The test you selected (" + cfg.testSuite + ") is potentially dangerous.");
+                System.out.println("Some of these tests have caused temporary DoS of some cards.");
+                System.out.print("Do you want to proceed? (y/n): ");
+                Scanner in = new Scanner(System.in);
+                String confirmation = in.nextLine();
+                if (!Arrays.asList("yes", "YES", "y", "Y").contains(confirmation)) {
+                    return;
                 }
-                if (cfg.binaryField) {
-                    commands.addAll(testCurves(cfg.namedCurve, KeyPair.ALG_EC_F2M));
-                }
-            } else {
-                if (cfg.all) {
-                    if (cfg.primeField) {
-                        //iterate over prime curve sizes used: EC_Consts.FP_SIZES
-                        for (short keyLength : EC_Consts.FP_SIZES) {
-                            commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_FP));
-                            commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_FP));
-                            commands.addAll(testCurve());
-                            commands.add(new Command.Cleanup(cardManager));
-                        }
-                    }
-                    if (cfg.binaryField) {
-                        //iterate over binary curve sizes used: EC_Consts.F2M_SIZES
-                        for (short keyLength : EC_Consts.F2M_SIZES) {
-                            commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_F2M));
-                            commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_F2M));
-                            commands.addAll(testCurve());
-                            commands.add(new Command.Cleanup(cardManager));
-                        }
-                    }
-                } else {
-                    if (cfg.primeField) {
-                        commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, KeyPair.ALG_EC_FP));
-                        commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, KeyPair.ALG_EC_FP));
-                        commands.addAll(testCurve());
-                        commands.add(new Command.Cleanup(cardManager));
-                    }
+                in.close();
 
-                    if (cfg.binaryField) {
-                        commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, KeyPair.ALG_EC_F2M));
-                        commands.addAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, KeyPair.ALG_EC_F2M));
-                        commands.addAll(testCurve());
-                        commands.add(new Command.Cleanup(cardManager));
-                    }
+                switch (cfg.testSuite) {
+                    case "wrong":
+                        suite = new TestSuite.Wrong(dataStore, cfg);
+                        break;
+                    case "nonprime":
+                        suite = new TestSuite.NonPrime(dataStore, cfg);
+                        break;
+                    case "invalid":
+                        suite = new TestSuite.Invalid(dataStore, cfg);
+                        break;
+                    default:
+                        System.err.println("Unknown test suite.");
+                        return;
                 }
-            }
-        } else if (cfg.testSuite.equals("test-vectors")) {
-            /* Set original curves (secg/nist/brainpool). Set keypairs from test vectors.
-             * Do ECDH both ways, export and verify that the result is correct.
-             *
-             */
-            suite = new TestSuite.TestVectors(dataStore, cfg);
-
-        } else {
-            // These tests are dangerous, prompt before them.
-            System.out.println("The test you selected (" + cfg.testSuite + ") is potentially dangerous.");
-            System.out.println("Some of these tests have caused temporary DoS of some cards.");
-            System.out.print("Do you want to proceed? (y/n): ");
-            Scanner in = new Scanner(System.in);
-            String confirmation = in.nextLine();
-            if (!Arrays.asList("yes", "y", "Y").contains(confirmation)) {
-                return;
-            }
-            in.close();
-
-            if (cfg.testSuite.equals("wrong")) {
-            /* Just do the default tests on the wrong curves.
-             * These should generally fail, the curves aren't safe.
-             */
-                if (cfg.primeField) {
-                    commands.addAll(testCurves(cfg.testSuite, KeyPair.ALG_EC_FP));
-                }
-                if (cfg.binaryField) {
-                    commands.addAll(testCurves(cfg.testSuite, KeyPair.ALG_EC_F2M));
-                }
-            } else if (cfg.testSuite.equals("nonprime")) {
-            /* Do the default tests with the public keys set to provided nonprime keys.
-             * These should fail, the curves aren't safe so that if the computation with
-             * a small order public key succeeds the private key modulo the public key order
-             * is revealed.
-             */
-                suite = new TestSuite.NonPrime(dataStore, cfg);
-            } else if (cfg.testSuite.equals("invalid")) {
-                /* Set original curves (secg/nist/brainpool). Generate local.
-                 * Try ECDH with invalid public keys of increasing (or decreasing) order.
-                 */
-                suite = new TestSuite.Invalid(dataStore, cfg);
-            }
+                break;
         }
-
-
-        List<Response> test = Command.sendAll(commands);
-        if (suite != null) {
-            suite.run(cardManager);
-        }
-        systemOutLogger.println(Response.toString(test, cfg.testSuite));
-
+        suite.run(cardManager);
     }
 
     /**
@@ -487,7 +429,7 @@ public class ECTester {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
         List<Response> prepare = new LinkedList<>();
         prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, keyClass).send());
-        prepare.addAll(Command.sendAll(prepareCurve(ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, keyClass)));
+        prepare.addAll(Command.sendAll(Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, keyClass)));
 
         systemOutLogger.println(Response.toString(prepare));
 
@@ -497,7 +439,7 @@ public class ECTester {
         List<Command> generate = new LinkedList<>();
         generate.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH));
         if (cfg.anyPublicKey || cfg.anyPrivateKey || cfg.anyKey) {
-            generate.add(prepareKey(ECTesterApplet.KEYPAIR_REMOTE));
+            generate.add(Command.prepareKey(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_REMOTE));
         }
 
         FileWriter out = null;
@@ -556,7 +498,7 @@ public class ECTester {
 
         Command generate;
         if (cfg.anyKeypart) {
-            generate = prepareKey(ECTesterApplet.KEYPAIR_LOCAL);
+            generate = Command.prepareKey(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_LOCAL);
         } else {
             generate = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL);
         }
@@ -564,7 +506,7 @@ public class ECTester {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
         List<Response> prepare = new LinkedList<>();
         prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass).send());
-        prepare.addAll(Command.sendAll(prepareCurve(ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass)));
+        prepare.addAll(Command.sendAll(Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass)));
 
         systemOutLogger.println(Response.toString(prepare));
 
@@ -602,176 +544,6 @@ public class ECTester {
         }
         if (out != null)
             out.close();
-    }
-
-    /**
-     * @param keyPair   which keyPair/s (local/remote) to set curve domain parameters on
-     * @param keyLength key length to choose
-     * @param keyClass  key class to choose
-     * @return a list of Commands to send in order to prepare the curve on the keypairs.
-     * @throws IOException if curve file cannot be found/opened
-     */
-    private List<Command> prepareCurve(byte keyPair, short keyLength, byte keyClass) throws IOException {
-        List<Command> commands = new ArrayList<>();
-
-        if (cfg.customCurve) {
-            // Set custom curve (one of the SECG curves embedded applet-side)
-            short domainParams = keyClass == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
-            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.getCurve(keyLength, keyClass), domainParams, null));
-        } else if (cfg.namedCurve != null) {
-            // Set a named curve.
-            // parse cfg.namedCurve -> cat / id | cat | id
-            EC_Curve curve = dataStore.getObject(EC_Curve.class, cfg.namedCurve);
-            if (curve == null) {
-                throw new IOException("Curve could no be found.");
-            }
-            if (curve.getBits() != keyLength) {
-                throw new IOException("Curve bits mismatch: " + curve.getBits() + " vs " + keyLength + " entered.");
-            }
-
-            byte[] external = curve.flatten();
-            if (external == null) {
-                throw new IOException("Couldn't read named curve data.");
-            }
-            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, curve.getParams(), external));
-        } else if (cfg.curveFile != null) {
-            // Set curve loaded from a file
-            EC_Curve curve = new EC_Curve(null, keyLength, keyClass);
-
-            FileInputStream in = new FileInputStream(cfg.curveFile);
-            curve.readCSV(in);
-            in.close();
-
-            byte[] external = curve.flatten();
-            if (external == null) {
-                throw new IOException("Couldn't read the curve file correctly.");
-            }
-            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, curve.getParams(), external));
-        } else {
-            // Set default curve
-            /* This command was generally causing problems for simulating on jcardsim.
-             * Since there, .clearKey() resets all the keys values, even the domain.
-             * This might break some other stuff.. But should not.
-             */
-            //commands.add(new Command.Clear(cardManager, keyPair));
-        }
-
-        return commands;
-    }
-
-    /**
-     * @param keyPair which keyPair/s to set the key params on
-     * @return a CommandAPDU setting params loaded on the keyPair/s
-     * @throws IOException if any of the key files cannot be found/opened
-     */
-    private Command prepareKey(byte keyPair) throws IOException {
-        short params = EC_Consts.PARAMETERS_NONE;
-        byte[] data = null;
-
-        if (cfg.key != null || cfg.namedKey != null) {
-            params |= EC_Consts.PARAMETERS_KEYPAIR;
-            EC_Params keypair;
-            if (cfg.key != null) {
-                keypair = new EC_Params(EC_Consts.PARAMETERS_KEYPAIR);
-
-                FileInputStream in = new FileInputStream(cfg.key);
-                keypair.readCSV(in);
-                in.close();
-            } else {
-                keypair = dataStore.getObject(EC_Keypair.class, cfg.namedKey);
-            }
-
-            data = keypair.flatten();
-            if (data == null) {
-                throw new IOException("Couldn't read the key file correctly.");
-            }
-        }
-
-        if (cfg.publicKey != null || cfg.namedPublicKey != null) {
-            params |= EC_Consts.PARAMETER_W;
-            EC_Params pub;
-            if (cfg.publicKey != null) {
-                pub = new EC_Params(EC_Consts.PARAMETER_W);
-
-                FileInputStream in = new FileInputStream(cfg.publicKey);
-                pub.readCSV(in);
-                in.close();
-            } else {
-                pub = dataStore.getObject(EC_Key.Public.class, cfg.namedPublicKey);
-                if (pub == null) {
-                    pub = dataStore.getObject(EC_Keypair.class, cfg.namedPublicKey);
-                }
-            }
-
-            byte[] pubkey = pub.flatten(EC_Consts.PARAMETER_W);
-            if (pubkey == null) {
-                throw new IOException("Couldn't read the public key file correctly.");
-            }
-            data = pubkey;
-        }
-        if (cfg.privateKey != null || cfg.namedPrivateKey != null) {
-            params |= EC_Consts.PARAMETER_S;
-            EC_Params priv;
-            if (cfg.privateKey != null) {
-                priv = new EC_Params(EC_Consts.PARAMETER_S);
-
-                FileInputStream in = new FileInputStream(cfg.privateKey);
-                priv.readCSV(in);
-                in.close();
-            } else {
-                priv = dataStore.getObject(EC_Key.Public.class, cfg.namedPrivateKey);
-                if (priv == null) {
-                    priv = dataStore.getObject(EC_Keypair.class, cfg.namedPrivateKey);
-                }
-            }
-
-            byte[] privkey = priv.flatten(EC_Consts.PARAMETER_S);
-            if (privkey == null) {
-                throw new IOException("Couldn't read the private key file correctly.");
-            }
-            data = Util.concatenate(data, privkey);
-        }
-        return new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, params, data);
-    }
-
-    /**
-     * @return
-     * @throws IOException if an IO error occurs when writing to key file.
-     */
-    private List<Command> testCurve() throws IOException {
-        List<Command> commands = new LinkedList<>();
-        commands.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH));
-        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDH));
-        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ONE, EC_Consts.KA_ECDH));
-        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ZERO, EC_Consts.KA_ECDH));
-        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_MAX, EC_Consts.KA_ECDH));
-        commands.add(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_FULLRANDOM, EC_Consts.KA_ECDH));
-        commands.add(new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, null));
-        return commands;
-    }
-
-    /**
-     * @param category
-     * @param field
-     * @return
-     * @throws IOException if an IO error occurs when writing to key file.
-     */
-    private List<Command> testCurves(String category, byte field) throws IOException {
-        List<Command> commands = new LinkedList<>();
-        Map<String, EC_Curve> curves = dataStore.getObjects(EC_Curve.class, category);
-        if (curves == null)
-            return commands;
-        for (Map.Entry<String, EC_Curve> entry : curves.entrySet()) {
-            EC_Curve curve = entry.getValue();
-            if (curve.getField() == field && (curve.getBits() == cfg.bits || cfg.all)) {
-                commands.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), field));
-                commands.add(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()));
-                commands.addAll(testCurve());
-                commands.add(new Command.Cleanup(cardManager));
-            }
-        }
-
-        return commands;
     }
 
     public static void main(String[] args) {
@@ -827,7 +599,7 @@ public class ECTester {
          * @param cli cli object, with parsed args
          * @return whether the options are valid.
          */
-        public boolean readOptions(CommandLine cli) {
+        boolean readOptions(CommandLine cli) {
             bits = Integer.parseInt(cli.getOptionValue("bit-size", "0"));
             all = cli.hasOption("all");
             primeField = cli.hasOption("fp");
@@ -929,7 +701,7 @@ public class ECTester {
                     return false;
                 }
             } else if (cli.hasOption("test")) {
-                if (!binaryField && primeField) {
+                if (!(binaryField || primeField)) {
                     binaryField = true;
                     primeField = true;
                 }

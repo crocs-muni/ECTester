@@ -1,10 +1,19 @@
 package cz.crcs.ectester.reader;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
+import cz.crcs.ectester.applet.EC_Consts;
+import cz.crcs.ectester.data.EC_Store;
+import cz.crcs.ectester.reader.ec.EC_Curve;
+import cz.crcs.ectester.reader.ec.EC_Key;
+import cz.crcs.ectester.reader.ec.EC_Keypair;
+import cz.crcs.ectester.reader.ec.EC_Params;
+import javacard.security.KeyPair;
 
 import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +41,139 @@ public abstract class Command {
         }
         return result;
     }
+
+
+    /**
+     * @param keyPair   which keyPair/s (local/remote) to set curve domain parameters on
+     * @param keyLength key length to choose
+     * @param keyClass  key class to choose
+     * @return a list of Commands to send in order to prepare the curve on the keypairs.
+     * @throws IOException if curve file cannot be found/opened
+     */
+    public static List<Command> prepareCurve(CardMngr cardManager, EC_Store dataStore, ECTester.Config cfg, byte keyPair, short keyLength, byte keyClass) throws IOException {
+        List<Command> commands = new ArrayList<>();
+
+        if (cfg.customCurve) {
+            // Set custom curve (one of the SECG curves embedded applet-side)
+            short domainParams = keyClass == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
+            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.getCurve(keyLength, keyClass), domainParams, null));
+        } else if (cfg.namedCurve != null) {
+            // Set a named curve.
+            // parse cfg.namedCurve -> cat / id | cat | id
+            EC_Curve curve = dataStore.getObject(EC_Curve.class, cfg.namedCurve);
+            if (curve == null) {
+                throw new IOException("Curve could no be found.");
+            }
+            if (curve.getBits() != keyLength) {
+                throw new IOException("Curve bits mismatch: " + curve.getBits() + " vs " + keyLength + " entered.");
+            }
+
+            byte[] external = curve.flatten();
+            if (external == null) {
+                throw new IOException("Couldn't read named curve data.");
+            }
+            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, curve.getParams(), external));
+        } else if (cfg.curveFile != null) {
+            // Set curve loaded from a file
+            EC_Curve curve = new EC_Curve(null, keyLength, keyClass);
+
+            FileInputStream in = new FileInputStream(cfg.curveFile);
+            curve.readCSV(in);
+            in.close();
+
+            byte[] external = curve.flatten();
+            if (external == null) {
+                throw new IOException("Couldn't read the curve file correctly.");
+            }
+            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, curve.getParams(), external));
+        } else {
+            // Set default curve
+            /* This command was generally causing problems for simulating on jcardsim.
+             * Since there, .clearKey() resets all the keys values, even the domain.
+             * This might break some other stuff.. But should not.
+             */
+            //commands.add(new Command.Clear(cardManager, keyPair));
+        }
+
+        return commands;
+    }
+
+
+    /**
+     * @param keyPair which keyPair/s to set the key params on
+     * @return a CommandAPDU setting params loaded on the keyPair/s
+     * @throws IOException if any of the key files cannot be found/opened
+     */
+    public static Command prepareKey(CardMngr cardManager, EC_Store dataStore, ECTester.Config cfg, byte keyPair) throws IOException {
+        short params = EC_Consts.PARAMETERS_NONE;
+        byte[] data = null;
+
+        if (cfg.key != null || cfg.namedKey != null) {
+            params |= EC_Consts.PARAMETERS_KEYPAIR;
+            EC_Params keypair;
+            if (cfg.key != null) {
+                keypair = new EC_Params(EC_Consts.PARAMETERS_KEYPAIR);
+
+                FileInputStream in = new FileInputStream(cfg.key);
+                keypair.readCSV(in);
+                in.close();
+            } else {
+                keypair = dataStore.getObject(EC_Keypair.class, cfg.namedKey);
+            }
+
+            data = keypair.flatten();
+            if (data == null) {
+                throw new IOException("Couldn't read the key file correctly.");
+            }
+        }
+
+        if (cfg.publicKey != null || cfg.namedPublicKey != null) {
+            params |= EC_Consts.PARAMETER_W;
+            EC_Params pub;
+            if (cfg.publicKey != null) {
+                pub = new EC_Params(EC_Consts.PARAMETER_W);
+
+                FileInputStream in = new FileInputStream(cfg.publicKey);
+                pub.readCSV(in);
+                in.close();
+            } else {
+                pub = dataStore.getObject(EC_Key.Public.class, cfg.namedPublicKey);
+                if (pub == null) {
+                    pub = dataStore.getObject(EC_Keypair.class, cfg.namedPublicKey);
+                }
+            }
+
+            byte[] pubkey = pub.flatten(EC_Consts.PARAMETER_W);
+            if (pubkey == null) {
+                throw new IOException("Couldn't read the public key file correctly.");
+            }
+            data = pubkey;
+        }
+        if (cfg.privateKey != null || cfg.namedPrivateKey != null) {
+            params |= EC_Consts.PARAMETER_S;
+            EC_Params priv;
+            if (cfg.privateKey != null) {
+                priv = new EC_Params(EC_Consts.PARAMETER_S);
+
+                FileInputStream in = new FileInputStream(cfg.privateKey);
+                priv.readCSV(in);
+                in.close();
+            } else {
+                priv = dataStore.getObject(EC_Key.Public.class, cfg.namedPrivateKey);
+                if (priv == null) {
+                    priv = dataStore.getObject(EC_Keypair.class, cfg.namedPrivateKey);
+                }
+            }
+
+            byte[] privkey = priv.flatten(EC_Consts.PARAMETER_S);
+            if (privkey == null) {
+                throw new IOException("Couldn't read the private key file correctly.");
+            }
+            data = Util.concatenate(data, privkey);
+        }
+        return new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, params, data);
+    }
+
 
     /**
      *
@@ -329,7 +471,6 @@ public abstract class Command {
     public static class Cleanup extends Command {
 
         /**
-         *
          * @param cardManager cardManager to send APDU through
          */
         protected Cleanup(CardMngr cardManager) {
@@ -353,7 +494,6 @@ public abstract class Command {
     public static class Support extends Command {
 
         /**
-         *
          * @param cardManager cardManager to send APDU through
          */
         protected Support(CardMngr cardManager) {

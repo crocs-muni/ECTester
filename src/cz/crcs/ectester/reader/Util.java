@@ -306,6 +306,18 @@ public class Util {
             case EC_Consts.CORRUPTION_INFINITY:
                 corrupt = "INFINITY";
                 break;
+            case EC_Consts.CORRUPTION_PREFIX_COMPRESSED:
+                corrupt = "COMPRESSED";
+                break;
+            case EC_Consts.CORRUPTION_PREFIX_HYBRID:
+                corrupt = "HYBRID";
+                break;
+            case EC_Consts.CORRUPTION_PREFIX_UNCOMPRESSED:
+                corrupt = "UNCOMPRESSED";
+                break;
+            case EC_Consts.CORRUPTION_MAX:
+                corrupt = "MAX";
+                break;
             default:
                 corrupt = "unknown";
                 break;
