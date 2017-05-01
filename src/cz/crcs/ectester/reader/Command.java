@@ -47,16 +47,15 @@ public abstract class Command {
      * @param keyPair   which keyPair/s (local/remote) to set curve domain parameters on
      * @param keyLength key length to choose
      * @param keyClass  key class to choose
-     * @return a list of Commands to send in order to prepare the curve on the keypairs.
+     * @return a Command to send in order to prepare the curve on the keypairs.
      * @throws IOException if curve file cannot be found/opened
      */
-    public static List<Command> prepareCurve(CardMngr cardManager, EC_Store dataStore, ECTester.Config cfg, byte keyPair, short keyLength, byte keyClass) throws IOException {
-        List<Command> commands = new ArrayList<>();
+    public static Command prepareCurve(CardMngr cardManager, EC_Store dataStore, ECTester.Config cfg, byte keyPair, short keyLength, byte keyClass) throws IOException {
 
         if (cfg.customCurve) {
             // Set custom curve (one of the SECG curves embedded applet-side)
             short domainParams = keyClass == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
-            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.getCurve(keyLength, keyClass), domainParams, null));
+            return new Command.Set(cardManager, keyPair, EC_Consts.getCurve(keyLength, keyClass), domainParams, null);
         } else if (cfg.namedCurve != null) {
             // Set a named curve.
             // parse cfg.namedCurve -> cat / id | cat | id
@@ -72,7 +71,7 @@ public abstract class Command {
             if (external == null) {
                 throw new IOException("Couldn't read named curve data.");
             }
-            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, curve.getParams(), external));
+            return new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, curve.getParams(), external);
         } else if (cfg.curveFile != null) {
             // Set curve loaded from a file
             EC_Curve curve = new EC_Curve(null, keyLength, keyClass);
@@ -85,7 +84,7 @@ public abstract class Command {
             if (external == null) {
                 throw new IOException("Couldn't read the curve file correctly.");
             }
-            commands.add(new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, curve.getParams(), external));
+            return new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, curve.getParams(), external);
         } else {
             // Set default curve
             /* This command was generally causing problems for simulating on jcardsim.
@@ -93,9 +92,8 @@ public abstract class Command {
              * This might break some other stuff.. But should not.
              */
             //commands.add(new Command.Clear(cardManager, keyPair));
+            return null;
         }
-
-        return commands;
     }
 
 

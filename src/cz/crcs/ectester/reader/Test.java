@@ -29,9 +29,6 @@ public class Test {
     }
 
     public Response getResponse() {
-        if (!hasRun) {
-            return null;
-        }
         return response;
     }
 

@@ -177,7 +177,7 @@ public class ECKeyGenerator {
                         short i3 = Util.makeShort(data[(short) (offset + 6)], data[(short) (offset + 7)]);
 //                        if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i1, i2, i3);
 //                        if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i1, i2, i3);
-                        // TODO fix this
+                        // TODO: fix this, ^^ fails on jcardsim, but is up to spec
                         if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i3, i2, i1);
                         if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i3, i2, i1);
                     } else {

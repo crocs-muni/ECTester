@@ -47,7 +47,6 @@ public class ECTester {
     private DirtyLogger systemOutLogger;
     private EC_Store dataStore;
     private Config cfg;
-    private TestSuite[] testSuites;
 
     private Options opts = new Options();
     private static final String CLI_HEADER = "\nECTester, a javacard Elliptic Curve Cryptograhy support tester/utility.\n\n";
@@ -209,7 +208,7 @@ public class ECTester {
         actions.addOption(Option.builder("ln").longOpt("list-named").desc("Print the list of supported named curves and keys.").hasArg().argName("what").optionalArg(true).build());
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate [amount] of EC keys.").hasArg().argName("amount").optionalArg(true).build());
-        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. [test_suite]:\n- default:\n- invalid:\n- wrong:\n- nonprime:\n- smallpub:\n- test-vectors:").hasArg().argName("test_suite").optionalArg(true).build());
+        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. [test_suite]:\n- default:\n- invalid:\n- wrong:\n- nonprime:\n- test-vectors:").hasArg().argName("test_suite").optionalArg(true).build());
         actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do ECDH, [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dhc").longOpt("ecdhc").desc("Do ECDHC, [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
@@ -333,7 +332,7 @@ public class ECTester {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
 
         new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass).send();
-        List<Command> curve = Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass);
+        Command curve = Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass);
 
         FileWriter keysFile = new FileWriter(cfg.output);
         keysFile.write("index;time;pubW;privS\n");
@@ -341,8 +340,8 @@ public class ECTester {
         int generated = 0;
         int retry = 0;
         while (generated < cfg.generateAmount || cfg.generateAmount == 0) {
-            if (cfg.fresh || generated == 0) {
-                Command.sendAll(curve);
+            if ((cfg.fresh || generated == 0) && curve != null) {
+                curve.send();
             }
 
             Command.Generate generate = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL);
@@ -429,7 +428,9 @@ public class ECTester {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
         List<Response> prepare = new LinkedList<>();
         prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, keyClass).send());
-        prepare.addAll(Command.sendAll(Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, keyClass)));
+        Command curve = Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, keyClass);
+        if (curve != null)
+            prepare.add(curve.send());
 
         systemOutLogger.println(Response.toString(prepare));
 
@@ -506,7 +507,9 @@ public class ECTester {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
         List<Response> prepare = new LinkedList<>();
         prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass).send());
-        prepare.addAll(Command.sendAll(Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass)));
+        Command curve = Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass);
+        if (curve != null)
+            prepare.add(curve.send());
 
         systemOutLogger.println(Response.toString(prepare));
 
