@@ -340,7 +340,7 @@ public class ECTesterApplet extends Applet {
      * @param apdu P1   = byte pubkey (KEYPAIR_*)
      *             P2   = byte privkey (KEYPAIR_*)
      *             DATA = byte export (EXPORT_TRUE || EXPORT_FALSE)
-     *             byte corruption (00 = valid, !00 = invalid)
+     *             short corruption (EC_Consts.CORRUPTION_* | ...)
      *             byte type (EC_Consts.KA_* | ...)
      */
     private void insECDH(APDU apdu) {
@@ -350,8 +350,8 @@ public class ECTesterApplet extends Applet {
         byte pubkey = apdubuf[ISO7816.OFFSET_P1];
         byte privkey = apdubuf[ISO7816.OFFSET_P2];
         byte export = apdubuf[ISO7816.OFFSET_CDATA];
-        byte corruption = apdubuf[(short) (ISO7816.OFFSET_CDATA + 1)];
-        byte type = apdubuf[(short) (ISO7816.OFFSET_CDATA + 2)];
+        short corruption = Util.getShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + 1));
+        byte type = apdubuf[(short) (ISO7816.OFFSET_CDATA + 3)];
 
         short len = ecdh(pubkey, privkey, export, corruption, type, apdubuf, (short) 0);
 
@@ -386,8 +386,9 @@ public class ECTesterApplet extends Applet {
     }
 
     /**
+     * Performs card memory cleanup via JCSystem.requestObjectDeletion()
      *
-     * @param apdu
+     * @param apdu no data
      */
     private void insCleanup(APDU apdu) {
         apdu.setIncomingAndReceive();
@@ -399,8 +400,10 @@ public class ECTesterApplet extends Applet {
     }
 
     /**
+     * Returns data about card support for various EC related tasks collected on applet
+     * install.
      *
-     * @param apdu
+     * @param apdu no data
      */
     private void insSupport(APDU apdu) {
         apdu.setIncomingAndReceive();
@@ -541,12 +544,12 @@ public class ECTesterApplet extends Applet {
      * @param privkey    keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
      * @param export     whether to export ECDH secret
      * @param corruption whether to invalidate the pubkey before ECDH
-     * @param type
+     * @param type       KeyAgreement type to test (EC_Consts.KA_* || ...)
      * @param buffer     buffer to write sw to, and export ECDH secret {@code if(export == EXPORT_TRUE)}
      * @param offset     output offset in buffer
      * @return length of data written to the buffer
      */
-    private short ecdh(byte pubkey, byte privkey, byte export, byte corruption, byte type, byte[] buffer, short offset) {
+    private short ecdh(byte pubkey, byte privkey, byte export, short corruption, byte type, byte[] buffer, short offset) {
         short length = 0;
 
         KeyPair pub = ((pubkey & KEYPAIR_LOCAL) != 0) ? localKeypair : remoteKeypair;
@@ -564,7 +567,7 @@ public class ECTesterApplet extends Applet {
                 secretLength = keyTester.testBOTH(priv, pub, ramArray, (short) 0, ramArray2, (short) 0, corruption);
                 break;
             case EC_Consts.KA_ANY:
-                secretLength = keyTester.testANY(priv, pub, ramArray, (short) 0, ramArray2, (short)0, corruption);
+                secretLength = keyTester.testANY(priv, pub, ramArray, (short) 0, ramArray2, (short) 0, corruption);
                 break;
             default:
                 ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
@@ -619,9 +622,9 @@ public class ECTesterApplet extends Applet {
     }
 
     /**
-     * @param buffer
-     * @param offset
-     * @return
+     * @param buffer buffer to write sw to
+     * @param offset output offset in buffer
+     * @return length of data written to the buffer
      */
     private short cleanup(byte[] buffer, short offset) {
         short sw = ISO7816.SW_NO_ERROR;
@@ -637,10 +640,9 @@ public class ECTesterApplet extends Applet {
     }
 
     /**
-     *
-     * @param buffer
-     * @param offset
-     * @return
+     * @param buffer buffer to write sw to
+     * @param offset output offset in buffer
+     * @return length of data written to the buffer
      */
     private short support(byte[] buffer, short offset) {
 
@@ -650,14 +652,14 @@ public class ECTesterApplet extends Applet {
             Util.setShort(buffer, offset, ISO7816.SW_INS_NOT_SUPPORTED);
         }
         if (keyTester.hasECDHC()) {
-            Util.setShort(buffer, (short) (offset+2), ecdhcSW);
+            Util.setShort(buffer, (short) (offset + 2), ecdhcSW);
         } else {
-            Util.setShort(buffer, (short) (offset+2), ISO7816.SW_INS_NOT_SUPPORTED);
+            Util.setShort(buffer, (short) (offset + 2), ISO7816.SW_INS_NOT_SUPPORTED);
         }
         if (keyTester.hasECDSA()) {
-            Util.setShort(buffer, (short) (offset+4), ecdsaSW);
+            Util.setShort(buffer, (short) (offset + 4), ecdsaSW);
         } else {
-            Util.setShort(buffer, (short) (offset+4), ISO7816.SW_INS_NOT_SUPPORTED);
+            Util.setShort(buffer, (short) (offset + 4), ISO7816.SW_INS_NOT_SUPPORTED);
         }
 
         return 6;

@@ -50,7 +50,7 @@ public class ECKeyTester {
         return sw;
     }
 
-    private short testKA(KeyAgreement ka, KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, byte corruption) {
+    private short testKA(KeyAgreement ka, KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, short corruption) {
         short length = 0;
         try {
             sw = ECUtil.kaCheck(ka);
@@ -72,16 +72,16 @@ public class ECKeyTester {
      * Uses {@code pubkeyBuffer} at {@code pubkeyOffset} for computations.
      * Output should equal with ECDHC output.
      *
-     * @param privatePair
-     * @param publicPair
-     * @param pubkeyBuffer
-     * @param pubkeyOffset
-     * @param outputBuffer
-     * @param outputOffset
-     * @param corruption
+     * @param privatePair  KeyPair from which the private key is used
+     * @param publicPair   KeyPair from which the public key is used
+     * @param pubkeyBuffer buffer to be used for the public key
+     * @param pubkeyOffset offset into pubkeyBuffer that can be used for the public key
+     * @param outputBuffer buffer to be used for the secret output
+     * @param outputOffset offset into the outputBuffer
+     * @param corruption   (EC_Consts.CORRUPTION_* | ...)
      * @return derived secret length
      **/
-    public short testECDH(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, byte corruption) {
+    public short testECDH(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, short corruption) {
         return testKA(ecdhKeyAgreement, privatePair, publicPair, pubkeyBuffer, pubkeyOffset, outputBuffer, outputOffset, corruption);
     }
 
@@ -90,31 +90,30 @@ public class ECKeyTester {
      * Uses {@code pubkeyBuffer} at {@code pubkeyOffset} for computations.
      * Output should equal to ECDH output.
      *
-     * @param privatePair
-     * @param publicPair
-     * @param pubkeyBuffer
-     * @param pubkeyOffset
-     * @param outputBuffer
-     * @param outputOffset
-     * @param corruption
+     * @param privatePair  KeyPair from which the private key is used
+     * @param publicPair   KeyPair from which the public key is used
+     * @param pubkeyBuffer buffer to be used for the public key
+     * @param pubkeyOffset offset into pubkeyBuffer that can be used for the public key
+     * @param outputBuffer buffer to be used for the secret output
+     * @param outputOffset offset into the outputBuffer
+     * @param corruption   (EC_Consts.CORRUPTION_* | ...)
      * @return derived secret length
      */
-    public short testECDHC(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, byte corruption) {
+    public short testECDHC(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, short corruption) {
         return testKA(ecdhcKeyAgreement, privatePair, publicPair, pubkeyBuffer, pubkeyOffset, outputBuffer, outputOffset, corruption);
     }
 
     /**
-     *
-     * @param privatePair
-     * @param publicPair
-     * @param pubkeyBuffer
-     * @param pubkeyOffset
-     * @param outputBuffer
-     * @param outputOffset
-     * @param corruption
+     * @param privatePair  KeyPair from which the private key is used
+     * @param publicPair   KeyPair from which the public key is used
+     * @param pubkeyBuffer buffer to be used for the public key
+     * @param pubkeyOffset offset into pubkeyBuffer that can be used for the public key
+     * @param outputBuffer buffer to be used for the secret output
+     * @param outputOffset offset into the outputBuffer
+     * @param corruption   (EC_Consts.CORRUPTION_* | ...)
      * @return
      */
-    public short testBOTH(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, byte corruption) {
+    public short testBOTH(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, short corruption) {
         short ecdhLength = testECDH(privatePair, publicPair, pubkeyBuffer, pubkeyOffset, outputBuffer, outputOffset, corruption);
         if (sw != ISO7816.SW_NO_ERROR) {
             return ecdhLength;
@@ -124,7 +123,7 @@ public class ECKeyTester {
         if (sw != ISO7816.SW_NO_ERROR) {
             return length;
         }
-        if (Util.arrayCompare(outputBuffer, outputOffset, outputBuffer, (short)(outputOffset + ecdhLength), ecdhLength) != 0) {
+        if (Util.arrayCompare(outputBuffer, outputOffset, outputBuffer, (short) (outputOffset + ecdhLength), ecdhLength) != 0) {
             sw = ECTesterApplet.SW_DH_DHC_MISMATCH;
         }
         return length;
@@ -132,34 +131,34 @@ public class ECKeyTester {
     }
 
     /**
-     *
-     * @param privatePair
-     * @param publicPair
-     * @param pubkeyBuffer
-     * @param pubkeyOffset
-     * @param outputBuffer
-     * @param outputOffset
-     * @param corruption
+     * @param privatePair  KeyPair from which the private key is used
+     * @param publicPair   KeyPair from which the public key is used
+     * @param pubkeyBuffer buffer to be used for the public key
+     * @param pubkeyOffset offset into pubkeyBuffer that can be used for the public key
+     * @param outputBuffer buffer to be used for the secret output
+     * @param outputOffset offset into the outputBuffer
+     * @param corruption   (EC_Consts.CORRUPTION_* | ...)
      * @return
      */
-    public short testANY(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[]outputBuffer, short outputOffset, byte corruption) {
+    public short testANY(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, short corruption) {
         short ecdhLength = testECDH(privatePair, publicPair, pubkeyBuffer, pubkeyOffset, outputBuffer, outputOffset, corruption);
         if (sw == ISO7816.SW_NO_ERROR)
             return ecdhLength;
         return testECDHC(privatePair, publicPair, pubkeyBuffer, pubkeyOffset, outputBuffer, outputOffset, corruption);
     }
+
     /**
      * Uses {@code signKey} to sign data from {@code inputBuffer} at {@code inputOffset} with {@code inputOffset}.
      * Then checks for correct signature length.
      * Then tries verifying the data with {@code verifyKey}.
      *
-     * @param signKey
-     * @param verifyKey
-     * @param inputBuffer
-     * @param inputOffset
-     * @param inputLength
-     * @param sigBuffer
-     * @param sigOffset
+     * @param signKey     key to use for signing
+     * @param verifyKey   key to use for verifying the signature
+     * @param inputBuffer buffer to sign data from
+     * @param inputOffset offset into inputBuffer to sign data from
+     * @param inputLength length of data to sign
+     * @param sigBuffer   buffer to output signature to
+     * @param sigOffset   offset into sigBuffer to output to
      * @return signature length
      */
     public short testECDSA(ECPrivateKey signKey, ECPublicKey verifyKey, byte[] inputBuffer, short inputOffset, short inputLength, byte[] sigBuffer, short sigOffset) {

@@ -950,18 +950,16 @@ public class EC_Consts {
 
 
     // getCorruptCurveParameter PARAMETER_CORRUPTION TYPES
-    public static final byte CORRUPTION_NONE = (byte) 0x00;
-    public static final byte CORRUPTION_FIXED = (byte) 0x01;
-    public static final byte CORRUPTION_FULLRANDOM = (byte) 0x02;
-    public static final byte CORRUPTION_ONEBYTERANDOM = (byte) 0x03;
-    public static final byte CORRUPTION_ZERO = (byte) 0x04;
-    public static final byte CORRUPTION_ONE = (byte) 0x05;
-    public static final byte CORRUPTION_MAX = (byte) 0x06;
-    public static final byte CORRUPTION_INCREMENT = (byte) 0x07;
-    public static final byte CORRUPTION_INFINITY = (byte) 0x08;
-    public static final byte CORRUPTION_PREFIX_COMPRESSED = (byte) 0x09;
-    public static final byte CORRUPTION_PREFIX_HYBRID = (byte) 0x0a;
-    public static final byte CORRUPTION_PREFIX_UNCOMPRESSED = (byte) 0x0b;
+    public static final short CORRUPTION_NONE = (short) 0x00;
+    public static final short CORRUPTION_FIXED = (short) 0x01;
+    public static final short CORRUPTION_FULLRANDOM = (short) 0x02;
+    public static final short CORRUPTION_ONEBYTERANDOM = (short) 0x04;
+    public static final short CORRUPTION_ZERO = (short) 0x08;
+    public static final short CORRUPTION_ONE = (short) 0x10;
+    public static final short CORRUPTION_MAX = (short) 0x20;
+    public static final short CORRUPTION_INCREMENT = (short) 0x40;
+    public static final short CORRUPTION_INFINITY = (short) 0x80;
+    public static final short CORRUPTION_COMPRESS = (short) 0x0100;
 
     // toX962 FORM types
     public static final byte X962_UNCOMPRESSED = (byte) 0x00;
@@ -1242,71 +1240,89 @@ public class EC_Consts {
         return length;
     }
 
-    public static short corruptParameter(byte corruption, byte[] buffer, short offset, short length) {
-        switch (corruption) {
-            case CORRUPTION_NONE:
-                break;
-            case CORRUPTION_FIXED:
-                if (length >= 1) {
-                    buffer[offset] = (byte) 0xcc;
-                    buffer[(short) (offset + length - 1)] = (byte) 0xcc;
-                }
-                break;
-            case CORRUPTION_FULLRANDOM:
-                randomData.generateData(buffer, offset, length);
-                break;
-            case CORRUPTION_ONEBYTERANDOM:
-                short first = Util.getShort(buffer, (short) 0); // save first two bytes
-
-                randomData.generateData(buffer, (short) 0, (short) 2); // generate position
-                short rngPos = Util.getShort(buffer, (short) 0); // save generated position
-
-                Util.setShort(buffer, (short) 0, first); // restore first two bytes
-
-                if (rngPos < 0) { // make positive
-                    rngPos = (short) -rngPos;
-                }
-                rngPos %= length; // make < param length
-
-                byte original = buffer[rngPos];
-                do {
-                    randomData.generateData(buffer, rngPos, (short) 1);
-                } while (original == buffer[rngPos]);
-                break;
-            case CORRUPTION_ZERO:
-                Util.arrayFillNonAtomic(buffer, offset, length, (byte) 0);
-                break;
-            case CORRUPTION_ONE:
-                Util.arrayFillNonAtomic(buffer, offset, length, (byte) 0);
-                buffer[(short) (offset + length)] = (byte) 1;
-                break;
-            case CORRUPTION_MAX:
-                Util.arrayFillNonAtomic(buffer, offset, length, (byte) 1);
-                break;
-            case CORRUPTION_INCREMENT:
-                short index = (short) (offset + length - 1);
-                byte value;
-                do {
-                    value = buffer[index];
-                    buffer[index--] = ++value;
-                } while (value == (byte) 0 && index >= offset);
-                break;
-            case CORRUPTION_INFINITY:
-                Util.arrayFillNonAtomic(buffer, offset, length, (byte) 0);
-                return 1;
-            case CORRUPTION_PREFIX_COMPRESSED:
-                buffer[offset] = 2;
-                break;
-            case CORRUPTION_PREFIX_HYBRID:
-                buffer[offset] = 6;
-                break;
-            case CORRUPTION_PREFIX_UNCOMPRESSED:
-                buffer[offset] = 4;
-                break;
-            default:
-                ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+    public static short corruptParameter(short corruption, byte[] buffer, short offset, short length) {
+        if (corruption == CORRUPTION_NONE) {
+            return length;
         }
 
+        short corruptionMask = CORRUPTION_FIXED;
+        while (corruptionMask <= CORRUPTION_COMPRESS) {
+            short corruptionPart = (short) (corruptionMask & corruption);
+            switch (corruptionPart) {
+                case 0:
+                    break;
+                case CORRUPTION_FIXED:
+                    if (length >= 1) {
+                        buffer[offset] = (byte) 0xcc;
+                        buffer[(short) (offset + length - 1)] = (byte) 0xcc;
+                    }
+                    break;
+                case CORRUPTION_FULLRANDOM:
+                    randomData.generateData(buffer, offset, length);
+                    break;
+                case CORRUPTION_ONEBYTERANDOM:
+                    short first = Util.getShort(buffer, (short) 0); // save first two bytes
+
+                    randomData.generateData(buffer, (short) 0, (short) 2); // generate position
+                    short rngPos = Util.getShort(buffer, (short) 0); // save generated position
+
+                    Util.setShort(buffer, (short) 0, first); // restore first two bytes
+
+                    if (rngPos < 0) { // make positive
+                        rngPos = (short) -rngPos;
+                    }
+                    rngPos %= length; // make < param length
+
+                    byte original = buffer[rngPos];
+                    do {
+                        randomData.generateData(buffer, rngPos, (short) 1);
+                    } while (original == buffer[rngPos]);
+                    break;
+                case CORRUPTION_ZERO:
+                    Util.arrayFillNonAtomic(buffer, offset, length, (byte) 0);
+                    break;
+                case CORRUPTION_ONE:
+                    Util.arrayFillNonAtomic(buffer, offset, length, (byte) 0);
+                    buffer[(short) (offset + length)] = (byte) 1;
+                    break;
+                case CORRUPTION_MAX:
+                    Util.arrayFillNonAtomic(buffer, offset, length, (byte) 1);
+                    break;
+                case CORRUPTION_INCREMENT:
+                    short index = (short) (offset + length - 1);
+                    byte value;
+                    do {
+                        value = buffer[index];
+                        buffer[index--] = ++value;
+                    } while (value == (byte) 0 && index >= offset);
+                    break;
+                case CORRUPTION_INFINITY:
+                    Util.arrayFillNonAtomic(buffer, offset, length, (byte) 0);
+                    length = 1;
+                    break;
+                case CORRUPTION_COMPRESS:
+                    if (length % 2 != 1) {
+                        // an uncompressed point should have odd length (since 1 byte type, + 2 * coords)
+                        ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+                    }
+                    short half = (short) ((length - 1) / 2);
+                    byte yLSB = buffer[(short) (offset + length)];
+                    byte yBit = (byte) (yLSB & 0x01);
+
+                    if (yBit == 1) {
+                        buffer[offset] = 3;
+                    } else {
+                        buffer[offset] = 2;
+                    }
+
+                    length = (short) (half + 1);
+                    break;
+                    //TODO: test hybrid form with not corresponding yBit (in first byte value) and y_value in the second half of the param
+                default:
+                    ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+            }
+            corruptionMask = (short) (corruptionMask << 1);
+        }
         return length;
     }
 

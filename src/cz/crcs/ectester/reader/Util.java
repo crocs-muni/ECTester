@@ -203,7 +203,7 @@ public class Util {
                     str = "FILE_NOT_FOUND";
                     break;
                 case ISO7816.SW_FUNC_NOT_SUPPORTED:
-                    str = "FILE_NOT_SUPPORTED";
+                    str = "FUNC_NOT_SUPPORTED";
                     break;
                 case ISO7816.SW_INCORRECT_P1P2:
                     str = "INCORRECT_P1P2";
@@ -279,7 +279,7 @@ public class Util {
         }
     }
 
-    public static String getCorruption(byte corruptionType) {
+    public static String getCorruption(short corruptionType) {
         String corrupt;
         switch (corruptionType) {
             case EC_Consts.CORRUPTION_NONE:
@@ -306,14 +306,8 @@ public class Util {
             case EC_Consts.CORRUPTION_INFINITY:
                 corrupt = "INFINITY";
                 break;
-            case EC_Consts.CORRUPTION_PREFIX_COMPRESSED:
+            case EC_Consts.CORRUPTION_COMPRESS:
                 corrupt = "COMPRESSED";
-                break;
-            case EC_Consts.CORRUPTION_PREFIX_HYBRID:
-                corrupt = "HYBRID";
-                break;
-            case EC_Consts.CORRUPTION_PREFIX_UNCOMPRESSED:
-                corrupt = "UNCOMPRESSED";
                 break;
             case EC_Consts.CORRUPTION_MAX:
                 corrupt = "MAX";

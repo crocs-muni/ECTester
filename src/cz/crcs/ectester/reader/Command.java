@@ -21,10 +21,10 @@ import java.util.List;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public abstract class Command {
-    protected CommandAPDU cmd;
-    protected CardMngr cardManager;
+    CommandAPDU cmd;
+    CardMngr cardManager;
 
-    protected Command(CardMngr cardManager) {
+    Command(CardMngr cardManager) {
         this.cardManager = cardManager;
     }
 
@@ -392,7 +392,7 @@ public abstract class Command {
         private byte pubkey;
         private byte privkey;
         private byte export;
-        private byte corruption;
+        private short corruption;
         private byte type;
 
         /**
@@ -402,10 +402,10 @@ public abstract class Command {
          * @param pubkey      keyPair to use for public key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
          * @param privkey     keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
          * @param export      whether to export ECDH secret
-         * @param corruption  whether to invalidate the pubkey before ECDH (EC_Consts.CORRUPTION_* || ...)
+         * @param corruption  whether to invalidate the pubkey before ECDH (EC_Consts.CORRUPTION_* | ...)
          * @param type        ECDH algorithm type (EC_Consts.KA_* | ...)
          */
-        protected ECDH(CardMngr cardManager, byte pubkey, byte privkey, byte export, byte corruption, byte type) {
+        protected ECDH(CardMngr cardManager, byte pubkey, byte privkey, byte export, short corruption, byte type) {
             super(cardManager);
             this.pubkey = pubkey;
             this.privkey = privkey;
@@ -413,7 +413,8 @@ public abstract class Command {
             this.corruption = corruption;
             this.type = type;
 
-            byte[] data = new byte[]{export, corruption, type};
+            byte[] data = new byte[]{export, 0,0, type};
+            Util.setShort(data, 1, corruption);
 
             this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ECDH, pubkey, privkey, data);
         }

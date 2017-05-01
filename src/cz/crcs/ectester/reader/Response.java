@@ -454,10 +454,10 @@ public abstract class Response {
         private byte pubkey;
         private byte privkey;
         private byte export;
-        private byte corruption;
+        private short corruption;
         private byte type;
 
-        protected ECDH(ResponseAPDU response, long time, byte pubkey, byte privkey, byte export, byte corruption, byte type) {
+        protected ECDH(ResponseAPDU response, long time, byte pubkey, byte privkey, byte export, short corruption, byte type) {
             super(response, time);
             this.pubkey = pubkey;
             this.privkey = privkey;
