@@ -78,5 +78,3 @@ For example:
 java -jar ECTester.jar -t invalid -nc nist -a -fp
 ```
 tests using all(`-a`), prime-field(`-fp`) NIST curves and pregenerated *invalid* public keys for these curves.
-
-**TODO: CURRENTLY NOT IMPLEMENTED**

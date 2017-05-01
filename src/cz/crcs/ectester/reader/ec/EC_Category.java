@@ -2,6 +2,7 @@ package cz.crcs.ectester.reader.ec;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -125,4 +126,15 @@ public class EC_Category {
         }
         return out.toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof EC_Category && Objects.equals(this.name, ((EC_Category) obj).name);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.name.hashCode() ^ this.directory.hashCode();
+    }
+
 }

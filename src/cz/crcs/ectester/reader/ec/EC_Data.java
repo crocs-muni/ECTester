@@ -3,16 +3,13 @@ package cz.crcs.ectester.reader.ec;
 import cz.crcs.ectester.reader.Util;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class EC_Data {
+public abstract class EC_Data {
     String id;
     int count;
     byte[][] data;
@@ -166,5 +163,34 @@ public class EC_Data {
     @Override
     public String toString() {
         return String.join(",", expand());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof EC_Data) {
+            EC_Data other = (EC_Data) obj;
+            if (this.id != null || other.id != null) {
+                return Objects.equals(this.id, other.id);
+            }
+
+            if (this.count != other.count)
+                return false;
+            for (int i = 0; i < this.count; ++i) {
+                if (!Arrays.equals(this.data[i], other.data[i])) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.id != null) {
+            return this.id.hashCode();
+        }
+        return Arrays.deepHashCode(this.data);
     }
 }

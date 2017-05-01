@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <pubkey>
     <id>160r1-1</id>
-    <inline>0xc4d7ddb433381eeb0c62b502b4059e616caf6fcf,0x0</inline>
+    <inline>0xc4d7ddb433381eeb0c62b502b4059e616caf6fcf,0x0000000000000000000000000000000000000000</inline>
     <curve>brainpool/brainpoolP160r1</curve>
     <desc>invalid order = 2</desc>
 </pubkey>

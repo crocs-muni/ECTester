@@ -4,7 +4,6 @@ import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.reader.Util;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 

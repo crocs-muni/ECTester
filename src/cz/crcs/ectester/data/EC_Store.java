@@ -178,21 +178,11 @@ public class EC_Store {
                 if (direct instanceof Element) {
                     Element elem = (Element) direct;
 
-                    NodeList childs = elem.getChildNodes();
-                    String id = null;
-                    for (int j = 0; j < childs.getLength(); ++j) {
-                        Node child = childs.item(j);
-                        if (child instanceof Element) {
-                            Element childElem = (Element) child;
-                            if (childElem.getTagName().equals("id")) {
-                                id = childElem.getTextContent();
-                                break;
-                            }
-                        }
-                    }
-                    if (id == null) {
+                    NodeList ids = elem.getElementsByTagName("id");
+                    if (ids.getLength() != 1) {
                         throw new SAXException("key no id?");
                     }
+                    String id = ids.item(0).getTextContent();
 
                     EC_Params result = parseKeylike(dir, elem);
 

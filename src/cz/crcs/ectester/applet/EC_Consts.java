@@ -1249,7 +1249,7 @@ public class EC_Consts {
         while (corruptionMask <= CORRUPTION_COMPRESS) {
             short corruptionPart = (short) (corruptionMask & corruption);
             switch (corruptionPart) {
-                case 0:
+                case (short) 0:
                     break;
                 case CORRUPTION_FIXED:
                     if (length >= 1) {
@@ -1301,14 +1301,14 @@ public class EC_Consts {
                     length = 1;
                     break;
                 case CORRUPTION_COMPRESS:
-                    if (length % 2 != 1) {
+
+                    if ((short) (length % 2) != 1) {
                         // an uncompressed point should have odd length (since 1 byte type, + 2 * coords)
                         ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
                     }
-                    short half = (short) ((length - 1) / 2);
+                    short half = (short) ((short)(length - 1) / 2);
                     byte yLSB = buffer[(short) (offset + length)];
                     byte yBit = (byte) (yLSB & 0x01);
-
                     if (yBit == 1) {
                         buffer[offset] = 3;
                     } else {

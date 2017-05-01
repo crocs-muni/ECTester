@@ -8,10 +8,7 @@ import javacard.security.KeyPair;
 
 import javax.smartcardio.CardException;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -250,6 +247,7 @@ public abstract class TestSuite {
              * Try ECDH with invalid public keys of increasing (or decreasing) order.
              */
             Map<String, EC_Key.Public> pubkeys = dataStore.getObjects(EC_Key.Public.class, "invalid");
+            Map<EC_Curve, List<EC_Key.Public>> curves = new HashMap<>();
             for (EC_Key.Public key : pubkeys.values()) {
                 EC_Curve curve = dataStore.getObject(EC_Curve.class, key.getCurve());
                 if (cfg.namedCurve != null && !(key.getCurve().startsWith(cfg.namedCurve) || key.getCurve().equals(cfg.namedCurve))) {
@@ -258,13 +256,24 @@ public abstract class TestSuite {
                 if (curve.getBits() != cfg.bits && !cfg.all) {
                     continue;
                 }
+                List<EC_Key.Public> keys = curves.getOrDefault(curve, new LinkedList<>());
+                keys.add(key);
+                curves.putIfAbsent(curve, keys);
+            }
+            for (Map.Entry<EC_Curve, List<EC_Key.Public>> e : curves.entrySet()) {
+                EC_Curve curve = e.getKey();
+                List<EC_Key.Public> keys = e.getValue();
+
                 tests.add(new Test(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), Test.Result.SUCCESS));
                 tests.add(new Test(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Test.Result.SUCCESS));
                 tests.add(new Test(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL), Test.Result.SUCCESS));
-                tests.add(new Test(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, key.getParams(), key.flatten()), Test.Result.ANY));
-                tests.add(new Test(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_BOTH), Test.Result.FAILURE));
+                for (EC_Key.Public pub : keys) {
+                    tests.add(new Test(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, pub.getParams(), pub.flatten()), Test.Result.ANY));
+                    tests.add(new Test(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_BOTH), Test.Result.FAILURE));
+                }
                 tests.add(new Test(new Command.Cleanup(cardManager), Test.Result.ANY));
             }
+
             return super.run(cardManager);
         }
     }
