@@ -120,7 +120,13 @@ public abstract class Response {
     public String toString(String inner) {
         StringBuilder suffix = new StringBuilder();
         for (int j = 0; j < getNumSW(); ++j) {
-            suffix.append(" ").append(Util.getSWString(getSW(j)));
+            short sw = getSW(j);
+            if (sw != 0) {
+                suffix.append(" ").append(Util.getSWString(sw));
+            }
+        }
+        if (suffix.length() == 0) {
+            suffix.append(" ").append(Util.getSWString(getNaturalSW()));
         }
         return String.format("%-62s:%4d ms : %s", inner, time / 1000000, suffix);
     }

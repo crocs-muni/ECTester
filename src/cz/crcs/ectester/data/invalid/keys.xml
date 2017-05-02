@@ -1,14 +1,62 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE keys [
-        <!ENTITY brainpool SYSTEM "invalid/brainpool/keys.xml">
-        <!ENTITY nist SYSTEM "invalid/nist/keys.xml">
-        <!ENTITY secg SYSTEM "invalid/secg/keys.xml">
+        <!ENTITY brainpoolP160r1 SYSTEM "invalid/brainpool/brainpoolP160r1.xml">
+        <!ENTITY brainpoolP160t1 SYSTEM "invalid/brainpool/brainpoolP160t1.xml">
+        <!ENTITY brainpoolP192r1 SYSTEM "invalid/brainpool/brainpoolP192r1.xml">
+        <!ENTITY brainpoolP192t1 SYSTEM "invalid/brainpool/brainpoolP192t1.xml">
+        <!ENTITY brainpoolP224r1 SYSTEM "invalid/brainpool/brainpoolP224r1.xml">
+        <!ENTITY brainpoolP224t1 SYSTEM "invalid/brainpool/brainpoolP224t1.xml">
+        <!ENTITY brainpoolP256r1 SYSTEM "invalid/brainpool/brainpoolP256r1.xml">
+        <!ENTITY brainpoolP256t1 SYSTEM "invalid/brainpool/brainpoolP256t1.xml">
+
+        <!ENTITY k163 SYSTEM "invalid/nist/k163.xml">
+        <!ENTITY k233 SYSTEM "invalid/nist/k233.xml">
+        <!ENTITY k283 SYSTEM "invalid/nist/k283.xml">
+        <!ENTITY b163 SYSTEM "invalid/nist/b163.xml">
+        <!ENTITY b233 SYSTEM "invalid/nist/b233.xml">
+        <!ENTITY b283 SYSTEM "invalid/nist/b283.xml">
+
+        <!ENTITY secp112r1 SYSTEM "invalid/secg/secp112r1.xml">
+        <!ENTITY secp112r2 SYSTEM "invalid/secg/secp112r2.xml">
+        <!ENTITY secp128r1 SYSTEM "invalid/secg/secp128r1.xml">
+        <!ENTITY secp128r2 SYSTEM "invalid/secg/secp128r2.xml">
+        <!ENTITY secp160r1 SYSTEM "invalid/secg/secp160r1.xml">
+        <!ENTITY secp160r2 SYSTEM "invalid/secg/secp160r2.xml">
+        <!ENTITY secp192r1 SYSTEM "invalid/secg/secp192r1.xml">
+        <!ENTITY secp224r1 SYSTEM "invalid/secg/secp224r1.xml">
+        <!ENTITY secp256r1 SYSTEM "invalid/secg/secp256r1.xml">
         ]>
 <keys xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="../schema.xsd"
       category="invalid"
       desc="">
-    &brainpool;
-    &nist;
-    &secg;
+    <!--
+    This is messy and what not, but Java XML api doesn't support
+    the XInclude selector necessary to make this work nicely, so XInclude is out...
+    -->
+    &brainpoolP160r1;
+    &brainpoolP160t1;
+    &brainpoolP192r1;
+    &brainpoolP192t1;
+    &brainpoolP224r1;
+    &brainpoolP224t1;
+    &brainpoolP256r1;
+    &brainpoolP256t1;
+
+    &k163;
+    &k233;
+    &k283;
+    &b163;
+    &b233;
+    &b283;
+
+    &secp112r1;
+    &secp112r2;
+    &secp128r1;
+    &secp128r2;
+    &secp160r1;
+    &secp160r2;
+    &secp192r1;
+    &secp224r1;
+    &secp256r1;
 </keys>
