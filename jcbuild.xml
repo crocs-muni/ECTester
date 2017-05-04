@@ -12,7 +12,7 @@
   <taskdef name="javacard" classname="pro.javacard.ant.JavaCard" classpath="ext/ant-javacard.jar"/>
 
   <target name="build" description="Builds the CAP file.">
-    <javacard jckit="${JC221}">
+    <javacard jckit="${JC222}">
       <cap output="!uploader/ectester.cap" sources="src/cz/crcs/ectester/applet" aid="4543546573746572" >
         <applet class="cz.crcs.ectester.applet.ECTesterApplet" aid="45435465737465723031"/>
       </cap>

@@ -126,7 +126,7 @@ public abstract class Response {
             }
         }
         if (suffix.length() == 0) {
-            suffix.append(" ").append(Util.getSWString(getNaturalSW()));
+            suffix.append(" [").append(Util.getSW(getNaturalSW())).append("]");
         }
         return String.format("%-62s:%4d ms : %s", inner, time / 1000000, suffix);
     }

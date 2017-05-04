@@ -1306,7 +1306,7 @@ public class EC_Consts {
                         // an uncompressed point should have odd length (since 1 byte type, + 2 * coords)
                         ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
                     }
-                    short half = (short) ((short)(length - 1) / 2);
+                    short half = (short) ((short) (length - 1) / 2);
                     byte yLSB = buffer[(short) (offset + length)];
                     byte yBit = (byte) (yLSB & 0x01);
                     if (yBit == 1) {
@@ -1317,7 +1317,7 @@ public class EC_Consts {
 
                     length = (short) (half + 1);
                     break;
-                    //TODO: test hybrid form with not corresponding yBit (in first byte value) and y_value in the second half of the param
+                //TODO: test hybrid form with not corresponding yBit (in first byte value) and y_value in the second half of the param
                 default:
                     ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
             }

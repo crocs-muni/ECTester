@@ -368,6 +368,9 @@ public class ECTester {
             keysFile.flush();
             generated++;
         }
+        Response cleanup = new Command.Cleanup(cardManager).send();
+        systemOutLogger.println(cleanup.toString());
+
         keysFile.close();
     }
 
@@ -474,6 +477,8 @@ public class ECTester {
 
             ++done;
         }
+        Response cleanup = new Command.Cleanup(cardManager).send();
+        systemOutLogger.println(cleanup.toString());
 
         if (out != null)
             out.close();
@@ -545,6 +550,9 @@ public class ECTester {
 
             ++done;
         }
+        Response cleanup = new Command.Cleanup(cardManager).send();
+        systemOutLogger.println(cleanup.toString());
+
         if (out != null)
             out.close();
     }

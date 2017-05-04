@@ -61,6 +61,10 @@ public class Test {
         hasRun = true;
     }
 
+    public boolean hasRun() {
+        return hasRun;
+    }
+
     @Override
     public String toString() {
         if (hasRun) {

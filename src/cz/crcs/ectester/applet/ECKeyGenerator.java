@@ -38,9 +38,15 @@ public class ECKeyGenerator {
         return ecKeyPair;
     }
 
+    /**
+     *
+     * @param keypair
+     * @param key
+     * @return
+     */
     public short clearPair(KeyPair keypair, byte key) {
         try {
-            sw = ECUtil.keypairCheck(keypair);
+            sw = AppletUtil.keypairCheck(keypair);
             if ((key & EC_Consts.KEY_PUBLIC) != 0) keypair.getPublic().clearKey();
             if ((key & EC_Consts.KEY_PRIVATE) != 0) keypair.getPrivate().clearKey();
         } catch (CardRuntimeException ce) {
@@ -55,7 +61,7 @@ public class ECKeyGenerator {
      */
     public short generatePair(KeyPair keypair) {
         try {
-            sw = ECUtil.keypairCheck(keypair);
+            sw = AppletUtil.keypairCheck(keypair);
             keypair.genKeyPair();
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
@@ -63,14 +69,41 @@ public class ECKeyGenerator {
         return sw;
     }
 
+    /**
+     *
+     * @param keypair
+     * @param curve
+     * @param buffer
+     * @param offset
+     * @return
+     */
     public short setCurve(KeyPair keypair, byte curve, byte[] buffer, short offset) {
         return setCurve(keypair, curve, EC_Consts.PARAMETERS_ALL, buffer, offset);
     }
 
+    /**
+     *
+     * @param keypair
+     * @param curve
+     * @param params
+     * @param buffer
+     * @param offset
+     * @return
+     */
     public short setCurve(KeyPair keypair, byte curve, short params, byte[] buffer, short offset) {
         return setCurve(keypair, EC_Consts.KEY_BOTH, curve, params, buffer, offset);
     }
 
+    /**
+     *
+     * @param keypair
+     * @param key
+     * @param curve
+     * @param params
+     * @param buffer
+     * @param offset
+     * @return
+     */
     public short setCurve(KeyPair keypair, byte key, byte curve, short params, byte[] buffer, short offset) {
         byte alg = EC_Consts.getCurveType(curve);
         sw = ISO7816.SW_NO_ERROR;
@@ -156,7 +189,7 @@ public class ECKeyGenerator {
      */
     public short setParameter(KeyPair keypair, byte key, short param, byte[] data, short offset, short length) {
         try {
-            sw = ECUtil.keypairCheck(keypair);
+            sw = AppletUtil.keypairCheck(keypair);
 
             ECPublicKey ecPublicKey = (ECPublicKey) keypair.getPublic();
             ECPrivateKey ecPrivateKey = (ECPrivateKey) keypair.getPrivate();
@@ -281,7 +314,7 @@ public class ECKeyGenerator {
     public short exportParameter(KeyPair keypair, byte key, short param, byte[] outputBuffer, short outputOffset) {
         short length = 0;
         try {
-            sw = ECUtil.keypairCheck(keypair);
+            sw = AppletUtil.keypairCheck(keypair);
             ECPublicKey ecPublicKey = (ECPublicKey) keypair.getPublic();
             ECPrivateKey ecPrivateKey = (ECPrivateKey) keypair.getPrivate();
 
@@ -390,8 +423,8 @@ public class ECKeyGenerator {
      */
     public short copyCurve(KeyPair from, KeyPair to, short params, byte[] buffer, short offset) {
         try {
-            sw = ECUtil.keypairCheck(from);
-            sw = ECUtil.keypairCheck(to);
+            sw = AppletUtil.keypairCheck(from);
+            sw = AppletUtil.keypairCheck(to);
 
             short param = EC_Consts.PARAMETER_FP;
             while (param <= EC_Consts.PARAMETER_K) {

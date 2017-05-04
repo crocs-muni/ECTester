@@ -166,115 +166,120 @@ public class Util {
         }
     }
 
+    public static String getSW(short sw) {
+        String str;
+        switch (sw) {
+            case ISO7816.SW_APPLET_SELECT_FAILED:
+                str = "APPLET_SELECT_FAILED";
+                break;
+            case ISO7816.SW_BYTES_REMAINING_00:
+                str = "BYTES_REMAINING";
+                break;
+            case ISO7816.SW_CLA_NOT_SUPPORTED:
+                str = "CLA_NOT_SUPPORTED";
+                break;
+            case ISO7816.SW_COMMAND_NOT_ALLOWED:
+                str = "COMMAND_NOT_ALLOWED";
+                break;
+            case ISO7816.SW_CONDITIONS_NOT_SATISFIED:
+                str = "CONDITIONS_NOT_SATISFIED";
+                break;
+            case ISO7816.SW_CORRECT_LENGTH_00:
+                str = "CORRECT_LENGTH";
+                break;
+            case ISO7816.SW_DATA_INVALID:
+                str = "DATA_INVALID";
+                break;
+            case ISO7816.SW_FILE_FULL:
+                str = "FILE_FULL";
+                break;
+            case ISO7816.SW_FILE_INVALID:
+                str = "FILE_INVALID";
+                break;
+            case ISO7816.SW_FILE_NOT_FOUND:
+                str = "FILE_NOT_FOUND";
+                break;
+            case ISO7816.SW_FUNC_NOT_SUPPORTED:
+                str = "FUNC_NOT_SUPPORTED";
+                break;
+            case ISO7816.SW_INCORRECT_P1P2:
+                str = "INCORRECT_P1P2";
+                break;
+            case ISO7816.SW_INS_NOT_SUPPORTED:
+                str = "INS_NOT_SUPPORTED";
+                break;
+            case ISO7816.SW_LOGICAL_CHANNEL_NOT_SUPPORTED:
+                str = "LOGICAL_CHANNEL_NOT_SUPPORTED";
+                break;
+            case ISO7816.SW_RECORD_NOT_FOUND:
+                str = "RECORD_NOT_FOUND";
+                break;
+            case ISO7816.SW_SECURE_MESSAGING_NOT_SUPPORTED:
+                str = "SECURE_MESSAGING_NOT_SUPPORTED";
+                break;
+            case ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED:
+                str = "SECURITY_STATUS_NOT_SATISFIED";
+                break;
+            case ISO7816.SW_UNKNOWN:
+                str = "UNKNOWN";
+                break;
+            case ISO7816.SW_WARNING_STATE_UNCHANGED:
+                str = "WARNING_STATE_UNCHANGED";
+                break;
+            case ISO7816.SW_WRONG_DATA:
+                str = "WRONG_DATA";
+                break;
+            case ISO7816.SW_WRONG_LENGTH:
+                str = "WRONG_LENGTH";
+                break;
+            case ISO7816.SW_WRONG_P1P2:
+                str = "WRONG_P1P2";
+                break;
+            case CryptoException.ILLEGAL_VALUE:
+                str = "ILLEGAL_VALUE";
+                break;
+            case CryptoException.UNINITIALIZED_KEY:
+                str = "UNINITIALIZED_KEY";
+                break;
+            case CryptoException.NO_SUCH_ALGORITHM:
+                str = "NO_SUCH_ALG";
+                break;
+            case CryptoException.INVALID_INIT:
+                str = "INVALID_INIT";
+                break;
+            case CryptoException.ILLEGAL_USE:
+                str = "ILLEGAL_USE";
+                break;
+            case ECTesterApplet.SW_SIG_VERIFY_FAIL:
+                str = "SIG_VERIFY_FAIL";
+                break;
+            case ECTesterApplet.SW_DH_DHC_MISMATCH:
+                str = "DH_DHC_MISMATCH";
+                break;
+            case ECTesterApplet.SW_KEYPAIR_NULL:
+                str = "KEYPAIR_NULL";
+                break;
+            case ECTesterApplet.SW_KA_NULL:
+                str = "KA_NULL";
+                break;
+            case ECTesterApplet.SW_SIGNATURE_NULL:
+                str = "SIGNATURE_NULL";
+                break;
+            case ECTesterApplet.SW_OBJECT_NULL:
+                str = "OBJECT_NULL";
+                break;
+            default:
+                str = "unknown";
+                break;
+        }
+        return str;
+    }
+
     public static String getSWString(short sw) {
         if (sw == ISO7816.SW_NO_ERROR) {
             return "OK\t(0x9000)";
         } else {
-            String str;
-            switch (sw) {
-                case ISO7816.SW_APPLET_SELECT_FAILED:
-                    str = "APPLET_SELECT_FAILED";
-                    break;
-                case ISO7816.SW_BYTES_REMAINING_00:
-                    str = "BYTES_REMAINING";
-                    break;
-                case ISO7816.SW_CLA_NOT_SUPPORTED:
-                    str = "CLA_NOT_SUPPORTED";
-                    break;
-                case ISO7816.SW_COMMAND_NOT_ALLOWED:
-                    str = "COMMAND_NOT_ALLOWED";
-                    break;
-                case ISO7816.SW_CONDITIONS_NOT_SATISFIED:
-                    str = "CONDITIONS_NOT_SATISFIED";
-                    break;
-                case ISO7816.SW_CORRECT_LENGTH_00:
-                    str = "CORRECT_LENGTH";
-                    break;
-                case ISO7816.SW_DATA_INVALID:
-                    str = "DATA_INVALID";
-                    break;
-                case ISO7816.SW_FILE_FULL:
-                    str = "FILE_FULL";
-                    break;
-                case ISO7816.SW_FILE_INVALID:
-                    str = "FILE_INVALID";
-                    break;
-                case ISO7816.SW_FILE_NOT_FOUND:
-                    str = "FILE_NOT_FOUND";
-                    break;
-                case ISO7816.SW_FUNC_NOT_SUPPORTED:
-                    str = "FUNC_NOT_SUPPORTED";
-                    break;
-                case ISO7816.SW_INCORRECT_P1P2:
-                    str = "INCORRECT_P1P2";
-                    break;
-                case ISO7816.SW_INS_NOT_SUPPORTED:
-                    str = "INS_NOT_SUPPORTED";
-                    break;
-                case ISO7816.SW_LOGICAL_CHANNEL_NOT_SUPPORTED:
-                    str = "LOGICAL_CHANNEL_NOT_SUPPORTED";
-                    break;
-                case ISO7816.SW_RECORD_NOT_FOUND:
-                    str = "RECORD_NOT_FOUND";
-                    break;
-                case ISO7816.SW_SECURE_MESSAGING_NOT_SUPPORTED:
-                    str = "SECURE_MESSAGING_NOT_SUPPORTED";
-                    break;
-                case ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED:
-                    str = "SECURITY_STATUS_NOT_SATISFIED";
-                    break;
-                case ISO7816.SW_UNKNOWN:
-                    str = "UNKNOWN";
-                    break;
-                case ISO7816.SW_WARNING_STATE_UNCHANGED:
-                    str = "WARNING_STATE_UNCHANGED";
-                    break;
-                case ISO7816.SW_WRONG_DATA:
-                    str = "WRONG_DATA";
-                    break;
-                case ISO7816.SW_WRONG_LENGTH:
-                    str = "WRONG_LENGTH";
-                    break;
-                case ISO7816.SW_WRONG_P1P2:
-                    str = "WRONG_P1P2";
-                    break;
-                case CryptoException.ILLEGAL_VALUE:
-                    str = "ILLEGAL_VALUE";
-                    break;
-                case CryptoException.UNINITIALIZED_KEY:
-                    str = "UNINITIALIZED_KEY";
-                    break;
-                case CryptoException.NO_SUCH_ALGORITHM:
-                    str = "NO_SUCH_ALG";
-                    break;
-                case CryptoException.INVALID_INIT:
-                    str = "INVALID_INIT";
-                    break;
-                case CryptoException.ILLEGAL_USE:
-                    str = "ILLEGAL_USE";
-                    break;
-                case ECTesterApplet.SW_SIG_VERIFY_FAIL:
-                    str = "SIG_VERIFY_FAIL";
-                    break;
-                case ECTesterApplet.SW_DH_DHC_MISMATCH:
-                    str = "DH_DHC_MISMATCH";
-                    break;
-                case ECTesterApplet.SW_KEYPAIR_NULL:
-                    str = "KEYPAIR_NULL";
-                    break;
-                case ECTesterApplet.SW_KA_NULL:
-                    str = "KA_NULL";
-                    break;
-                case ECTesterApplet.SW_SIGNATURE_NULL:
-                    str = "SIGNATURE_NULL";
-                    break;
-                case ECTesterApplet.SW_OBJECT_NULL:
-                    str = "OBJECT_NULL";
-                    break;
-                default:
-                    str = "unknown";
-                    break;
-            }
+            String str = getSW(sw);
             return String.format("fail\t(%s,\t0x%04x)", str, sw);
         }
     }

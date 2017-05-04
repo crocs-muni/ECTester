@@ -4,6 +4,7 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.ec.*;
+import javacard.security.Key;
 import javacard.security.KeyPair;
 
 import javax.smartcardio.CardException;
@@ -18,7 +19,6 @@ public abstract class TestSuite {
     EC_Store dataStore;
     ECTester.Config cfg;
     String name;
-    boolean hasRun = false;
     List<Test> tests = new LinkedList<>();
 
     TestSuite(EC_Store dataStore, ECTester.Config cfg, String name) {
@@ -29,19 +29,16 @@ public abstract class TestSuite {
 
     public List<Test> run(CardMngr cardManager) throws CardException, IOException {
         for (Test t : tests) {
-            t.run();
-            System.out.println(t);
+            if (!t.hasRun()) {
+                t.run();
+                System.out.println(t);
+            }
         }
-        hasRun = true;
         return tests;
     }
 
     public List<Test> getTests() {
         return Collections.unmodifiableList(tests);
-    }
-
-    public boolean hasRun() {
-        return hasRun;
     }
 
     public String getName() {
@@ -171,6 +168,9 @@ public abstract class TestSuite {
                 if (curve.getBits() != cfg.bits && !cfg.all) {
                     continue;
                 }
+                if (curve.getField() == KeyPair.ALG_EC_FP && !cfg.primeField || curve.getField() == KeyPair.ALG_EC_F2M && !cfg.binaryField) {
+                    continue;
+                }
                 EC_Params onekey = dataStore.getObject(EC_Keypair.class, result.getOneKey());
                 if (onekey == null) {
                     onekey = dataStore.getObject(EC_Key.Private.class, result.getOneKey());
@@ -206,7 +206,6 @@ public abstract class TestSuite {
 
     public static class NonPrime extends TestSuite {
 
-
         public NonPrime(EC_Store dataStore, ECTester.Config cfg) {
             super(dataStore, cfg, "nonprime");
         }
@@ -222,6 +221,12 @@ public abstract class TestSuite {
             Map<String, EC_Key> keys = dataStore.getObjects(EC_Key.class, "nonprime");
             for (EC_Key key : keys.values()) {
                 EC_Curve curve = dataStore.getObject(EC_Curve.class, key.getCurve());
+                if (cfg.namedCurve != null && !(key.getCurve().startsWith(cfg.namedCurve) || key.getCurve().equals(cfg.namedCurve))) {
+                    continue;
+                }
+                if (curve.getField() == KeyPair.ALG_EC_FP && !cfg.primeField || curve.getField() == KeyPair.ALG_EC_F2M && !cfg.binaryField) {
+                    continue;
+                }
                 if ((curve.getBits() == cfg.bits || cfg.all)) {
                     tests.add(new Test(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), Test.Result.SUCCESS));
                     tests.add(new Test(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Test.Result.ANY));
@@ -254,6 +259,9 @@ public abstract class TestSuite {
                     continue;
                 }
                 if (curve.getBits() != cfg.bits && !cfg.all) {
+                    continue;
+                }
+                if (curve.getField() == KeyPair.ALG_EC_FP && !cfg.primeField || curve.getField() == KeyPair.ALG_EC_F2M && !cfg.binaryField) {
                     continue;
                 }
                 List<EC_Key.Public> keys = curves.getOrDefault(curve, new LinkedList<>());

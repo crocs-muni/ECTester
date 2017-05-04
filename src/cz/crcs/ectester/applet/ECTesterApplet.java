@@ -30,6 +30,7 @@ import javacard.security.ECPrivateKey;
 import javacard.security.ECPublicKey;
 import javacard.security.KeyPair;
 import javacard.security.RandomData;
+import javacardx.apdu.ExtendedLength;
 
 /**
  * Applet part of ECTester, a tool for testing Elliptic curve support on javacards.
@@ -37,7 +38,7 @@ import javacard.security.RandomData;
  * @author Petr Svenda petr@svenda.com
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class ECTesterApplet extends Applet {
+public class ECTesterApplet extends Applet implements ExtendedLength {
 
     // MAIN INSTRUCTION CLASS
     public static final byte CLA_ECTESTERAPPLET = (byte) 0xB0;
@@ -71,9 +72,11 @@ public class ECTesterApplet extends Applet {
 
 
     private static final short ARRAY_LENGTH = (short) 0xff;
+    private static final short APDU_MAX_LENGTH = (short) 1024;
     // TEMPORARRY ARRAY IN RAM
     private byte[] ramArray = null;
     private byte[] ramArray2 = null;
+    private byte[] apduArray = null;
     // PERSISTENT ARRAY IN EEPROM
     private byte[] dataArray = null; // unused
 
@@ -102,6 +105,7 @@ public class ECTesterApplet extends Applet {
 
             ramArray = JCSystem.makeTransientByteArray(ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
             ramArray2 = JCSystem.makeTransientByteArray(ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
+            apduArray = JCSystem.makeTransientByteArray(APDU_MAX_LENGTH, JCSystem.CLEAR_ON_RESET);
 
             dataArray = new byte[ARRAY_LENGTH];
             Util.arrayFillNonAtomic(dataArray, (short) 0, ARRAY_LENGTH, (byte) 0);
@@ -126,49 +130,56 @@ public class ECTesterApplet extends Applet {
     public void process(APDU apdu) throws ISOException {
         // get the APDU buffer
         byte[] apduBuffer = apdu.getBuffer();
+        byte cla = apduBuffer[ISO7816.OFFSET_CLA];
+        byte ins = apduBuffer[ISO7816.OFFSET_INS];
 
         // ignore the applet select command dispached to the process
         if (selectingApplet()) {
             return;
         }
 
-        if (apduBuffer[ISO7816.OFFSET_CLA] == CLA_ECTESTERAPPLET) {
-            switch (apduBuffer[ISO7816.OFFSET_INS]) {
+        if (cla == CLA_ECTESTERAPPLET) {
+            AppletUtil.readAPDU(apdu, apduArray, APDU_MAX_LENGTH);
+
+            short length = 0;
+            switch (ins) {
                 case INS_ALLOCATE:
-                    insAllocate(apdu);
+                    length = insAllocate(apdu);
                     break;
                 case INS_CLEAR:
-                    insClear(apdu);
+                    length = insClear(apdu);
                     break;
                 case INS_SET:
-                    insSet(apdu);
+                    length = insSet(apdu);
                     break;
                 case INS_CORRUPT:
-                    insCorrupt(apdu);
+                    length = insCorrupt(apdu);
                     break;
                 case INS_GENERATE:
-                    insGenerate(apdu);
+                    length = insGenerate(apdu);
                     break;
                 case INS_EXPORT:
-                    insExport(apdu);
+                    length = insExport(apdu);
                     break;
                 case INS_ECDH:
-                    insECDH(apdu);
+                    length = insECDH(apdu);
                     break;
                 case INS_ECDSA:
-                    insECDSA(apdu);
+                    length = insECDSA(apdu);
                     break;
                 case INS_CLEANUP:
-                    insCleanup(apdu);
+                    length = insCleanup(apdu);
                     break;
                 case INS_SUPPORT:
-                    insSupport(apdu);
+                    length = insSupport(apdu);
                     break;
                 default:
                     // The INS code is not supported by the dispatcher
                     ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);
                     break;
             }
+
+            apdu.setOutgoingAndSend((short) 0, length);
         } else ISOException.throwIt(ISO7816.SW_CLA_NOT_SUPPORTED);
     }
 
@@ -180,18 +191,15 @@ public class ECTesterApplet extends Applet {
      *             P2   =
      *             DATA = short keyLength
      *             byte keyClass
+     * @return length of response
      */
-    private void insAllocate(APDU apdu) {
-        apdu.setIncomingAndReceive();
-        byte[] apdubuf = apdu.getBuffer();
+    private short insAllocate(APDU apdu) {
+        byte keyPair = apduArray[ISO7816.OFFSET_P1];
+        short cdata = apdu.getOffsetCdata();
+        short keyLength = Util.getShort(apduArray, cdata);
+        byte keyClass = apduArray[(short) (cdata + 2)];
 
-        byte keyPair = apdubuf[ISO7816.OFFSET_P1];
-        short keyLength = Util.getShort(apdubuf, ISO7816.OFFSET_CDATA);
-        byte keyClass = apdubuf[ISO7816.OFFSET_CDATA + 2];
-
-        short len = allocate(keyPair, keyLength, keyClass, apdubuf, (short) 0);
-
-        apdu.setOutgoingAndSend((short) 0, len);
+        return allocate(keyPair, keyLength, keyClass, apdu.getBuffer(), (short) 0);
     }
 
     /**
@@ -200,21 +208,20 @@ public class ECTesterApplet extends Applet {
      *
      * @param apdu P1   = byte keyPair (KEYPAIR_* | ...)
      *             P2   =
+     * @return length of response
      */
-    private void insClear(APDU apdu) {
-        apdu.setIncomingAndReceive();
-        byte[] apdubuf = apdu.getBuffer();
-        byte keyPair = apdubuf[ISO7816.OFFSET_P1];
+    private short insClear(APDU apdu) {
+        byte keyPair = apduArray[ISO7816.OFFSET_P1];
 
         short len = 0;
         if ((keyPair & KEYPAIR_LOCAL) != 0) {
-            len += clear(localKeypair, apdubuf, (short) 0);
+            len += clear(localKeypair, apdu.getBuffer(), (short) 0);
         }
         if ((keyPair & KEYPAIR_REMOTE) != 0) {
-            len += clear(remoteKeypair, apdubuf, len);
+            len += clear(remoteKeypair, apdu.getBuffer(), len);
         }
 
-        apdu.setOutgoingAndSend((short) 0, len);
+        return len;
     }
 
     /**
@@ -229,25 +236,24 @@ public class ECTesterApplet extends Applet {
      *             [short paramLength, byte[] param],
      *             for all params in params,
      *             in order: field,a,b,g,r,k,w,s
+     * @return length of response
      */
-    private void insSet(APDU apdu) {
-        apdu.setIncomingAndReceive();
-        byte[] apdubuf = apdu.getBuffer();
-
-        byte keyPair = apdubuf[ISO7816.OFFSET_P1];
-        byte curve = apdubuf[ISO7816.OFFSET_P2];
-        short params = Util.getShort(apdubuf, ISO7816.OFFSET_CDATA);
+    private short insSet(APDU apdu) {
+        byte keyPair = apduArray[ISO7816.OFFSET_P1];
+        byte curve = apduArray[ISO7816.OFFSET_P2];
+        short cdata = apdu.getOffsetCdata();
+        short params = Util.getShort(apduArray, cdata);
 
         short len = 0;
 
         if ((keyPair & KEYPAIR_LOCAL) != 0) {
-            len += set(localKeypair, curve, params, apdubuf, (short) (ISO7816.OFFSET_CDATA + 2), (short) 0);
+            len += set(localKeypair, curve, params, apduArray, (short) (cdata + 2), apdu.getBuffer(), (short) 0);
         }
         if ((keyPair & KEYPAIR_REMOTE) != 0) {
-            len += set(remoteKeypair, curve, params, apdubuf, (short) (ISO7816.OFFSET_CDATA + 2), len);
+            len += set(remoteKeypair, curve, params, apduArray, (short) (cdata + 2), apdu.getBuffer(), len);
         }
 
-        apdu.setOutgoingAndSend((short) 0, len);
+        return len;
     }
 
     /**
@@ -258,26 +264,25 @@ public class ECTesterApplet extends Applet {
      *             P2 = byte key (EC_Consts.KEY_* | ...)
      *             DATA = short params (EC_Consts.PARAMETER_* | ...)
      *             byte corruption (EC_Consts.CORRUPTION_* || ...)
+     * @return length of response
      */
-    private void insCorrupt(APDU apdu) {
-        apdu.setIncomingAndReceive();
-        byte[] apdubuf = apdu.getBuffer();
-
-        byte keyPair = apdubuf[ISO7816.OFFSET_P1];
-        byte key = apdubuf[ISO7816.OFFSET_P2];
-        short params = Util.getShort(apdubuf, ISO7816.OFFSET_CDATA);
-        byte corruption = apdubuf[(short) (ISO7816.OFFSET_CDATA + 2)];
+    private short insCorrupt(APDU apdu) {
+        byte keyPair = apduArray[ISO7816.OFFSET_P1];
+        byte key = apduArray[ISO7816.OFFSET_P2];
+        short cdata = apdu.getOffsetCdata();
+        short params = Util.getShort(apduArray, cdata);
+        byte corruption = apduArray[(short) (cdata + 2)];
 
         short len = 0;
         if ((keyPair & KEYPAIR_LOCAL) != 0) {
-            len += corrupt(localKeypair, key, params, corruption, apdubuf, (short) 0);
+            len += corrupt(localKeypair, key, params, corruption, apdu.getBuffer(), (short) 0);
         }
 
         if ((keyPair & KEYPAIR_REMOTE) != 0) {
-            len += corrupt(remoteKeypair, key, params, corruption, apdubuf, len);
+            len += corrupt(remoteKeypair, key, params, corruption, apdu.getBuffer(), len);
         }
 
-        apdu.setOutgoingAndSend((short) 0, len);
+        return len;
     }
 
     /**
@@ -286,22 +291,20 @@ public class ECTesterApplet extends Applet {
      *
      * @param apdu P1   = byte keyPair (KEYPAIR_* | ...)
      *             P2   =
+     * @return length of response
      */
-    private void insGenerate(APDU apdu) {
-        apdu.setIncomingAndReceive();
-        byte[] apdubuf = apdu.getBuffer();
-
-        byte keyPair = apdubuf[ISO7816.OFFSET_P1];
+    private short insGenerate(APDU apdu) {
+        byte keyPair = apduArray[ISO7816.OFFSET_P1];
 
         short len = 0;
         if ((keyPair & KEYPAIR_LOCAL) != 0) {
-            len += generate(localKeypair, apdubuf, (short) 0);
+            len += generate(localKeypair, apdu.getBuffer(), (short) 0);
         }
         if ((keyPair & KEYPAIR_REMOTE) != 0) {
-            len += generate(remoteKeypair, apdubuf, len);
+            len += generate(remoteKeypair, apdu.getBuffer(), len);
         }
 
-        apdu.setOutgoingAndSend((short) 0, len);
+        return len;
     }
 
     /**
@@ -310,27 +313,26 @@ public class ECTesterApplet extends Applet {
      * @param apdu P1   = byte keyPair (KEYPAIR_* | ...)
      *             P2   = byte key (EC_Consts.KEY_* | ...)
      *             DATA = short params
+     * @return length of response
      */
-    private void insExport(APDU apdu) {
-        apdu.setIncomingAndReceive();
-        byte[] apdubuf = apdu.getBuffer();
-
-        byte keyPair = apdubuf[ISO7816.OFFSET_P1];
-        byte key = apdubuf[ISO7816.OFFSET_P2];
-        short params = Util.getShort(apdubuf, ISO7816.OFFSET_CDATA);
+    private short insExport(APDU apdu) {
+        byte keyPair = apduArray[ISO7816.OFFSET_P1];
+        byte key = apduArray[ISO7816.OFFSET_P2];
+        short cdata = apdu.getOffsetCdata();
+        short params = Util.getShort(apduArray, cdata);
 
         short swOffset = 0;
         short len = (short) (keyPair == KEYPAIR_BOTH ? 4 : 2);
 
         if ((keyPair & KEYPAIR_LOCAL) != 0) {
-            len += export(localKeypair, key, params, apdubuf, swOffset, len);
+            len += export(localKeypair, key, params, apdu.getBuffer(), swOffset, len);
             swOffset += 2;
         }
         if ((keyPair & KEYPAIR_REMOTE) != 0) {
-            len += export(remoteKeypair, key, params, apdubuf, swOffset, len);
+            len += export(remoteKeypair, key, params, apdu.getBuffer(), swOffset, len);
         }
 
-        apdu.setOutgoingAndSend((short) 0, len);
+        return len;
     }
 
     /**
@@ -342,20 +344,17 @@ public class ECTesterApplet extends Applet {
      *             DATA = byte export (EXPORT_TRUE || EXPORT_FALSE)
      *             short corruption (EC_Consts.CORRUPTION_* | ...)
      *             byte type (EC_Consts.KA_* | ...)
+     * @return length of response
      */
-    private void insECDH(APDU apdu) {
-        apdu.setIncomingAndReceive();
-        byte[] apdubuf = apdu.getBuffer();
+    private short insECDH(APDU apdu) {
+        byte pubkey = apduArray[ISO7816.OFFSET_P1];
+        byte privkey = apduArray[ISO7816.OFFSET_P2];
+        short cdata = apdu.getOffsetCdata();
+        byte export = apduArray[cdata];
+        short corruption = Util.getShort(apduArray, (short) (cdata + 1));
+        byte type = apduArray[(short) (cdata + 3)];
 
-        byte pubkey = apdubuf[ISO7816.OFFSET_P1];
-        byte privkey = apdubuf[ISO7816.OFFSET_P2];
-        byte export = apdubuf[ISO7816.OFFSET_CDATA];
-        short corruption = Util.getShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + 1));
-        byte type = apdubuf[(short) (ISO7816.OFFSET_CDATA + 3)];
-
-        short len = ecdh(pubkey, privkey, export, corruption, type, apdubuf, (short) 0);
-
-        apdu.setOutgoingAndSend((short) 0, len);
+        return ecdh(pubkey, privkey, export, corruption, type, apdu.getBuffer(), (short) 0);
     }
 
     /**
@@ -366,37 +365,34 @@ public class ECTesterApplet extends Applet {
      *             P2   = byte export (EXPORT_TRUE || EXPORT_FALSE)
      *             DATA = short dataLength (00 = random data generated, !00 = data length)
      *             byte[] data
+     * @return length of response
      */
-    private void insECDSA(APDU apdu) {
-        apdu.setIncomingAndReceive();
-        byte[] apdubuf = apdu.getBuffer();
-
-        byte keyPair = apdubuf[ISO7816.OFFSET_P1];
-        byte export = apdubuf[ISO7816.OFFSET_P2];
+    private short insECDSA(APDU apdu) {
+        byte keyPair = apduArray[ISO7816.OFFSET_P1];
+        byte export = apduArray[ISO7816.OFFSET_P2];
+        short cdata = apdu.getOffsetCdata();
 
         short len = 0;
         if ((keyPair & KEYPAIR_LOCAL) != 0) {
-            len += ecdsa(localKeypair, export, apdubuf, ISO7816.OFFSET_CDATA, (short) 0);
+            len += ecdsa(localKeypair, export, apduArray, cdata, apdu.getBuffer(), (short) 0);
         }
         if ((keyPair & KEYPAIR_REMOTE) != 0) {
-            len += ecdsa(remoteKeypair, export, apdubuf, ISO7816.OFFSET_CDATA, len);
+            len += ecdsa(remoteKeypair, export, apduArray, cdata, apdu.getBuffer(), len);
         }
 
-        apdu.setOutgoingAndSend((short) 0, len);
+        return len;
     }
 
     /**
      * Performs card memory cleanup via JCSystem.requestObjectDeletion()
      *
      * @param apdu no data
+     * @return length of response
      */
-    private void insCleanup(APDU apdu) {
-        apdu.setIncomingAndReceive();
+    private short insCleanup(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
 
-        short len = cleanup(apdubuf, (short) 0);
-
-        apdu.setOutgoingAndSend((short) 0, len);
+        return cleanup(apdubuf, (short) 0);
     }
 
     /**
@@ -404,35 +400,33 @@ public class ECTesterApplet extends Applet {
      * install.
      *
      * @param apdu no data
+     * @return length of response
      */
-    private void insSupport(APDU apdu) {
-        apdu.setIncomingAndReceive();
+    private short insSupport(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
 
-        short len = support(apdubuf, (short) 0);
-
-        apdu.setOutgoingAndSend((short) 0, len);
+        return support(apdubuf, (short) 0);
     }
 
     /**
      * @param keyPair   which keyPair to use, local/remote (KEYPAIR_* | ...)
      * @param keyLength key length to set
      * @param keyClass  key class to allocate
-     * @param buffer    buffer to write sw to
-     * @param offset    offset into buffer
+     * @param outBuffer buffer to write sw to
+     * @param outOffset offset into buffer
      * @return length of data written to the buffer
      */
-    private short allocate(byte keyPair, short keyLength, byte keyClass, byte[] buffer, short offset) {
+    private short allocate(byte keyPair, short keyLength, byte keyClass, byte[] outBuffer, short outOffset) {
         short length = 0;
         if ((keyPair & KEYPAIR_LOCAL) != 0) {
             localKeypair = keyGenerator.allocatePair(keyClass, keyLength);
-            Util.setShort(buffer, offset, keyGenerator.getSW());
+            Util.setShort(outBuffer, outOffset, keyGenerator.getSW());
             length += 2;
         }
 
         if ((keyPair & KEYPAIR_REMOTE) != 0) {
             remoteKeypair = keyGenerator.allocatePair(keyClass, keyLength);
-            Util.setShort(buffer, (short) (offset + length), keyGenerator.getSW());
+            Util.setShort(outBuffer, (short) (outOffset + length), keyGenerator.getSW());
             length += 2;
         }
 
@@ -440,14 +434,14 @@ public class ECTesterApplet extends Applet {
     }
 
     /**
-     * @param keyPair KeyPair to clear
-     * @param buffer  buffer to write sw to
-     * @param offset  offset into buffer
+     * @param keyPair   KeyPair to clear
+     * @param outBuffer buffer to write sw to
+     * @param outOffset offset into buffer
      * @return length of data written to the buffer
      */
-    private short clear(KeyPair keyPair, byte[] buffer, short offset) {
+    private short clear(KeyPair keyPair, byte[] outBuffer, short outOffset) {
         short sw = keyGenerator.clearPair(keyPair, EC_Consts.KEY_BOTH);
-        Util.setShort(buffer, offset, sw);
+        Util.setShort(outBuffer, outOffset, sw);
 
         return 2;
     }
@@ -456,12 +450,13 @@ public class ECTesterApplet extends Applet {
      * @param keyPair   KeyPair to set params on
      * @param curve     curve to set (EC_Consts.CURVE_*)
      * @param params    parameters to set (EC_Consts.PARAMETER_* | ...)
-     * @param buffer    buffer to read params from and write sw to
+     * @param inBuffer  buffer to read params from
      * @param inOffset  input offset in buffer
+     * @param outBuffer buffer to write sw to
      * @param outOffset output offset in buffer
      * @return length of data written to the buffer
      */
-    private short set(KeyPair keyPair, byte curve, short params, byte[] buffer, short inOffset, short outOffset) {
+    private short set(KeyPair keyPair, byte curve, short params, byte[] inBuffer, short inOffset, byte[] outBuffer, short outOffset) {
         short sw = ISO7816.SW_NO_ERROR;
 
         switch (curve) {
@@ -470,7 +465,7 @@ public class ECTesterApplet extends Applet {
                 break;
             case EC_Consts.CURVE_external:
                 //external
-                sw = keyGenerator.setExternalCurve(keyPair, params, buffer, inOffset);
+                sw = keyGenerator.setExternalCurve(keyPair, params, inBuffer, inOffset);
                 break;
             default:
                 //custom
@@ -478,7 +473,7 @@ public class ECTesterApplet extends Applet {
                 break;
         }
 
-        Util.setShort(buffer, outOffset, sw);
+        Util.setShort(outBuffer, outOffset, sw);
         return 2;
     }
 
@@ -487,54 +482,54 @@ public class ECTesterApplet extends Applet {
      * @param key        key to corrupt (EC_Consts.KEY_* | ...)
      * @param params     parameters to corrupt (EC_Consts.PARAMETER_* | ...)
      * @param corruption corruption type (EC_Consts.CORRUPTION_*)
-     * @param buffer     buffer to output sw to
-     * @param offset     output offset in buffer
+     * @param outBuffer  buffer to output sw to
+     * @param outOffset  output offset in buffer
      * @return length of data written to the buffer
      */
-    private short corrupt(KeyPair keyPair, byte key, short params, byte corruption, byte[] buffer, short offset) {
+    private short corrupt(KeyPair keyPair, byte key, short params, byte corruption, byte[] outBuffer, short outOffset) {
         short sw = keyGenerator.corruptCurve(keyPair, key, params, corruption, ramArray, (short) 0);
-        Util.setShort(buffer, offset, sw);
+        Util.setShort(outBuffer, outOffset, sw);
         return 2;
     }
 
     /**
-     * @param keyPair KeyPair to generate
-     * @param buffer  buffer to write sw to
-     * @param offset  output offset in buffer
+     * @param keyPair   KeyPair to generate
+     * @param outBuffer buffer to output sw to
+     * @param outOffset output offset in buffer
      * @return length of data written to the buffer
      */
-    private short generate(KeyPair keyPair, byte[] buffer, short offset) {
+    private short generate(KeyPair keyPair, byte[] outBuffer, short outOffset) {
         short sw = keyGenerator.generatePair(keyPair);
-        Util.setShort(buffer, offset, sw);
+        Util.setShort(outBuffer, outOffset, sw);
 
         return 2;
     }
 
     /**
-     * @param keyPair  KeyPair to export from
-     * @param key      which key to export from (EC_Consts.KEY_PUBLIC | EC_Consts.KEY_PRIVATE)
-     * @param params   which params to export (EC_Consts.PARAMETER_* | ...)
-     * @param buffer   buffer to export params to
-     * @param swOffset offset to output sw to buffer
-     * @param offset   output offset in buffer
+     * @param keyPair   KeyPair to export from
+     * @param key       which key to export from (EC_Consts.KEY_PUBLIC | EC_Consts.KEY_PRIVATE)
+     * @param params    which params to export (EC_Consts.PARAMETER_* | ...)
+     * @param outBuffer buffer to export params to
+     * @param swOffset  offset to output sw to buffer
+     * @param outOffset output offset in buffer
      * @return length of data written to the buffer
      */
-    private short export(KeyPair keyPair, byte key, short params, byte[] buffer, short swOffset, short offset) {
+    private short export(KeyPair keyPair, byte key, short params, byte[] outBuffer, short swOffset, short outOffset) {
         short length = 0;
 
         short sw = ISO7816.SW_NO_ERROR;
         if ((key & EC_Consts.KEY_PUBLIC) != 0) {
             //export params from public
-            length += keyGenerator.exportParameters(keyPair, EC_Consts.KEY_PUBLIC, params, buffer, offset);
+            length += keyGenerator.exportParameters(keyPair, EC_Consts.KEY_PUBLIC, params, outBuffer, outOffset);
             sw = keyGenerator.getSW();
         }
         //TODO unify this, now that param key == the passed on param.
         if ((key & EC_Consts.KEY_PRIVATE) != 0 && sw == ISO7816.SW_NO_ERROR) {
             //export params from private
-            length += keyGenerator.exportParameters(keyPair, EC_Consts.KEY_PRIVATE, params, buffer, (short) (offset + length));
+            length += keyGenerator.exportParameters(keyPair, EC_Consts.KEY_PRIVATE, params, outBuffer, (short) (outOffset + length));
             sw = keyGenerator.getSW();
         }
-        Util.setShort(buffer, swOffset, sw);
+        Util.setShort(outBuffer, swOffset, sw);
 
         return length;
     }
@@ -545,11 +540,11 @@ public class ECTesterApplet extends Applet {
      * @param export     whether to export ECDH secret
      * @param corruption whether to invalidate the pubkey before ECDH
      * @param type       KeyAgreement type to test (EC_Consts.KA_* || ...)
-     * @param buffer     buffer to write sw to, and export ECDH secret {@code if(export == EXPORT_TRUE)}
-     * @param offset     output offset in buffer
+     * @param outBuffer  buffer to write sw to, and export ECDH secret {@code if(export == EXPORT_TRUE)}
+     * @param outOffset  output offset in buffer
      * @return length of data written to the buffer
      */
-    private short ecdh(byte pubkey, byte privkey, byte export, short corruption, byte type, byte[] buffer, short offset) {
+    private short ecdh(byte pubkey, byte privkey, byte export, short corruption, byte type, byte[] outBuffer, short outOffset) {
         short length = 0;
 
         KeyPair pub = ((pubkey & KEYPAIR_LOCAL) != 0) ? localKeypair : remoteKeypair;
@@ -573,13 +568,13 @@ public class ECTesterApplet extends Applet {
                 ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
         }
 
-        Util.setShort(buffer, offset, keyTester.getSW());
+        Util.setShort(outBuffer, outOffset, keyTester.getSW());
         length += 2;
 
         if ((export == EXPORT_TRUE)) {
-            Util.setShort(buffer, (short) (offset + length), secretLength);
+            Util.setShort(outBuffer, (short) (outOffset + length), secretLength);
             length += 2;
-            Util.arrayCopyNonAtomic(ramArray2, (short) 0, buffer, (short) (offset + length), secretLength);
+            Util.arrayCopyNonAtomic(ramArray2, (short) 0, outBuffer, (short) (outOffset + length), secretLength);
             length += secretLength;
         }
 
@@ -589,32 +584,33 @@ public class ECTesterApplet extends Applet {
     /**
      * @param sign      keyPair to use for signing and verification
      * @param export    whether to export ECDSA signature
-     * @param buffer    buffer to write sw to, and export ECDSA signature {@code if(export == EXPORT_TRUE)}
+     * @param inBuffer  buffer to read dataLength and data to sign from
      * @param inOffset  input offset in buffer
+     * @param outBuffer buffer to write sw to, and export ECDSA signature {@code if(export == EXPORT_TRUE)}
      * @param outOffset output offset in buffer
      * @return length of data written to the buffer
      */
-    private short ecdsa(KeyPair sign, byte export, byte[] buffer, short inOffset, short outOffset) {
+    private short ecdsa(KeyPair sign, byte export, byte[] inBuffer, short inOffset, byte[] outBuffer, short outOffset) {
         short length = 0;
 
-        short dataLength = Util.getShort(buffer, inOffset);
+        short dataLength = Util.getShort(inBuffer, inOffset);
         if (dataLength == 0) { //no data to sign
             //generate random
             dataLength = 64;
             randomData.generateData(ramArray, (short) 0, dataLength);
         } else {
-            Util.arrayCopyNonAtomic(buffer, (short) (inOffset + 2), ramArray, (short) 0, dataLength);
+            Util.arrayCopyNonAtomic(inBuffer, (short) (inOffset + 2), ramArray, (short) 0, dataLength);
         }
 
         short signatureLength = keyTester.testECDSA((ECPrivateKey) sign.getPrivate(), (ECPublicKey) sign.getPublic(), ramArray, (short) 0, dataLength, ramArray2, (short) 0);
-        Util.setShort(buffer, outOffset, keyTester.getSW());
+        Util.setShort(outBuffer, outOffset, keyTester.getSW());
         length += 2;
 
         if (export == EXPORT_TRUE) {
-            Util.setShort(buffer, (short) (outOffset + length), signatureLength);
+            Util.setShort(outBuffer, (short) (outOffset + length), signatureLength);
             length += 2;
 
-            Util.arrayCopyNonAtomic(ramArray2, (short) 0, buffer, (short) (outOffset + length), signatureLength);
+            Util.arrayCopyNonAtomic(ramArray2, (short) 0, outBuffer, (short) (outOffset + length), signatureLength);
             length += signatureLength;
         }
 

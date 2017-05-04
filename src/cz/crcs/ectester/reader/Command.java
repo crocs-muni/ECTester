@@ -66,6 +66,9 @@ public abstract class Command {
             if (curve.getBits() != keyLength) {
                 throw new IOException("Curve bits mismatch: " + curve.getBits() + " vs " + keyLength + " entered.");
             }
+            if (curve.getField() != keyClass) {
+                throw new IOException("Curve field mismatch.");
+            }
 
             byte[] external = curve.flatten();
             if (external == null) {

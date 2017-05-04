@@ -3,7 +3,6 @@ package cz.crcs.ectester.applet;
 
 import javacard.framework.CardRuntimeException;
 import javacard.framework.ISO7816;
-import javacard.framework.Util;
 import javacard.security.*;
 
 /**
@@ -53,9 +52,9 @@ public class ECKeyTester {
     private short testKA(KeyAgreement ka, KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, short corruption) {
         short length = 0;
         try {
-            sw = ECUtil.kaCheck(ka);
-            sw = ECUtil.keypairCheck(privatePair);
-            sw = ECUtil.keypairCheck(publicPair);
+            sw = AppletUtil.kaCheck(ka);
+            sw = AppletUtil.keypairCheck(privatePair);
+            sw = AppletUtil.keypairCheck(publicPair);
 
             ka.init(privatePair.getPrivate());
             short pubkeyLength = ((ECPublicKey) publicPair.getPublic()).getW(pubkeyBuffer, pubkeyOffset);
@@ -123,7 +122,7 @@ public class ECKeyTester {
         if (sw != ISO7816.SW_NO_ERROR) {
             return length;
         }
-        if (Util.arrayCompare(outputBuffer, outputOffset, outputBuffer, (short) (outputOffset + ecdhLength), ecdhLength) != 0) {
+        if (javacard.framework.Util.arrayCompare(outputBuffer, outputOffset, outputBuffer, (short) (outputOffset + ecdhLength), ecdhLength) != 0) {
             sw = ECTesterApplet.SW_DH_DHC_MISMATCH;
         }
         return length;
@@ -164,7 +163,7 @@ public class ECKeyTester {
     public short testECDSA(ECPrivateKey signKey, ECPublicKey verifyKey, byte[] inputBuffer, short inputOffset, short inputLength, byte[] sigBuffer, short sigOffset) {
         short length = 0;
         try {
-            sw = ECUtil.signCheck(ecdsaSignature);
+            sw = AppletUtil.signCheck(ecdsaSignature);
 
             ecdsaSignature.init(signKey, Signature.MODE_SIGN);
             length = ecdsaSignature.sign(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset);
