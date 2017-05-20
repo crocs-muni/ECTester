@@ -280,7 +280,7 @@ public class Util {
             return "OK\t(0x9000)";
         } else {
             String str = getSW(sw);
-            return String.format("fail\t(%s,\t0x%04x)", str, sw);
+            return String.format("fail\t(%s, 0x%04x)", str, sw);
         }
     }
 

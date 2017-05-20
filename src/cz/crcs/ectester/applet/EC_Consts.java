@@ -990,7 +990,7 @@ public class EC_Consts {
 
     public static final byte F2M_CURVES = (byte) 12;
 
-    public static final short[] FP_SIZES = new short[]{128, 160, 192, 224, 256, 384, 521};
+    public static final short[] FP_SIZES = new short[]{112, 128, 160, 192, 224, 256, 384, 512, 521};
     public static final short[] F2M_SIZES = new short[]{163, 233, 283, 409, 571};
 
     public static byte getCurve(short keyLength, byte keyClass) {

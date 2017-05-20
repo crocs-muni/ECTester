@@ -23,4 +23,9 @@
     <exec dir="!uploader" executable="./gppro_upload.sh" osfamily="unix"/>
     <exec dir="!uploader" executable="./gppro_upload.bat" osfamily="windows"/>
   </target>
+
+  <target name="upload-emv" depends="build" description="Uploads the CAP file to the card, using gp.jar, uses the EMV protocol">
+    <exec dir="!uploader" executable="./gppro_upload_emv.sh" osfamily="unix"/>
+    <exec dir="!uploader" executable="./gppro_upload_emv.bat" osfamily="windows"/>
+  </target>
 </project>

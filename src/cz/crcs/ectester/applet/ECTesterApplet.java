@@ -645,17 +645,17 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
         if (keyTester.hasECDH()) {
             Util.setShort(buffer, offset, ecdhSW);
         } else {
-            Util.setShort(buffer, offset, ISO7816.SW_INS_NOT_SUPPORTED);
+            Util.setShort(buffer, offset, ISO7816.SW_FUNC_NOT_SUPPORTED);
         }
         if (keyTester.hasECDHC()) {
             Util.setShort(buffer, (short) (offset + 2), ecdhcSW);
         } else {
-            Util.setShort(buffer, (short) (offset + 2), ISO7816.SW_INS_NOT_SUPPORTED);
+            Util.setShort(buffer, (short) (offset + 2), ISO7816.SW_FUNC_NOT_SUPPORTED);
         }
         if (keyTester.hasECDSA()) {
             Util.setShort(buffer, (short) (offset + 4), ecdsaSW);
         } else {
-            Util.setShort(buffer, (short) (offset + 4), ISO7816.SW_INS_NOT_SUPPORTED);
+            Util.setShort(buffer, (short) (offset + 4), ISO7816.SW_FUNC_NOT_SUPPORTED);
         }
 
         return 6;
