@@ -150,8 +150,14 @@ public class ECTester {
             System.err.println("Not a number. " + nfex.getMessage());
         } catch (FileNotFoundException fnfe) {
             System.err.println("File " + fnfe.getMessage() + " not found.");
-        } catch (ParseException | IOException | CardException ex) {
+        } catch (ParseException | IOException ex) {
             System.err.println(ex.getMessage());
+        } catch (CardException ex) {
+            if (systemOutLogger != null)
+                systemOutLogger.println(ex.getMessage());
+        } finally {
+            if (systemOutLogger != null)
+                systemOutLogger.flush();
         }
     }
 
@@ -201,6 +207,7 @@ public class ECTester {
          *
          * -f / --fresh
          * -s / --simulate
+         * -y / --yes
          */
         OptionGroup actions = new OptionGroup();
         actions.setRequired(true);
@@ -250,6 +257,7 @@ public class ECTester {
 
         opts.addOption(Option.builder("f").longOpt("fresh").desc("Generate fresh keys (set domain parameters before every generation).").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
+        opts.addOption(Option.builder("y").longOpt("yes").desc("Accept all warnings and prompts.").build());
 
         CommandLineParser parser = new DefaultParser();
         return parser.parse(opts, args);
@@ -385,32 +393,35 @@ public class ECTester {
 
         switch (cfg.testSuite) {
             case "default":
-                suite = new TestSuite.Default(dataStore, cfg);
+                suite = new TestSuite.Default(dataStore, cfg, systemOutLogger);
                 break;
             case "test-vectors":
-                suite = new TestSuite.TestVectors(dataStore, cfg);
+                suite = new TestSuite.TestVectors(dataStore, cfg, systemOutLogger);
                 break;
             default:
                 // These tests are dangerous, prompt before them.
                 System.out.println("The test you selected (" + cfg.testSuite + ") is potentially dangerous.");
                 System.out.println("Some of these tests have caused temporary DoS of some cards.");
-                System.out.print("Do you want to proceed? (y/n): ");
-                Scanner in = new Scanner(System.in);
-                String confirmation = in.nextLine();
-                if (!Arrays.asList("yes", "YES", "y", "Y").contains(confirmation)) {
-                    return;
+                if (!cfg.yes) {
+                    System.out.print("Do you want to proceed? (y/n): ");
+                    Scanner in = new Scanner(System.in);
+                    String confirmation = in.nextLine();
+                    if (!Arrays.asList("yes", "YES", "y", "Y").contains(confirmation)) {
+                        return;
+                    }
+                    in.close();
                 }
-                in.close();
+
 
                 switch (cfg.testSuite) {
                     case "wrong":
-                        suite = new TestSuite.Wrong(dataStore, cfg);
+                        suite = new TestSuite.Wrong(dataStore, cfg, systemOutLogger);
                         break;
                     case "nonprime":
-                        suite = new TestSuite.NonPrime(dataStore, cfg);
+                        suite = new TestSuite.NonPrime(dataStore, cfg, systemOutLogger);
                         break;
                     case "invalid":
-                        suite = new TestSuite.Invalid(dataStore, cfg);
+                        suite = new TestSuite.Invalid(dataStore, cfg, systemOutLogger);
                         break;
                     default:
                         System.err.println("Unknown test suite.");
@@ -595,6 +606,7 @@ public class ECTester {
         public String output;
         public boolean fresh = false;
         public boolean simulate = false;
+        public boolean yes = false;
 
         //Action-related ions
         public String listNamed;
@@ -642,6 +654,7 @@ public class ECTester {
             output = cli.getOptionValue("output");
             fresh = cli.hasOption("fresh");
             simulate = cli.hasOption("simulate");
+            yes = cli.hasOption("yes");
 
             if (cli.hasOption("list-named")) {
                 listNamed = cli.getOptionValue("list-named");

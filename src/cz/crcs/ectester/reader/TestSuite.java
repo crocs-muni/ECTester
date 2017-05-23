@@ -4,7 +4,6 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.ec.*;
-import javacard.security.Key;
 import javacard.security.KeyPair;
 
 import javax.smartcardio.CardException;
@@ -18,12 +17,14 @@ public abstract class TestSuite {
 
     EC_Store dataStore;
     ECTester.Config cfg;
+    DirtyLogger systemOut;
     String name;
     List<Test> tests = new LinkedList<>();
 
-    TestSuite(EC_Store dataStore, ECTester.Config cfg, String name) {
+    TestSuite(EC_Store dataStore, ECTester.Config cfg, DirtyLogger systemOut, String name) {
         this.dataStore = dataStore;
         this.cfg = cfg;
+        this.systemOut = systemOut;
         this.name = name;
     }
 
@@ -31,7 +32,7 @@ public abstract class TestSuite {
         for (Test t : tests) {
             if (!t.hasRun()) {
                 t.run();
-                System.out.println(t);
+                systemOut.println(t.toString());
             }
         }
         return tests;
@@ -97,8 +98,8 @@ public abstract class TestSuite {
 
     public static class Default extends TestSuite {
 
-        public Default(EC_Store dataStore, ECTester.Config cfg) {
-            super(dataStore, cfg, "default");
+        public Default(EC_Store dataStore, ECTester.Config cfg, DirtyLogger systemOut) {
+            super(dataStore, cfg, systemOut, "default");
         }
 
         @Override
@@ -150,8 +151,8 @@ public abstract class TestSuite {
 
     public static class TestVectors extends TestSuite {
 
-        public TestVectors(EC_Store dataStore, ECTester.Config cfg) {
-            super(dataStore, cfg, "test");
+        public TestVectors(EC_Store dataStore, ECTester.Config cfg, DirtyLogger systemOut) {
+            super(dataStore, cfg, systemOut, "test");
         }
 
         @Override
@@ -206,8 +207,8 @@ public abstract class TestSuite {
 
     public static class NonPrime extends TestSuite {
 
-        public NonPrime(EC_Store dataStore, ECTester.Config cfg) {
-            super(dataStore, cfg, "nonprime");
+        public NonPrime(EC_Store dataStore, ECTester.Config cfg, DirtyLogger systemOut) {
+            super(dataStore, cfg, systemOut, "nonprime");
         }
 
         @Override
@@ -242,8 +243,8 @@ public abstract class TestSuite {
 
     public static class Invalid extends TestSuite {
 
-        public Invalid(EC_Store dataStore, ECTester.Config cfg) {
-            super(dataStore, cfg, "invalid");
+        public Invalid(EC_Store dataStore, ECTester.Config cfg, DirtyLogger systemOut) {
+            super(dataStore, cfg, systemOut, "invalid");
         }
 
         @Override
@@ -288,8 +289,8 @@ public abstract class TestSuite {
 
     public static class Wrong extends TestSuite {
 
-        public Wrong(EC_Store dataStore, ECTester.Config cfg) {
-            super(dataStore, cfg, "wrong");
+        public Wrong(EC_Store dataStore, ECTester.Config cfg, DirtyLogger systemOut) {
+            super(dataStore, cfg, systemOut, "wrong");
         }
 
         @Override
