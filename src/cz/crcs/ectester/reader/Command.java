@@ -429,6 +429,41 @@ public abstract class Command {
         }
     }
 
+    /**
+     *
+     */
+    public static class ECDH_direct extends Command {
+        private byte privkey;
+        private byte export;
+        private short corruption;
+        private byte type;
+        private byte[] pubkey;
+
+        protected ECDH_direct(CardMngr cardManager, byte privkey, byte export, short corruption, byte type, byte[] pubkey) {
+            super(cardManager);
+            this.privkey = privkey;
+            this.export = export;
+            this.corruption = corruption;
+            this.type = type;
+            this.pubkey = pubkey;
+
+            byte[] data = new byte[3 + pubkey.length];
+            Util.setShort(data, 0, corruption);
+            data[2] = type;
+            System.arraycopy(pubkey, 0, data, 3, pubkey.length);
+
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ECDH_DIRECT, privkey, export, data);
+        }
+
+        @Override
+        public Response.ECDH send() throws CardException {
+            long elapsed = -System.nanoTime();
+            ResponseAPDU response = cardManager.send(cmd);
+            elapsed += System.nanoTime();
+            return new Response.ECDH(response, elapsed, ECTesterApplet.KEYPAIR_REMOTE, privkey, export, corruption, type);
+        }
+    }
+
     public static class ECDSA extends Command {
         private byte keyPair;
         private byte export;

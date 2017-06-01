@@ -66,6 +66,21 @@ public class ECKeyTester {
         return length;
     }
 
+    private short testKA_direct(KeyAgreement ka, KeyPair privatePair, byte[] pubkey, short pubkeyOffset, short pubkeyLength, byte[] outpuBuffer, short outputOffset, short corruption) {
+        short length = 0;
+        try {
+            sw = AppletUtil.kaCheck(ka);
+            sw = AppletUtil.keypairCheck(privatePair);
+
+            ka.init(privatePair.getPrivate());
+            pubkeyLength = EC_Consts.corruptParameter(corruption, pubkey, pubkeyOffset, pubkeyLength);
+            length = ka.generateSecret(pubkey, pubkeyOffset, pubkeyLength, outpuBuffer, outputOffset);
+        } catch (CardRuntimeException ce)  {
+            sw = ce.getReason();
+        }
+        return length;
+    }
+
     /**
      * Tests ECDH secret generation with keys from given {@code privatePair} and {@code publicPair}.
      * Uses {@code pubkeyBuffer} at {@code pubkeyOffset} for computations.
@@ -84,6 +99,10 @@ public class ECKeyTester {
         return testKA(ecdhKeyAgreement, privatePair, publicPair, pubkeyBuffer, pubkeyOffset, outputBuffer, outputOffset, corruption);
     }
 
+    public short testECDH_direct(KeyPair privatePair, byte[] pubkey, short pubkeyOffset, short pubkeyLength, byte[] outpuBuffer, short outputOffset, short corruption) {
+        return testKA_direct(ecdhKeyAgreement, privatePair, pubkey, pubkeyOffset, pubkeyLength, outpuBuffer, outputOffset, corruption);
+    }
+
     /**
      * Tests ECDHC secret generation with keys from given {@code privatePair} and {@code publicPair}.
      * Uses {@code pubkeyBuffer} at {@code pubkeyOffset} for computations.
@@ -100,6 +119,10 @@ public class ECKeyTester {
      */
     public short testECDHC(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, short corruption) {
         return testKA(ecdhcKeyAgreement, privatePair, publicPair, pubkeyBuffer, pubkeyOffset, outputBuffer, outputOffset, corruption);
+    }
+
+    public short testECDHC_direct(KeyPair privatePair, byte[] pubkey, short pubkeyOffset, short pubkeyLength, byte[] outpuBuffer, short outputOffset, short corruption) {
+        return testKA_direct(ecdhcKeyAgreement, privatePair, pubkey, pubkeyOffset, pubkeyLength, outpuBuffer, outputOffset, corruption);
     }
 
     /**
@@ -126,7 +149,22 @@ public class ECKeyTester {
             sw = ECTesterApplet.SW_DH_DHC_MISMATCH;
         }
         return length;
+    }
 
+    public short testBOTH_direct(KeyPair privatePair, byte[] pubkey, short pubkeyOffset, short pubkeyLength, byte[] outputBuffer, short outputOffset, short corruption) {
+        short ecdhLength = testECDH_direct(privatePair, pubkey, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset, corruption);
+        if (sw != ISO7816.SW_NO_ERROR) {
+            return ecdhLength;
+        }
+        short ecdhcLength = testECDHC_direct(privatePair, pubkey, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset, corruption);
+        short length = (short) (ecdhLength + ecdhcLength);
+        if (sw != ISO7816.SW_NO_ERROR) {
+            return length;
+        }
+        if (javacard.framework.Util.arrayCompare(outputBuffer, outputOffset, outputBuffer, (short) (outputOffset + ecdhLength), ecdhLength) != 0) {
+            sw = ECTesterApplet.SW_DH_DHC_MISMATCH;
+        }
+        return length;
     }
 
     /**
@@ -144,6 +182,13 @@ public class ECKeyTester {
         if (sw == ISO7816.SW_NO_ERROR)
             return ecdhLength;
         return testECDHC(privatePair, publicPair, pubkeyBuffer, pubkeyOffset, outputBuffer, outputOffset, corruption);
+    }
+
+    public short testANY_direct(KeyPair privatePair, byte[] pubkey, short pubkeyOffset, short pubkeyLength, byte[] outputBuffer, short outputOffset, short corruption) {
+        short ecdhLength = testECDH_direct(privatePair, pubkey, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset, corruption);
+        if (sw == ISO7816.SW_NO_ERROR)
+            return ecdhLength;
+        return testECDHC_direct(privatePair, pubkey, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset, corruption);
     }
 
     /**

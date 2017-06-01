@@ -51,7 +51,6 @@ public class AppletUtil {
             sum += read;
             read = apdu.receiveBytes((short) 0);
         } while (sum < total);
-        // TODO figure this out, in buffer + out buffer(apdubuf) or just send each param on its own?
         return 0;
     }
 }

@@ -51,9 +51,10 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     public static final byte INS_GENERATE = (byte) 0x5e;
     public static final byte INS_EXPORT = (byte) 0x5f;
     public static final byte INS_ECDH = (byte) 0x60;
-    public static final byte INS_ECDSA = (byte) 0x61;
-    public static final byte INS_CLEANUP = (byte) 0x62;
-    public static final byte INS_SUPPORT = (byte) 0x63;
+    public static final byte INS_ECDH_DIRECT = (byte) 0x61;
+    public static final byte INS_ECDSA = (byte) 0x62;
+    public static final byte INS_CLEANUP = (byte) 0x63;
+    public static final byte INS_SUPPORT = (byte) 0x64;
 
     // PARAMETERS for P1 and P2
     public static final byte KEYPAIR_LOCAL = (byte) 0x01;
@@ -163,6 +164,9 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
                     break;
                 case INS_ECDH:
                     length = insECDH(apdu);
+                    break;
+                case INS_ECDH_DIRECT:
+                    length = insECDH_direct(apdu);
                     break;
                 case INS_ECDSA:
                     length = insECDSA(apdu);
@@ -355,6 +359,26 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
         byte type = apduArray[(short) (cdata + 3)];
 
         return ecdh(pubkey, privkey, export, corruption, type, apdu.getBuffer(), (short) 0);
+    }
+
+    /**
+     *
+     * @param apdu P1   = byte privkey (KEYPAIR_*)
+     * @return     P2   = byte export (EXPORT_TRUE || EXPORT_FALSE)
+     *             DATA = short corruption (EC_Consts.CORRUPTION_* | ...)
+     *             byte type (EC_Consts.KA_* | ...)
+     *             short length
+     *             byte[] pubkey
+     */
+    private short insECDH_direct(APDU apdu) {
+        byte privkey = apduArray[ISO7816.OFFSET_P1];
+        byte export = apduArray[ISO7816.OFFSET_P2];
+        short cdata = apdu.getOffsetCdata();
+        short corruption = Util.getShort(apduArray, cdata);
+        byte type = apduArray[(short) (cdata + 2)];
+        short length = Util.getShort(apduArray, (short) (cdata + 3));
+
+        return ecdh_direct(privkey, export, corruption, type, (short) (cdata + 5), length, apdu.getBuffer(), (short) 0);
     }
 
     /**
@@ -578,6 +602,41 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
             length += secretLength;
         }
 
+        return length;
+    }
+
+    private short ecdh_direct(byte privkey, byte export, short corruption, byte type, short keyOffset, short keyLength, byte[] outBuffer, short outOffset) {
+        short length = 0;
+
+        KeyPair priv = ((privkey & KEYPAIR_LOCAL) != 0) ? localKeypair : remoteKeypair;
+
+        short secretLength = 0;
+        switch (type) {
+            case EC_Consts.KA_ECDH:
+                secretLength = keyTester.testECDH_direct(priv, apduArray, keyOffset, keyLength, outBuffer, outOffset, corruption);
+                break;
+            case EC_Consts.KA_ECDHC:
+                secretLength = keyTester.testECDHC_direct(priv, apduArray, keyOffset, keyLength, outBuffer, outOffset, corruption);
+                break;
+            case EC_Consts.KA_BOTH:
+                secretLength = keyTester.testBOTH_direct(priv, apduArray, keyOffset, keyLength, outBuffer, outOffset, corruption);
+                break;
+            case EC_Consts.KA_ANY:
+                secretLength = keyTester.testANY_direct(priv, apduArray, keyOffset, keyLength, outBuffer, outOffset, corruption);
+                break;
+            default:
+                ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+        }
+
+        Util.setShort(outBuffer, outOffset, keyTester.getSW());
+        length += 2;
+
+        if ((export == EXPORT_TRUE)) {
+            Util.setShort(outBuffer, (short) (outOffset + length), secretLength);
+            length += 2;
+            Util.arrayCopyNonAtomic(ramArray2, (short) 0, outBuffer, (short) (outOffset + length), secretLength);
+            length += secretLength;
+        }
         return length;
     }
 

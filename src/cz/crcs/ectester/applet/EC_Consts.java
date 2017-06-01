@@ -68,6 +68,45 @@ public class EC_Consts {
 
     public static RandomData randomData = null;
 
+    // secp112r1
+    public static final byte[] EC112_FP_P = new byte[]{
+            (byte) 0xdb, (byte) 0x7c, (byte) 0x2a, (byte) 0xbf,
+            (byte) 0x62, (byte) 0xe3, (byte) 0x5e, (byte) 0x66,
+            (byte) 0x80, (byte) 0x76, (byte) 0xbe, (byte) 0xad,
+            (byte) 0x20, (byte) 0x8b};
+
+    public static final byte[] EC112_FP_A = new byte[]{
+            (byte) 0xdb, (byte) 0x7c, (byte) 0x2a, (byte) 0xbf,
+            (byte) 0x62, (byte) 0xe3, (byte) 0x5e, (byte) 0x66,
+            (byte) 0x80, (byte) 0x76, (byte) 0xbe, (byte) 0xad,
+            (byte) 0x20, (byte) 0x88};
+
+    public static final byte[] EC112_FP_B = new byte[]{
+            (byte) 0x65, (byte) 0x9e, (byte) 0xf8, (byte) 0xba,
+            (byte) 0x04, (byte) 0x39, (byte) 0x16, (byte) 0xee,
+            (byte) 0xde, (byte) 0x89, (byte) 0x11, (byte) 0x70,
+            (byte) 0x2b, (byte) 0x22};
+
+    public static final byte[] EC112_FP_G_X = new byte[]{
+            (byte) 0x09, (byte) 0x48, (byte) 0x72, (byte) 0x39,
+            (byte) 0x99, (byte) 0x5a, (byte) 0x5e, (byte) 0xe7,
+            (byte) 0x6b, (byte) 0x55, (byte) 0xf9, (byte) 0xc2,
+            (byte) 0xf0, (byte) 0x98};
+
+    public static final byte[] EC112_FP_G_Y = new byte[]{
+            (byte) 0xa8, (byte) 0x9c, (byte) 0xe5, (byte) 0xaf,
+            (byte) 0x87, (byte) 0x24, (byte) 0xc0, (byte) 0xa2,
+            (byte) 0x3e, (byte) 0x0e, (byte) 0x0f, (byte) 0xf7,
+            (byte) 0x75, (byte) 0x00};
+
+    public static final byte[] EC112_FP_R = new byte[]{
+            (byte) 0xdb, (byte) 0x7c, (byte) 0x2a, (byte) 0xbf,
+            (byte) 0x62, (byte) 0xe3, (byte) 0x5e, (byte) 0x76,
+            (byte) 0x28, (byte) 0xdf, (byte) 0xac, (byte) 0x65,
+            (byte) 0x61, (byte) 0xc5};
+
+    public static final short EC112_FP_K = 1;
+
 
     // secp128r1 from http://www.secg.org/sec2-v2.pdf
     public static final byte[] EC128_FP_P = new byte[]{
@@ -971,31 +1010,34 @@ public class EC_Consts {
     public static final byte CURVE_external = (byte) 0xff;
 
     // SECP recommended curves over FP
-    public static final byte CURVE_secp128r1 = (byte) 1;
-    public static final byte CURVE_secp160r1 = (byte) 2;
-    public static final byte CURVE_secp192r1 = (byte) 3;
-    public static final byte CURVE_secp224r1 = (byte) 4;
-    public static final byte CURVE_secp256r1 = (byte) 5;
-    public static final byte CURVE_secp384r1 = (byte) 6;
-    public static final byte CURVE_secp521r1 = (byte) 7;
+    public static final byte CURVE_secp112r1 = (byte) 1;
+    public static final byte CURVE_secp128r1 = (byte) 2;
+    public static final byte CURVE_secp160r1 = (byte) 3;
+    public static final byte CURVE_secp192r1 = (byte) 4;
+    public static final byte CURVE_secp224r1 = (byte) 5;
+    public static final byte CURVE_secp256r1 = (byte) 6;
+    public static final byte CURVE_secp384r1 = (byte) 7;
+    public static final byte CURVE_secp521r1 = (byte) 8;
 
-    public static final byte FP_CURVES = (byte) 7;
+    public static final byte FP_CURVES = (byte) 8;
 
     // SECP recommended curves over F2M
-    public static final byte CURVE_sect163r1 = (byte) 8;
-    public static final byte CURVE_sect233r1 = (byte) 9;
-    public static final byte CURVE_sect283r1 = (byte) 10;
-    public static final byte CURVE_sect409r1 = (byte) 11;
-    public static final byte CURVE_sect571r1 = (byte) 12;
+    public static final byte CURVE_sect163r1 = (byte) 9;
+    public static final byte CURVE_sect233r1 = (byte) 10;
+    public static final byte CURVE_sect283r1 = (byte) 11;
+    public static final byte CURVE_sect409r1 = (byte) 12;
+    public static final byte CURVE_sect571r1 = (byte) 13;
 
-    public static final byte F2M_CURVES = (byte) 12;
+    public static final byte F2M_CURVES = (byte) 13;
 
-    public static final short[] FP_SIZES = new short[]{112, 128, 160, 192, 224, 256, 384, 512, 521};
+    public static final short[] FP_SIZES = new short[]{112, 128, 160, 192, 224, 256, 384, 521};
     public static final short[] F2M_SIZES = new short[]{163, 233, 283, 409, 571};
 
     public static byte getCurve(short keyLength, byte keyClass) {
         if (keyClass == KeyPair.ALG_EC_FP) {
             switch (keyLength) {
+                case (short) 112:
+                    return CURVE_secp112r1;
                 case (short) 128:
                     return CURVE_secp128r1;
                 case (short) 160:
@@ -1037,6 +1079,19 @@ public class EC_Consts {
     public static short getCurveParameter(byte curve, short param, byte[] outputBuffer, short outputOffset) {
         byte alg = getCurveType(curve);
         switch (curve) {
+            case CURVE_secp112r1: {
+                EC_FP_P = EC112_FP_P;
+                EC_A = EC112_FP_A;
+                EC_B = EC112_FP_B;
+                EC_G_X = EC112_FP_G_X;
+                EC_G_Y = EC112_FP_G_Y;
+                EC_R = EC112_FP_R;
+                EC_K = EC112_FP_K;
+                EC_W_X = null;
+                EC_W_Y = null;
+                EC_S = null;
+                break;
+            }
             case CURVE_secp128r1: {
                 EC_FP_P = EC128_FP_P;
                 EC_A = EC128_FP_A;
