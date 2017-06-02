@@ -349,7 +349,8 @@ public class ECTester {
         int retry = 0;
         while (generated < cfg.generateAmount || cfg.generateAmount == 0) {
             if ((cfg.fresh || generated == 0) && curve != null) {
-                curve.send();
+                Response fresh = curve.send();
+                systemOutLogger.println(fresh.toString());
             }
 
             Command.Generate generate = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL);
