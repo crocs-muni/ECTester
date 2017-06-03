@@ -25,6 +25,16 @@ java -jar ECTester.jar -nc secg -a -fp -t
 ```
 tests all(`-a`), prime field(`-fp`) SECG curves, using the default test suite.
 
+```bash
+java -jar ECTester.jar -u -a -f2m -t
+```
+tests all(`-a`), binary field(`-f2m`), custom(`-u`) curves.
+
+```bash
+java -jar ECTester.jar -b 128 -fp -t
+```
+tests a 128 bit(`-b`), prime field(`-fp`) curve, (if a default one is present).
+
 ## Test-Vectors
 Tests using known test vectors provided by NIST/SECG/Brainpool:
 
