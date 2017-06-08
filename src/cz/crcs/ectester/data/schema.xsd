@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+    <!-- /<category>/curves.xml -->
+
+    <xs:simpleType name="fieldType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="prime"/>
+            <xs:enumeration value="binary"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="data" abstract="true"/>
+    <xs:element name="file" substitutionGroup="data" type="xs:string"/>
+    <xs:element name="inline" substitutionGroup="data" type="xs:string"/>
+
+    <xs:complexType name="curveType">
+        <xs:all>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="bits" type="xs:positiveInteger"/>
+            <xs:element name="field" type="fieldType"/>
+            <xs:element ref="data" />
+            <xs:element name="desc" type="xs:string" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:element name="curves">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="curve" type="curveType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- /<category>/keys.xml -->
+
+    <xs:complexType name="keyType">
+        <xs:all>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element ref="data" />
+            <xs:element name="curve" type="xs:string"/>
+            <xs:element name="desc" type="xs:string" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:element name="keys">
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="keypair" type="keyType" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="privkey" type="keyType" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="pubkey" type="keyType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:choice>
+            <xs:attribute name="category" type="xs:string"/>
+            <xs:attribute name="desc" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- /<category>/results.xml -->
+
+    <xs:simpleType name="kaType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="DH"/>
+            <xs:enumeration value="ECDH"/>
+            <xs:enumeration value="DHC"/>
+            <xs:enumeration value="ECDHC"/>
+            <xs:enumeration value="BOTH"/>
+            <xs:enumeration value="ANY"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="resultType">
+        <xs:all>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="ka" type="kaType"/>
+            <xs:element ref="data" />
+            <xs:element name="curve" type="xs:string"/>
+            <xs:element name="onekey" type="xs:string"/>
+            <xs:element name="otherkey" type="xs:string"/>
+            <xs:element name="desc" type="xs:string" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:element name="results">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="result" type="resultType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- /categories.xml -->
+
+    <xs:complexType name="categoryType">
+        <xs:all>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="directory" type="xs:string"/>
+            <xs:element name="desc" minOccurs="0" type="xs:string"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:element name="categories">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="category" type="categoryType" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

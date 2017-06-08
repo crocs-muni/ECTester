@@ -70,4 +70,26 @@
     nbproject/build-impl.xml file. 
 
     -->
+    <!--
+    <path id="classpath">
+        <fileset dir="lib" includes="**/*.jar"/>
+    </path>
+
+    <target name="clean">
+        <delete file="dist/ECTester.jar"/>
+    </target>
+    <target name="build">
+        <javac srcdir="src" destdir="dist/production/ECTester" classpathref="classpath" excludes="**/SimpleAPDU.java"/>
+    </target>
+    <target name="jar" depends="build">
+        <jar destfile="dist/ECTester.jar">
+            <fileset dir="dist/production/ECTester"/>
+            <fileset dir="dist/data"/>
+            <manifest>
+                <attribute name="Main-Class" value="ECTester"/>
+                <attribute name="Class-Path" value="lib/jcardsim-2.2.2-all.jar lib/commons-cli-1.3.1.jar"/>
+            </manifest>
+        </jar>
+    </target>
+    -->
 </project>

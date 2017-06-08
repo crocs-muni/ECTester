@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<curves xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../schema.xsd">
+    <curve>
+        <id>gost256</id>
+        <bits>256</bits>
+        <field>prime</field>
+        <file>gost256.csv</file>
+    </curve>
+    <curve>
+        <id>gost512</id>
+        <bits>512</bits>
+        <field>prime</field>
+        <file>gost512.csv</file>
+    </curve>
+</curves>

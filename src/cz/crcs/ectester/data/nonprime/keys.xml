@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<keys xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../schema.xsd"
+      category="nonprime"
+      desc="Points on the non-prime curves, very small point orders(3-5).">
+    <pubkey>
+        <id>nonprime128-pub</id>
+        <file>nonprime128_pub.csv</file>
+        <curve>nonprime/nonprime128</curve>
+        <desc>order = 5</desc>
+    </pubkey>
+    <pubkey>
+        <id>nonprime160-pub</id>
+        <file>nonprime160_pub.csv</file>
+        <curve>nonprime/nonprime160</curve>
+        <desc>order = 3</desc>
+    </pubkey>
+    <pubkey>
+        <id>nonprime192-pub</id>
+        <file>nonprime192_pub.csv</file>
+        <curve>nonprime/nonprime192</curve>
+        <desc>order = 3</desc>
+    </pubkey>
+    <pubkey>
+        <id>nonprime224-pub</id>
+        <file>nonprime224_pub.csv</file>
+        <curve>nonprime/nonprime224</curve>
+        <desc>order = 5</desc>
+    </pubkey>
+    <pubkey>
+        <id>nonprime256-pub</id>
+        <file>nonprime256_pub.csv</file>
+        <curve>nonprime/nonprime256</curve>
+        <desc>order = 3</desc>
+    </pubkey>
+    <pubkey>
+        <id>nonprime384-pub</id>
+        <file>nonprime384_pub.csv</file>
+        <curve>nonprime/nonprime384</curve>
+        <desc>order = 3</desc>
+    </pubkey>
+    <pubkey>
+        <id>nonprime521-pub</id>
+        <file>nonprime521_pub.csv</file>
+        <curve>nonprime/nonprime521</curve>
+        <desc>order = 5</desc>
+    </pubkey>
+</keys>

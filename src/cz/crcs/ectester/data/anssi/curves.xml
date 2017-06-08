@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<curves xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../schema.xsd">
+    <curve>
+        <id>FRP256v1</id>
+        <bits>256</bits>
+        <field>prime</field>
+        <file>frp256v1.csv</file>
+    </curve>
+</curves>
