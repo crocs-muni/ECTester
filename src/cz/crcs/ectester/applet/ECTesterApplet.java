@@ -51,12 +51,14 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     public static final byte INS_CORRUPT = (byte) 0x5d;
     public static final byte INS_GENERATE = (byte) 0x5e;
     public static final byte INS_EXPORT = (byte) 0x5f;
-    public static final byte INS_ECDH = (byte) 0x60;
-    public static final byte INS_ECDH_DIRECT = (byte) 0x61;
-    public static final byte INS_ECDSA = (byte) 0x62;
-    public static final byte INS_CLEANUP = (byte) 0x63;
-    public static final byte INS_SUPPORT = (byte) 0x64;
-
+    public static final byte INS_ECDH = (byte) 0x70;
+    public static final byte INS_ECDH_DIRECT = (byte) 0x71;
+    public static final byte INS_ECDSA = (byte) 0x72;
+    public static final byte INS_CLEANUP = (byte) 0x73;
+    public static final byte INS_SUPPORT = (byte) 0x74;
+    public static final byte INS_ALLOCATE_KA = (byte) 0x75;
+    
+            
     // PARAMETERS for P1 and P2
     public static final byte KEYPAIR_LOCAL = (byte) 0x01;
     public static final byte KEYPAIR_REMOTE = (byte) 0x02;
