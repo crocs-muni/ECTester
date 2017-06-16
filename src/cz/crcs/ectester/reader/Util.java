@@ -1,6 +1,12 @@
 package cz.crcs.ectester.reader;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
+import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_PACE_GM;
+import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH;
+import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DHC;
+import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DHC_PLAIN;
+import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH_PLAIN;
+import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY;
 import cz.crcs.ectester.applet.EC_Consts;
 import javacard.framework.ISO7816;
 import javacard.security.CryptoException;
@@ -338,5 +344,32 @@ public class Util {
             algo += "ECDHC";
         }
         return algo;
+    }
+    
+    public static String getKATypeString(byte kaType) {
+        String kaTypeString = "unknown";
+        switch (kaType) {
+            case KeyAgreement_ALG_EC_SVDP_DH:
+                kaTypeString = "ALG_EC_SVDP_DH";
+                break;
+            case KeyAgreement_ALG_EC_SVDP_DH_PLAIN:
+                kaTypeString = "ALG_EC_SVDP_DH_PLAIN";
+                break;
+            case KeyAgreement_ALG_EC_PACE_GM:
+                kaTypeString = "ALG_EC_PACE_GM";
+                break;
+            case KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY:
+                kaTypeString = "ALG_EC_SVDP_DH_PLAIN_XY";
+                break;
+            case KeyAgreement_ALG_EC_SVDP_DHC:
+                kaTypeString = "ALG_EC_SVDP_DHC";
+                break;
+            case KeyAgreement_ALG_EC_SVDP_DHC_PLAIN:
+                kaTypeString = "ALG_EC_SVDP_DHC_PLAIN";
+                break;
+            default:
+                kaTypeString = "unknown";
+        }        
+        return kaTypeString;
     }
 }

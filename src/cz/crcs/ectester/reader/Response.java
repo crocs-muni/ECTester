@@ -154,9 +154,26 @@ public abstract class Response {
         return out.toString();
     }
 
+
     /**
      *
      */
+    public static class AllocateKeyAgreement extends Response {
+        byte kaType;
+        protected AllocateKeyAgreement(ResponseAPDU response, long time, byte kaType) {
+            super(response, time);
+            this.kaType = kaType;
+
+            parse(2, 0);
+        }
+
+        @Override
+        public String toString() {
+            return super.toString(String.format("Allocate KeyAgreement(%s) object", Util.getKATypeString(this.kaType)));
+        }
+
+    }
+    
     public static class Allocate extends Response {
 
         private byte keyPair;

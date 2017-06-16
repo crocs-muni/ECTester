@@ -22,6 +22,7 @@
 package cz.crcs.ectester.reader;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
+import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.ec.EC_Category;
@@ -219,6 +220,7 @@ public class ECTester {
         actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do ECDH, [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dhc").longOpt("ecdhc").desc("Do ECDHC, [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
+        
         opts.addOptionGroup(actions);
 
         OptionGroup size = new OptionGroup();
@@ -258,6 +260,8 @@ public class ECTester {
         opts.addOption(Option.builder("f").longOpt("fresh").desc("Generate fresh keys (set domain parameters before every generation).").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
         opts.addOption(Option.builder("y").longOpt("yes").desc("Accept all warnings and prompts.").build());
+
+        opts.addOption(Option.builder("ka").longOpt("ka-type").desc("Set KeyAgreement object [type], corresponds to JC.KeyAgreement constants.").hasArg().argName("type").optionalArg(true).build());
 
         CommandLineParser parser = new DefaultParser();
         return parser.parse(opts, args);
@@ -442,6 +446,7 @@ public class ECTester {
     private void ecdh() throws IOException, CardException {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
         List<Response> prepare = new LinkedList<>();
+        prepare.add(new Command.AllocateKeyAgreement(cardManager, cfg.kaType).send()); // Prepare KeyAgreement or required type
         prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, keyClass).send());
         Command curve = Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, keyClass);
         if (curve != null)
@@ -581,6 +586,7 @@ public class ECTester {
         public boolean all;
         public boolean primeField = false;
         public boolean binaryField = false;
+        public byte kaType = KeyAgreement_ALG_EC_SVDP_DH;
 
         public String namedCurve;
         public String curveFile;
@@ -628,6 +634,7 @@ public class ECTester {
             all = cli.hasOption("all");
             primeField = cli.hasOption("fp");
             binaryField = cli.hasOption("f2m");
+            kaType = Byte.parseByte(cli.getOptionValue("ka-type", "1"));
 
             namedCurve = cli.getOptionValue("named-curve");
             customCurve = cli.hasOption("custom");

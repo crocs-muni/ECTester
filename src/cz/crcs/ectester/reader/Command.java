@@ -211,6 +211,33 @@ public abstract class Command {
             return new Response.Allocate(response, elapsed, keyPair, keyLength, keyClass);
         }
     }
+    
+    public static class AllocateKeyAgreement extends Command {
+
+        private byte kaType;
+
+
+        /**
+         * Creates the INS_ALLOCATE_KA instruction.
+         *
+         * @param cardManager cardManager to send APDU through
+         * @param kaType which type of KeyAgreement to use
+         */
+        protected AllocateKeyAgreement(CardMngr cardManager, byte kaType) {
+            super(cardManager);
+            this.kaType = kaType;
+            byte[] data = new byte[]{kaType};
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ALLOCATE_KA, 0x00, 0x00, data);
+        }
+
+        @Override
+        public Response.AllocateKeyAgreement send() throws CardException {
+            long elapsed = -System.nanoTime();
+            ResponseAPDU response = cardManager.send(cmd);
+            elapsed += System.nanoTime();
+            return new Response.AllocateKeyAgreement(response, elapsed, kaType);
+        }
+    }    
 
     /**
      *

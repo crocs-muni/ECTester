@@ -3,6 +3,7 @@ package cz.crcs.ectester.applet;
 
 import javacard.framework.CardRuntimeException;
 import javacard.framework.ISO7816;
+import javacard.framework.ISOException;
 import javacard.security.*;
 
 /**
@@ -19,20 +20,20 @@ public class ECKeyTester {
 
     private short sw = ISO7816.SW_NO_ERROR;
 
-    public short allocateECDH() {
+    public short allocateECDH(byte algorithm) {
         sw = ISO7816.SW_NO_ERROR;
         try {
-            ecdhKeyAgreement = KeyAgreement.getInstance(KeyAgreement.ALG_EC_SVDP_DH, false);
+            ecdhKeyAgreement = KeyAgreement.getInstance(algorithm, false);
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
         }
         return sw;
     }
 
-    public short allocateECDHC() {
+    public short allocateECDHC(byte algorithm) {
         sw = ISO7816.SW_NO_ERROR;
         try {
-            ecdhcKeyAgreement = KeyAgreement.getInstance(KeyAgreement.ALG_EC_SVDP_DHC, false);
+            ecdhcKeyAgreement = KeyAgreement.getInstance(algorithm, false);
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
         }
@@ -55,9 +56,11 @@ public class ECKeyTester {
             sw = AppletUtil.kaCheck(ka);
             sw = AppletUtil.keypairCheck(privatePair);
             sw = AppletUtil.keypairCheck(publicPair);
-
-            ka.init(privatePair.getPrivate());
             short pubkeyLength = ((ECPublicKey) publicPair.getPublic()).getW(pubkeyBuffer, pubkeyOffset);
+            // reached ok
+            ka.init(privatePair.getPrivate()); // throws UNITIALIZED KEY when ALG_EC_SVDP_DHC_PLAIN is used
+            //ISOException.throwIt((short) 0x666);
+            
             pubkeyLength = EC_Consts.corruptParameter(corruption, pubkeyBuffer, pubkeyOffset, pubkeyLength);
             length = ka.generateSecret(pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);
         } catch (CardRuntimeException ce) {

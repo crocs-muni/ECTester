@@ -28,6 +28,7 @@ package cz.crcs.ectester.applet;
 import javacard.framework.*;
 import javacard.security.ECPrivateKey;
 import javacard.security.ECPublicKey;
+import javacard.security.KeyAgreement;
 import javacard.security.KeyPair;
 import javacard.security.RandomData;
 import javacardx.apdu.ExtendedLength;
@@ -69,7 +70,21 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     public static final short SW_KEYPAIR_NULL = (short) 0x0ee3;
     public static final short SW_KA_NULL = (short) 0x0ee4;
     public static final short SW_SIGNATURE_NULL = (short) 0x0ee5;
-    public static final short SW_OBJECT_NULL = (short) 0x0ee6;
+    public static final short SW_OBJECT_NULL = (short) 0x0ee6;    
+    public static final short SW_KA_UNSUPPORTED = (short) 0x0ee7;
+
+    
+    // Class javacard.security.KeyAgreement
+    // javacard.security.KeyAgreement Fields:
+    public static final byte KeyAgreement_ALG_EC_SVDP_DH = 1;
+    public static final byte KeyAgreement_ALG_EC_SVDP_DH_KDF = 1;
+    public static final byte KeyAgreement_ALG_EC_SVDP_DHC = 2;
+    public static final byte KeyAgreement_ALG_EC_SVDP_DHC_KDF = 2;
+    public static final byte KeyAgreement_ALG_EC_SVDP_DH_PLAIN = 3;
+    public static final byte KeyAgreement_ALG_EC_SVDP_DHC_PLAIN = 4;
+    public static final byte KeyAgreement_ALG_EC_PACE_GM = 5;
+    public static final byte KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY = 6;
+    public static final byte KeyAgreement_ALG_DH_PLAIN = 7;    
 
 
     private static final short ARRAY_LENGTH = (short) 0xff;
@@ -116,8 +131,10 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
 
             keyGenerator = new ECKeyGenerator();
             keyTester = new ECKeyTester();
-            ecdhSW = keyTester.allocateECDH();
-            ecdhcSW = keyTester.allocateECDHC();
+            ecdhSW = keyTester.allocateECDH(KeyAgreement.ALG_EC_SVDP_DH);
+            ecdhcSW = keyTester.allocateECDHC(KeyAgreement.ALG_EC_SVDP_DHC);
+            //ecdhSW = keyTester.allocateECDH((byte) 3);
+            //ecdhcSW = keyTester.allocateECDHC((byte) 4);
             ecdsaSW = keyTester.allocateECDSA();
         }
         register();
@@ -144,6 +161,9 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
 
             short length = 0;
             switch (ins) {
+                case INS_ALLOCATE_KA: 
+                    length = insAllocateKA(apdu);
+                    break;
                 case INS_ALLOCATE:
                     length = insAllocate(apdu);
                     break;
@@ -186,7 +206,45 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
             apdu.setOutgoingAndSend((short) 0, length);
         } else ISOException.throwIt(ISO7816.SW_CLA_NOT_SUPPORTED);
     }
-
+    
+    /**
+     * Allocates KeyAgreement object. returns allocate SW
+     *
+     * @param apdu DATA = byte KeyAgreementType
+     * @return length of response
+     */
+    private short insAllocateKA(APDU apdu) {
+        short cdata = apdu.getOffsetCdata();
+        byte kaType = apduArray[cdata];
+/*
+        short sw = SW_KA_UNSUPPORTED;
+        switch (kaType) {
+            case KeyAgreement_ALG_EC_SVDP_DH: // no break
+            case KeyAgreement_ALG_EC_SVDP_DH_PLAIN:
+            case KeyAgreement_ALG_EC_PACE_GM:
+            case KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY:
+                sw = keyTester.allocateECDH(kaType);
+                break;
+            case KeyAgreement_ALG_EC_SVDP_DHC:
+            case KeyAgreement_ALG_EC_SVDP_DHC_PLAIN: 
+                sw = keyTester.allocateECDHC(kaType);
+                break;
+            default:
+                sw = SW_KA_UNSUPPORTED;
+                break;
+        }
+*/        
+        // Allocate given type into both DH and DHC objects
+        short sw = keyTester.allocateECDH(kaType);
+        short offset = 0;
+        Util.setShort(apdu.getBuffer(), offset, sw);
+        offset += 2;
+        
+        //sw = keyTester.allocateECDHC(kaType);
+        Util.setShort(apdu.getBuffer(), offset, sw);
+        offset += 2;
+        return offset;
+    }    
     /**
      * Allocates local and remote keyPairs.
      * returns allocate SWs
