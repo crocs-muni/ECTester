@@ -3,6 +3,8 @@ package cz.crcs.ectester.reader.ec;
 import cz.crcs.ectester.applet.EC_Consts;
 
 /**
+ * An abstract-like EC key. Concrete implementations create a public and private keys.
+ *
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class EC_Key extends EC_Params {
@@ -38,6 +40,9 @@ public class EC_Key extends EC_Params {
         return desc;
     }
 
+    /**
+     * An EC public key, contains the W parameter.
+     */
     public static class Public extends EC_Key {
 
         public Public(String curve) {
@@ -54,6 +59,9 @@ public class EC_Key extends EC_Params {
         }
     }
 
+    /**
+     * An EC private key, contains the S parameter.
+     */
     public static class Private extends EC_Key {
 
         public Private(String curve) {

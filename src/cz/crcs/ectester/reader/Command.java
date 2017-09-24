@@ -466,6 +466,16 @@ public abstract class Command {
         private byte type;
         private byte[] pubkey;
 
+        /**
+         * Creates the INS_ECDH_DIRECT instruction.
+         *
+         * @param cardManager cardManager to send APDU through
+         * @param privkey     keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
+         * @param export      whether to export ECDH secret
+         * @param corruption  whether to invalidate the pubkey before ECDH (EC_Consts.CORRUPTION_* | ...)
+         * @param type        ECDH algorithm type (EC_Consts.KA_* | ...)
+         * @param pubkey      pubkey data to do ECDH with.
+         */
         protected ECDH_direct(CardMngr cardManager, byte privkey, byte export, short corruption, byte type, byte[] pubkey) {
             super(cardManager);
             this.privkey = privkey;

@@ -3,6 +3,8 @@ package cz.crcs.ectester.reader.ec;
 import cz.crcs.ectester.applet.EC_Consts;
 
 /**
+ * An EC keypair, contains both the W and S parameters.
+ *
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class EC_Keypair extends EC_Params {
