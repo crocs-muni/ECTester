@@ -32,9 +32,9 @@
         <desc>GOST R 34.10-2001: RFC5832</desc>
     </category>
     <category>
-        <name>nonprime</name>
-        <directory>nonprime</directory>
-        <desc>Non-prime order curves, with points of very small order pregenerated.</desc>
+        <name>composite</name>
+        <directory>composite</directory>
+        <desc>Composite order curves, with points of very small order pregenerated.</desc>
     </category>
     <category>
         <name>wrong</name>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<keys xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../schema.xsd"
+      category="composite"
+      desc="Points on the non-prime curves, very small point orders(3-5).">
+    <pubkey>
+        <id>composite128-pub</id>
+        <file>composite128_pub.csv</file>
+        <curve>composite/composite128</curve>
+        <desc>order = 5</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite160-pub</id>
+        <file>composite160_pub.csv</file>
+        <curve>composite/composite160</curve>
+        <desc>order = 3</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192-pub</id>
+        <file>composite192_pub.csv</file>
+        <curve>composite/composite192</curve>
+        <desc>order = 3</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224-pub</id>
+        <file>composite224_pub.csv</file>
+        <curve>composite/composite224</curve>
+        <desc>order = 5</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite256-pub</id>
+        <file>composite256_pub.csv</file>
+        <curve>composite/composite256</curve>
+        <desc>order = 3</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite384-pub</id>
+        <file>composite384_pub.csv</file>
+        <curve>composite/composite384</curve>
+        <desc>order = 3</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite521-pub</id>
+        <file>composite521_pub.csv</file>
+        <curve>composite/composite521</curve>
+        <desc>order = 5</desc>
+    </pubkey>
+</keys>

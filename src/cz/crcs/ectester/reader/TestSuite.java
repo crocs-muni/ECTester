@@ -205,21 +205,21 @@ public abstract class TestSuite {
         }
     }
 
-    public static class NonPrime extends TestSuite {
+    public static class Composite extends TestSuite {
 
-        public NonPrime(EC_Store dataStore, ECTester.Config cfg, DirtyLogger systemOut) {
-            super(dataStore, cfg, systemOut, "nonprime");
+        public Composite(EC_Store dataStore, ECTester.Config cfg, DirtyLogger systemOut) {
+            super(dataStore, cfg, systemOut, "composite");
         }
 
         @Override
         public List<Test> run(CardMngr cardManager) throws IOException, CardException {
             /* Do the default tests with the public keys set to provided smallorder keys
-             * over non-prime order curves. Essentially small subgroup attacks.
+             * over composite order curves. Essentially small subgroup attacks.
              * These should fail, the curves aren't safe so that if the computation with
              * a small order public key succeeds the private key modulo the public key order
              * is revealed.
              */
-            Map<String, EC_Key> keys = dataStore.getObjects(EC_Key.class, "nonprime");
+            Map<String, EC_Key> keys = dataStore.getObjects(EC_Key.class, "composite");
             for (EC_Key key : keys.values()) {
                 EC_Curve curve = dataStore.getObject(EC_Curve.class, key.getCurve());
                 if (cfg.namedCurve != null && !(key.getCurve().startsWith(cfg.namedCurve) || key.getCurve().equals(cfg.namedCurve))) {

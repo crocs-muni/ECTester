@@ -3,10 +3,10 @@
  - `default`
  - `test-vectors`
  - `wrong`
- - `nonprime`
+ - `composite`
  - `invalid`
  
-**NOTE: The `wrong`, `nonprime` and `invalid` test suites caused temporary DoS of some cards. These test suites prompt you for
+**NOTE: The `wrong`, `composite` and `invalid` test suites caused temporary DoS of some cards. These test suites prompt you for
 confirmation before running, be cautious.**
 
 ## Default
@@ -68,14 +68,14 @@ java -jar ECTester.jar -t wrong -b 521 -fp
 ```
 tests a 521 bit(`-b`), prime-field(`-fp`) wrong curve.
 
-## Nonprime
+## Composite
 Tests using curves that don't have a prime order/nearly prime order.
 These tests should generally fail, a success here implies the card **WILL** use a non-secure curve if such curve is set
 by the applet. Operations over such curves are susceptible to small-subgroup attacks.
 
 For example:
 ```bash
-java -jar ECTester.jar -t nonprime -b 160 -fp
+java -jar ECTester.jar -t composite -b 160 -fp
 ```
 
 ## Invalid
