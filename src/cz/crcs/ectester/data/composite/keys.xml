@@ -4,29 +4,393 @@
       category="composite"
       desc="Points on the non-prime curves, very small point orders(3-5).">
     <pubkey>
-        <id>composite128-pub</id>
-        <file>composite128_pub.csv</file>
+        <id>composite128/1</id>
+        <inline>0x746fa441b3a54d3c531bd59d119f400d,0x73aff68dbd96e1485cd2de0f6389cc70</inline>
+        <curve>composite/composite128</curve>
+        <desc>order = 3</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite128/2</id>
+        <inline>0x6e9dc37af66af0045d7a2e414d4bfb89,0x40b01d2f36c9a5b2a1cb28386dd12470</inline>
         <curve>composite/composite128</curve>
         <desc>order = 5</desc>
     </pubkey>
     <pubkey>
-        <id>composite160-pub</id>
-        <file>composite160_pub.csv</file>
+        <id>composite128/3</id>
+        <inline>0x32076e371a48d82777ce851969439ab8,0xb049b7d6ba6f2d9c6ce240bc689d3556</inline>
+        <curve>composite/composite128</curve>
+        <desc>order = 15</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite128/4</id>
+        <inline>0xc819a68e95796650cd7d11e8ad65806f,0x280e9c9b7e5d9a5e07653ee2afac83e7</inline>
+        <curve>composite/composite128</curve>
+        <desc>order = 59</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite128/5</id>
+        <inline>0x66f66346d87e2214bf1bfc3331628c81,0x8c1a74b09bbbb515b027d89dcc1cecb2</inline>
+        <curve>composite/composite128</curve>
+        <desc>order = 177</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite128/6</id>
+        <inline>0xa546a97bd17378bd6e5c42c4ab857cac,0x13b99be68904a968a8d4ca6feab23f40</inline>
+        <curve>composite/composite128</curve>
+        <desc>order = 295</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite128/7</id>
+        <inline>0x6ae9f873a9da27b41e676d3514c96e56,0x8f6479493be1835cee6b9f29df21f74f</inline>
+        <curve>composite/composite128</curve>
+        <desc>order = 885</desc>
+    </pubkey>
+
+    <pubkey>
+        <id>composite160/1</id>
+        <inline>0x37efeffb592df52c0080de1a5074505fb9bd7d6f,0x0000000000000000000000000000000000000000</inline>
+        <curve>composite/composite160</curve>
+        <desc>order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite160/2</id>
+        <inline>0x68684425389f5552a24b7c205e19da7a0c10a1cb,0x825ecf13c08f314cd6ad5eae73044c71e9876409</inline>
         <curve>composite/composite160</curve>
         <desc>order = 3</desc>
     </pubkey>
     <pubkey>
-        <id>composite192-pub</id>
-        <file>composite192_pub.csv</file>
+        <id>composite160/3</id>
+        <inline>0x61602e67d8e17442afb37c07ea9fff2beb6c5b63,0x525e64d325c225855df22c141ab48292e2f8f937</inline>
+        <curve>composite/composite160</curve>
+        <desc>order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite160/4</id>
+        <inline>0x041fea694918a16ede5e6c32e24f52f7827b7942,0x0c4005ad4b02d3f04ba662cca7c5ae4de9a9ba1e</inline>
+        <curve>composite/composite160</curve>
+        <desc>order = 6</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite160/5</id>
+        <inline>0x896db2058ec6de5bf0c3d4729449c161f3a6513c,0x168828b2d35afa6ae22cfb88470444ecfe31565a</inline>
+        <curve>composite/composite160</curve>
+        <desc>order = 12</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite160/6</id>
+        <inline>0x5addb1c0c2b73b1c3bfa6ee1d4fa55c3d6cb79c8,0x18cf3b6fc6ac06a6af69817234799a7bed594e16</inline>
+        <curve>composite/composite160</curve>
+        <desc>order = 107</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite160/7</id>
+        <inline>0x2a8b120fa9fb0901280068fac4c7343c91707974,0x3c64f73118aa3e6263f988428d4f8e931c835dbd</inline>
+        <curve>composite/composite160</curve>
+        <desc>order = 214</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite160/8</id>
+        <inline>0x09814e9b98b521aa510d24e2eb68484f9cd4f446,0x030f959368478d906bd830105e1e645f9a3e7aa7</inline>
+        <curve>composite/composite160</curve>
+        <desc>order = 321</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite160/9</id>
+        <inline>0x475d0927fdea77619a4c0f3d7f78fa17b1a82ebf,0x0f9ef6e4b67034f84f2568cf93bcd6244f99befb</inline>
+        <curve>composite/composite160</curve>
+        <desc>order = 428</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite160/10</id>
+        <inline>0x441a137ed2bbe1397492bacec4d8d98e54e88fcd,0x1ba3217b753b1fd483ebd0eb6ce6642ab8f9b1d1</inline>
+        <curve>composite/composite160</curve>
+        <desc>order = 642</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite160/11</id>
+        <inline>0x8fcb8221093a80fe3ab7ee7ce952ae78e21177c3,0x29c944efc6e04c8a3393470be6eff62e250795c8</inline>
+        <curve>composite/composite160</curve>
+        <desc>order = 504</desc>
+    </pubkey>
+
+    <pubkey>
+        <id>composite192/1</id>
+        <inline>0x8220bcea81992c46bc57e0dae661eeff29e66d64b33253c5,0x000000000000000000000000000000000000000000000000</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/2</id>
+        <inline>0x94863540fdd9e8f415df79e18aee4bdd0914127581b6bb15,0x3aa760e488d12f8f93b10da531e1dbc033db25729119839f</inline>
         <curve>composite/composite192</curve>
         <desc>order = 3</desc>
     </pubkey>
     <pubkey>
-        <id>composite224-pub</id>
-        <file>composite224_pub.csv</file>
-        <curve>composite/composite224</curve>
+        <id>composite192/3</id>
+        <inline>0x0cdf12ec0389daa5dc4fb9a877082e7acc4d7054d7eb320d,0x2a135f63802b9bb9064ffe6d319942ada312b0a06a506c68</inline>
+        <curve>composite/composite192</curve>
         <desc>order = 5</desc>
     </pubkey>
+    <pubkey>
+        <id>composite192/4</id>
+        <inline>0x3d2cf1aa8ef6db0076b8e026f5f5eeb612bed45c2bf57796,0x40b1b1c78925a90c4f9c994ee9ac8a97ce8e1e5613676ec1</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 6</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/5</id>
+        <inline>0x069f245ec322d6ed422f18b4df1b2728bcff22a08c160de7,0x792466cd587549a3ffb4dbe491d54e5df25494ba9be83472</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 9</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/6</id>
+        <inline>0x649ddaeba68589618a326232704a4324957c8191fd558c60,0x9461496a59b680b82f199144c29323e061273efa62a60faf</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 10</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/7</id>
+        <inline>0x319a75780c9090f769b69b082ad16dbce0e8bdbc16d04cd5,0x76b03040b524f21b3dd5008995459ca8ed35dae3722c7035</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 15</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/8</id>
+        <inline>0x77acef779d8562b4492309adf946f5970bb83190ad76a2e3,0x3e98d9c7b72a8bfd5c6f6a7c07478df003d273b1326caa6c</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 18</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/9</id>
+        <inline>0x1e90f09d5328536457f6d9fe58444f086e32229007ef12fc,0x26407fbfba9f796afa97ea2c2e986d3343d711015b220f44</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 19</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/10</id>
+        <inline>0xa2e5982912dd423cfb745a01088e540b41e19ba84107cddc,0xaa29fc9dd974238b9daf73997d3c4dd331584d87356f9549</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 30</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/11</id>
+        <inline>0x670c2e74df1cf4f473ab37ef685b2a915858863bc9c67868,0x2edc6b47a9fbe500c2f4f4b79bb44b229dd99194aca26d5a</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 38</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/12</id>
+        <inline>0x14c936965c39188192d431aaf96f37e0d398b5a858933b3c,0x19c6526df20625d92445007603f19dd120702351869f9ae3</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 45</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/13</id>
+        <inline>0x595694d6d70b13b372b2f1b4daf5ffd391513d9542b0d600,0x099f0ac0ce38d9920f3c59a63433230f4f945716c8d246f9</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 57</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/14</id>
+        <inline>0x09cf293ad9517ef1932fb81a4800d60a768356fd2980ae77,0x1b12ab568cb4ac07593bb7cd6bc8a9364bac3c345419026f</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 90</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/15</id>
+        <inline>0x9424bf6ba15758fc88df622be2a7055ebd34bb0e8e89c945,0x2611aaf3752880c39238f669d910ca591358e5aa06f95119</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 95</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/16</id>
+        <inline>0x4289f802fa238ded56eda2164532f205cdde5b9ba58b8226,0xa2e1cdff2ae8312f4882ff44e4ef1d9e16be424fecd624e3</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 114</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/17</id>
+        <inline>0x5cabb4f80e166127067104af1327a8531c053ec510702d6a,0x2fdd3945ffdde5e5389ff43ec323031f9c39b795fbb9f41b</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 171</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/18</id>
+        <inline>0x9a6f5c897b695025e86d74043bf6a5a2bdf38ea7e2fe8f0e,0x4367779cadb1f8a193ac73dc51293aa0e94e930456e89692</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 190</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/19</id>
+        <inline>0x30f786b7a6a3292c40a1a2ac6934646595787c4f003a08c3,0x84e4b9970c123d1f5188fca8f27152d377d85f2352543992</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 285</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/20</id>
+        <inline>0x042d015cd6633de4ed1700c346774ae17263b3e284b43162,0x7c27c4593d37115d93bfd33797ae73f0805117b032289e46</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 342</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/21</id>
+        <inline>0x9f62978f1018599e5139fa6560fe3a39c108674f361b1389,0x884e25851a5de235df686fbb870e6b7b81accb8bbc63cd15</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 570</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/22</id>
+        <inline>0x29d846d8f363bc58149fdf6eaced9dbc7692a0942f6ecabb,0x784af0c66238ef9cdf900eee2fdce8081d2aa59dd327c8c3</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 855</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite192/23</id>
+        <inline>0x3c6d33801293213a71f4a7d9b1091cabb89bcf7fc266084e,0x80eb1f866a3774c45811feaee8cda2f020e5aec70a2b5233</inline>
+        <curve>composite/composite192</curve>
+        <desc>order = 1710</desc>
+    </pubkey>
+
+    <pubkey>
+        <id>composite224/1</id>
+        <inline>0x14f89a6ef687659649fd6e0e6cb1f7f27c0f9f94fc872e7f54a9c856,0x00000000000000000000000000000000000000000000000000000000</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/2</id>
+        <inline>0xb4fbabc7cf96b62b08edbaa2df53346bbb871c121bbb35e771c74db5,0x61cf8b556f068f45ec69963964a0e8ab72c1fa0be48e2ea886235956</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 3</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/3</id>
+        <inline>0x5b98ef6f104d0cc4159cc793d52713bafbc2b37a9f64af8f962b1c5a,0x7935aef16b1cb800beca9ab322aa8ecf8281f870057a8e1fbdd72490</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/4</id>
+        <inline>0x3abe85a7ef34758c487373eb1f193a86f2b073b23a42ab3753596308,0xca9743c8ebf2fe6ceb300b93e0742ebe5f594b2ed84dba7f42f7aedc</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 6</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/5</id>
+        <inline>0x3b931bbe008a038b5a5b03cf34c4102ba919579bd0a81f066193ab76,0x794f623ed1525010559240ad899b19a841bbbb818a64f32fc28c9931</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/6</id>
+        <inline>0x6ca8b206ce077be28ff56c18295508ade9fce4a051d4975d61ee84d0,0x1f5720ccc870e31e83eb58f7c7c5ada471f7502ae5b2d87a69109df7</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 12</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/7</id>
+        <inline>0x45437959ee88358cd8ee9902139cf6c9eee124c8ee199bd1a1ecc2da,0x756ad18b140d6a13a010fc21f1c4cf45a67eeb4c3dd4b202e9ae775f</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 16</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/8</id>
+        <inline>0xd2074198f477e79a92918d4a5bc0ba104de4b0369104a8b51012595d,0x5025127d318e3c34e4fbbefb397874a3ed50a9cfd6ca455d4be02125</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 24</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/9</id>
+        <inline>0x4513ad86e9415caae932018d67c869dbbe001cd53e64d82d205f4e2a,0x130dbd3e71618ddb0464bf3e894c30e1dd3bc25bb01e09e5b50a001d</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 29</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/10</id>
+        <inline>0x2f4f470b72c093667e3f433a5189988adbb0fe1ae36482c3eeecf8a4,0xc1ac6c167ff41b0842f6470bac49d2a518da6c4c456c5657be15dec6</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 32</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/11</id>
+        <inline>0x58741bd7ac127ecf8aa7c9fd78d22d81f8c10bb971bb77c015f69cd6,0x52e914fc15edb4af4a53ebeaf8466d2b7cf1bfe4a78c036a8faa5cdf</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 48</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/12</id>
+        <inline>0x7a06eeb07784de6a15d1322243b4edbe24eb9d24869e1d9b7b883686,0xba5f157579eda39cc85cf04cd48f710133716a0fa0f5a48c3948381c</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 58</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/13</id>
+        <inline>0x67d78ae1eaa30a898a3497c0cff43675be6d8cd4e41971661e8622b8,0x2e7337490aa8220d721167f7d047952af1d68615b07619607c771f5d</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 87</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/</id>
+        <inline>0x30eea9b5158e7ba9ba6a2a955942e3324c6539a70e78270abe43f7fd,0xb3eb76bbcac6cd68e28688d70f431d26147bbb380bf1938d8038418e</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 96</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/14</id>
+        <inline>0x4a27a6d15ecdfa776161aa180a4cd2de898610aac1b274f7a85d7ef1,0xd92847404473b63060e1514fe6a431130a79512c867d89eda0e3c674</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 116</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/15</id>
+        <inline>0x6a7ed0907ecee744da1a57ec48ff6cfc0d8d77c67a585fd9750081e6,0x96106e57beafd660a8622f6341967fd4565ce9f4f09793cc3f287316</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 174</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/16</id>
+        <inline>0x52c53640843d85f9945b18452a96e48816bbb52c76d012b3bd197f79,0x9630aba4de01758e0aaddef1de1cfb070af629f80c3ad3bb21e3cce5</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 232</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/17</id>
+        <inline>0x88166b34bee1151dc0589da4bed6da8c6a2e9d4c78eb4ef21c5a9efd,0xbb92af84b1faffb9cbd516316e2c58dabd3867c5ac4dccb4b3d7c25c</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 348</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/18</id>
+        <inline>0x02edb51c0bc83b37cc89d2a7eab42719f0c847d61334022b6ca765c6,0xe08729140e552810499c414488de5751769d595940be05992e1e2977</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 464</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/19</id>
+        <inline>0x96967cf6b0ae919e50f815ac8ebcc35d0625b518d3fd095224b3c70a,0xd7d51361df21536593163d588bb4843a3ea53bfb114e43afa5eae2fb</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 696</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/20</id>
+        <inline>0xb2b0a8e35a9597549a98a150f2b2a311feb560c99923e5ad23befcfa,0x6275928b50ccfd639b81c77c65a8d016c7ea4a035975e871dd10ef5d</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 928</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/21</id>
+        <inline>0xd22b61d5ba5ee04d963bedcbb11165c23990b7053e5d9aef656eb078,0xa000d64563591df0b2f9e270247bca57b242e70f58ed57b4a8acec2e</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 1392</desc>
+    </pubkey>
+    <pubkey>
+        <id>composite224/22</id>
+        <inline>0x1f126f0463995cd293799fc58cb3efa1459a539cbd2d88c8d7283cfc,0x51175df02b5884fce8bfd17a7a97ccf12a5fdfdec4c297b301e477cc</inline>
+        <curve>composite/composite224</curve>
+        <desc>order = 2784</desc>
+    </pubkey>
+
     <pubkey>
         <id>composite256-pub</id>
         <file>composite256_pub.csv</file>
