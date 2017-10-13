@@ -22,11 +22,6 @@ public class EC_Key extends EC_Params {
         this.desc = desc;
     }
 
-    private EC_Key(String id, short mask, String curve) {
-        this(mask, curve);
-        this.id = id;
-    }
-
     private EC_Key(String id, short mask, String curve, String desc) {
         this(mask, curve, desc);
         this.id = id;
@@ -53,9 +48,13 @@ public class EC_Key extends EC_Params {
             super(EC_Consts.PARAMETER_W, curve, desc);
         }
 
+        public Public(String id, String curve, String desc) {
+            super(id, EC_Consts.PARAMETER_W, curve, desc);
+        }
+
         @Override
         public String toString() {
-            return "EC Public key, over " + getCurve() + (getDesc() == null ? "" : ": " + getDesc());
+            return "<" + getId() + "> EC Public key, over " + getCurve() + (getDesc() == null ? "" : ": " + getDesc());
         }
     }
 
@@ -70,6 +69,10 @@ public class EC_Key extends EC_Params {
 
         public Private(String curve, String desc) {
             super(EC_Consts.PARAMETER_S, curve, desc);
+        }
+
+        public Private(String id, String curve, String desc) {
+            super(id, EC_Consts.PARAMETER_S, curve, desc);
         }
 
         @Override

@@ -21,6 +21,11 @@ public class EC_Keypair extends EC_Params {
         this.desc = desc;
     }
 
+    public EC_Keypair(String id, String curve, String desc) {
+        this(curve, desc);
+        this.id = id;
+    }
+
     public String getCurve() {
         return curve;
     }

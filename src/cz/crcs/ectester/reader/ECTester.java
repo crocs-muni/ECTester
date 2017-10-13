@@ -615,7 +615,7 @@ public class ECTester {
         public boolean simulate = false;
         public boolean yes = false;
 
-        //Action-related ions
+        //Action-related options
         public String listNamed;
         public String testSuite;
         public int generateAmount;
