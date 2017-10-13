@@ -1,8 +1,8 @@
-package cz.crcs.ectester.reader;
+package cz.crcs.ectester.reader.response;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
-import cz.crcs.ectester.reader.ec.EC_Curve;
+import cz.crcs.ectester.reader.Util;
 import javacard.framework.ISO7816;
 import javacard.security.KeyPair;
 
@@ -22,12 +22,12 @@ public abstract class Response {
     //TODO replace params with EC_Data?
     private boolean success = true;
 
-    protected Response(ResponseAPDU response, long time) {
+    public Response(ResponseAPDU response, long time) {
         this.resp = response;
         this.time = time;
     }
 
-    protected void parse(int numSW, int numParams) {
+    public void parse(int numSW, int numParams) {
         this.numSW = numSW;
         this.sws = new short[numSW];
 
@@ -160,7 +160,7 @@ public abstract class Response {
      */
     public static class AllocateKeyAgreement extends Response {
         byte kaType;
-        protected AllocateKeyAgreement(ResponseAPDU response, long time, byte kaType) {
+        public AllocateKeyAgreement(ResponseAPDU response, long time, byte kaType) {
             super(response, time);
             this.kaType = kaType;
 
@@ -180,7 +180,7 @@ public abstract class Response {
         private short keyLength;
         private byte keyClass;
 
-        protected Allocate(ResponseAPDU response, long time, byte keyPair, short keyLength, byte keyClass) {
+        public Allocate(ResponseAPDU response, long time, byte keyPair, short keyLength, byte keyClass) {
             super(response, time);
             this.keyPair = keyPair;
             this.keyLength = keyLength;
@@ -212,7 +212,7 @@ public abstract class Response {
 
         private byte keyPair;
 
-        protected Clear(ResponseAPDU response, long time, byte keyPair) {
+        public Clear(ResponseAPDU response, long time, byte keyPair) {
             super(response, time);
             this.keyPair = keyPair;
 
@@ -243,7 +243,7 @@ public abstract class Response {
         private byte curve;
         private short parameters;
 
-        protected Set(ResponseAPDU response, long time, byte keyPair, byte curve, short parameters) {
+        public Set(ResponseAPDU response, long time, byte keyPair, byte curve, short parameters) {
             super(response, time);
             this.keyPair = keyPair;
             this.curve = curve;
@@ -302,7 +302,7 @@ public abstract class Response {
         private short params;
         private byte corruption;
 
-        protected Corrupt(ResponseAPDU response, long time, byte keyPair, byte key, short params, byte corruption) {
+        public Corrupt(ResponseAPDU response, long time, byte keyPair, byte key, short params, byte corruption) {
             super(response, time);
             this.keyPair = keyPair;
             this.key = key;
@@ -337,7 +337,7 @@ public abstract class Response {
 
         private byte keyPair;
 
-        protected Generate(ResponseAPDU response, long time, byte keyPair) {
+        public Generate(ResponseAPDU response, long time, byte keyPair) {
             super(response, time);
             this.keyPair = keyPair;
 
@@ -369,7 +369,7 @@ public abstract class Response {
         private byte key;
         private short parameters;
 
-        protected Export(ResponseAPDU response, long time, byte keyPair, byte key, short parameters) {
+        public Export(ResponseAPDU response, long time, byte keyPair, byte key, short parameters) {
             super(response, time);
             this.keyPair = keyPair;
             this.key = key;
@@ -480,7 +480,7 @@ public abstract class Response {
         private short corruption;
         private byte type;
 
-        protected ECDH(ResponseAPDU response, long time, byte pubkey, byte privkey, byte export, short corruption, byte type) {
+        public ECDH(ResponseAPDU response, long time, byte pubkey, byte privkey, byte export, short corruption, byte type) {
             super(response, time);
             this.pubkey = pubkey;
             this.privkey = privkey;
@@ -529,7 +529,7 @@ public abstract class Response {
         private byte export;
         private byte[] raw;
 
-        protected ECDSA(ResponseAPDU response, long time, byte keyPair, byte export, byte[] raw) {
+        public ECDSA(ResponseAPDU response, long time, byte keyPair, byte export, byte[] raw) {
             super(response, time);
             this.keyPair = keyPair;
             this.export = export;
@@ -559,7 +559,7 @@ public abstract class Response {
      */
     public static class Cleanup extends Response {
 
-        protected Cleanup(ResponseAPDU response, long time) {
+        public Cleanup(ResponseAPDU response, long time) {
             super(response, time);
 
             parse(1, 0);
@@ -577,7 +577,7 @@ public abstract class Response {
      */
     public static class Support extends Response {
 
-        protected Support(ResponseAPDU response, long time) {
+        public Support(ResponseAPDU response, long time) {
             super(response, time);
 
             parse(3, 0);

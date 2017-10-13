@@ -25,9 +25,12 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Store;
+import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.ec.EC_Category;
 import cz.crcs.ectester.reader.ec.EC_Data;
 import cz.crcs.ectester.reader.ec.EC_Params;
+import cz.crcs.ectester.reader.response.Response;
+import cz.crcs.ectester.reader.test.TestSuite;
 import javacard.security.KeyPair;
 import org.apache.commons.cli.*;
 

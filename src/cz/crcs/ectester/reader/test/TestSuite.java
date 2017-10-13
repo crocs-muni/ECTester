@@ -1,9 +1,15 @@
-package cz.crcs.ectester.reader;
+package cz.crcs.ectester.reader.test;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Store;
+import cz.crcs.ectester.reader.CardMngr;
+import cz.crcs.ectester.reader.DirtyLogger;
+import cz.crcs.ectester.reader.ECTester;
+import cz.crcs.ectester.reader.Util;
+import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.ec.*;
+import cz.crcs.ectester.reader.response.Response;
 import javacard.security.KeyPair;
 
 import javax.smartcardio.CardException;

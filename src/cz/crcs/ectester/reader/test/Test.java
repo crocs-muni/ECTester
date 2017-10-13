@@ -1,4 +1,7 @@
-package cz.crcs.ectester.reader;
+package cz.crcs.ectester.reader.test;
+
+import cz.crcs.ectester.reader.command.Command;
+import cz.crcs.ectester.reader.response.Response;
 
 import javax.smartcardio.CardException;
 import java.util.function.BiFunction;
