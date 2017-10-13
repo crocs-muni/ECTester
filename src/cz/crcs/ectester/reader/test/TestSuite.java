@@ -4,11 +4,12 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
-import cz.crcs.ectester.reader.DirtyLogger;
+import cz.crcs.ectester.reader.output.OutputLogger;
 import cz.crcs.ectester.reader.ECTester;
 import cz.crcs.ectester.reader.Util;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.ec.*;
+import cz.crcs.ectester.reader.output.OutputWriter;
 import cz.crcs.ectester.reader.response.Response;
 import javacard.security.KeyPair;
 
@@ -23,24 +24,26 @@ public abstract class TestSuite {
 
     EC_Store dataStore;
     ECTester.Config cfg;
-    DirtyLogger systemOut;
+    OutputWriter writer;
     String name;
     List<Test> tests = new LinkedList<>();
 
-    TestSuite(EC_Store dataStore, ECTester.Config cfg, DirtyLogger systemOut, String name) {
+    TestSuite(EC_Store dataStore, ECTester.Config cfg, OutputWriter writer, String name) {
         this.dataStore = dataStore;
         this.cfg = cfg;
-        this.systemOut = systemOut;
+        this.writer = writer;
         this.name = name;
     }
 
     public List<Test> run(CardMngr cardManager) throws CardException, IOException {
+        writer.begin();
         for (Test t : tests) {
             if (!t.hasRun()) {
                 t.run();
-                systemOut.println(t.toString());
+                writer.printTest(t);
             }
         }
+        writer.end();
         return tests;
     }
 
@@ -104,8 +107,8 @@ public abstract class TestSuite {
 
     public static class Default extends TestSuite {
 
-        public Default(EC_Store dataStore, ECTester.Config cfg, DirtyLogger systemOut) {
-            super(dataStore, cfg, systemOut, "default");
+        public Default(EC_Store dataStore, ECTester.Config cfg, OutputWriter writer) {
+            super(dataStore, cfg, writer, "default");
         }
 
         @Override
@@ -157,8 +160,8 @@ public abstract class TestSuite {
 
     public static class TestVectors extends TestSuite {
 
-        public TestVectors(EC_Store dataStore, ECTester.Config cfg, DirtyLogger systemOut) {
-            super(dataStore, cfg, systemOut, "test");
+        public TestVectors(EC_Store dataStore, ECTester.Config cfg, OutputWriter writer) {
+            super(dataStore, cfg, writer, "test");
         }
 
         @Override
@@ -213,8 +216,8 @@ public abstract class TestSuite {
 
     public static class Composite extends TestSuite {
 
-        public Composite(EC_Store dataStore, ECTester.Config cfg, DirtyLogger systemOut) {
-            super(dataStore, cfg, systemOut, "composite");
+        public Composite(EC_Store dataStore, ECTester.Config cfg, OutputWriter writer) {
+            super(dataStore, cfg, writer, "composite");
         }
 
         @Override
@@ -252,8 +255,8 @@ public abstract class TestSuite {
 
     public static class Invalid extends TestSuite {
 
-        public Invalid(EC_Store dataStore, ECTester.Config cfg, DirtyLogger systemOut) {
-            super(dataStore, cfg, systemOut, "invalid");
+        public Invalid(EC_Store dataStore, ECTester.Config cfg, OutputWriter writer) {
+            super(dataStore, cfg, writer, "invalid");
         }
 
         @Override
@@ -299,8 +302,8 @@ public abstract class TestSuite {
 
     public static class Wrong extends TestSuite {
 
-        public Wrong(EC_Store dataStore, ECTester.Config cfg, DirtyLogger systemOut) {
-            super(dataStore, cfg, systemOut, "wrong");
+        public Wrong(EC_Store dataStore, ECTester.Config cfg, OutputWriter writer) {
+            super(dataStore, cfg, writer, "wrong");
         }
 
         @Override

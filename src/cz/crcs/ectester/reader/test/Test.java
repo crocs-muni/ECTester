@@ -31,6 +31,8 @@ public abstract class Test {
 
     public abstract void run() throws CardException;
 
+    public abstract String getDescription();
+
     /**
      * A result of a Test.
      */
@@ -93,12 +95,8 @@ public abstract class Test {
         }
 
         @Override
-        public String toString() {
-            if (hasRun) {
-                return (ok() ? "OK " : "NOK") + " " + response.toString();
-            } else {
-                return "";
-            }
+        public String getDescription() {
+            return response.getDescription();
         }
     }
 
@@ -140,6 +138,10 @@ public abstract class Test {
             }, any);
         }
 
+        public Test[] getTests() {
+            return tests;
+        }
+
         @Override
         public boolean ok() {
             return result == Result.SUCCESS;
@@ -147,10 +149,15 @@ public abstract class Test {
 
         @Override
         public void run() throws CardException {
-            for (Test test: tests) {
+            for (Test test : tests) {
                 test.run();
             }
             result = callback.apply(tests);
+        }
+
+        @Override
+        public String getDescription() {
+            return "";
         }
     }
 }
