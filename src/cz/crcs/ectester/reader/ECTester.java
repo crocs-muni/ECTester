@@ -35,6 +35,7 @@ import javacard.security.KeyPair;
 import org.apache.commons.cli.*;
 
 import javax.smartcardio.CardException;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
@@ -113,7 +114,7 @@ public class ECTester {
                         writer = new TextOutputWriter(logger.getPrintStream());
                         break;
                     case "xml":
-                        writer = new XMLOutputWriter();
+                        writer = new XMLOutputWriter(logger.getOutputStream());
                         break;
                     case "html":
                         writer = new HTMLOutputWriter();
@@ -177,6 +178,8 @@ public class ECTester {
         } catch (CardException ex) {
             if (logger != null)
                 logger.println(ex.getMessage());
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
         } finally {
             if (logger != null)
                 logger.flush();

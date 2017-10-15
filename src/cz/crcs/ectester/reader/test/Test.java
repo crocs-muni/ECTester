@@ -23,6 +23,8 @@ public abstract class Test {
         return result;
     }
 
+    public abstract String getDescription();
+
     public boolean hasRun() {
         return hasRun;
     }
@@ -31,7 +33,6 @@ public abstract class Test {
 
     public abstract void run() throws CardException;
 
-    public abstract String getDescription();
 
     /**
      * A result of a Test.
@@ -112,11 +113,11 @@ public abstract class Test {
             this.tests = tests;
         }
 
-        public Compound function(Function<Test[], Result> callback, Test... tests) {
+        public static Compound function(Function<Test[], Result> callback, Test... tests) {
             return new Compound(callback, tests);
         }
 
-        public Compound all(Result what, Test... all) {
+        public static Compound all(Result what, Test... all) {
             return new Compound((tests) -> {
                 for (Test test : tests) {
                     if (test.getResult() != what) {
@@ -127,7 +128,7 @@ public abstract class Test {
             }, all);
         }
 
-        public Compound any(Result what, Test... any) {
+        public static Compound any(Result what, Test... any) {
             return new Compound((tests) -> {
                 for (Test test : tests) {
                     if (test.getResult() == what) {
