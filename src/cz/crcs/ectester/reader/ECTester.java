@@ -117,7 +117,7 @@ public class ECTester {
                         writer = new XMLOutputWriter(logger.getOutputStream());
                         break;
                     case "yaml":
-                        writer = new YAMLOutputWriter();
+                        writer = new YAMLOutputWriter(logger.getPrintStream());
                         break;
                 }
             }
