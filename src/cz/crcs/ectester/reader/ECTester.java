@@ -116,8 +116,8 @@ public class ECTester {
                     case "xml":
                         writer = new XMLOutputWriter(logger.getOutputStream());
                         break;
-                    case "html":
-                        writer = new HTMLOutputWriter();
+                    case "yaml":
+                        writer = new YAMLOutputWriter();
                         break;
                 }
             }
@@ -699,11 +699,16 @@ public class ECTester {
             fresh = cli.hasOption("fresh");
             simulate = cli.hasOption("simulate");
             yes = cli.hasOption("yes");
-            format = cli.getOptionValue("format");
 
             if (cli.hasOption("list-named")) {
                 listNamed = cli.getOptionValue("list-named");
                 return true;
+            }
+
+            format = cli.getOptionValue("format");
+            if (!Arrays.asList("text", "xml", "yaml").contains(format)) {
+                System.err.println("Wrong output format " + format + ".");
+                return false;
             }
 
             if ((key != null || namedKey != null) && (anyPublicKey || anyPrivateKey)) {
