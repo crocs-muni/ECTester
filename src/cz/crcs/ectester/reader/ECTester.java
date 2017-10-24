@@ -30,7 +30,7 @@ import cz.crcs.ectester.reader.ec.EC_Data;
 import cz.crcs.ectester.reader.ec.EC_Params;
 import cz.crcs.ectester.reader.output.*;
 import cz.crcs.ectester.reader.response.Response;
-import cz.crcs.ectester.reader.test.TestSuite;
+import cz.crcs.ectester.reader.test.*;
 import javacard.security.KeyPair;
 import org.apache.commons.cli.*;
 
@@ -425,10 +425,10 @@ public class ECTester {
 
         switch (cfg.testSuite) {
             case "default":
-                suite = new TestSuite.Default(dataStore, cfg, writer);
+                suite = new DefaultSuite(dataStore, cfg, writer);
                 break;
             case "test-vectors":
-                suite = new TestSuite.TestVectors(dataStore, cfg, writer);
+                suite = new TestVectorSuite(dataStore, cfg, writer);
                 break;
             default:
                 // These tests are dangerous, prompt before them.
@@ -447,13 +447,13 @@ public class ECTester {
 
                 switch (cfg.testSuite) {
                     case "wrong":
-                        suite = new TestSuite.Wrong(dataStore, cfg, writer);
+                        suite = new WrongCurvesSuite(dataStore, cfg, writer);
                         break;
                     case "composite":
-                        suite = new TestSuite.Composite(dataStore, cfg, writer);
+                        suite = new CompositeCurvesSuite(dataStore, cfg, writer);
                         break;
                     case "invalid":
-                        suite = new TestSuite.Invalid(dataStore, cfg, writer);
+                        suite = new InvalidCurvesSuite(dataStore, cfg, writer);
                         break;
                     default:
                         System.err.println("Unknown test suite.");
