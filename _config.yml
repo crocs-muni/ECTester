@@ -3,3 +3,8 @@ description: "Tester of Eliptic curve support on the JavaCard smartcard platform
 theme: jekyll-theme-cayman
 
 markdown: kramdown
+
+
+exclude:
+ - Gemfile
+ - Gemfile.lock
