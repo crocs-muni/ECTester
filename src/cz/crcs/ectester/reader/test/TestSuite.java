@@ -1,5 +1,6 @@
 package cz.crcs.ectester.reader.test;
 
+import static cz.crcs.ectester.reader.test.Test.Result;
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Store;
@@ -104,6 +105,9 @@ public abstract class TestSuite {
         return tests;
     }
 
+    /**
+     *
+     */
     public static class Default extends TestSuite {
 
         public Default(EC_Store dataStore, ECTester.Config cfg, OutputWriter writer) {
@@ -157,6 +161,9 @@ public abstract class TestSuite {
         }
     }
 
+    /**
+     *
+     */
     public static class TestVectors extends TestSuite {
 
         public TestVectors(EC_Store dataStore, ECTester.Config cfg, OutputWriter writer) {
@@ -191,13 +198,14 @@ public abstract class TestSuite {
                 if (onekey == null || otherkey == null) {
                     throw new IOException("Test vector keys couldn't be located.");
                 }
+                List<Test> testVector = new LinkedList<>();
 
-                tests.add(new Test.Simple(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), Test.Result.SUCCESS));
-                tests.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Test.Result.SUCCESS));
+                testVector.add(new Test.Simple(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), Test.Result.SUCCESS));
+                testVector.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Test.Result.SUCCESS));
                 //tests.add(new Test.Simple(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH), Test.Result.SUCCESS));
-                tests.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, onekey.flatten(EC_Consts.PARAMETER_S)), Test.Result.SUCCESS));
-                tests.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_W, otherkey.flatten(EC_Consts.PARAMETER_W)), Test.Result.SUCCESS));
-                tests.add(new Test.Simple(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, result.getKA()), Test.Result.SUCCESS, (command, response) -> {
+                testVector.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, onekey.flatten(EC_Consts.PARAMETER_S)), Test.Result.SUCCESS));
+                testVector.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_W, otherkey.flatten(EC_Consts.PARAMETER_W)), Test.Result.SUCCESS));
+                testVector.add(new Test.Simple(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, result.getKA()), Test.Result.SUCCESS, (command, response) -> {
                     Response.ECDH dh = (Response.ECDH) response;
                     if (!dh.successful() || !dh.hasSecret())
                         return Test.Result.FAILURE;
@@ -206,6 +214,8 @@ public abstract class TestSuite {
                     }
                     return Test.Result.SUCCESS;
                 }));
+                //tests.addAll(testVector);
+                tests.add(Test.Compound.all(Result.SUCCESS, "Test vector " + result.getId(), testVector.toArray(new Test[0])));
                 tests.add(new Test.Simple(new Command.Cleanup(cardManager), Test.Result.ANY));
 
             }
@@ -213,6 +223,9 @@ public abstract class TestSuite {
         }
     }
 
+    /**
+     *
+     */
     public static class Composite extends TestSuite {
 
         public Composite(EC_Store dataStore, ECTester.Config cfg, OutputWriter writer) {
@@ -252,6 +265,9 @@ public abstract class TestSuite {
         }
     }
 
+    /**
+     *
+     */
     public static class Invalid extends TestSuite {
 
         public Invalid(EC_Store dataStore, ECTester.Config cfg, OutputWriter writer) {
@@ -299,6 +315,9 @@ public abstract class TestSuite {
         }
     }
 
+    /**
+     *
+     */
     public static class Wrong extends TestSuite {
 
         public Wrong(EC_Store dataStore, ECTester.Config cfg, OutputWriter writer) {

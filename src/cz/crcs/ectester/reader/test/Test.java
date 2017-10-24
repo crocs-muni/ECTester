@@ -114,8 +114,17 @@ public abstract class Test {
             this.tests = tests;
         }
 
+        private Compound(Function<Test[], Result> callback, String descripiton, Test... tests) {
+            this(callback, tests);
+            this.description = descripiton;
+        }
+
         public static Compound function(Function<Test[], Result> callback, Test... tests) {
             return new Compound(callback, tests);
+        }
+
+        public static Compound function(Function<Test[], Result> callback, String description, Test... tests) {
+            return new Compound(callback, description, tests);
         }
 
         public static Compound all(Result what, Test... all) {
@@ -129,6 +138,12 @@ public abstract class Test {
             }, all);
         }
 
+        public static Compound all(Result what, String description, Test... all) {
+            Compound result = Compound.all(what, all);
+            result.setDescription(description);
+            return result;
+        }
+
         public static Compound any(Result what, Test... any) {
             return new Compound((tests) -> {
                 for (Test test : tests) {
@@ -138,6 +153,29 @@ public abstract class Test {
                 }
                 return Result.FAILURE;
             }, any);
+        }
+
+        public static Compound any(Result what, String description, Test... any) {
+            Compound result = Compound.any(what, any);
+            result.setDescription(description);
+            return result;
+        }
+
+        public static Compound mask(Result[] results, Test... masked) {
+            return new Compound((tests) -> {
+                for (int i = 0; i < results.length; ++i) {
+                    if (results[i] != Result.ANY && results[i] != tests[i].getResult()) {
+                        return Result.FAILURE;
+                    }
+                }
+                return Result.SUCCESS;
+            }, masked);
+        }
+
+        public static Compound mask(Result[] results, String description, Test... masked) {
+            Compound result = Compound.mask(results, masked);
+            result.setDescription(description);
+            return result;
         }
 
         public Test[] getTests() {
@@ -155,6 +193,7 @@ public abstract class Test {
                 test.run();
             }
             result = callback.apply(tests);
+            this.hasRun = true;
         }
 
         public void setDescription(String description) {

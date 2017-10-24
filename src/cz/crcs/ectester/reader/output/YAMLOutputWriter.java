@@ -82,7 +82,11 @@ public class YAMLOutputWriter implements OutputWriter {
         DumperOptions options = new DumperOptions();
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         Yaml yaml = new Yaml(options);
-        String out = yaml.dump(testRun);
+
+        Map<String, List<Object>> result = new HashMap<>();
+        result.put("testRun", testRun);
+        String out = yaml.dump(result);
+
         output.println(out);
         output.println("---");
     }

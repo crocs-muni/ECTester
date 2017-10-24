@@ -47,22 +47,28 @@ public class TextOutputWriter implements OutputWriter {
         output.flush();
     }
 
-    @Override
-    public void outputTest(Test t) {
+    private String testString(Test t) {
         if (!t.hasRun())
-            return;
+            return null;
 
-        String out = "";
+        StringBuilder out = new StringBuilder();
         if (t instanceof Test.Simple) {
             Test.Simple test = (Test.Simple) t;
-            out += String.format("%-62s:", testPrefix(t) + " " + test.getDescription()) + " : ";
-            out += responseSuffix(test.getResponse());
-        } else if (t instanceof  Test.Compound) {
+            out.append(String.format("%-62s:", testPrefix(t) + " " + test.getDescription())).append(" : ");
+            out.append(responseSuffix(test.getResponse()));
+        } else if (t instanceof Test.Compound) {
             Test.Compound test = (Test.Compound) t;
-            out += String.format("%-62s:", testPrefix(t) + " " + test.getDescription());
+            for (Test innerTest : test.getTests()) {
+                out.append("    ").append(testString(innerTest)).append(System.lineSeparator());
+            }
+            out.append(String.format("%-62s:", testPrefix(t) + " " + test.getDescription()));
         }
+        return out.toString();
+    }
 
-        output.println(out);
+    @Override
+    public void outputTest(Test t) {
+        output.println(testString(t));
         output.flush();
     }
 
