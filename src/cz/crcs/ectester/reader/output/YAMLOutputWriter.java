@@ -6,19 +6,19 @@ import cz.crcs.ectester.reader.test.Test;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class HTMLOutputWriter implements OutputWriter {
+public class YAMLOutputWriter implements OutputWriter {
     @Override
     public void begin() {
 
     }
 
     @Override
-    public void printResponse(Response r) {
+    public void outputResponse(Response r) {
 
     }
 
     @Override
-    public void printTest(Test t) {
+    public void outputTest(Test t) {
 
     }
 

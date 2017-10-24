@@ -4,7 +4,6 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
-import cz.crcs.ectester.reader.output.OutputLogger;
 import cz.crcs.ectester.reader.ECTester;
 import cz.crcs.ectester.reader.Util;
 import cz.crcs.ectester.reader.command.Command;
@@ -40,7 +39,7 @@ public abstract class TestSuite {
         for (Test t : tests) {
             if (!t.hasRun()) {
                 t.run();
-                writer.printTest(t);
+                writer.outputTest(t);
             }
         }
         writer.end();
@@ -62,7 +61,7 @@ public abstract class TestSuite {
      * @param ecdsaExpected    expected result of the ordinary ECDSA command
      * @return tests to run
      */
-    List<Test> testCurve(CardMngr cardManager, Test.Result generateExpected, Test.Result ecdhExpected, Test.Result ecdsaExpected) {
+    List<Test> defaultCurveTests(CardMngr cardManager, Test.Result generateExpected, Test.Result ecdhExpected, Test.Result ecdsaExpected) {
         List<Test> tests = new LinkedList<>();
 
         tests.add(new Test.Simple(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH), generateExpected));
@@ -87,7 +86,7 @@ public abstract class TestSuite {
      * @param ecdsaExpected    expected result of the ordinary ECDSA command
      * @return tests to run
      */
-    List<Test> testCategory(CardMngr cardManager, String category, byte field, Test.Result setExpected, Test.Result generateExpected, Test.Result ecdhExpected, Test.Result ecdsaExpected) {
+    List<Test> defaultCategoryTests(CardMngr cardManager, String category, byte field, Test.Result setExpected, Test.Result generateExpected, Test.Result ecdhExpected, Test.Result ecdsaExpected) {
         List<Test> tests = new LinkedList<>();
         Map<String, EC_Curve> curves = dataStore.getObjects(EC_Curve.class, category);
         if (curves == null)
@@ -97,7 +96,7 @@ public abstract class TestSuite {
             if (curve.getField() == field && (curve.getBits() == cfg.bits || cfg.all)) {
                 tests.add(new Test.Simple(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), field), Test.Result.SUCCESS));
                 tests.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), setExpected));
-                tests.addAll(testCurve(cardManager, generateExpected, ecdhExpected, ecdsaExpected));
+                tests.addAll(defaultCurveTests(cardManager, generateExpected, ecdhExpected, ecdsaExpected));
                 tests.add(new Test.Simple(new Command.Cleanup(cardManager), Test.Result.ANY));
             }
         }
@@ -116,10 +115,10 @@ public abstract class TestSuite {
             tests.add(new Test.Simple(new Command.Support(cardManager), Test.Result.ANY));
             if (cfg.namedCurve != null) {
                 if (cfg.primeField) {
-                    tests.addAll(testCategory(cardManager, cfg.namedCurve, KeyPair.ALG_EC_FP, Test.Result.SUCCESS, Test.Result.SUCCESS, Test.Result.SUCCESS, Test.Result.SUCCESS));
+                    tests.addAll(defaultCategoryTests(cardManager, cfg.namedCurve, KeyPair.ALG_EC_FP, Test.Result.SUCCESS, Test.Result.SUCCESS, Test.Result.SUCCESS, Test.Result.SUCCESS));
                 }
                 if (cfg.binaryField) {
-                    tests.addAll(testCategory(cardManager, cfg.namedCurve, KeyPair.ALG_EC_F2M, Test.Result.SUCCESS, Test.Result.SUCCESS, Test.Result.SUCCESS, Test.Result.SUCCESS));
+                    tests.addAll(defaultCategoryTests(cardManager, cfg.namedCurve, KeyPair.ALG_EC_F2M, Test.Result.SUCCESS, Test.Result.SUCCESS, Test.Result.SUCCESS, Test.Result.SUCCESS));
                 }
             } else {
                 if (cfg.all) {
@@ -153,7 +152,7 @@ public abstract class TestSuite {
             Command curve = Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_BOTH, keyLength, keyType);
             if (curve != null)
                 tests.add(new Test.Simple(curve, Test.Result.SUCCESS));
-            tests.addAll(testCurve(cardManager, Test.Result.SUCCESS, Test.Result.SUCCESS, Test.Result.SUCCESS));
+            tests.addAll(defaultCurveTests(cardManager, Test.Result.SUCCESS, Test.Result.SUCCESS, Test.Result.SUCCESS));
             tests.add(new Test.Simple(new Command.Cleanup(cardManager), Test.Result.ANY));
         }
     }
@@ -312,10 +311,10 @@ public abstract class TestSuite {
              * These should generally fail, the curves aren't curves.
              */
             if (cfg.primeField) {
-                tests.addAll(testCategory(cardManager, cfg.testSuite, KeyPair.ALG_EC_FP, Test.Result.FAILURE, Test.Result.FAILURE, Test.Result.FAILURE, Test.Result.FAILURE));
+                tests.addAll(defaultCategoryTests(cardManager, cfg.testSuite, KeyPair.ALG_EC_FP, Test.Result.FAILURE, Test.Result.FAILURE, Test.Result.FAILURE, Test.Result.FAILURE));
             }
             if (cfg.binaryField) {
-                tests.addAll(testCategory(cardManager, cfg.testSuite, KeyPair.ALG_EC_F2M, Test.Result.FAILURE, Test.Result.FAILURE, Test.Result.FAILURE, Test.Result.FAILURE));
+                tests.addAll(defaultCategoryTests(cardManager, cfg.testSuite, KeyPair.ALG_EC_F2M, Test.Result.FAILURE, Test.Result.FAILURE, Test.Result.FAILURE, Test.Result.FAILURE));
             }
             return super.run(cardManager);
         }

@@ -65,7 +65,7 @@ public class XMLOutputWriter implements OutputWriter {
     }
 
     @Override
-    public void printResponse(Response r) {
+    public void outputResponse(Response r) {
         root.appendChild(responseElement(r));
     }
 
@@ -96,7 +96,7 @@ public class XMLOutputWriter implements OutputWriter {
     }
 
     @Override
-    public void printTest(Test t) {
+    public void outputTest(Test t) {
         if (!t.hasRun())
             return;
         root.appendChild(testElement(t));

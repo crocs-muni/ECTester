@@ -39,7 +39,7 @@ public class TextOutputWriter implements OutputWriter {
     }
 
     @Override
-    public void printResponse(Response r) {
+    public void outputResponse(Response r) {
         String out = "";
         out += String.format("%-62s:", r.getDescription()) + " : ";
         out += responseSuffix(r);
@@ -48,7 +48,7 @@ public class TextOutputWriter implements OutputWriter {
     }
 
     @Override
-    public void printTest(Test t) {
+    public void outputTest(Test t) {
         if (!t.hasRun())
             return;
 

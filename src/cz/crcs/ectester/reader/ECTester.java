@@ -351,7 +351,7 @@ public class ECTester {
         sent.add(export);
 
         for (Response r : sent) {
-            writer.printResponse(r);
+            writer.outputResponse(r);
         }
 
         EC_Params exported = new EC_Params(domain, export.getParams());
@@ -480,7 +480,7 @@ public class ECTester {
             prepare.add(curve.send());
 
         for (Response r : prepare) {
-            writer.printResponse(r);
+            writer.outputResponse(r);
         }
 
         byte pubkey = (cfg.anyPublicKey || cfg.anyKey) ? ECTesterApplet.KEYPAIR_REMOTE : ECTesterApplet.KEYPAIR_LOCAL;
@@ -506,7 +506,7 @@ public class ECTester {
             Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, cfg.ECDHKA).send();
             ecdh.add(perform);
             for (Response r : ecdh) {
-                writer.printResponse(r);
+                writer.outputResponse(r);
             }
 
             if (!perform.successful() || !perform.hasSecret()) {
@@ -565,7 +565,7 @@ public class ECTester {
             prepare.add(curve.send());
 
         for (Response r : prepare) {
-            writer.printResponse(r);
+            writer.outputResponse(r);
         }
 
         FileWriter out = null;
@@ -583,7 +583,7 @@ public class ECTester {
             Response.ECDSA perform = new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, data).send();
             ecdsa.add(perform);
             for (Response r : ecdsa) {
-                writer.printResponse(r);
+                writer.outputResponse(r);
             }
 
             if (!perform.successful() || !perform.hasSignature()) {

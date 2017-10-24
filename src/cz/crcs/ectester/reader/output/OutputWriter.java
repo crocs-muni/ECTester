@@ -12,7 +12,7 @@ import javax.xml.transform.TransformerException;
  */
 public interface OutputWriter {
     void begin();
-    void printResponse(Response r);
-    void printTest(Test t);
+    void outputResponse(Response r);
+    void outputTest(Test t);
     void end();
 }
