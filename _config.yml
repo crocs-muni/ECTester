@@ -4,7 +4,18 @@ theme: jekyll-theme-cayman
 
 markdown: kramdown
 
-
 exclude:
  - Gemfile
  - Gemfile.lock
+
+collections:
+  results:
+    output: true
+
+defaults:
+ - scope:
+     path: ""
+     type: results
+   values:
+     layout: result_page
+     permalink: /:collection/:path/
