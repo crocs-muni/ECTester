@@ -107,6 +107,7 @@ public abstract class Test {
     public static class Compound extends Test {
         private Function<Test[], Result> callback;
         private Test[] tests;
+        private String description;
 
         private Compound(Function<Test[], Result> callback, Test... tests) {
             this.callback = callback;
@@ -156,9 +157,13 @@ public abstract class Test {
             result = callback.apply(tests);
         }
 
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
         @Override
         public String getDescription() {
-            return "";
+            return description;
         }
     }
 }

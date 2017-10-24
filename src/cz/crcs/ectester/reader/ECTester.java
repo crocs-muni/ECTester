@@ -705,7 +705,7 @@ public class ECTester {
                 return true;
             }
 
-            format = cli.getOptionValue("format");
+            format = cli.getOptionValue("format", "text");
             if (!Arrays.asList("text", "xml", "yaml").contains(format)) {
                 System.err.println("Wrong output format " + format + ".");
                 return false;
