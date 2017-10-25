@@ -232,11 +232,13 @@ public class ECTester {
          *
          * -i / --input <input_file>
          * -o / --output <output_file>
+         *      --format <format>
          * -l / --log [log_file]
          *
          * -f / --fresh
          * -s / --simulate
          * -y / --yes
+         * -ka/ --ka-type <type>
          */
         OptionGroup actions = new OptionGroup();
         actions.setRequired(true);
@@ -284,7 +286,7 @@ public class ECTester {
         opts.addOption(Option.builder("o").longOpt("output").desc("Output into file <output_file>.").hasArg().argName("output_file").build());
         opts.addOption(Option.builder("l").longOpt("log").desc("Log output into file [log_file].").hasArg().argName("log_file").optionalArg(true).build());
         opts.addOption(Option.builder("v").longOpt("verbose").desc("Turn on verbose logging.").build());
-        opts.addOption(Option.builder().longOpt("format").desc("Output format to use.").hasArg().argName("format").build());
+        opts.addOption(Option.builder().longOpt("format").desc("Output format to use. One of: text,yml,xml.").hasArg().argName("format").build());
 
         opts.addOption(Option.builder("f").longOpt("fresh").desc("Generate fresh keys (set domain parameters before every generation).").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());

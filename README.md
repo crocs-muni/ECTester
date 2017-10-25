@@ -55,10 +55,15 @@ See `java -jar ECTester.jar -h` for more.
  -o,--output <output_file>         Output into file <output_file>.
  -l,--log <log_file>               Log output into file [log_file].
  -v,--verbose                      Turn on verbose logging.
+    --format <format>              Output format to use.
  -f,--fresh                        Generate fresh keys (set domain
                                    parameters before every generation).
  -s,--simulate                     Simulate a card with jcardsim instead
                                    of using a terminal.
+ -y,--yes                          Accept all warnings and prompts.
+ -ka,--ka-type <type>              Set KeyAgreement object [type],
+                                   corresponds to JC.KeyAgreement
+                                   constants.   
 ```
 
 ### Actions
