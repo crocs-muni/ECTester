@@ -22,7 +22,7 @@ import java.util.Map;
 public class TestVectorSuite extends TestSuite {
 
     public TestVectorSuite(EC_Store dataStore, ECTester.Config cfg) {
-        super(dataStore, cfg, "test", "");
+        super(dataStore, cfg, "test", "The test-vectors suite contains a collection of test vectors which test basic ECDH correctness.");
     }
 
     @Override

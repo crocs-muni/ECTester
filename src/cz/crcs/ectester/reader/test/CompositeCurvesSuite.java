@@ -18,7 +18,7 @@ import java.util.Map;
 public class CompositeCurvesSuite extends TestSuite {
 
     public CompositeCurvesSuite(EC_Store dataStore, ECTester.Config cfg) {
-        super(dataStore, cfg, "composite", "");
+        super(dataStore, cfg, "composite", "The composite suite tests ECDH over curves with composite order. This should generally fail, as using such a curve is unsafe.");
     }
 
     @Override
@@ -42,11 +42,8 @@ public class CompositeCurvesSuite extends TestSuite {
                 tests.add(new Test.Simple(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), Result.Value.SUCCESS));
                 tests.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.Value.ANY));
                 tests.add(new Test.Simple(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL), Result.Value.ANY));
-
-                //tests.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, key.getParams(), key.flatten()), Result.Value.ANY));
-                //tests.add(new Test.Simple(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDH), Result.Value.FAILURE));
-                tests.add(new Test.Simple(new Command.ECDH_direct(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDH, key.flatten()), Result.Value.FAILURE));
-
+                Command ecdhCommand = new Command.ECDH_direct(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDH, key.flatten());
+                tests.add(new Test.Simple(ecdhCommand, Result.Value.FAILURE, "Card correctly rejected to do ECDH over a composite order curve.", "Card incorrectly does ECDH over a composite order curve, leaks bits of private key."));
                 tests.add(new Test.Simple(new Command.Cleanup(cardManager), Result.Value.ANY));
             }
         }

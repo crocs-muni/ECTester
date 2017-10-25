@@ -64,7 +64,10 @@ public class YAMLTestWriter implements TestWriter {
         }
 
         testObj.put("desc", t.getDescription());
-        testObj.put("result", t.getResultValue().name());
+        Map<String, String> result = new HashMap<>();
+        result.put("value", t.getResultValue().name());
+        result.put("cause", t.getResultCause());
+        testObj.put("result", result);
 
         return testObj;
     }

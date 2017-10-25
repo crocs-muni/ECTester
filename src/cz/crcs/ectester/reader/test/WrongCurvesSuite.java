@@ -3,21 +3,17 @@ package cz.crcs.ectester.reader.test;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTester;
-import cz.crcs.ectester.reader.output.TestWriter;
 import javacard.security.KeyPair;
 
-import javax.smartcardio.CardException;
 import java.io.IOException;
-import java.util.List;
 
 /**
- *
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class WrongCurvesSuite extends TestSuite {
 
     public WrongCurvesSuite(EC_Store dataStore, ECTester.Config cfg) {
-        super(dataStore, cfg, "wrong", "");
+        super(dataStore, cfg, "wrong", "The wrong curve suite tests whether the card rejects domain parameters which are not curves.");
     }
 
     @Override

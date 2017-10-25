@@ -138,10 +138,10 @@ public abstract class Test {
             return new Compound((tests) -> {
                 for (Test test : tests) {
                     if (test.getResultValue() != what) {
-                        return new Result(Value.FAILURE);
+                        return new Result(Value.FAILURE, "At least one of the sub-tests did not have the expected result.");
                     }
                 }
-                return new Result(Value.SUCCESS);
+                return new Result(Value.SUCCESS, "All sub-tests had the expected result.");
             }, all);
         }
 
@@ -155,10 +155,10 @@ public abstract class Test {
             return new Compound((tests) -> {
                 for (Test test : tests) {
                     if (test.getResultValue() == what) {
-                        return new Result(Value.SUCCESS);
+                        return new Result(Value.SUCCESS, "At least one of the sub-tests did have the expected result.");
                     }
                 }
-                return new Result(Value.FAILURE);
+                return new Result(Value.FAILURE, "None of the sub-tests had the expected result.");
             }, any);
         }
 
@@ -172,10 +172,10 @@ public abstract class Test {
             return new Compound((tests) -> {
                 for (int i = 0; i < results.length; ++i) {
                     if (results[i] != Value.ANY && results[i] != tests[i].getResultValue()) {
-                        return new Result(Value.FAILURE);
+                        return new Result(Value.FAILURE, "At least one of the sub-tests did not match the result mask.");
                     }
                 }
-                return new Result(Value.SUCCESS);
+                return new Result(Value.SUCCESS, "All sub-tests matched the expected mask.");
             }, masked);
         }
 

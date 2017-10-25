@@ -95,7 +95,12 @@ public class XMLTestWriter implements TestWriter {
         testElem.appendChild(description);
 
         Element result = doc.createElement("result");
-        result.setTextContent(t.getResult().toString());
+        Element value = doc.createElement("value");
+        value.setTextContent(t.getResultValue().name());
+        Element cause = doc.createElement("cause");
+        cause.setTextContent(t.getResultCause());
+        result.appendChild(value);
+        result.appendChild(cause);
         testElem.appendChild(result);
 
         return testElem;
@@ -116,6 +121,7 @@ public class XMLTestWriter implements TestWriter {
             TransformerFactory tf = TransformerFactory.newInstance();
             Transformer transformer = tf.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             transformer.transform(domSource, result);
         } catch (TransformerException e) {
             e.printStackTrace();
