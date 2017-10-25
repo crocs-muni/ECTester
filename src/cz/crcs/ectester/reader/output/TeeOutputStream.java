@@ -22,14 +22,14 @@ public class TeeOutputStream extends OutputStream {
 
     @Override
     public void flush() throws IOException {
-        for (OutputStream out :outputs) {
+        for (OutputStream out : outputs) {
             out.flush();
         }
     }
 
     @Override
     public void close() throws IOException {
-        for (OutputStream out :outputs) {
+        for (OutputStream out : outputs) {
             out.close();
         }
     }

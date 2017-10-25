@@ -8,7 +8,7 @@ import cz.crcs.ectester.reader.ECTester;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.ec.EC_Curve;
 import cz.crcs.ectester.reader.ec.EC_Key;
-import cz.crcs.ectester.reader.output.OutputWriter;
+import cz.crcs.ectester.reader.output.TestWriter;
 import javacard.security.KeyPair;
 
 import javax.smartcardio.CardException;
@@ -22,12 +22,12 @@ import java.util.Map;
  */
 public class CompositeCurvesSuite extends TestSuite {
 
-    public CompositeCurvesSuite(EC_Store dataStore, ECTester.Config cfg, OutputWriter writer) {
-        super(dataStore, cfg, writer, "composite");
+    public CompositeCurvesSuite(EC_Store dataStore, ECTester.Config cfg) {
+        super(dataStore, cfg,  "composite");
     }
 
     @Override
-    public List<Test> run(CardMngr cardManager) throws IOException, CardException {
+    public void setup(CardMngr cardManager) {
         /* Do the default tests with the public keys set to provided smallorder keys
          * over composite order curves. Essentially small subgroup attacks.
          * These should fail, the curves aren't safe so that if the computation with
@@ -55,6 +55,5 @@ public class CompositeCurvesSuite extends TestSuite {
                 tests.add(new Test.Simple(new Command.Cleanup(cardManager), Test.Result.ANY));
             }
         }
-        return super.run(cardManager);
     }
 }

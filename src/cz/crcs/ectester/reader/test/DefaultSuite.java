@@ -6,25 +6,21 @@ import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTester;
 import cz.crcs.ectester.reader.command.Command;
-import cz.crcs.ectester.reader.output.OutputWriter;
 import javacard.security.KeyPair;
 
-import javax.smartcardio.CardException;
 import java.io.IOException;
-import java.util.List;
 
 /**
- *
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class DefaultSuite extends TestSuite {
 
-    public DefaultSuite(EC_Store dataStore, ECTester.Config cfg, OutputWriter writer) {
-        super(dataStore, cfg, writer, "default");
+    public DefaultSuite(EC_Store dataStore, ECTester.Config cfg) {
+        super(dataStore, cfg, "default");
     }
 
     @Override
-    public List<Test> run(CardMngr cardManager) throws IOException, CardException {
+    public void setup(CardMngr cardManager) throws IOException {
         tests.add(new Test.Simple(new Command.Support(cardManager), Test.Result.ANY));
         if (cfg.namedCurve != null) {
             if (cfg.primeField) {
@@ -57,7 +53,6 @@ public class DefaultSuite extends TestSuite {
                 }
             }
         }
-        return super.run(cardManager);
     }
 
     private void defaultTests(CardMngr cardManager, short keyLength, byte keyType) throws IOException {

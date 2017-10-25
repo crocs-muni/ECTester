@@ -1,17 +1,13 @@
 package cz.crcs.ectester.reader.test;
 
-import static cz.crcs.ectester.reader.test.Test.Result;
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTester;
-import cz.crcs.ectester.reader.Util;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.ec.*;
-import cz.crcs.ectester.reader.output.OutputWriter;
-import cz.crcs.ectester.reader.response.Response;
-import javacard.security.KeyPair;
+import cz.crcs.ectester.reader.output.TestWriter;
 
 import javax.smartcardio.CardException;
 import java.io.IOException;
@@ -24,28 +20,16 @@ public abstract class TestSuite {
 
     EC_Store dataStore;
     ECTester.Config cfg;
-    OutputWriter writer;
     String name;
     List<Test> tests = new LinkedList<>();
 
-    TestSuite(EC_Store dataStore, ECTester.Config cfg, OutputWriter writer, String name) {
+    TestSuite(EC_Store dataStore, ECTester.Config cfg, String name) {
         this.dataStore = dataStore;
         this.cfg = cfg;
-        this.writer = writer;
         this.name = name;
     }
 
-    public List<Test> run(CardMngr cardManager) throws CardException, IOException {
-        writer.begin();
-        for (Test t : tests) {
-            if (!t.hasRun()) {
-                t.run();
-                writer.outputTest(t);
-            }
-        }
-        writer.end();
-        return tests;
-    }
+    public abstract void setup(CardMngr cardManager) throws IOException;
 
     public List<Test> getTests() {
         return Collections.unmodifiableList(tests);

@@ -8,10 +8,8 @@ import cz.crcs.ectester.reader.ECTester;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.ec.EC_Curve;
 import cz.crcs.ectester.reader.ec.EC_Key;
-import cz.crcs.ectester.reader.output.OutputWriter;
 import javacard.security.KeyPair;
 
-import javax.smartcardio.CardException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,17 +17,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class InvalidCurvesSuite extends TestSuite {
 
-    public InvalidCurvesSuite(EC_Store dataStore, ECTester.Config cfg, OutputWriter writer) {
-        super(dataStore, cfg, writer, "invalid");
+    public InvalidCurvesSuite(EC_Store dataStore, ECTester.Config cfg) {
+        super(dataStore, cfg, "invalid");
     }
 
     @Override
-    public List<Test> run(CardMngr cardManager) throws CardException, IOException {
+    public void setup(CardMngr cardManager) throws IOException {
         /* Set original curves (secg/nist/brainpool). Generate local.
          * Try ECDH with invalid public keys of increasing (or decreasing) order.
          */
@@ -64,7 +61,5 @@ public class InvalidCurvesSuite extends TestSuite {
             }
             tests.add(new Test.Simple(new Command.Cleanup(cardManager), Test.Result.ANY));
         }
-
-        return super.run(cardManager);
     }
 }

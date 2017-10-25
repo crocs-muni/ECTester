@@ -52,7 +52,8 @@ public class ECTester {
 
     private CardMngr cardManager;
     private OutputLogger logger;
-    private OutputWriter writer;
+    private TestWriter testWriter;
+    private ResponseWriter respWriter;
     private EC_Store dataStore;
     private Config cfg;
 
@@ -105,22 +106,25 @@ public class ECTester {
                 cardManager.send(SELECT_ECTESTERAPPLET);
             }
 
+            // Setup logger, testWriter and respWriter
             logger = new OutputLogger(true, cfg.log);
             if (cfg.format == null) {
-                writer = new TextOutputWriter(logger.getPrintStream());
+                testWriter = new TextTestWriter(logger.getPrintStream());
             } else {
                 switch (cfg.format) {
                     case "text":
-                        writer = new TextOutputWriter(logger.getPrintStream());
+                        testWriter = new TextTestWriter(logger.getPrintStream());
                         break;
                     case "xml":
-                        writer = new XMLOutputWriter(logger.getOutputStream());
+                        testWriter = new XMLTestWriter(logger.getOutputStream());
                         break;
                     case "yaml":
-                        writer = new YAMLOutputWriter(logger.getPrintStream());
+                    case "yml":
+                        testWriter = new YAMLTestWriter(logger.getPrintStream());
                         break;
                 }
             }
+            respWriter = new ResponseWriter(logger.getPrintStream());
 
             //do action
             if (cli.hasOption("export")) {
@@ -351,7 +355,7 @@ public class ECTester {
         sent.add(export);
 
         for (Response r : sent) {
-            writer.outputResponse(r);
+            respWriter.outputResponse(r);
         }
 
         EC_Params exported = new EC_Params(domain, export.getParams());
@@ -425,10 +429,10 @@ public class ECTester {
 
         switch (cfg.testSuite) {
             case "default":
-                suite = new DefaultSuite(dataStore, cfg, writer);
+                suite = new DefaultSuite(dataStore, cfg);
                 break;
             case "test-vectors":
-                suite = new TestVectorSuite(dataStore, cfg, writer);
+                suite = new TestVectorSuite(dataStore, cfg);
                 break;
             default:
                 // These tests are dangerous, prompt before them.
@@ -438,7 +442,7 @@ public class ECTester {
                     System.out.print("Do you want to proceed? (y/n): ");
                     Scanner in = new Scanner(System.in);
                     String confirmation = in.nextLine().toLowerCase();
-                    if (!Arrays.asList("yes","y").contains(confirmation)) {
+                    if (!Arrays.asList("yes", "y").contains(confirmation)) {
                         return;
                     }
                     in.close();
@@ -447,13 +451,13 @@ public class ECTester {
 
                 switch (cfg.testSuite) {
                     case "wrong":
-                        suite = new WrongCurvesSuite(dataStore, cfg, writer);
+                        suite = new WrongCurvesSuite(dataStore, cfg);
                         break;
                     case "composite":
-                        suite = new CompositeCurvesSuite(dataStore, cfg, writer);
+                        suite = new CompositeCurvesSuite(dataStore, cfg);
                         break;
                     case "invalid":
-                        suite = new InvalidCurvesSuite(dataStore, cfg, writer);
+                        suite = new InvalidCurvesSuite(dataStore, cfg);
                         break;
                     default:
                         System.err.println("Unknown test suite.");
@@ -461,7 +465,10 @@ public class ECTester {
                 }
                 break;
         }
-        suite.run(cardManager);
+
+        TestRunner runner = new TestRunner(suite, testWriter);
+        suite.setup(cardManager);
+        runner.run();
     }
 
     /**
@@ -480,7 +487,7 @@ public class ECTester {
             prepare.add(curve.send());
 
         for (Response r : prepare) {
-            writer.outputResponse(r);
+            respWriter.outputResponse(r);
         }
 
         byte pubkey = (cfg.anyPublicKey || cfg.anyKey) ? ECTesterApplet.KEYPAIR_REMOTE : ECTesterApplet.KEYPAIR_LOCAL;
@@ -506,7 +513,7 @@ public class ECTester {
             Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, cfg.ECDHKA).send();
             ecdh.add(perform);
             for (Response r : ecdh) {
-                writer.outputResponse(r);
+                respWriter.outputResponse(r);
             }
 
             if (!perform.successful() || !perform.hasSecret()) {
@@ -565,7 +572,7 @@ public class ECTester {
             prepare.add(curve.send());
 
         for (Response r : prepare) {
-            writer.outputResponse(r);
+            respWriter.outputResponse(r);
         }
 
         FileWriter out = null;
@@ -583,7 +590,7 @@ public class ECTester {
             Response.ECDSA perform = new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, data).send();
             ecdsa.add(perform);
             for (Response r : ecdsa) {
-                writer.outputResponse(r);
+                respWriter.outputResponse(r);
             }
 
             if (!perform.successful() || !perform.hasSignature()) {
@@ -706,7 +713,7 @@ public class ECTester {
             }
 
             format = cli.getOptionValue("format", "text");
-            if (!Arrays.asList("text", "xml", "yaml").contains(format)) {
+            if (!Arrays.asList("text", "xml", "yaml", "yml").contains(format)) {
                 System.err.println("Wrong output format " + format + ".");
                 return false;
             }

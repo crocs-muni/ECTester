@@ -8,28 +8,25 @@ import cz.crcs.ectester.reader.ECTester;
 import cz.crcs.ectester.reader.Util;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.ec.*;
-import cz.crcs.ectester.reader.output.OutputWriter;
 import cz.crcs.ectester.reader.response.Response;
 import javacard.security.KeyPair;
 
-import javax.smartcardio.CardException;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 /**
- *
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class TestVectorSuite extends TestSuite {
 
-    public TestVectorSuite(EC_Store dataStore, ECTester.Config cfg, OutputWriter writer) {
-        super(dataStore, cfg, writer, "test");
+    public TestVectorSuite(EC_Store dataStore, ECTester.Config cfg) {
+        super(dataStore, cfg, "test");
     }
 
     @Override
-    public List<Test> run(CardMngr cardManager) throws IOException, CardException {
+    public void setup(CardMngr cardManager) throws IOException {
         /* Set original curves (secg/nist/brainpool). Set keypairs from test vectors.
          * Do ECDH both ways, export and verify that the result is correct.
          */
@@ -76,6 +73,5 @@ public class TestVectorSuite extends TestSuite {
             tests.add(new Test.Simple(new Command.Cleanup(cardManager), Test.Result.ANY));
 
         }
-        return super.run(cardManager);
     }
 }

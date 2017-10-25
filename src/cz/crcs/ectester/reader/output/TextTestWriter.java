@@ -1,50 +1,28 @@
 package cz.crcs.ectester.reader.output;
 
-import cz.crcs.ectester.reader.Util;
-import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.test.Test;
+import cz.crcs.ectester.reader.test.TestSuite;
 
 import java.io.PrintStream;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class TextOutputWriter implements OutputWriter {
+public class TextTestWriter implements TestWriter {
     private PrintStream output;
+    private ResponseWriter respWriter;
 
-    public TextOutputWriter(PrintStream output) {
+    public TextTestWriter(PrintStream output) {
         this.output = output;
+        this.respWriter = new ResponseWriter(output);
     }
 
     @Override
-    public void begin() {
+    public void begin(TestSuite suite) {
     }
 
     private String testPrefix(Test t) {
         return String.format("%-4s", t.getResult() == Test.Result.SUCCESS ? "OK" : "NOK");
-    }
-
-    private String responseSuffix(Response r) {
-        StringBuilder suffix = new StringBuilder();
-        for (int j = 0; j < r.getNumSW(); ++j) {
-            short sw = r.getSW(j);
-            if (sw != 0) {
-                suffix.append(" ").append(Util.getSWString(sw));
-            }
-        }
-        if (suffix.length() == 0) {
-            suffix.append(" [").append(Util.getSW(r.getNaturalSW())).append("]");
-        }
-        return String.format("%4d ms : %s", r.getDuration() / 1000000, suffix);
-    }
-
-    @Override
-    public void outputResponse(Response r) {
-        String out = "";
-        out += String.format("%-70s:", r.getDescription()) + " : ";
-        out += responseSuffix(r);
-        output.println(out);
-        output.flush();
     }
 
     private String testString(Test t) {
@@ -55,7 +33,7 @@ public class TextOutputWriter implements OutputWriter {
         if (t instanceof Test.Simple) {
             Test.Simple test = (Test.Simple) t;
             out.append(String.format("%-70s:", testPrefix(t) + " : " + test.getDescription())).append(" : ");
-            out.append(responseSuffix(test.getResponse()));
+            out.append(respWriter.responseSuffix(test.getResponse()));
         } else if (t instanceof Test.Compound) {
             Test.Compound test = (Test.Compound) t;
             Test[] tests = test.getTests();
@@ -76,6 +54,8 @@ public class TextOutputWriter implements OutputWriter {
 
     @Override
     public void outputTest(Test t) {
+        if (!t.hasRun())
+            return;
         output.println(testString(t));
         output.flush();
     }

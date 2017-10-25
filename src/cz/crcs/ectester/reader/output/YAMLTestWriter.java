@@ -3,6 +3,7 @@ package cz.crcs.ectester.reader.output;
 import cz.crcs.ectester.reader.Util;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.test.Test;
+import cz.crcs.ectester.reader.test.TestSuite;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -15,16 +16,16 @@ import java.util.Map;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class YAMLOutputWriter implements OutputWriter {
+public class YAMLTestWriter implements TestWriter {
     private PrintStream output;
     private List<Object> testRun;
 
-    public YAMLOutputWriter(PrintStream output) {
+    public YAMLTestWriter(PrintStream output) {
         this.output = output;
     }
 
     @Override
-    public void begin() {
+    public void begin(TestSuite suite) {
         output.println("---");
         testRun = new LinkedList<>();
     }
@@ -42,11 +43,6 @@ public class YAMLOutputWriter implements OutputWriter {
         responseObj.put("duration", r.getDuration());
         responseObj.put("desc", r.getDescription());
         return responseObj;
-    }
-
-    @Override
-    public void outputResponse(Response r) {
-        testRun.add(responseObject(r));
     }
 
     private Map<String, Object> testObject(Test t) {
@@ -74,6 +70,8 @@ public class YAMLOutputWriter implements OutputWriter {
 
     @Override
     public void outputTest(Test t) {
+        if (!t.hasRun())
+            return;
         testRun.add(testObject(t));
     }
 
@@ -81,6 +79,7 @@ public class YAMLOutputWriter implements OutputWriter {
     public void end() {
         DumperOptions options = new DumperOptions();
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        options.setPrettyFlow(true);
         Yaml yaml = new Yaml(options);
 
         Map<String, List<Object>> result = new HashMap<>();

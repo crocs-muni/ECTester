@@ -3,13 +3,17 @@ package cz.crcs.ectester.reader.output;
 import cz.crcs.ectester.reader.Util;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.test.Test;
+import cz.crcs.ectester.reader.test.TestSuite;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.OutputStream;
@@ -17,18 +21,18 @@ import java.io.OutputStream;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class XMLOutputWriter implements OutputWriter {
+public class XMLTestWriter implements TestWriter {
     private OutputStream output;
     private Document doc;
     private Node root;
 
-    public XMLOutputWriter(OutputStream output) throws ParserConfigurationException {
+    public XMLTestWriter(OutputStream output) throws ParserConfigurationException {
         this.output = output;
         this.doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
     }
 
     @Override
-    public void begin() {
+    public void begin(TestSuite suite) {
         root = doc.createElement("testRun");
         doc.appendChild(root);
     }
@@ -62,11 +66,6 @@ public class XMLOutputWriter implements OutputWriter {
         responseElem.appendChild(description);
 
         return responseElem;
-    }
-
-    @Override
-    public void outputResponse(Response r) {
-        root.appendChild(responseElement(r));
     }
 
     private Element testElement(Test t) {
