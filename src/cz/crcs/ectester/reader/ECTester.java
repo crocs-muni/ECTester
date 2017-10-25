@@ -713,8 +713,9 @@ public class ECTester {
             }
 
             format = cli.getOptionValue("format", "text");
-            if (!Arrays.asList("text", "xml", "yaml", "yml").contains(format)) {
-                System.err.println("Wrong output format " + format + ".");
+            String formats[] = new String[]{"text", "xml", "yaml", "yml"};
+            if (!Arrays.asList(formats).contains(format)) {
+                System.err.println("Wrong output format " + format + ". Should be one of " + Arrays.toString(formats));
                 return false;
             }
 
@@ -789,9 +790,8 @@ public class ECTester {
 
                 testSuite = cli.getOptionValue("test", "default").toLowerCase();
                 String[] tests = new String[]{"default", "composite", "invalid", "test-vectors", "wrong"};
-                List<String> testsList = Arrays.asList(tests);
-                if (!testsList.contains(testSuite)) {
-                    System.err.println("Unknown test case. Should be one of: " + Arrays.toString(tests));
+                if (!Arrays.asList(tests).contains(testSuite)) {
+                    System.err.println("Unknown test suite " + testSuite + ". Should be one of: " + Arrays.toString(tests));
                     return false;
                 }
 

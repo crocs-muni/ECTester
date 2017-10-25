@@ -1,6 +1,7 @@
 package cz.crcs.ectester.reader.output;
 
 import cz.crcs.ectester.reader.test.Test;
+import cz.crcs.ectester.reader.test.Result;
 import cz.crcs.ectester.reader.test.TestSuite;
 
 import java.io.PrintStream;
@@ -19,10 +20,11 @@ public class TextTestWriter implements TestWriter {
 
     @Override
     public void begin(TestSuite suite) {
+        //TODO: output suite.name and suite.description
     }
 
     private String testPrefix(Test t) {
-        return String.format("%-4s", t.getResult() == Test.Result.SUCCESS ? "OK" : "NOK");
+        return String.format("%-4s", t.getResultValue() == Result.Value.SUCCESS ? "OK" : "NOK");
     }
 
     private String testString(Test t) {

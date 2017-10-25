@@ -28,6 +28,7 @@ public class YAMLTestWriter implements TestWriter {
     public void begin(TestSuite suite) {
         output.println("---");
         testRun = new LinkedList<>();
+        //TODO: output suite.name and suite.description
     }
 
     private Map<String, Object> responseObject(Response r) {
@@ -63,7 +64,7 @@ public class YAMLTestWriter implements TestWriter {
         }
 
         testObj.put("desc", t.getDescription());
-        testObj.put("result", t.getResult().name());
+        testObj.put("result", t.getResultValue().name());
 
         return testObj;
     }

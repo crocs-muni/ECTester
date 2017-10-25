@@ -8,22 +8,17 @@ import cz.crcs.ectester.reader.ECTester;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.ec.EC_Curve;
 import cz.crcs.ectester.reader.ec.EC_Key;
-import cz.crcs.ectester.reader.output.TestWriter;
 import javacard.security.KeyPair;
 
-import javax.smartcardio.CardException;
-import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 /**
- *
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class CompositeCurvesSuite extends TestSuite {
 
     public CompositeCurvesSuite(EC_Store dataStore, ECTester.Config cfg) {
-        super(dataStore, cfg,  "composite");
+        super(dataStore, cfg, "composite", "");
     }
 
     @Override
@@ -44,15 +39,15 @@ public class CompositeCurvesSuite extends TestSuite {
                 continue;
             }
             if ((curve.getBits() == cfg.bits || cfg.all)) {
-                tests.add(new Test.Simple(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), Test.Result.SUCCESS));
-                tests.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Test.Result.ANY));
-                tests.add(new Test.Simple(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL), Test.Result.ANY));
+                tests.add(new Test.Simple(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), Result.Value.SUCCESS));
+                tests.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.Value.ANY));
+                tests.add(new Test.Simple(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL), Result.Value.ANY));
 
-                //tests.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, key.getParams(), key.flatten()), Test.Result.ANY));
-                //tests.add(new Test.Simple(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDH), Test.Result.FAILURE));
-                tests.add(new Test.Simple(new Command.ECDH_direct(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDH, key.flatten()), Test.Result.FAILURE));
+                //tests.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, key.getParams(), key.flatten()), Result.Value.ANY));
+                //tests.add(new Test.Simple(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDH), Result.Value.FAILURE));
+                tests.add(new Test.Simple(new Command.ECDH_direct(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDH, key.flatten()), Result.Value.FAILURE));
 
-                tests.add(new Test.Simple(new Command.Cleanup(cardManager), Test.Result.ANY));
+                tests.add(new Test.Simple(new Command.Cleanup(cardManager), Result.Value.ANY));
             }
         }
     }

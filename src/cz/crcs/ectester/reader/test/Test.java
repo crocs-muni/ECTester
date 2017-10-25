@@ -7,6 +7,8 @@ import javax.smartcardio.CardException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static cz.crcs.ectester.reader.test.Result.Value;
+
 /**
  * An abstract test that can be run and has a Result.
  *
@@ -23,6 +25,20 @@ public abstract class Test {
         return result;
     }
 
+    public Value getResultValue() {
+        if (!hasRun) {
+            return null;
+        }
+        return result.getValue();
+    }
+
+    public String getResultCause() {
+        if (!hasRun) {
+            return null;
+        }
+        return result.getCause();
+    }
+
     public abstract String getDescription();
 
     public boolean hasRun() {
@@ -30,16 +46,6 @@ public abstract class Test {
     }
 
     public abstract void run() throws CardException;
-
-
-    /**
-     * A result of a Test.
-     */
-    public enum Result {
-        SUCCESS,
-        FAILURE,
-        ANY
-    }
 
     /**
      * A simple test that runs one Command to get and evaluate one Response
@@ -50,18 +56,24 @@ public abstract class Test {
         private Command command;
         private Response response;
 
-        public Simple(Command command, Result expected) {
-            this(command, (cmd, resp) -> {
-                if (expected == Result.ANY)
-                    return Result.SUCCESS;
-                Result respResult = resp.successful() ? Result.SUCCESS : Result.FAILURE;
-                return respResult == expected ? Result.SUCCESS : Result.FAILURE;
-            });
-        }
-
         public Simple(Command command, BiFunction<Command, Response, Result> callback) {
             this.command = command;
             this.callback = callback;
+        }
+
+        public Simple(Command command, Value expected, String ok, String nok) {
+            this(command, (cmd, resp) -> {
+                if (expected == Value.ANY) {
+                    return new Result(Value.SUCCESS, ok);
+                }
+                Value respResult = resp.successful() ? Value.SUCCESS : Value.FAILURE;
+                boolean cond = expected == respResult;
+                return new Result(cond ? Value.SUCCESS : Value.FAILURE, cond ? ok : nok);
+            });
+        }
+
+        public Simple(Command command, Value expected) {
+            this(command, expected, null, null);
         }
 
         public Command getCommand() {
@@ -82,9 +94,9 @@ public abstract class Test {
                 result = callback.apply(command, response);
             } else {
                 if (response.successful()) {
-                    result = Result.SUCCESS;
+                    result = new Result(Value.SUCCESS);
                 } else {
-                    result = Result.FAILURE;
+                    result = new Result(Value.FAILURE);
                 }
             }
             hasRun = true;
@@ -122,52 +134,52 @@ public abstract class Test {
             return new Compound(callback, description, tests);
         }
 
-        public static Compound all(Result what, Test... all) {
+        public static Compound all(Value what, Test... all) {
             return new Compound((tests) -> {
                 for (Test test : tests) {
-                    if (test.getResult() != what) {
-                        return Result.FAILURE;
+                    if (test.getResultValue() != what) {
+                        return new Result(Value.FAILURE);
                     }
                 }
-                return Result.SUCCESS;
+                return new Result(Value.SUCCESS);
             }, all);
         }
 
-        public static Compound all(Result what, String description, Test... all) {
+        public static Compound all(Value what, String description, Test... all) {
             Compound result = Compound.all(what, all);
             result.setDescription(description);
             return result;
         }
 
-        public static Compound any(Result what, Test... any) {
+        public static Compound any(Value what, Test... any) {
             return new Compound((tests) -> {
                 for (Test test : tests) {
-                    if (test.getResult() == what) {
-                        return Result.SUCCESS;
+                    if (test.getResultValue() == what) {
+                        return new Result(Value.SUCCESS);
                     }
                 }
-                return Result.FAILURE;
+                return new Result(Value.FAILURE);
             }, any);
         }
 
-        public static Compound any(Result what, String description, Test... any) {
+        public static Compound any(Value what, String description, Test... any) {
             Compound result = Compound.any(what, any);
             result.setDescription(description);
             return result;
         }
 
-        public static Compound mask(Result[] results, Test... masked) {
+        public static Compound mask(Value[] results, Test... masked) {
             return new Compound((tests) -> {
                 for (int i = 0; i < results.length; ++i) {
-                    if (results[i] != Result.ANY && results[i] != tests[i].getResult()) {
-                        return Result.FAILURE;
+                    if (results[i] != Value.ANY && results[i] != tests[i].getResultValue()) {
+                        return new Result(Value.FAILURE);
                     }
                 }
-                return Result.SUCCESS;
+                return new Result(Value.SUCCESS);
             }, masked);
         }
 
-        public static Compound mask(Result[] results, String description, Test... masked) {
+        public static Compound mask(Value[] results, String description, Test... masked) {
             Compound result = Compound.mask(results, masked);
             result.setDescription(description);
             return result;

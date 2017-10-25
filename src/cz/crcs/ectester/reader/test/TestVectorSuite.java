@@ -22,7 +22,7 @@ import java.util.Map;
 public class TestVectorSuite extends TestSuite {
 
     public TestVectorSuite(EC_Store dataStore, ECTester.Config cfg) {
-        super(dataStore, cfg, "test");
+        super(dataStore, cfg, "test", "");
     }
 
     @Override
@@ -55,22 +55,25 @@ public class TestVectorSuite extends TestSuite {
             }
             List<Test> testVector = new LinkedList<>();
 
-            testVector.add(new Test.Simple(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), Test.Result.SUCCESS));
-            testVector.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Test.Result.SUCCESS));
-            //tests.add(new Test.Simple(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH), Test.Result.SUCCESS));
-            testVector.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, onekey.flatten(EC_Consts.PARAMETER_S)), Test.Result.SUCCESS));
-            testVector.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_W, otherkey.flatten(EC_Consts.PARAMETER_W)), Test.Result.SUCCESS));
+            testVector.add(new Test.Simple(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), Result.Value.SUCCESS));
+            testVector.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.Value.SUCCESS));
+            //tests.add(new Test.Simple(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH), Result.Value.SUCCESS));
+            testVector.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, onekey.flatten(EC_Consts.PARAMETER_S)), Result.Value.SUCCESS));
+            testVector.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_W, otherkey.flatten(EC_Consts.PARAMETER_W)), Result.Value.SUCCESS));
             testVector.add(new Test.Simple(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, result.getKA()), (command, response) -> {
                 Response.ECDH dh = (Response.ECDH) response;
-                if (!dh.successful() || !dh.hasSecret())
-                    return Test.Result.FAILURE;
+                if (!dh.successful())
+                    return new Result(Result.Value.FAILURE, "ECDH was unsuccessful.");
+                if (!dh.hasSecret())
+                    return new Result(Result.Value.FAILURE, "ECDH response did not contain the derived secret.");
                 if (!Util.compareBytes(dh.getSecret(), 0, result.getParam(0), 0, dh.secretLength())) {
-                    return Test.Result.FAILURE;
+                    int firstDiff = Util.diffBytes(dh.getSecret(), 0, result.getParam(0), 0, dh.secretLength());
+                    return new Result(Result.Value.FAILURE, "ECDH derived secret does not match the test, first difference was at byte " + String.valueOf(firstDiff) + ".");
                 }
-                return Test.Result.SUCCESS;
+                return new Result(Result.Value.SUCCESS);
             }));
-            tests.add(Test.Compound.all(Test.Result.SUCCESS, "Test vector " + result.getId(), testVector.toArray(new Test[0])));
-            tests.add(new Test.Simple(new Command.Cleanup(cardManager), Test.Result.ANY));
+            tests.add(Test.Compound.all(Result.Value.SUCCESS, "Test vector " + result.getId(), testVector.toArray(new Test[0])));
+            tests.add(new Test.Simple(new Command.Cleanup(cardManager), Result.Value.ANY));
 
         }
     }

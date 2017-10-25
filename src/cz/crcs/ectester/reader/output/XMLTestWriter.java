@@ -8,6 +8,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -23,17 +24,23 @@ import java.io.OutputStream;
  */
 public class XMLTestWriter implements TestWriter {
     private OutputStream output;
+    private DocumentBuilder db;
     private Document doc;
     private Node root;
 
     public XMLTestWriter(OutputStream output) throws ParserConfigurationException {
         this.output = output;
-        this.doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        this.db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
     }
 
     @Override
     public void begin(TestSuite suite) {
-        root = doc.createElement("testRun");
+        doc = db.newDocument();
+        Element rootElem = doc.createElement("testSuite");
+        rootElem.setAttribute("name", suite.getName());
+        rootElem.setAttribute("desc", suite.getDescription());
+
+        root = rootElem;
         doc.appendChild(root);
     }
 

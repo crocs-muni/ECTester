@@ -17,7 +17,7 @@ import java.util.List;
 public class WrongCurvesSuite extends TestSuite {
 
     public WrongCurvesSuite(EC_Store dataStore, ECTester.Config cfg) {
-        super(dataStore, cfg, "wrong");
+        super(dataStore, cfg, "wrong", "");
     }
 
     @Override
@@ -26,10 +26,10 @@ public class WrongCurvesSuite extends TestSuite {
          * These should generally fail, the curves aren't curves.
          */
         if (cfg.primeField) {
-            tests.addAll(defaultCategoryTests(cardManager, cfg.testSuite, KeyPair.ALG_EC_FP, Test.Result.FAILURE, Test.Result.FAILURE, Test.Result.FAILURE, Test.Result.FAILURE));
+            tests.addAll(defaultCategoryTests(cardManager, cfg.testSuite, KeyPair.ALG_EC_FP, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE));
         }
         if (cfg.binaryField) {
-            tests.addAll(defaultCategoryTests(cardManager, cfg.testSuite, KeyPair.ALG_EC_F2M, Test.Result.FAILURE, Test.Result.FAILURE, Test.Result.FAILURE, Test.Result.FAILURE));
+            tests.addAll(defaultCategoryTests(cardManager, cfg.testSuite, KeyPair.ALG_EC_F2M, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE));
         }
     }
 }
