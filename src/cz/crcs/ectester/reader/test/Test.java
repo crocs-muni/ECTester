@@ -29,8 +29,6 @@ public abstract class Test {
         return hasRun;
     }
 
-    public abstract boolean ok();
-
     public abstract void run() throws CardException;
 
 
@@ -49,17 +47,20 @@ public abstract class Test {
      */
     public static class Simple extends Test {
         private BiFunction<Command, Response, Result> callback;
-        private Result expected;
         private Command command;
         private Response response;
 
         public Simple(Command command, Result expected) {
-            this.command = command;
-            this.expected = expected;
+            this(command, (cmd, resp) -> {
+                if (expected == Result.ANY)
+                    return Result.SUCCESS;
+                Result respResult = resp.successful() ? Result.SUCCESS : Result.FAILURE;
+                return respResult == expected ? Result.SUCCESS : Result.FAILURE;
+            });
         }
 
-        public Simple(Command command, Result expected, BiFunction<Command, Response, Result> callback) {
-            this(command, expected);
+        public Simple(Command command, BiFunction<Command, Response, Result> callback) {
+            this.command = command;
             this.callback = callback;
         }
 
@@ -71,17 +72,11 @@ public abstract class Test {
             return response;
         }
 
-        public Result getExpected() {
-            return expected;
-        }
-
-        @Override
-        public boolean ok() {
-            return result == expected || expected == Result.ANY;
-        }
-
         @Override
         public void run() throws CardException {
+            if (hasRun)
+                return;
+
             response = command.send();
             if (callback != null) {
                 result = callback.apply(command, response);
@@ -183,12 +178,10 @@ public abstract class Test {
         }
 
         @Override
-        public boolean ok() {
-            return result == Result.SUCCESS;
-        }
-
-        @Override
         public void run() throws CardException {
+            if (hasRun)
+                return;
+
             for (Test test : tests) {
                 test.run();
             }

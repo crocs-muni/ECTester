@@ -21,7 +21,7 @@ public class TextOutputWriter implements OutputWriter {
     }
 
     private String testPrefix(Test t) {
-        return (t.ok() ? "OK" : "NOK");
+        return String.format("%-4s", t.getResult() == Test.Result.SUCCESS ? "OK" : "NOK");
     }
 
     private String responseSuffix(Response r) {
@@ -41,7 +41,7 @@ public class TextOutputWriter implements OutputWriter {
     @Override
     public void outputResponse(Response r) {
         String out = "";
-        out += String.format("%-62s:", r.getDescription()) + " : ";
+        out += String.format("%-70s:", r.getDescription()) + " : ";
         out += responseSuffix(r);
         output.println(out);
         output.flush();
@@ -54,14 +54,22 @@ public class TextOutputWriter implements OutputWriter {
         StringBuilder out = new StringBuilder();
         if (t instanceof Test.Simple) {
             Test.Simple test = (Test.Simple) t;
-            out.append(String.format("%-62s:", testPrefix(t) + " " + test.getDescription())).append(" : ");
+            out.append(String.format("%-70s:", testPrefix(t) + " : " + test.getDescription())).append(" : ");
             out.append(responseSuffix(test.getResponse()));
         } else if (t instanceof Test.Compound) {
             Test.Compound test = (Test.Compound) t;
-            for (Test innerTest : test.getTests()) {
-                out.append("    ").append(testString(innerTest)).append(System.lineSeparator());
+            Test[] tests = test.getTests();
+            for (int i = 0; i < tests.length; ++i) {
+                if (i == 0) {
+                    out.append(" /- ");
+                } else if (i == tests.length - 1) {
+                    out.append(" \\- ");
+                } else {
+                    out.append(" |  ");
+                }
+                out.append(testString(tests[i])).append(System.lineSeparator());
             }
-            out.append(String.format("%-62s:", testPrefix(t) + " " + test.getDescription()));
+            out.append(String.format("%-70s:", testPrefix(t) + " : " + test.getDescription()));
         }
         return out.toString();
     }

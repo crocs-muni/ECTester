@@ -68,7 +68,6 @@ public class YAMLOutputWriter implements OutputWriter {
 
         testObj.put("desc", t.getDescription());
         testObj.put("result", t.getResult().name());
-        testObj.put("ok", t.ok());
 
         return testObj;
     }

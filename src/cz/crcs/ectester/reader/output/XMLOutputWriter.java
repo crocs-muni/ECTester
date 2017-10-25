@@ -92,10 +92,6 @@ public class XMLOutputWriter implements OutputWriter {
         result.setTextContent(t.getResult().toString());
         testElem.appendChild(result);
 
-        Element ok = doc.createElement("ok");
-        ok.setTextContent(t.ok() ? "true" : "false");
-        testElem.appendChild(ok);
-
         return testElem;
     }
 
