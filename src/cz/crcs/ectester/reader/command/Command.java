@@ -164,7 +164,7 @@ public abstract class Command {
                 priv.readCSV(in);
                 in.close();
             } else {
-                priv = dataStore.getObject(EC_Key.Public.class, cfg.namedPrivateKey);
+                priv = dataStore.getObject(EC_Key.Private.class, cfg.namedPrivateKey);
                 if (priv == null) {
                     priv = dataStore.getObject(EC_Keypair.class, cfg.namedPrivateKey);
                 }
