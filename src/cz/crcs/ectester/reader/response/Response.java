@@ -546,7 +546,7 @@ public abstract class Response {
 
         @Override
         public String getDescription() {
-            return "Support of ECDH, ECDHC, ECDSA";
+            return "Support of ECDH, ECDHC, ECDSA allocation";
         }
     }
 }
