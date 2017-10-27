@@ -1,0 +1,49 @@
+<style>
+    .clickable:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<table>
+    <tr>
+        <th></th>
+        <th>Description</th>
+        <th>Result</th>
+        <th>Cause</th>
+    </tr>
+    {% for test in include.testRun %}
+    <tr>
+        {% if test.type == "compound" %}
+        <td class="clickable" data-rows="{{ test.tests | size }}"><b>+</b></td>
+        {% else %}
+        <td></td>
+        {% endif %}
+        <td>{{ test.desc }}</td>
+        <td title="{{ test.result.cause }}">{{ test.result.value }}</td>
+        <td title="{% for sw in test.response.sws %}{{ sw }} {% endfor %}">{{ test.result.cause }}</td>
+    </tr>
+    {% if test.type == "compound" %}
+    {% for t in test.tests %}
+    <tr style="display: none;">
+        <td></td>
+        <td>{{ t.desc }}</td>
+        <td title="{{ t.result.cause }}">{{ t.result.value }}</td>
+        <td title="{% for sw in t.response.sws %}{{ sw }} {% endfor %}">{{ t.result.cause }}</td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+    {% endfor %}
+</table>
+
+
+<script>
+    $(".clickable").click(function () {
+        var tests = $(this).attr("data-rows");
+        $(this).parent().nextAll().each(function () {
+            if (tests > 0) {
+                $(this).toggle();
+                tests--;
+            }
+        })
+    });
+</script>
