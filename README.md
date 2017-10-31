@@ -73,14 +73,14 @@ See `java -jar ECTester.jar -h` for more.
 
 Exports the default curves (if any) that are preset on the card.
 Use with `-o / --output [out_file]` to output the curve parameters to a file.
-For format of this file see [FORMAT](FORMAT.md).
+For format of this file see [FORMAT](docs/FORMAT.md).
 
 #### Test
 `-t / --test [test_suite]`
 
 Perform support and performance tests of ECC.
 
-For more info about the test suites see [TESTS](TESTS.md).
+For more info about the test suites see [TESTS](docs/TESTS.md).
 
 #### Generate
 `-g / --generate [amount]`
@@ -113,7 +113,7 @@ With the format: `category/name`.
 For example:
 `secg/secp192r1` identifies the SECG 192 bit prime field curve known as `secp192r1`.
 
-For more info about the curves see [CURVES](CURVES.md).
+For more info about the curves see [CURVES](docs/CURVES.md).
 
 ### Example
 
