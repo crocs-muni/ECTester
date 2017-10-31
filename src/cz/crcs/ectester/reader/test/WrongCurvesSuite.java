@@ -21,11 +21,12 @@ public class WrongCurvesSuite extends TestSuite {
         /* Just do the default tests on the wrong curves.
          * These should generally fail, the curves aren't curves.
          */
+        String desc = "Default tests over wrong curve params.";
         if (cfg.primeField) {
-            tests.addAll(defaultCategoryTests(cardManager, cfg.testSuite, KeyPair.ALG_EC_FP, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE));
+            tests.addAll(defaultCategoryTests(cardManager, cfg.testSuite, KeyPair.ALG_EC_FP, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE, desc));
         }
         if (cfg.binaryField) {
-            tests.addAll(defaultCategoryTests(cardManager, cfg.testSuite, KeyPair.ALG_EC_F2M, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE));
+            tests.addAll(defaultCategoryTests(cardManager, cfg.testSuite, KeyPair.ALG_EC_F2M, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE, desc));
         }
     }
 }
