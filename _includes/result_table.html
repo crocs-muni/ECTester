@@ -1,6 +1,12 @@
 <style>
+    .clickable {
+        font-size: 1.5em;
+        font-weight: bold;
+    }
+
     .clickable:hover {
         text-decoration: underline;
+        cursor: pointer;
     }
 </style>
 
@@ -14,7 +20,7 @@
     {% for test in include.testRun %}
     <tr>
         {% if test.type == "compound" %}
-        <td class="clickable" data-rows="{{ test.tests | size }}"><b>+</b></td>
+        <td class="clickable" data-rows="{{ test.tests | size }}">+</td>
         {% else %}
         <td></td>
         {% endif %}
@@ -37,13 +43,18 @@
 
 
 <script>
-    $(".clickable").click(function () {
+    $(".clickable").click(function (btn) {
         var tests = $(this).attr("data-rows");
         $(this).parent().nextAll().each(function () {
             if (tests > 0) {
                 $(this).toggle();
                 tests--;
             }
-        })
+        });
+        if (btn.currentTarget.innerHTML === "+") {
+            btn.currentTarget.innerHTML = "-";
+        } else {
+            btn.currentTarget.innerHTML = "+";
+        }
     });
 </script>

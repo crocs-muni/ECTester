@@ -2,4 +2,10 @@
 layout: default
 ---
 
+{% include result_header.html testRun=page.testRun suite="Invalid" %}
+
+Tests using known named curves from several categories(SECG/NIST/Brainpool) against pregenerated <b>invalid</b> public keys.
+These tests should definitely fail, a success here implies the card is susceptible to invalid curve attacks.
+<br/>
+
 {% include result_table.html testRun=page.testRun %}

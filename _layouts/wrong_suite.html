@@ -2,4 +2,12 @@
 layout: default
 ---
 
+{% include result_header.html testRun=page.testRun suite="Wrong" %}
+
+Tests using the default tests on a category of wrong curves. These curves are not really curves as they have: <br/>
+<ul>
+    <li>non-prime field in the prime-field case</li>
+    <li>reducible polynomial as the field polynomial in the binary case</li>
+</ul>
+
 {% include result_table.html testRun=page.testRun %}

@@ -11,6 +11,8 @@ exclude:
 collections:
   results:
     output: true
+  performance:
+    output: true
 
 defaults:
  - scope:
@@ -52,3 +54,15 @@ defaults:
    values:
      layout: test_vectors_suite
      category: "Test vectors"
+ - scope:
+     path: "_performance/ecdh"
+     type: "performance"
+   values:
+     layout: ecdh_performance
+     category: "ECDH performance"
+ - scope:
+     path: "_performance/ecdsa"
+     type: "performance"
+   values:
+     layout: ecdsa_performance
+     category: "ECDSA performance"
