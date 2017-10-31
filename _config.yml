@@ -15,6 +15,10 @@ collections:
 defaults:
  - scope:
      path: ""
+   values:
+     layout: "default"
+ - scope:
+     path: ""
      type: "results"
    values:
      permalink: /:collection/:path/
@@ -23,23 +27,28 @@ defaults:
      type: "results"
    values:
      layout: default_suite
+     category: Default
  - scope:
      path: "_results/wrong"
      type: "results"
    values:
      layout: wrong_suite
+     category: Wrong
  - scope:
      path: "_results/invalid"
      type: "results"
    values:
      layout: invalid_suite
+     category: Invalid
  - scope:
      path: "_results/composite"
      type: "results"
    values:
      layout: composite_suite
+     category: Composite
  - scope:
      path: "_results/test-vectors"
      type: "results"
    values:
      layout: test_vectors_suite
+     category: "Test vectors"

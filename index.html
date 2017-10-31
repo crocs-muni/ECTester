@@ -1,0 +1,45 @@
+---
+---
+
+<h1>ECTester</h1>
+
+<p>Tests support and behavior of smartcards with JavaCard platform with focus on Eliptic curves (<code>TYPE_EC_FP</code>
+    and <code>TYPE_EC_F2M</code>).</p>
+
+<h2>Docs</h2>
+<ul>
+    <li><a href="tests">Test suites</a></li>
+    <li><a href="curves">Curve categories</a></li>
+</ul>
+
+<h2>Results</h2>
+
+<h3>Test suite runs</h3>
+{% assign result_categories = site.results | group_by:"category" %}
+{% assign cards = site.results | group_by_exp:"item", "item.path | split: '.' | reverse | shift | split: '/' | reverse | pop | pop " %}
+<table>
+    <tr>
+        <th>Card name</th>
+        {% for cat in result_categories %}
+        <th>{{ cat.name }}</th>
+        {% endfor %}
+    </tr>
+    {% for card in cards %}
+    <tr>
+        <td>{{ card.name.first | remove: '"' | remove: ']' }}</td>
+        {% for cat in result_categories %}
+        <td>
+            {% for document in card.items %}
+            {% if document.category == cat.name %}
+            <a href="{{ site.baseurl }}{{ document.url }}">results</a>
+            {% endif %}
+            {% endfor %}
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>ECDH performance</h3>
+
+<h3>ECDSA performance</h3>
