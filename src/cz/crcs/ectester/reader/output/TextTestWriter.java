@@ -49,7 +49,7 @@ public class TextTestWriter implements TestWriter {
                 }
                 out.append(testString(tests[i])).append(System.lineSeparator());
             }
-            out.append(String.format("%-70s:", testPrefix(t) + " : " + test.getDescription()));
+            out.append(String.format("%-70s", testPrefix(t) + " : " + test.getDescription()));
         }
         return out.toString();
     }

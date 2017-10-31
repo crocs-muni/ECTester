@@ -387,7 +387,7 @@ public class ECTester {
         while (generated < cfg.generateAmount || cfg.generateAmount == 0) {
             if ((cfg.fresh || generated == 0) && curve != null) {
                 Response fresh = curve.send();
-                logger.println(fresh.toString());
+                respWriter.outputResponse(fresh);
             }
 
             Command.Generate generate = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL);
@@ -405,7 +405,7 @@ public class ECTester {
                     break;
                 }
             }
-            logger.println(response.toString());
+            respWriter.outputResponse(response);
 
             String pub = Util.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_W), false);
             String priv = Util.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S), false);
@@ -415,7 +415,7 @@ public class ECTester {
             generated++;
         }
         Response cleanup = new Command.Cleanup(cardManager).send();
-        logger.println(cleanup.toString());
+        respWriter.outputResponse(cleanup);
 
         keysFile.close();
     }
@@ -535,7 +535,7 @@ public class ECTester {
             ++done;
         }
         Response cleanup = new Command.Cleanup(cardManager).send();
-        logger.println(cleanup.toString());
+        respWriter.outputResponse(cleanup);
 
         if (out != null)
             out.close();
@@ -612,7 +612,7 @@ public class ECTester {
             ++done;
         }
         Response cleanup = new Command.Cleanup(cardManager).send();
-        logger.println(cleanup.toString());
+        respWriter.outputResponse(cleanup);
 
         if (out != null)
             out.close();
