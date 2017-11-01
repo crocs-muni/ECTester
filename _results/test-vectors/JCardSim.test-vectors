@@ -1,0 +1,1820 @@
+---
+testRun:
+- result:
+    cause: All sub-tests had the expected result.
+    value: SUCCESS
+  tests:
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 54969840
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Allocated both keypairs 163b ALG_EC_F2M
+    type: simple
+    desc: Allocated both keypairs 163b ALG_EC_F2M
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 205728
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 76106
+      natural_sw: -28672
+      apdu: 90 00 90 00
+      sws:
+      - -28672
+      successful: true
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 67507
+      natural_sw: -28672
+      apdu: 90 00 90 00
+      sws:
+      - -28672
+      successful: true
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 46059559
+      natural_sw: -28672
+      apdu: 90 00 00 14 10 f4 dd cf 79 c2 3f d7 dc 11 56 3b f1 8b 2b e7 5a 13 9e 4f
+        90 00
+      sws:
+      - -28672
+      successful: true
+      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDHC of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector b163-dhc
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 1103372
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: At least one of the sub-tests did not have the expected result.
+    value: FAILURE
+  tests:
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 751590
+      natural_sw: -28672
+      apdu: 00 01 00 01 90 00
+      sws:
+      - 1
+      - 1
+      successful: false
+      desc: Allocated both keypairs 233b ALG_EC_F2M
+    type: simple
+    desc: Allocated both keypairs 233b ALG_EC_F2M
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 117149
+      natural_sw: -28672
+      apdu: 0e e3 0e e3 90 00
+      sws:
+      - 3811
+      - 3811
+      successful: false
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 83408
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 62721
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: ECDH was unsuccessful.
+      value: FAILURE
+    response:
+      duration: 78128
+      natural_sw: -28672
+      apdu: 0e e3 00 00 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDHC of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector b233-dhc
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 81759
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: At least one of the sub-tests did not have the expected result.
+    value: FAILURE
+  tests:
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 199682
+      natural_sw: -28672
+      apdu: 00 01 00 01 90 00
+      sws:
+      - 1
+      - 1
+      successful: false
+      desc: Allocated both keypairs 283b ALG_EC_F2M
+    type: simple
+    desc: Allocated both keypairs 283b ALG_EC_F2M
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 76036
+      natural_sw: -28672
+      apdu: 0e e3 0e e3 90 00
+      sws:
+      - 3811
+      - 3811
+      successful: false
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 67028
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 62557
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: ECDH was unsuccessful.
+      value: FAILURE
+    response:
+      duration: 62486
+      natural_sw: -28672
+      apdu: 0e e3 00 00 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDHC of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector b283-dhc
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 84457
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: At least one of the sub-tests did not have the expected result.
+    value: FAILURE
+  tests:
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 207118
+      natural_sw: -28672
+      apdu: 00 01 00 01 90 00
+      sws:
+      - 1
+      - 1
+      successful: false
+      desc: Allocated both keypairs 409b ALG_EC_F2M
+    type: simple
+    desc: Allocated both keypairs 409b ALG_EC_F2M
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 871660
+      natural_sw: -28672
+      apdu: 0e e3 0e e3 90 00
+      sws:
+      - 3811
+      - 3811
+      successful: false
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 66962
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 62584
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: ECDH was unsuccessful.
+      value: FAILURE
+    response:
+      duration: 69220
+      natural_sw: -28672
+      apdu: 0e e3 00 00 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDHC of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector b409-dhc
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 90068
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: At least one of the sub-tests did not have the expected result.
+    value: FAILURE
+  tests:
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 210260
+      natural_sw: -28672
+      apdu: 00 01 00 01 90 00
+      sws:
+      - 1
+      - 1
+      successful: false
+      desc: Allocated both keypairs 571b ALG_EC_F2M
+    type: simple
+    desc: Allocated both keypairs 571b ALG_EC_F2M
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 344085
+      natural_sw: -28672
+      apdu: 0e e3 0e e3 90 00
+      sws:
+      - 3811
+      - 3811
+      successful: false
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 67934
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 70582
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: ECDH was unsuccessful.
+      value: FAILURE
+    response:
+      duration: 72247
+      natural_sw: -28672
+      apdu: 0e e3 00 00 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDHC of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector b571-dhc
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 89473
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: At least one of the sub-tests did not have the expected result.
+    value: FAILURE
+  tests:
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 191435
+      natural_sw: -28672
+      apdu: 00 01 00 01 90 00
+      sws:
+      - 1
+      - 1
+      successful: false
+      desc: Allocated both keypairs 224b ALG_EC_FP
+    type: simple
+    desc: Allocated both keypairs 224b ALG_EC_FP
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 78144
+      natural_sw: -28672
+      apdu: 0e e3 0e e3 90 00
+      sws:
+      - 3811
+      - 3811
+      successful: false
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 94515
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 65515
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: ECDH was unsuccessful.
+      value: FAILURE
+    response:
+      duration: 83400
+      natural_sw: -28672
+      apdu: 0e e3 00 00 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: ECDH of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDH of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector brainpoolP224r1-dh
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 80858
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: At least one of the sub-tests did not have the expected result.
+    value: FAILURE
+  tests:
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 2927622
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Allocated both keypairs 256b ALG_EC_FP
+    type: simple
+    desc: Allocated both keypairs 256b ALG_EC_FP
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 121406
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 58376
+      natural_sw: -28672
+      apdu: 90 00 90 00
+      sws:
+      - -28672
+      successful: true
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 72997
+      natural_sw: -28672
+      apdu: 90 00 90 00
+      sws:
+      - -28672
+      successful: true
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: ECDH derived secret does not match the test, first difference was at
+        byte 0.
+      value: FAILURE
+    response:
+      duration: 64063970
+      natural_sw: -28672
+      apdu: 90 00 00 14 bd 4e da d9 61 4e 42 39 27 e3 ce 90 ed 33 01 0b 4d 6d 39 9b
+        90 00
+      sws:
+      - -28672
+      successful: true
+      desc: ECDH of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDH of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector brainpoolP256r1-dh
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 80138
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: At least one of the sub-tests did not have the expected result.
+    value: FAILURE
+  tests:
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 818034
+      natural_sw: -28672
+      apdu: 00 01 00 01 90 00
+      sws:
+      - 1
+      - 1
+      successful: false
+      desc: Allocated both keypairs 384b ALG_EC_FP
+    type: simple
+    desc: Allocated both keypairs 384b ALG_EC_FP
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 262547
+      natural_sw: -28672
+      apdu: 0e e3 0e e3 90 00
+      sws:
+      - 3811
+      - 3811
+      successful: false
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 72719
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 59400
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: ECDH was unsuccessful.
+      value: FAILURE
+    response:
+      duration: 63473
+      natural_sw: -28672
+      apdu: 0e e3 00 00 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: ECDH of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDH of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector brainpoolP384r1-dh
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 74169
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: At least one of the sub-tests did not have the expected result.
+    value: FAILURE
+  tests:
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 202293
+      natural_sw: -28672
+      apdu: 00 01 00 01 90 00
+      sws:
+      - 1
+      - 1
+      successful: false
+      desc: Allocated both keypairs 512b ALG_EC_FP
+    type: simple
+    desc: Allocated both keypairs 512b ALG_EC_FP
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 233570
+      natural_sw: -28672
+      apdu: 0e e3 0e e3 90 00
+      sws:
+      - 3811
+      - 3811
+      successful: false
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 61267
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 58266
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: ECDH was unsuccessful.
+      value: FAILURE
+    response:
+      duration: 63424
+      natural_sw: -28672
+      apdu: 0e e3 00 00 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: ECDH of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDH of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector brainpoolP512r1-dh
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 63153
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: All sub-tests had the expected result.
+    value: SUCCESS
+  tests:
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 331683
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Allocated both keypairs 163b ALG_EC_F2M
+    type: simple
+    desc: Allocated both keypairs 163b ALG_EC_F2M
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 78085
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 50144
+      natural_sw: -28672
+      apdu: 90 00 90 00
+      sws:
+      - -28672
+      successful: true
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 52779
+      natural_sw: -28672
+      apdu: 90 00 90 00
+      sws:
+      - -28672
+      successful: true
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 14542847
+      natural_sw: -28672
+      apdu: 90 00 00 14 5e 13 84 ed 2d 3d 5e fc 77 e8 95 81 bb b4 67 93 4e cb 7b 03
+        90 00
+      sws:
+      - -28672
+      successful: true
+      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDHC of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector k163-dhc
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 109739
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: At least one of the sub-tests did not have the expected result.
+    value: FAILURE
+  tests:
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 196035
+      natural_sw: -28672
+      apdu: 00 01 00 01 90 00
+      sws:
+      - 1
+      - 1
+      successful: false
+      desc: Allocated both keypairs 233b ALG_EC_F2M
+    type: simple
+    desc: Allocated both keypairs 233b ALG_EC_F2M
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 88765
+      natural_sw: -28672
+      apdu: 0e e3 0e e3 90 00
+      sws:
+      - 3811
+      - 3811
+      successful: false
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 76997
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 65517
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: ECDH was unsuccessful.
+      value: FAILURE
+    response:
+      duration: 59978
+      natural_sw: -28672
+      apdu: 0e e3 00 00 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDHC of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector k233-dhc
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 68482
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: At least one of the sub-tests did not have the expected result.
+    value: FAILURE
+  tests:
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 168235
+      natural_sw: -28672
+      apdu: 00 01 00 01 90 00
+      sws:
+      - 1
+      - 1
+      successful: false
+      desc: Allocated both keypairs 283b ALG_EC_F2M
+    type: simple
+    desc: Allocated both keypairs 283b ALG_EC_F2M
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 71075
+      natural_sw: -28672
+      apdu: 0e e3 0e e3 90 00
+      sws:
+      - 3811
+      - 3811
+      successful: false
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 58365
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 64881
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: ECDH was unsuccessful.
+      value: FAILURE
+    response:
+      duration: 58297
+      natural_sw: -28672
+      apdu: 0e e3 00 00 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDHC of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector k283-dhc
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 64319
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: At least one of the sub-tests did not have the expected result.
+    value: FAILURE
+  tests:
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 165943
+      natural_sw: -28672
+      apdu: 00 01 00 01 90 00
+      sws:
+      - 1
+      - 1
+      successful: false
+      desc: Allocated both keypairs 409b ALG_EC_F2M
+    type: simple
+    desc: Allocated both keypairs 409b ALG_EC_F2M
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 182909
+      natural_sw: -28672
+      apdu: 0e e3 0e e3 90 00
+      sws:
+      - 3811
+      - 3811
+      successful: false
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 58359
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 57610
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: ECDH was unsuccessful.
+      value: FAILURE
+    response:
+      duration: 56439
+      natural_sw: -28672
+      apdu: 0e e3 00 00 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDHC of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector k409-dhc
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 63750
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: At least one of the sub-tests did not have the expected result.
+    value: FAILURE
+  tests:
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 170212
+      natural_sw: -28672
+      apdu: 00 01 00 01 90 00
+      sws:
+      - 1
+      - 1
+      successful: false
+      desc: Allocated both keypairs 571b ALG_EC_F2M
+    type: simple
+    desc: Allocated both keypairs 571b ALG_EC_F2M
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 191405
+      natural_sw: -28672
+      apdu: 0e e3 0e e3 90 00
+      sws:
+      - 3811
+      - 3811
+      successful: false
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 60744
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 61779
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: ECDH was unsuccessful.
+      value: FAILURE
+    response:
+      duration: 72428
+      natural_sw: -28672
+      apdu: 0e e3 00 00 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDHC of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector k571-dhc
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 72377
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: At least one of the sub-tests did not have the expected result.
+    value: FAILURE
+  tests:
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 337660
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Allocated both keypairs 192b ALG_EC_FP
+    type: simple
+    desc: Allocated both keypairs 192b ALG_EC_FP
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 54981
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 33133
+      natural_sw: -28672
+      apdu: 90 00 90 00
+      sws:
+      - -28672
+      successful: true
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 32011
+      natural_sw: -28672
+      apdu: 90 00 90 00
+      sws:
+      - -28672
+      successful: true
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: ECDH derived secret does not match the test, first difference was at
+        byte 0.
+      value: FAILURE
+    response:
+      duration: 10961706
+      natural_sw: -28672
+      apdu: 90 00 00 14 c9 f5 a4 4f 0e 78 42 67 9b ff f9 97 85 0a fa 05 cb df c5 b3
+        90 00
+      sws:
+      - -28672
+      successful: true
+      desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector p192-dhc
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 78983
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: At least one of the sub-tests did not have the expected result.
+    value: FAILURE
+  tests:
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 175763
+      natural_sw: -28672
+      apdu: 00 01 00 01 90 00
+      sws:
+      - 1
+      - 1
+      successful: false
+      desc: Allocated both keypairs 224b ALG_EC_FP
+    type: simple
+    desc: Allocated both keypairs 224b ALG_EC_FP
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 92560
+      natural_sw: -28672
+      apdu: 0e e3 0e e3 90 00
+      sws:
+      - 3811
+      - 3811
+      successful: false
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 57573
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 58628
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: ECDH was unsuccessful.
+      value: FAILURE
+    response:
+      duration: 80703
+      natural_sw: -28672
+      apdu: 0e e3 00 00 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector p224-dhc
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 56095
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: All sub-tests had the expected result.
+    value: SUCCESS
+  tests:
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 293825
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Allocated both keypairs 256b ALG_EC_FP
+    type: simple
+    desc: Allocated both keypairs 256b ALG_EC_FP
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 81494
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 47605
+      natural_sw: -28672
+      apdu: 90 00 90 00
+      sws:
+      - -28672
+      successful: true
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 59949
+      natural_sw: -28672
+      apdu: 90 00 90 00
+      sws:
+      - -28672
+      successful: true
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 20896061
+      natural_sw: -28672
+      apdu: 90 00 00 14 38 1a e0 83 bf 9f f3 bb 49 73 0a 96 d4 e5 5a ab ae 1c 42 da
+        90 00
+      sws:
+      - -28672
+      successful: true
+      desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector p256-dhc
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 85266
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: At least one of the sub-tests did not have the expected result.
+    value: FAILURE
+  tests:
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 181415
+      natural_sw: -28672
+      apdu: 00 01 00 01 90 00
+      sws:
+      - 1
+      - 1
+      successful: false
+      desc: Allocated both keypairs 384b ALG_EC_FP
+    type: simple
+    desc: Allocated both keypairs 384b ALG_EC_FP
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 75119
+      natural_sw: -28672
+      apdu: 0e e3 0e e3 90 00
+      sws:
+      - 3811
+      - 3811
+      successful: false
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 56092
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 55106
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: ECDH was unsuccessful.
+      value: FAILURE
+    response:
+      duration: 63458
+      natural_sw: -28672
+      apdu: 0e e3 00 00 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector p384-dhc
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 54264
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: At least one of the sub-tests did not have the expected result.
+    value: FAILURE
+  tests:
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 148117
+      natural_sw: -28672
+      apdu: 00 01 00 01 90 00
+      sws:
+      - 1
+      - 1
+      successful: false
+      desc: Allocated both keypairs 521b ALG_EC_FP
+    type: simple
+    desc: Allocated both keypairs 521b ALG_EC_FP
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 98089
+      natural_sw: -28672
+      apdu: 0e e3 0e e3 90 00
+      sws:
+      - 3811
+      - 3811
+      successful: false
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 62462
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: FAILURE
+    response:
+      duration: 53668
+      natural_sw: -28672
+      apdu: 0e e3 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: ECDH was unsuccessful.
+      value: FAILURE
+    response:
+      duration: 69100
+      natural_sw: -28672
+      apdu: 0e e3 00 00 90 00
+      sws:
+      - 3811
+      successful: false
+      desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector p521-dhc
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 108556
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: At least one of the sub-tests did not have the expected result.
+    value: FAILURE
+  tests:
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 470357
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Allocated both keypairs 160b ALG_EC_FP
+    type: simple
+    desc: Allocated both keypairs 160b ALG_EC_FP
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 93208
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 60222
+      natural_sw: -28672
+      apdu: 90 00 90 00
+      sws:
+      - -28672
+      successful: true
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 60560
+      natural_sw: -28672
+      apdu: 90 00 90 00
+      sws:
+      - -28672
+      successful: true
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: ECDH derived secret does not match the test, first difference was at
+        byte 0.
+      value: FAILURE
+    response:
+      duration: 8204723
+      natural_sw: -28672
+      apdu: 90 00 00 14 62 c1 dc 07 28 c2 1c bf 21 6f 98 26 4e 1c 74 64 cb 1e 26 59
+        90 00
+      sws:
+      - -28672
+      successful: true
+      desc: ECDH of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDH of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector secp160r1-dh
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 107418
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+- result:
+    cause: All sub-tests had the expected result.
+    value: SUCCESS
+  tests:
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 297752
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Allocated both keypairs 163b ALG_EC_F2M
+    type: simple
+    desc: Allocated both keypairs 163b ALG_EC_F2M
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 82783
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Set external curve parameters on both keypairs
+    type: simple
+    desc: Set external curve parameters on both keypairs
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 50049
+      natural_sw: -28672
+      apdu: 90 00 90 00
+      sws:
+      - -28672
+      successful: true
+      desc: Set external privkey parameters on local keypair
+    type: simple
+    desc: Set external privkey parameters on local keypair
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 72201
+      natural_sw: -28672
+      apdu: 90 00 90 00
+      sws:
+      - -28672
+      successful: true
+      desc: Set external pubkey parameters on remote keypair
+    type: simple
+    desc: Set external pubkey parameters on remote keypair
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 9198998
+      natural_sw: -28672
+      apdu: 90 00 00 14 13 13 2f 80 88 d6 0f 9f e0 d9 55 ae 04 c9 d2 0d a8 29 a3 8b
+        90 00
+      sws:
+      - -28672
+      successful: true
+      desc: ECDH of remote pubkey and local privkey(unchanged point)
+    type: simple
+    desc: ECDH of remote pubkey and local privkey(unchanged point)
+  type: compound
+  desc: Test vector sect163k1-dh
+- result:
+    cause: null
+    value: SUCCESS
+  response:
+    duration: 181448
+    natural_sw: -28672
+    apdu: 90 00 90 00
+    sws:
+    - -28672
+    successful: true
+    desc: Requested JCSystem object deletion
+  type: simple
+  desc: Requested JCSystem object deletion
+
+---
