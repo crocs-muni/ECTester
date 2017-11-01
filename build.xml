@@ -92,4 +92,8 @@
         </jar>
     </target>
     -->
+    <target name="-post-jar">
+        <copy file="src/cz/crcs/ectester/scripts/ectester.sh" todir="${dist.dir}"/>
+        <copy file="src/cz/crcs/ectester/scripts/ectester.bat" todir="${dist.dir}"/>
+    </target>
 </project>
