@@ -1,1995 +1,1999 @@
 ---
 testRun:
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 6304804
-    natural_sw: -28672
-    apdu: 90 00 90 00 90 00 90 00
-    sws:
-    - -28672
-    - -28672
-    - -28672
-    successful: true
+  suite:
+    name: default
+    desc: The default test suite tests basic support of ECDH and ECDSA.
+  tests:
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 6304804
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      - -28672
+      successful: true
+      desc: Support of ECDH, ECDHC, ECDSA allocation
+    type: simple
     desc: Support of ECDH, ECDHC, ECDSA allocation
-  type: simple
-  desc: Support of ECDH, ECDHC, ECDSA allocation
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 175957550
-    natural_sw: -28672
-    apdu: 90 00 90 00 90 00
-    sws:
-    - -28672
-    - -28672
-    successful: true
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 175957550
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Allocated both keypairs 112b ALG_EC_FP
+    type: simple
     desc: Allocated both keypairs 112b ALG_EC_FP
-  type: simple
-  desc: Allocated both keypairs 112b ALG_EC_FP
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 283121944
-    natural_sw: -28672
-    apdu: 90 00 90 00 90 00
-    sws:
-    - -28672
-    - -28672
-    successful: true
-    desc: Set custom curve parameters on both keypairs
-  type: simple
-  desc: Set custom curve parameters on both keypairs
-- result:
-    cause: The ECDH should have been successful, but it did not.
-    value: FAILURE
-  tests:
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 451342296
+      duration: 283121944
       natural_sw: -28672
       apdu: 90 00 90 00 90 00
       sws:
       - -28672
       - -28672
       successful: true
-      desc: Generated both keypairs
+      desc: Set custom curve parameters on both keypairs
     type: simple
-    desc: Generated both keypairs
+    desc: Set custom curve parameters on both keypairs
   - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 83524655
-      natural_sw: -28672
-      apdu: 90 00 90 00
-      sws:
-      - -28672
-      successful: true
-      desc: ECDH of local pubkey and remote privkey(unchanged point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(unchanged point)
-  - result:
-      cause: null
+      cause: The ECDH should have been successful, but it did not.
       value: FAILURE
-    response:
-      duration: 19301844
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    tests:
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 451342296
+        natural_sw: -28672
+        apdu: 90 00 90 00 90 00
+        sws:
+        - -28672
+        - -28672
+        successful: true
+        desc: Generated both keypairs
+      type: simple
+      desc: Generated both keypairs
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 83524655
+        natural_sw: -28672
+        apdu: 90 00 90 00
+        sws:
+        - -28672
+        successful: true
+        desc: ECDH of local pubkey and remote privkey(unchanged point)
+      type: simple
+      desc: ECDH of local pubkey and remote privkey(unchanged point)
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 19301844
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 23132640
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 23132640
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ONE point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ONE point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ONE point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 26499273
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 26499273
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ZERO point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ZERO point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ZERO point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 23122577
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 23122577
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(MAX point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(MAX point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(MAX point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 37444886
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 37444886
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 174501464
+        natural_sw: -28672
+        apdu: 90 00 90 00
+        sws:
+        - -28672
+        successful: true
+        desc: ECDSA with local keypair(random data)
+      type: simple
+      desc: ECDSA with local keypair(random data)
+    type: compound
+    desc: Default tests.
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 174501464
+      duration: 212134158
       natural_sw: -28672
       apdu: 90 00 90 00
       sws:
       - -28672
       successful: true
-      desc: ECDSA with local keypair(random data)
+      desc: Requested JCSystem object deletion
     type: simple
-    desc: ECDSA with local keypair(random data)
-  type: compound
-  desc: Default tests.
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 212134158
-    natural_sw: -28672
-    apdu: 90 00 90 00
-    sws:
-    - -28672
-    successful: true
     desc: Requested JCSystem object deletion
-  type: simple
-  desc: Requested JCSystem object deletion
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 181529623
-    natural_sw: -28672
-    apdu: 90 00 90 00 90 00
-    sws:
-    - -28672
-    - -28672
-    successful: true
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 181529623
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Allocated both keypairs 128b ALG_EC_FP
+    type: simple
     desc: Allocated both keypairs 128b ALG_EC_FP
-  type: simple
-  desc: Allocated both keypairs 128b ALG_EC_FP
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 286587845
-    natural_sw: -28672
-    apdu: 90 00 90 00 90 00
-    sws:
-    - -28672
-    - -28672
-    successful: true
-    desc: Set custom curve parameters on both keypairs
-  type: simple
-  desc: Set custom curve parameters on both keypairs
-- result:
-    cause: The ECDH should have been successful, but it did not.
-    value: FAILURE
-  tests:
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 462654202
+      duration: 286587845
       natural_sw: -28672
       apdu: 90 00 90 00 90 00
       sws:
       - -28672
       - -28672
       successful: true
-      desc: Generated both keypairs
+      desc: Set custom curve parameters on both keypairs
     type: simple
-    desc: Generated both keypairs
+    desc: Set custom curve parameters on both keypairs
   - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 90135954
-      natural_sw: -28672
-      apdu: 90 00 90 00
-      sws:
-      - -28672
-      successful: true
-      desc: ECDH of local pubkey and remote privkey(unchanged point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(unchanged point)
-  - result:
-      cause: null
+      cause: The ECDH should have been successful, but it did not.
       value: FAILURE
-    response:
-      duration: 19511632
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    tests:
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 462654202
+        natural_sw: -28672
+        apdu: 90 00 90 00 90 00
+        sws:
+        - -28672
+        - -28672
+        successful: true
+        desc: Generated both keypairs
+      type: simple
+      desc: Generated both keypairs
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 90135954
+        natural_sw: -28672
+        apdu: 90 00 90 00
+        sws:
+        - -28672
+        successful: true
+        desc: ECDH of local pubkey and remote privkey(unchanged point)
+      type: simple
+      desc: ECDH of local pubkey and remote privkey(unchanged point)
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 19511632
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 23267901
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 23267901
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ONE point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ONE point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ONE point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 26473462
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 26473462
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ZERO point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ZERO point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ZERO point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 23106124
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 23106124
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(MAX point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(MAX point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(MAX point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 37654407
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 37654407
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 184848787
+        natural_sw: -28672
+        apdu: 90 00 90 00
+        sws:
+        - -28672
+        successful: true
+        desc: ECDSA with local keypair(random data)
+      type: simple
+      desc: ECDSA with local keypair(random data)
+    type: compound
+    desc: Default tests.
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 184848787
+      duration: 390664522
       natural_sw: -28672
       apdu: 90 00 90 00
       sws:
       - -28672
       successful: true
-      desc: ECDSA with local keypair(random data)
+      desc: Requested JCSystem object deletion
     type: simple
-    desc: ECDSA with local keypair(random data)
-  type: compound
-  desc: Default tests.
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 390664522
-    natural_sw: -28672
-    apdu: 90 00 90 00
-    sws:
-    - -28672
-    successful: true
     desc: Requested JCSystem object deletion
-  type: simple
-  desc: Requested JCSystem object deletion
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 180954573
-    natural_sw: -28672
-    apdu: 90 00 90 00 90 00
-    sws:
-    - -28672
-    - -28672
-    successful: true
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 180954573
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Allocated both keypairs 160b ALG_EC_FP
+    type: simple
     desc: Allocated both keypairs 160b ALG_EC_FP
-  type: simple
-  desc: Allocated both keypairs 160b ALG_EC_FP
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 293832968
-    natural_sw: -28672
-    apdu: 90 00 90 00 90 00
-    sws:
-    - -28672
-    - -28672
-    successful: true
-    desc: Set custom curve parameters on both keypairs
-  type: simple
-  desc: Set custom curve parameters on both keypairs
-- result:
-    cause: The ECDH should have been successful, but it did not.
-    value: FAILURE
-  tests:
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 567329086
+      duration: 293832968
       natural_sw: -28672
       apdu: 90 00 90 00 90 00
       sws:
       - -28672
       - -28672
       successful: true
-      desc: Generated both keypairs
+      desc: Set custom curve parameters on both keypairs
     type: simple
-    desc: Generated both keypairs
+    desc: Set custom curve parameters on both keypairs
   - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 111541046
-      natural_sw: -28672
-      apdu: 90 00 90 00
-      sws:
-      - -28672
-      successful: true
-      desc: ECDH of local pubkey and remote privkey(unchanged point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(unchanged point)
-  - result:
-      cause: null
+      cause: The ECDH should have been successful, but it did not.
       value: FAILURE
-    response:
-      duration: 19412843
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    tests:
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 567329086
+        natural_sw: -28672
+        apdu: 90 00 90 00 90 00
+        sws:
+        - -28672
+        - -28672
+        successful: true
+        desc: Generated both keypairs
+      type: simple
+      desc: Generated both keypairs
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 111541046
+        natural_sw: -28672
+        apdu: 90 00 90 00
+        sws:
+        - -28672
+        successful: true
+        desc: ECDH of local pubkey and remote privkey(unchanged point)
+      type: simple
+      desc: ECDH of local pubkey and remote privkey(unchanged point)
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 19412843
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 23157385
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 23157385
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ONE point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ONE point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ONE point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 26500004
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 26500004
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ZERO point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ZERO point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ZERO point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 23142179
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 23142179
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(MAX point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(MAX point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(MAX point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 37696091
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 37696091
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 216430712
+        natural_sw: -28672
+        apdu: 90 00 90 00
+        sws:
+        - -28672
+        successful: true
+        desc: ECDSA with local keypair(random data)
+      type: simple
+      desc: ECDSA with local keypair(random data)
+    type: compound
+    desc: Default tests.
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 216430712
+      duration: 411150221
       natural_sw: -28672
       apdu: 90 00 90 00
       sws:
       - -28672
       successful: true
-      desc: ECDSA with local keypair(random data)
+      desc: Requested JCSystem object deletion
     type: simple
-    desc: ECDSA with local keypair(random data)
-  type: compound
-  desc: Default tests.
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 411150221
-    natural_sw: -28672
-    apdu: 90 00 90 00
-    sws:
-    - -28672
-    successful: true
     desc: Requested JCSystem object deletion
-  type: simple
-  desc: Requested JCSystem object deletion
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 181668943
-    natural_sw: -28672
-    apdu: 90 00 90 00 90 00
-    sws:
-    - -28672
-    - -28672
-    successful: true
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 181668943
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Allocated both keypairs 192b ALG_EC_FP
+    type: simple
     desc: Allocated both keypairs 192b ALG_EC_FP
-  type: simple
-  desc: Allocated both keypairs 192b ALG_EC_FP
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 285567609
-    natural_sw: -28672
-    apdu: 90 00 90 00 90 00
-    sws:
-    - -28672
-    - -28672
-    successful: true
-    desc: Set custom curve parameters on both keypairs
-  type: simple
-  desc: Set custom curve parameters on both keypairs
-- result:
-    cause: The ECDH should have been successful, but it did not.
-    value: FAILURE
-  tests:
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 680047484
+      duration: 285567609
       natural_sw: -28672
       apdu: 90 00 90 00 90 00
       sws:
       - -28672
       - -28672
       successful: true
-      desc: Generated both keypairs
+      desc: Set custom curve parameters on both keypairs
     type: simple
-    desc: Generated both keypairs
+    desc: Set custom curve parameters on both keypairs
   - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 135586886
-      natural_sw: -28672
-      apdu: 90 00 90 00
-      sws:
-      - -28672
-      successful: true
-      desc: ECDH of local pubkey and remote privkey(unchanged point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(unchanged point)
-  - result:
-      cause: null
+      cause: The ECDH should have been successful, but it did not.
       value: FAILURE
-    response:
-      duration: 19594730
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    tests:
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 680047484
+        natural_sw: -28672
+        apdu: 90 00 90 00 90 00
+        sws:
+        - -28672
+        - -28672
+        successful: true
+        desc: Generated both keypairs
+      type: simple
+      desc: Generated both keypairs
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 135586886
+        natural_sw: -28672
+        apdu: 90 00 90 00
+        sws:
+        - -28672
+        successful: true
+        desc: ECDH of local pubkey and remote privkey(unchanged point)
+      type: simple
+      desc: ECDH of local pubkey and remote privkey(unchanged point)
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 19594730
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 23534628
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 23534628
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ONE point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ONE point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ONE point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 26947861
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 26947861
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ZERO point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ZERO point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ZERO point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 23597996
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 23597996
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(MAX point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(MAX point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(MAX point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 38348252
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 38348252
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 250899564
+        natural_sw: -28672
+        apdu: 90 00 90 00
+        sws:
+        - -28672
+        successful: true
+        desc: ECDSA with local keypair(random data)
+      type: simple
+      desc: ECDSA with local keypair(random data)
+    type: compound
+    desc: Default tests.
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 250899564
+      duration: 427063821
       natural_sw: -28672
       apdu: 90 00 90 00
       sws:
       - -28672
       successful: true
-      desc: ECDSA with local keypair(random data)
+      desc: Requested JCSystem object deletion
     type: simple
-    desc: ECDSA with local keypair(random data)
-  type: compound
-  desc: Default tests.
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 427063821
-    natural_sw: -28672
-    apdu: 90 00 90 00
-    sws:
-    - -28672
-    successful: true
     desc: Requested JCSystem object deletion
-  type: simple
-  desc: Requested JCSystem object deletion
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 181329668
-    natural_sw: -28672
-    apdu: 90 00 90 00 90 00
-    sws:
-    - -28672
-    - -28672
-    successful: true
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 181329668
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Allocated both keypairs 224b ALG_EC_FP
+    type: simple
     desc: Allocated both keypairs 224b ALG_EC_FP
-  type: simple
-  desc: Allocated both keypairs 224b ALG_EC_FP
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 308303358
-    natural_sw: -28672
-    apdu: 90 00 90 00 90 00
-    sws:
-    - -28672
-    - -28672
-    successful: true
-    desc: Set custom curve parameters on both keypairs
-  type: simple
-  desc: Set custom curve parameters on both keypairs
-- result:
-    cause: The ECDH should have been successful, but it did not.
-    value: FAILURE
-  tests:
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 837395060
+      duration: 308303358
       natural_sw: -28672
       apdu: 90 00 90 00 90 00
       sws:
       - -28672
       - -28672
       successful: true
-      desc: Generated both keypairs
+      desc: Set custom curve parameters on both keypairs
     type: simple
-    desc: Generated both keypairs
+    desc: Set custom curve parameters on both keypairs
   - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 164661491
-      natural_sw: -28672
-      apdu: 90 00 90 00
-      sws:
-      - -28672
-      successful: true
-      desc: ECDH of local pubkey and remote privkey(unchanged point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(unchanged point)
-  - result:
-      cause: null
+      cause: The ECDH should have been successful, but it did not.
       value: FAILURE
-    response:
-      duration: 19513482
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    tests:
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 837395060
+        natural_sw: -28672
+        apdu: 90 00 90 00 90 00
+        sws:
+        - -28672
+        - -28672
+        successful: true
+        desc: Generated both keypairs
+      type: simple
+      desc: Generated both keypairs
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 164661491
+        natural_sw: -28672
+        apdu: 90 00 90 00
+        sws:
+        - -28672
+        successful: true
+        desc: ECDH of local pubkey and remote privkey(unchanged point)
+      type: simple
+      desc: ECDH of local pubkey and remote privkey(unchanged point)
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 19513482
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 23229727
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 23229727
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ONE point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ONE point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ONE point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 26609830
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 26609830
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ZERO point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ZERO point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ZERO point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 23168986
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 23168986
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(MAX point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(MAX point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(MAX point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 38052855
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 38052855
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 293879345
+        natural_sw: -28672
+        apdu: 90 00 90 00
+        sws:
+        - -28672
+        successful: true
+        desc: ECDSA with local keypair(random data)
+      type: simple
+      desc: ECDSA with local keypair(random data)
+    type: compound
+    desc: Default tests.
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 293879345
+      duration: 446119684
       natural_sw: -28672
       apdu: 90 00 90 00
       sws:
       - -28672
       successful: true
-      desc: ECDSA with local keypair(random data)
+      desc: Requested JCSystem object deletion
     type: simple
-    desc: ECDSA with local keypair(random data)
-  type: compound
-  desc: Default tests.
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 446119684
-    natural_sw: -28672
-    apdu: 90 00 90 00
-    sws:
-    - -28672
-    successful: true
     desc: Requested JCSystem object deletion
-  type: simple
-  desc: Requested JCSystem object deletion
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 183175727
-    natural_sw: -28672
-    apdu: 90 00 90 00 90 00
-    sws:
-    - -28672
-    - -28672
-    successful: true
+  - result:
+      cause: null
+      value: SUCCESS
+    response:
+      duration: 183175727
+      natural_sw: -28672
+      apdu: 90 00 90 00 90 00
+      sws:
+      - -28672
+      - -28672
+      successful: true
+      desc: Allocated both keypairs 256b ALG_EC_FP
+    type: simple
     desc: Allocated both keypairs 256b ALG_EC_FP
-  type: simple
-  desc: Allocated both keypairs 256b ALG_EC_FP
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 297693462
-    natural_sw: -28672
-    apdu: 90 00 90 00 90 00
-    sws:
-    - -28672
-    - -28672
-    successful: true
-    desc: Set custom curve parameters on both keypairs
-  type: simple
-  desc: Set custom curve parameters on both keypairs
-- result:
-    cause: The ECDH should have been successful, but it did not.
-    value: FAILURE
-  tests:
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 1001359453
+      duration: 297693462
       natural_sw: -28672
       apdu: 90 00 90 00 90 00
       sws:
       - -28672
       - -28672
       successful: true
-      desc: Generated both keypairs
+      desc: Set custom curve parameters on both keypairs
     type: simple
-    desc: Generated both keypairs
+    desc: Set custom curve parameters on both keypairs
+  - result:
+      cause: The ECDH should have been successful, but it did not.
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 1001359453
+        natural_sw: -28672
+        apdu: 90 00 90 00 90 00
+        sws:
+        - -28672
+        - -28672
+        successful: true
+        desc: Generated both keypairs
+      type: simple
+      desc: Generated both keypairs
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 200038167
+        natural_sw: -28672
+        apdu: 90 00 90 00
+        sws:
+        - -28672
+        successful: true
+        desc: ECDH of local pubkey and remote privkey(unchanged point)
+      type: simple
+      desc: ECDH of local pubkey and remote privkey(unchanged point)
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 19662325
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
+      type: simple
+      desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 23410988
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ONE point)
+      type: simple
+      desc: ECDH of local pubkey and remote privkey(ONE point)
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 26786629
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ZERO point)
+      type: simple
+      desc: ECDH of local pubkey and remote privkey(ZERO point)
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 23409067
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(MAX point)
+      type: simple
+      desc: ECDH of local pubkey and remote privkey(MAX point)
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 38402228
+        natural_sw: -28672
+        apdu: 00 01 90 00
+        sws:
+        - 1
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      type: simple
+      desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 344970406
+        natural_sw: -28672
+        apdu: 90 00 90 00
+        sws:
+        - -28672
+        successful: true
+        desc: ECDSA with local keypair(random data)
+      type: simple
+      desc: ECDSA with local keypair(random data)
+    type: compound
+    desc: Default tests.
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 200038167
+      duration: 463243990
       natural_sw: -28672
       apdu: 90 00 90 00
       sws:
       - -28672
       successful: true
-      desc: ECDH of local pubkey and remote privkey(unchanged point)
+      desc: Requested JCSystem object deletion
     type: simple
-    desc: ECDH of local pubkey and remote privkey(unchanged point)
+    desc: Requested JCSystem object deletion
   - result:
       cause: null
       value: FAILURE
     response:
-      duration: 19662325
+      duration: 52547804
       natural_sw: -28672
-      apdu: 00 01 90 00
+      apdu: 00 03 00 03 90 00
       sws:
-      - 1
+      - 3
+      - 3
       successful: false
-      desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
+      desc: Allocated both keypairs 384b ALG_EC_FP
     type: simple
-    desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 23410988
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
-      desc: ECDH of local pubkey and remote privkey(ONE point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ONE point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 26786629
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
-      desc: ECDH of local pubkey and remote privkey(ZERO point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ZERO point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 23409067
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
-      desc: ECDH of local pubkey and remote privkey(MAX point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(MAX point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 38402228
-      natural_sw: -28672
-      apdu: 00 01 90 00
-      sws:
-      - 1
-      successful: false
-      desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 344970406
-      natural_sw: -28672
-      apdu: 90 00 90 00
-      sws:
-      - -28672
-      successful: true
-      desc: ECDSA with local keypair(random data)
-    type: simple
-    desc: ECDSA with local keypair(random data)
-  type: compound
-  desc: Default tests.
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 463243990
-    natural_sw: -28672
-    apdu: 90 00 90 00
-    sws:
-    - -28672
-    successful: true
-    desc: Requested JCSystem object deletion
-  type: simple
-  desc: Requested JCSystem object deletion
-- result:
-    cause: null
-    value: FAILURE
-  response:
-    duration: 52547804
-    natural_sw: -28672
-    apdu: 00 03 00 03 90 00
-    sws:
-    - 3
-    - 3
-    successful: false
     desc: Allocated both keypairs 384b ALG_EC_FP
-  type: simple
-  desc: Allocated both keypairs 384b ALG_EC_FP
-- result:
-    cause: null
-    value: FAILURE
-  response:
-    duration: 66494034
-    natural_sw: -28672
-    apdu: 0e e3 0e e3 90 00
-    sws:
-    - 3811
-    - 3811
-    successful: false
-    desc: Set custom curve parameters on both keypairs
-  type: simple
-  desc: Set custom curve parameters on both keypairs
-- result:
-    cause: The generation of a key should have been successful, but it did not.
-    value: FAILURE
-  tests:
   - result:
       cause: null
       value: FAILURE
     response:
-      duration: 8278498
+      duration: 66494034
       natural_sw: -28672
       apdu: 0e e3 0e e3 90 00
       sws:
       - 3811
       - 3811
       successful: false
+      desc: Set custom curve parameters on both keypairs
+    type: simple
+    desc: Set custom curve parameters on both keypairs
+  - result:
+      cause: The generation of a key should have been successful, but it did not.
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 8278498
+        natural_sw: -28672
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Generated both keypairs
+      type: simple
       desc: Generated both keypairs
-    type: simple
-    desc: Generated both keypairs
-  - result:
-      cause: null
-      value: FAILURE
-    response:
-      duration: 12799265
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 12799265
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(unchanged point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(unchanged point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(unchanged point)
-  - result:
-      cause: null
-      value: FAILURE
-    response:
-      duration: 20599432
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 20599432
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 17261094
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17261094
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ONE point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ONE point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ONE point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 17288582
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17288582
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ZERO point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ZERO point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ZERO point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 20765462
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 20765462
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(MAX point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(MAX point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(MAX point)
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 18007660
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      type: simple
+      desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 21053624
+        natural_sw: 28416
+        apdu: 6f 00
+        sws:
+        - 0
+        successful: false
+        desc: ECDSA with local keypair(random data)
+      type: simple
+      desc: ECDSA with local keypair(random data)
+    type: compound
+    desc: Default tests.
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 18007660
+      duration: 350915241
       natural_sw: -28672
-      apdu: 0e e3 90 00
+      apdu: 90 00 90 00
       sws:
-      - 3811
-      successful: false
-      desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      - -28672
+      successful: true
+      desc: Requested JCSystem object deletion
     type: simple
-    desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    desc: Requested JCSystem object deletion
   - result:
       cause: null
       value: FAILURE
     response:
-      duration: 21053624
-      natural_sw: 28416
-      apdu: 6f 00
+      duration: 50138907
+      natural_sw: -28672
+      apdu: 00 03 00 03 90 00
       sws:
-      - 0
+      - 3
+      - 3
       successful: false
-      desc: ECDSA with local keypair(random data)
+      desc: Allocated both keypairs 521b ALG_EC_FP
     type: simple
-    desc: ECDSA with local keypair(random data)
-  type: compound
-  desc: Default tests.
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 350915241
-    natural_sw: -28672
-    apdu: 90 00 90 00
-    sws:
-    - -28672
-    successful: true
-    desc: Requested JCSystem object deletion
-  type: simple
-  desc: Requested JCSystem object deletion
-- result:
-    cause: null
-    value: FAILURE
-  response:
-    duration: 50138907
-    natural_sw: -28672
-    apdu: 00 03 00 03 90 00
-    sws:
-    - 3
-    - 3
-    successful: false
     desc: Allocated both keypairs 521b ALG_EC_FP
-  type: simple
-  desc: Allocated both keypairs 521b ALG_EC_FP
-- result:
-    cause: null
-    value: FAILURE
-  response:
-    duration: 66564601
-    natural_sw: -28672
-    apdu: 0e e3 0e e3 90 00
-    sws:
-    - 3811
-    - 3811
-    successful: false
-    desc: Set custom curve parameters on both keypairs
-  type: simple
-  desc: Set custom curve parameters on both keypairs
-- result:
-    cause: The generation of a key should have been successful, but it did not.
-    value: FAILURE
-  tests:
   - result:
       cause: null
       value: FAILURE
     response:
-      duration: 10031980
+      duration: 66564601
       natural_sw: -28672
       apdu: 0e e3 0e e3 90 00
       sws:
       - 3811
       - 3811
       successful: false
+      desc: Set custom curve parameters on both keypairs
+    type: simple
+    desc: Set custom curve parameters on both keypairs
+  - result:
+      cause: The generation of a key should have been successful, but it did not.
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 10031980
+        natural_sw: -28672
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Generated both keypairs
+      type: simple
       desc: Generated both keypairs
-    type: simple
-    desc: Generated both keypairs
-  - result:
-      cause: null
-      value: FAILURE
-    response:
-      duration: 17328376
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 17328376
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(unchanged point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(unchanged point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(unchanged point)
-  - result:
-      cause: null
-      value: FAILURE
-    response:
-      duration: 21676442
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 21676442
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 17271630
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17271630
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ONE point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ONE point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ONE point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 17222101
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17222101
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ZERO point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ZERO point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ZERO point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 20562892
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 20562892
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(MAX point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(MAX point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(MAX point)
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17162845
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      type: simple
+      desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 20983023
+        natural_sw: 28416
+        apdu: 6f 00
+        sws:
+        - 0
+        successful: false
+        desc: ECDSA with local keypair(random data)
+      type: simple
+      desc: ECDSA with local keypair(random data)
+    type: compound
+    desc: Default tests.
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 17162845
+      duration: 219315950
       natural_sw: -28672
-      apdu: 0e e3 90 00
+      apdu: 90 00 90 00
       sws:
-      - 3811
-      successful: false
-      desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      - -28672
+      successful: true
+      desc: Requested JCSystem object deletion
     type: simple
-    desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    desc: Requested JCSystem object deletion
   - result:
       cause: null
       value: FAILURE
     response:
-      duration: 20983023
-      natural_sw: 28416
-      apdu: 6f 00
+      duration: 49812868
+      natural_sw: -28672
+      apdu: 00 03 00 03 90 00
       sws:
-      - 0
+      - 3
+      - 3
       successful: false
-      desc: ECDSA with local keypair(random data)
+      desc: Allocated both keypairs 163b ALG_EC_F2M
     type: simple
-    desc: ECDSA with local keypair(random data)
-  type: compound
-  desc: Default tests.
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 219315950
-    natural_sw: -28672
-    apdu: 90 00 90 00
-    sws:
-    - -28672
-    successful: true
-    desc: Requested JCSystem object deletion
-  type: simple
-  desc: Requested JCSystem object deletion
-- result:
-    cause: null
-    value: FAILURE
-  response:
-    duration: 49812868
-    natural_sw: -28672
-    apdu: 00 03 00 03 90 00
-    sws:
-    - 3
-    - 3
-    successful: false
     desc: Allocated both keypairs 163b ALG_EC_F2M
-  type: simple
-  desc: Allocated both keypairs 163b ALG_EC_F2M
-- result:
-    cause: null
-    value: FAILURE
-  response:
-    duration: 69119303
-    natural_sw: -28672
-    apdu: 0e e3 0e e3 90 00
-    sws:
-    - 3811
-    - 3811
-    successful: false
-    desc: Set custom curve parameters on both keypairs
-  type: simple
-  desc: Set custom curve parameters on both keypairs
-- result:
-    cause: The generation of a key should have been successful, but it did not.
-    value: FAILURE
-  tests:
   - result:
       cause: null
       value: FAILURE
     response:
-      duration: 8479658
+      duration: 69119303
       natural_sw: -28672
       apdu: 0e e3 0e e3 90 00
       sws:
       - 3811
       - 3811
       successful: false
+      desc: Set custom curve parameters on both keypairs
+    type: simple
+    desc: Set custom curve parameters on both keypairs
+  - result:
+      cause: The generation of a key should have been successful, but it did not.
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 8479658
+        natural_sw: -28672
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Generated both keypairs
+      type: simple
       desc: Generated both keypairs
-    type: simple
-    desc: Generated both keypairs
-  - result:
-      cause: null
-      value: FAILURE
-    response:
-      duration: 17272476
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 17272476
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(unchanged point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(unchanged point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(unchanged point)
-  - result:
-      cause: null
-      value: FAILURE
-    response:
-      duration: 20575870
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 20575870
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 17208413
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17208413
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ONE point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ONE point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ONE point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 27503600
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 27503600
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ZERO point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ZERO point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ZERO point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 17210389
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17210389
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(MAX point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(MAX point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(MAX point)
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17248093
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      type: simple
+      desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 20975610
+        natural_sw: 28416
+        apdu: 6f 00
+        sws:
+        - 0
+        successful: false
+        desc: ECDSA with local keypair(random data)
+      type: simple
+      desc: ECDSA with local keypair(random data)
+    type: compound
+    desc: Default tests.
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 17248093
+      duration: 219336579
       natural_sw: -28672
-      apdu: 0e e3 90 00
+      apdu: 90 00 90 00
       sws:
-      - 3811
-      successful: false
-      desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      - -28672
+      successful: true
+      desc: Requested JCSystem object deletion
     type: simple
-    desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    desc: Requested JCSystem object deletion
   - result:
       cause: null
       value: FAILURE
     response:
-      duration: 20975610
-      natural_sw: 28416
-      apdu: 6f 00
+      duration: 49686625
+      natural_sw: -28672
+      apdu: 00 03 00 03 90 00
       sws:
-      - 0
+      - 3
+      - 3
       successful: false
-      desc: ECDSA with local keypair(random data)
+      desc: Allocated both keypairs 233b ALG_EC_F2M
     type: simple
-    desc: ECDSA with local keypair(random data)
-  type: compound
-  desc: Default tests.
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 219336579
-    natural_sw: -28672
-    apdu: 90 00 90 00
-    sws:
-    - -28672
-    successful: true
-    desc: Requested JCSystem object deletion
-  type: simple
-  desc: Requested JCSystem object deletion
-- result:
-    cause: null
-    value: FAILURE
-  response:
-    duration: 49686625
-    natural_sw: -28672
-    apdu: 00 03 00 03 90 00
-    sws:
-    - 3
-    - 3
-    successful: false
     desc: Allocated both keypairs 233b ALG_EC_F2M
-  type: simple
-  desc: Allocated both keypairs 233b ALG_EC_F2M
-- result:
-    cause: null
-    value: FAILURE
-  response:
-    duration: 66388054
-    natural_sw: -28672
-    apdu: 0e e3 0e e3 90 00
-    sws:
-    - 3811
-    - 3811
-    successful: false
-    desc: Set custom curve parameters on both keypairs
-  type: simple
-  desc: Set custom curve parameters on both keypairs
-- result:
-    cause: The generation of a key should have been successful, but it did not.
-    value: FAILURE
-  tests:
   - result:
       cause: null
       value: FAILURE
     response:
-      duration: 8419371
+      duration: 66388054
       natural_sw: -28672
       apdu: 0e e3 0e e3 90 00
       sws:
       - 3811
       - 3811
       successful: false
+      desc: Set custom curve parameters on both keypairs
+    type: simple
+    desc: Set custom curve parameters on both keypairs
+  - result:
+      cause: The generation of a key should have been successful, but it did not.
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 8419371
+        natural_sw: -28672
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Generated both keypairs
+      type: simple
       desc: Generated both keypairs
-    type: simple
-    desc: Generated both keypairs
-  - result:
-      cause: null
-      value: FAILURE
-    response:
-      duration: 17394909
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 17394909
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(unchanged point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(unchanged point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(unchanged point)
-  - result:
-      cause: null
-      value: FAILURE
-    response:
-      duration: 20636094
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 20636094
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 17307641
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17307641
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ONE point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ONE point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ONE point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 17342947
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17342947
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ZERO point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ZERO point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ZERO point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 20709101
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 20709101
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(MAX point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(MAX point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(MAX point)
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17282498
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      type: simple
+      desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 21100594
+        natural_sw: 28416
+        apdu: 6f 00
+        sws:
+        - 0
+        successful: false
+        desc: ECDSA with local keypair(random data)
+      type: simple
+      desc: ECDSA with local keypair(random data)
+    type: compound
+    desc: Default tests.
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 17282498
+      duration: 219330728
       natural_sw: -28672
-      apdu: 0e e3 90 00
+      apdu: 90 00 90 00
       sws:
-      - 3811
-      successful: false
-      desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      - -28672
+      successful: true
+      desc: Requested JCSystem object deletion
     type: simple
-    desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    desc: Requested JCSystem object deletion
   - result:
       cause: null
       value: FAILURE
     response:
-      duration: 21100594
-      natural_sw: 28416
-      apdu: 6f 00
+      duration: 49832979
+      natural_sw: -28672
+      apdu: 00 03 00 03 90 00
       sws:
-      - 0
+      - 3
+      - 3
       successful: false
-      desc: ECDSA with local keypair(random data)
+      desc: Allocated both keypairs 283b ALG_EC_F2M
     type: simple
-    desc: ECDSA with local keypair(random data)
-  type: compound
-  desc: Default tests.
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 219330728
-    natural_sw: -28672
-    apdu: 90 00 90 00
-    sws:
-    - -28672
-    successful: true
-    desc: Requested JCSystem object deletion
-  type: simple
-  desc: Requested JCSystem object deletion
-- result:
-    cause: null
-    value: FAILURE
-  response:
-    duration: 49832979
-    natural_sw: -28672
-    apdu: 00 03 00 03 90 00
-    sws:
-    - 3
-    - 3
-    successful: false
     desc: Allocated both keypairs 283b ALG_EC_F2M
-  type: simple
-  desc: Allocated both keypairs 283b ALG_EC_F2M
-- result:
-    cause: null
-    value: FAILURE
-  response:
-    duration: 66716271
-    natural_sw: -28672
-    apdu: 0e e3 0e e3 90 00
-    sws:
-    - 3811
-    - 3811
-    successful: false
-    desc: Set custom curve parameters on both keypairs
-  type: simple
-  desc: Set custom curve parameters on both keypairs
-- result:
-    cause: The generation of a key should have been successful, but it did not.
-    value: FAILURE
-  tests:
   - result:
       cause: null
       value: FAILURE
     response:
-      duration: 8388639
+      duration: 66716271
       natural_sw: -28672
       apdu: 0e e3 0e e3 90 00
       sws:
       - 3811
       - 3811
       successful: false
+      desc: Set custom curve parameters on both keypairs
+    type: simple
+    desc: Set custom curve parameters on both keypairs
+  - result:
+      cause: The generation of a key should have been successful, but it did not.
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 8388639
+        natural_sw: -28672
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Generated both keypairs
+      type: simple
       desc: Generated both keypairs
-    type: simple
-    desc: Generated both keypairs
-  - result:
-      cause: null
-      value: FAILURE
-    response:
-      duration: 17392315
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 17392315
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(unchanged point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(unchanged point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(unchanged point)
-  - result:
-      cause: null
-      value: FAILURE
-    response:
-      duration: 20658000
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 20658000
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 17303450
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17303450
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ONE point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ONE point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ONE point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 17321321
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17321321
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ZERO point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ZERO point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ZERO point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 20587708
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 20587708
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(MAX point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(MAX point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(MAX point)
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17576086
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      type: simple
+      desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 21016709
+        natural_sw: 28416
+        apdu: 6f 00
+        sws:
+        - 0
+        successful: false
+        desc: ECDSA with local keypair(random data)
+      type: simple
+      desc: ECDSA with local keypair(random data)
+    type: compound
+    desc: Default tests.
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 17576086
+      duration: 219251297
       natural_sw: -28672
-      apdu: 0e e3 90 00
+      apdu: 90 00 90 00
       sws:
-      - 3811
-      successful: false
-      desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      - -28672
+      successful: true
+      desc: Requested JCSystem object deletion
     type: simple
-    desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    desc: Requested JCSystem object deletion
   - result:
       cause: null
       value: FAILURE
     response:
-      duration: 21016709
-      natural_sw: 28416
-      apdu: 6f 00
+      duration: 49795843
+      natural_sw: -28672
+      apdu: 00 03 00 03 90 00
       sws:
-      - 0
+      - 3
+      - 3
       successful: false
-      desc: ECDSA with local keypair(random data)
+      desc: Allocated both keypairs 409b ALG_EC_F2M
     type: simple
-    desc: ECDSA with local keypair(random data)
-  type: compound
-  desc: Default tests.
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 219251297
-    natural_sw: -28672
-    apdu: 90 00 90 00
-    sws:
-    - -28672
-    successful: true
-    desc: Requested JCSystem object deletion
-  type: simple
-  desc: Requested JCSystem object deletion
-- result:
-    cause: null
-    value: FAILURE
-  response:
-    duration: 49795843
-    natural_sw: -28672
-    apdu: 00 03 00 03 90 00
-    sws:
-    - 3
-    - 3
-    successful: false
     desc: Allocated both keypairs 409b ALG_EC_F2M
-  type: simple
-  desc: Allocated both keypairs 409b ALG_EC_F2M
-- result:
-    cause: null
-    value: FAILURE
-  response:
-    duration: 66538818
-    natural_sw: -28672
-    apdu: 0e e3 0e e3 90 00
-    sws:
-    - 3811
-    - 3811
-    successful: false
-    desc: Set custom curve parameters on both keypairs
-  type: simple
-  desc: Set custom curve parameters on both keypairs
-- result:
-    cause: The generation of a key should have been successful, but it did not.
-    value: FAILURE
-  tests:
   - result:
       cause: null
       value: FAILURE
     response:
-      duration: 8435500
+      duration: 66538818
       natural_sw: -28672
       apdu: 0e e3 0e e3 90 00
       sws:
       - 3811
       - 3811
       successful: false
+      desc: Set custom curve parameters on both keypairs
+    type: simple
+    desc: Set custom curve parameters on both keypairs
+  - result:
+      cause: The generation of a key should have been successful, but it did not.
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 8435500
+        natural_sw: -28672
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Generated both keypairs
+      type: simple
       desc: Generated both keypairs
-    type: simple
-    desc: Generated both keypairs
-  - result:
-      cause: null
-      value: FAILURE
-    response:
-      duration: 17413325
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 17413325
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(unchanged point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(unchanged point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(unchanged point)
-  - result:
-      cause: null
-      value: FAILURE
-    response:
-      duration: 20748396
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 20748396
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 17328888
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17328888
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ONE point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ONE point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ONE point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 17274076
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17274076
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ZERO point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ZERO point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ZERO point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 20690104
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 20690104
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(MAX point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(MAX point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(MAX point)
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17377929
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      type: simple
+      desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 21133992
+        natural_sw: 28416
+        apdu: 6f 00
+        sws:
+        - 0
+        successful: false
+        desc: ECDSA with local keypair(random data)
+      type: simple
+      desc: ECDSA with local keypair(random data)
+    type: compound
+    desc: Default tests.
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 17377929
+      duration: 219321437
       natural_sw: -28672
-      apdu: 0e e3 90 00
+      apdu: 90 00 90 00
       sws:
-      - 3811
-      successful: false
-      desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      - -28672
+      successful: true
+      desc: Requested JCSystem object deletion
     type: simple
-    desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    desc: Requested JCSystem object deletion
   - result:
       cause: null
       value: FAILURE
     response:
-      duration: 21133992
-      natural_sw: 28416
-      apdu: 6f 00
+      duration: 49764063
+      natural_sw: -28672
+      apdu: 00 03 00 03 90 00
       sws:
-      - 0
+      - 3
+      - 3
       successful: false
-      desc: ECDSA with local keypair(random data)
+      desc: Allocated both keypairs 571b ALG_EC_F2M
     type: simple
-    desc: ECDSA with local keypair(random data)
-  type: compound
-  desc: Default tests.
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 219321437
-    natural_sw: -28672
-    apdu: 90 00 90 00
-    sws:
-    - -28672
-    successful: true
-    desc: Requested JCSystem object deletion
-  type: simple
-  desc: Requested JCSystem object deletion
-- result:
-    cause: null
-    value: FAILURE
-  response:
-    duration: 49764063
-    natural_sw: -28672
-    apdu: 00 03 00 03 90 00
-    sws:
-    - 3
-    - 3
-    successful: false
     desc: Allocated both keypairs 571b ALG_EC_F2M
-  type: simple
-  desc: Allocated both keypairs 571b ALG_EC_F2M
-- result:
-    cause: null
-    value: FAILURE
-  response:
-    duration: 66552281
-    natural_sw: -28672
-    apdu: 0e e3 0e e3 90 00
-    sws:
-    - 3811
-    - 3811
-    successful: false
-    desc: Set custom curve parameters on both keypairs
-  type: simple
-  desc: Set custom curve parameters on both keypairs
-- result:
-    cause: The generation of a key should have been successful, but it did not.
-    value: FAILURE
-  tests:
   - result:
       cause: null
       value: FAILURE
     response:
-      duration: 8464541
+      duration: 66552281
       natural_sw: -28672
       apdu: 0e e3 0e e3 90 00
       sws:
       - 3811
       - 3811
       successful: false
+      desc: Set custom curve parameters on both keypairs
+    type: simple
+    desc: Set custom curve parameters on both keypairs
+  - result:
+      cause: The generation of a key should have been successful, but it did not.
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 8464541
+        natural_sw: -28672
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Generated both keypairs
+      type: simple
       desc: Generated both keypairs
-    type: simple
-    desc: Generated both keypairs
-  - result:
-      cause: null
-      value: FAILURE
-    response:
-      duration: 17379457
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 17379457
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(unchanged point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(unchanged point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(unchanged point)
-  - result:
-      cause: null
-      value: FAILURE
-    response:
-      duration: 20660627
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 20660627
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(COMPRESSED point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 17261114
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17261114
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ONE point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ONE point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ONE point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 17394795
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17394795
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(ZERO point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(ZERO point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(ZERO point)
-  - result:
-      cause: null
-      value: SUCCESS
-    response:
-      duration: 20789743
-      natural_sw: -28672
-      apdu: 0e e3 90 00
-      sws:
-      - 3811
-      successful: false
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 20789743
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(MAX point)
+      type: simple
       desc: ECDH of local pubkey and remote privkey(MAX point)
-    type: simple
-    desc: ECDH of local pubkey and remote privkey(MAX point)
+    - result:
+        cause: null
+        value: SUCCESS
+      response:
+        duration: 17387262
+        natural_sw: -28672
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      type: simple
+      desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+    - result:
+        cause: null
+        value: FAILURE
+      response:
+        duration: 21154108
+        natural_sw: 28416
+        apdu: 6f 00
+        sws:
+        - 0
+        successful: false
+        desc: ECDSA with local keypair(random data)
+      type: simple
+      desc: ECDSA with local keypair(random data)
+    type: compound
+    desc: Default tests.
   - result:
       cause: null
       value: SUCCESS
     response:
-      duration: 17387262
+      duration: 219394570
       natural_sw: -28672
-      apdu: 0e e3 90 00
+      apdu: 90 00 90 00
       sws:
-      - 3811
-      successful: false
-      desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
+      - -28672
+      successful: true
+      desc: Requested JCSystem object deletion
     type: simple
-    desc: ECDH of local pubkey and remote privkey(FULL_RANDOM point)
-  - result:
-      cause: null
-      value: FAILURE
-    response:
-      duration: 21154108
-      natural_sw: 28416
-      apdu: 6f 00
-      sws:
-      - 0
-      successful: false
-      desc: ECDSA with local keypair(random data)
-    type: simple
-    desc: ECDSA with local keypair(random data)
-  type: compound
-  desc: Default tests.
-- result:
-    cause: null
-    value: SUCCESS
-  response:
-    duration: 219394570
-    natural_sw: -28672
-    apdu: 90 00 90 00
-    sws:
-    - -28672
-    successful: true
     desc: Requested JCSystem object deletion
-  type: simple
-  desc: Requested JCSystem object deletion
 
 ---
