@@ -55,6 +55,11 @@ defaults:
      layout: test_vectors_suite
      category: "Test vectors"
  - scope:
+     path: ""
+     type: "performance"
+   values:
+     permalink: /:collection/:path/
+ - scope:
      path: "_performance/ecdh"
      type: "performance"
    values:

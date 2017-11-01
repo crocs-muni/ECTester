@@ -40,6 +40,13 @@
     {% endfor %}
 </table>
 
+
 <h3>ECDH performance</h3>
+{% assign ecdh = site.performance | where:"category","ECDH performance" %}
+<ul>
+    {% for report in ecdh %}
+    <li><a href="{{ report.url }}">{{ report.id | split: "/" | shift | shift | shift}}</a></li>
+    {% endfor %}
+</ul>
 
 <h3>ECDSA performance</h3>

@@ -1,3 +1,17 @@
 ---
 layout: default
 ---
+
+
+<div id="chart"></div>
+{% assign csv_array = content | split: '' %}
+{% capture chars %}{% for char in csv_array %}{% assign c = char | strip_newlines %}{% if c != '' %}{{ char }}{% else %}|{% endif %}{% endfor %}{% endcapture %}
+{% assign lines = chars | split: '|' %}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var csv = {% for line in lines %}"{{line}}\n" +
+                  {% endfor %}
+                  "";
+        console.log($.csv.toArrays(csv ,{'separator': ';'}));
+    });
+</script>
