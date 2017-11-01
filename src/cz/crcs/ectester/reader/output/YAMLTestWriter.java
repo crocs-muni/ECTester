@@ -1,6 +1,7 @@
 package cz.crcs.ectester.reader.output;
 
 import cz.crcs.ectester.reader.Util;
+import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.test.Test;
 import cz.crcs.ectester.reader.test.TestSuite;
@@ -18,7 +19,9 @@ import java.util.Map;
  */
 public class YAMLTestWriter implements TestWriter {
     private PrintStream output;
-    private List<Object> testRun;
+    private Map<String, Object> testRun;
+    private Map<String, String> testSuite;
+    private List<Object> tests;
 
     public YAMLTestWriter(PrintStream output) {
         this.output = output;
@@ -27,8 +30,20 @@ public class YAMLTestWriter implements TestWriter {
     @Override
     public void begin(TestSuite suite) {
         output.println("---");
-        testRun = new LinkedList<>();
-        //TODO: output suite.name and suite.description
+        testRun = new HashMap<>();
+        testSuite = new HashMap<>();
+        tests = new LinkedList<>();
+        testSuite.put("name", suite.getName());
+        testSuite.put("desc", suite.getDescription());
+
+        testRun.put("suite", testSuite);
+        testRun.put("tests", tests);
+    }
+
+    private Map<String, Object> commandObject(Command c) {
+        Map<String, Object> commandObj = new HashMap<>();
+        commandObj.put("apdu", Util.bytesToHex(c.getAPDU().getBytes()));
+        return commandObj;
     }
 
     private Map<String, Object> responseObject(Response r) {
@@ -52,6 +67,7 @@ public class YAMLTestWriter implements TestWriter {
         if (t instanceof Test.Simple) {
             Test.Simple test = (Test.Simple) t;
             testObj.put("type", "simple");
+            testObj.put("command", commandObject(test.getCommand()));
             testObj.put("response", responseObject(test.getResponse()));
         } else if (t instanceof Test.Compound) {
             Test.Compound test = (Test.Compound) t;
@@ -76,7 +92,7 @@ public class YAMLTestWriter implements TestWriter {
     public void outputTest(Test t) {
         if (!t.hasRun())
             return;
-        testRun.add(testObject(t));
+        tests.add(testObject(t));
     }
 
     @Override
@@ -86,7 +102,7 @@ public class YAMLTestWriter implements TestWriter {
         options.setPrettyFlow(true);
         Yaml yaml = new Yaml(options);
 
-        Map<String, List<Object>> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
         result.put("testRun", testRun);
         String out = yaml.dump(result);
 

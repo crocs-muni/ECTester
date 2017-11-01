@@ -1,6 +1,7 @@
 package cz.crcs.ectester.reader.output;
 
 import cz.crcs.ectester.reader.Util;
+import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.test.Test;
 import cz.crcs.ectester.reader.test.TestSuite;
@@ -44,6 +45,16 @@ public class XMLTestWriter implements TestWriter {
         doc.appendChild(root);
     }
 
+    private Element commandElement(Command c) {
+        Element commandElem = doc.createElement("command");
+
+        Element apdu = doc.createElement("apdu");
+        apdu.setTextContent(Util.bytesToHex(c.getAPDU().getBytes()));
+        commandElem.appendChild(apdu);
+
+        return commandElem;
+    }
+
     private Element responseElement(Response r) {
         Element responseElem = doc.createElement("response");
         responseElem.setAttribute("successful", r.successful() ? "true" : "false");
@@ -81,6 +92,7 @@ public class XMLTestWriter implements TestWriter {
         if (t instanceof Test.Simple) {
             Test.Simple test = (Test.Simple) t;
             testElem.setAttribute("type", "simple");
+            testElem.appendChild(commandElement(test.getCommand()));
             testElem.appendChild(responseElement(test.getResponse()));
         } else if (t instanceof Test.Compound) {
             Test.Compound test = (Test.Compound) t;

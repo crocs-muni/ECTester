@@ -20,7 +20,8 @@ public class TextTestWriter implements TestWriter {
 
     @Override
     public void begin(TestSuite suite) {
-        //TODO: output suite.name and suite.description
+        output.println("=== Running test suite: " + suite.getName() + " ===");
+        output.println("=== " + suite.getDescription());
     }
 
     private String testPrefix(Test t) {
