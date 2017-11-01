@@ -13,7 +13,7 @@
 <table>
     <tr>
         <th></th>
-        <th>Description</th>
+        <th><i class="fa fa-file-text-o"></i> Description</th>
         <th>Result</th>
         <th>Cause</th>
     </tr>
@@ -25,7 +25,11 @@
         <td></td>
         {% endif %}
         <td>{{ test.desc }}</td>
-        <td title="{{ test.result.cause }}">{{ test.result.value }}</td>
+        {% if test.result.value == "SUCCESS" %}
+        <td align="center" title="{{ test.result.cause }}"><i class="fa fa-check"></i></td>
+        {% else %}
+        <td align="center" title="{{ test.result.cause }}"><i class="fa fa-exclamation-triangle"></i></td>
+        {% endif %}
         <td title="{% for sw in test.response.sws %}{{ sw }} {% endfor %}">{{ test.result.cause }}</td>
     </tr>
     {% if test.type == "compound" %}
