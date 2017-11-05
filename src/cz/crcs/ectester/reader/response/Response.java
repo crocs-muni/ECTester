@@ -7,7 +7,6 @@ import javacard.framework.ISO7816;
 import javacard.security.KeyPair;
 
 import javax.smartcardio.ResponseAPDU;
-import java.util.List;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -21,6 +20,7 @@ public abstract class Response {
     private byte[][] params;
     //TODO replace params with EC_Data?
     private boolean success = true;
+    private boolean error = false;
 
     public Response(ResponseAPDU response, long time) {
         this.resp = response;
@@ -45,22 +45,28 @@ public abstract class Response {
                 }
             } else {
                 success = false;
+                error = true;
             }
         }
 
-        if ((short) resp.getSW() != ISO7816.SW_NO_ERROR)
+        if ((short) resp.getSW() != ISO7816.SW_NO_ERROR) {
             success = false;
+            error = true;
+        }
+
 
         //try to parse numParams..
         params = new byte[numParams][];
         for (int i = 0; i < numParams; i++) {
             if (data.length - offset < 2) {
                 success = false;
+                error = true;
                 break;
             }
             short paramLength = Util.getShort(data, offset);
             offset += 2;
             if (data.length < offset + paramLength) {
+                error = true;
                 success = false;
                 break;
             }
@@ -114,6 +120,10 @@ public abstract class Response {
         return this.success;
     }
 
+    public boolean error() {
+        return this.error;
+    }
+
     public abstract String getDescription();
 
     /**
@@ -121,6 +131,7 @@ public abstract class Response {
      */
     public static class AllocateKeyAgreement extends Response {
         byte kaType;
+
         public AllocateKeyAgreement(ResponseAPDU response, long time, byte kaType) {
             super(response, time);
             this.kaType = kaType;
@@ -134,7 +145,7 @@ public abstract class Response {
         }
 
     }
-    
+
     public static class Allocate extends Response {
 
         private byte keyPair;

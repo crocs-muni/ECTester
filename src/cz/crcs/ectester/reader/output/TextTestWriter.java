@@ -12,7 +12,7 @@ public class TextTestWriter implements TestWriter {
     private PrintStream output;
     private ResponseWriter respWriter;
 
-    public static int BASE_WIDTH = 72;
+    public static int BASE_WIDTH = 76;
 
     public TextTestWriter(PrintStream output) {
         this.output = output;
