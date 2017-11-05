@@ -4,6 +4,7 @@ layout: default
 
 
 <div id="chart"></div>
+
 {% assign csv_array = content | split: '' %}
 {% capture chars %}{% for char in csv_array %}{% assign c = char | strip_newlines %}{% if c != '' %}{{ char }}{% else %}|{% endif %}{% endfor %}{% endcapture %}
 {% assign lines = chars | split: '|' %}
@@ -12,6 +13,50 @@ layout: default
         var csv = {% for line in lines %}"{{line}}\n" +
                   {% endfor %}
                   "";
-        console.log($.csv.toArrays(csv ,{'separator': ';'}));
+        var raw = $.csv.toArrays(csv, {separator: ';'});
+        var data = raw.slice(1);
+
+        var max = Number.MIN_VALUE;
+        var min = Number.MAX_VALUE;
+        var frequencies = {};
+        data.forEach(function (row) {
+            var time = parseInt(row[1]);
+            if (!frequencies[time]) {
+                frequencies[time] = 1;
+            } else {
+                frequencies[time] += 1;
+            }
+            max = Math.max(max, time);
+            min = Math.min(min, time);
+        });
+
+        var freq_labels = [];
+        var freq_values = [];
+        for (i = 0; i <= max; i++) {
+            if (i < min) {
+                freq_values[i] = 0;
+            } else {
+                freq_values[i] = frequencies[i];
+            }
+            freq_labels[i] = i + " ms";
+        }
+
+        var freq_data = {
+            labels: freq_labels,
+            datasets: [
+                {
+                    color: "blue",
+                    values: freq_values
+                }
+            ]
+        };
+
+        var chart = new Chart({
+            parent: "#chart",
+            title: "Frequencies",
+            data: freq_data,
+            type:"bar",
+            height: 250
+        });
     });
 </script>
