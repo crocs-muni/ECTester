@@ -25,7 +25,6 @@ public class TextTestWriter implements TestWriter {
         output.println("=== " + suite.getDescription());
     }
 
-
     private String testString(Test t, int offset) {
         if (!t.hasRun()) {
             return null;
@@ -44,7 +43,6 @@ public class TextTestWriter implements TestWriter {
             out.append(" ┃ ");
             out.append(respWriter.responseSuffix(test.getResponse()));
         } else {
-            out.append(System.lineSeparator());
             Test.Compound test = (Test.Compound) t;
             out.append(test.ok() ? "OK  " : "NOK ");
             out.append("┳ ");
