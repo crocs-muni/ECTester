@@ -3,6 +3,7 @@ package cz.crcs.ectester.reader.response;
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.reader.Util;
+import cz.crcs.ectester.reader.ec.EC_Data;
 import javacard.framework.ISO7816;
 import javacard.security.KeyPair;
 
@@ -18,7 +19,6 @@ public abstract class Response {
     private short[] sws;
     private int numSW = 0;
     private byte[][] params;
-    //TODO replace params with EC_Data?
     private boolean success = true;
     private boolean error = false;
 
@@ -27,7 +27,7 @@ public abstract class Response {
         this.time = time;
     }
 
-    public void parse(int numSW, int numParams) {
+    void parse(int numSW, int numParams) {
         this.numSW = numSW;
         this.sws = new short[numSW];
 

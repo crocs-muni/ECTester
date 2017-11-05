@@ -287,10 +287,10 @@ public class Util {
 
     public static String getSWString(short sw) {
         if (sw == ISO7816.SW_NO_ERROR) {
-            return "OK\t(0x9000)";
+            return "OK   (0x9000)";
         } else {
             String str = getSW(sw);
-            return String.format("fail\t(%s, 0x%04x)", str, sw);
+            return String.format("fail (%s, 0x%04x)", str, sw);
         }
     }
 

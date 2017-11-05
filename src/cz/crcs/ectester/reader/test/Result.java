@@ -29,11 +29,29 @@ public class Result {
         return value.ok();
     }
 
+    public boolean compareTo(Result other) {
+        if (other == null) {
+            return false;
+        }
+        return value == other.value;
+    }
+
+    public boolean compareTo(Value other) {
+        if (other == null) {
+            return false;
+        }
+        return value == other;
+    }
+
+    /**
+     *
+     */
     public enum Value {
         SUCCESS(true),
         FAILURE(false),
         UXSUCCESS(false),
-        XFAILURE(true);
+        XFAILURE(true),
+        ERROR(false);
 
         private boolean ok;
 
@@ -53,28 +71,24 @@ public class Result {
             return SUCCESS;
         }
 
+        public static Value fromExpected(ExpectedValue expected, boolean successful, boolean error) {
+            if (error) {
+                return ERROR;
+            }
+            return fromExpected(expected, successful);
+        }
+
         public boolean ok() {
             return ok;
         }
     }
 
+    /**
+     *
+     */
     public enum ExpectedValue {
         SUCCESS,
         FAILURE,
         ANY
-    }
-
-    public boolean compareTo(Result other) {
-        if (other == null) {
-            return false;
-        }
-        return value == other.value;
-    }
-
-    public boolean compareTo(Value other) {
-        if (other == null) {
-            return false;
-        }
-        return value == other;
     }
 }

@@ -71,7 +71,7 @@ public abstract class Test {
 
         public Simple(Command command, ExpectedValue expected, String ok, String nok) {
             this(command, (cmd, resp) -> {
-                Value resultValue = Value.fromExpected(expected, resp.successful());
+                Value resultValue = Value.fromExpected(expected, resp.successful(), resp.error());
                 return new Result(resultValue, resultValue.ok() ? ok : nok);
             });
         }

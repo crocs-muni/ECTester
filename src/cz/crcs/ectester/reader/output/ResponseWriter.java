@@ -31,7 +31,7 @@ public class ResponseWriter {
 
     public void outputResponse(Response r) {
         String out = "";
-        out += String.format("%-70s", r.getDescription()) + " : ";
+        out += String.format("%-70s", r.getDescription()) + " ┃ ";
         out += responseSuffix(r);
         output.println(out);
         output.flush();
