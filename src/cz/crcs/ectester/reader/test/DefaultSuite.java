@@ -10,6 +10,8 @@ import javacard.security.KeyPair;
 
 import java.io.IOException;
 
+import static cz.crcs.ectester.reader.test.Result.ExpectedValue;
+
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
@@ -21,14 +23,14 @@ public class DefaultSuite extends TestSuite {
 
     @Override
     public void setup(CardMngr cardManager) throws IOException {
-        tests.add(new Test.Simple(new Command.Support(cardManager), Result.Value.ANY));
+        tests.add(new Test.Simple(new Command.Support(cardManager), ExpectedValue.ANY));
         if (cfg.namedCurve != null) {
             String desc = "Default tests over the " + cfg.namedCurve + " curve category.";
             if (cfg.primeField) {
-                tests.addAll(defaultCategoryTests(cardManager, cfg.namedCurve, KeyPair.ALG_EC_FP, Result.Value.SUCCESS, Result.Value.SUCCESS, Result.Value.SUCCESS, Result.Value.ANY, Result.Value.SUCCESS, desc));
+                tests.addAll(defaultCategoryTests(cardManager, cfg.namedCurve, KeyPair.ALG_EC_FP, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.ANY, ExpectedValue.SUCCESS, desc));
             }
             if (cfg.binaryField) {
-                tests.addAll(defaultCategoryTests(cardManager, cfg.namedCurve, KeyPair.ALG_EC_F2M, Result.Value.SUCCESS, Result.Value.SUCCESS, Result.Value.SUCCESS, Result.Value.ANY, Result.Value.SUCCESS, desc));
+                tests.addAll(defaultCategoryTests(cardManager, cfg.namedCurve, KeyPair.ALG_EC_F2M, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.ANY, ExpectedValue.SUCCESS, desc));
             }
         } else {
             if (cfg.all) {
@@ -57,11 +59,11 @@ public class DefaultSuite extends TestSuite {
     }
 
     private void defaultTests(CardMngr cardManager, short keyLength, byte keyType) throws IOException {
-        tests.add(new Test.Simple(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, keyType), Result.Value.SUCCESS));
+        tests.add(new Test.Simple(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, keyType), ExpectedValue.SUCCESS));
         Command curve = Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_BOTH, keyLength, keyType);
         if (curve != null)
-            tests.add(new Test.Simple(curve, Result.Value.SUCCESS));
-        tests.add(defaultCurveTests(cardManager, Result.Value.SUCCESS, Result.Value.SUCCESS, Result.Value.ANY, Result.Value.SUCCESS, "Default tests."));
-        tests.add(new Test.Simple(new Command.Cleanup(cardManager), Result.Value.ANY));
+            tests.add(new Test.Simple(curve, ExpectedValue.SUCCESS));
+        tests.add(defaultCurveTests(cardManager, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.ANY, ExpectedValue.SUCCESS, "Default tests."));
+        tests.add(new Test.Simple(new Command.Cleanup(cardManager), ExpectedValue.ANY));
     }
 }

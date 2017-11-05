@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static cz.crcs.ectester.reader.test.Result.ExpectedValue;
+import static cz.crcs.ectester.reader.test.Result.Value;
+
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
@@ -55,23 +58,23 @@ public abstract class TestSuite {
      * @param description          compound test description
      * @return test to run
      */
-    Test defaultCurveTests(CardMngr cardManager, Result.Value generateExpected, Result.Value ecdhExpected, Result.Value ecdhCompressExpected, Result.Value ecdsaExpected, String description) {
+    Test defaultCurveTests(CardMngr cardManager, ExpectedValue generateExpected, ExpectedValue ecdhExpected, ExpectedValue ecdhCompressExpected, ExpectedValue ecdsaExpected, String description) {
         List<Test> tests = new LinkedList<>();
 
         tests.add(new Test.Simple(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH), generateExpected));
         tests.add(new Test.Simple(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDH), ecdhExpected));
         tests.add(new Test.Simple(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_COMPRESS, EC_Consts.KA_ECDH), ecdhExpected));
-        tests.add(new Test.Simple(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ONE, EC_Consts.KA_ECDH), Result.Value.FAILURE));
-        tests.add(new Test.Simple(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ZERO, EC_Consts.KA_ECDH), Result.Value.FAILURE));
-        tests.add(new Test.Simple(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_MAX, EC_Consts.KA_ECDH), Result.Value.FAILURE));
-        tests.add(new Test.Simple(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_FULLRANDOM, EC_Consts.KA_ECDH), Result.Value.FAILURE));
+        tests.add(new Test.Simple(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ONE, EC_Consts.KA_ECDH), ExpectedValue.FAILURE));
+        tests.add(new Test.Simple(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ZERO, EC_Consts.KA_ECDH), ExpectedValue.FAILURE));
+        tests.add(new Test.Simple(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_MAX, EC_Consts.KA_ECDH), ExpectedValue.FAILURE));
+        tests.add(new Test.Simple(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_FULLRANDOM, EC_Consts.KA_ECDH), ExpectedValue.FAILURE));
         tests.add(new Test.Simple(new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, null), ecdsaExpected));
 
         return Test.Compound.function((testArray) -> {
-            Function<Result.Value, String> shouldHave = (expected) -> {
+            Function<ExpectedValue, String> shouldHave = (expected) -> {
                 switch (expected) {
                     case SUCCESS:
-                        return "been successful";
+                        return "succeeded";
                     case FAILURE:
                         return "failed";
                     case ANY:
@@ -82,21 +85,21 @@ public abstract class TestSuite {
 
             for (int i = 0; i < testArray.length; ++i) {
                 Test t = testArray[i];
-                if (t.getResultValue() != Result.Value.SUCCESS) {
+                if (!t.ok()) {
                     if (i == 0) { // generate
-                        return new Result(Result.Value.FAILURE, "The generation of a key should have " + shouldHave.apply(generateExpected) + ", but it did not.");
+                        return new Result(Value.FAILURE, "The generation of a key should have " + shouldHave.apply(generateExpected) + ", but it did not.");
                     } else if (i == 2) { // ecdh compress
-                        return new Result(Result.Value.FAILURE, "The ECDH should have " + shouldHave.apply(ecdhExpected) + ", but it did not.");
+                        return new Result(Value.FAILURE, "The ECDH should have " + shouldHave.apply(ecdhExpected) + ", but it did not.");
                     } else if (i == 1) { // ecdh normal
-                        return new Result(Result.Value.FAILURE, "The ECDH of a compressed point should have " + shouldHave.apply(ecdhCompressExpected) + ", but it did not.");
+                        return new Result(Value.FAILURE, "The ECDH of a compressed point should have " + shouldHave.apply(ecdhCompressExpected) + ", but it did not.");
                     } else if (i <= 6) { // ecdh wrong, should fail
-                        return new Result(Result.Value.FAILURE, "The ECDH of a corrupted point should have failed, but it dit not.");
+                        return new Result(Value.FAILURE, "The ECDH of a corrupted point should have failed, but it dit not.");
                     } else { // ecdsa
-                        return new Result(Result.Value.FAILURE, "The ECDSA should have " + shouldHave.apply(ecdsaExpected) + ", but it did not.");
+                        return new Result(Value.FAILURE, "The ECDSA should have " + shouldHave.apply(ecdsaExpected) + ", but it did not.");
                     }
                 }
             }
-            return new Result(Result.Value.SUCCESS);
+            return new Result(Value.SUCCESS);
         }, description, tests.toArray(new Test[0]));
     }
 
@@ -107,12 +110,12 @@ public abstract class TestSuite {
      * @param setExpected            expected result of the Set (curve) command
      * @param generateExpected       expected result of the Generate command
      * @param ecdhExpected           expected result of the ordinary ECDH command
-     * @param ecdhCompressedExpected
+     * @param ecdhCompressedExpected expected result of the ECDH command with a compressed point.
      * @param ecdsaExpected          expected result of the ordinary ECDSA command
      * @param description            compound test description
      * @return tests to run
      */
-    List<Test> defaultCategoryTests(CardMngr cardManager, String category, byte field, Result.Value setExpected, Result.Value generateExpected, Result.Value ecdhExpected, Result.Value ecdhCompressedExpected, Result.Value ecdsaExpected, String description) {
+    List<Test> defaultCategoryTests(CardMngr cardManager, String category, byte field, ExpectedValue setExpected, ExpectedValue generateExpected, ExpectedValue ecdhExpected, ExpectedValue ecdhCompressedExpected, ExpectedValue ecdsaExpected, String description) {
         List<Test> tests = new LinkedList<>();
         Map<String, EC_Curve> curves = dataStore.getObjects(EC_Curve.class, category);
         if (curves == null)
@@ -120,10 +123,10 @@ public abstract class TestSuite {
         for (Map.Entry<String, EC_Curve> entry : curves.entrySet()) {
             EC_Curve curve = entry.getValue();
             if (curve.getField() == field && (curve.getBits() == cfg.bits || cfg.all)) {
-                tests.add(new Test.Simple(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), field), Result.Value.SUCCESS));
+                tests.add(new Test.Simple(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), field), ExpectedValue.SUCCESS));
                 tests.add(new Test.Simple(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), setExpected));
                 tests.add(defaultCurveTests(cardManager, generateExpected, ecdhExpected, ecdhCompressedExpected, ecdsaExpected, description));
-                tests.add(new Test.Simple(new Command.Cleanup(cardManager), Result.Value.ANY));
+                tests.add(new Test.Simple(new Command.Cleanup(cardManager), ExpectedValue.ANY));
             }
         }
 

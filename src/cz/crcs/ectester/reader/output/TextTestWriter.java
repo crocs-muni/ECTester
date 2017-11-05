@@ -1,7 +1,6 @@
 package cz.crcs.ectester.reader.output;
 
 import cz.crcs.ectester.reader.test.Test;
-import cz.crcs.ectester.reader.test.Result;
 import cz.crcs.ectester.reader.test.TestSuite;
 
 import java.io.PrintStream;
@@ -12,6 +11,8 @@ import java.io.PrintStream;
 public class TextTestWriter implements TestWriter {
     private PrintStream output;
     private ResponseWriter respWriter;
+
+    public static int BASE_WIDTH = 72;
 
     public TextTestWriter(PrintStream output) {
         this.output = output;
@@ -24,34 +25,51 @@ public class TextTestWriter implements TestWriter {
         output.println("=== " + suite.getDescription());
     }
 
-    private String testPrefix(Test t) {
-        return String.format("%-4s", t.getResultValue() == Result.Value.SUCCESS ? "OK" : "NOK");
-    }
 
-    private String testString(Test t) {
-        if (!t.hasRun())
+    private String testString(Test t, int offset) {
+        if (!t.hasRun()) {
             return null;
+        }
 
         StringBuilder out = new StringBuilder();
         if (t instanceof Test.Simple) {
             Test.Simple test = (Test.Simple) t;
-            out.append(String.format("%-70s:", testPrefix(t) + " : " + test.getDescription())).append(" : ");
+            out.append(test.ok() ? "OK  " : "NOK ");
+            out.append("━ ");
+            int width = BASE_WIDTH - (offset + out.length());
+            String widthSpec = "%-" + String.valueOf(width) + "s";
+            out.append(String.format(widthSpec, t.getDescription()));
+            out.append(" ┃ ");
+            out.append(String.format("%-9s", test.getResultValue().name()));
+            out.append(" ┃ ");
             out.append(respWriter.responseSuffix(test.getResponse()));
-        } else if (t instanceof Test.Compound) {
+        } else {
+            out.append(System.lineSeparator());
             Test.Compound test = (Test.Compound) t;
+            out.append(test.ok() ? "OK  " : "NOK ");
+            out.append("┳ ");
+            int width = BASE_WIDTH - (offset + out.length());
+            String widthSpec = "%-" + String.valueOf(width) + "s";
+            out.append(String.format(widthSpec, t.getDescription()));
+            out.append(" ┃ ");
+            out.append(String.format("%-9s", test.getResultValue().name()));
+            out.append(" ┃ ");
+            out.append(test.getResultCause());
+            out.append(System.lineSeparator());
             Test[] tests = test.getTests();
             for (int i = 0; i < tests.length; ++i) {
-                if (i == 0) {
-                    out.append(" /- ");
-                } else if (i == tests.length - 1) {
-                    out.append(" \\- ");
+                if (i == tests.length - 1) {
+                    out.append("    ┗ ");
                 } else {
-                    out.append(" |  ");
+                    out.append("    ┣ ");
                 }
-                out.append(testString(tests[i])).append(System.lineSeparator());
+                out.append(testString(tests[i], offset + 6));
+                if (i != tests.length - 1) {
+                    out.append(System.lineSeparator());
+                }
             }
-            out.append(String.format("%-70s", testPrefix(t) + " : " + test.getDescription()));
         }
+
         return out.toString();
     }
 
@@ -59,7 +77,7 @@ public class TextTestWriter implements TestWriter {
     public void outputTest(Test t) {
         if (!t.hasRun())
             return;
-        output.println(testString(t));
+        output.println(testString(t, 0));
         output.flush();
     }
 

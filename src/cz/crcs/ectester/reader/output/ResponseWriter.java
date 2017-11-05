@@ -26,7 +26,7 @@ public class ResponseWriter {
         if (suffix.length() == 0) {
             suffix.append(" [").append(Util.getSW(r.getNaturalSW())).append("]");
         }
-        return String.format("%4d ms : %s", r.getDuration() / 1000000, suffix);
+        return String.format("%4d ms ┃ %s", r.getDuration() / 1000000, suffix);
     }
 
     public void outputResponse(Response r) {

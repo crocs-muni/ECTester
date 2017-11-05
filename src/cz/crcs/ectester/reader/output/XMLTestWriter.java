@@ -107,10 +107,13 @@ public class XMLTestWriter implements TestWriter {
         testElem.appendChild(description);
 
         Element result = doc.createElement("result");
+        Element ok = doc.createElement("ok");
+        ok.setTextContent(String.valueOf(t.ok()));
         Element value = doc.createElement("value");
         value.setTextContent(t.getResultValue().name());
         Element cause = doc.createElement("cause");
         cause.setTextContent(t.getResultCause());
+        result.appendChild(ok);
         result.appendChild(value);
         result.appendChild(cause);
         testElem.appendChild(result);

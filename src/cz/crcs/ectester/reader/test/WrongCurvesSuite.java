@@ -7,6 +7,8 @@ import javacard.security.KeyPair;
 
 import java.io.IOException;
 
+import static cz.crcs.ectester.reader.test.Result.ExpectedValue;
+
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
@@ -23,10 +25,10 @@ public class WrongCurvesSuite extends TestSuite {
          */
         String desc = "Default tests over wrong curve params.";
         if (cfg.primeField) {
-            tests.addAll(defaultCategoryTests(cardManager, cfg.testSuite, KeyPair.ALG_EC_FP, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE, desc));
+            tests.addAll(defaultCategoryTests(cardManager, cfg.testSuite, KeyPair.ALG_EC_FP, ExpectedValue.FAILURE, ExpectedValue.FAILURE, ExpectedValue.FAILURE, ExpectedValue.FAILURE, ExpectedValue.FAILURE, desc));
         }
         if (cfg.binaryField) {
-            tests.addAll(defaultCategoryTests(cardManager, cfg.testSuite, KeyPair.ALG_EC_F2M, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE, Result.Value.FAILURE, desc));
+            tests.addAll(defaultCategoryTests(cardManager, cfg.testSuite, KeyPair.ALG_EC_F2M, ExpectedValue.FAILURE, ExpectedValue.FAILURE, ExpectedValue.FAILURE, ExpectedValue.FAILURE, ExpectedValue.FAILURE, desc));
         }
     }
 }

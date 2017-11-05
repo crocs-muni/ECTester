@@ -7,6 +7,7 @@ import javax.smartcardio.CardException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static cz.crcs.ectester.reader.test.Result.ExpectedValue;
 import static cz.crcs.ectester.reader.test.Result.Value;
 
 /**
@@ -39,6 +40,13 @@ public abstract class Test {
         return result.getCause();
     }
 
+    public boolean ok() {
+        if (!hasRun) {
+            return true;
+        }
+        return result.ok();
+    }
+
     public abstract String getDescription();
 
     public boolean hasRun() {
@@ -61,18 +69,14 @@ public abstract class Test {
             this.callback = callback;
         }
 
-        public Simple(Command command, Value expected, String ok, String nok) {
+        public Simple(Command command, ExpectedValue expected, String ok, String nok) {
             this(command, (cmd, resp) -> {
-                if (expected == Value.ANY) {
-                    return new Result(Value.SUCCESS, ok);
-                }
-                Value respResult = resp.successful() ? Value.SUCCESS : Value.FAILURE;
-                boolean cond = expected == respResult;
-                return new Result(cond ? Value.SUCCESS : Value.FAILURE, cond ? ok : nok);
+                Value resultValue = Value.fromExpected(expected, resp.successful());
+                return new Result(resultValue, resultValue.ok() ? ok : nok);
             });
         }
 
-        public Simple(Command command, Value expected) {
+        public Simple(Command command, ExpectedValue expected) {
             this(command, expected, null, null);
         }
 
@@ -134,10 +138,10 @@ public abstract class Test {
             return new Compound(callback, description, tests);
         }
 
-        public static Compound all(Value what, Test... all) {
+        public static Compound all(ExpectedValue what, Test... all) {
             return new Compound((tests) -> {
                 for (Test test : tests) {
-                    if (test.getResultValue() != what) {
+                    if (!Value.fromExpected(what, test.ok()).ok()) {
                         return new Result(Value.FAILURE, "At least one of the sub-tests did not have the expected result.");
                     }
                 }
@@ -145,16 +149,16 @@ public abstract class Test {
             }, all);
         }
 
-        public static Compound all(Value what, String description, Test... all) {
+        public static Compound all(ExpectedValue what, String description, Test... all) {
             Compound result = Compound.all(what, all);
             result.setDescription(description);
             return result;
         }
 
-        public static Compound any(Value what, Test... any) {
+        public static Compound any(ExpectedValue what, Test... any) {
             return new Compound((tests) -> {
                 for (Test test : tests) {
-                    if (test.getResultValue() == what) {
+                    if (Value.fromExpected(what, test.ok()).ok()) {
                         return new Result(Value.SUCCESS, "At least one of the sub-tests did have the expected result.");
                     }
                 }
@@ -162,16 +166,16 @@ public abstract class Test {
             }, any);
         }
 
-        public static Compound any(Value what, String description, Test... any) {
+        public static Compound any(ExpectedValue what, String description, Test... any) {
             Compound result = Compound.any(what, any);
             result.setDescription(description);
             return result;
         }
 
-        public static Compound mask(Value[] results, Test... masked) {
+        public static Compound mask(ExpectedValue[] results, Test... masked) {
             return new Compound((tests) -> {
                 for (int i = 0; i < results.length; ++i) {
-                    if (results[i] != Value.ANY && results[i] != tests[i].getResultValue()) {
+                    if (!Value.fromExpected(results[i], tests[i].ok()).ok()) {
                         return new Result(Value.FAILURE, "At least one of the sub-tests did not match the result mask.");
                     }
                 }
@@ -179,7 +183,7 @@ public abstract class Test {
             }, masked);
         }
 
-        public static Compound mask(Value[] results, String description, Test... masked) {
+        public static Compound mask(ExpectedValue[] results, String description, Test... masked) {
             Compound result = Compound.mask(results, masked);
             result.setDescription(description);
             return result;
