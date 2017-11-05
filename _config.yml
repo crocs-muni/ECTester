@@ -71,3 +71,9 @@ defaults:
    values:
      layout: ecdsa_performance
      category: "ECDSA performance"
+ - scope:
+     path: "_performance/keygen"
+     type: "performance"
+   values:
+     layout: keygen_performance
+     category: "Key generation performance"
