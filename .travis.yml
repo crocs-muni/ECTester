@@ -3,4 +3,4 @@ jdk:
   - oraclejdk8
 script:
   - ant -f jcbuild.xml build
-  - ant -f build.xml jar
+  - ant -f build.xml package
