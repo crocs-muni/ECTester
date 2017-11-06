@@ -20,11 +20,14 @@ esac
 done
 set -- "${positional[@]}"
 
-if [[ $# -ne 1 ]]; then
-    echo "One argument expected:" >&2
-    echo "    ./ectester.sh [--dangerous] CARD_NAME" >&2
+if [[ $# -lt 1 ]]; then
+    echo "At least one argument expected:" >&2
+    echo "    ./ectester.sh [--dangerous] CARD_NAME [ECTester args]" >&2
     exit 1
 fi
+
+card="$1"
+shift
 
 declare -a tests=("default" "test-vectors")
 if [[ "$dangerous" == "1" ]]; then
@@ -34,12 +37,12 @@ fi
 declare -a files=()
 for i in $(seq 0 $((${#tests[@]} - 1))); do
     test="${tests[$i]}"
-    java -jar ECTester.jar -t ${test} -a --format yaml -l ${1}.${test}
-    files+=(${1}.$test)
+    java -jar ECTester.jar -t ${test} -a --format yaml -l ${card}.${test} $@
+    files+=(${card}.$test)
 done
 
 if command -v tar 2>&1 >/dev/null; then
-    tar -czvf ${1}.tar.gz ${files[*]}
+    tar -czvf ${card}.tar.gz ${files[*]}
 elif command -v zip 2>&1 >/dev/null; then
-    zip ${1}.zip ${files[*]}
+    zip ${card}.zip ${files[*]}
 fi
