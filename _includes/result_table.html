@@ -1,16 +1,15 @@
 <style>
-    .clickable {
-        font-size: 1.5em;
-        font-weight: bold;
+    .clickable:hover {
+        cursor: pointer;
     }
 
-    .clickable:hover {
-        text-decoration: underline;
-        cursor: pointer;
+    #result-table {
+        margin-top: 2em;
+        margin-bottom: 2em;
     }
 </style>
 
-<table style="width: 100%">
+<table id="result-table" style="width: 100%">
     <colgroup>
         <col span="1" style="width: 6%">
         <col span="1" style="width: 6%">
@@ -32,7 +31,7 @@
     /**
      *
      */
-    $(".clickable").click(function (btn) {
+    $(".clickable").click(function () {
         var parent = $(this).parent();
         var parent_depth = parent.data("depth");
         var tests = $(this).data("rows");
@@ -45,12 +44,7 @@
                 }
             }
         });
-
-        if (btn.currentTarget.innerHTML === "+") {
-            btn.currentTarget.innerHTML = "-";
-        } else {
-            btn.currentTarget.innerHTML = "+";
-        }
+        $(this).children().toggleClass("fa-plus-square").toggleClass("fa-minus-square");
     });
     var common_tooltip = {
         position: {
@@ -72,9 +66,6 @@
             );
         }
     };
-    /**
-     *
-     */
     $(".sw-tooltip").tooltip($.extend({}, common_tooltip, {
         items: ".sw-tooltip",
         content: function () {
@@ -86,7 +77,7 @@
             var ectester_sws = $("<span></span>").text(sws);
             var natural_label = $("<b>Natural SW:</b>");
             var sws_label = $("<b>SWs:</b>");
-            return natural_label.add(nat_sws).add($("</br>")).add(sws_label).add(ectester_sws);
+            return natural_label.add(nat_sws).add($("<br/>")).add(sws_label).add(ectester_sws);
         }
     }));
     $(".cause-tooltip").tooltip($.extend({}, common_tooltip, {

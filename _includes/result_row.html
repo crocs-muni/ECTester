@@ -21,9 +21,9 @@
 </tr>
 {% else %}
 <tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
-    <td class="clickable" data-rows="{{ include.test.tests | size }}">+</td>
+    <td class="clickable" data-rows="{{ include.test.tests | size }}"><i class="fa fa-plus-square"></i></td>
     {{ ok }}
-    <td>{{ include.test.desc }}</td>
+    <td><i class="fa fa-clone"></i> {{ include.test.desc }}</td>
     <td>{{ include.test.result.value }}</td>
 </tr>
 {% assign new_depth=include.depth | plus: 1 %}

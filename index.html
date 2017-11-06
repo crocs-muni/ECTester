@@ -50,5 +50,17 @@
 </ul>
 
 <h3>ECDSA performance</h3>
+{% assign ecdsa = site.performance | where:"category","ECDSA performance" %}
+<ul>
+    {% for report in ecdsa %}
+    <li><a href="{{ report.url }}">{{ report.id | split: "/" | shift | shift | shift}}</a></li>
+    {% endfor %}
+</ul>
 
 <h3>Key generation performance</h3>
+{% assign keygen = site.performance | where:"category","Key generation performance" %}
+<ul>
+    {% for report in keygen %}
+    <li><a href="{{ report.url }}">{{ report.id | split: "/" | shift | shift | shift}}</a></li>
+    {% endfor %}
+</ul>
