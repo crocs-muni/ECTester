@@ -93,7 +93,7 @@ public abstract class TestSuite {
                     } else if (i == 1) { // ecdh normal
                         return new Result(Value.FAILURE, "The ECDH of a compressed point should have " + shouldHave.apply(ecdhCompressExpected) + ", but it did not.");
                     } else if (i <= 6) { // ecdh wrong, should fail
-                        return new Result(Value.FAILURE, "The ECDH of a corrupted point should have failed, but it dit not.");
+                        return new Result(Value.FAILURE, "The ECDH of a corrupted point should have failed, but it did not.");
                     } else { // ecdsa
                         return new Result(Value.FAILURE, "The ECDSA should have " + shouldHave.apply(ecdsaExpected) + ", but it did not.");
                     }

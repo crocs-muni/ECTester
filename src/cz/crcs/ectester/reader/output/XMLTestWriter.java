@@ -64,13 +64,13 @@ public class XMLTestWriter implements TestWriter {
         responseElem.appendChild(apdu);
 
         Element naturalSW = doc.createElement("natural-sw");
-        naturalSW.setTextContent(String.valueOf(r.getNaturalSW()));
+        naturalSW.setTextContent(String.valueOf(Short.toUnsignedInt(r.getNaturalSW())));
         responseElem.appendChild(naturalSW);
 
         Element sws = doc.createElement("sws");
         for (int i = 0; i < r.getNumSW(); ++i) {
             Element sw = doc.createElement("sw");
-            sw.setTextContent(String.valueOf(r.getSW(i)));
+            sw.setTextContent(String.valueOf(Short.toUnsignedInt(r.getSW(i))));
             sws.appendChild(sw);
         }
         responseElem.appendChild(sws);

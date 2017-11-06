@@ -50,10 +50,10 @@ public class YAMLTestWriter implements TestWriter {
         Map<String, Object> responseObj = new HashMap<>();
         responseObj.put("successful", r.successful());
         responseObj.put("apdu", Util.bytesToHex(r.getAPDU().getBytes()));
-        responseObj.put("natural_sw", r.getNaturalSW());
-        List<Short> sws = new LinkedList<>();
+        responseObj.put("natural_sw", Short.toUnsignedInt(r.getNaturalSW()));
+        List<Integer> sws = new LinkedList<>();
         for (int i = 0; i < r.getNumSW(); ++i) {
-            sws.add(r.getSW(i));
+            sws.add(Short.toUnsignedInt(r.getSW(i)));
         }
         responseObj.put("sws", sws);
         responseObj.put("duration", r.getDuration());
