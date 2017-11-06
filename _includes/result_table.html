@@ -10,55 +10,89 @@
     }
 </style>
 
-<table>
+<table style="width: 100%">
+    <colgroup>
+        <col span="1" style="width: 6%">
+        <col span="1" style="width: 6%">
+        <col span="1" style="width: 78%">
+        <col span="1" style="width: 10%">
+    </colgroup>
     <tr>
         <th></th>
-        <th><i class="fa fa-file-text-o"></i> Description</th>
+        <th>Test result</th>
+        <th>Description</th>
         <th>Result</th>
-        <th>Cause</th>
     </tr>
     {% for test in include.testRun.tests %}
-    <tr>
-        {% if test.type == "compound" %}
-        <td class="clickable" data-rows="{{ test.tests | size }}">+</td>
-        {% else %}
-        <td></td>
-        {% endif %}
-        <td>{{ test.desc }}</td>
-        {% if test.result.value == "SUCCESS" %}
-        <td align="center" title="{{ test.result.cause }}"><i class="fa fa-check"></i></td>
-        {% else %}
-        <td align="center" title="{{ test.result.cause }}"><i class="fa fa-exclamation-triangle"></i></td>
-        {% endif %}
-        <td title="{% for sw in test.response.sws %}{{ sw }} {% endfor %}">{{ test.result.cause }}</td>
-    </tr>
-        {% if test.type == "compound" %}
-            {% for t in test.tests %}
-            <tr style="display: none;">
-                <td></td>
-                <td>{{ t.desc }}</td>
-                <td title="{{ t.result.cause }}">{{ t.result.value }}</td>
-                <td title="{% for sw in t.response.sws %}{{ sw }} {% endfor %}">{{ t.result.cause }}</td>
-            </tr>
-            {% endfor %}
-        {% endif %}
+    {% include result_row.html test=test depth=1 %}
     {% endfor %}
 </table>
 
-
 <script>
+    /**
+     *
+     */
     $(".clickable").click(function (btn) {
-        var tests = $(this).attr("data-rows");
-        $(this).parent().nextAll().each(function () {
+        var parent = $(this).parent();
+        var parent_depth = parent.data("depth");
+        var tests = $(this).data("rows");
+
+        parent.nextAll().each(function () {
             if (tests > 0) {
-                $(this).toggle();
-                tests--;
+                if ($(this).data("depth") === parent_depth + 1) {
+                    $(this).toggle(200);
+                    tests--;
+                }
             }
         });
+
         if (btn.currentTarget.innerHTML === "+") {
             btn.currentTarget.innerHTML = "-";
         } else {
             btn.currentTarget.innerHTML = "+";
         }
     });
+    var common_tooltip = {
+        position: {
+            my: "left center",
+            at: "right center"
+        },
+        show: null,
+        hide: {
+            effect: ""
+        },
+        close: function( event, ui ) {
+            ui.tooltip.hover(
+                function () {
+                    $(this).stop(true).fadeTo(400, 1);
+                },
+                function () {
+                    $(this).fadeOut("400", function(){ $(this).remove(); })
+                }
+            );
+        }
+    };
+    /**
+     *
+     */
+    $(".sw-tooltip").tooltip($.extend({}, common_tooltip, {
+        items: ".sw-tooltip",
+        content: function () {
+            var natural_sw = $(this).data("natural-sw").replace(/'/g, "");
+            var sws = $(this).data("sws").replace(/'/g, "").split(",");
+            sws.pop();
+            sws = sws.map(parseInt).map(function (t) { return "0x" + t.toString(16); }).join(" ");
+            var nat_sws = $("<span></span>").text("0x" + parseInt(natural_sw).toString(16));
+            var ectester_sws = $("<span></span>").text(sws);
+            var natural_label = $("<b>Natural SW:</b>");
+            var sws_label = $("<b>SWs:</b>");
+            return natural_label.add(nat_sws).add($("</br>")).add(sws_label).add(ectester_sws);
+        }
+    }));
+    $(".cause-tooltip").tooltip($.extend({}, common_tooltip, {
+        items: ".cause-tooltip",
+        content: function () {
+            return $(this).data("cause");
+        }
+    }));
 </script>

@@ -15,12 +15,12 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 38047207
-        natural_sw: -28672
+        duration: 73765936
+        natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
-        - -28672
-        - -28672
+        - 36864
+        - 36864
         successful: true
         desc: Allocated both keypairs 163b ALG_EC_F2M
       type: simple
@@ -32,12 +32,12 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 143863
-        natural_sw: -28672
+        duration: 289254
+        natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
-        - -28672
-        - -28672
+        - 36864
+        - 36864
         successful: true
         desc: Set external curve parameters on both keypairs
       type: simple
@@ -54,11 +54,11 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 56370
-        natural_sw: -28672
+        duration: 105640
+        natural_sw: 36864
         apdu: 90 00 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: Set external privkey parameters on local keypair
       type: simple
@@ -71,11 +71,11 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 47637
-        natural_sw: -28672
+        duration: 67297
+        natural_sw: 36864
         apdu: 90 00 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: Set external pubkey parameters on remote keypair
       type: simple
@@ -89,12 +89,12 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 34763084
-        natural_sw: -28672
+        duration: 49947891
+        natural_sw: 36864
         apdu: 90 00 00 14 10 f4 dd cf 79 c2 3f d7 dc 11 56 3b f1 8b 2b e7 5a 13 9e
           4f 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: ECDHC of remote pubkey and local privkey(unchanged point)
       type: simple
@@ -108,11 +108,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 1034214
-      natural_sw: -28672
+      duration: 1129744
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -129,8 +129,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 856547
-        natural_sw: -28672
+        duration: 854264
+        natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
         - 1
@@ -146,8 +146,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 124857
-        natural_sw: -28672
+        duration: 130691
+        natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
         - 3811
@@ -170,8 +170,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 76516
-        natural_sw: -28672
+        duration: 83966
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -187,8 +187,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 61846
-        natural_sw: -28672
+        duration: 66294
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -205,8 +205,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 77404
-        natural_sw: -28672
+        duration: 84653
+        natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
@@ -223,11 +223,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 82607
-      natural_sw: -28672
+      duration: 91170
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -244,8 +244,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 204302
-        natural_sw: -28672
+        duration: 258211
+        natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
         - 1
@@ -261,8 +261,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 82325
-        natural_sw: -28672
+        duration: 88900
+        natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
         - 3811
@@ -286,8 +286,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 72483
-        natural_sw: -28672
+        duration: 73340
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -303,8 +303,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 67634
-        natural_sw: -28672
+        duration: 65010
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -322,8 +322,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 67832
-        natural_sw: -28672
+        duration: 64778
+        natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
@@ -340,11 +340,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 85351
-      natural_sw: -28672
+      duration: 95462
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -361,8 +361,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 198655
-        natural_sw: -28672
+        duration: 237914
+        natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
         - 1
@@ -378,8 +378,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 871297
-        natural_sw: -28672
+        duration: 1006870
+        natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
         - 3811
@@ -407,8 +407,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 66817
-        natural_sw: -28672
+        duration: 99127
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -425,8 +425,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 62444
-        natural_sw: -28672
+        duration: 73300
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -445,8 +445,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 67977
-        natural_sw: -28672
+        duration: 75869
+        natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
@@ -463,11 +463,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 83974
-      natural_sw: -28672
+      duration: 152254
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -484,8 +484,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 210372
-        natural_sw: -28672
+        duration: 362412
+        natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
         - 1
@@ -501,8 +501,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 556154
-        natural_sw: -28672
+        duration: 785349
+        natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
         - 3811
@@ -534,8 +534,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 62947
-        natural_sw: -28672
+        duration: 404685
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -553,8 +553,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 62845
-        natural_sw: -28672
+        duration: 87635
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -575,8 +575,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 57881
-        natural_sw: -28672
+        duration: 74116
+        natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
@@ -593,11 +593,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 84798
-      natural_sw: -28672
+      duration: 129276
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -614,8 +614,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 196965
-        natural_sw: -28672
+        duration: 255048
+        natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
         - 1
@@ -631,8 +631,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 74169
-        natural_sw: -28672
+        duration: 92221
+        natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
         - 3811
@@ -655,8 +655,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 61781
-        natural_sw: -28672
+        duration: 80246
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -672,8 +672,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 60705
-        natural_sw: -28672
+        duration: 66050
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -690,8 +690,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 76755
-        natural_sw: -28672
+        duration: 83021
+        natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
@@ -708,11 +708,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 80597
-      natural_sw: -28672
+      duration: 99006
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -729,12 +729,12 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 2963495
-        natural_sw: -28672
+        duration: 3116212
+        natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
-        - -28672
-        - -28672
+        - 36864
+        - 36864
         successful: true
         desc: Allocated both keypairs 256b ALG_EC_FP
       type: simple
@@ -746,12 +746,12 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 118719
-        natural_sw: -28672
+        duration: 139657
+        natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
-        - -28672
-        - -28672
+        - 36864
+        - 36864
         successful: true
         desc: Set external curve parameters on both keypairs
       type: simple
@@ -771,11 +771,11 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 52631
-        natural_sw: -28672
+        duration: 70784
+        natural_sw: 36864
         apdu: 90 00 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: Set external privkey parameters on local keypair
       type: simple
@@ -788,11 +788,11 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 61075
-        natural_sw: -28672
+        duration: 102409
+        natural_sw: 36864
         apdu: 90 00 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: Set external pubkey parameters on remote keypair
       type: simple
@@ -808,12 +808,12 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 55374940
-        natural_sw: -28672
+        duration: 85453088
+        natural_sw: 36864
         apdu: 90 00 00 14 bd 4e da d9 61 4e 42 39 27 e3 ce 90 ed 33 01 0b 4d 6d 39
           9b 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: ECDH of remote pubkey and local privkey(unchanged point)
       type: simple
@@ -827,11 +827,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 78849
-      natural_sw: -28672
+      duration: 75906
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -848,8 +848,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 905038
-        natural_sw: -28672
+        duration: 3017849
+        natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
         - 1
@@ -865,8 +865,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 251324
-        natural_sw: -28672
+        duration: 833220
+        natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
         - 3811
@@ -895,8 +895,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 69707
-        natural_sw: -28672
+        duration: 66581
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -913,8 +913,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 58718
-        natural_sw: -28672
+        duration: 59964
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -933,8 +933,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 61804
-        natural_sw: -28672
+        duration: 4294647
+        natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
@@ -951,11 +951,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 108151
-      natural_sw: -28672
+      duration: 192170
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -972,8 +972,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 202260
-        natural_sw: -28672
+        duration: 8254600
+        natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
         - 1
@@ -989,8 +989,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 220896
-        natural_sw: -28672
+        duration: 801620
+        natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
         - 3811
@@ -1023,8 +1023,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 66196
-        natural_sw: -28672
+        duration: 70703
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -1042,8 +1042,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 57584
-        natural_sw: -28672
+        duration: 2693371
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -1063,8 +1063,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 57962
-        natural_sw: -28672
+        duration: 109697
+        natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
@@ -1081,11 +1081,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 44710
-      natural_sw: -28672
+      duration: 90029
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -1102,12 +1102,12 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 269773
-        natural_sw: -28672
+        duration: 464832
+        natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
-        - -28672
-        - -28672
+        - 36864
+        - 36864
         successful: true
         desc: Allocated both keypairs 163b ALG_EC_F2M
       type: simple
@@ -1119,12 +1119,12 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 69074
-        natural_sw: -28672
+        duration: 97065
+        natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
-        - -28672
-        - -28672
+        - 36864
+        - 36864
         successful: true
         desc: Set external curve parameters on both keypairs
       type: simple
@@ -1141,11 +1141,11 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 42901
-        natural_sw: -28672
+        duration: 74309
+        natural_sw: 36864
         apdu: 90 00 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: Set external privkey parameters on local keypair
       type: simple
@@ -1158,11 +1158,11 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 45794
-        natural_sw: -28672
+        duration: 125835
+        natural_sw: 36864
         apdu: 90 00 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: Set external pubkey parameters on remote keypair
       type: simple
@@ -1176,12 +1176,12 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 14271980
-        natural_sw: -28672
+        duration: 36932590
+        natural_sw: 36864
         apdu: 90 00 00 14 5e 13 84 ed 2d 3d 5e fc 77 e8 95 81 bb b4 67 93 4e cb 7b
           03 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: ECDHC of remote pubkey and local privkey(unchanged point)
       type: simple
@@ -1195,11 +1195,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 86439
-      natural_sw: -28672
+      duration: 4379086
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -1216,8 +1216,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 194437
-        natural_sw: -28672
+        duration: 2407986
+        natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
         - 1
@@ -1233,8 +1233,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 80428
-        natural_sw: -28672
+        duration: 4745816
+        natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
         - 3811
@@ -1257,8 +1257,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 61596
-        natural_sw: -28672
+        duration: 82466
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -1274,8 +1274,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 55265
-        natural_sw: -28672
+        duration: 54782
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -1292,8 +1292,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 52484
-        natural_sw: -28672
+        duration: 57776
+        natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
@@ -1310,11 +1310,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 71698
-      natural_sw: -28672
+      duration: 79931
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -1331,8 +1331,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 183680
-        natural_sw: -28672
+        duration: 169499
+        natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
         - 1
@@ -1348,8 +1348,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63530
-        natural_sw: -28672
+        duration: 62388
+        natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
         - 3811
@@ -1373,8 +1373,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 109999
-        natural_sw: -28672
+        duration: 50743
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -1390,8 +1390,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 57752
-        natural_sw: -28672
+        duration: 59791
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -1409,8 +1409,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 55128
-        natural_sw: -28672
+        duration: 51584
+        natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
@@ -1427,11 +1427,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 64687
-      natural_sw: -28672
+      duration: 89277
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -1448,8 +1448,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 160183
-        natural_sw: -28672
+        duration: 188139
+        natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
         - 1
@@ -1465,8 +1465,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 166514
-        natural_sw: -28672
+        duration: 68108
+        natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
         - 3811
@@ -1494,8 +1494,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 49731
-        natural_sw: -28672
+        duration: 57396
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -1512,8 +1512,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 48738
-        natural_sw: -28672
+        duration: 54260
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -1532,8 +1532,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 54613
-        natural_sw: -28672
+        duration: 58209
+        natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
@@ -1550,11 +1550,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 68103
-      natural_sw: -28672
+      duration: 105735
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -1571,8 +1571,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 159540
-        natural_sw: -28672
+        duration: 223504
+        natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
         - 1
@@ -1588,8 +1588,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 159828
-        natural_sw: -28672
+        duration: 76725
+        natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
         - 3811
@@ -1621,8 +1621,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 49435
-        natural_sw: -28672
+        duration: 73162
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -1640,8 +1640,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 74010
-        natural_sw: -28672
+        duration: 51650
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -1662,8 +1662,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 49850
-        natural_sw: -28672
+        duration: 57071
+        natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
@@ -1680,11 +1680,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 96210
-      natural_sw: -28672
+      duration: 1004038
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -1701,12 +1701,12 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 422073
-        natural_sw: -28672
+        duration: 571832
+        natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
-        - -28672
-        - -28672
+        - 36864
+        - 36864
         successful: true
         desc: Allocated both keypairs 192b ALG_EC_FP
       type: simple
@@ -1718,12 +1718,12 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 78254
-        natural_sw: -28672
+        duration: 11674608
+        natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
-        - -28672
-        - -28672
+        - 36864
+        - 36864
         successful: true
         desc: Set external curve parameters on both keypairs
       type: simple
@@ -1741,11 +1741,11 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 40991
-        natural_sw: -28672
+        duration: 63704
+        natural_sw: 36864
         apdu: 90 00 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: Set external privkey parameters on local keypair
       type: simple
@@ -1758,11 +1758,11 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 39989
-        natural_sw: -28672
+        duration: 39309
+        natural_sw: 36864
         apdu: 90 00 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: Set external pubkey parameters on remote keypair
       type: simple
@@ -1777,12 +1777,12 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 12128243
-        natural_sw: -28672
+        duration: 23042542
+        natural_sw: 36864
         apdu: 90 00 00 14 c9 f5 a4 4f 0e 78 42 67 9b ff f9 97 85 0a fa 05 cb df c5
           b3 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
       type: simple
@@ -1796,11 +1796,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 86992
-      natural_sw: -28672
+      duration: 67564
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -1817,8 +1817,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 170941
-        natural_sw: -28672
+        duration: 695849
+        natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
         - 1
@@ -1834,8 +1834,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 67536
-        natural_sw: -28672
+        duration: 66170
+        natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
         - 3811
@@ -1858,8 +1858,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 46162
-        natural_sw: -28672
+        duration: 47418
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -1875,8 +1875,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 44692
-        natural_sw: -28672
+        duration: 43486
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -1893,8 +1893,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 64495
-        natural_sw: -28672
+        duration: 69272
+        natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
@@ -1911,11 +1911,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 80167
-      natural_sw: -28672
+      duration: 77482
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -1932,12 +1932,12 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 243300
-        natural_sw: -28672
+        duration: 1048504
+        natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
-        - -28672
-        - -28672
+        - 36864
+        - 36864
         successful: true
         desc: Allocated both keypairs 256b ALG_EC_FP
       type: simple
@@ -1949,12 +1949,12 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 67595
-        natural_sw: -28672
+        duration: 101061
+        natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
-        - -28672
-        - -28672
+        - 36864
+        - 36864
         successful: true
         desc: Set external curve parameters on both keypairs
       type: simple
@@ -1974,11 +1974,11 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 36189
-        natural_sw: -28672
+        duration: 51416
+        natural_sw: 36864
         apdu: 90 00 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: Set external privkey parameters on local keypair
       type: simple
@@ -1991,11 +1991,11 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 34864
-        natural_sw: -28672
+        duration: 43040
+        natural_sw: 36864
         apdu: 90 00 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: Set external pubkey parameters on remote keypair
       type: simple
@@ -2010,12 +2010,12 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 19744608
-        natural_sw: -28672
+        duration: 22348552
+        natural_sw: 36864
         apdu: 90 00 00 14 38 1a e0 83 bf 9f f3 bb 49 73 0a 96 d4 e5 5a ab ae 1c 42
           da 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
       type: simple
@@ -2029,11 +2029,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 86641
-      natural_sw: -28672
+      duration: 440454
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -2050,8 +2050,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 158545
-        natural_sw: -28672
+        duration: 268949
+        natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
         - 1
@@ -2067,8 +2067,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 56298
-        natural_sw: -28672
+        duration: 68223
+        natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
         - 3811
@@ -2097,8 +2097,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 37664
-        natural_sw: -28672
+        duration: 46201
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -2115,8 +2115,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 37572
-        natural_sw: -28672
+        duration: 43792
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -2135,8 +2135,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 49208
-        natural_sw: -28672
+        duration: 57321
+        natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
@@ -2153,11 +2153,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 63785
-      natural_sw: -28672
+      duration: 63532
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -2174,8 +2174,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 159988
-        natural_sw: -28672
+        duration: 156252
+        natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
         - 1
@@ -2191,8 +2191,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 85146
-        natural_sw: -28672
+        duration: 567032
+        natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
         - 3811
@@ -2225,8 +2225,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 53272
-        natural_sw: -28672
+        duration: 588804
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -2244,8 +2244,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 44721
-        natural_sw: -28672
+        duration: 68416
+        natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
         - 3811
@@ -2265,8 +2265,8 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 58617
-        natural_sw: -28672
+        duration: 58921
+        natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
@@ -2283,11 +2283,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 95659
-      natural_sw: -28672
+      duration: 100055
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -2304,12 +2304,12 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 372065
-        natural_sw: -28672
+        duration: 508279
+        natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
-        - -28672
-        - -28672
+        - 36864
+        - 36864
         successful: true
         desc: Allocated both keypairs 160b ALG_EC_FP
       type: simple
@@ -2321,12 +2321,12 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 68622
-        natural_sw: -28672
+        duration: 91433
+        natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
-        - -28672
-        - -28672
+        - 36864
+        - 36864
         successful: true
         desc: Set external curve parameters on both keypairs
       type: simple
@@ -2343,11 +2343,11 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 55549
-        natural_sw: -28672
+        duration: 372432
+        natural_sw: 36864
         apdu: 90 00 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: Set external privkey parameters on local keypair
       type: simple
@@ -2360,11 +2360,11 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 34108
-        natural_sw: -28672
+        duration: 50789
+        natural_sw: 36864
         apdu: 90 00 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: Set external pubkey parameters on remote keypair
       type: simple
@@ -2379,12 +2379,12 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7804918
-        natural_sw: -28672
+        duration: 8666780
+        natural_sw: 36864
         apdu: 90 00 00 14 62 c1 dc 07 28 c2 1c bf 21 6f 98 26 4e 1c 74 64 cb 1e 26
           59 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: ECDH of remote pubkey and local privkey(unchanged point)
       type: simple
@@ -2398,11 +2398,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 60063
-      natural_sw: -28672
+      duration: 72128
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple
@@ -2419,12 +2419,12 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 240001
-        natural_sw: -28672
+        duration: 309814
+        natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
-        - -28672
-        - -28672
+        - 36864
+        - 36864
         successful: true
         desc: Allocated both keypairs 163b ALG_EC_F2M
       type: simple
@@ -2436,12 +2436,12 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 95855
-        natural_sw: -28672
+        duration: 1395406
+        natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
-        - -28672
-        - -28672
+        - 36864
+        - 36864
         successful: true
         desc: Set external curve parameters on both keypairs
       type: simple
@@ -2458,11 +2458,11 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 36042
-        natural_sw: -28672
+        duration: 83224
+        natural_sw: 36864
         apdu: 90 00 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: Set external privkey parameters on local keypair
       type: simple
@@ -2475,11 +2475,11 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 44946
-        natural_sw: -28672
+        duration: 1086367
+        natural_sw: 36864
         apdu: 90 00 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: Set external pubkey parameters on remote keypair
       type: simple
@@ -2493,12 +2493,12 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 8686776
-        natural_sw: -28672
+        duration: 15403385
+        natural_sw: 36864
         apdu: 90 00 00 14 13 13 2f 80 88 d6 0f 9f e0 d9 55 ae 04 c9 d2 0d a8 29 a3
           8b 90 00
         sws:
-        - -28672
+        - 36864
         successful: true
         desc: ECDH of remote pubkey and local privkey(unchanged point)
       type: simple
@@ -2512,11 +2512,11 @@ testRun:
       ok: true
       value: SUCCESS
     response:
-      duration: 116227
-      natural_sw: -28672
+      duration: 2258529
+      natural_sw: 36864
       apdu: 90 00 90 00
       sws:
-      - -28672
+      - 36864
       successful: true
       desc: Requested JCSystem object deletion
     type: simple

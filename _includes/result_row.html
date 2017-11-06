@@ -1,0 +1,33 @@
+
+{% capture ok %}
+{% if include.test.result.ok == true %}
+<td align="center" class="tooltip cause-tooltip" data-cause="{{ include.test.result.cause }}"><i class="fa fa-check"></i></td>
+{% else %}
+<td align="center" class="tooltip cause-tooltip" data-cause="{{ include.test.result.cause }}"><i class="fa fa-exclamation-triangle"></i></td>
+{% endif %}
+{% endcapture %}
+
+{% assign color_val=include.depth | minus: 1 | times: 10 %}
+{% assign color_channel=255 | minus: color_val %}
+{% capture hidden %}{% if include.depth > 1 %}display: none;{% endif %}{% endcapture %}
+{% capture color %}background-color: rgb({{color_channel}},{{color_channel}},{{color_channel}});{% endcapture %}
+
+{% if include.test.type == "simple" %}
+<tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
+    <td></td>
+    {{ ok }}
+    <td>{{ include.test.desc }}</td>
+    <td class="tooltip sw-tooltip" data-natural-sw="'{{ include.test.response.natural_sw }}'" data-sws="'{{ include.test.response.sws | join: ',' }}'">{{ include.test.result.value }}</td>
+</tr>
+{% else %}
+<tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
+    <td class="clickable" data-rows="{{ include.test.tests | size }}">+</td>
+    {{ ok }}
+    <td>{{ include.test.desc }}</td>
+    <td>{{ include.test.result.value }}</td>
+</tr>
+{% assign new_depth=include.depth | plus: 1 %}
+{% for test in include.test.tests %}
+    {% include result_row.html test=test depth=new_depth %}
+{% endfor %}
+{% endif %}
