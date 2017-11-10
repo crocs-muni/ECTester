@@ -104,7 +104,12 @@
         <echo message="Packaging ${application.title} into a single JAR at ${store.jar}"/>
 
         <tempfile property="temp.file" destDir="${java.io.tmpdir}" suffix=".jar"/>
+        <tempfile property="temp.previous_jar" destdir="${java.io.tmpdir}" suffix=".jar"/>
 
+        <copy file="${store.jar}" tofile="${temp.previous_jar}" failonerror="false"/>
+        <echo message="Backed up ${store.jar} into ${temp.previous_jar}"/>
+
+        <delete file="${store.jar}" failonerror="false"/>
         <jar destfile="${temp.file}" filesetmanifest="skip">
             <zipgroupfileset dir="dist" includes="*.jar"/>
             <zipgroupfileset dir="dist/lib" includes="*.jar"/>
@@ -120,5 +125,6 @@
         </zip>
 
         <delete file="${temp.file}"/>
+        <delete file="${temp.previous_jar}"/>
     </target>
 </project>

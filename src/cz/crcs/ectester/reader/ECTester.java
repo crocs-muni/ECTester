@@ -47,6 +47,7 @@ import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH
  *
  * @author Petr Svenda petr@svenda.com
  * @author Jan Jancar johny@neuromancer.sk
+ * @version v0.1.0
  */
 public class ECTester {
 
@@ -58,8 +59,11 @@ public class ECTester {
     private Config cfg;
 
     private Options opts = new Options();
-    private static final String CLI_HEADER = "\nECTester, a javacard Elliptic Curve Cryptograhy support tester/utility.\n\n";
-    private static final String CLI_FOOTER = "\nMIT Licensed\nCopyright (c) 2016-2017 Petr Svenda <petr@svenda.com>";
+    private static final String VERSION = "v0.1.0";
+    private static final String DESCRIPTION = "ECTester " + VERSION + ", a javacard Elliptic Curve Cryptograhy support tester/utility.";
+    private static final String LICENSE = "MIT Licensed\nCopyright (c) 2016-2017 Petr Svenda <petr@svenda.com>";
+    private static final String CLI_HEADER = "\n" + DESCRIPTION + "\n\n";
+    private static final String CLI_FOOTER = "\n" + LICENSE;
 
     private static final byte[] SELECT_ECTESTERAPPLET = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x0a,
             (byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x65, (byte) 0x72, (byte) 0x30, (byte) 0x31};
@@ -73,6 +77,10 @@ public class ECTester {
             //if help, print and quit
             if (cli.hasOption("help")) {
                 help();
+                return;
+            } else if (cli.hasOption("version")) {
+                System.out.println(DESCRIPTION);
+                System.out.println(LICENSE);
                 return;
             }
             cfg = new Config();
@@ -200,6 +208,7 @@ public class ECTester {
     private CommandLine parseArgs(String[] args) throws ParseException {
         /*
          * Actions:
+         * -V / --version
          * -h / --help
          * -e / --export
          * -g / --generate [amount]
@@ -242,6 +251,7 @@ public class ECTester {
          */
         OptionGroup actions = new OptionGroup();
         actions.setRequired(true);
+        actions.addOption(Option.builder("V").longOpt("version").desc("Print version info.").build());
         actions.addOption(Option.builder("h").longOpt("help").desc("Print help.").build());
         actions.addOption(Option.builder("ln").longOpt("list-named").desc("Print the list of supported named curves and keys.").hasArg().argName("what").optionalArg(true).build());
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
