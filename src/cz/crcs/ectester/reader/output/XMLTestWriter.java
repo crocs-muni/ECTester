@@ -1,9 +1,11 @@
 package cz.crcs.ectester.reader.output;
 
+import cz.crcs.ectester.common.test.CompoundTest;
 import cz.crcs.ectester.reader.Util;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
-import cz.crcs.ectester.reader.test.Test;
+import cz.crcs.ectester.common.test.Test;
+import cz.crcs.ectester.reader.test.SimpleTest;
 import cz.crcs.ectester.reader.test.TestSuite;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -89,13 +91,13 @@ public class XMLTestWriter implements TestWriter {
     private Element testElement(Test t) {
         Element testElem = doc.createElement("test");
 
-        if (t instanceof Test.Simple) {
-            Test.Simple test = (Test.Simple) t;
+        if (t instanceof SimpleTest) {
+            SimpleTest test = (SimpleTest) t;
             testElem.setAttribute("type", "simple");
             testElem.appendChild(commandElement(test.getCommand()));
             testElem.appendChild(responseElement(test.getResponse()));
-        } else if (t instanceof Test.Compound) {
-            Test.Compound test = (Test.Compound) t;
+        } else if (t instanceof CompoundTest) {
+            CompoundTest test = (CompoundTest) t;
             testElem.setAttribute("type", "compound");
             for (Test innerTest : test.getTests()) {
                 testElem.appendChild(testElement(innerTest));

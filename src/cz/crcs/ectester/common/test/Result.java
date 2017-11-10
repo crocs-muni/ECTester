@@ -1,6 +1,8 @@
-package cz.crcs.ectester.reader.test;
+package cz.crcs.ectester.common.test;
 
 /**
+ * A Result of a Test. Has a Value and an optional String cause.
+ *
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class Result {

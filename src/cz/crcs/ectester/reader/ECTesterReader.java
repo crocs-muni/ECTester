@@ -23,11 +23,12 @@ package cz.crcs.ectester.reader;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
-import cz.crcs.ectester.data.EC_Store;
-import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.common.ec.EC_Category;
 import cz.crcs.ectester.common.ec.EC_Data;
 import cz.crcs.ectester.common.ec.EC_Params;
+import cz.crcs.ectester.common.test.TestException;
+import cz.crcs.ectester.data.EC_Store;
+import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.output.*;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.test.*;
@@ -187,7 +188,7 @@ public class ECTesterReader {
             System.err.println("File " + fnfe.getMessage() + " not found.");
         } catch (ParseException | IOException ex) {
             System.err.println(ex.getMessage());
-        } catch (CardException ex) {
+        } catch (CardException | TestException ex) {
             if (logger != null)
                 logger.println(ex.getMessage());
         } catch (ParserConfigurationException e) {
@@ -436,7 +437,7 @@ public class ECTesterReader {
      * @throws CardException if APDU transmission fails
      * @throws IOException   if an IO error occurs when writing to key file.
      */
-    private void test() throws IOException, CardException {
+    private void test() throws IOException, TestException {
         TestSuite suite;
 
         switch (cfg.testSuite) {

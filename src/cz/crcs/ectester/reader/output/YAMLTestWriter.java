@@ -1,9 +1,11 @@
 package cz.crcs.ectester.reader.output;
 
+import cz.crcs.ectester.common.test.CompoundTest;
 import cz.crcs.ectester.reader.Util;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
-import cz.crcs.ectester.reader.test.Test;
+import cz.crcs.ectester.common.test.Test;
+import cz.crcs.ectester.reader.test.SimpleTest;
 import cz.crcs.ectester.reader.test.TestSuite;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -64,13 +66,13 @@ public class YAMLTestWriter implements TestWriter {
     private Map<String, Object> testObject(Test t) {
         Map<String, Object> testObj = new HashMap<>();
 
-        if (t instanceof Test.Simple) {
-            Test.Simple test = (Test.Simple) t;
+        if (t instanceof SimpleTest) {
+            SimpleTest test = (SimpleTest) t;
             testObj.put("type", "simple");
             testObj.put("command", commandObject(test.getCommand()));
             testObj.put("response", responseObject(test.getResponse()));
-        } else if (t instanceof Test.Compound) {
-            Test.Compound test = (Test.Compound) t;
+        } else if (t instanceof CompoundTest) {
+            CompoundTest test = (CompoundTest) t;
             testObj.put("type", "compound");
             List<Map<String, Object>> tests = new LinkedList<>();
             for (Test innerTest : test.getTests()) {

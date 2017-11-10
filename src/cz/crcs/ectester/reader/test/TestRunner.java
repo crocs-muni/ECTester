@@ -1,8 +1,8 @@
 package cz.crcs.ectester.reader.test;
 
+import cz.crcs.ectester.common.test.Test;
+import cz.crcs.ectester.common.test.TestException;
 import cz.crcs.ectester.reader.output.TestWriter;
-
-import javax.smartcardio.CardException;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -16,7 +16,7 @@ public class TestRunner {
         this.writer = writer;
     }
 
-    public void run() throws CardException {
+    public void run() throws TestException {
         writer.begin(suite);
         for (Test t : suite.getTests()) {
             if (!t.hasRun()) {

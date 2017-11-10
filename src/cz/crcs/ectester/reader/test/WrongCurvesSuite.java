@@ -7,7 +7,7 @@ import javacard.security.KeyPair;
 
 import java.io.IOException;
 
-import static cz.crcs.ectester.reader.test.Result.ExpectedValue;
+import static cz.crcs.ectester.common.test.Result.ExpectedValue;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk

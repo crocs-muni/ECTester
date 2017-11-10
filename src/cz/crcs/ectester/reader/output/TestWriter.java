@@ -1,6 +1,6 @@
 package cz.crcs.ectester.reader.output;
 
-import cz.crcs.ectester.reader.test.Test;
+import cz.crcs.ectester.common.test.Test;
 import cz.crcs.ectester.reader.test.TestSuite;
 
 /**

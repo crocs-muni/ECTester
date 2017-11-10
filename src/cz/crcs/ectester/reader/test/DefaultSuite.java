@@ -10,7 +10,7 @@ import javacard.security.KeyPair;
 
 import java.io.IOException;
 
-import static cz.crcs.ectester.reader.test.Result.ExpectedValue;
+import static cz.crcs.ectester.common.test.Result.ExpectedValue;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -23,7 +23,7 @@ public class DefaultSuite extends TestSuite {
 
     @Override
     public void setup(CardMngr cardManager) throws IOException {
-        tests.add(new Test.Simple(new Command.Support(cardManager), ExpectedValue.ANY));
+        tests.add(new SimpleTest(new Command.Support(cardManager), ExpectedValue.ANY));
         if (cfg.namedCurve != null) {
             String desc = "Default tests over the " + cfg.namedCurve + " curve category.";
             if (cfg.primeField) {
@@ -59,11 +59,11 @@ public class DefaultSuite extends TestSuite {
     }
 
     private void defaultTests(CardMngr cardManager, short keyLength, byte keyType) throws IOException {
-        tests.add(new Test.Simple(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, keyType), ExpectedValue.SUCCESS));
+        tests.add(new SimpleTest(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, keyType), ExpectedValue.SUCCESS));
         Command curve = Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_BOTH, keyLength, keyType);
         if (curve != null)
-            tests.add(new Test.Simple(curve, ExpectedValue.SUCCESS));
+            tests.add(new SimpleTest(curve, ExpectedValue.SUCCESS));
         tests.add(defaultCurveTests(cardManager, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.ANY, ExpectedValue.SUCCESS, "Default tests."));
-        tests.add(new Test.Simple(new Command.Cleanup(cardManager), ExpectedValue.ANY));
+        tests.add(new SimpleTest(new Command.Cleanup(cardManager), ExpectedValue.ANY));
     }
 }
