@@ -2,6 +2,14 @@
 
 Tests support and behavior of smartcards with JavaCard platform with focus on Eliptic curves (`TYPE_EC_FP` and `TYPE_EC_F2M`).
 
+## Build
+
+ECTester uses ant.
+```bash
+ant package               # To build the reader tool (jar).
+ant -f jcbuild.xml build  # To build the applet (cap).
+```
+
 ## Usage
 
 1. Upload `!uploader/ectester.cap` using your favorite tool (e.g., [GlobalPlatformPro tool](https://github.com/martinpaljak/GlobalPlatform))
