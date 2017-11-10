@@ -1,15 +1,11 @@
 package cz.crcs.ectester.reader;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
-import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_PACE_GM;
-import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH;
-import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DHC;
-import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DHC_PLAIN;
-import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH_PLAIN;
-import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY;
 import cz.crcs.ectester.applet.EC_Consts;
 import javacard.framework.ISO7816;
 import javacard.security.CryptoException;
+
+import static cz.crcs.ectester.applet.ECTesterApplet.*;
 
 /**
  * Utility class, some byte/hex manipulation, convenient byte[] methods.
@@ -349,9 +345,9 @@ public class Util {
         }
         return algo;
     }
-    
+
     public static String getKATypeString(byte kaType) {
-        String kaTypeString = "unknown";
+        String kaTypeString;
         switch (kaType) {
             case KeyAgreement_ALG_EC_SVDP_DH:
                 kaTypeString = "ALG_EC_SVDP_DH";
@@ -373,7 +369,7 @@ public class Util {
                 break;
             default:
                 kaTypeString = "unknown";
-        }        
+        }
         return kaTypeString;
     }
 }

@@ -57,8 +57,8 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     public static final byte INS_CLEANUP = (byte) 0x73;
     public static final byte INS_SUPPORT = (byte) 0x74;
     public static final byte INS_ALLOCATE_KA = (byte) 0x75;
-    
-            
+
+
     // PARAMETERS for P1 and P2
     public static final byte KEYPAIR_LOCAL = (byte) 0x01;
     public static final byte KEYPAIR_REMOTE = (byte) 0x02;
@@ -72,10 +72,10 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     public static final short SW_KEYPAIR_NULL = (short) 0x0ee3;
     public static final short SW_KA_NULL = (short) 0x0ee4;
     public static final short SW_SIGNATURE_NULL = (short) 0x0ee5;
-    public static final short SW_OBJECT_NULL = (short) 0x0ee6;    
+    public static final short SW_OBJECT_NULL = (short) 0x0ee6;
     public static final short SW_KA_UNSUPPORTED = (short) 0x0ee7;
 
-    
+
     // Class javacard.security.KeyAgreement
     // javacard.security.KeyAgreement Fields:
     public static final byte KeyAgreement_ALG_EC_SVDP_DH = 1;
@@ -86,7 +86,7 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     public static final byte KeyAgreement_ALG_EC_SVDP_DHC_PLAIN = 4;
     public static final byte KeyAgreement_ALG_EC_PACE_GM = 5;
     public static final byte KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY = 6;
-    public static final byte KeyAgreement_ALG_DH_PLAIN = 7;    
+    public static final byte KeyAgreement_ALG_DH_PLAIN = 7;
 
 
     private static final short ARRAY_LENGTH = (short) 0xff;
@@ -163,7 +163,7 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
 
             short length = 0;
             switch (ins) {
-                case INS_ALLOCATE_KA: 
+                case INS_ALLOCATE_KA:
                     length = insAllocateKA(apdu);
                     break;
                 case INS_ALLOCATE:
@@ -208,7 +208,7 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
             apdu.setOutgoingAndSend((short) 0, length);
         } else ISOException.throwIt(ISO7816.SW_CLA_NOT_SUPPORTED);
     }
-    
+
     /**
      * Allocates KeyAgreement object. returns allocate SW
      *
@@ -235,18 +235,18 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
                 sw = SW_KA_UNSUPPORTED;
                 break;
         }
-*/        
+*/
         // Allocate given type into both DH and DHC objects
         short sw = keyTester.allocateECDH(kaType);
         short offset = 0;
         Util.setShort(apdu.getBuffer(), offset, sw);
         offset += 2;
-        
+
         //sw = keyTester.allocateECDHC(kaType);
         Util.setShort(apdu.getBuffer(), offset, sw);
         offset += 2;
         return offset;
-    }    
+    }
     /**
      * Allocates local and remote keyPairs.
      * returns allocate SWs
@@ -422,13 +422,15 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     }
 
     /**
+     * Performs ECDH, directly between the privkey specified in P1(local/remote) and the raw data
      *
      * @param apdu P1   = byte privkey (KEYPAIR_*)
-     * @return     P2   = byte export (EXPORT_TRUE || EXPORT_FALSE)
+     *             P2   = byte export (EXPORT_TRUE || EXPORT_FALSE)
      *             DATA = short corruption (EC_Consts.CORRUPTION_* | ...)
      *             byte type (EC_Consts.KA_* | ...)
      *             short length
      *             byte[] pubkey
+     * @return length of response
      */
     private short insECDH_direct(APDU apdu) {
         byte privkey = apduArray[ISO7816.OFFSET_P1];
