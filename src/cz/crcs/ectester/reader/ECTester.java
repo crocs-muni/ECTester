@@ -22,19 +22,25 @@
 package cz.crcs.ectester.reader;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
-import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Store;
+import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.ec.EC_Category;
 import cz.crcs.ectester.reader.ec.EC_Data;
 import cz.crcs.ectester.reader.ec.EC_Params;
+import cz.crcs.ectester.reader.output.*;
+import cz.crcs.ectester.reader.response.Response;
+import cz.crcs.ectester.reader.test.*;
 import javacard.security.KeyPair;
 import org.apache.commons.cli.*;
 
 import javax.smartcardio.CardException;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
+
+import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH;
 
 /**
  * Reader part of ECTester, a tool for testing Elliptic curve support on javacards.
@@ -45,7 +51,9 @@ import java.util.*;
 public class ECTester {
 
     private CardMngr cardManager;
-    private DirtyLogger systemOutLogger;
+    private OutputLogger logger;
+    private TestWriter testWriter;
+    private ResponseWriter respWriter;
     private EC_Store dataStore;
     private Config cfg;
 
@@ -98,7 +106,25 @@ public class ECTester {
                 cardManager.send(SELECT_ECTESTERAPPLET);
             }
 
-            systemOutLogger = new DirtyLogger(cfg.log, true);
+            // Setup logger, testWriter and respWriter
+            logger = new OutputLogger(true, cfg.log);
+            if (cfg.format == null) {
+                testWriter = new TextTestWriter(logger.getPrintStream());
+            } else {
+                switch (cfg.format) {
+                    case "text":
+                        testWriter = new TextTestWriter(logger.getPrintStream());
+                        break;
+                    case "xml":
+                        testWriter = new XMLTestWriter(logger.getOutputStream());
+                        break;
+                    case "yaml":
+                    case "yml":
+                        testWriter = new YAMLTestWriter(logger.getPrintStream());
+                        break;
+                }
+            }
+            respWriter = new ResponseWriter(logger.getPrintStream());
 
             //do action
             if (cli.hasOption("export")) {
@@ -115,7 +141,7 @@ public class ECTester {
 
             //disconnect
             cardManager.disconnectFromCard();
-            systemOutLogger.close();
+            logger.close();
 
         } catch (MissingOptionException moex) {
             System.err.println("Missing required options, one of:");
@@ -154,11 +180,13 @@ public class ECTester {
         } catch (ParseException | IOException ex) {
             System.err.println(ex.getMessage());
         } catch (CardException ex) {
-            if (systemOutLogger != null)
-                systemOutLogger.println(ex.getMessage());
+            if (logger != null)
+                logger.println(ex.getMessage());
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
         } finally {
-            if (systemOutLogger != null)
-                systemOutLogger.flush();
+            if (logger != null)
+                logger.flush();
         }
     }
 
@@ -204,11 +232,13 @@ public class ECTester {
          *
          * -i / --input <input_file>
          * -o / --output <output_file>
+         *      --format <format>
          * -l / --log [log_file]
          *
          * -f / --fresh
          * -s / --simulate
          * -y / --yes
+         * -ka/ --ka-type <type>
          */
         OptionGroup actions = new OptionGroup();
         actions.setRequired(true);
@@ -216,11 +246,11 @@ public class ECTester {
         actions.addOption(Option.builder("ln").longOpt("list-named").desc("Print the list of supported named curves and keys.").hasArg().argName("what").optionalArg(true).build());
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate [amount] of EC keys.").hasArg().argName("amount").optionalArg(true).build());
-        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. [test_suite]:\n- default:\n- invalid:\n- wrong:\n- nonprime:\n- test-vectors:").hasArg().argName("test_suite").optionalArg(true).build());
+        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. [test_suite]:\n- default:\n- invalid:\n- wrong:\n- composite:\n- test-vectors:").hasArg().argName("test_suite").optionalArg(true).build());
         actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do ECDH, [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dhc").longOpt("ecdhc").desc("Do ECDHC, [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
-        
+
         opts.addOptionGroup(actions);
 
         OptionGroup size = new OptionGroup();
@@ -256,6 +286,7 @@ public class ECTester {
         opts.addOption(Option.builder("o").longOpt("output").desc("Output into file <output_file>.").hasArg().argName("output_file").build());
         opts.addOption(Option.builder("l").longOpt("log").desc("Log output into file [log_file].").hasArg().argName("log_file").optionalArg(true).build());
         opts.addOption(Option.builder("v").longOpt("verbose").desc("Turn on verbose logging.").build());
+        opts.addOption(Option.builder().longOpt("format").desc("Output format to use. One of: text,yml,xml.").hasArg().argName("format").build());
 
         opts.addOption(Option.builder("f").longOpt("fresh").desc("Generate fresh keys (set domain parameters before every generation).").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
@@ -325,7 +356,9 @@ public class ECTester {
         }
         sent.add(export);
 
-        systemOutLogger.println(Response.toString(sent));
+        for (Response r : sent) {
+            respWriter.outputResponse(r);
+        }
 
         EC_Params exported = new EC_Params(domain, export.getParams());
 
@@ -354,7 +387,7 @@ public class ECTester {
         while (generated < cfg.generateAmount || cfg.generateAmount == 0) {
             if ((cfg.fresh || generated == 0) && curve != null) {
                 Response fresh = curve.send();
-                systemOutLogger.println(fresh.toString());
+                respWriter.outputResponse(fresh);
             }
 
             Command.Generate generate = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL);
@@ -372,7 +405,7 @@ public class ECTester {
                     break;
                 }
             }
-            systemOutLogger.println(response.toString());
+            respWriter.outputResponse(response);
 
             String pub = Util.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_W), false);
             String priv = Util.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S), false);
@@ -382,7 +415,7 @@ public class ECTester {
             generated++;
         }
         Response cleanup = new Command.Cleanup(cardManager).send();
-        systemOutLogger.println(cleanup.toString());
+        respWriter.outputResponse(cleanup);
 
         keysFile.close();
     }
@@ -398,10 +431,10 @@ public class ECTester {
 
         switch (cfg.testSuite) {
             case "default":
-                suite = new TestSuite.Default(dataStore, cfg, systemOutLogger);
+                suite = new DefaultSuite(dataStore, cfg);
                 break;
             case "test-vectors":
-                suite = new TestSuite.TestVectors(dataStore, cfg, systemOutLogger);
+                suite = new TestVectorSuite(dataStore, cfg);
                 break;
             default:
                 // These tests are dangerous, prompt before them.
@@ -410,8 +443,8 @@ public class ECTester {
                 if (!cfg.yes) {
                     System.out.print("Do you want to proceed? (y/n): ");
                     Scanner in = new Scanner(System.in);
-                    String confirmation = in.nextLine();
-                    if (!Arrays.asList("yes", "YES", "y", "Y").contains(confirmation)) {
+                    String confirmation = in.nextLine().toLowerCase();
+                    if (!Arrays.asList("yes", "y").contains(confirmation)) {
                         return;
                     }
                     in.close();
@@ -420,13 +453,13 @@ public class ECTester {
 
                 switch (cfg.testSuite) {
                     case "wrong":
-                        suite = new TestSuite.Wrong(dataStore, cfg, systemOutLogger);
+                        suite = new WrongCurvesSuite(dataStore, cfg);
                         break;
-                    case "nonprime":
-                        suite = new TestSuite.NonPrime(dataStore, cfg, systemOutLogger);
+                    case "composite":
+                        suite = new CompositeCurvesSuite(dataStore, cfg);
                         break;
                     case "invalid":
-                        suite = new TestSuite.Invalid(dataStore, cfg, systemOutLogger);
+                        suite = new InvalidCurvesSuite(dataStore, cfg);
                         break;
                     default:
                         System.err.println("Unknown test suite.");
@@ -434,7 +467,10 @@ public class ECTester {
                 }
                 break;
         }
-        suite.run(cardManager);
+
+        TestRunner runner = new TestRunner(suite, testWriter);
+        suite.setup(cardManager);
+        runner.run();
     }
 
     /**
@@ -452,7 +488,9 @@ public class ECTester {
         if (curve != null)
             prepare.add(curve.send());
 
-        systemOutLogger.println(Response.toString(prepare));
+        for (Response r : prepare) {
+            respWriter.outputResponse(r);
+        }
 
         byte pubkey = (cfg.anyPublicKey || cfg.anyKey) ? ECTesterApplet.KEYPAIR_REMOTE : ECTesterApplet.KEYPAIR_LOCAL;
         byte privkey = (cfg.anyPrivateKey || cfg.anyKey) ? ECTesterApplet.KEYPAIR_REMOTE : ECTesterApplet.KEYPAIR_LOCAL;
@@ -476,7 +514,9 @@ public class ECTester {
 
             Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, cfg.ECDHKA).send();
             ecdh.add(perform);
-            systemOutLogger.println(Response.toString(ecdh));
+            for (Response r : ecdh) {
+                respWriter.outputResponse(r);
+            }
 
             if (!perform.successful() || !perform.hasSecret()) {
                 if (retry < 10) {
@@ -495,7 +535,7 @@ public class ECTester {
             ++done;
         }
         Response cleanup = new Command.Cleanup(cardManager).send();
-        systemOutLogger.println(cleanup.toString());
+        respWriter.outputResponse(cleanup);
 
         if (out != null)
             out.close();
@@ -533,7 +573,9 @@ public class ECTester {
         if (curve != null)
             prepare.add(curve.send());
 
-        systemOutLogger.println(Response.toString(prepare));
+        for (Response r : prepare) {
+            respWriter.outputResponse(r);
+        }
 
         FileWriter out = null;
         if (cfg.output != null) {
@@ -549,7 +591,9 @@ public class ECTester {
 
             Response.ECDSA perform = new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, data).send();
             ecdsa.add(perform);
-            systemOutLogger.println(Response.toString(ecdsa));
+            for (Response r : ecdsa) {
+                respWriter.outputResponse(r);
+            }
 
             if (!perform.successful() || !perform.hasSignature()) {
                 if (retry < 10) {
@@ -568,7 +612,7 @@ public class ECTester {
             ++done;
         }
         Response cleanup = new Command.Cleanup(cardManager).send();
-        systemOutLogger.println(cleanup.toString());
+        respWriter.outputResponse(cleanup);
 
         if (out != null)
             out.close();
@@ -614,8 +658,9 @@ public class ECTester {
         public boolean fresh = false;
         public boolean simulate = false;
         public boolean yes = false;
+        public String format;
 
-        //Action-related ions
+        //Action-related options
         public String listNamed;
         public String testSuite;
         public int generateAmount;
@@ -667,6 +712,13 @@ public class ECTester {
             if (cli.hasOption("list-named")) {
                 listNamed = cli.getOptionValue("list-named");
                 return true;
+            }
+
+            format = cli.getOptionValue("format", "text");
+            String formats[] = new String[]{"text", "xml", "yaml", "yml"};
+            if (!Arrays.asList(formats).contains(format)) {
+                System.err.println("Wrong output format " + format + ". Should be one of " + Arrays.toString(formats));
+                return false;
             }
 
             if ((key != null || namedKey != null) && (anyPublicKey || anyPrivateKey)) {
@@ -739,10 +791,9 @@ public class ECTester {
                 }
 
                 testSuite = cli.getOptionValue("test", "default").toLowerCase();
-                String[] tests = new String[]{"default", "nonprime", "invalid", "test-vectors", "wrong"};
-                List<String> testsList = Arrays.asList(tests);
-                if (!testsList.contains(testSuite)) {
-                    System.err.println("Unknown test case. Should be one of: " + Arrays.toString(tests));
+                String[] tests = new String[]{"default", "composite", "invalid", "test-vectors", "wrong"};
+                if (!Arrays.asList(tests).contains(testSuite)) {
+                    System.err.println("Unknown test suite " + testSuite + ". Should be one of: " + Arrays.toString(tests));
                     return false;
                 }
 

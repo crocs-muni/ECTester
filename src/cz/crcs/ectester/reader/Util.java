@@ -28,15 +28,19 @@ public class Util {
         array[offset] = (byte) ((value >> 8) & 0xFF);
     }
 
-    public static boolean compareBytes(byte[] one, int oneOffset, byte[] other, int otherOffset, int length) {
+    public static int diffBytes(byte[] one, int oneOffset, byte[] other, int otherOffset, int length) {
         for (int i = 0; i < length; ++i) {
             byte a = one[i + oneOffset];
             byte b = other[i + otherOffset];
             if (a != b) {
-                return false;
+                return i;
             }
         }
-        return true;
+        return length;
+    }
+
+    public static boolean compareBytes(byte[] one, int oneOffset, byte[] other, int otherOffset, int length) {
+        return diffBytes(one, oneOffset, other, otherOffset, length) == length;
     }
 
     public static boolean allValue(byte[] array, byte value) {
@@ -283,10 +287,10 @@ public class Util {
 
     public static String getSWString(short sw) {
         if (sw == ISO7816.SW_NO_ERROR) {
-            return "OK\t(0x9000)";
+            return "OK   (0x9000)";
         } else {
             String str = getSW(sw);
-            return String.format("fail\t(%s, 0x%04x)", str, sw);
+            return String.format("fail (%s, 0x%04x)", str, sw);
         }
     }
 

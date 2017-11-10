@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * A list of EC parameters, can contain a subset of the Fp/F2M, A, B, G, R, K, W, S parameters.
+ *
+ * The set of parameters is uniquely identified by a short bit string.
+ * The parameters can be exported to a byte array via <code>flatten()</code> or to a comma delimited
+ * string via <code>expand()</code>.
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class EC_Params extends EC_Data {

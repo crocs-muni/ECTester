@@ -3,6 +3,8 @@ package cz.crcs.ectester.reader.ec;
 import cz.crcs.ectester.applet.EC_Consts;
 
 /**
+ * An abstract-like EC key. Concrete implementations create a public and private keys.
+ *
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class EC_Key extends EC_Params {
@@ -20,11 +22,6 @@ public class EC_Key extends EC_Params {
         this.desc = desc;
     }
 
-    private EC_Key(String id, short mask, String curve) {
-        this(mask, curve);
-        this.id = id;
-    }
-
     private EC_Key(String id, short mask, String curve, String desc) {
         this(mask, curve, desc);
         this.id = id;
@@ -38,6 +35,9 @@ public class EC_Key extends EC_Params {
         return desc;
     }
 
+    /**
+     * An EC public key, contains the W parameter.
+     */
     public static class Public extends EC_Key {
 
         public Public(String curve) {
@@ -48,12 +48,19 @@ public class EC_Key extends EC_Params {
             super(EC_Consts.PARAMETER_W, curve, desc);
         }
 
+        public Public(String id, String curve, String desc) {
+            super(id, EC_Consts.PARAMETER_W, curve, desc);
+        }
+
         @Override
         public String toString() {
-            return "EC Public key, over " + getCurve() + (getDesc() == null ? "" : ": " + getDesc());
+            return "<" + getId() + "> EC Public key, over " + getCurve() + (getDesc() == null ? "" : ": " + getDesc());
         }
     }
 
+    /**
+     * An EC private key, contains the S parameter.
+     */
     public static class Private extends EC_Key {
 
         public Private(String curve) {
@@ -62,6 +69,10 @@ public class EC_Key extends EC_Params {
 
         public Private(String curve, String desc) {
             super(EC_Consts.PARAMETER_S, curve, desc);
+        }
+
+        public Private(String id, String curve, String desc) {
+            super(id, EC_Consts.PARAMETER_S, curve, desc);
         }
 
         @Override

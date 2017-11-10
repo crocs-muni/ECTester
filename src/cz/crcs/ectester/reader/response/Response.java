@@ -1,13 +1,13 @@
-package cz.crcs.ectester.reader;
+package cz.crcs.ectester.reader.response;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
-import cz.crcs.ectester.reader.ec.EC_Curve;
+import cz.crcs.ectester.reader.Util;
+import cz.crcs.ectester.reader.ec.EC_Data;
 import javacard.framework.ISO7816;
 import javacard.security.KeyPair;
 
 import javax.smartcardio.ResponseAPDU;
-import java.util.List;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -19,15 +19,15 @@ public abstract class Response {
     private short[] sws;
     private int numSW = 0;
     private byte[][] params;
-    //TODO replace params with EC_Data?
     private boolean success = true;
+    private boolean error = false;
 
-    protected Response(ResponseAPDU response, long time) {
+    public Response(ResponseAPDU response, long time) {
         this.resp = response;
         this.time = time;
     }
 
-    protected void parse(int numSW, int numParams) {
+    void parse(int numSW, int numParams) {
         this.numSW = numSW;
         this.sws = new short[numSW];
 
@@ -45,22 +45,28 @@ public abstract class Response {
                 }
             } else {
                 success = false;
+                error = true;
             }
         }
 
-        if ((short) resp.getSW() != ISO7816.SW_NO_ERROR)
+        if ((short) resp.getSW() != ISO7816.SW_NO_ERROR) {
             success = false;
+            error = true;
+        }
+
 
         //try to parse numParams..
         params = new byte[numParams][];
         for (int i = 0; i < numParams; i++) {
             if (data.length - offset < 2) {
                 success = false;
+                error = true;
                 break;
             }
             short paramLength = Util.getShort(data, offset);
             offset += 2;
             if (data.length < offset + paramLength) {
+                error = true;
                 success = false;
                 break;
             }
@@ -114,53 +120,19 @@ public abstract class Response {
         return this.success;
     }
 
-    @Override
-    public abstract String toString();
-
-    public String toString(String inner) {
-        StringBuilder suffix = new StringBuilder();
-        for (int j = 0; j < getNumSW(); ++j) {
-            short sw = getSW(j);
-            if (sw != 0) {
-                suffix.append(" ").append(Util.getSWString(sw));
-            }
-        }
-        if (suffix.length() == 0) {
-            suffix.append(" [").append(Util.getSW(getNaturalSW())).append("]");
-        }
-        return String.format("%-62s:%4d ms : %s", inner, time / 1000000, suffix);
+    public boolean error() {
+        return this.error;
     }
 
-    public static String toString(List<Response> responses) {
-        return toString(responses, null);
-    }
-
-    public static String toString(List<Response> responses, String prefix) {
-        if (prefix != null)
-            prefix += " | ";
-        StringBuilder out = new StringBuilder();
-        for (int i = 0; i < responses.size(); ++i) {
-            Response r = responses.get(i);
-
-            if (prefix != null)
-                out.append(prefix);
-
-            String message = r.toString();
-            out.append(message);
-            if (i < responses.size() - 1) {
-                out.append("\n");
-            }
-        }
-        return out.toString();
-    }
-
+    public abstract String getDescription();
 
     /**
      *
      */
     public static class AllocateKeyAgreement extends Response {
         byte kaType;
-        protected AllocateKeyAgreement(ResponseAPDU response, long time, byte kaType) {
+
+        public AllocateKeyAgreement(ResponseAPDU response, long time, byte kaType) {
             super(response, time);
             this.kaType = kaType;
 
@@ -168,19 +140,19 @@ public abstract class Response {
         }
 
         @Override
-        public String toString() {
-            return super.toString(String.format("Allocate KeyAgreement(%s) object", Util.getKATypeString(this.kaType)));
+        public String getDescription() {
+            return String.format("Allocated KeyAgreement(%s) object", Util.getKATypeString(this.kaType));
         }
 
     }
-    
+
     public static class Allocate extends Response {
 
         private byte keyPair;
         private short keyLength;
         private byte keyClass;
 
-        protected Allocate(ResponseAPDU response, long time, byte keyPair, short keyLength, byte keyClass) {
+        public Allocate(ResponseAPDU response, long time, byte keyPair, short keyLength, byte keyClass) {
             super(response, time);
             this.keyPair = keyPair;
             this.keyLength = keyLength;
@@ -193,7 +165,7 @@ public abstract class Response {
         }
 
         @Override
-        public String toString() {
+        public String getDescription() {
             String field = keyClass == KeyPair.ALG_EC_FP ? "ALG_EC_FP" : "ALG_EC_F2M";
             String key;
             if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
@@ -201,7 +173,7 @@ public abstract class Response {
             } else {
                 key = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
             }
-            return super.toString(String.format("Allocated %s %db %s", key, keyLength, field));
+            return String.format("Allocated %s %db %s", key, keyLength, field);
         }
     }
 
@@ -212,7 +184,7 @@ public abstract class Response {
 
         private byte keyPair;
 
-        protected Clear(ResponseAPDU response, long time, byte keyPair) {
+        public Clear(ResponseAPDU response, long time, byte keyPair) {
             super(response, time);
             this.keyPair = keyPair;
 
@@ -223,14 +195,14 @@ public abstract class Response {
         }
 
         @Override
-        public String toString() {
+        public String getDescription() {
             String key;
             if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
                 key = "both keypairs";
             } else {
                 key = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
             }
-            return super.toString(String.format("Cleared %s", key));
+            return String.format("Cleared %s", key);
         }
     }
 
@@ -243,7 +215,7 @@ public abstract class Response {
         private byte curve;
         private short parameters;
 
-        protected Set(ResponseAPDU response, long time, byte keyPair, byte curve, short parameters) {
+        public Set(ResponseAPDU response, long time, byte keyPair, byte curve, short parameters) {
             super(response, time);
             this.keyPair = keyPair;
             this.curve = curve;
@@ -257,7 +229,7 @@ public abstract class Response {
         }
 
         @Override
-        public String toString() {
+        public String getDescription() {
             String name;
             switch (curve) {
                 case EC_Consts.CURVE_default:
@@ -287,7 +259,7 @@ public abstract class Response {
             } else {
                 pair = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
             }
-            return super.toString(String.format("Set %s %s parameters on %s", name, what, pair));
+            return String.format("Set %s %s parameters on %s", name, what, pair);
         }
 
     }
@@ -302,7 +274,7 @@ public abstract class Response {
         private short params;
         private byte corruption;
 
-        protected Corrupt(ResponseAPDU response, long time, byte keyPair, byte key, short params, byte corruption) {
+        public Corrupt(ResponseAPDU response, long time, byte keyPair, byte key, short params, byte corruption) {
             super(response, time);
             this.keyPair = keyPair;
             this.key = key;
@@ -317,7 +289,7 @@ public abstract class Response {
         }
 
         @Override
-        public String toString() {
+        public String getDescription() {
             String corrupt = Util.getCorruption(corruption);
 
             String pair;
@@ -326,7 +298,7 @@ public abstract class Response {
             } else {
                 pair = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
             }
-            return super.toString(String.format("Corrupted params of %s, %s", pair, corrupt));
+            return String.format("Corrupted params of %s, %s", pair, corrupt);
         }
     }
 
@@ -337,7 +309,7 @@ public abstract class Response {
 
         private byte keyPair;
 
-        protected Generate(ResponseAPDU response, long time, byte keyPair) {
+        public Generate(ResponseAPDU response, long time, byte keyPair) {
             super(response, time);
             this.keyPair = keyPair;
 
@@ -348,14 +320,14 @@ public abstract class Response {
         }
 
         @Override
-        public String toString() {
+        public String getDescription() {
             String key;
             if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
                 key = "both keypairs";
             } else {
                 key = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
             }
-            return super.toString(String.format("Generated %s", key));
+            return String.format("Generated %s", key);
         }
 
     }
@@ -369,7 +341,7 @@ public abstract class Response {
         private byte key;
         private short parameters;
 
-        protected Export(ResponseAPDU response, long time, byte keyPair, byte key, short parameters) {
+        public Export(ResponseAPDU response, long time, byte keyPair, byte key, short parameters) {
             super(response, time);
             this.keyPair = keyPair;
             this.key = key;
@@ -452,7 +424,7 @@ public abstract class Response {
         }
 
         @Override
-        public String toString() {
+        public String getDescription() {
             String source;
             if (key == EC_Consts.KEY_BOTH) {
                 source = "both keys";
@@ -465,7 +437,7 @@ public abstract class Response {
             } else {
                 pair = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
             }
-            return super.toString(String.format("Exported params from %s of %s", source, pair));
+            return String.format("Exported params from %s of %s", source, pair);
         }
     }
 
@@ -480,7 +452,7 @@ public abstract class Response {
         private short corruption;
         private byte type;
 
-        protected ECDH(ResponseAPDU response, long time, byte pubkey, byte privkey, byte export, short corruption, byte type) {
+        public ECDH(ResponseAPDU response, long time, byte pubkey, byte privkey, byte export, short corruption, byte type) {
             super(response, time);
             this.pubkey = pubkey;
             this.privkey = privkey;
@@ -504,7 +476,7 @@ public abstract class Response {
         }
 
         @Override
-        public String toString() {
+        public String getDescription() {
             String algo = Util.getKA(type);
 
             String pub = pubkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
@@ -516,7 +488,7 @@ public abstract class Response {
             } else {
                 validity = Util.getCorruption(corruption);
             }
-            return super.toString(String.format("%s of %s pubkey and %s privkey(%s point)", algo, pub, priv, validity));
+            return String.format("%s of %s pubkey and %s privkey(%s point)", algo, pub, priv, validity);
         }
     }
 
@@ -529,7 +501,7 @@ public abstract class Response {
         private byte export;
         private byte[] raw;
 
-        protected ECDSA(ResponseAPDU response, long time, byte keyPair, byte export, byte[] raw) {
+        public ECDSA(ResponseAPDU response, long time, byte keyPair, byte export, byte[] raw) {
             super(response, time);
             this.keyPair = keyPair;
             this.export = export;
@@ -547,10 +519,10 @@ public abstract class Response {
         }
 
         @Override
-        public String toString() {
+        public String getDescription() {
             String key = keyPair == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
             String data = raw == null ? "random" : "provided";
-            return super.toString(String.format("ECDSA with %s keypair(%s data)", key, data));
+            return String.format("ECDSA with %s keypair(%s data)", key, data);
         }
     }
 
@@ -559,15 +531,15 @@ public abstract class Response {
      */
     public static class Cleanup extends Response {
 
-        protected Cleanup(ResponseAPDU response, long time) {
+        public Cleanup(ResponseAPDU response, long time) {
             super(response, time);
 
             parse(1, 0);
         }
 
         @Override
-        public String toString() {
-            return super.toString("Requested JCSystem object deletion");
+        public String getDescription() {
+            return "Requested JCSystem object deletion";
         }
 
     }
@@ -577,15 +549,15 @@ public abstract class Response {
      */
     public static class Support extends Response {
 
-        protected Support(ResponseAPDU response, long time) {
+        public Support(ResponseAPDU response, long time) {
             super(response, time);
 
             parse(3, 0);
         }
 
         @Override
-        public String toString() {
-            return super.toString("Support of ECDH, ECDHC, ECDSA");
+        public String getDescription() {
+            return "Support of ECDH, ECDHC, ECDSA allocation";
         }
     }
 }

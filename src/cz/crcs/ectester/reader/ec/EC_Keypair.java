@@ -3,6 +3,8 @@ package cz.crcs.ectester.reader.ec;
 import cz.crcs.ectester.applet.EC_Consts;
 
 /**
+ * An EC keypair, contains both the W and S parameters.
+ *
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class EC_Keypair extends EC_Params {
@@ -17,6 +19,11 @@ public class EC_Keypair extends EC_Params {
     public EC_Keypair(String curve, String desc) {
         this(curve);
         this.desc = desc;
+    }
+
+    public EC_Keypair(String id, String curve, String desc) {
+        this(curve, desc);
+        this.id = id;
     }
 
     public String getCurve() {

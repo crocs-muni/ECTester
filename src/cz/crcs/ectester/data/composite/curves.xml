@@ -2,45 +2,45 @@
 <curves xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="../schema.xsd">
     <curve>
-        <id>nonprime128</id>
+        <id>composite128</id>
         <bits>128</bits>
         <field>prime</field>
-        <file>nonprime128.csv</file>
+        <file>composite128.csv</file>
     </curve>
     <curve>
-        <id>nonprime160</id>
+        <id>composite160</id>
         <bits>160</bits>
         <field>prime</field>
-        <file>nonprime160.csv</file>
+        <file>composite160.csv</file>
     </curve>
     <curve>
-        <id>nonprime192</id>
+        <id>composite192</id>
         <bits>192</bits>
         <field>prime</field>
-        <file>nonprime192.csv</file>
+        <file>composite192.csv</file>
     </curve>
     <curve>
-        <id>nonprime224</id>
+        <id>composite224</id>
         <bits>224</bits>
         <field>prime</field>
-        <file>nonprime224.csv</file>
+        <file>composite224.csv</file>
     </curve>
     <curve>
-        <id>nonprime256</id>
+        <id>composite256</id>
         <bits>256</bits>
         <field>prime</field>
-        <file>nonprime256.csv</file>
+        <file>composite256.csv</file>
     </curve>
     <curve>
-        <id>nonprime384</id>
+        <id>composite384</id>
         <bits>384</bits>
         <field>prime</field>
-        <file>nonprime384.csv</file>
+        <file>composite384.csv</file>
     </curve>
     <curve>
-        <id>nonprime521</id>
+        <id>composite521</id>
         <bits>521</bits>
         <field>prime</field>
-        <file>nonprime521.csv</file>
+        <file>composite521.csv</file>
     </curve>
 </curves>

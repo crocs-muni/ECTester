@@ -4,6 +4,8 @@ import cz.crcs.ectester.applet.EC_Consts;
 import javacard.security.KeyPair;
 
 /**
+ * An Elliptic curve, contains parameters Fp/F2M, A, B, G, R, (K)?.
+ *
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class EC_Curve extends EC_Params {

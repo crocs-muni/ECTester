@@ -266,11 +266,11 @@ public class EC_Store {
 
         EC_Params result;
         if (elem.getTagName().equals("pubkey")) {
-            result = new EC_Key.Public(curve.getTextContent(), descs);
+            result = new EC_Key.Public(id.getTextContent(), curve.getTextContent(), descs);
         } else if (elem.getTagName().equals("privkey")) {
-            result = new EC_Key.Private(curve.getTextContent(), descs);
+            result = new EC_Key.Private(id.getTextContent(), curve.getTextContent(), descs);
         } else if (elem.getTagName().equals("keypair")) {
-            result = new EC_Keypair(curve.getTextContent(), descs);
+            result = new EC_Keypair(id.getTextContent(), curve.getTextContent(), descs);
         } else {
             throw new SAXException("?");
         }

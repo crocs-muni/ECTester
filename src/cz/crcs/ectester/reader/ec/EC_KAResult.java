@@ -3,6 +3,8 @@ package cz.crcs.ectester.reader.ec;
 import cz.crcs.ectester.reader.Util;
 
 /**
+ * A result of EC based Key agreement operation.
+ *
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class EC_KAResult extends EC_Data {

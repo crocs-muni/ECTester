@@ -1,8 +1,12 @@
-package cz.crcs.ectester.reader;
+package cz.crcs.ectester.reader.command;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Store;
+import cz.crcs.ectester.reader.CardMngr;
+import cz.crcs.ectester.reader.ECTester;
+import cz.crcs.ectester.reader.response.Response;
+import cz.crcs.ectester.reader.Util;
 import cz.crcs.ectester.reader.ec.EC_Curve;
 import cz.crcs.ectester.reader.ec.EC_Key;
 import cz.crcs.ectester.reader.ec.EC_Keypair;
@@ -160,7 +164,7 @@ public abstract class Command {
                 priv.readCSV(in);
                 in.close();
             } else {
-                priv = dataStore.getObject(EC_Key.Public.class, cfg.namedPrivateKey);
+                priv = dataStore.getObject(EC_Key.Private.class, cfg.namedPrivateKey);
                 if (priv == null) {
                     priv = dataStore.getObject(EC_Keypair.class, cfg.namedPrivateKey);
                 }
@@ -192,7 +196,7 @@ public abstract class Command {
          * @param keyLength   key length to set
          * @param keyClass    key class to allocate
          */
-        protected Allocate(CardMngr cardManager, byte keyPair, short keyLength, byte keyClass) {
+        public Allocate(CardMngr cardManager, byte keyPair, short keyLength, byte keyClass) {
             super(cardManager);
             this.keyPair = keyPair;
             this.keyLength = keyLength;
@@ -223,7 +227,7 @@ public abstract class Command {
          * @param cardManager cardManager to send APDU through
          * @param kaType which type of KeyAgreement to use
          */
-        protected AllocateKeyAgreement(CardMngr cardManager, byte kaType) {
+        public AllocateKeyAgreement(CardMngr cardManager, byte kaType) {
             super(cardManager);
             this.kaType = kaType;
             byte[] data = new byte[]{kaType};
@@ -249,7 +253,7 @@ public abstract class Command {
          * @param cardManager cardManager to send APDU through
          * @param keyPair     which keyPair clear, local/remote (KEYPAIR_* || ...)
          */
-        protected Clear(CardMngr cardManager, byte keyPair) {
+        public Clear(CardMngr cardManager, byte keyPair) {
             super(cardManager);
             this.keyPair = keyPair;
 
@@ -283,7 +287,7 @@ public abstract class Command {
          * @param params      parameters to set (EC_Consts.PARAMETER_* | ...)
          * @param external    external curve data, can be null
          */
-        protected Set(CardMngr cardManager, byte keyPair, byte curve, short params, byte[] external) {
+        public Set(CardMngr cardManager, byte keyPair, byte curve, short params, byte[] external) {
             super(cardManager);
             this.keyPair = keyPair;
             this.curve = curve;
@@ -325,7 +329,7 @@ public abstract class Command {
          * @param params      parameters to corrupt (EC_Consts.PARAMETER_* | ...)
          * @param corruption  corruption type (EC_Consts.CORRUPTION_*)
          */
-        protected Corrupt(CardMngr cardManager, byte keyPair, byte key, short params, byte corruption) {
+        public Corrupt(CardMngr cardManager, byte keyPair, byte key, short params, byte corruption) {
             super(cardManager);
             this.keyPair = keyPair;
             this.key = key;
@@ -360,7 +364,7 @@ public abstract class Command {
          * @param cardManager cardManager to send APDU through
          * @param keyPair     which keyPair to generate, local/remote (KEYPAIR_* || ...)
          */
-        protected Generate(CardMngr cardManager, byte keyPair) {
+        public Generate(CardMngr cardManager, byte keyPair) {
             super(cardManager);
             this.keyPair = keyPair;
 
@@ -392,7 +396,7 @@ public abstract class Command {
          * @param key         key to export from (EC_Consts.KEY_* | ...)
          * @param params      params to export (EC_Consts.PARAMETER_* | ...)
          */
-        protected Export(CardMngr cardManager, byte keyPair, byte key, short params) {
+        public Export(CardMngr cardManager, byte keyPair, byte key, short params) {
             super(cardManager);
             this.keyPair = keyPair;
             this.key = key;
@@ -433,7 +437,7 @@ public abstract class Command {
          * @param corruption  whether to invalidate the pubkey before ECDH (EC_Consts.CORRUPTION_* | ...)
          * @param type        ECDH algorithm type (EC_Consts.KA_* | ...)
          */
-        protected ECDH(CardMngr cardManager, byte pubkey, byte privkey, byte export, short corruption, byte type) {
+        public ECDH(CardMngr cardManager, byte pubkey, byte privkey, byte export, short corruption, byte type) {
             super(cardManager);
             this.pubkey = pubkey;
             this.privkey = privkey;
@@ -466,7 +470,17 @@ public abstract class Command {
         private byte type;
         private byte[] pubkey;
 
-        protected ECDH_direct(CardMngr cardManager, byte privkey, byte export, short corruption, byte type, byte[] pubkey) {
+        /**
+         * Creates the INS_ECDH_DIRECT instruction.
+         *
+         * @param cardManager cardManager to send APDU through
+         * @param privkey     keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
+         * @param export      whether to export ECDH secret
+         * @param corruption  whether to invalidate the pubkey before ECDH (EC_Consts.CORRUPTION_* | ...)
+         * @param type        ECDH algorithm type (EC_Consts.KA_* | ...)
+         * @param pubkey      pubkey data to do ECDH with.
+         */
+        public ECDH_direct(CardMngr cardManager, byte privkey, byte export, short corruption, byte type, byte[] pubkey) {
             super(cardManager);
             this.privkey = privkey;
             this.export = export;
@@ -504,7 +518,7 @@ public abstract class Command {
          * @param export      whether to export ECDSA signature
          * @param raw         data to sign, can be null, in which case random data is signed.
          */
-        protected ECDSA(CardMngr cardManager, byte keyPair, byte export, byte[] raw) {
+        public ECDSA(CardMngr cardManager, byte keyPair, byte export, byte[] raw) {
             super(cardManager);
             this.keyPair = keyPair;
             this.export = export;
@@ -537,7 +551,7 @@ public abstract class Command {
         /**
          * @param cardManager cardManager to send APDU through
          */
-        protected Cleanup(CardMngr cardManager) {
+        public Cleanup(CardMngr cardManager) {
             super(cardManager);
 
             this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_CLEANUP, 0, 0);
@@ -560,7 +574,7 @@ public abstract class Command {
         /**
          * @param cardManager cardManager to send APDU through
          */
-        protected Support(CardMngr cardManager) {
+        public Support(CardMngr cardManager) {
             super(cardManager);
 
             this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_SUPPORT, 0, 0);

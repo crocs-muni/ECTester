@@ -7,6 +7,10 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
+ * A list of byte arrays for holding EC data.
+ *
+ * The data can be read from a byte array via <code>readBytes()</code>, from a CSV via <code>readCSV()</code>.
+ * The data can be exported to a byte array via <code>flatten()</code> or to a string array via <code>expand()</code>.
  * @author Jan Jancar johny@neuromancer.sk
  */
 public abstract class EC_Data {
