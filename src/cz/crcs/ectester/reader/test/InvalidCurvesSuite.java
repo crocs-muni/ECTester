@@ -4,10 +4,10 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
-import cz.crcs.ectester.reader.ECTester;
+import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
-import cz.crcs.ectester.reader.ec.EC_Curve;
-import cz.crcs.ectester.reader.ec.EC_Key;
+import cz.crcs.ectester.common.ec.EC_Curve;
+import cz.crcs.ectester.common.ec.EC_Key;
 import javacard.security.KeyPair;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ import static cz.crcs.ectester.reader.test.Result.ExpectedValue;
  */
 public class InvalidCurvesSuite extends TestSuite {
 
-    public InvalidCurvesSuite(EC_Store dataStore, ECTester.Config cfg) {
+    public InvalidCurvesSuite(EC_Store dataStore, ECTesterReader.Config cfg) {
         super(dataStore, cfg, "invalid", "The invalid curve suite tests whether the card rejects points outside of the curve during ECDH.");
     }
 

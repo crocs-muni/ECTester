@@ -3,7 +3,6 @@ package cz.crcs.ectester.reader.response;
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.reader.Util;
-import cz.crcs.ectester.reader.ec.EC_Data;
 import javacard.framework.ISO7816;
 import javacard.security.KeyPair;
 

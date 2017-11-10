@@ -4,10 +4,10 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
-import cz.crcs.ectester.reader.ECTester;
+import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
-import cz.crcs.ectester.reader.ec.EC_Curve;
-import cz.crcs.ectester.reader.ec.EC_Key;
+import cz.crcs.ectester.common.ec.EC_Curve;
+import cz.crcs.ectester.common.ec.EC_Key;
 import javacard.security.KeyPair;
 
 import java.util.Map;
@@ -19,7 +19,7 @@ import static cz.crcs.ectester.reader.test.Result.ExpectedValue;
  */
 public class CompositeCurvesSuite extends TestSuite {
 
-    public CompositeCurvesSuite(EC_Store dataStore, ECTester.Config cfg) {
+    public CompositeCurvesSuite(EC_Store dataStore, ECTesterReader.Config cfg) {
         super(dataStore, cfg, "composite", "The composite suite tests ECDH over curves with composite order. This should generally fail, as using such a curve is unsafe.");
     }
 

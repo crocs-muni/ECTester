@@ -25,9 +25,9 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.command.Command;
-import cz.crcs.ectester.reader.ec.EC_Category;
-import cz.crcs.ectester.reader.ec.EC_Data;
-import cz.crcs.ectester.reader.ec.EC_Params;
+import cz.crcs.ectester.common.ec.EC_Category;
+import cz.crcs.ectester.common.ec.EC_Data;
+import cz.crcs.ectester.common.ec.EC_Params;
 import cz.crcs.ectester.reader.output.*;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.test.*;
@@ -49,7 +49,7 @@ import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH
  * @author Jan Jancar johny@neuromancer.sk
  * @version v0.1.0
  */
-public class ECTester {
+public class ECTesterReader {
 
     private CardMngr cardManager;
     private OutputLogger logger;
@@ -60,7 +60,7 @@ public class ECTester {
 
     private Options opts = new Options();
     private static final String VERSION = "v0.1.0";
-    private static final String DESCRIPTION = "ECTester " + VERSION + ", a javacard Elliptic Curve Cryptograhy support tester/utility.";
+    private static final String DESCRIPTION = "ECTesterReader " + VERSION + ", a javacard Elliptic Curve Cryptograhy support tester/utility.";
     private static final String LICENSE = "MIT Licensed\nCopyright (c) 2016-2017 Petr Svenda <petr@svenda.com>";
     private static final String CLI_HEADER = "\n" + DESCRIPTION + "\n\n";
     private static final String CLI_FOOTER = "\n" + LICENSE;
@@ -314,7 +314,7 @@ public class ECTester {
     private void help() {
         HelpFormatter help = new HelpFormatter();
         help.setOptionComparator(null);
-        help.printHelp("ECTester.jar", CLI_HEADER, opts, CLI_FOOTER, true);
+        help.printHelp("ECTesterReader.jar", CLI_HEADER, opts, CLI_FOOTER, true);
     }
 
     /**
@@ -629,7 +629,7 @@ public class ECTester {
     }
 
     public static void main(String[] args) {
-        ECTester app = new ECTester();
+        ECTesterReader app = new ECTesterReader();
         app.run(args);
     }
 

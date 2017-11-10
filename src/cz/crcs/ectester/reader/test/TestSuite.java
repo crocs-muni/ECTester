@@ -4,9 +4,9 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
-import cz.crcs.ectester.reader.ECTester;
+import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
-import cz.crcs.ectester.reader.ec.EC_Curve;
+import cz.crcs.ectester.common.ec.EC_Curve;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -23,12 +23,12 @@ import static cz.crcs.ectester.reader.test.Result.Value;
  */
 public abstract class TestSuite {
     EC_Store dataStore;
-    ECTester.Config cfg;
+    ECTesterReader.Config cfg;
     String name;
     String description;
     List<Test> tests = new LinkedList<>();
 
-    TestSuite(EC_Store dataStore, ECTester.Config cfg, String name, String description) {
+    TestSuite(EC_Store dataStore, ECTesterReader.Config cfg, String name, String description) {
         this.dataStore = dataStore;
         this.cfg = cfg;
         this.name = name;

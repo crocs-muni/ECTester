@@ -1,4 +1,4 @@
-package cz.crcs.ectester.reader.ec;
+package cz.crcs.ectester.common.ec;
 
 import java.util.Collections;
 import java.util.Map;

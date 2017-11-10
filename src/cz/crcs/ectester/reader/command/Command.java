@@ -4,13 +4,13 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
-import cz.crcs.ectester.reader.ECTester;
+import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.Util;
-import cz.crcs.ectester.reader.ec.EC_Curve;
-import cz.crcs.ectester.reader.ec.EC_Key;
-import cz.crcs.ectester.reader.ec.EC_Keypair;
-import cz.crcs.ectester.reader.ec.EC_Params;
+import cz.crcs.ectester.common.ec.EC_Curve;
+import cz.crcs.ectester.common.ec.EC_Key;
+import cz.crcs.ectester.common.ec.EC_Keypair;
+import cz.crcs.ectester.common.ec.EC_Params;
 import javacard.security.KeyPair;
 
 import javax.smartcardio.CardException;
@@ -54,7 +54,7 @@ public abstract class Command {
      * @return a Command to send in order to prepare the curve on the keypairs.
      * @throws IOException if curve file cannot be found/opened
      */
-    public static Command prepareCurve(CardMngr cardManager, EC_Store dataStore, ECTester.Config cfg, byte keyPair, short keyLength, byte keyClass) throws IOException {
+    public static Command prepareCurve(CardMngr cardManager, EC_Store dataStore, ECTesterReader.Config cfg, byte keyPair, short keyLength, byte keyClass) throws IOException {
 
         if (cfg.customCurve) {
             // Set custom curve (one of the SECG curves embedded applet-side)
@@ -109,7 +109,7 @@ public abstract class Command {
      * @return a CommandAPDU setting params loaded on the keyPair/s
      * @throws IOException if any of the key files cannot be found/opened
      */
-    public static Command prepareKey(CardMngr cardManager, EC_Store dataStore, ECTester.Config cfg, byte keyPair) throws IOException {
+    public static Command prepareKey(CardMngr cardManager, EC_Store dataStore, ECTesterReader.Config cfg, byte keyPair) throws IOException {
         short params = EC_Consts.PARAMETERS_NONE;
         byte[] data = null;
 

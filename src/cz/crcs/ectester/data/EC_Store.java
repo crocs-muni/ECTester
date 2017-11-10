@@ -1,7 +1,7 @@
 package cz.crcs.ectester.data;
 
 import cz.crcs.ectester.applet.EC_Consts;
-import cz.crcs.ectester.reader.ec.*;
+import cz.crcs.ectester.common.ec.*;
 import javacard.security.KeyPair;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

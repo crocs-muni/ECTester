@@ -2,7 +2,7 @@ package cz.crcs.ectester.reader.test;
 
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
-import cz.crcs.ectester.reader.ECTester;
+import cz.crcs.ectester.reader.ECTesterReader;
 import javacard.security.KeyPair;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ import static cz.crcs.ectester.reader.test.Result.ExpectedValue;
  */
 public class WrongCurvesSuite extends TestSuite {
 
-    public WrongCurvesSuite(EC_Store dataStore, ECTester.Config cfg) {
+    public WrongCurvesSuite(EC_Store dataStore, ECTesterReader.Config cfg) {
         super(dataStore, cfg, "wrong", "The wrong curve suite tests whether the card rejects domain parameters which are not curves.");
     }
 
