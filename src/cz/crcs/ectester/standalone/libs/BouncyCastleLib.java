@@ -1,21 +1,14 @@
 package cz.crcs.ectester.standalone.libs;
+
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import java.security.Security;
-
-public class BouncyCastleLib {
+/**
+ * @author Jan Jancar johny@neuromancer.sk
+ */
+public class BouncyCastleLib extends JavaECLibrary {
 
     public BouncyCastleLib() {
-
-    }
-
-    public boolean setUp() {
-        try {
-            Security.addProvider(new BouncyCastleProvider());
-        } catch (NullPointerException | SecurityException ignored) {
-            return false;
-        }
-        return true;
+        super(new BouncyCastleProvider());
     }
 
 }

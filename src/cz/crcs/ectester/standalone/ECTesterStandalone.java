@@ -1,12 +1,15 @@
 package cz.crcs.ectester.standalone;
 
-import cz.crcs.ectester.common.Util;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.data.EC_Store;
+import cz.crcs.ectester.standalone.libs.BouncyCastleLib;
+import cz.crcs.ectester.standalone.libs.ECLibrary;
+import cz.crcs.ectester.standalone.libs.SunECLib;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Standalone part of ECTester, a tool for testing Elliptic curve implementations in software libraries.
@@ -16,6 +19,7 @@ import java.io.IOException;
  */
 public class ECTesterStandalone {
 
+    private ECLibrary[] libs = new ECLibrary[]{new SunECLib(), new BouncyCastleLib()};
     private EC_Store dataStore;
     private Config cfg;
 
@@ -40,9 +44,17 @@ public class ECTesterStandalone {
 
             cfg = new Config();
             dataStore = new EC_Store();
+            for (ECLibrary lib : libs) {
+                lib.initialize();
+                lib.getECKAs();
+                lib.getECSigs();
+            }
+            System.out.println(Arrays.toString(libs));
 
             if (cli.hasOption("generate")) {
                 generate();
+            } else if (cli.hasOption("libs")) {
+                listLibraries();
             }
 
         } catch (ParseException | IOException ex) {
@@ -56,6 +68,7 @@ public class ECTesterStandalone {
         actions.addOption(Option.builder("V").longOpt("version").desc("Print version info.").build());
         actions.addOption(Option.builder("h").longOpt("help").desc("Print help.").build());
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate [amount] of EC keys.").hasArg().argName("amount").optionalArg(true).build());
+        actions.addOption(Option.builder("ls").longOpt("libs").desc("List supported libraries.").build());
         opts.addOptionGroup(actions);
 
         CommandLineParser parser = new DefaultParser();
@@ -86,6 +99,17 @@ public class ECTesterStandalone {
         EC_Curve curve = dataStore.getObject(EC_Curve.class, "secg/secp192r1");
         byte[] fp = curve.getParam(EC_Consts.PARAMETER_FP)[0];
 
+    }
+
+    /**
+     *
+     */
+    private void listLibraries() {
+        for (ECLibrary lib : libs) {
+            if (lib.isInitialized()) {
+                System.out.println(lib.name());
+            }
+        }
     }
 
     public static void main(String[] args) {
