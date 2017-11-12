@@ -51,4 +51,9 @@
         <directory>test</directory>
         <desc>Test vectors</desc>
     </category>
+    <category>
+        <name>x962</name>
+        <directory>x962</directory>
+        <desc>ANSI X9.62 example curves.</desc>
+    </category>
 </categories>
