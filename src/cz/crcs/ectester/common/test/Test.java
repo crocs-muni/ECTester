@@ -7,7 +7,7 @@ import static cz.crcs.ectester.common.test.Result.Value;
  *
  * @author Jan Jancar johny@neuromancer.sk
  */
-public abstract class Test {
+public abstract class Test implements Testable {
     protected boolean hasRun = false;
     protected Result result;
 

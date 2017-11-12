@@ -26,6 +26,7 @@ import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.ec.EC_Category;
 import cz.crcs.ectester.common.ec.EC_Data;
 import cz.crcs.ectester.common.ec.EC_Params;
+import cz.crcs.ectester.common.output.OutputLogger;
 import cz.crcs.ectester.common.test.TestException;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.command.Command;

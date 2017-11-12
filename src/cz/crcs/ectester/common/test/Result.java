@@ -46,7 +46,7 @@ public class Result {
     }
 
     /**
-     *
+     * A result value of a Test.
      */
     public enum Value {
         SUCCESS(true),
@@ -86,7 +86,7 @@ public class Result {
     }
 
     /**
-     *
+     * A possible expected value result of a Test.
      */
     public enum ExpectedValue {
         SUCCESS,
