@@ -1,5 +1,7 @@
 /dist/lib/
-/dist/ECTester.jar
-/dist/ECTester-dist.jar
-/dist/ectester.sh
-/dist/ectester.bat
+/dist/ECTesterReader.jar
+/dist/ECTesterReader-dist.jar
+/dist/ectester-reader.sh
+/dist/ectester-reader.bat
+/dist/ECTesterStandalone.jar
+/dist/ECTesterStandalone-dist.jar

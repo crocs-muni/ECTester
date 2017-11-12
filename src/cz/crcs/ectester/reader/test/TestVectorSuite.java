@@ -8,7 +8,7 @@ import cz.crcs.ectester.common.test.Test;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
-import cz.crcs.ectester.reader.Util;
+import cz.crcs.ectester.common.Util;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.common.ec.*;
 import cz.crcs.ectester.reader.response.Response;

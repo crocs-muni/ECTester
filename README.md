@@ -6,8 +6,9 @@ Tests support and behavior of smartcards with JavaCard platform with focus on El
 
 ECTester uses ant.
 ```bash
-ant package               # To build the reader tool (jar).
-ant -f jcbuild.xml build  # To build the applet (cap).
+ant -f build-reader.xml package               # To build the reader tool (jar).
+ant -f build-standalone.xml package           # To build the standalone tool (jar).
+ant -f build-applet.xml build                 # To build the applet (cap).
 ```
 
 ## Usage

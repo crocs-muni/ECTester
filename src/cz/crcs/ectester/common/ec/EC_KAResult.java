@@ -1,6 +1,6 @@
 package cz.crcs.ectester.common.ec;
 
-import cz.crcs.ectester.reader.Util;
+import cz.crcs.ectester.common.Util;
 
 /**
  * A result of EC based Key agreement operation.

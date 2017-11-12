@@ -1,7 +1,5 @@
 package cz.crcs.ectester.common.output;
 
-import cz.crcs.ectester.reader.output.TeeOutputStream;
-
 import java.io.*;
 import java.util.LinkedList;
 import java.util.List;

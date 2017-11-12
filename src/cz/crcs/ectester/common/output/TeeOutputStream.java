@@ -1,4 +1,4 @@
-package cz.crcs.ectester.reader.output;
+package cz.crcs.ectester.common.output;
 
 import java.io.IOException;
 import java.io.OutputStream;

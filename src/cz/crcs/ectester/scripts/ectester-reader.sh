@@ -22,7 +22,7 @@ set -- "${positional[@]}"
 
 if [[ $# -lt 1 ]]; then
     echo "At least one argument expected:" >&2
-    echo "    ./ectester.sh [--dangerous] CARD_NAME [ECTester args]" >&2
+    echo "    ./ectester-reader.sh [--dangerous] CARD_NAME [ECTester args]" >&2
     exit 1
 fi
 

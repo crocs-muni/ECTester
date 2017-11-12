@@ -2,6 +2,7 @@ package cz.crcs.ectester.reader;
 
 import com.licel.jcardsim.io.CAD;
 import com.licel.jcardsim.io.JavaxSmartCardInterface;
+import cz.crcs.ectester.common.Util;
 import javacard.framework.AID;
 
 import javax.smartcardio.*;

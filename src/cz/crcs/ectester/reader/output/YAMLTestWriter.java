@@ -1,7 +1,7 @@
 package cz.crcs.ectester.reader.output;
 
 import cz.crcs.ectester.common.test.CompoundTest;
-import cz.crcs.ectester.reader.Util;
+import cz.crcs.ectester.common.Util;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.common.test.Test;

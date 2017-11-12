@@ -1,4 +1,4 @@
-package cz.crcs.ectester.reader;
+package cz.crcs.ectester.common;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="dist-build">
+    <description>.</description>
+    <target name="package">
+        <property name="store.dir" value="dist"/>
+        <property name="store.jar" value="${store.dir}/${store.jar.name}.jar"/>
+
+        <echo message="Packaging ${application.title} into a single JAR at ${store.jar}"/>
+
+        <tempfile property="temp.file" destDir="${java.io.tmpdir}" suffix=".jar"/>
+        <tempfile property="temp.previous_jar" destdir="${java.io.tmpdir}" suffix=".jar"/>
+
+        <copy file="${store.jar}" tofile="${temp.previous_jar}" failonerror="false"/>
+        <echo message="Backed up ${store.jar} into ${temp.previous_jar}"/>
+
+        <delete file="${store.jar}" failonerror="false"/>
+        <jar destfile="${temp.file}" filesetmanifest="skip">
+            <zipgroupfileset dir="dist" includes="*.jar"/>
+            <zipgroupfileset dir="dist/lib" includes="*.jar"/>
+
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+            </manifest>
+        </jar>
+
+        <zip destfile="${store.jar}">
+            <zipfileset src="${temp.file}"
+                        excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA"/>
+        </zip>
+
+        <delete file="${temp.file}"/>
+        <delete file="${temp.previous_jar}"/>
+    </target>
+</project>

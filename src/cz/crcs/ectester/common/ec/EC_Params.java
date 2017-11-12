@@ -1,7 +1,7 @@
 package cz.crcs.ectester.common.ec;
 
 import cz.crcs.ectester.applet.EC_Consts;
-import cz.crcs.ectester.reader.Util;
+import cz.crcs.ectester.common.Util;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;

@@ -39,6 +39,13 @@ public abstract class Test implements Testable {
         return result.ok();
     }
 
+    public boolean error() {
+        if (!hasRun) {
+            return false;
+        }
+        return result.compareTo(Value.ERROR);
+    }
+
     public abstract String getDescription();
 
     public boolean hasRun() {
