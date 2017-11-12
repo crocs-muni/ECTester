@@ -55,12 +55,12 @@ public abstract class EC_Data {
         return data;
     }
 
-    public boolean hasData() {
-        return data != null;
+    public byte[] getData(int index) {
+        return data[index];
     }
 
-    public byte[] getParam(int index) {
-        return data[index];
+    public boolean hasData() {
+        return data != null;
     }
 
     public byte[] flatten() {

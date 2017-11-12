@@ -44,6 +44,49 @@ public class EC_Params extends EC_Data {
         return params;
     }
 
+    public byte[][] getParam(short param) {
+        if (!hasParam(param)) {
+            return null;
+        }
+        if (Integer.bitCount(param) != 1) {
+            return null;
+        }
+        short paramMask = EC_Consts.PARAMETER_FP;
+        byte[][] result = null;
+        int i = 0;
+        while (paramMask <= EC_Consts.PARAMETER_S) {
+            short masked = (short) (this.params & param & paramMask);
+            short shallow = (short) (this.params & paramMask);
+            if (masked != 0) {
+                if (masked == EC_Consts.PARAMETER_F2M) {
+                    result = new byte[4][];
+                    result[0] = data[i].clone();
+                    result[1] = data[i+1].clone();
+                    result[2] = data[i+2].clone();
+                    result[3] = data[i+3].clone();
+                    break;
+                }
+                if (masked == EC_Consts.PARAMETER_G || masked == EC_Consts.PARAMETER_W) {
+                    result = new byte[2][];
+                    result[0] = data[i].clone();
+                    result[1] = data[i+1].clone();
+                    break;
+                }
+                result = new byte[1][];
+                result[0] = data[i].clone();
+            }
+            if (shallow == EC_Consts.PARAMETER_F2M) {
+                i += 4;
+            } else if (shallow == EC_Consts.PARAMETER_G || shallow == EC_Consts.PARAMETER_W) {
+                i += 2;
+            } else if (shallow != 0) {
+                i++;
+            }
+            paramMask = (short) (paramMask << 1);
+        }
+        return result;
+    }
+
     public boolean hasParam(short param) {
         return (params & param) != 0;
     }
