@@ -13,24 +13,24 @@ import java.util.function.BiFunction;
  * A simple test that runs one Command to get and evaluate one Response
  * to get a Result and compare it with the expected one.
  */
-public class SimpleTest extends Test {
+public class CommandTest extends Test {
     private BiFunction<Command, Response, Result> callback;
     private Command command;
     private Response response;
 
-    public SimpleTest(Command command, BiFunction<Command, Response, Result> callback) {
+    public CommandTest(Command command, BiFunction<Command, Response, Result> callback) {
         this.command = command;
         this.callback = callback;
     }
 
-    public SimpleTest(Command command, Result.ExpectedValue expected, String ok, String nok) {
+    public CommandTest(Command command, Result.ExpectedValue expected, String ok, String nok) {
         this(command, (cmd, resp) -> {
             Result.Value resultValue = Result.Value.fromExpected(expected, resp.successful(), resp.error());
             return new Result(resultValue, resultValue.ok() ? ok : nok);
         });
     }
 
-    public SimpleTest(Command command, Result.ExpectedValue expected) {
+    public CommandTest(Command command, Result.ExpectedValue expected) {
         this(command, expected, null, null);
     }
 

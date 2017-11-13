@@ -1,5 +1,8 @@
 package cz.crcs.ectester.standalone.consts;
 
+import javax.crypto.KeyAgreement;
+import java.security.NoSuchAlgorithmException;
+import java.security.Provider;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,7 +50,11 @@ public class KeyAgreementIdent extends Ident {
         return null;
     }
 
-    private KeyAgreementIdent(String... names) {
-        super(names);
+    private KeyAgreementIdent(String name, String... aliases) {
+        super(name, aliases);
+    }
+
+    public KeyAgreement getInstance(Provider provider) throws NoSuchAlgorithmException {
+        return KeyAgreement.getInstance(name, provider);
     }
 }

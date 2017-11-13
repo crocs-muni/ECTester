@@ -64,14 +64,14 @@ public abstract class TestSuite {
     Test defaultCurveTests(CardMngr cardManager, ExpectedValue generateExpected, ExpectedValue ecdhExpected, ExpectedValue ecdhCompressExpected, ExpectedValue ecdsaExpected, String description) {
         List<Test> tests = new LinkedList<>();
 
-        tests.add(new SimpleTest(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH), generateExpected));
-        tests.add(new SimpleTest(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDH), ecdhExpected));
-        tests.add(new SimpleTest(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_COMPRESS, EC_Consts.KA_ECDH), ecdhExpected));
-        tests.add(new SimpleTest(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ONE, EC_Consts.KA_ECDH), ExpectedValue.FAILURE));
-        tests.add(new SimpleTest(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ZERO, EC_Consts.KA_ECDH), ExpectedValue.FAILURE));
-        tests.add(new SimpleTest(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_MAX, EC_Consts.KA_ECDH), ExpectedValue.FAILURE));
-        tests.add(new SimpleTest(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_FULLRANDOM, EC_Consts.KA_ECDH), ExpectedValue.FAILURE));
-        tests.add(new SimpleTest(new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, null), ecdsaExpected));
+        tests.add(new CommandTest(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH), generateExpected));
+        tests.add(new CommandTest(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDH), ecdhExpected));
+        tests.add(new CommandTest(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_COMPRESS, EC_Consts.KA_ECDH), ecdhExpected));
+        tests.add(new CommandTest(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ONE, EC_Consts.KA_ECDH), ExpectedValue.FAILURE));
+        tests.add(new CommandTest(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ZERO, EC_Consts.KA_ECDH), ExpectedValue.FAILURE));
+        tests.add(new CommandTest(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_MAX, EC_Consts.KA_ECDH), ExpectedValue.FAILURE));
+        tests.add(new CommandTest(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_FULLRANDOM, EC_Consts.KA_ECDH), ExpectedValue.FAILURE));
+        tests.add(new CommandTest(new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, null), ecdsaExpected));
 
         return CompoundTest.function((testArray) -> {
             Function<ExpectedValue, String> shouldHave = (expected) -> {
@@ -126,10 +126,10 @@ public abstract class TestSuite {
         for (Map.Entry<String, EC_Curve> entry : curves.entrySet()) {
             EC_Curve curve = entry.getValue();
             if (curve.getField() == field && (curve.getBits() == cfg.bits || cfg.all)) {
-                tests.add(new SimpleTest(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), field), ExpectedValue.SUCCESS));
-                tests.add(new SimpleTest(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), setExpected));
+                tests.add(new CommandTest(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), field), ExpectedValue.SUCCESS));
+                tests.add(new CommandTest(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), setExpected));
                 tests.add(defaultCurveTests(cardManager, generateExpected, ecdhExpected, ecdhCompressedExpected, ecdsaExpected, description));
-                tests.add(new SimpleTest(new Command.Cleanup(cardManager), ExpectedValue.ANY));
+                tests.add(new CommandTest(new Command.Cleanup(cardManager), ExpectedValue.ANY));
             }
         }
 

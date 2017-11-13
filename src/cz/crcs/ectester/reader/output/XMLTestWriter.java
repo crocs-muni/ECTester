@@ -5,7 +5,7 @@ import cz.crcs.ectester.common.Util;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.common.test.Test;
-import cz.crcs.ectester.reader.test.SimpleTest;
+import cz.crcs.ectester.reader.test.CommandTest;
 import cz.crcs.ectester.reader.test.TestSuite;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -91,8 +91,8 @@ public class XMLTestWriter implements TestWriter {
     private Element testElement(Test t) {
         Element testElem = doc.createElement("test");
 
-        if (t instanceof SimpleTest) {
-            SimpleTest test = (SimpleTest) t;
+        if (t instanceof CommandTest) {
+            CommandTest test = (CommandTest) t;
             testElem.setAttribute("type", "simple");
             testElem.appendChild(commandElement(test.getCommand()));
             testElem.appendChild(responseElement(test.getResponse()));

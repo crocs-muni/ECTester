@@ -1,5 +1,8 @@
 package cz.crcs.ectester.standalone.consts;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.Provider;
+import java.security.Signature;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -71,7 +74,11 @@ public class SignatureIdent extends Ident {
         return null;
     }
 
-    private SignatureIdent(String... names) {
-        super(names);
+    private SignatureIdent(String name, String... aliases) {
+        super(name, aliases);
+    }
+
+    public Signature getInstance(Provider provider) throws NoSuchAlgorithmException {
+        return Signature.getInstance(name, provider);
     }
 }

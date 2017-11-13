@@ -6,11 +6,18 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public abstract class Ident {
-    private Set<String> idents;
+    Set<String> idents;
+    String name;
 
-    public Ident(String... names) {
+    public Ident(String name, String... aliases) {
+        this.name = name;
         this.idents = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        this.idents.addAll(Arrays.asList(names));
+        this.idents.add(name);
+        this.idents.addAll(Arrays.asList(aliases));
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Set<String> getIdents() {

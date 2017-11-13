@@ -55,16 +55,16 @@ public class InvalidCurvesSuite extends TestSuite {
             EC_Curve curve = e.getKey();
             List<EC_Key.Public> keys = e.getValue();
 
-            tests.add(new SimpleTest(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS));
-            tests.add(new SimpleTest(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.SUCCESS));
-            tests.add(new SimpleTest(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL), ExpectedValue.SUCCESS));
+            tests.add(new CommandTest(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS));
+            tests.add(new CommandTest(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.SUCCESS));
+            tests.add(new CommandTest(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL), ExpectedValue.SUCCESS));
             List<Test> ecdhTests = new LinkedList<>();
             for (EC_Key.Public pub : keys) {
                 Command ecdhCommand = new Command.ECDH_direct(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ANY, pub.flatten());
-                ecdhTests.add(new SimpleTest(ecdhCommand, ExpectedValue.FAILURE, "Card correctly rejected point on invalid curve." , "Card incorrectly accepted point on invalid curve."));
+                ecdhTests.add(new CommandTest(ecdhCommand, ExpectedValue.FAILURE, "Card correctly rejected point on invalid curve." , "Card incorrectly accepted point on invalid curve."));
             }
             tests.add(CompoundTest.all(ExpectedValue.SUCCESS, "Invalid curve test of " + curve.getId(), ecdhTests.toArray(new Test[0])));
-            tests.add(new SimpleTest(new Command.Cleanup(cardManager), ExpectedValue.ANY));
+            tests.add(new CommandTest(new Command.Cleanup(cardManager), ExpectedValue.ANY));
         }
     }
 }

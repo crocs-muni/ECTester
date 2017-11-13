@@ -2,7 +2,7 @@ package cz.crcs.ectester.reader.output;
 
 import cz.crcs.ectester.common.test.CompoundTest;
 import cz.crcs.ectester.common.test.Test;
-import cz.crcs.ectester.reader.test.SimpleTest;
+import cz.crcs.ectester.reader.test.CommandTest;
 import cz.crcs.ectester.reader.test.TestSuite;
 
 import java.io.PrintStream;
@@ -33,8 +33,8 @@ public class TextTestWriter implements TestWriter {
         }
 
         StringBuilder out = new StringBuilder();
-        if (t instanceof SimpleTest) {
-            SimpleTest test = (SimpleTest) t;
+        if (t instanceof CommandTest) {
+            CommandTest test = (CommandTest) t;
             out.append(test.ok() ? "OK  " : "NOK ");
             out.append("━ ");
             int width = BASE_WIDTH - (offset + out.length());

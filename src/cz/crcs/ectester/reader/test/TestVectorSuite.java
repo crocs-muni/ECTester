@@ -61,12 +61,12 @@ public class TestVectorSuite extends TestSuite {
             }
             List<Test> testVector = new LinkedList<>();
 
-            testVector.add(new SimpleTest(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS));
-            testVector.add(new SimpleTest(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.SUCCESS));
+            testVector.add(new CommandTest(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS));
+            testVector.add(new CommandTest(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.SUCCESS));
             //tests.add(new Test.Simple(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH), ExpectedValue.SUCCESS));
-            testVector.add(new SimpleTest(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, onekey.flatten(EC_Consts.PARAMETER_S)), ExpectedValue.SUCCESS));
-            testVector.add(new SimpleTest(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_W, otherkey.flatten(EC_Consts.PARAMETER_W)), ExpectedValue.SUCCESS));
-            testVector.add(new SimpleTest(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, result.getKA()), (command, response) -> {
+            testVector.add(new CommandTest(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, onekey.flatten(EC_Consts.PARAMETER_S)), ExpectedValue.SUCCESS));
+            testVector.add(new CommandTest(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_W, otherkey.flatten(EC_Consts.PARAMETER_W)), ExpectedValue.SUCCESS));
+            testVector.add(new CommandTest(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, result.getKA()), (command, response) -> {
                 Response.ECDH dh = (Response.ECDH) response;
                 if (!dh.successful())
                     return new Result(Value.FAILURE, "ECDH was unsuccessful.");
@@ -79,7 +79,7 @@ public class TestVectorSuite extends TestSuite {
                 return new Result(Value.SUCCESS);
             }));
             tests.add(CompoundTest.all(ExpectedValue.SUCCESS, "Test vector " + result.getId(), testVector.toArray(new Test[0])));
-            tests.add(new SimpleTest(new Command.Cleanup(cardManager), ExpectedValue.ANY));
+            tests.add(new CommandTest(new Command.Cleanup(cardManager), ExpectedValue.ANY));
 
         }
     }
