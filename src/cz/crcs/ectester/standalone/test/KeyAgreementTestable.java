@@ -17,7 +17,7 @@ public class KeyAgreementTestable implements Testable {
     private ECPublicKey publicKey;
     private byte[] secret;
     private boolean hasRun;
-    private boolean error;
+    private boolean error = false;
     private boolean ok;
 
     public KeyAgreementTestable(KeyAgreement ka, ECPrivateKey privateKey, ECPublicKey publicKey) {
@@ -51,7 +51,6 @@ public class KeyAgreementTestable implements Testable {
         } catch (InvalidKeyException ikex) {
             throw new TestException(ikex);
         } catch (IllegalStateException isex) {
-            error = true;
             ok = false;
             hasRun = true;
             return;
@@ -60,12 +59,12 @@ public class KeyAgreementTestable implements Testable {
         try {
             secret = ka.generateSecret();
         } catch (IllegalStateException isex) {
-            error = true;
             ok = false;
             hasRun = true;
             return;
         }
         ok = true;
+        hasRun = true;
     }
 
     @Override

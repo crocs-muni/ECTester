@@ -41,6 +41,10 @@ public class KeyAgreementTest extends Test {
         });
     }
 
+    public static KeyAgreementTest function(KeyAgreementTestable ka, TestCallback<KeyAgreementTestable> callback) {
+        return new KeyAgreementTest(ka, callback);
+    }
+
     @Override
     public String getDescription() {
         return null;
