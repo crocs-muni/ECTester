@@ -3,12 +3,17 @@ package cz.crcs.ectester.standalone;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.data.EC_Store;
+import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
 import cz.crcs.ectester.standalone.libs.BouncyCastleLib;
 import cz.crcs.ectester.standalone.libs.ECLibrary;
+import cz.crcs.ectester.standalone.libs.JavaECLibrary;
 import cz.crcs.ectester.standalone.libs.SunECLib;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 /**
@@ -45,9 +50,23 @@ public class ECTesterStandalone {
             cfg = new Config();
             dataStore = new EC_Store();
             for (ECLibrary lib : libs) {
-                lib.initialize();
-                lib.getECKAs();
-                lib.getECSigs();
+                if (lib instanceof JavaECLibrary) {
+                    JavaECLibrary jlib = (JavaECLibrary) lib;
+                    lib.initialize();
+                    lib.getECKAs();
+                    lib.getECSigs();
+                    for (KeyPairGeneratorIdent ident : lib.getKPGs()) {
+                        try {
+                            KeyPairGenerator kpg = ident.getInstance(jlib.getProvider());
+                            kpg.initialize(192);
+                            KeyPair kp = kpg.genKeyPair();
+                            System.out.println(kp);
+                        } catch (NoSuchAlgorithmException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
             }
             System.out.println(Arrays.toString(libs));
 

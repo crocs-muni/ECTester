@@ -1,12 +1,15 @@
 package cz.crcs.ectester.standalone.libs;
 
+import cz.crcs.ectester.standalone.consts.Ident;
 import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
+import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
 import cz.crcs.ectester.standalone.consts.SignatureIdent;
 
 import java.security.Provider;
 import java.security.Security;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -39,34 +42,32 @@ public abstract class JavaECLibrary implements ECLibrary {
         return initialized;
     }
 
-    @Override
-    public Set<KeyAgreementIdent> getECKAs() {
-        Set<KeyAgreementIdent> results = new HashSet<>();
+    private <T extends Ident> Set<T> getIdents(String type, Function<String, T> getter) {
+        Set<T> results = new HashSet<>();
         for (Provider.Service service : provider.getServices()) {
-            if (service.getType().equals("KeyAgreement")) {
-                KeyAgreementIdent id = KeyAgreementIdent.get(service.getAlgorithm());
+            if (service.getType().equals(type)) {
+                T id = getter.apply(service.getAlgorithm());
                 if (id != null) {
                     results.add(id);
                 }
             }
         }
-        System.out.println(results);
         return results;
     }
 
     @Override
+    public Set<KeyAgreementIdent> getECKAs() {
+        return getIdents("KeyAgreement", KeyAgreementIdent::get);
+    }
+
+    @Override
     public Set<SignatureIdent> getECSigs() {
-        Set<SignatureIdent> results = new HashSet<>();
-        for (Provider.Service service : provider.getServices()) {
-            if (service.getType().equals("Signature")) {
-                SignatureIdent id = SignatureIdent.get(service.getAlgorithm());
-                if (id != null) {
-                    results.add(id);
-                }
-            }
-        }
-        System.out.println(results);
-        return results;
+        return getIdents("Signature", SignatureIdent::get);
+    }
+
+    @Override
+    public Set<KeyPairGeneratorIdent> getKPGs() {
+        return getIdents("KeyPairGenerator", KeyPairGeneratorIdent::get);
     }
 
     @Override
