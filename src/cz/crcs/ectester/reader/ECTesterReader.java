@@ -23,6 +23,7 @@ package cz.crcs.ectester.reader;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
+import cz.crcs.ectester.common.CLITools;
 import cz.crcs.ectester.common.Util;
 import cz.crcs.ectester.common.ec.EC_Category;
 import cz.crcs.ectester.common.ec.EC_Data;
@@ -79,11 +80,10 @@ public class ECTesterReader {
 
             //if help, print and quit
             if (cli.hasOption("help")) {
-                help();
+                CLITools.help("ECTesterReader.jar", CLI_HEADER, opts, CLI_FOOTER, true);
                 return;
             } else if (cli.hasOption("version")) {
-                System.out.println(DESCRIPTION);
-                System.out.println(LICENSE);
+                CLITools.version(DESCRIPTION, LICENSE);
                 return;
             }
             cfg = new Config();
@@ -96,7 +96,7 @@ public class ECTesterReader {
             dataStore = new EC_Store();
             //if list, print and quit
             if (cli.hasOption("list-named")) {
-                list();
+                CLITools.listNamed(dataStore, cli.getOptionValue("list-named"));
                 return;
             }
 
@@ -309,39 +309,6 @@ public class ECTesterReader {
 
         CommandLineParser parser = new DefaultParser();
         return parser.parse(opts, args);
-    }
-
-    /**
-     * Prints help.
-     */
-    private void help() {
-        HelpFormatter help = new HelpFormatter();
-        help.setOptionComparator(null);
-        help.printHelp("ECTesterReader.jar", CLI_HEADER, opts, CLI_FOOTER, true);
-    }
-
-    /**
-     * List categories and named curves.
-     */
-    private void list() {
-        Map<String, EC_Category> categories = dataStore.getCategories();
-        if (cfg.listNamed == null) {
-            // print all categories, briefly
-            for (EC_Category cat : categories.values()) {
-                System.out.println(cat);
-            }
-        } else if (categories.containsKey(cfg.listNamed)) {
-            // print given category
-            System.out.println(categories.get(cfg.listNamed));
-        } else {
-            // print given object
-            EC_Data object = dataStore.getObject(EC_Data.class, cfg.listNamed);
-            if (object != null) {
-                System.out.println(object);
-            } else {
-                System.err.println("Named object " + cfg.listNamed + " not found!");
-            }
-        }
     }
 
     /**

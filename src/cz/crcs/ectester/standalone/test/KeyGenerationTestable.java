@@ -6,14 +6,14 @@ import cz.crcs.ectester.common.test.Testable;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.ECParameterSpec;
 
 public class KeyGenerationTestable implements Testable {
 
     private KeyPair kp;
     private KeyPairGenerator kpg;
     private int keysize;
-    private AlgorithmParameterSpec spec;
+    private ECParameterSpec spec;
     private boolean hasRun;
     private boolean error = false;
     private boolean ok;
@@ -23,7 +23,7 @@ public class KeyGenerationTestable implements Testable {
         this.keysize = keysize;
     }
 
-    public KeyGenerationTestable(KeyPairGenerator kpg, AlgorithmParameterSpec spec) {
+    public KeyGenerationTestable(KeyPairGenerator kpg, ECParameterSpec spec) {
         this.kpg = kpg;
         this.spec = spec;
     }
