@@ -1,11 +1,14 @@
-package cz.crcs.ectester.common;
+package cz.crcs.ectester.common.cli;
 
 import cz.crcs.ectester.common.ec.EC_Category;
 import cz.crcs.ectester.common.ec.EC_Data;
 import cz.crcs.ectester.data.EC_Store;
+import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Map;
 
 /**
@@ -20,6 +23,37 @@ public class CLITools {
         HelpFormatter help = new HelpFormatter();
         help.setOptionComparator(null);
         help.printHelp(prog, header, options, footer, usage);
+    }
+
+    private static void help(HelpFormatter help, PrintWriter pw, CommandLineParser cli, int depth) {
+        if (cli instanceof TreeParser) {
+            TreeParser tp = (TreeParser) cli;
+            tp.getParsers().forEach((key, value) -> {
+                help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, String.format("%" + String.valueOf(depth) + "s" + key + ":", " "));
+                help.printOptions(pw, HelpFormatter.DEFAULT_WIDTH, value.getOptions(), HelpFormatter.DEFAULT_LEFT_PAD + depth, HelpFormatter.DEFAULT_DESC_PAD);
+                pw.println();
+                CLITools.help(help, pw, value.getParser(), depth + 1);
+            });
+        }
+    }
+
+    /**
+     * Print tree help.
+     */
+    public static void help(String prog, String header, Options baseOpts, TreeParser baseParser, String footer, boolean usage) {
+        HelpFormatter help = new HelpFormatter();
+        help.setOptionComparator(null);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        if (usage) {
+            help.printUsage(pw, HelpFormatter.DEFAULT_WIDTH, prog, baseOpts);
+        }
+        help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, header);
+        help.printOptions(pw, HelpFormatter.DEFAULT_WIDTH, baseOpts, HelpFormatter.DEFAULT_LEFT_PAD, HelpFormatter.DEFAULT_DESC_PAD);
+        pw.println();
+        help(help, pw, baseParser, 1);
+        help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, footer);
+        System.out.println(sw.toString());
     }
 
     /**

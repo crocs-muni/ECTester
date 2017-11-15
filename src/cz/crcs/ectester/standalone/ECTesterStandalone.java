@@ -1,8 +1,7 @@
 package cz.crcs.ectester.standalone;
 
-import cz.crcs.ectester.applet.EC_Consts;
-import cz.crcs.ectester.common.CLITools;
-import cz.crcs.ectester.common.ec.EC_Curve;
+import cz.crcs.ectester.common.cli.CLITools;
+import cz.crcs.ectester.common.test.Result;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
 import cz.crcs.ectester.standalone.libs.BouncyCastleLib;
