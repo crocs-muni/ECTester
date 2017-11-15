@@ -37,16 +37,43 @@ public class CLITools {
         }
     }
 
+    private static void usage(HelpFormatter help, PrintWriter pw, CommandLineParser cli, Options opts) {
+        StringWriter sw = new StringWriter();
+        PrintWriter upw = new PrintWriter(sw);
+        help.printUsage(upw, HelpFormatter.DEFAULT_WIDTH, "", opts);
+        upw.print(" ");
+        if (cli instanceof TreeParser) {
+            TreeParser tp = (TreeParser) cli;
+            if (!tp.isRequired()) {
+                upw.print("[ ");
+            }
+            tp.getParsers().forEach((key, value) -> {
+                upw.print("( " + key + " ");
+                usage(help, upw, value.getParser(), value.getOptions());
+                upw.print(")");
+            });
+            if (!tp.isRequired()) {
+                upw.print(" ]");
+            }
+        }
+        pw.println(sw.toString().substring(8).replace("\n", ""));
+    }
+
     /**
      * Print tree help.
      */
-    public static void help(String prog, String header, Options baseOpts, TreeParser baseParser, String footer, boolean usage) {
+    public static void help(String prog, String header, Options baseOpts, TreeParser baseParser, String footer, boolean printUsage) {
         HelpFormatter help = new HelpFormatter();
         help.setOptionComparator(null);
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
-        if (usage) {
-            help.printUsage(pw, HelpFormatter.DEFAULT_WIDTH, prog, baseOpts);
+        if (printUsage) {
+            StringWriter uw = new StringWriter();
+            PrintWriter upw = new PrintWriter(uw);
+            usage(help, upw, baseParser, baseOpts);
+            pw.print(prog + " usage: ");
+            help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, uw.toString());
+            upw.close();
         }
         help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, header);
         help.printOptions(pw, HelpFormatter.DEFAULT_WIDTH, baseOpts, HelpFormatter.DEFAULT_LEFT_PAD, HelpFormatter.DEFAULT_DESC_PAD);
