@@ -2,10 +2,7 @@ package cz.crcs.ectester.common.cli;
 
 import org.apache.commons.cli.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -50,11 +47,27 @@ public class TreeParser implements CommandLineParser {
         String sub = null;
         if (args.length != 0) {
             sub = args[0];
-            ParserOptions subparser = parsers.get(sub);
-            if (subparser != null) {
+
+            List<String> matches = new LinkedList<>();
+            String finalSub = sub;
+            for (Map.Entry<String, ParserOptions> entry : parsers.entrySet()) {
+                if (entry.getKey().equalsIgnoreCase(finalSub)) {
+                    matches.clear();
+                    matches.add(finalSub);
+                    break;
+                } else if (entry.getKey().startsWith(finalSub)) {
+                    matches.add(entry.getKey());
+                }
+            }
+
+            if (matches.size() == 1) {
+                sub = matches.get(0);
+                ParserOptions subparser = parsers.get(sub);
                 String[] remainingArgs = new String[args.length - 1];
                 System.arraycopy(args, 1, remainingArgs, 0, args.length - 1);
                 subCli = subparser.getParser().parse(subparser.getOptions(), remainingArgs, true);
+            } else if (matches.size() > 1) {
+                throw new UnrecognizedOptionException("Ambiguous option: " + sub + ", couldn't match. Partially matches: " + String.join(",", matches.toArray(new String[0])) + ".", sub);
             }
         } else {
             if (required) {
