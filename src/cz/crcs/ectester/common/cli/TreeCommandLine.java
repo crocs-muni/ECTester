@@ -57,7 +57,7 @@ public class TreeCommandLine extends CommandLine {
 
     private <T> T getOption(String opt, BiFunction<CommandLine, String, T> getter, T defaultValue) {
         if (opt.contains(".")) {
-            String[] parts = opt.split(".", 2);
+            String[] parts = opt.split("\\.", 2);
             if (next != null && parts[0].equals(next.getName())) {
                 return getter.apply(next, parts[1]);
             }
