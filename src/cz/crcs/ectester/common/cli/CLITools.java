@@ -25,14 +25,20 @@ public class CLITools {
         help.printHelp(prog, header, options, footer, usage);
     }
 
-    private static void help(HelpFormatter help, PrintWriter pw, CommandLineParser cli, int depth) {
+    private static void help(HelpFormatter help, PrintWriter pw, CommandLineParser cli, Options opts, int depth) {
+        if (opts.getOptions().size() > 0) {
+            help.printOptions(pw, HelpFormatter.DEFAULT_WIDTH, opts, HelpFormatter.DEFAULT_LEFT_PAD + depth, HelpFormatter.DEFAULT_DESC_PAD);
+        }
         if (cli instanceof TreeParser) {
             TreeParser tp = (TreeParser) cli;
+            for (Argument arg : tp.getArgs()) {
+                String argname = arg.isRequired() ? "<" + arg.getName() + ">" : "[" + arg.getName() + "]";
+                help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, String.format("%" + (depth + 1) + "s" + argname + "   " + arg.getDesc(), " "));
+            }
             tp.getParsers().forEach((key, value) -> {
-                help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, String.format("%" + String.valueOf(depth) + "s" + key + ":", " "));
-                help.printOptions(pw, HelpFormatter.DEFAULT_WIDTH, value.getOptions(), HelpFormatter.DEFAULT_LEFT_PAD + depth, HelpFormatter.DEFAULT_DESC_PAD);
                 pw.println();
-                CLITools.help(help, pw, value.getParser(), depth + 1);
+                help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, String.format("%" + depth + "s" + key + ":", " "));
+                CLITools.help(help, pw, value.getParser(), value.getOptions(), depth + 1);
             });
         }
     }
@@ -41,22 +47,37 @@ public class CLITools {
         StringWriter sw = new StringWriter();
         PrintWriter upw = new PrintWriter(sw);
         help.printUsage(upw, HelpFormatter.DEFAULT_WIDTH, "", opts);
-        upw.print(" ");
         if (cli instanceof TreeParser) {
+            upw.print(" ");
             TreeParser tp = (TreeParser) cli;
-            if (!tp.isRequired()) {
+            String[] keys = tp.getParsers().keySet().toArray(new String[tp.getParsers().size()]);
+            if (keys.length > 0 && !tp.isRequired()) {
                 upw.print("[ ");
             }
-            tp.getParsers().forEach((key, value) -> {
-                upw.print("( " + key + " ");
+
+            for (int i = 0; i < keys.length; ++i) {
+                String key = keys[i];
+                ParserOptions value = tp.getParsers().get(key);
+                upw.print("(" + key);
                 usage(help, upw, value.getParser(), value.getOptions());
                 upw.print(")");
-            });
-            if (!tp.isRequired()) {
+                if (i != keys.length - 1) {
+                    upw.print(" | ");
+                }
+            }
+            Argument[] args = tp.getArgs().toArray(new Argument[tp.getArgs().size()]);
+            String[] argss = new String[tp.getArgs().size()];
+            for (int i = 0; i < args.length; ++i) {
+                Argument arg = args[i];
+                argss[i] = arg.isRequired() ? "<" + arg.getName() + ">" : "[" + arg.getName() + "]";
+            }
+            upw.print(String.join(" ", argss));
+
+            if (keys.length > 0 && !tp.isRequired()) {
                 upw.print(" ]");
             }
         }
-        pw.println(sw.toString().substring(8).replace("\n", ""));
+        pw.println(sw.toString().replaceAll("usage:( )?", "").replace("\n", ""));
     }
 
     /**
@@ -67,18 +88,17 @@ public class CLITools {
         help.setOptionComparator(null);
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
+        help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, header);
         if (printUsage) {
             StringWriter uw = new StringWriter();
             PrintWriter upw = new PrintWriter(uw);
             usage(help, upw, baseParser, baseOpts);
-            pw.print(prog + " usage: ");
+            pw.print("usage: " + prog);
             help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, uw.toString());
             upw.close();
+            pw.println();
         }
-        help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, header);
-        help.printOptions(pw, HelpFormatter.DEFAULT_WIDTH, baseOpts, HelpFormatter.DEFAULT_LEFT_PAD, HelpFormatter.DEFAULT_DESC_PAD);
-        pw.println();
-        help(help, pw, baseParser, 1);
+        help(help, pw, baseParser, baseOpts, 1);
         help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, footer);
         System.out.println(sw.toString());
     }

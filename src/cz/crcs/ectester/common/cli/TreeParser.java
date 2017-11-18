@@ -10,10 +10,16 @@ import java.util.*;
 public class TreeParser implements CommandLineParser {
     private Map<String, ParserOptions> parsers;
     private boolean required;
+    private List<Argument> args = Collections.emptyList();
 
     public TreeParser(Map<String, ParserOptions> parsers, boolean required) {
         this.parsers = parsers;
         this.required = required;
+    }
+
+    public TreeParser(Map<String, ParserOptions> parsers, boolean required, List<Argument> args) {
+        this(parsers, required);
+        this.args = args;
     }
 
     public Map<String, ParserOptions> getParsers() {
@@ -24,21 +30,25 @@ public class TreeParser implements CommandLineParser {
         return required;
     }
 
+    public List<Argument> getArgs() {
+        return Collections.unmodifiableList(args);
+    }
+
     @Override
-    public CommandLine parse(Options options, String[] arguments) throws ParseException {
+    public TreeCommandLine parse(Options options, String[] arguments) throws ParseException {
         return this.parse(options, arguments, null);
     }
 
-    public CommandLine parse(Options options, String[] arguments, Properties properties) throws ParseException {
+    public TreeCommandLine parse(Options options, String[] arguments, Properties properties) throws ParseException {
         return this.parse(options, arguments, properties, false);
     }
 
     @Override
-    public CommandLine parse(Options options, String[] arguments, boolean stopAtNonOption) throws ParseException {
+    public TreeCommandLine parse(Options options, String[] arguments, boolean stopAtNonOption) throws ParseException {
         return this.parse(options, arguments, null, stopAtNonOption);
     }
 
-    public CommandLine parse(Options options, String[] arguments, Properties properties, boolean stopAtNonOption) throws ParseException {
+    public TreeCommandLine parse(Options options, String[] arguments, Properties properties, boolean stopAtNonOption) throws ParseException {
         DefaultParser thisParser = new DefaultParser();
         CommandLine cli = thisParser.parse(options, arguments, properties, true);
 
@@ -67,7 +77,7 @@ public class TreeParser implements CommandLineParser {
                 System.arraycopy(args, 1, remainingArgs, 0, args.length - 1);
                 subCli = subparser.getParser().parse(subparser.getOptions(), remainingArgs, true);
             } else if (matches.size() > 1) {
-                throw new UnrecognizedOptionException("Ambiguous option: " + sub + ", couldn't match. Partially matches: " + String.join(",", matches.toArray(new String[0])) + ".", sub);
+                throw new AmbiguousOptionException(sub, matches);
             }
         } else {
             if (required) {

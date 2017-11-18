@@ -5,6 +5,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.function.BiFunction;
 
@@ -43,6 +45,10 @@ public class TreeCommandLine extends CommandLine {
 
     public TreeCommandLine getNext() {
         return next;
+    }
+
+    public boolean isNext(String next) {
+        return Objects.equals(getNextName(), next);
     }
 
     public CommandLine getThis() {
@@ -130,5 +136,22 @@ public class TreeCommandLine extends CommandLine {
     @Override
     public Option[] getOptions() {
         return cli.getOptions();
+    }
+
+    public String getArg(int index) {
+        if (index < 0 || index >= cli.getArgs().length) {
+            return null;
+        }
+        return cli.getArgs()[index];
+    }
+
+    @Override
+    public String[] getArgs() {
+        return cli.getArgs();
+    }
+
+    @Override
+    public List<String> getArgList() {
+        return cli.getArgList();
     }
 }
