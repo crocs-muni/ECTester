@@ -24,6 +24,10 @@ public abstract class Ident {
         return Collections.unmodifiableSet(idents);
     }
 
+    public boolean contains(String other) {
+        return name.equals(other) || idents.contains(other);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

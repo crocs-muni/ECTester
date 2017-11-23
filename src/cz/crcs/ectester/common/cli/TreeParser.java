@@ -3,6 +3,7 @@ package cz.crcs.ectester.common.cli;
 import org.apache.commons.cli.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -53,10 +54,10 @@ public class TreeParser implements CommandLineParser {
         CommandLine cli = thisParser.parse(options, arguments, properties, true);
 
         CommandLine subCli = null;
-        String[] args = cli.getArgs();
+        String[] cliArgs = cli.getArgs();
         String sub = null;
-        if (args.length != 0) {
-            sub = args[0];
+        if (cliArgs.length != 0) {
+            sub = cliArgs[0];
 
             List<String> matches = new LinkedList<>();
             String finalSub = sub;
@@ -73,8 +74,8 @@ public class TreeParser implements CommandLineParser {
             if (matches.size() == 1) {
                 sub = matches.get(0);
                 ParserOptions subparser = parsers.get(sub);
-                String[] remainingArgs = new String[args.length - 1];
-                System.arraycopy(args, 1, remainingArgs, 0, args.length - 1);
+                String[] remainingArgs = new String[cliArgs.length - 1];
+                System.arraycopy(cliArgs, 1, remainingArgs, 0, cliArgs.length - 1);
                 subCli = subparser.getParser().parse(subparser.getOptions(), remainingArgs, true);
             } else if (matches.size() > 1) {
                 throw new AmbiguousOptionException(sub, matches);
@@ -84,14 +85,35 @@ public class TreeParser implements CommandLineParser {
                 throw new MissingOptionException(new ArrayList(parsers.keySet()));
             }
         }
+
+        long requiredArgs = args.stream().filter(Argument::isRequired).count();
+        String reqArgs = String.join(" ", args.stream().filter(Argument::isRequired).map(Argument::getName).collect(Collectors.toList()));
+
         if (subCli instanceof TreeCommandLine) {
             TreeCommandLine subTreeCli = (TreeCommandLine) subCli;
+
+            TreeCommandLine lastCli = subTreeCli;
+            while (lastCli.getNext() != null) {
+                lastCli = lastCli.getNext();
+            }
+
+            if (lastCli.getArgs().length < requiredArgs) {
+                throw new MissingArgumentException("Not enough arguments: " + reqArgs);
+            }
+
             subTreeCli.setName(sub);
             return new TreeCommandLine(cli, subTreeCli);
         } else if (subCli != null) {
+            if (subCli.getArgs().length < requiredArgs) {
+                throw new MissingArgumentException("Not enough arguments: " + reqArgs);
+            }
+
             TreeCommandLine subTreeCli = new TreeCommandLine(sub, subCli, null);
             return new TreeCommandLine(cli, subTreeCli);
         } else {
+            if (cliArgs.length < requiredArgs) {
+                throw new MissingArgumentException("Not enough arguments: " + reqArgs);
+            }
             return new TreeCommandLine(cli, null);
         }
     }

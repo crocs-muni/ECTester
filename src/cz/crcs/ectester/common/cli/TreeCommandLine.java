@@ -3,6 +3,7 @@ package cz.crcs.ectester.common.cli;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
+import sun.reflect.generics.tree.Tree;
 
 import java.util.Iterator;
 import java.util.List;
@@ -55,11 +56,21 @@ public class TreeCommandLine extends CommandLine {
         return cli;
     }
 
+    public int getDepth() {
+        if (next == null) {
+            return 0;
+        }
+        return next.getDepth() + 1;
+    }
+
     private <T> T getOption(String opt, BiFunction<CommandLine, String, T> getter, T defaultValue) {
         if (opt.contains(".")) {
             String[] parts = opt.split("\\.", 2);
             if (next != null && parts[0].equals(next.getName())) {
-                return getter.apply(next, parts[1]);
+                T result = getter.apply(next, parts[1]);
+                if (result != null)
+                    return result;
+                return defaultValue;
             }
             return defaultValue;
         }
@@ -138,11 +149,21 @@ public class TreeCommandLine extends CommandLine {
         return cli.getOptions();
     }
 
+    public boolean hasArg(int index) {
+        if (next != null) {
+            return next.hasArg(index);
+        }
+        return Math.abs(index) < cli.getArgs().length;
+    }
+
     public String getArg(int index) {
-        if (index < 0 || index >= cli.getArgs().length) {
+        if (next != null) {
+            return next.getArg(index);
+        }
+        if (index >= cli.getArgs().length) {
             return null;
         }
-        return cli.getArgs()[index];
+        return index < 0 ? cli.getArgs()[cli.getArgs().length + index] : cli.getArgs()[index];
     }
 
     @Override
