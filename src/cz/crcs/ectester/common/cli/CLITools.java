@@ -65,16 +65,19 @@ public class CLITools {
                     upw.print(" | ");
                 }
             }
-            Argument[] args = tp.getArgs().toArray(new Argument[tp.getArgs().size()]);
-            String[] argss = new String[tp.getArgs().size()];
-            for (int i = 0; i < args.length; ++i) {
-                Argument arg = args[i];
-                argss[i] = arg.isRequired() ? "<" + arg.getName() + ">" : "[" + arg.getName() + "]";
-            }
-            upw.print(String.join(" ", argss));
 
             if (keys.length > 0 && !tp.isRequired()) {
                 upw.print(" ]");
+            }
+
+            Argument[] args = tp.getArgs().toArray(new Argument[tp.getArgs().size()]);
+            if (args.length > 0) {
+                String[] argss = new String[tp.getArgs().size()];
+                for (int i = 0; i < args.length; ++i) {
+                    Argument arg = args[i];
+                    argss[i] = arg.isRequired() ? "<" + arg.getName() + ">" : "[" + arg.getName() + "]";
+                }
+                upw.print(" " + String.join(" ", argss));
             }
         }
         pw.println(sw.toString().replaceAll("usage:( )?", "").replace("\n", ""));
