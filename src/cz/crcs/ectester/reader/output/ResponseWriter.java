@@ -1,6 +1,6 @@
 package cz.crcs.ectester.reader.output;
 
-import cz.crcs.ectester.common.Util;
+import cz.crcs.ectester.common.util.CardUtil;
 import cz.crcs.ectester.reader.response.Response;
 
 import java.io.PrintStream;
@@ -20,11 +20,11 @@ public class ResponseWriter {
         for (int j = 0; j < r.getNumSW(); ++j) {
             short sw = r.getSW(j);
             if (sw != 0) {
-                suffix.append(" ").append(Util.getSWString(sw));
+                suffix.append(" ").append(CardUtil.getSWString(sw));
             }
         }
         if (suffix.length() == 0) {
-            suffix.append(" [").append(Util.getSW(r.getNaturalSW())).append("]");
+            suffix.append(" [").append(CardUtil.getSW(r.getNaturalSW())).append("]");
         }
         return String.format("%4d ms ┃ %s", r.getDuration() / 1000000, suffix);
     }

@@ -5,10 +5,10 @@ import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.test.CompoundTest;
 import cz.crcs.ectester.common.test.Result;
 import cz.crcs.ectester.common.test.Test;
+import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
-import cz.crcs.ectester.common.Util;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.common.ec.*;
 import cz.crcs.ectester.reader.response.Response;
@@ -72,8 +72,8 @@ public class TestVectorSuite extends TestSuite {
                     return new Result(Value.FAILURE, "ECDH was unsuccessful.");
                 if (!dh.hasSecret())
                     return new Result(Value.FAILURE, "ECDH response did not contain the derived secret.");
-                if (!Util.compareBytes(dh.getSecret(), 0, result.getData(0), 0, dh.secretLength())) {
-                    int firstDiff = Util.diffBytes(dh.getSecret(), 0, result.getData(0), 0, dh.secretLength());
+                if (!ByteUtil.compareBytes(dh.getSecret(), 0, result.getData(0), 0, dh.secretLength())) {
+                    int firstDiff = ByteUtil.diffBytes(dh.getSecret(), 0, result.getData(0), 0, dh.secretLength());
                     return new Result(Value.FAILURE, "ECDH derived secret does not match the test, first difference was at byte " + String.valueOf(firstDiff) + ".");
                 }
                 return new Result(Value.SUCCESS);

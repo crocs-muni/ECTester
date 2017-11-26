@@ -1,6 +1,6 @@
 package cz.crcs.ectester.common.ec;
 
-import cz.crcs.ectester.common.Util;
+import cz.crcs.ectester.common.util.ByteUtil;
 
 import java.io.*;
 import java.util.*;
@@ -8,9 +8,10 @@ import java.util.regex.Pattern;
 
 /**
  * A list of byte arrays for holding EC data.
- *
+ * <p>
  * The data can be read from a byte array via <code>readBytes()</code>, from a CSV via <code>readCSV()</code>.
  * The data can be exported to a byte array via <code>flatten()</code> or to a string array via <code>expand()</code>.
+ *
  * @author Jan Jancar johny@neuromancer.sk
  */
 public abstract class EC_Data {
@@ -67,7 +68,7 @@ public abstract class EC_Data {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         for (byte[] param : data) {
             byte[] length = new byte[2];
-            Util.setShort(length, 0, (short) param.length);
+            ByteUtil.setShort(length, 0, (short) param.length);
 
             out.write(length, 0, 2);
             out.write(param, 0, param.length);
@@ -79,7 +80,7 @@ public abstract class EC_Data {
     public String[] expand() {
         List<String> out = new ArrayList<>(count);
         for (byte[] param : data) {
-            out.add(Util.bytesToHex(param, false));
+            out.add(ByteUtil.bytesToHex(param, false));
         }
 
         return out.toArray(new String[out.size()]);
@@ -97,9 +98,9 @@ public abstract class EC_Data {
     private static byte[] parse(String param) {
         byte[] data;
         if (param.startsWith("0x") || param.startsWith("0X")) {
-            data = Util.hexToBytes(param.substring(2));
+            data = ByteUtil.hexToBytes(param.substring(2));
         } else {
-            data = Util.hexToBytes(param);
+            data = ByteUtil.hexToBytes(param);
         }
         if (data == null)
             return new byte[0];
@@ -141,12 +142,16 @@ public abstract class EC_Data {
     }
 
     public boolean readBytes(byte[] bytes) {
+        if (bytes == null) {
+            return false;
+        }
+
         int offset = 0;
         for (int i = 0; i < count; i++) {
             if (bytes.length - offset < 2) {
                 return false;
             }
-            short paramLength = Util.getShort(bytes, offset);
+            short paramLength = ByteUtil.getShort(bytes, offset);
             offset += 2;
             if (bytes.length < offset + paramLength) {
                 return false;
@@ -154,6 +159,18 @@ public abstract class EC_Data {
             data[i] = new byte[paramLength];
             System.arraycopy(bytes, offset, data[i], 0, paramLength);
             offset += paramLength;
+        }
+        return true;
+    }
+
+    public boolean readByteArray(byte[][] bytes) {
+        if (bytes == null || count != bytes.length) {
+            return false;
+        }
+
+        for (int i = 0; i < count; ++i) {
+            data[i] = new byte[bytes[i].length];
+            System.arraycopy(bytes[i], 0, data[i], 0, bytes[i].length);
         }
         return true;
     }

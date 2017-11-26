@@ -1,7 +1,7 @@
 package cz.crcs.ectester.common.ec;
 
 import cz.crcs.ectester.applet.EC_Consts;
-import cz.crcs.ectester.common.Util;
+import cz.crcs.ectester.common.util.ByteUtil;
 import javacard.security.KeyPair;
 
 import java.math.BigInteger;
@@ -60,10 +60,10 @@ public class EC_Curve extends EC_Params {
             field = new ECFieldFp(new BigInteger(1, getData(0)));
         } else {
             byte[][] fieldData = getParam(EC_Consts.PARAMETER_F2M);
-            int m = Util.getShort(fieldData[0], 0);
-            int e1 = Util.getShort(fieldData[1], 0);
-            int e2 = Util.getShort(fieldData[2], 0);
-            int e3 = Util.getShort(fieldData[3], 0);
+            int m = ByteUtil.getShort(fieldData[0], 0);
+            int e1 = ByteUtil.getShort(fieldData[1], 0);
+            int e2 = ByteUtil.getShort(fieldData[2], 0);
+            int e3 = ByteUtil.getShort(fieldData[3], 0);
             int[] powers = new int[]{e1, e2, e3};
             field = new ECFieldF2m(m, powers);
         }
@@ -80,8 +80,50 @@ public class EC_Curve extends EC_Params {
 
         BigInteger n = new BigInteger(1, getParam(EC_Consts.PARAMETER_R)[0]);
 
-        int h = Util.getShort(getParam(EC_Consts.PARAMETER_K)[0], 0);
+        int h = ByteUtil.getShort(getParam(EC_Consts.PARAMETER_K)[0], 0);
 
         return new ECParameterSpec(curve, generator, n, h);
+    }
+
+    public static EC_Curve fromSpec(ECParameterSpec spec) {
+        EllipticCurve curve = spec.getCurve();
+        ECField field = curve.getField();
+
+        short bits = (short) field.getFieldSize();
+        byte[][] params;
+        int paramIndex = 0;
+        byte fieldType;
+        if (field instanceof ECFieldFp) {
+            ECFieldFp primeField = (ECFieldFp) field;
+            params = new byte[5][];
+            params[paramIndex++] = primeField.getP().toByteArray();
+            fieldType = KeyPair.ALG_EC_FP;
+        } else if (field instanceof ECFieldF2m) {
+            ECFieldF2m binaryField = (ECFieldF2m) field;
+            params = new byte[8][];
+            params[paramIndex] = new byte[2];
+            ByteUtil.setShort(params[paramIndex++], 0, (short) binaryField.getM());
+            int[] powers = binaryField.getMidTermsOfReductionPolynomial();
+            for (int i = 0; i < 3; ++i) {
+                params[paramIndex] = new byte[2];
+                ByteUtil.setShort(params[paramIndex++], 0, (short) powers[i]);
+            }
+            fieldType = KeyPair.ALG_EC_F2M;
+        } else {
+            throw new IllegalArgumentException("ECParameterSpec with an unknnown field.");
+        }
+
+        ECPoint generator = spec.getGenerator();
+
+        params[paramIndex++] = generator.getAffineX().toByteArray();
+        params[paramIndex++] = generator.getAffineY().toByteArray();
+
+        params[paramIndex++] = spec.getOrder().toByteArray();
+        params[paramIndex] = new byte[2];
+        ByteUtil.setShort(params[paramIndex], 0, (short) spec.getCofactor());
+
+        EC_Curve result = new EC_Curve(bits, fieldType);
+        result.readByteArray(params);
+        return result;
     }
 }

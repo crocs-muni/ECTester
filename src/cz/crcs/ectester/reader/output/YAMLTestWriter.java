@@ -1,7 +1,7 @@
 package cz.crcs.ectester.reader.output;
 
 import cz.crcs.ectester.common.test.CompoundTest;
-import cz.crcs.ectester.common.Util;
+import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.common.test.Test;
@@ -44,14 +44,14 @@ public class YAMLTestWriter implements TestWriter {
 
     private Map<String, Object> commandObject(Command c) {
         Map<String, Object> commandObj = new HashMap<>();
-        commandObj.put("apdu", Util.bytesToHex(c.getAPDU().getBytes()));
+        commandObj.put("apdu", ByteUtil.bytesToHex(c.getAPDU().getBytes()));
         return commandObj;
     }
 
     private Map<String, Object> responseObject(Response r) {
         Map<String, Object> responseObj = new HashMap<>();
         responseObj.put("successful", r.successful());
-        responseObj.put("apdu", Util.bytesToHex(r.getAPDU().getBytes()));
+        responseObj.put("apdu", ByteUtil.bytesToHex(r.getAPDU().getBytes()));
         responseObj.put("natural_sw", Short.toUnsignedInt(r.getNaturalSW()));
         List<Integer> sws = new LinkedList<>();
         for (int i = 0; i < r.getNumSW(); ++i) {

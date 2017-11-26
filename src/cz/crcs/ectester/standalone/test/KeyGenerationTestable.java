@@ -12,11 +12,15 @@ public class KeyGenerationTestable implements Testable {
 
     private KeyPair kp;
     private KeyPairGenerator kpg;
-    private int keysize;
-    private ECParameterSpec spec;
+    private int keysize = 0;
+    private ECParameterSpec spec = null;
     private boolean hasRun;
     private boolean error = false;
     private boolean ok;
+
+    public KeyGenerationTestable(KeyPairGenerator kpg) {
+        this.kpg = kpg;
+    }
 
     public KeyGenerationTestable(KeyPairGenerator kpg, int keysize) {
         this.kpg = kpg;
@@ -42,7 +46,7 @@ public class KeyGenerationTestable implements Testable {
         try {
             if (spec != null) {
                 kpg.initialize(spec);
-            } else {
+            } else if (keysize != 0) {
                 kpg.initialize(keysize);
             }
         } catch (InvalidAlgorithmParameterException e) {

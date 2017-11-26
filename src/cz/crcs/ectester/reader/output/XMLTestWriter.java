@@ -1,7 +1,7 @@
 package cz.crcs.ectester.reader.output;
 
 import cz.crcs.ectester.common.test.CompoundTest;
-import cz.crcs.ectester.common.Util;
+import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.common.test.Test;
@@ -51,7 +51,7 @@ public class XMLTestWriter implements TestWriter {
         Element commandElem = doc.createElement("command");
 
         Element apdu = doc.createElement("apdu");
-        apdu.setTextContent(Util.bytesToHex(c.getAPDU().getBytes()));
+        apdu.setTextContent(ByteUtil.bytesToHex(c.getAPDU().getBytes()));
         commandElem.appendChild(apdu);
 
         return commandElem;
@@ -62,7 +62,7 @@ public class XMLTestWriter implements TestWriter {
         responseElem.setAttribute("successful", r.successful() ? "true" : "false");
 
         Element apdu = doc.createElement("apdu");
-        apdu.setTextContent(Util.bytesToHex(r.getAPDU().getBytes()));
+        apdu.setTextContent(ByteUtil.bytesToHex(r.getAPDU().getBytes()));
         responseElem.appendChild(apdu);
 
         Element naturalSW = doc.createElement("natural-sw");

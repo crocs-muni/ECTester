@@ -24,10 +24,10 @@ package cz.crcs.ectester.reader;
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.cli.CLITools;
-import cz.crcs.ectester.common.Util;
 import cz.crcs.ectester.common.ec.EC_Params;
 import cz.crcs.ectester.common.output.OutputLogger;
 import cz.crcs.ectester.common.test.TestException;
+import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.output.*;
@@ -385,8 +385,8 @@ public class ECTesterReader {
             }
             respWriter.outputResponse(response);
 
-            String pub = Util.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_W), false);
-            String priv = Util.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S), false);
+            String pub = ByteUtil.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_W), false);
+            String priv = ByteUtil.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S), false);
             String line = String.format("%d;%d;%s;%s\n", generated, elapsed / 1000000, pub, priv);
             keysFile.write(line);
             keysFile.flush();
@@ -507,7 +507,7 @@ public class ECTesterReader {
             }
 
             if (out != null) {
-                out.write(String.format("%d;%d;%s\n", done, perform.getDuration() / 1000000, Util.bytesToHex(perform.getSecret(), false)));
+                out.write(String.format("%d;%d;%s\n", done, perform.getDuration() / 1000000, ByteUtil.bytesToHex(perform.getSecret(), false)));
             }
 
             ++done;
@@ -584,7 +584,7 @@ public class ECTesterReader {
             }
 
             if (out != null) {
-                out.write(String.format("%d;%d;%s\n", done, perform.getDuration() / 1000000, Util.bytesToHex(perform.getSignature(), false)));
+                out.write(String.format("%d;%d;%s\n", done, perform.getDuration() / 1000000, ByteUtil.bytesToHex(perform.getSignature(), false)));
             }
 
             ++done;

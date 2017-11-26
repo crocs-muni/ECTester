@@ -2,6 +2,7 @@ package cz.crcs.ectester.standalone;
 
 import cz.crcs.ectester.common.cli.*;
 import cz.crcs.ectester.common.ec.EC_Curve;
+import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
 import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
@@ -21,6 +22,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECParameterSpec;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,11 +51,11 @@ public class ECTesterStandalone {
         try {
             cli = parseArgs(args);
 
-            if (cli.hasOption("help") || cli.getNext() == null) {
-                CLITools.help("ECTesterStandalone.jar", CLI_HEADER, opts, optParser, CLI_FOOTER, true);
-                return;
-            } else if (cli.hasOption("version")) {
+            if (cli.hasOption("version")) {
                 CLITools.version(DESCRIPTION, LICENSE);
+                return;
+            } else if (cli.hasOption("help") || cli.getNext() == null) {
+                CLITools.help("ECTesterStandalone.jar", CLI_HEADER, opts, optParser, CLI_FOOTER, true);
                 return;
             }
 
@@ -209,12 +211,19 @@ public class ECTesterStandalone {
                     }
                     kpg.initialize(curve.toSpec());
                 }
+                System.out.println("index;time;pubW;privS");
 
                 int amount = Integer.parseInt(cli.getOptionValue("generate.amount", "1"));
                 for (int i = 0; i < amount; ++i) {
+                    long elapsed = -System.nanoTime();
                     KeyPair kp = kpg.genKeyPair();
+                    elapsed += System.nanoTime();
+                    ECPublicKey publicKey = (ECPublicKey) kp.getPublic();
                     ECPrivateKey privateKey = (ECPrivateKey) kp.getPrivate();
-                    System.out.println(privateKey);
+
+                    String pub = ByteUtil.bytesToHex(publicKey.getEncoded(), false);
+                    String priv = ByteUtil.bytesToHex(privateKey.getEncoded(), false);
+                    System.out.println(String.format("%d;%d;%s;%s", i, elapsed / 1000000, pub, priv));
                 }
             }
         }
@@ -253,6 +262,8 @@ public class ECTesterStandalone {
                 ECPrivateKey privateKey = (ECPrivateKey) kp.getPrivate();
                 ECParameterSpec params = privateKey.getParams();
                 System.out.println(params);
+                EC_Curve curve = EC_Curve.fromSpec(params);
+                System.out.println(curve);
             }
         }
     }
