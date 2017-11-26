@@ -1,7 +1,11 @@
 package cz.crcs.ectester.common.ec;
 
 import cz.crcs.ectester.applet.EC_Consts;
+import cz.crcs.ectester.common.Util;
 import javacard.security.KeyPair;
+
+import java.math.BigInteger;
+import java.security.spec.*;
 
 /**
  * An Elliptic curve, contains parameters Fp/F2M, A, B, G, R, (K)?.
@@ -48,5 +52,36 @@ public class EC_Curve extends EC_Params {
     @Override
     public String toString() {
         return "<" + getId() + "> " + (field == KeyPair.ALG_EC_FP ? "Prime" : "Binary") + " field Elliptic curve (" + String.valueOf(bits) + "b)" + (desc == null ? "" : ": " + desc);
+    }
+
+    public ECParameterSpec toSpec() {
+        ECField field;
+        if (this.field == KeyPair.ALG_EC_FP) {
+            field = new ECFieldFp(new BigInteger(1, getData(0)));
+        } else {
+            byte[][] fieldData = getParam(EC_Consts.PARAMETER_F2M);
+            int m = Util.getShort(fieldData[0], 0);
+            int e1 = Util.getShort(fieldData[1], 0);
+            int e2 = Util.getShort(fieldData[2], 0);
+            int e3 = Util.getShort(fieldData[3], 0);
+            int[] powers = new int[]{e1, e2, e3};
+            field = new ECFieldF2m(m, powers);
+        }
+
+        BigInteger a = new BigInteger(1, getParam(EC_Consts.PARAMETER_A)[0]);
+        BigInteger b = new BigInteger(1, getParam(EC_Consts.PARAMETER_B)[0]);
+
+        EllipticCurve curve = new EllipticCurve(field, a, b);
+
+        byte[][] G = getParam(EC_Consts.PARAMETER_G);
+        BigInteger gx = new BigInteger(1, G[0]);
+        BigInteger gy = new BigInteger(1, G[1]);
+        ECPoint generator = new ECPoint(gx, gy);
+
+        BigInteger n = new BigInteger(1, getParam(EC_Consts.PARAMETER_R)[0]);
+
+        int h = Util.getShort(getParam(EC_Consts.PARAMETER_K)[0], 0);
+
+        return new ECParameterSpec(curve, generator, n, h);
     }
 }

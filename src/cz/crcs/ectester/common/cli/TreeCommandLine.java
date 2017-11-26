@@ -3,7 +3,6 @@ package cz.crcs.ectester.common.cli;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
-import sun.reflect.generics.tree.Tree;
 
 import java.util.Iterator;
 import java.util.List;
@@ -150,20 +149,21 @@ public class TreeCommandLine extends CommandLine {
     }
 
     public boolean hasArg(int index) {
-        if (next != null) {
-            return next.hasArg(index);
-        }
-        return Math.abs(index) < cli.getArgs().length;
+        return getArg(index) != null;
     }
 
     public String getArg(int index) {
         if (next != null) {
             return next.getArg(index);
         }
-        if (index >= cli.getArgs().length) {
+        String[] args = cli.getArgs();
+        if (index >= args.length) {
             return null;
         }
-        return index < 0 ? cli.getArgs()[cli.getArgs().length + index] : cli.getArgs()[index];
+        if (index < 0 && -index > args.length) {
+            return null;
+        }
+        return index < 0 ? args[args.length + index] : args[index];
     }
 
     @Override

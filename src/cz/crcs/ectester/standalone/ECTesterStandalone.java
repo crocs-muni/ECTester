@@ -1,6 +1,7 @@
 package cz.crcs.ectester.standalone;
 
 import cz.crcs.ectester.common.cli.*;
+import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
 import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
@@ -13,12 +14,14 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import sun.reflect.generics.tree.Tree;
 
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,10 +32,9 @@ import java.util.stream.Collectors;
  * @version v0.1.0
  */
 public class ECTesterStandalone {
-
     private ECLibrary[] libs = new ECLibrary[]{new SunECLib(), new BouncyCastleLib()};
     private EC_Store dataStore;
-    private Config cfg = new Config();
+    private Config cfg;
 
     private Options opts = new Options();
     private TreeParser optParser;
@@ -55,7 +57,11 @@ public class ECTesterStandalone {
                 return;
             }
 
-            cfg.readOptions(cli);
+
+            cfg = new Config(libs);
+            if (!cfg.readOptions(cli)) {
+                return;
+            }
             dataStore = new EC_Store();
 
             if (cli.hasOption("list-named")) {
@@ -83,8 +89,10 @@ public class ECTesterStandalone {
 
             }
 
-        } catch (ParseException | IOException ex) {
+        } catch (ParseException | NoSuchAlgorithmException | IOException ex) {
             System.err.println(ex.getMessage());
+        } catch (InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
         }
     }
 
@@ -106,6 +114,7 @@ public class ECTesterStandalone {
         actions.put("ecdsa", ecdsa);
 
         Options generateOpts = new Options();
+        generateOpts.addOption(Option.builder("nc").longOpt("named-curve").desc("Use a named curve, from CurveDB: <cat/id>").hasArg().argName("cat/id").build());
         generateOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Generate [amount] of EC keys.").build());
         generateOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPairGenerator object [type].").build());
         generateOpts.addOption(Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").build());
@@ -139,39 +148,42 @@ public class ECTesterStandalone {
     /**
      *
      */
-    private void generate() {
-        if (!cli.hasArg(0)) {
-            System.err.println("Missing library name argument.");
-            return;
-        }
-        String libraryName = cli.getArg(0);
-
-        List<ECLibrary> matchedLibs = new LinkedList<>();
-        for (ECLibrary lib : libs) {
-            if (lib.name().toLowerCase().contains(libraryName.toLowerCase())) {
-                matchedLibs.add(lib);
+    private void generate() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+        if (cfg.selected instanceof JavaECLibrary) {
+            JavaECLibrary jlib = (JavaECLibrary) cfg.selected;
+            KeyPairGeneratorIdent ident = null;
+            String algo = cli.getOptionValue("generate.type", "EC");
+            for (KeyPairGeneratorIdent kpIdent : jlib.getKPGs()) {
+                if (kpIdent.contains(algo)) {
+                    ident = kpIdent;
+                    break;
+                }
             }
-        }
-        if (matchedLibs.size() == 0) {
-            System.err.println("No library found.");
-        } else if (matchedLibs.size() > 1) {
-            System.err.println("Multiple matching libraries found: " + String.join(",", matchedLibs.stream().map(ECLibrary::name).collect(Collectors.toList())));
-        } else {
-            ECLibrary lib = matchedLibs.get(0);
-            if (lib instanceof JavaECLibrary) {
-                JavaECLibrary jlib = (JavaECLibrary) lib;
-                for (KeyPairGeneratorIdent ident : lib.getKPGs()) {
-                    if (!ident.contains(cli.getOptionValue("generate.type", "EC"))) {
-                        continue;
+            if (ident == null) {
+                throw new NoSuchAlgorithmException(algo);
+            } else {
+                KeyPairGenerator kpg = ident.getInstance(jlib.getProvider());
+                if (cli.hasOption("generate.bits")) {
+                    int bits = Integer.parseInt(cli.getOptionValue("generate.bits", "256"));
+                    kpg.initialize(bits);
+                } else if (cli.hasOption("generate.named-curve")) {
+                    String curveName = cli.getOptionValue("generate.named-curve");
+                    EC_Curve curve = dataStore.getObject(EC_Curve.class, curveName);
+                    if (curve == null) {
+                        System.err.println("Curve not found: " + curveName);
+                        return;
                     }
-                    try {
-                        KeyPairGenerator kpg = ident.getInstance(jlib.getProvider());
-                        kpg.initialize(Integer.parseInt(cli.getOptionValue("generate.bits", "256")));
-                        KeyPair kp = kpg.genKeyPair();
-                        System.out.println(kp.getPrivate());
-                    } catch (NoSuchAlgorithmException e) {
-                        e.printStackTrace();
-                    }
+                    kpg.initialize(curve.toSpec());
+                } else {
+                    kpg.initialize(256);
+                }
+
+                int amount = Integer.parseInt(cli.getOptionValue("generate.amount", "1"));
+                for (int i = 0; i < amount; ++i) {
+                    KeyPair kp = kpg.genKeyPair();
+                    ECPrivateKey privateKey = (ECPrivateKey) kp.getPrivate();
+                    ECPublicKey publicKey = (ECPublicKey) kp.getPublic();
+                    System.out.println(privateKey);
                 }
             }
         }
@@ -182,7 +194,7 @@ public class ECTesterStandalone {
      */
     private void listLibraries() {
         for (ECLibrary lib : libs) {
-            if (lib.isInitialized()) {
+            if (lib.isInitialized() && (cfg.selected == null || lib == cfg.selected)) {
                 System.out.println("\t- " + lib.name());
                 Set<KeyPairGeneratorIdent> kpgs = lib.getKPGs();
                 if (!kpgs.isEmpty()) {
@@ -205,10 +217,49 @@ public class ECTesterStandalone {
         app.run(args);
     }
 
+
+    /**
+     *
+     */
     public static class Config {
-        public ECLibrary selected;
+        private ECLibrary[] libs;
+        public ECLibrary selected = null;
+
+        public Config(ECLibrary[] libs) {
+            this.libs = libs;
+        }
 
         boolean readOptions(TreeCommandLine cli) {
+            if (cli.isNext("generate")) {
+                if (!cli.hasArg(-1)) {
+                    System.err.println("Missing library name argument.");
+                    return false;
+                }
+
+                if (cli.hasOption("generate.bits") && cli.hasOption("generate.named-curve")) {
+                    System.err.println("");
+                    return false;
+                }
+            }
+
+            String libraryName = cli.getArg(-1);
+            if (libraryName != null) {
+                List<ECLibrary> matchedLibs = new LinkedList<>();
+                for (ECLibrary lib : libs) {
+                    if (lib.name().toLowerCase().contains(libraryName.toLowerCase())) {
+                        matchedLibs.add(lib);
+                    }
+                }
+                if (matchedLibs.size() == 0) {
+                    System.err.println("No library " + libraryName + " found.");
+                    return false;
+                } else if (matchedLibs.size() > 1) {
+                    System.err.println("Multiple matching libraries found: " + String.join(",", matchedLibs.stream().map(ECLibrary::name).collect(Collectors.toList())));
+                    return false;
+                } else {
+                    selected = matchedLibs.get(0);
+                }
+            }
 
             return true;
         }
