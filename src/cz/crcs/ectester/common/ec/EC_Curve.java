@@ -95,12 +95,12 @@ public class EC_Curve extends EC_Params {
         byte fieldType;
         if (field instanceof ECFieldFp) {
             ECFieldFp primeField = (ECFieldFp) field;
-            params = new byte[5][];
+            params = new byte[7][];
             params[paramIndex++] = primeField.getP().toByteArray();
             fieldType = KeyPair.ALG_EC_FP;
         } else if (field instanceof ECFieldF2m) {
             ECFieldF2m binaryField = (ECFieldF2m) field;
-            params = new byte[8][];
+            params = new byte[10][];
             params[paramIndex] = new byte[2];
             ByteUtil.setShort(params[paramIndex++], 0, (short) binaryField.getM());
             int[] powers = binaryField.getMidTermsOfReductionPolynomial();
@@ -110,10 +110,13 @@ public class EC_Curve extends EC_Params {
             }
             fieldType = KeyPair.ALG_EC_F2M;
         } else {
-            throw new IllegalArgumentException("ECParameterSpec with an unknnown field.");
+            throw new IllegalArgumentException("ECParameterSpec with an unknown field.");
         }
 
         ECPoint generator = spec.getGenerator();
+
+        params[paramIndex++] = curve.getA().toByteArray();
+        params[paramIndex++] = curve.getB().toByteArray();
 
         params[paramIndex++] = generator.getAffineX().toByteArray();
         params[paramIndex++] = generator.getAffineY().toByteArray();

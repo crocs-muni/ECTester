@@ -240,7 +240,7 @@ public class ECTesterStandalone {
     /**
      *
      */
-    private void export() throws NoSuchAlgorithmException {
+    private void export() throws NoSuchAlgorithmException, IOException {
         if (cfg.selected instanceof JavaECLibrary) {
             JavaECLibrary jlib = (JavaECLibrary) cfg.selected;
             KeyPairGeneratorIdent ident = null;
@@ -264,7 +264,7 @@ public class ECTesterStandalone {
                 ECParameterSpec params = privateKey.getParams();
                 System.out.println(params);
                 EC_Curve curve = EC_Curve.fromSpec(params);
-                System.out.println(curve);
+                curve.writeCSV(System.out);
             }
         }
     }
