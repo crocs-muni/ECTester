@@ -31,6 +31,8 @@ public class KeyPairGeneratorIdent extends Ident {
     }
 
     public KeyPairGenerator getInstance(Provider provider) throws NoSuchAlgorithmException {
-        return KeyPairGenerator.getInstance(name, provider);
+        KeyPairGenerator instance = KeyPairGenerator.getInstance(name, provider);
+        instance.getProvider();
+        return instance;
     }
 }

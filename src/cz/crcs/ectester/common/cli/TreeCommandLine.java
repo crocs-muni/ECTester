@@ -89,7 +89,7 @@ public class TreeCommandLine extends CommandLine {
     @Override
     public Object getParsedOptionValue(String opt) throws ParseException {
         if (opt.contains(".")) {
-            String[] parts = opt.split(".", 2);
+            String[] parts = opt.split("\\.", 2);
             if (next != null && parts[0].equals(next.getName())) {
                 return next.getParsedOptionValue(parts[1]);
             }

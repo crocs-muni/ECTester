@@ -64,11 +64,6 @@ public class ECTesterStandalone {
             }
             dataStore = new EC_Store();
 
-            if (cli.hasOption("list-named")) {
-                CLITools.listNamed(dataStore, cli.getOptionValue("list-named"));
-                return;
-            }
-
             for (ECLibrary lib : libs) {
                 lib.initialize();
             }
@@ -78,15 +73,15 @@ public class ECTesterStandalone {
             } else if (cli.isNext("list-data")) {
                 CLITools.listNamed(dataStore, cli.getNext().getArg(0));
             } else if (cli.isNext("ecdh")) {
-
+                ecdh();
             } else if (cli.isNext("ecdsa")) {
-
+                ecdsa();
             } else if (cli.isNext("generate")) {
                 generate();
             } else if (cli.isNext("test")) {
-
+                test();
             } else if (cli.isNext("export")) {
-
+                export();
             }
 
         } catch (ParseException | NoSuchAlgorithmException | IOException ex) {
@@ -148,6 +143,43 @@ public class ECTesterStandalone {
     /**
      *
      */
+    private void listLibraries() {
+        for (ECLibrary lib : libs) {
+            if (lib.isInitialized() && (cfg.selected == null || lib == cfg.selected)) {
+                System.out.println("\t- " + lib.name());
+                Set<KeyPairGeneratorIdent> kpgs = lib.getKPGs();
+                if (!kpgs.isEmpty()) {
+                    System.out.println("\t\t- KeyPairGenerators: " + String.join(",", kpgs.stream().map(KeyPairGeneratorIdent::getName).collect(Collectors.toList())));
+                }
+                Set<KeyAgreementIdent> eckas = lib.getECKAs();
+                if (!eckas.isEmpty()) {
+                    System.out.println("\t\t- KeyAgreements: " + String.join(",", eckas.stream().map(KeyAgreementIdent::getName).collect(Collectors.toList())));
+                }
+                Set<SignatureIdent> sigs = lib.getECSigs();
+                if (!eckas.isEmpty()) {
+                    System.out.println("\t\t- Signatures: " + String.join(",", sigs.stream().map(SignatureIdent::getName).collect(Collectors.toList())));
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private void ecdh() {
+
+    }
+
+    /**
+     *
+     */
+    private void ecdsa() {
+
+    }
+
+    /**
+     *
+     */
     private void generate() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         if (cfg.selected instanceof JavaECLibrary) {
             JavaECLibrary jlib = (JavaECLibrary) cfg.selected;
@@ -192,24 +224,15 @@ public class ECTesterStandalone {
     /**
      *
      */
-    private void listLibraries() {
-        for (ECLibrary lib : libs) {
-            if (lib.isInitialized() && (cfg.selected == null || lib == cfg.selected)) {
-                System.out.println("\t- " + lib.name());
-                Set<KeyPairGeneratorIdent> kpgs = lib.getKPGs();
-                if (!kpgs.isEmpty()) {
-                    System.out.println("\t\t- KeyPairGenerators: " + String.join(",", kpgs.stream().map(KeyPairGeneratorIdent::getName).collect(Collectors.toList())));
-                }
-                Set<KeyAgreementIdent> eckas = lib.getECKAs();
-                if (!eckas.isEmpty()) {
-                    System.out.println("\t\t- KeyAgreements: " + String.join(",", eckas.stream().map(KeyAgreementIdent::getName).collect(Collectors.toList())));
-                }
-                Set<SignatureIdent> sigs = lib.getECSigs();
-                if (!eckas.isEmpty()) {
-                    System.out.println("\t\t- Signatures: " + String.join(",", sigs.stream().map(SignatureIdent::getName).collect(Collectors.toList())));
-                }
-            }
-        }
+    private void test() {
+
+    }
+
+    /**
+     *
+     */
+    private void export() {
+
     }
 
     public static void main(String[] args) {
