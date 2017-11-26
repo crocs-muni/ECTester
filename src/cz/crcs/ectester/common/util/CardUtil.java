@@ -7,6 +7,10 @@ import javacard.security.CryptoException;
 
 import static cz.crcs.ectester.applet.ECTesterApplet.*;
 
+/**
+ * @author Petr Svenda petr@svenda.com
+ * @author Jan Jancar johny@neuromancer.sk
+ */
 public class CardUtil {
     public static String getSWSource(short sw) {
         switch (sw) {

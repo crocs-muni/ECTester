@@ -3,6 +3,7 @@ package cz.crcs.ectester.standalone;
 import cz.crcs.ectester.common.cli.*;
 import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.common.util.ByteUtil;
+import cz.crcs.ectester.common.util.ECUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
 import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
@@ -221,8 +222,8 @@ public class ECTesterStandalone {
                     ECPublicKey publicKey = (ECPublicKey) kp.getPublic();
                     ECPrivateKey privateKey = (ECPrivateKey) kp.getPrivate();
 
-                    String pub = ByteUtil.bytesToHex(publicKey.getEncoded(), false);
-                    String priv = ByteUtil.bytesToHex(privateKey.getEncoded(), false);
+                    String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(publicKey.getW()), false);
+                    String priv = ByteUtil.bytesToHex(privateKey.getS().toByteArray(), false);
                     System.out.println(String.format("%d;%d;%s;%s", i, elapsed / 1000000, pub, priv));
                 }
             }
