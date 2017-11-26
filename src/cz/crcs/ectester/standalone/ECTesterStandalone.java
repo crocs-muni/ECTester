@@ -21,7 +21,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
+import java.security.spec.ECParameterSpec;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -117,6 +117,8 @@ public class ECTesterStandalone {
         actions.put("generate", generate);
 
         Options exportOpts = new Options();
+        exportOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPair object [type].").build());
+        exportOpts.addOption(Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").build());
         ParserOptions export = new ParserOptions(new DefaultParser(), exportOpts);
         actions.put("export", export);
 
@@ -196,7 +198,7 @@ public class ECTesterStandalone {
             } else {
                 KeyPairGenerator kpg = ident.getInstance(jlib.getProvider());
                 if (cli.hasOption("generate.bits")) {
-                    int bits = Integer.parseInt(cli.getOptionValue("generate.bits", "256"));
+                    int bits = Integer.parseInt(cli.getOptionValue("generate.bits"));
                     kpg.initialize(bits);
                 } else if (cli.hasOption("generate.named-curve")) {
                     String curveName = cli.getOptionValue("generate.named-curve");
@@ -206,15 +208,12 @@ public class ECTesterStandalone {
                         return;
                     }
                     kpg.initialize(curve.toSpec());
-                } else {
-                    kpg.initialize(256);
                 }
 
                 int amount = Integer.parseInt(cli.getOptionValue("generate.amount", "1"));
                 for (int i = 0; i < amount; ++i) {
                     KeyPair kp = kpg.genKeyPair();
                     ECPrivateKey privateKey = (ECPrivateKey) kp.getPrivate();
-                    ECPublicKey publicKey = (ECPublicKey) kp.getPublic();
                     System.out.println(privateKey);
                 }
             }
@@ -231,8 +230,31 @@ public class ECTesterStandalone {
     /**
      *
      */
-    private void export() {
-
+    private void export() throws NoSuchAlgorithmException {
+        if (cfg.selected instanceof JavaECLibrary) {
+            JavaECLibrary jlib = (JavaECLibrary) cfg.selected;
+            KeyPairGeneratorIdent ident = null;
+            String algo = cli.getOptionValue("export.type", "EC");
+            for (KeyPairGeneratorIdent kpIdent : jlib.getKPGs()) {
+                if (kpIdent.contains(algo)) {
+                    ident = kpIdent;
+                    break;
+                }
+            }
+            if (ident == null) {
+                throw new NoSuchAlgorithmException(algo);
+            } else {
+                KeyPairGenerator kpg = ident.getInstance(jlib.getProvider());
+                if (cli.hasOption("export.bits")) {
+                    int bits = Integer.parseInt(cli.getOptionValue("export.bits"));
+                    kpg.initialize(bits);
+                }
+                KeyPair kp = kpg.genKeyPair();
+                ECPrivateKey privateKey = (ECPrivateKey) kp.getPrivate();
+                ECParameterSpec params = privateKey.getParams();
+                System.out.println(params);
+            }
+        }
     }
 
     public static void main(String[] args) {
@@ -260,7 +282,17 @@ public class ECTesterStandalone {
                 }
 
                 if (cli.hasOption("generate.bits") && cli.hasOption("generate.named-curve")) {
-                    System.err.println("");
+                    System.err.println("You can only specify bitsize or a named curve, nor both.");
+                    return false;
+                }
+            } else if (cli.isNext("export")) {
+                if (!cli.hasArg(-1)) {
+                    System.err.println("Missing library name argument.");
+                    return false;
+                }
+
+                if (cli.hasOption("export.bits") && cli.hasOption("export.named-curve")) {
+                    System.err.println("You can only specify bitsize or a named curve, nor both.");
                     return false;
                 }
             }
