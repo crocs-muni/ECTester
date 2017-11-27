@@ -5,7 +5,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class BouncyCastleLib extends JavaECLibrary {
+public class BouncyCastleLib extends ProviderECLibrary {
 
     public BouncyCastleLib() {
         super(new BouncyCastleProvider());

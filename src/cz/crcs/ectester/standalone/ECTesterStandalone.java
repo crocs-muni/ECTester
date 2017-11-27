@@ -10,7 +10,7 @@ import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
 import cz.crcs.ectester.standalone.consts.SignatureIdent;
 import cz.crcs.ectester.standalone.libs.BouncyCastleLib;
 import cz.crcs.ectester.standalone.libs.ECLibrary;
-import cz.crcs.ectester.standalone.libs.JavaECLibrary;
+import cz.crcs.ectester.standalone.libs.ProviderECLibrary;
 import cz.crcs.ectester.standalone.libs.SunECLib;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
@@ -186,8 +186,8 @@ public class ECTesterStandalone {
      *
      */
     private void generate() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
-        if (cfg.selected instanceof JavaECLibrary) {
-            JavaECLibrary jlib = (JavaECLibrary) cfg.selected;
+        if (cfg.selected instanceof ProviderECLibrary) {
+            ProviderECLibrary jlib = (ProviderECLibrary) cfg.selected;
             KeyPairGeneratorIdent ident = null;
             String algo = cli.getOptionValue("generate.type", "EC");
             for (KeyPairGeneratorIdent kpIdent : jlib.getKPGs()) {
@@ -241,8 +241,8 @@ public class ECTesterStandalone {
      *
      */
     private void export() throws NoSuchAlgorithmException, IOException {
-        if (cfg.selected instanceof JavaECLibrary) {
-            JavaECLibrary jlib = (JavaECLibrary) cfg.selected;
+        if (cfg.selected instanceof ProviderECLibrary) {
+            ProviderECLibrary jlib = (ProviderECLibrary) cfg.selected;
             KeyPairGeneratorIdent ident = null;
             String algo = cli.getOptionValue("export.type", "EC");
             for (KeyPairGeneratorIdent kpIdent : jlib.getKPGs()) {

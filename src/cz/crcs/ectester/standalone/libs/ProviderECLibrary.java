@@ -14,11 +14,11 @@ import java.util.function.Function;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public abstract class JavaECLibrary implements ECLibrary {
+public class ProviderECLibrary implements ECLibrary {
     private Provider provider;
     private boolean initialized;
 
-    public JavaECLibrary(Provider provider) {
+    public ProviderECLibrary(Provider provider) {
         this.provider = provider;
         this.initialized = false;
     }
@@ -44,6 +44,10 @@ public abstract class JavaECLibrary implements ECLibrary {
 
     private <T extends Ident> Set<T> getIdents(String type, Function<String, T> getter) {
         Set<T> results = new HashSet<>();
+        if (!initialized) {
+            return results;
+        }
+
         for (Provider.Service service : provider.getServices()) {
             if (service.getType().equals(type)) {
                 T id = getter.apply(service.getAlgorithm());

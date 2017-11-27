@@ -75,4 +75,9 @@
         <property name="store.jar.name" value="ECTesterStandalone-dist"/>
         <antcall target="dist-build.package"/>
     </target>
+    <target name="headers" depends="compile">
+        <javah classpath="${build.classes.dir}" outputfile="src/cz/crcs/ectester/standalone/libs/native.h">
+            <class name="cz.crcs.ectester.standalone.libs.TomcryptLib"/>
+        </javah>
+    </target>
 </project>
