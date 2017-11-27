@@ -12,5 +12,5 @@ public class TomcryptLib extends NativeECLibrary {
     }
 
     @Override
-    public native Provider getProvider();
+    native Provider createProvider();
 }

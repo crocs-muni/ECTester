@@ -14,13 +14,16 @@ import java.util.function.Function;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class ProviderECLibrary implements ECLibrary {
-    private Provider provider;
-    private boolean initialized;
+public abstract class ProviderECLibrary implements ECLibrary {
+    Provider provider;
+    private boolean initialized = false;
+
+    public ProviderECLibrary() {
+
+    }
 
     public ProviderECLibrary(Provider provider) {
         this.provider = provider;
-        this.initialized = false;
     }
 
     @Override
@@ -60,12 +63,12 @@ public class ProviderECLibrary implements ECLibrary {
     }
 
     @Override
-    public Set<KeyAgreementIdent> getECKAs() {
+    public Set<KeyAgreementIdent> getKAs() {
         return getIdents("KeyAgreement", KeyAgreementIdent::get);
     }
 
     @Override
-    public Set<SignatureIdent> getECSigs() {
+    public Set<SignatureIdent> getSigs() {
         return getIdents("Signature", SignatureIdent::get);
     }
 

@@ -17,11 +17,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import javax.crypto.KeyAgreement;
 import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECParameterSpec;
@@ -87,9 +85,13 @@ public class ECTesterStandalone {
                 export();
             }
 
-        } catch (ParseException | NoSuchAlgorithmException | IOException ex) {
+        } catch (ParseException | IOException ex) {
             System.err.println(ex.getMessage());
         } catch (InvalidAlgorithmParameterException e) {
+            System.err.println("Invalid algorithm parameter: " + e.getMessage());
+        } catch (NoSuchAlgorithmException nsaex) {
+            System.err.println("Algorithm not supported by the selected library: " + nsaex.getMessage());
+        } catch (InvalidKeyException e) {
             e.printStackTrace();
         }
     }
@@ -103,6 +105,9 @@ public class ECTesterStandalone {
 
         Options ecdhOpts = new Options();
         ecdhOpts.addOption(Option.builder("t").longOpt("type").desc("Set KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
+        ecdhOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDH [amount] times.").build());
+        ecdhOpts.addOption(Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").build());
+        ecdhOpts.addOption(Option.builder("nc").longOpt("named-curve").desc("Use a named curve, from CurveDB: <cat/id>").hasArg().argName("cat/id").build());
         ParserOptions ecdh = new ParserOptions(new DefaultParser(), ecdhOpts);
         actions.put("ecdh", ecdh);
 
@@ -156,11 +161,11 @@ public class ECTesterStandalone {
                 if (!kpgs.isEmpty()) {
                     System.out.println("\t\t- KeyPairGenerators: " + String.join(",", kpgs.stream().map(KeyPairGeneratorIdent::getName).collect(Collectors.toList())));
                 }
-                Set<KeyAgreementIdent> eckas = lib.getECKAs();
+                Set<KeyAgreementIdent> eckas = lib.getKAs();
                 if (!eckas.isEmpty()) {
                     System.out.println("\t\t- KeyAgreements: " + String.join(",", eckas.stream().map(KeyAgreementIdent::getName).collect(Collectors.toList())));
                 }
-                Set<SignatureIdent> sigs = lib.getECSigs();
+                Set<SignatureIdent> sigs = lib.getSigs();
                 if (!eckas.isEmpty()) {
                     System.out.println("\t\t- Signatures: " + String.join(",", sigs.stream().map(SignatureIdent::getName).collect(Collectors.toList())));
                 }
@@ -171,8 +176,68 @@ public class ECTesterStandalone {
     /**
      *
      */
-    private void ecdh() {
+    private void ecdh() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
+        if (cfg.selected instanceof ProviderECLibrary) {
+            ProviderECLibrary lib = (ProviderECLibrary) cfg.selected;
 
+            String algo = cli.getOptionValue("ecdh.type", "ECDH");
+            KeyAgreementIdent kaIdent = null;
+            for (KeyAgreementIdent ident : lib.getKAs()) {
+                if (ident.contains(algo)) {
+                    kaIdent = ident;
+                    break;
+                }
+            }
+
+            KeyPairGeneratorIdent kpIdent = null;
+            for (KeyPairGeneratorIdent ident : lib.getKPGs()) {
+                if (ident.contains("EC")) {
+                    kpIdent = ident;
+                    break;
+                }
+            }
+
+            if (kaIdent == null || kpIdent == null) {
+                throw new NoSuchAlgorithmException(algo);
+            } else {
+                KeyAgreement ka = kaIdent.getInstance(lib.getProvider());
+                KeyPairGenerator kpg = kpIdent.getInstance(lib.getProvider());
+                if (cli.hasOption("ecdh.bits")) {
+                    int bits = Integer.parseInt(cli.getOptionValue("ecdh.bits"));
+                    kpg.initialize(bits);
+                } else if (cli.hasOption("ecdh.named-curve")) {
+                    String curveName = cli.getOptionValue("ecdh.named-curve");
+                    EC_Curve curve = dataStore.getObject(EC_Curve.class, curveName);
+                    if (curve == null) {
+                        System.err.println("Curve not found: " + curveName);
+                        return;
+                    }
+                    kpg.initialize(curve.toSpec());
+                }
+
+                System.out.println("index;nanotime;pubW;privS;secret");
+
+                int amount = Integer.parseInt(cli.getOptionValue("ecdh.amount", "1"));
+                for (int i = 0; i < amount; ++i) {
+                    KeyPair one = kpg.genKeyPair();
+                    KeyPair other = kpg.genKeyPair();
+
+                    ECPrivateKey privkey = (ECPrivateKey) one.getPrivate();
+                    ECPublicKey pubkey = (ECPublicKey) other.getPublic();
+
+                    long elapsed = -System.nanoTime();
+                    ka.init(privkey);
+                    ka.doPhase(pubkey, true);
+                    elapsed += System.nanoTime();
+                    byte[] result = ka.generateSecret();
+
+                    String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW()), false);
+                    String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
+                    String dh = ByteUtil.bytesToHex(result, false);
+                    System.out.println(String.format("%d;%d;%s;%s;%s", i, elapsed, pub, priv, dh));
+                }
+            }
+        }
     }
 
     /**
@@ -187,10 +252,10 @@ public class ECTesterStandalone {
      */
     private void generate() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         if (cfg.selected instanceof ProviderECLibrary) {
-            ProviderECLibrary jlib = (ProviderECLibrary) cfg.selected;
+            ProviderECLibrary lib = (ProviderECLibrary) cfg.selected;
             KeyPairGeneratorIdent ident = null;
             String algo = cli.getOptionValue("generate.type", "EC");
-            for (KeyPairGeneratorIdent kpIdent : jlib.getKPGs()) {
+            for (KeyPairGeneratorIdent kpIdent : lib.getKPGs()) {
                 if (kpIdent.contains(algo)) {
                     ident = kpIdent;
                     break;
@@ -199,7 +264,7 @@ public class ECTesterStandalone {
             if (ident == null) {
                 throw new NoSuchAlgorithmException(algo);
             } else {
-                KeyPairGenerator kpg = ident.getInstance(jlib.getProvider());
+                KeyPairGenerator kpg = ident.getInstance(lib.getProvider());
                 if (cli.hasOption("generate.bits")) {
                     int bits = Integer.parseInt(cli.getOptionValue("generate.bits"));
                     kpg.initialize(bits);
@@ -212,7 +277,7 @@ public class ECTesterStandalone {
                     }
                     kpg.initialize(curve.toSpec());
                 }
-                System.out.println("index;time;pubW;privS");
+                System.out.println("index;nanotime;pubW;privS");
 
                 int amount = Integer.parseInt(cli.getOptionValue("generate.amount", "1"));
                 for (int i = 0; i < amount; ++i) {
@@ -224,7 +289,7 @@ public class ECTesterStandalone {
 
                     String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(publicKey.getW()), false);
                     String priv = ByteUtil.bytesToHex(privateKey.getS().toByteArray(), false);
-                    System.out.println(String.format("%d;%d;%s;%s", i, elapsed / 1000000, pub, priv));
+                    System.out.println(String.format("%d;%d;%s;%s", i, elapsed, pub, priv));
                 }
             }
         }
@@ -242,10 +307,10 @@ public class ECTesterStandalone {
      */
     private void export() throws NoSuchAlgorithmException, IOException {
         if (cfg.selected instanceof ProviderECLibrary) {
-            ProviderECLibrary jlib = (ProviderECLibrary) cfg.selected;
+            ProviderECLibrary lib = (ProviderECLibrary) cfg.selected;
             KeyPairGeneratorIdent ident = null;
             String algo = cli.getOptionValue("export.type", "EC");
-            for (KeyPairGeneratorIdent kpIdent : jlib.getKPGs()) {
+            for (KeyPairGeneratorIdent kpIdent : lib.getKPGs()) {
                 if (kpIdent.contains(algo)) {
                     ident = kpIdent;
                     break;
@@ -254,7 +319,7 @@ public class ECTesterStandalone {
             if (ident == null) {
                 throw new NoSuchAlgorithmException(algo);
             } else {
-                KeyPairGenerator kpg = ident.getInstance(jlib.getProvider());
+                KeyPairGenerator kpg = ident.getInstance(lib.getProvider());
                 if (cli.hasOption("export.bits")) {
                     int bits = Integer.parseInt(cli.getOptionValue("export.bits"));
                     kpg.initialize(bits);
@@ -287,23 +352,14 @@ public class ECTesterStandalone {
         }
 
         boolean readOptions(TreeCommandLine cli) {
-            if (cli.isNext("generate")) {
+            if (cli.isNext("generate") || cli.isNext("export") || cli.isNext("ecdh")) {
                 if (!cli.hasArg(-1)) {
                     System.err.println("Missing library name argument.");
                     return false;
                 }
 
-                if (cli.hasOption("generate.bits") && cli.hasOption("generate.named-curve")) {
-                    System.err.println("You can only specify bitsize or a named curve, nor both.");
-                    return false;
-                }
-            } else if (cli.isNext("export")) {
-                if (!cli.hasArg(-1)) {
-                    System.err.println("Missing library name argument.");
-                    return false;
-                }
-
-                if (cli.hasOption("export.bits") && cli.hasOption("export.named-curve")) {
+                String next = cli.getNextName();
+                if (cli.hasOption(next + ".bits") && cli.hasOption(next + ".named-curve")) {
                     System.err.println("You can only specify bitsize or a named curve, nor both.");
                     return false;
                 }

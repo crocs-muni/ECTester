@@ -1,9 +1,5 @@
 package cz.crcs.ectester.standalone.libs;
 
-import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
-import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
-import cz.crcs.ectester.standalone.consts.SignatureIdent;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -13,14 +9,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.Provider;
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public abstract class NativeECLibrary implements ECLibrary {
-    private ProviderECLibrary loaded;
+public abstract class NativeECLibrary extends ProviderECLibrary {
     private String resource;
     private String libname;
 
@@ -80,52 +73,13 @@ public abstract class NativeECLibrary implements ECLibrary {
 
             System.load(libPath.toString());
 
-            loaded = new ProviderECLibrary(getProvider());
-            return true;
+            provider = createProvider();
+            return super.initialize();
         } catch (IOException ignored) {
 
         }
         return false;
     }
 
-    public abstract Provider getProvider();
-
-    @Override
-    public boolean isInitialized() {
-        return loaded != null && loaded.isInitialized();
-    }
-
-    @Override
-    public Set<KeyAgreementIdent> getECKAs() {
-        if (!isInitialized()) {
-            return Collections.emptySet();
-        }
-        return loaded.getECKAs();
-    }
-
-    @Override
-    public Set<SignatureIdent> getECSigs() {
-        if (!isInitialized()) {
-            return Collections.emptySet();
-        }
-        return loaded.getECSigs();
-    }
-
-    @Override
-    public Set<KeyPairGeneratorIdent> getKPGs() {
-        if (!isInitialized()) {
-            return Collections.emptySet();
-        }
-        return loaded.getKPGs();
-    }
-
-    @Override
-    public String name() {
-        return loaded.name();
-    }
-
-    @Override
-    public String toString() {
-        return name();
-    }
+    abstract Provider createProvider();
 }

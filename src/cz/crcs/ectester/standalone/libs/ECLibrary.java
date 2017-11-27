@@ -14,9 +14,9 @@ public interface ECLibrary {
 
     boolean isInitialized();
 
-    Set<KeyAgreementIdent> getECKAs();
+    Set<KeyAgreementIdent> getKAs();
 
-    Set<SignatureIdent> getECSigs();
+    Set<SignatureIdent> getSigs();
 
     Set<KeyPairGeneratorIdent> getKPGs();
 
