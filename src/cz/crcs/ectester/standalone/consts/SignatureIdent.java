@@ -79,7 +79,13 @@ public class SignatureIdent extends Ident {
     }
 
     public Signature getInstance(Provider provider) throws NoSuchAlgorithmException {
-        Signature instance = Signature.getInstance(name, provider);
+        Signature instance = getInstance((algorithm, provider1) -> {
+            try {
+                return Signature.getInstance(algorithm, provider1);
+            } catch (NoSuchAlgorithmException e) {
+                return null;
+            }
+        }, provider);
         instance.getProvider();
         return instance;
     }

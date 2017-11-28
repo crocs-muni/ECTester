@@ -18,10 +18,14 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import javax.crypto.KeyAgreement;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
+import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECParameterSpec;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -93,6 +97,8 @@ public class ECTesterStandalone {
             System.err.println("Algorithm not supported by the selected library: " + nsaex.getMessage());
         } catch (InvalidKeyException e) {
             e.printStackTrace();
+        } catch (SignatureException e) {
+            e.printStackTrace();
         }
     }
 
@@ -113,6 +119,8 @@ public class ECTesterStandalone {
 
         Options ecdsaOpts = new Options();
         ecdsaOpts.addOption(Option.builder("t").longOpt("type").desc("Set Signature object [type].").hasArg().argName("type").optionalArg(false).build());
+        ecdsaOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDSA [amount] times.").build());
+        ecdsaOpts.addOption(Option.builder("f").longOpt("file").hasArg().argName("file").optionalArg(false).desc("Input [file] to sign.").build());
         ParserOptions ecdsa = new ParserOptions(new DefaultParser(), ecdsaOpts);
         actions.put("ecdsa", ecdsa);
 
@@ -181,27 +189,26 @@ public class ECTesterStandalone {
             ProviderECLibrary lib = (ProviderECLibrary) cfg.selected;
 
             String algo = cli.getOptionValue("ecdh.type", "ECDH");
-            KeyAgreementIdent kaIdent = null;
-            for (KeyAgreementIdent ident : lib.getKAs()) {
-                if (ident.contains(algo)) {
-                    kaIdent = ident;
-                    break;
-                }
-            }
+            KeyAgreementIdent kaIdent = lib.getKAs().stream()
+                    .filter((ident) -> ident.contains(algo))
+                    .findFirst()
+                    .orElse(null);
 
-            KeyPairGeneratorIdent kpIdent = null;
-            for (KeyPairGeneratorIdent ident : lib.getKPGs()) {
-                if (ident.contains("EC")) {
-                    kpIdent = ident;
-                    break;
-                }
-            }
+            KeyPairGeneratorIdent kpIdent = lib.getKPGs().stream()
+                    .filter((ident) -> ident.contains(algo))
+                    .findFirst()
+                    .orElse(lib.getKPGs().stream()
+                            .filter((ident) -> ident.contains("EC"))
+                            .findFirst()
+                            .orElse(null));
+
 
             if (kaIdent == null || kpIdent == null) {
                 throw new NoSuchAlgorithmException(algo);
             } else {
                 KeyAgreement ka = kaIdent.getInstance(lib.getProvider());
                 KeyPairGenerator kpg = kpIdent.getInstance(lib.getProvider());
+                AlgorithmParameterSpec spec = null;
                 if (cli.hasOption("ecdh.bits")) {
                     int bits = Integer.parseInt(cli.getOptionValue("ecdh.bits"));
                     kpg.initialize(bits);
@@ -212,7 +219,8 @@ public class ECTesterStandalone {
                         System.err.println("Curve not found: " + curveName);
                         return;
                     }
-                    kpg.initialize(curve.toSpec());
+                    spec = curve.toSpec();
+                    kpg.initialize(spec);
                 }
 
                 System.out.println("index;nanotime;pubW;privS;secret");
@@ -226,10 +234,15 @@ public class ECTesterStandalone {
                     ECPublicKey pubkey = (ECPublicKey) other.getPublic();
 
                     long elapsed = -System.nanoTime();
-                    ka.init(privkey);
+                    if (spec != null) {
+                        ka.init(privkey, spec);
+                    } else {
+                        ka.init(privkey);
+                    }
                     ka.doPhase(pubkey, true);
                     elapsed += System.nanoTime();
                     byte[] result = ka.generateSecret();
+                    ka = kaIdent.getInstance(lib.getProvider());
 
                     String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW()), false);
                     String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
@@ -243,8 +256,93 @@ public class ECTesterStandalone {
     /**
      *
      */
-    private void ecdsa() {
+    private void ecdsa() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, IOException, SignatureException {
+        byte[] data;
+        String dataString;
+        if (cli.hasOption("ecdsa.file")) {
+            String fileName = cli.getOptionValue("ecdsa.file");
+            File in = new File(fileName);
+            long len = in.length();
+            if (len == 0) {
+                throw new FileNotFoundException(fileName);
+            }
+            data = Files.readAllBytes(in.toPath());
+            dataString = "";
+        } else {
+            SecureRandom random = new SecureRandom();
+            data = new byte[128];
+            random.nextBytes(data);
+            dataString = ByteUtil.bytesToHex(data, false);
+        }
 
+        if (cfg.selected instanceof ProviderECLibrary) {
+            ProviderECLibrary lib = (ProviderECLibrary) cfg.selected;
+
+            String algo = cli.getOptionValue("ecdsa.type", "ECDSA");
+            SignatureIdent sigIdent = lib.getSigs().stream()
+                    .filter((ident) -> ident.contains(algo))
+                    .findFirst()
+                    .orElse(null);
+
+            KeyPairGeneratorIdent kpIdent = lib.getKPGs().stream()
+                    .filter((ident) -> ident.contains(algo))
+                    .findFirst()
+                    .orElse(lib.getKPGs().stream()
+                            .filter((ident) -> ident.contains("EC"))
+                            .findFirst()
+                            .orElse(null));
+
+            if (sigIdent == null || kpIdent == null) {
+                throw new NoSuchAlgorithmException(algo);
+            } else {
+                Signature sig = sigIdent.getInstance(lib.getProvider());
+                KeyPairGenerator kpg = kpIdent.getInstance(lib.getProvider());
+                AlgorithmParameterSpec spec = null;
+                if (cli.hasOption("ecdsa.bits")) {
+                    int bits = Integer.parseInt(cli.getOptionValue("ecdsa.bits"));
+                    kpg.initialize(bits);
+                } else if (cli.hasOption("ecdsa.named-curve")) {
+                    String curveName = cli.getOptionValue("ecdsa.named-curve");
+                    EC_Curve curve = dataStore.getObject(EC_Curve.class, curveName);
+                    if (curve == null) {
+                        System.err.println("Curve not found: " + curveName);
+                        return;
+                    }
+                    spec = curve.toSpec();
+                    kpg.initialize(spec);
+                }
+
+                System.out.println("index;data;signtime;verifytime;pubW;privS;signature;verified");
+
+                int amount = Integer.parseInt(cli.getOptionValue("ecdsa.amount", "1"));
+                for (int i = 0; i < amount; ++i) {
+                    KeyPair one = kpg.genKeyPair();
+
+                    ECPrivateKey privkey = (ECPrivateKey) one.getPrivate();
+                    ECPublicKey pubkey = (ECPublicKey) one.getPublic();
+
+                    sig.initSign(privkey);
+                    sig.update(data);
+
+                    long signTime = -System.nanoTime();
+                    byte[] signature = sig.sign();
+                    signTime += System.nanoTime();
+
+                    sig.initVerify(pubkey);
+                    sig.update(data);
+
+                    long verifyTime = -System.nanoTime();
+                    boolean verified = sig.verify(signature);
+                    verifyTime += System.nanoTime();
+
+
+                    String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW()), false);
+                    String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
+                    String sign = ByteUtil.bytesToHex(signature, false);
+                    System.out.println(String.format("%d;%s;%d;%d;%s;%s;%s;%d", i, dataString, signTime, verifyTime, pub, priv, sign, verified ? 1 : 0));
+                }
+            }
+        }
     }
 
     /**

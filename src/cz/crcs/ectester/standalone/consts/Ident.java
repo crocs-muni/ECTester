@@ -1,9 +1,12 @@
 package cz.crcs.ectester.standalone.consts;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.Provider;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.BiFunction;
 
 public abstract class Ident {
     Set<String> idents;
@@ -26,6 +29,28 @@ public abstract class Ident {
 
     public boolean contains(String other) {
         return name.equals(other) || idents.contains(other);
+    }
+
+    <T> T getInstance(BiFunction<String, Provider, T> getter, Provider provider) throws NoSuchAlgorithmException {
+        T instance = null;
+        try {
+            instance = getter.apply(name, provider);
+        } catch (Exception ignored) {
+        }
+
+        if (instance == null) {
+            for (String alias : idents) {
+                try {
+                    instance = getter.apply(alias, provider);
+                } catch (Exception ignored) {
+                }
+            }
+        }
+
+        if (instance == null) {
+            throw new NoSuchAlgorithmException(name);
+        }
+        return instance;
     }
 
     @Override

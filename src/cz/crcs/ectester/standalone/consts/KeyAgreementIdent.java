@@ -55,7 +55,13 @@ public class KeyAgreementIdent extends Ident {
     }
 
     public KeyAgreement getInstance(Provider provider) throws NoSuchAlgorithmException {
-        KeyAgreement instance = KeyAgreement.getInstance(name, provider);
+        KeyAgreement instance = getInstance((algorithm, provider1) -> {
+            try {
+                return KeyAgreement.getInstance(algorithm, provider1);
+            } catch (NoSuchAlgorithmException e) {
+                return null;
+            }
+        }, provider);
         instance.getProvider();
         return instance;
     }

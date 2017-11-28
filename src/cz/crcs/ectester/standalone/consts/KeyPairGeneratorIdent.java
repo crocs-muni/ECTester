@@ -15,6 +15,8 @@ public class KeyPairGeneratorIdent extends Ident {
         ALL.add(new KeyPairGeneratorIdent("ECDSA"));
         ALL.add(new KeyPairGeneratorIdent("ECDHC"));
         ALL.add(new KeyPairGeneratorIdent("ECMQV"));
+        ALL.add(new KeyPairGeneratorIdent("ECGOST3410"));
+        ALL.add(new KeyPairGeneratorIdent("ECGOST3410-2012"));
     }
 
     public static KeyPairGeneratorIdent get(String ident) {
@@ -31,7 +33,13 @@ public class KeyPairGeneratorIdent extends Ident {
     }
 
     public KeyPairGenerator getInstance(Provider provider) throws NoSuchAlgorithmException {
-        KeyPairGenerator instance = KeyPairGenerator.getInstance(name, provider);
+        KeyPairGenerator instance = getInstance((algorithm, provider1) -> {
+            try {
+                return KeyPairGenerator.getInstance(algorithm, provider1);
+            } catch (NoSuchAlgorithmException e) {
+                return null;
+            }
+        }, provider);
         instance.getProvider();
         return instance;
     }
