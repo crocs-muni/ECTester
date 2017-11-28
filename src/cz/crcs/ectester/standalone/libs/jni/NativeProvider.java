@@ -22,4 +22,13 @@ public abstract class NativeProvider extends Provider {
 
     abstract void setup();
 
+    public static class TomCrypt extends NativeProvider {
+
+        public TomCrypt(String name, double version, String info) {
+            super(name, version, info);
+        }
+
+        @Override
+        native void setup();
+    }
 }

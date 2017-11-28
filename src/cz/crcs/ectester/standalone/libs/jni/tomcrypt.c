@@ -4,7 +4,7 @@
 #include <tomcrypt.h>
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_createProvider(JNIEnv *env, jobject this) {
-    jclass provider_class = (*env)->FindClass(env, "cz/crcs/ectester/standalone/libs/jni/TomCryptProvider");
+    jclass provider_class = (*env)->FindClass(env, "cz/crcs/ectester/standalone/libs/jni/NativeProvider$TomCrypt");
 
     jmethodID init = (*env)->GetMethodID(env, provider_class, "<init>", "(Ljava/lang/String;DLjava/lang/String;)V");
     if (init == NULL) {
@@ -15,8 +15,23 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_crea
     return (*env)->NewObject(env, provider_class, init, name, version, name);
 }
 
-JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_TomCryptProvider_setup(JNIEnv *env, jobject this) {
+JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_00024TomCrypt_setup(JNIEnv *env, jobject this) {
+
+    /* Initialize libtommath as the math lib. */
     ltc_mp = ltm_desc;
+
+    jclass provider_class = (*env)->FindClass(env, "cz/crcs/ectester/standalone/libs/jni/NativeProvider$TomCrypt");
+
+    jmethodID put = (*env)->GetMethodID(env, provider_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+    if (put == NULL) {
+        return;
+    }
+    const ltc_ecc_set_type * curve = ltc_ecc_sets;
+    while (curve->name != NULL) {
+        printf("%s\n", curve->name);
+        curve++;
+    }
+
     /* Just test ecc key generation at this time. */
     ecc_key mykey;
     prng_state prng;
