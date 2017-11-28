@@ -5,3 +5,7 @@
 /dist/ectester-reader.bat
 /dist/ECTesterStandalone.jar
 /dist/ECTesterStandalone-dist.jar
+
+/src/**/*.a
+/src/**/*.o
+/src/**/*.so

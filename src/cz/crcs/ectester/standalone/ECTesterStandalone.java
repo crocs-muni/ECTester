@@ -8,10 +8,7 @@ import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
 import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
 import cz.crcs.ectester.standalone.consts.SignatureIdent;
-import cz.crcs.ectester.standalone.libs.BouncyCastleLib;
-import cz.crcs.ectester.standalone.libs.ECLibrary;
-import cz.crcs.ectester.standalone.libs.ProviderECLibrary;
-import cz.crcs.ectester.standalone.libs.SunECLib;
+import cz.crcs.ectester.standalone.libs.*;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -37,7 +34,7 @@ import java.util.stream.Collectors;
  * @version v0.1.0
  */
 public class ECTesterStandalone {
-    private ECLibrary[] libs = new ECLibrary[]{new SunECLib(), new BouncyCastleLib()};
+    private ECLibrary[] libs = new ECLibrary[]{new SunECLib(), new BouncyCastleLib(), new TomcryptLib()};
     private EC_Store dataStore;
     private Config cfg;
 
@@ -297,7 +294,6 @@ public class ECTesterStandalone {
             } else {
                 Signature sig = sigIdent.getInstance(lib.getProvider());
                 KeyPairGenerator kpg = kpIdent.getInstance(lib.getProvider());
-                AlgorithmParameterSpec spec = null;
                 if (cli.hasOption("ecdsa.bits")) {
                     int bits = Integer.parseInt(cli.getOptionValue("ecdsa.bits"));
                     kpg.initialize(bits);
@@ -308,8 +304,7 @@ public class ECTesterStandalone {
                         System.err.println("Curve not found: " + curveName);
                         return;
                     }
-                    spec = curve.toSpec();
-                    kpg.initialize(spec);
+                    kpg.initialize(curve.toSpec());
                 }
 
                 System.out.println("index;data;signtime;verifytime;pubW;privS;signature;verified");

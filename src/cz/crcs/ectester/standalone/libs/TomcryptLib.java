@@ -8,7 +8,7 @@ import java.security.Provider;
 public class TomcryptLib extends NativeECLibrary {
 
     public TomcryptLib() {
-        super("tomcrypt", "libtomcrypt");
+        super("tomcrypt_provider", "tommath", "tomcrypt");
     }
 
     @Override

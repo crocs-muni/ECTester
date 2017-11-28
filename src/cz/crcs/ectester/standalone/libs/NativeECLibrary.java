@@ -15,11 +15,13 @@ import java.security.Provider;
  */
 public abstract class NativeECLibrary extends ProviderECLibrary {
     private String resource;
-    private String libname;
+    private String[] requriements;
 
-    public NativeECLibrary(String resource, String libname) {
+    public static String LIB_RESOURCE_DIR = "/cz/crcs/ectester/standalone/libs/jni/";
+
+    public NativeECLibrary(String resource, String... requirements) {
         this.resource = resource;
-        this.libname = libname;
+        this.requriements = requirements;
     }
 
     @Override
@@ -33,8 +35,10 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
             } else {
                 suffix = "so";
                 if (System.getProperty("os.name").startsWith("Linux")) {
-                    appData = Paths.get(System.getenv("XDG_DATA_HOME"));
-                    if (appData == null) {
+                    String dataHome = System.getenv("XDG_DATA_HOME");
+                    if (dataHome != null) {
+                        appData = Paths.get(dataHome);
+                    } else {
                         appData = Paths.get(System.getProperty("user.home"), ".local", "share");
                     }
                 } else {
@@ -43,10 +47,10 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
             }
             Path libDir = appData.resolve("ECTesterStandalone");
             File libDirFile = libDir.toFile();
-            Path libPath = libDir.resolve(libname + "." + suffix);
+            Path libPath = libDir.resolve(resource + "." + suffix);
             File libFile = libPath.toFile();
 
-            URL jarURL = NativeECLibrary.class.getResource("/cz/crcs/ectester/standalone/libs/" + resource + "." + suffix);
+            URL jarURL = NativeECLibrary.class.getResource(LIB_RESOURCE_DIR + resource + "." + suffix);
             if (jarURL == null) {
                 return false;
             }
@@ -70,6 +74,10 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
                 Files.copy(jarConnection.getInputStream(), libPath, StandardCopyOption.REPLACE_EXISTING);
             }
             jarConnection.getInputStream().close();
+
+            for (String requirement : requriements) {
+                System.loadLibrary(requirement);
+            }
 
             System.load(libPath.toString());
 

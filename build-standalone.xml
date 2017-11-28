@@ -76,8 +76,9 @@
         <antcall target="dist-build.package"/>
     </target>
     <target name="headers" depends="compile">
-        <javah classpath="${build.classes.dir}" outputfile="src/cz/crcs/ectester/standalone/libs/native.h">
+        <javah classpath="${build.classes.dir}" outputfile="src/cz/crcs/ectester/standalone/libs/jni/native.h">
             <class name="cz.crcs.ectester.standalone.libs.TomcryptLib"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.TomCryptProvider"/>
         </javah>
     </target>
 </project>
