@@ -14,6 +14,8 @@ public interface ECLibrary {
 
     boolean isInitialized();
 
+    Set<String> getCurves();
+
     Set<KeyAgreementIdent> getKAs();
 
     Set<SignatureIdent> getSigs();

@@ -174,6 +174,11 @@ public class ECTesterStandalone {
                 if (!eckas.isEmpty()) {
                     System.out.println("\t\t- Signatures: " + String.join(",", sigs.stream().map(SignatureIdent::getName).collect(Collectors.toList())));
                 }
+                Set<String> curves = lib.getCurves();
+                if (!curves.isEmpty()) {
+                    System.out.println("\t\t- Curves: " + String.join(",", curves));
+                }
+                System.out.println();
             }
         }
     }

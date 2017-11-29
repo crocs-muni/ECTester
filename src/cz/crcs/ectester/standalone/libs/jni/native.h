@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_createProvider
   (JNIEnv *, jobject);
 
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_TomcryptLib
+ * Method:    getCurves
+ * Signature: ()Ljava/util/Set;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_getCurves
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

@@ -12,11 +12,9 @@ public abstract class NativeProvider extends Provider {
     public NativeProvider(String name, double version, String info) {
         super(name, version, info);
 
-        AccessController.doPrivileged(new PrivilegedAction() {
-            public Object run() {
-                setup();
-                return null;
-            }
+        AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+            setup();
+            return null;
         });
     }
 
