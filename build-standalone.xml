@@ -71,7 +71,7 @@
     nbproject/build-impl.xml file. 
 
     -->
-    <target name="package" depends="jar,libs-try">
+    <target name="package" depends="jar">
         <property name="store.jar.name" value="ECTesterStandalone-dist"/>
         <antcall target="dist-build.package"/>
     </target>
@@ -87,6 +87,7 @@
         </exec>
     </target>
 
+    <target name="-post-compile" depends="libs-try"/>
     <target name="-post-clean">
         <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="make clean"
               osfamily="unix"/>
@@ -96,6 +97,9 @@
         <javah classpath="${build.classes.dir}" outputfile="src/cz/crcs/ectester/standalone/libs/jni/native.h">
             <class name="cz.crcs.ectester.standalone.libs.TomcryptLib"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeProvider$TomCrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$TomCrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$TomCrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$TomCrypt"/>
         </javah>
     </target>
 </project>

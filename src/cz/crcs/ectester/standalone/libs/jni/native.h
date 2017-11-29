@@ -60,3 +60,68 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
 }
 #endif
 #endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_TomCrypt */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_TomCrypt
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_TomCrypt
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_TomCrypt
+ * Method:    keysizeSupported
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024TomCrypt_keysizeSupported
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_TomCrypt
+ * Method:    paramsSupported
+ * Signature: (Ljava/security/spec/AlgorithmParameterSpec;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024TomCrypt_paramsSupported
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_TomCrypt
+ * Method:    generate
+ * Signature: (ILjava/security/SecureRandom;)Ljava/security/KeyPair;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024TomCrypt_generate__ILjava_security_SecureRandom_2
+  (JNIEnv *, jobject, jint, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_TomCrypt
+ * Method:    generate
+ * Signature: (Ljava/security/spec/AlgorithmParameterSpec;Ljava/security/SecureRandom;)Ljava/security/KeyPair;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024TomCrypt_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2
+  (JNIEnv *, jobject, jobject, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeECPublicKey_TomCrypt */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPublicKey_TomCrypt
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPublicKey_TomCrypt
+#ifdef __cplusplus
+extern "C" {
+#endif
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeECPrivateKey_TomCrypt */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPrivateKey_TomCrypt
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPrivateKey_TomCrypt
+#ifdef __cplusplus
+extern "C" {
+#endif
+#ifdef __cplusplus
+}
+#endif
+#endif

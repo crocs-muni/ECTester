@@ -23,6 +23,7 @@ import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -87,7 +88,7 @@ public class ECTesterStandalone {
 
         } catch (ParseException | IOException ex) {
             System.err.println(ex.getMessage());
-        } catch (InvalidAlgorithmParameterException e) {
+        } catch (InvalidAlgorithmParameterException | InvalidParameterException e) {
             System.err.println("Invalid algorithm parameter: " + e.getMessage());
         } catch (NoSuchAlgorithmException nsaex) {
             System.err.println("Algorithm not supported by the selected library: " + nsaex.getMessage());
