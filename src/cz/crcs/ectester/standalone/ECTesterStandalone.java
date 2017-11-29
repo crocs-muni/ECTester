@@ -59,16 +59,15 @@ public class ECTesterStandalone {
                 return;
             }
 
+            for (ECLibrary lib : libs) {
+                lib.initialize();
+            }
 
             cfg = new Config(libs);
             if (!cfg.readOptions(cli)) {
                 return;
             }
             dataStore = new EC_Store();
-
-            for (ECLibrary lib : libs) {
-                lib.initialize();
-            }
 
             if (cli.isNext("list-libs")) {
                 listLibraries();
@@ -171,7 +170,7 @@ public class ECTesterStandalone {
                     System.out.println("\t\t- KeyAgreements: " + String.join(",", eckas.stream().map(KeyAgreementIdent::getName).collect(Collectors.toList())));
                 }
                 Set<SignatureIdent> sigs = lib.getSigs();
-                if (!eckas.isEmpty()) {
+                if (!sigs.isEmpty()) {
                     System.out.println("\t\t- Signatures: " + String.join(",", sigs.stream().map(SignatureIdent::getName).collect(Collectors.toList())));
                 }
                 Set<String> curves = lib.getCurves();

@@ -20,28 +20,19 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
 
     jclass provider_class = (*env)->FindClass(env, "cz/crcs/ectester/standalone/libs/jni/NativeProvider$TomCrypt");
 
-    jmethodID put = (*env)->GetMethodID(env, provider_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+    jmethodID provider_put = (*env)->GetMethodID(env, provider_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
 
-/*    *//* Just test ecc key generation at this time. *//*
-    ecc_key mykey;
-    prng_state prng;
-    int err;
-    *//* register yarrow *//*
-    if (register_prng(&yarrow_desc) == -1) {
-        printf("Error registering Yarrow\n");
-        return;
-    }
-    *//* setup the PRNG *//*
-    if ((err = rng_make_prng(128, find_prng("yarrow"), &prng, NULL)) != CRYPT_OK) {
-        printf("Error setting up PRNG, %s\n", error_to_string(err));
-        return;
-    }
-    *//* make a 192-bit ECC key *//*
-    if ((err = ecc_make_key(&prng, find_prng("yarrow"), 24, &mykey)) != CRYPT_OK) {
-        printf("Error making key: %s\n", error_to_string(err));
-        return;
-    }
-    return;*/
+    jstring ec = (*env)->NewStringUTF(env, "KeyPairGenerator.EC");
+    jstring ec_value = (*env)->NewStringUTF(env, "cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$TomCrypt");
+    (*env)->CallObjectMethod(env, this, provider_put, ec, ec_value);
+
+    jstring ecdh = (*env)->NewStringUTF(env, "KeyAgreement.ECDH");
+    jstring ecdh_value = (*env)->NewStringUTF(env, "cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$TomCrypt");
+    (*env)->CallObjectMethod(env, this, provider_put, ecdh, ecdh_value);
+
+    jstring ecdsa = (*env)->NewStringUTF(env, "Signature.ECDSA");
+    jstring ecdsa_value = (*env)->NewStringUTF(env, "cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$TomCrypt");
+    (*env)->CallObjectMethod(env, this, provider_put, ecdsa, ecdsa_value);
 }
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_getCurves(JNIEnv *env, jobject this) {
