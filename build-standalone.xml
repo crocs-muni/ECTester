@@ -71,16 +71,27 @@
     nbproject/build-impl.xml file. 
 
     -->
-    <target name="package" depends="jar,libs">
+    <target name="package" depends="jar,libs-try">
         <property name="store.jar.name" value="ECTesterStandalone-dist"/>
         <antcall target="dist-build.package"/>
     </target>
+
+    <target name="libs-try">
+        <exec dir="src/cz/crcs/ectester/standalone/libs/jni" executable="make" osfamily="unix">
+            <arg value="-k"/>
+        </exec>
+    </target>
     <target name="libs">
-        <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="make" osfamily="unix"/>
+        <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="make" osfamily="unix">
+            <arg value="-k"/>
+        </exec>
     </target>
+
     <target name="-post-clean">
-        <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="make clean" osfamily="unix"/>
+        <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="make clean"
+              osfamily="unix"/>
     </target>
+
     <target name="headers" depends="compile">
         <javah classpath="${build.classes.dir}" outputfile="src/cz/crcs/ectester/standalone/libs/jni/native.h">
             <class name="cz.crcs.ectester.standalone.libs.TomcryptLib"/>
