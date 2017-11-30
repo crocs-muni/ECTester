@@ -1,7 +1,6 @@
 #include "native.h"
 #include <stdio.h>
 #include <string.h>
-#define LTM_DESC
 #include <tomcrypt.h>
 
 static prng_state ltc_prng;
@@ -287,7 +286,7 @@ static jobject generate_from_curve(JNIEnv *env, const ltc_ecc_set_type *curve) {
 
     jbyteArray priv_bytes = (*env)->NewByteArray(env, curve->size);
     jbyte *key_priv = (*env)->GetByteArrayElements(env, priv_bytes, NULL);
-    mp_to_unsigned_bin(key.k, key_priv);
+    ltc_mp.unsigned_write(key.k, key_priv);
     (*env)->ReleaseByteArrayElements(env, priv_bytes, key_priv, 0);
 
     jobject ec_priv_param_spec = (*env)->NewLocalRef(env, ec_param_spec);
@@ -341,4 +340,53 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
     } else {
         return NULL;
     }
+}
+
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024TomCrypt_generateSecret(JNIEnv *env, jobject this, jbyteArray pubkey, jbyteArray privkey, jobject params){
+    ltc_ecc_set_type *curve = create_curve(env, params);
+
+    jsize pub_size = (*env)->GetArrayLength(env, pubkey);
+    jbyte *pub_data = (*env)->GetByteArrayElements(env, pubkey, NULL);
+    jsize pub_half = (pub_size - 1) / 2;
+
+    ecc_key pub;
+    pub.type = PK_PUBLIC;
+    pub.idx = -1;
+    pub.dp = curve;
+    ltc_init_multi(&pub.pubkey.x, &pub.pubkey.y, &pub.pubkey.z, NULL);
+    ltc_mp.set_int(pub.pubkey.z, 1);
+    ltc_mp.unsigned_read(pub.pubkey.x, pub_data + 1, (unsigned long) pub_half);
+    ltc_mp.unsigned_read(pub.pubkey.y, pub_data + 1 + pub_half, (unsigned long) pub_half);
+
+    (*env)->ReleaseByteArrayElements(env, pubkey, pub_data, JNI_ABORT);
+
+    jsize priv_size = (*env)->GetArrayLength(env, privkey);
+    jbyte *priv_data = (*env)->GetByteArrayElements(env, privkey, NULL);
+
+    ecc_key priv;
+    priv.type = PK_PRIVATE;
+    priv.idx = -1;
+    priv.dp = curve;
+    ltc_mp.init(&priv.k);
+    ltc_mp.unsigned_read(priv.k, priv_data, (unsigned long) priv_size);
+
+    (*env)->ReleaseByteArrayElements(env, privkey, priv_data, JNI_ABORT);
+
+    unsigned char result[pub_half];
+
+    unsigned long output_len = pub_half;
+    int err;
+    if ((err = ecc_shared_secret(&priv, &pub, result, &output_len)) != CRYPT_OK) {
+        printf("Error during shared secret computation: %s\n", error_to_string(err));
+        free(curve);
+        return NULL;
+    }
+
+    jbyteArray output = (*env)->NewByteArray(env, pub_half);
+    jbyte *output_data = (*env)->GetByteArrayElements(env, output, NULL);
+    memcpy(output_data, result, pub_half);
+    (*env)->ReleaseByteArrayElements(env, output, output_data, JNI_COMMIT);
+
+    free(curve);
+    return output;
 }

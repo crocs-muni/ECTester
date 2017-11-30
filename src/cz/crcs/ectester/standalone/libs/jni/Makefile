@@ -36,10 +36,10 @@ JNI_PLATFORMINCLUDEDIR ?= $(JNI_INCLUDEDIR)/$(JNI_PLATFORM)
 all: tomcrypt_provider.so
 
 tomcrypt_provider.so: tomcrypt.o
-	gcc -DLTM_DESC -DUSE_LTM -fPIC -g -shared -o $@ $< -ltommath -ltomcrypt
+	gcc -fPIC -g -shared -o $@ $< -L. -ltommath -ltomcrypt
 
 %.o: %.c
-	gcc -fPIC -g -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I. -c $<
+	gcc -DLTM_DESC -fPIC -g -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I. -c $<
 
 clean:
 	rm -rf *.o
