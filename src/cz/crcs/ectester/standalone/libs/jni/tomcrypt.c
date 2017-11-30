@@ -45,8 +45,8 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
     jstring ecdh_value = (*env)->NewStringUTF(env, "cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$TomCrypt");
     (*env)->CallObjectMethod(env, this, provider_put, ecdh, ecdh_value);
 
-    jstring ecdsa = (*env)->NewStringUTF(env, "Signature.ECDSA");
-    jstring ecdsa_value = (*env)->NewStringUTF(env, "cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$TomCrypt");
+    jstring ecdsa = (*env)->NewStringUTF(env, "Signature.NONEwithECDSA");
+    jstring ecdsa_value = (*env)->NewStringUTF(env, "cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$TomCryptRaw");
     (*env)->CallObjectMethod(env, this, provider_put, ecdsa, ecdsa_value);
 
     int err;
@@ -112,9 +112,10 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_getC
 }
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024TomCrypt_keysizeSupported(JNIEnv *env, jobject this, jint keysize){
+    int key_bytes = (keysize + 7) / 8;
     const ltc_ecc_set_type * curve = ltc_ecc_sets;
     while (curve->size != 0) {
-        if (curve->size * 8 == keysize) {
+        if (curve->size == key_bytes) {
             return JNI_TRUE;
         }
         curve++;
@@ -309,7 +310,7 @@ static jobject generate_from_curve(JNIEnv *env, const ltc_ecc_set_type *curve) {
 }
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024TomCrypt_generate__ILjava_security_SecureRandom_2(JNIEnv *env, jobject this, jint keysize, jobject random){
-    int key_bytes = keysize / 8;
+    int key_bytes = (keysize + 7) / 8;
 
     const ltc_ecc_set_type *curve = ltc_ecc_sets;
     while (curve->size != 0) {
@@ -351,49 +352,63 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
     }
 }
 
-JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024TomCrypt_generateSecret(JNIEnv *env, jobject this, jbyteArray pubkey, jbyteArray privkey, jobject params){
-    ltc_ecc_set_type *curve = create_curve(env, params);
-
-    jsize pub_size = (*env)->GetArrayLength(env, pubkey);
-    jbyte *pub_data = (*env)->GetByteArrayElements(env, pubkey, NULL);
-
-    if (curve->size != (pub_size - 1) / 2) {
-        throw_new(env, "java/lang/IllegalStateException", "Curve size does not match the public key size.");
-        (*env)->ReleaseByteArrayElements(env, pubkey, pub_data, JNI_ABORT);
-        free(curve);
-        return NULL;
-    }
-
-    ecc_key pub;
-    pub.type = PK_PUBLIC;
-    pub.idx = -1;
-    pub.dp = curve;
-    ltc_init_multi(&pub.pubkey.x, &pub.pubkey.y, &pub.pubkey.z, NULL);
-    ltc_mp.set_int(pub.pubkey.z, 1);
-    ltc_mp.unsigned_read(pub.pubkey.x, pub_data + 1, (unsigned long) curve->size);
-    ltc_mp.unsigned_read(pub.pubkey.y, pub_data + 1 + curve->size, (unsigned long) curve->size);
-
-    (*env)->ReleaseByteArrayElements(env, pubkey, pub_data, JNI_ABORT);
-
-
+static jboolean privkey_from_bytes(JNIEnv *env, jbyteArray privkey, const ltc_ecc_set_type *curve, ecc_key *out) {
     jsize priv_size = (*env)->GetArrayLength(env, privkey);
     jbyte *priv_data = (*env)->GetByteArrayElements(env, privkey, NULL);
 
     if (curve->size != priv_size) {
         throw_new(env, "java/lang/IllegalStateException", "Curve size does not match the private key size.");
         (*env)->ReleaseByteArrayElements(env, privkey, priv_data, JNI_ABORT);
+        return JNI_FALSE;
+    }
+
+    out->type = PK_PRIVATE;
+    out->idx = -1;
+    out->dp = curve;
+    ltc_mp.init(&out->k);
+    ltc_mp.unsigned_read(out->k, priv_data, (unsigned long) curve->size);
+
+    (*env)->ReleaseByteArrayElements(env, privkey, priv_data, JNI_ABORT);
+    return JNI_TRUE;
+}
+
+static jboolean pubkey_from_bytes(JNIEnv *env, jbyteArray pubkey, const ltc_ecc_set_type *curve, ecc_key *out) {
+    jsize pub_size = (*env)->GetArrayLength(env, pubkey);
+    jbyte *pub_data = (*env)->GetByteArrayElements(env, pubkey, NULL);
+
+    if (curve->size != (pub_size - 1) / 2) {
+        throw_new(env, "java/lang/IllegalStateException", "Curve size does not match the public key size.");
+        (*env)->ReleaseByteArrayElements(env, pubkey, pub_data, JNI_ABORT);
+        return JNI_FALSE;
+    }
+
+    out->type = PK_PUBLIC;
+    out->idx = -1;
+    out->dp = curve;
+    ltc_init_multi(&out->pubkey.x, &out->pubkey.y, &out->pubkey.z, NULL);
+    ltc_mp.set_int(out->pubkey.z, 1);
+    ltc_mp.unsigned_read(out->pubkey.x, pub_data + 1, (unsigned long) curve->size);
+    ltc_mp.unsigned_read(out->pubkey.y, pub_data + 1 + curve->size, (unsigned long) curve->size);
+
+    (*env)->ReleaseByteArrayElements(env, pubkey, pub_data, JNI_ABORT);
+
+    return JNI_TRUE;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024TomCrypt_generateSecret(JNIEnv *env, jobject this, jbyteArray pubkey, jbyteArray privkey, jobject params){
+    ltc_ecc_set_type *curve = create_curve(env, params);
+
+    ecc_key pub;
+    if (!pubkey_from_bytes(env, pubkey, curve, &pub)) {
         free(curve);
         return NULL;
     }
 
     ecc_key priv;
-    priv.type = PK_PRIVATE;
-    priv.idx = -1;
-    priv.dp = curve;
-    ltc_mp.init(&priv.k);
-    ltc_mp.unsigned_read(priv.k, priv_data, (unsigned long) curve->size);
-
-    (*env)->ReleaseByteArrayElements(env, privkey, priv_data, JNI_ABORT);
+    if (!privkey_from_bytes(env, privkey, curve, &priv)) {
+        free(curve);
+        return NULL;
+    }
 
     unsigned char result[curve->size];
     unsigned long output_len = curve->size;
@@ -412,4 +427,68 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     ltc_cleanup_multi(&pub.pubkey.x, &pub.pubkey.y, &pub.pubkey.z, &priv.k, NULL);
     free(curve);
     return output;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024TomCryptRaw_sign(JNIEnv *env, jobject this, jbyteArray data, jbyteArray privkey, jobject params) {
+    ltc_ecc_set_type *curve = create_curve(env, params);
+
+    ecc_key priv;
+    if (!privkey_from_bytes(env, privkey, curve, &priv)) {
+        free(curve);
+        return NULL;
+    }
+
+    jsize data_size = (*env)->GetArrayLength(env, data);
+    jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
+
+    unsigned char result[curve->size*4];
+    unsigned long output_len = curve->size*4;
+    int err;
+    if ((err = ecc_sign_hash(data_data, data_size, result, &output_len, &ltc_prng, find_prng("yarrow"), &priv)) != CRYPT_OK) {
+        throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
+        free(curve);
+        (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
+        return NULL;
+    }
+
+    (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
+
+    jbyteArray output = (*env)->NewByteArray(env, output_len);
+    jbyte *output_data = (*env)->GetByteArrayElements(env, output, NULL);
+    memcpy(output_data, result, output_len);
+    (*env)->ReleaseByteArrayElements(env, output, output_data, JNI_COMMIT);
+
+    free(curve);
+    return output;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024TomCryptRaw_verify(JNIEnv *env, jobject this, jbyteArray signature, jbyteArray data, jbyteArray pubkey, jobject params) {
+    ltc_ecc_set_type *curve = create_curve(env, params);
+
+    ecc_key pub;
+    if (!pubkey_from_bytes(env, pubkey, curve, &pub)) {
+        free(curve);
+        return JNI_FALSE;
+    }
+
+    jsize data_size = (*env)->GetArrayLength(env, data);
+    jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
+
+    jsize sig_size = (*env)->GetArrayLength(env, signature);
+    jbyte *sig_data = (*env)->GetByteArrayElements(env, signature, NULL);
+
+    int err;
+    int result;
+    if ((err = ecc_verify_hash(sig_data, sig_size, data_data, data_size, &result, &pub)) != CRYPT_OK) {
+        throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
+        free(curve);
+        (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
+        (*env)->ReleaseByteArrayElements(env, signature, sig_data, JNI_ABORT);
+        return JNI_FALSE;
+    }
+
+    (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
+    (*env)->ReleaseByteArrayElements(env, signature, sig_data, JNI_ABORT);
+    free(curve);
+    return result;
 }

@@ -101,6 +101,7 @@
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$TomCrypt"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$TomCrypt"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$TomCrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$TomCryptRaw"/>
         </javah>
     </target>
 </project>

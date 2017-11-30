@@ -23,7 +23,7 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
     protected void engineInit(Key key, SecureRandom random) throws InvalidKeyException {
         if (!(key instanceof ECPrivateKey)) {
             throw new InvalidKeyException
-                    ("Key must be instance of PrivateKey");
+                    ("Key must be instance of ECPrivateKey");
         }
         privateKey = (ECPrivateKey) key;
         this.params = privateKey.getParams();
@@ -52,7 +52,7 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         }
         if (!(key instanceof ECPublicKey)) {
             throw new InvalidKeyException
-                    ("Key must be a PublicKey with algorithm EC");
+                    ("Key must be an instance of ECPublicKey");
         }
         ECParameterSpec publicParams = ((ECPublicKey) key).getParams();
         if (!(params.getCurve().equals(publicParams.getCurve()) &&

@@ -116,6 +116,8 @@ public class ECTesterStandalone {
         Options ecdsaOpts = new Options();
         ecdsaOpts.addOption(Option.builder("t").longOpt("type").desc("Set Signature object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdsaOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDSA [amount] times.").build());
+        ecdsaOpts.addOption(Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").build());
+        ecdsaOpts.addOption(Option.builder("nc").longOpt("named-curve").desc("Use a named curve, from CurveDB: <cat/id>").hasArg().argName("cat/id").build());
         ecdsaOpts.addOption(Option.builder("f").longOpt("file").hasArg().argName("file").optionalArg(false).desc("Input [file] to sign.").build());
         ParserOptions ecdsa = new ParserOptions(new DefaultParser(), ecdsaOpts);
         actions.put("ecdsa", ecdsa);
@@ -271,7 +273,7 @@ public class ECTesterStandalone {
             dataString = "";
         } else {
             SecureRandom random = new SecureRandom();
-            data = new byte[128];
+            data = new byte[32];
             random.nextBytes(data);
             dataString = ByteUtil.bytesToHex(data, false);
         }
@@ -449,7 +451,7 @@ public class ECTesterStandalone {
         }
 
         boolean readOptions(TreeCommandLine cli) {
-            if (cli.isNext("generate") || cli.isNext("export") || cli.isNext("ecdh")) {
+            if (cli.isNext("generate") || cli.isNext("export") || cli.isNext("ecdh") || cli.isNext("ecdsa")) {
                 if (!cli.hasArg(-1)) {
                     System.err.println("Missing library name argument.");
                     return false;
