@@ -13,7 +13,7 @@ public class ECUtil {
         int bytes = (bits + 7) / 8;
         if (raw.length < bytes) {
             byte[] result = new byte[bytes];
-            System.arraycopy(raw,0, result, bytes - raw.length, raw.length);
+            System.arraycopy(raw, 0, result, bytes - raw.length, raw.length);
             return result;
         }
         if (bytes < raw.length) {
@@ -128,14 +128,14 @@ public class ECUtil {
             System.arraycopy(data, 1, xbytes, 0, len);
             byte[] ybytes = new byte[len];
             System.arraycopy(data, 1 + len, ybytes, 0, len);
-            return new ECPoint(new BigInteger(xbytes), new BigInteger(ybytes));
+            return new ECPoint(new BigInteger(1, xbytes), new BigInteger(1, ybytes));
         } else if (data[0] == 0x02 || data[0] == 0x03) {
             if (curve == null) {
                 throw new IllegalArgumentException();
             }
             byte[] xbytes = new byte[data.length - 1];
             System.arraycopy(data, 1, xbytes, 0, data.length - 1);
-            BigInteger x = new BigInteger(xbytes);
+            BigInteger x = new BigInteger(1, xbytes);
             BigInteger a = curve.getA();
             BigInteger b = curve.getB();
 

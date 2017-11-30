@@ -40,7 +40,7 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
 
         @Override
         public BigInteger getS() {
-            return new BigInteger(keyData);
+            return new BigInteger(1, keyData);
         }
 
         @Override
