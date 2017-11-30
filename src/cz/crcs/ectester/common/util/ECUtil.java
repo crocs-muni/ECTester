@@ -7,32 +7,73 @@ import java.security.spec.*;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class ECUtil {
-    public static byte[] toX962Compressed(ECPoint point) {
+
+    public static byte[] toByteArray(BigInteger what, int bits) {
+        byte[] raw = what.toByteArray();
+        int bytes = (bits + 7) / 8;
+        if (raw.length < bytes) {
+            byte[] result = new byte[bytes];
+            System.arraycopy(raw,0, result, bytes - raw.length, raw.length);
+            return result;
+        }
+        if (bytes < raw.length) {
+            byte[] result = new byte[bytes];
+            System.arraycopy(raw, raw.length - bytes, result, 0, bytes);
+            return result;
+        }
+        return raw;
+    }
+
+    public static byte[] toX962Compressed(ECPoint point, int bits) {
         if (point.equals(ECPoint.POINT_INFINITY)) {
             return new byte[]{0};
         }
-        byte[] x = point.getAffineX().toByteArray();
+        byte[] x = toByteArray(point.getAffineX(), bits);
         byte marker = (byte) (0x02 | point.getAffineY().mod(BigInteger.valueOf(2)).byteValue());
         return ByteUtil.concatenate(new byte[]{marker}, x);
     }
 
-    public static byte[] toX962Uncompressed(ECPoint point) {
+    public static byte[] toX962Compressed(ECPoint point, EllipticCurve curve) {
+        return toX962Compressed(point, curve.getField().getFieldSize());
+    }
+
+    public static byte[] toX962Compressed(ECPoint point, ECParameterSpec spec) {
+        return toX962Compressed(point, spec.getCurve());
+    }
+
+    public static byte[] toX962Uncompressed(ECPoint point, int bits) {
         if (point.equals(ECPoint.POINT_INFINITY)) {
             return new byte[]{0};
         }
-        byte[] x = point.getAffineX().toByteArray();
-        byte[] y = point.getAffineY().toByteArray();
+        byte[] x = toByteArray(point.getAffineX(), bits);
+        byte[] y = toByteArray(point.getAffineY(), bits);
         return ByteUtil.concatenate(new byte[]{0x04}, x, y);
     }
 
-    public static byte[] toX962Hybrid(ECPoint point) {
+    public static byte[] toX962Uncompressed(ECPoint point, EllipticCurve curve) {
+        return toX962Uncompressed(point, curve.getField().getFieldSize());
+    }
+
+    public static byte[] toX962Uncompressed(ECPoint point, ECParameterSpec spec) {
+        return toX962Uncompressed(point, spec.getCurve());
+    }
+
+    public static byte[] toX962Hybrid(ECPoint point, int bits) {
         if (point.equals(ECPoint.POINT_INFINITY)) {
             return new byte[]{0};
         }
-        byte[] x = point.getAffineX().toByteArray();
-        byte[] y = point.getAffineY().toByteArray();
+        byte[] x = toByteArray(point.getAffineX(), bits);
+        byte[] y = toByteArray(point.getAffineY(), bits);
         byte marker = (byte) (0x06 | point.getAffineY().mod(BigInteger.valueOf(2)).byteValue());
         return ByteUtil.concatenate(new byte[]{marker}, x, y);
+    }
+
+    public static byte[] toX962Hybrid(ECPoint point, EllipticCurve curve) {
+        return toX962Hybrid(point, curve.getField().getFieldSize());
+    }
+
+    public static byte[] toX962Hybrid(ECPoint point, ECParameterSpec spec) {
+        return toX962Hybrid(point, spec.getCurve());
     }
 
     private static boolean isResidue(BigInteger a, BigInteger p) {
@@ -64,7 +105,7 @@ public class ECUtil {
             int i = 0;
             BigInteger exponent;
             do {
-               exponent = BigInteger.valueOf(2).pow(++i);
+                exponent = BigInteger.valueOf(2).pow(++i);
             } while (!t.modPow(exponent, p).equals(BigInteger.ONE));
 
             BigInteger twoExponent = m.subtract(BigInteger.valueOf(i + 1));
@@ -120,7 +161,8 @@ public class ECUtil {
 
                 return new ECPoint(x, beta);
             } else if (field instanceof ECFieldF2m) {
-
+                //TODO
+                throw new UnsupportedOperationException();
             }
             return null;
         } else {

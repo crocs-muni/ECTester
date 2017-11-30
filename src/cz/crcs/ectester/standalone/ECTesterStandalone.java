@@ -23,7 +23,6 @@ import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -246,7 +245,7 @@ public class ECTesterStandalone {
                     byte[] result = ka.generateSecret();
                     ka = kaIdent.getInstance(lib.getProvider());
 
-                    String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW()), false);
+                    String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW(), pubkey.getParams()), false);
                     String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
                     String dh = ByteUtil.bytesToHex(result, false);
                     System.out.println(String.format("%d;%d;%s;%s;%s", i, elapsed, pub, priv, dh));
@@ -336,7 +335,7 @@ public class ECTesterStandalone {
                     verifyTime += System.nanoTime();
 
 
-                    String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW()), false);
+                    String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW(), pubkey.getParams()), false);
                     String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
                     String sign = ByteUtil.bytesToHex(signature, false);
                     System.out.println(String.format("%d;%s;%d;%d;%s;%s;%s;%d", i, dataString, signTime, verifyTime, pub, priv, sign, verified ? 1 : 0));
@@ -385,7 +384,7 @@ public class ECTesterStandalone {
                     ECPublicKey publicKey = (ECPublicKey) kp.getPublic();
                     ECPrivateKey privateKey = (ECPrivateKey) kp.getPrivate();
 
-                    String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(publicKey.getW()), false);
+                    String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(publicKey.getW(), publicKey.getParams()), false);
                     String priv = ByteUtil.bytesToHex(privateKey.getS().toByteArray(), false);
                     System.out.println(String.format("%d;%d;%s;%s", i, elapsed, pub, priv));
                 }

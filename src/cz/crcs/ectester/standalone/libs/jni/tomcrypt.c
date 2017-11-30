@@ -15,6 +15,7 @@ static jclass fp_field_class;
 static jclass f2m_field_class;
 static jclass point_class;
 static jclass biginteger_class;
+static jclass illegal_state_exception_class;
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_createProvider(JNIEnv *env, jobject this) {
     /* Create the custom provider. */
@@ -88,6 +89,9 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
 
     jclass local_point_class = (*env)->FindClass(env, "java/security/spec/ECPoint");
     point_class = (*env)->NewGlobalRef(env, local_point_class);
+
+    jclass local_illegal_state_exception_class = (*env)->FindClass(env, "java/lang/IllegalStateException");
+    illegal_state_exception_class = (*env)->NewGlobalRef(env, local_illegal_state_exception_class);
 }
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_getCurves(JNIEnv *env, jobject this) {
@@ -233,7 +237,7 @@ static ltc_ecc_set_type* create_curve(JNIEnv *env, jobject params) {
 
     jmethodID get_bits = (*env)->GetMethodID(env, fp_field_class, "getFieldSize", "()I");
     jint bits = (*env)->CallIntMethod(env, field, get_bits);
-    jint bytes = (bits + (8 - bits % 8)) / 8;
+    jint bytes = (bits + 7) / 8;
 
     jmethodID get_b = (*env)->GetMethodID(env, elliptic_curve_class, "getB", "()Ljava/math/BigInteger;");
     jobject b = (*env)->CallObjectMethod(env, elliptic_curve, get_b);
@@ -265,18 +269,23 @@ static ltc_ecc_set_type* create_curve(JNIEnv *env, jobject params) {
     return curve;
 }
 
+static void throw_new(JNIEnv *env, const char *class, const char *message) {
+    jclass clazz = (*env)->FindClass(env, class);
+    (*env)->ThrowNew(env, clazz, message);
+}
+
 static jobject generate_from_curve(JNIEnv *env, const ltc_ecc_set_type *curve) {
     ecc_key key;
     int err;
     if ((err = ecc_make_key_ex(&ltc_prng, find_prng("yarrow"), &key, curve)) != CRYPT_OK) {
-        printf("Error making key: %s\n", error_to_string(err));
+        throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
         return NULL;
     }
     unsigned long key_len = 2*curve->size + 1;
     jbyteArray pub_bytes = (*env)->NewByteArray(env, key_len);
     jbyte *key_pub = (*env)->GetByteArrayElements(env, pub_bytes, NULL);
     ecc_ansi_x963_export(&key, key_pub, &key_len);
-    (*env)->ReleaseByteArrayElements(env, pub_bytes, key_pub, 0);
+    (*env)->ReleaseByteArrayElements(env, pub_bytes, key_pub, JNI_COMMIT);
 
     jobject ec_param_spec = create_ec_param_spec(env, curve);
 
@@ -287,7 +296,7 @@ static jobject generate_from_curve(JNIEnv *env, const ltc_ecc_set_type *curve) {
     jbyteArray priv_bytes = (*env)->NewByteArray(env, curve->size);
     jbyte *key_priv = (*env)->GetByteArrayElements(env, priv_bytes, NULL);
     ltc_mp.unsigned_write(key.k, key_priv);
-    (*env)->ReleaseByteArrayElements(env, priv_bytes, key_priv, 0);
+    (*env)->ReleaseByteArrayElements(env, priv_bytes, key_priv, JNI_COMMIT);
 
     jobject ec_priv_param_spec = (*env)->NewLocalRef(env, ec_param_spec);
     jmethodID ec_priv_init = (*env)->GetMethodID(env, privkey_class, "<init>", "([BLjava/security/spec/ECParameterSpec;)V");
@@ -347,7 +356,13 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 
     jsize pub_size = (*env)->GetArrayLength(env, pubkey);
     jbyte *pub_data = (*env)->GetByteArrayElements(env, pubkey, NULL);
-    jsize pub_half = (pub_size - 1) / 2;
+
+    if (curve->size != (pub_size - 1) / 2) {
+        throw_new(env, "java/lang/IllegalStateException", "Curve size does not match the public key size.");
+        (*env)->ReleaseByteArrayElements(env, pubkey, pub_data, JNI_ABORT);
+        free(curve);
+        return NULL;
+    }
 
     ecc_key pub;
     pub.type = PK_PUBLIC;
@@ -355,38 +370,46 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     pub.dp = curve;
     ltc_init_multi(&pub.pubkey.x, &pub.pubkey.y, &pub.pubkey.z, NULL);
     ltc_mp.set_int(pub.pubkey.z, 1);
-    ltc_mp.unsigned_read(pub.pubkey.x, pub_data + 1, (unsigned long) pub_half);
-    ltc_mp.unsigned_read(pub.pubkey.y, pub_data + 1 + pub_half, (unsigned long) pub_half);
+    ltc_mp.unsigned_read(pub.pubkey.x, pub_data + 1, (unsigned long) curve->size);
+    ltc_mp.unsigned_read(pub.pubkey.y, pub_data + 1 + curve->size, (unsigned long) curve->size);
 
     (*env)->ReleaseByteArrayElements(env, pubkey, pub_data, JNI_ABORT);
 
+
     jsize priv_size = (*env)->GetArrayLength(env, privkey);
     jbyte *priv_data = (*env)->GetByteArrayElements(env, privkey, NULL);
+
+    if (curve->size != priv_size) {
+        throw_new(env, "java/lang/IllegalStateException", "Curve size does not match the private key size.");
+        (*env)->ReleaseByteArrayElements(env, privkey, priv_data, JNI_ABORT);
+        free(curve);
+        return NULL;
+    }
 
     ecc_key priv;
     priv.type = PK_PRIVATE;
     priv.idx = -1;
     priv.dp = curve;
     ltc_mp.init(&priv.k);
-    ltc_mp.unsigned_read(priv.k, priv_data, (unsigned long) priv_size);
+    ltc_mp.unsigned_read(priv.k, priv_data, (unsigned long) curve->size);
 
     (*env)->ReleaseByteArrayElements(env, privkey, priv_data, JNI_ABORT);
 
-    unsigned char result[pub_half];
-
-    unsigned long output_len = pub_half;
+    unsigned char result[curve->size];
+    unsigned long output_len = curve->size;
     int err;
     if ((err = ecc_shared_secret(&priv, &pub, result, &output_len)) != CRYPT_OK) {
-        printf("Error during shared secret computation: %s\n", error_to_string(err));
+        throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
         free(curve);
         return NULL;
     }
 
-    jbyteArray output = (*env)->NewByteArray(env, pub_half);
+    jbyteArray output = (*env)->NewByteArray(env, curve->size);
     jbyte *output_data = (*env)->GetByteArrayElements(env, output, NULL);
-    memcpy(output_data, result, pub_half);
+    memcpy(output_data, result, curve->size);
     (*env)->ReleaseByteArrayElements(env, output, output_data, JNI_COMMIT);
 
+    ltc_cleanup_multi(&pub.pubkey.x, &pub.pubkey.y, &pub.pubkey.z, &priv.k, NULL);
     free(curve);
     return output;
 }

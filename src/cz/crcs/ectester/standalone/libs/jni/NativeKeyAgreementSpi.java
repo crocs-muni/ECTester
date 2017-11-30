@@ -67,8 +67,8 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
 
     @Override
     protected byte[] engineGenerateSecret() throws IllegalStateException {
-        byte[] pubkey = ECUtil.toX962Uncompressed(publicKey.getW());
-        byte[] privkey = privateKey.getS().toByteArray();
+        byte[] pubkey = ECUtil.toX962Uncompressed(publicKey.getW(), params.getCurve());
+        byte[] privkey = ECUtil.toByteArray(privateKey.getS(), params.getCurve().getField().getFieldSize());
         return generateSecret(pubkey, privkey, params);
     }
 
