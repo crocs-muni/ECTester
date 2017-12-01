@@ -54,13 +54,6 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
             throw new InvalidKeyException
                     ("Key must be an instance of ECPublicKey");
         }
-        ECParameterSpec publicParams = ((ECPublicKey) key).getParams();
-        if (!(params.getCurve().equals(publicParams.getCurve()) &&
-                params.getGenerator().equals(publicParams.getGenerator()) &&
-                params.getOrder().equals(publicParams.getOrder()) &&
-                params.getCofactor() == publicParams.getCofactor())) {
-            throw new IllegalStateException("Mismatched parameters.");
-        }
         publicKey = (ECPublicKey) key;
         return null;
     }
