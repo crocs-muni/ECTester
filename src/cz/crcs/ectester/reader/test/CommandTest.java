@@ -1,45 +1,42 @@
 package cz.crcs.ectester.reader.test;
 
 import cz.crcs.ectester.common.test.Result;
-import cz.crcs.ectester.common.test.Test;
+import cz.crcs.ectester.common.test.SimpleTest;
+import cz.crcs.ectester.common.test.TestCallback;
 import cz.crcs.ectester.common.test.TestException;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
-
-import javax.smartcardio.CardException;
-import java.util.function.BiFunction;
 
 /**
  * A simple test that runs one Command to get and evaluate one Response
  * to get a Result and compare it with the expected one.
  */
-public class CommandTest extends Test {
-    private BiFunction<Command, Response, Result> callback;
-    private Command command;
-    private Response response;
-
-    public CommandTest(Command command, BiFunction<Command, Response, Result> callback) {
-        this.command = command;
-        this.callback = callback;
+public class CommandTest extends SimpleTest<CommandTestable> {
+    private CommandTest(CommandTestable command, TestCallback<CommandTestable> callback) {
+        super(command, callback);
     }
 
-    public CommandTest(Command command, Result.ExpectedValue expected, String ok, String nok) {
-        this(command, (cmd, resp) -> {
-            Result.Value resultValue = Result.Value.fromExpected(expected, resp.successful(), resp.error());
-            return new Result(resultValue, resultValue.ok() ? ok : nok);
+    public CommandTest expect(CommandTestable command, Result.ExpectedValue expected, String ok, String nok) {
+        return new CommandTest(command, new TestCallback<CommandTestable>() {
+            @Override
+            public Result apply(CommandTestable commandTestable) {
+                Response resp = commandTestable.getResponse();
+                Result.Value resultValue = Result.Value.fromExpected(expected, resp.successful(), resp.error());
+                return new Result(resultValue, resultValue.ok() ? ok : nok);
+            }
         });
     }
 
-    public CommandTest(Command command, Result.ExpectedValue expected) {
-        this(command, expected, null, null);
+    public CommandTest expect(CommandTestable command, Result.ExpectedValue expected) {
+        return expect(command, expected, null, null);
     }
 
     public Command getCommand() {
-        return command;
+        return testable.getCommand();
     }
 
     public Response getResponse() {
-        return response;
+        return testable.getResponse();
     }
 
     @Override
@@ -47,25 +44,13 @@ public class CommandTest extends Test {
         if (hasRun)
             return;
 
-        try {
-            response = command.send();
-        } catch (CardException e) {
-            throw new TestException(e);
-        }
-        if (callback != null) {
-            result = callback.apply(command, response);
-        } else {
-            if (response.successful()) {
-                result = new Result(Result.Value.SUCCESS);
-            } else {
-                result = new Result(Result.Value.FAILURE);
-            }
-        }
+        testable.run();
+        result = callback.apply(testable);
         hasRun = true;
     }
 
     @Override
     public String getDescription() {
-        return response.getDescription();
+        return null;
     }
 }

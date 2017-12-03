@@ -8,22 +8,22 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.spec.ECParameterSpec;
 
-public class KeyGenerationTestable extends BaseTestable {
+public class KeyGeneratorTestable extends BaseTestable {
     private KeyPair kp;
     private KeyPairGenerator kpg;
     private int keysize = 0;
     private ECParameterSpec spec = null;
 
-    public KeyGenerationTestable(KeyPairGenerator kpg) {
+    public KeyGeneratorTestable(KeyPairGenerator kpg) {
         this.kpg = kpg;
     }
 
-    public KeyGenerationTestable(KeyPairGenerator kpg, int keysize) {
+    public KeyGeneratorTestable(KeyPairGenerator kpg, int keysize) {
         this.kpg = kpg;
         this.keysize = keysize;
     }
 
-    public KeyGenerationTestable(KeyPairGenerator kpg, ECParameterSpec spec) {
+    public KeyGeneratorTestable(KeyPairGenerator kpg, ECParameterSpec spec) {
         this.kpg = kpg;
         this.spec = spec;
     }

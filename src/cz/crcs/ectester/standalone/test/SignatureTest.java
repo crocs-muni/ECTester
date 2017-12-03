@@ -1,19 +1,15 @@
 package cz.crcs.ectester.standalone.test;
 
-import cz.crcs.ectester.common.test.Test;
+import cz.crcs.ectester.common.test.SimpleTest;
 import cz.crcs.ectester.common.test.TestCallback;
 import cz.crcs.ectester.common.test.TestException;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class SignatureTest extends Test {
-    private SignatureTestable sig;
-    private TestCallback<SignatureTestable> callback;
-
+public class SignatureTest extends SimpleTest<SignatureTestable> {
     private SignatureTest(SignatureTestable sig, TestCallback<SignatureTestable> callback) {
-        this.sig = sig;
-        this.callback = callback;
+        super(sig, callback);
     }
 
     @Override
@@ -23,8 +19,10 @@ public class SignatureTest extends Test {
 
     @Override
     public void run() throws TestException {
-        sig.run();
-        result = callback.apply(sig);
+        if (hasRun)
+            return;
+        testable.run();
+        result = callback.apply(testable);
         hasRun = true;
     }
 }

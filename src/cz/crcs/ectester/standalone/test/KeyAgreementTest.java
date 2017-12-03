@@ -1,7 +1,7 @@
 package cz.crcs.ectester.standalone.test;
 
 import cz.crcs.ectester.common.test.Result;
-import cz.crcs.ectester.common.test.Test;
+import cz.crcs.ectester.common.test.SimpleTest;
 import cz.crcs.ectester.common.test.TestCallback;
 import cz.crcs.ectester.common.test.TestException;
 
@@ -10,13 +10,9 @@ import java.util.Arrays;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class KeyAgreementTest extends Test {
-    private KeyAgreementTestable ka;
-    private TestCallback<KeyAgreementTestable> callback;
-
+public class KeyAgreementTest extends SimpleTest<KeyAgreementTestable> {
     private KeyAgreementTest(KeyAgreementTestable ka, TestCallback<KeyAgreementTestable> callback) {
-        this.ka = ka;
-        this.callback = callback;
+        super(ka, callback);
     }
 
     public static KeyAgreementTest match(KeyAgreementTestable ka, byte[] expectedSecret) {
@@ -52,8 +48,10 @@ public class KeyAgreementTest extends Test {
 
     @Override
     public void run() throws TestException {
-        ka.run();
-        result = callback.apply(ka);
+        if (hasRun)
+            return;
+        testable.run();
+        result = callback.apply(testable);
         hasRun = true;
     }
 }

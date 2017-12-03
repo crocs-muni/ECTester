@@ -1,7 +1,6 @@
 package cz.crcs.ectester.common.output;
 
 import cz.crcs.ectester.common.test.BaseTestable;
-import cz.crcs.ectester.common.test.Testable;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
