@@ -61,11 +61,13 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
     }
 
     @Override
+    @Deprecated
     protected void engineSetParameter(String param, Object value) throws InvalidParameterException {
         throw new UnsupportedOperationException("setParameter() not supported");
     }
 
     @Override
+    @Deprecated
     protected Object engineGetParameter(String param) throws InvalidParameterException {
         throw new UnsupportedOperationException("getParameter() not supported");
     }

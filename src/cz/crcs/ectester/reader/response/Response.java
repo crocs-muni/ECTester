@@ -13,7 +13,6 @@ import javax.smartcardio.ResponseAPDU;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public abstract class Response {
-
     private ResponseAPDU resp;
     private long time;
     private short[] sws;
@@ -86,6 +85,10 @@ public abstract class Response {
 
     public short getNaturalSW() {
         return (short) resp.getSW();
+    }
+
+    public short[] getSWs() {
+        return sws;
     }
 
     public short getSW(int index) {

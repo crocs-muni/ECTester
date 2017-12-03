@@ -1,5 +1,6 @@
 package cz.crcs.ectester.standalone.test;
 
+import cz.crcs.ectester.common.test.BaseTestable;
 import cz.crcs.ectester.common.test.TestException;
 import cz.crcs.ectester.common.test.Testable;
 
@@ -9,18 +10,13 @@ import java.security.SignatureException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 
-public class SignatureTestable implements Testable {
-
+public class SignatureTestable extends BaseTestable {
     private Signature sig;
     private ECPrivateKey signKey;
     private ECPublicKey verifyKey;
     private byte[] data;
     private byte[] signature;
     private boolean verified;
-
-    private boolean hasRun;
-    private boolean error;
-    private boolean ok;
 
     public SignatureTestable(Signature sig, ECPrivateKey signKey, ECPublicKey verifyKey, byte[] data) {
         this.sig = sig;
@@ -35,11 +31,6 @@ public class SignatureTestable implements Testable {
 
     public boolean getVerified() {
         return verified;
-    }
-
-    @Override
-    public boolean hasRun() {
-        return hasRun;
     }
 
     @Override
@@ -88,15 +79,5 @@ public class SignatureTestable implements Testable {
         }
         ok = true;
         hasRun = true;
-    }
-
-    @Override
-    public boolean ok() {
-        return ok;
-    }
-
-    @Override
-    public boolean error() {
-        return error;
     }
 }

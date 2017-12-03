@@ -1,5 +1,6 @@
 package cz.crcs.ectester.reader.output;
 
+import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.CompoundTest;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.reader.command.Command;

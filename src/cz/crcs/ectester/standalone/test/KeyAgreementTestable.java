@@ -1,5 +1,6 @@
 package cz.crcs.ectester.standalone.test;
 
+import cz.crcs.ectester.common.test.BaseTestable;
 import cz.crcs.ectester.common.test.TestException;
 import cz.crcs.ectester.common.test.Testable;
 
@@ -11,14 +12,11 @@ import java.security.interfaces.ECPublicKey;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class KeyAgreementTestable implements Testable {
+public class KeyAgreementTestable extends BaseTestable {
     private KeyAgreement ka;
     private ECPrivateKey privateKey;
     private ECPublicKey publicKey;
     private byte[] secret;
-    private boolean hasRun;
-    private boolean error = false;
-    private boolean ok;
 
     public KeyAgreementTestable(KeyAgreement ka, ECPrivateKey privateKey, ECPublicKey publicKey) {
         this.ka = ka;
@@ -31,11 +29,6 @@ public class KeyAgreementTestable implements Testable {
             return null;
         }
         return secret;
-    }
-
-    @Override
-    public boolean hasRun() {
-        return hasRun;
     }
 
     @Override
@@ -65,15 +58,5 @@ public class KeyAgreementTestable implements Testable {
         }
         ok = true;
         hasRun = true;
-    }
-
-    @Override
-    public boolean ok() {
-        return ok;
-    }
-
-    @Override
-    public boolean error() {
-        return error;
     }
 }
