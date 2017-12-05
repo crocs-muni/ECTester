@@ -26,9 +26,9 @@ import static cz.crcs.ectester.common.test.Result.Value;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class TestVectorSuite extends TestSuite {
+public class CardTestVectorSuite extends CardTestSuite {
 
-    public TestVectorSuite(EC_Store dataStore, ECTesterReader.Config cfg) {
+    public CardTestVectorSuite(EC_Store dataStore, ECTesterReader.Config cfg) {
         super(dataStore, cfg, "test", "The test-vectors suite contains a collection of test vectors which test basic ECDH correctness.");
     }
 

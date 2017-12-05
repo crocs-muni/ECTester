@@ -7,7 +7,7 @@ import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.common.test.Test;
 import cz.crcs.ectester.reader.test.CommandTest;
-import cz.crcs.ectester.reader.test.TestSuite;
+import cz.crcs.ectester.reader.test.CardTestSuite;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -38,7 +38,7 @@ public class XMLTestWriter implements TestWriter {
     }
 
     @Override
-    public void begin(TestSuite suite) {
+    public void begin(CardTestSuite suite) {
         doc = db.newDocument();
         Element rootElem = doc.createElement("testSuite");
         rootElem.setAttribute("name", suite.getName());

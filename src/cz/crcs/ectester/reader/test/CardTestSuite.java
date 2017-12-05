@@ -6,6 +6,7 @@ import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.common.test.CompoundTest;
 import cz.crcs.ectester.common.test.Result;
 import cz.crcs.ectester.common.test.Test;
+import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
@@ -24,33 +25,15 @@ import static cz.crcs.ectester.common.test.Result.Value;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public abstract class TestSuite {
-    EC_Store dataStore;
+public abstract class CardTestSuite extends TestSuite {
     ECTesterReader.Config cfg;
-    String name;
-    String description;
-    List<Test> tests = new LinkedList<>();
 
-    TestSuite(EC_Store dataStore, ECTesterReader.Config cfg, String name, String description) {
-        this.dataStore = dataStore;
+    CardTestSuite(EC_Store dataStore, ECTesterReader.Config cfg, String name, String description) {
+        super(dataStore, name, description);
         this.cfg = cfg;
-        this.name = name;
-        this.description = description;
     }
 
     public abstract void setup(CardMngr cardManager) throws IOException;
-
-    public List<Test> getTests() {
-        return Collections.unmodifiableList(tests);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
 
     /**
      * @param cardManager          cardManager to send APDU through

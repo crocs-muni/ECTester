@@ -7,7 +7,7 @@ import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.common.test.Test;
 import cz.crcs.ectester.reader.test.CommandTest;
-import cz.crcs.ectester.reader.test.TestSuite;
+import cz.crcs.ectester.reader.test.CardTestSuite;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -31,7 +31,7 @@ public class YAMLTestWriter implements TestWriter {
     }
 
     @Override
-    public void begin(TestSuite suite) {
+    public void begin(CardTestSuite suite) {
         output.println("---");
         testRun = new HashMap<>();
         testSuite = new HashMap<>();

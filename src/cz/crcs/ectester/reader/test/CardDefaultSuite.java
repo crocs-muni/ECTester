@@ -15,9 +15,9 @@ import static cz.crcs.ectester.common.test.Result.ExpectedValue;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class DefaultSuite extends TestSuite {
+public class CardDefaultSuite extends CardTestSuite {
 
-    public DefaultSuite(EC_Store dataStore, ECTesterReader.Config cfg) {
+    public CardDefaultSuite(EC_Store dataStore, ECTesterReader.Config cfg) {
         super(dataStore, cfg, "default", "The default test suite tests basic support of ECDH and ECDSA.");
     }
 

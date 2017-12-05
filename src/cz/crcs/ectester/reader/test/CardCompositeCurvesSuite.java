@@ -17,9 +17,9 @@ import static cz.crcs.ectester.common.test.Result.ExpectedValue;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class CompositeCurvesSuite extends TestSuite {
+public class CardCompositeCurvesSuite extends CardTestSuite {
 
-    public CompositeCurvesSuite(EC_Store dataStore, ECTesterReader.Config cfg) {
+    public CardCompositeCurvesSuite(EC_Store dataStore, ECTesterReader.Config cfg) {
         super(dataStore, cfg, "composite", "The composite suite tests ECDH over curves with composite order. This should generally fail, as using such a curve is unsafe.");
     }
 

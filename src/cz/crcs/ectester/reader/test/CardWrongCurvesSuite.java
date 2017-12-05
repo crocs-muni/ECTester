@@ -12,9 +12,9 @@ import static cz.crcs.ectester.common.test.Result.ExpectedValue;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class WrongCurvesSuite extends TestSuite {
+public class CardWrongCurvesSuite extends CardTestSuite {
 
-    public WrongCurvesSuite(EC_Store dataStore, ECTesterReader.Config cfg) {
+    public CardWrongCurvesSuite(EC_Store dataStore, ECTesterReader.Config cfg) {
         super(dataStore, cfg, "wrong", "The wrong curve suite tests whether the card rejects domain parameters which are not curves.");
     }
 

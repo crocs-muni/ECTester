@@ -28,6 +28,7 @@ import cz.crcs.ectester.common.ec.EC_Params;
 import cz.crcs.ectester.common.output.OutputLogger;
 import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.TestException;
+import cz.crcs.ectester.common.test.TestRunner;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.command.Command;
@@ -406,14 +407,14 @@ public class ECTesterReader {
      * @throws IOException   if an IO error occurs when writing to key file.
      */
     private void test() throws IOException, TestException {
-        TestSuite suite;
+        CardTestSuite suite;
 
         switch (cfg.testSuite) {
             case "default":
-                suite = new DefaultSuite(dataStore, cfg);
+                suite = new CardDefaultSuite(dataStore, cfg);
                 break;
             case "test-vectors":
-                suite = new TestVectorSuite(dataStore, cfg);
+                suite = new CardTestVectorSuite(dataStore, cfg);
                 break;
             default:
                 // These tests are dangerous, prompt before them.
@@ -432,13 +433,13 @@ public class ECTesterReader {
 
                 switch (cfg.testSuite) {
                     case "wrong":
-                        suite = new WrongCurvesSuite(dataStore, cfg);
+                        suite = new CardWrongCurvesSuite(dataStore, cfg);
                         break;
                     case "composite":
-                        suite = new CompositeCurvesSuite(dataStore, cfg);
+                        suite = new CardCompositeCurvesSuite(dataStore, cfg);
                         break;
                     case "invalid":
-                        suite = new InvalidCurvesSuite(dataStore, cfg);
+                        suite = new CardInvalidCurvesSuite(dataStore, cfg);
                         break;
                     default:
                         System.err.println("Unknown test suite.");
