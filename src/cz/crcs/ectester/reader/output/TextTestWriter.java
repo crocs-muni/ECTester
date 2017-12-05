@@ -3,6 +3,7 @@ package cz.crcs.ectester.reader.output;
 import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.CompoundTest;
 import cz.crcs.ectester.common.test.Test;
+import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.reader.test.CommandTest;
 import cz.crcs.ectester.reader.test.CardTestSuite;
 
@@ -23,7 +24,7 @@ public class TextTestWriter implements TestWriter {
     }
 
     @Override
-    public void begin(CardTestSuite suite) {
+    public void begin(TestSuite suite) {
         output.println("=== Running test suite: " + suite.getName() + " ===");
         output.println("=== " + suite.getDescription());
     }

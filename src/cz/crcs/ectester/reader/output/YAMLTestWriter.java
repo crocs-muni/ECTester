@@ -2,6 +2,7 @@ package cz.crcs.ectester.reader.output;
 
 import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.CompoundTest;
+import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
@@ -31,7 +32,7 @@ public class YAMLTestWriter implements TestWriter {
     }
 
     @Override
-    public void begin(CardTestSuite suite) {
+    public void begin(TestSuite suite) {
         output.println("---");
         testRun = new HashMap<>();
         testSuite = new HashMap<>();
