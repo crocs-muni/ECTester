@@ -1,8 +1,11 @@
 addons:
   apt:
+    sources:
+    - ubuntu-toolchain-r-test
     packages:
     - libtomcrypt-dev
     - libtommath-dev
+    - gcc-6
 language: java
 jdk:
 - oraclejdk8
