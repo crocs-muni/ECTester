@@ -23,7 +23,7 @@ public class DefaultSuite extends TestSuite {
 
     @Override
     public void setup(CardMngr cardManager) throws IOException {
-        tests.add(new CommandTest(new Command.Support(cardManager), ExpectedValue.ANY));
+        tests.add(CommandTest.expect(new Command.Support(cardManager), ExpectedValue.ANY));
         if (cfg.namedCurve != null) {
             String desc = "Default tests over the " + cfg.namedCurve + " curve category.";
             if (cfg.primeField) {
@@ -59,11 +59,11 @@ public class DefaultSuite extends TestSuite {
     }
 
     private void defaultTests(CardMngr cardManager, short keyLength, byte keyType) throws IOException {
-        tests.add(new CommandTest(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, keyType), ExpectedValue.SUCCESS));
+        tests.add(CommandTest.expect(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, keyType), ExpectedValue.SUCCESS));
         Command curve = Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_BOTH, keyLength, keyType);
         if (curve != null)
-            tests.add(new CommandTest(curve, ExpectedValue.SUCCESS));
+            tests.add(CommandTest.expect(curve, ExpectedValue.SUCCESS));
         tests.add(defaultCurveTests(cardManager, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.ANY, ExpectedValue.SUCCESS, "Default tests."));
-        tests.add(new CommandTest(new Command.Cleanup(cardManager), ExpectedValue.ANY));
+        tests.add(CommandTest.expect(new Command.Cleanup(cardManager), ExpectedValue.ANY));
     }
 }

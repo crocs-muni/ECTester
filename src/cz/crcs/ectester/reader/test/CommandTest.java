@@ -16,7 +16,15 @@ public class CommandTest extends SimpleTest<CommandTestable> {
         super(command, callback);
     }
 
-    public CommandTest expect(CommandTestable command, Result.ExpectedValue expected, String ok, String nok) {
+    public static CommandTest function(CommandTestable command, TestCallback<CommandTestable> callback) {
+        return new CommandTest(command, callback);
+    }
+
+    public static CommandTest function(Command command, TestCallback<CommandTestable> callback) {
+        return function(new CommandTestable(command), callback);
+    }
+
+    public static CommandTest expect(CommandTestable command, Result.ExpectedValue expected, String ok, String nok) {
         return new CommandTest(command, new TestCallback<CommandTestable>() {
             @Override
             public Result apply(CommandTestable commandTestable) {
@@ -27,8 +35,16 @@ public class CommandTest extends SimpleTest<CommandTestable> {
         });
     }
 
-    public CommandTest expect(CommandTestable command, Result.ExpectedValue expected) {
+    public static CommandTest expect(Command command, Result.ExpectedValue expectedValue, String ok, String nok) {
+        return expect(new CommandTestable(command), expectedValue, ok, nok);
+    }
+
+    public static CommandTest expect(CommandTestable command, Result.ExpectedValue expected) {
         return expect(command, expected, null, null);
+    }
+
+    public static CommandTest expect(Command command, Result.ExpectedValue expectedValue) {
+        return expect(command, expectedValue, null, null);
     }
 
     public Command getCommand() {

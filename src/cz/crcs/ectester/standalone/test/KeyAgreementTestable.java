@@ -14,7 +14,7 @@ import java.security.interfaces.ECPublicKey;
  */
 public class KeyAgreementTestable extends BaseTestable {
     private KeyAgreement ka;
-    private ECPrivateKey privateKey;a
+    private ECPrivateKey privateKey;
     private ECPublicKey publicKey;
     private byte[] secret;
 
