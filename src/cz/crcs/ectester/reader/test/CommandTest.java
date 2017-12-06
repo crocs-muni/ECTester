@@ -67,6 +67,10 @@ public class CommandTest extends SimpleTest<CommandTestable> {
 
     @Override
     public String getDescription() {
-        return null;
+        if (hasRun) {
+            return testable.getResponse().getDescription();
+        } else {
+            return testable.getCommand().toString();
+        }
     }
 }

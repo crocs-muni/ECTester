@@ -214,12 +214,18 @@ public abstract class Command {
             elapsed += System.nanoTime();
             return new Response.Allocate(response, elapsed, keyPair, keyLength, keyClass);
         }
+
+        @Override
+        public String toString() {
+            return "Allocate";
+        }
     }
-    
+
+    /**
+     *
+     */
     public static class AllocateKeyAgreement extends Command {
-
         private byte kaType;
-
 
         /**
          * Creates the INS_ALLOCATE_KA instruction.
@@ -240,6 +246,11 @@ public abstract class Command {
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
             return new Response.AllocateKeyAgreement(response, elapsed, kaType);
+        }
+
+        @Override
+        public String toString() {
+            return "AllocateKeyAgreement";
         }
     }    
 
@@ -266,6 +277,11 @@ public abstract class Command {
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
             return new Response.Clear(response, elapsed, keyPair);
+        }
+
+        @Override
+        public String toString() {
+            return "Clear";
         }
     }
 
@@ -311,6 +327,11 @@ public abstract class Command {
             elapsed += System.nanoTime();
             return new Response.Set(response, elapsed, keyPair, curve, params);
         }
+
+        @Override
+        public String toString() {
+            return "Set";
+        }
     }
 
     /**
@@ -350,6 +371,11 @@ public abstract class Command {
             elapsed += System.nanoTime();
             return new Response.Corrupt(response, elapsed, keyPair, key, params, corruption);
         }
+
+        @Override
+        public String toString() {
+            return "Corrupt";
+        }
     }
 
     /**
@@ -377,6 +403,11 @@ public abstract class Command {
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
             return new Response.Generate(response, elapsed, keyPair);
+        }
+
+        @Override
+        public String toString() {
+            return "Generate";
         }
     }
 
@@ -414,6 +445,11 @@ public abstract class Command {
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
             return new Response.Export(response, elapsed, keyPair, key, params);
+        }
+
+        @Override
+        public String toString() {
+            return "Export";
         }
     }
 
@@ -457,6 +493,11 @@ public abstract class Command {
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
             return new Response.ECDH(response, elapsed, pubkey, privkey, export, corruption, type);
+        }
+
+        @Override
+        public String toString() {
+            return "ECDH";
         }
     }
 
@@ -503,6 +544,11 @@ public abstract class Command {
             elapsed += System.nanoTime();
             return new Response.ECDH(response, elapsed, ECTesterApplet.KEYPAIR_REMOTE, privkey, export, corruption, type);
         }
+
+        @Override
+        public String toString() {
+            return "ECDH_direct";
+        }
     }
 
     public static class ECDSA extends Command {
@@ -541,6 +587,11 @@ public abstract class Command {
             elapsed += System.nanoTime();
             return new Response.ECDSA(response, elapsed, keyPair, export, raw);
         }
+
+        @Override
+        public String toString() {
+            return "ECDSA";
+        }
     }
 
     /**
@@ -564,6 +615,11 @@ public abstract class Command {
             elapsed += System.nanoTime();
             return new Response.Cleanup(response, elapsed);
         }
+
+        @Override
+        public String toString() {
+            return "Cleanup";
+        }
     }
 
     /**
@@ -586,6 +642,11 @@ public abstract class Command {
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
             return new Response.Support(response, elapsed);
+        }
+
+        @Override
+        public String toString() {
+            return "Support";
         }
     }
 }
