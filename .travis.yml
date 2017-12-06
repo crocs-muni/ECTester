@@ -6,14 +6,17 @@ addons:
     - libtomcrypt-dev
     - libtommath-dev
     - gcc-6
+    - g++-6
 language: java
 jdk:
-- oraclejdk8
+  - oraclejdk8
+env:
+  - CC=gcc-6 CXX=g++-6
 
 script:
-- ant -f build-applet.xml build
-- ant -f build-reader.xml package
-- ant -f build-standalone.xml package
+  - ant -f build-applet.xml build
+  - ant -f build-reader.xml package
+  - ant -f build-standalone.xml package
 
 deploy:
   provider: releases
