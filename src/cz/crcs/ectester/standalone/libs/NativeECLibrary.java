@@ -2,6 +2,7 @@ package cz.crcs.ectester.standalone.libs;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -27,6 +28,7 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
     @Override
     public boolean initialize() {
         try {
+            /* Determine what OS are we running on and use appropriate suffix and path. */
             String suffix;
             Path appData;
             if (System.getProperty("os.name").startsWith("Windows")) {
@@ -56,6 +58,10 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
             }
             URLConnection jarConnection = jarURL.openConnection();
 
+            /* Only write the file if it does not exist,
+             * or if the existing one is older than the
+             * one in the JAR.
+             */
             boolean write = false;
             if (libDirFile.isDirectory() && libFile.isFile()) {
                 long jarModified = jarConnection.getLastModified();
@@ -75,8 +81,29 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
             }
             jarConnection.getInputStream().close();
 
+            /*
+             *  Need to hack in /usr/local/lib to path.
+             *  See: https://stackoverflow.com/questions/5419039/is-djava-library-path-equivalent-to-system-setpropertyjava-library-path/24988095#24988095
+             */
+            String path = System.getProperty("java.library.path");
+            if (suffix.equals("so")) {
+                String newPath = path + ":/usr/local/lib";
+                System.setProperty("java.library.path", newPath);
+                Field fieldSysPath;
+                try {
+                    fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
+                    fieldSysPath.setAccessible( true );
+                    fieldSysPath.set( null, null );
+                } catch (NoSuchFieldException | IllegalAccessException ignored) {
+                }
+            }
+
             for (String requirement : requriements) {
                 System.loadLibrary(requirement);
+            }
+
+            if (suffix.equals("so")) {
+                System.setProperty("java.library.path", path);
             }
 
             System.load(libPath.toString());
@@ -84,7 +111,6 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
             provider = createProvider();
             return super.initialize();
         } catch (IOException | UnsatisfiedLinkError ignored) {
-
         }
         return false;
     }

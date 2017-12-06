@@ -31,15 +31,23 @@ endif
 
 JNI_PLATFORMINCLUDEDIR ?= $(JNI_INCLUDEDIR)/$(JNI_PLATFORM)
 
+LOCAL_INCLUDES = /usr/local/include
+LOCAL_LIBS = /usr/local/lib
 
 
-all: tomcrypt_provider.so
+all: tomcrypt_provider.so botan_provider.so
 
 tomcrypt_provider.so: tomcrypt.o
 	gcc -fPIC -g -shared -o $@ $< -L. -ltommath -ltomcrypt
 
-%.o: %.c
+tomcrypt.o: tomcrypt.c
 	gcc -DLTM_DESC -fPIC -g -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I. -c $<
+
+botan_provider.so: botan.o
+	g++ -fPIC -g -shared -o $@ $< -L. -L"$(LOCAL_LIBS)" -lbotan-2 -fstack-protector -m64 -pthread
+
+botan.o: botan.cpp
+	g++ -fPIC -g -I"$(LOCAL_INCLUDES)/botan-2" -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I. -c $<
 
 clean:
 	rm -rf *.o

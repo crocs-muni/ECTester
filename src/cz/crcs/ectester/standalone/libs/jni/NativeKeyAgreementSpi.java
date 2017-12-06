@@ -88,4 +88,10 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         @Override
         native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
     }
+
+    public static class Botan extends NativeKeyAgreementSpi {
+
+        @Override
+        native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
+    }
 }

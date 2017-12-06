@@ -83,6 +83,14 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
 
         @Override
         native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
+    }
 
+    public static class Botan extends NativeSignatureSpi {
+
+        @Override
+        native byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
     }
 }

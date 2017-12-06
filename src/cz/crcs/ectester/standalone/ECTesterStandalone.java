@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * @version v0.1.0
  */
 public class ECTesterStandalone {
-    private ProviderECLibrary[] libs = new ProviderECLibrary[]{new SunECLib(), new BouncyCastleLib(), new TomcryptLib()};
+    private ProviderECLibrary[] libs = new ProviderECLibrary[]{new SunECLib(), new BouncyCastleLib(), new TomcryptLib(), new BotanLib()};
     private EC_Store dataStore;
     private Config cfg;
 

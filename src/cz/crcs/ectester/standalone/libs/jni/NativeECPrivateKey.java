@@ -28,11 +28,11 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
         return format;
     }
 
-    public static class TomCrypt extends NativeECPrivateKey {
+    private static class Raw extends NativeECPrivateKey {
         private byte[] keyData;
         private ECParameterSpec params;
 
-        public TomCrypt(byte[] keyData, ECParameterSpec params) {
+        public Raw(byte[] keyData, ECParameterSpec params) {
             super("EC", "raw");
             this.keyData = keyData;
             this.params = params;
@@ -51,6 +51,18 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
         @Override
         public ECParameterSpec getParams() {
             return params;
+        }
+    }
+
+    public static class TomCrypt extends Raw {
+        public TomCrypt(byte[] keyData, ECParameterSpec params) {
+            super(keyData, params);
+        }
+    }
+
+    public static class Botan extends Raw {
+        public Botan(byte[] keyData, ECParameterSpec params) {
+            super(keyData, params);
         }
     }
 }

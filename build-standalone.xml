@@ -102,6 +102,13 @@
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$TomCrypt"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$TomCrypt"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$TomCryptRaw"/>
+            <class name="cz.crcs.ectester.standalone.libs.BotanLib"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeProvider$Botan"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Botan"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$Botan"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Botan"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Botan"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Botan"/>
         </javah>
     </target>
 </project>

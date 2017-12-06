@@ -29,11 +29,11 @@ public abstract class NativeECPublicKey implements ECPublicKey {
         return format;
     }
 
-    public static class TomCrypt extends NativeECPublicKey {
+    private static class ANSIX962 extends NativeECPublicKey {
         private byte[] keyData;
         private ECParameterSpec params;
 
-        public TomCrypt(byte[] keyData, ECParameterSpec params) {
+        public ANSIX962(byte[] keyData, ECParameterSpec params) {
             super("EC", "ANSI X9.62");
             this.keyData = keyData;
             this.params = params;
@@ -52,6 +52,18 @@ public abstract class NativeECPublicKey implements ECPublicKey {
         @Override
         public ECParameterSpec getParams() {
             return params;
+        }
+    }
+
+    public static class TomCrypt extends ANSIX962 {
+        public TomCrypt(byte[] keyData, ECParameterSpec params) {
+            super(keyData, params);
+        }
+    }
+
+    public static class Botan extends ANSIX962 {
+        public Botan(byte[] keyData, ECParameterSpec params) {
+            super(keyData, params);
         }
     }
 }
