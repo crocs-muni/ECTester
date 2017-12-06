@@ -42,6 +42,9 @@ public abstract class Ident {
             for (String alias : idents) {
                 try {
                     instance = getter.apply(alias, provider);
+                    if (instance != null) {
+                        break;
+                    }
                 } catch (Exception ignored) {
                 }
             }
