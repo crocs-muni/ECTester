@@ -29,11 +29,15 @@ public class ResponseWriter {
         return String.format("%4d ms ┃ %s", r.getDuration() / 1000000, suffix);
     }
 
-    public void outputResponse(Response r) {
+    public String responseString(Response r) {
         String out = "";
         out += String.format("%-70s", r.getDescription()) + " ┃ ";
         out += responseSuffix(r);
-        output.println(out);
+        return out;
+    }
+
+    public void outputResponse(Response r) {
+        output.println(responseString(r));
         output.flush();
     }
 }

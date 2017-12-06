@@ -1,11 +1,9 @@
-package cz.crcs.ectester.reader.output;
+package cz.crcs.ectester.common.output;
 
-import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.CompoundTest;
+import cz.crcs.ectester.common.test.SimpleTest;
 import cz.crcs.ectester.common.test.Test;
 import cz.crcs.ectester.common.test.TestSuite;
-import cz.crcs.ectester.reader.test.CommandTest;
-import cz.crcs.ectester.reader.test.CardTestSuite;
 
 import java.io.PrintStream;
 
@@ -14,13 +12,13 @@ import java.io.PrintStream;
  */
 public class TextTestWriter implements TestWriter {
     private PrintStream output;
-    private ResponseWriter respWriter;
+    private TestableWriter testableWriter;
 
     public static int BASE_WIDTH = 76;
 
     public TextTestWriter(PrintStream output) {
         this.output = output;
-        this.respWriter = new ResponseWriter(output);
+        this.testableWriter = new TestableWriter(output);
     }
 
     @Override
@@ -35,27 +33,17 @@ public class TextTestWriter implements TestWriter {
         }
 
         StringBuilder out = new StringBuilder();
-        if (t instanceof CommandTest) {
-            CommandTest test = (CommandTest) t;
-            out.append(test.ok() ? "OK  " : "NOK ");
-            out.append("━ ");
-            int width = BASE_WIDTH - (offset + out.length());
-            String widthSpec = "%-" + String.valueOf(width) + "s";
-            out.append(String.format(widthSpec, t.getDescription()));
-            out.append(" ┃ ");
-            out.append(String.format("%-9s", test.getResultValue().name()));
-            out.append(" ┃ ");
-            out.append(respWriter.responseSuffix(test.getResponse()));
-        } else {
+        out.append(t.ok() ? "OK  " : "NOK ");
+        out.append("━ ");
+        int width = BASE_WIDTH - (offset + out.length());
+        String widthSpec = "%-" + String.valueOf(width) + "s";
+        out.append(String.format(widthSpec, t.getDescription()));
+        out.append(" ┃ ");
+        out.append(String.format("%-9s", t.getResultValue().name()));
+        out.append(" ┃ ");
+
+        if (t instanceof CompoundTest) {
             CompoundTest test = (CompoundTest) t;
-            out.append(test.ok() ? "OK  " : "NOK ");
-            out.append("┳ ");
-            int width = BASE_WIDTH - (offset + out.length());
-            String widthSpec = "%-" + String.valueOf(width) + "s";
-            out.append(String.format(widthSpec, t.getDescription()));
-            out.append(" ┃ ");
-            out.append(String.format("%-9s", test.getResultValue().name()));
-            out.append(" ┃ ");
             out.append(test.getResultCause());
             out.append(System.lineSeparator());
             Test[] tests = test.getTests();
@@ -70,8 +58,10 @@ public class TextTestWriter implements TestWriter {
                     out.append(System.lineSeparator());
                 }
             }
+        } else {
+            SimpleTest test = (SimpleTest) t;
+            out.append(testableWriter.outputTestableSuffix(test.getTestable()));
         }
-
         return out.toString();
     }
 

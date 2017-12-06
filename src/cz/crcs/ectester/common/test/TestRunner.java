@@ -1,7 +1,6 @@
 package cz.crcs.ectester.common.test;
 
 import cz.crcs.ectester.common.output.TestWriter;
-import cz.crcs.ectester.reader.test.CardTestSuite;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -10,7 +9,7 @@ public class TestRunner {
     private TestSuite suite;
     private TestWriter writer;
 
-    public TestRunner(CardTestSuite suite, TestWriter writer) {
+    public TestRunner(TestSuite suite, TestWriter writer) {
         this.suite = suite;
         this.writer = writer;
     }

@@ -1,18 +1,19 @@
-package cz.crcs.ectester.reader.output;
+package cz.crcs.ectester.common.output;
 
-import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.CompoundTest;
+import cz.crcs.ectester.common.test.Test;
 import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
-import cz.crcs.ectester.common.test.Test;
 import cz.crcs.ectester.reader.test.CommandTest;
-import cz.crcs.ectester.reader.test.CardTestSuite;
+import cz.crcs.ectester.standalone.test.*;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.PrintStream;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,14 +66,57 @@ public class YAMLTestWriter implements TestWriter {
         return responseObj;
     }
 
+    private Map<String, Object> kaObject(KeyAgreementTestable kat) {
+        Map<String, Object> katObject = new HashMap<>();
+        katObject.put("secret", ByteUtil.bytesToHex(kat.getSecret()));
+        return katObject;
+    }
+
+    private Map<String, Object> kgtObject(KeyGeneratorTestable kgt) {
+        Map<String, Object> kgtObject = new HashMap<>();
+        Map<String, Object> pubObject = new HashMap<>();
+        PublicKey pkey = kgt.getKeyPair().getPublic();
+        pubObject.put("algorithm", pkey.getAlgorithm());
+        pubObject.put("format", pkey.getFormat());
+        pubObject.put("raw", ByteUtil.bytesToHex(pkey.getEncoded()));
+        kgtObject.put("pubkey", pubObject);
+
+        Map<String, Object> privObject = new HashMap<>();
+        PrivateKey skey = kgt.getKeyPair().getPrivate();
+        privObject.put("algorithm", skey.getAlgorithm());
+        privObject.put("format", skey.getFormat());
+        privObject.put("raw", ByteUtil.bytesToHex(skey.getEncoded()));
+        kgtObject.put("privkey", privObject);
+        return kgtObject;
+    }
+
+    private Map<String, Object> sigObject(SignatureTestable sig) {
+        Map<String, Object> sigObject = new HashMap<>();
+        sigObject.put("verified", sig.getVerified());
+        sigObject.put("raw", ByteUtil.bytesToHex(sig.getSignature()));
+        return sigObject;
+    }
+
     private Map<String, Object> testObject(Test t) {
         Map<String, Object> testObj = new HashMap<>();
 
         if (t instanceof CommandTest) {
             CommandTest test = (CommandTest) t;
-            testObj.put("type", "simple");
+            testObj.put("type", "command");
             testObj.put("command", commandObject(test.getCommand()));
             testObj.put("response", responseObject(test.getResponse()));
+        } else if (t instanceof KeyAgreementTest) {
+            KeyAgreementTest test = (KeyAgreementTest) t;
+            testObj.put("type", "key-agreement");
+            testObj.put("key-agreement", kaObject(test.getTestable()));
+        } else if (t instanceof KeyGeneratorTest) {
+            KeyGeneratorTest test = (KeyGeneratorTest) t;
+            testObj.put("type", "key-pair-generator");
+            testObj.put("key-pair-generator", kgtObject(test.getTestable()));
+        } else if (t instanceof SignatureTest) {
+            SignatureTest test = (SignatureTest) t;
+            testObj.put("type", "signature");
+            testObj.put("signature", sigObject(test.getTestable()));
         } else if (t instanceof CompoundTest) {
             CompoundTest test = (CompoundTest) t;
             testObj.put("type", "compound");
