@@ -85,12 +85,143 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
     }
 
-    public static class Botan extends NativeSignatureSpi {
+    public abstract static class Botan extends NativeSignatureSpi {
+        private String type;
+
+        public Botan(String type) {
+            this.type = type;
+        }
 
         @Override
         native byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
 
         @Override
         native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
+    }
+
+    public static class BotanECDSAwithNONE extends Botan {
+
+        public BotanECDSAwithNONE() {
+            super("NONEwithECDSA");
+        }
+    }
+
+    public static class BotanECDSAwithSHA1 extends Botan {
+
+        public BotanECDSAwithSHA1() {
+            super("SHA1withECDSA");
+        }
+    }
+
+    public static class BotanECDSAwithSHA224 extends Botan {
+
+        public BotanECDSAwithSHA224() {
+            super("SHA224withECDSA");
+        }
+    }
+
+    public static class BotanECDSAwithSHA256 extends Botan {
+
+        public BotanECDSAwithSHA256() {
+            super("SHA256withECDSA");
+        }
+    }
+
+    public static class BotanECDSAwithSHA384 extends Botan {
+
+        public BotanECDSAwithSHA384() {
+            super("SHA384withECDSA");
+        }
+    }
+
+    public static class BotanECDSAwithSHA512 extends Botan {
+
+        public BotanECDSAwithSHA512() {
+            super("SHA512withECDSA");
+        }
+    }
+
+    public static class BotanECKCDSAwithNONE extends Botan {
+
+        public BotanECKCDSAwithNONE() {
+            super("NONEwithECKCDSA");
+        }
+    }
+
+    public static class BotanECKCDSAwithSHA1 extends Botan {
+
+        public BotanECKCDSAwithSHA1() {
+            super("SHA1withECKCDSA");
+        }
+    }
+
+    public static class BotanECKCDSAwithSHA224 extends Botan {
+
+        public BotanECKCDSAwithSHA224() {
+            super("SHA224withECKCDSA");
+        }
+    }
+
+    public static class BotanECKCDSAwithSHA256 extends Botan {
+
+        public BotanECKCDSAwithSHA256() {
+            super("SHA256withECKCDSA");
+        }
+    }
+
+    public static class BotanECKCDSAwithSHA384 extends Botan {
+
+        public BotanECKCDSAwithSHA384() {
+            super("SHA384withECKCDSA");
+        }
+    }
+
+    public static class BotanECKCDSAwithSHA512 extends Botan {
+
+        public BotanECKCDSAwithSHA512() {
+            super("SHA512withECKCDSA");
+        }
+    }
+
+    public static class BotanECGDSAwithNONE extends Botan {
+
+        public BotanECGDSAwithNONE() {
+            super("NONEwithECGDSA");
+        }
+    }
+
+    public static class BotanECGDSAwithSHA1 extends Botan {
+
+        public BotanECGDSAwithSHA1() {
+            super("SHA1withECGDSA");
+        }
+    }
+
+    public static class BotanECGDSAwithSHA224 extends Botan {
+
+        public BotanECGDSAwithSHA224() {
+            super("SHA224withECGDSA");
+        }
+    }
+
+    public static class BotanECGDSAwithSHA256 extends Botan {
+
+        public BotanECGDSAwithSHA256() {
+            super("SHA256withECGDSA");
+        }
+    }
+
+    public static class BotanECGDSAwithSHA384 extends Botan {
+
+        public BotanECGDSAwithSHA384() {
+            super("SHA384withECGDSA");
+        }
+    }
+
+    public static class BotanECGDSAwithSHA512 extends Botan {
+
+        public BotanECGDSAwithSHA512() {
+            super("SHA512withECGDSA");
+        }
     }
 }
