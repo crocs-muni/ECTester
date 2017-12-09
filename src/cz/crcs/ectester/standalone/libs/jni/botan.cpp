@@ -530,7 +530,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
         kdf = "EMSA1(SHA-512)";
     }
 
-    Botan::PK_Signer signer(*skey, rng, kdf);
+    Botan::PK_Signer signer(*skey, rng, kdf, Botan::DER_SEQUENCE);
 
     jsize data_length = env->GetArrayLength(data);
     jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
@@ -551,5 +551,56 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
  * Signature: ([B[B[BLjava/security/spec/ECParameterSpec;)Z
  */
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Botan_verify(JNIEnv *env, jobject self, jbyteArray signature, jbyteArray data, jbyteArray pubkey, jobject params){
+    Botan::EC_Group curve_group = group_from_params(env, params);
 
+    jclass botan_sig_class = env->FindClass("cz/crcs/ectester/standalone/libs/jni/NativeSignatureSpi$Botan");
+    jfieldID type_id = env->GetFieldID(botan_sig_class, "type", "Ljava/lang/String;");
+    jstring type = (jstring) env->GetObjectField(self, type_id);
+    const char *type_data = env->GetStringUTFChars(type, NULL);
+    std::string type_str(type_data);
+    env->ReleaseStringUTFChars(type, type_data);
+
+    jsize pubkey_length = env->GetArrayLength(pubkey);
+    jbyte *pubkey_data = env->GetByteArrayElements(pubkey, NULL);
+    Botan::PointGFp public_point = Botan::OS2ECP((uint8_t*) pubkey_data, pubkey_length, curve_group.get_curve());
+    env->ReleaseByteArrayElements(pubkey, pubkey_data, JNI_ABORT);
+
+    std::unique_ptr<Botan::EC_PublicKey> pkey;
+    if (type_str.find("ECDSA") != std::string::npos) {
+        pkey = std::make_unique<Botan::ECDSA_PublicKey>(curve_group, public_point);
+    } else if (type_str.find("ECKCDSA") != std::string::npos) {
+        pkey = std::make_unique<Botan::ECKCDSA_PublicKey>(curve_group, public_point);
+    } else if (type_str.find("ECGDSA") != std::string::npos) {
+        pkey = std::make_unique<Botan::ECGDSA_PublicKey>(curve_group, public_point);
+    }
+
+    std::string kdf;
+    if (type_str.find("NONE") != std::string::npos) {
+        kdf = "Raw";
+    } else if (type_str.find("SHA1") != std::string::npos) {
+        kdf = "EMSA1(SHA-1)";
+    } else if (type_str.find("SHA224") != std::string::npos) {
+        kdf = "EMSA1(SHA-224)";
+    } else if (type_str.find("SHA256") != std::string::npos) {
+        kdf = "EMSA1(SHA-256)";
+    } else if (type_str.find("SHA384") != std::string::npos) {
+        kdf = "EMSA1(SHA-384)";
+    } else if (type_str.find("SHA512") != std::string::npos) {
+        kdf = "EMSA1(SHA-512)";
+    }
+
+    Botan::PK_Verifier verifier(*pkey, kdf, Botan::DER_SEQUENCE);
+
+    jsize data_length = env->GetArrayLength(data);
+    jsize sig_length = env->GetArrayLength(signature);
+    jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
+    jbyte *sig_bytes = env->GetByteArrayElements(signature, NULL);
+
+    bool result = verifier.verify_message((uint8_t*)data_bytes, data_length, (uint8_t*)sig_bytes, sig_length);
+    env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
+    env->ReleaseByteArrayElements(signature, sig_bytes, JNI_ABORT);
+    if (result) {
+        return JNI_TRUE;
+    }
+    return JNI_FALSE;
 }
