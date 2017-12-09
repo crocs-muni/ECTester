@@ -72,9 +72,11 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
         native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
     }
 
-    public static class Botan extends NativeKeyPairGeneratorSpi {
+    public static abstract class Botan extends NativeKeyPairGeneratorSpi {
+        private String type;
 
-        public Botan() {
+        public Botan(String type) {
+            this.type = type;
             initialize(256, new SecureRandom());
         }
 
@@ -89,5 +91,33 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
 
         @Override
         native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
+    }
+
+    public static class BotanECDH extends Botan {
+
+        public BotanECDH() {
+            super("ECDH");
+        }
+    }
+
+    public static class BotanECDSA extends Botan {
+
+        public BotanECDSA() {
+            super("ECDSA");
+        }
+    }
+
+    public static class BotanECKCDSA extends Botan {
+
+        public BotanECKCDSA() {
+            super("ECKCDSA");
+        }
+    }
+
+    public static class BotanECGDSA extends Botan {
+
+        public BotanECGDSA() {
+            super("ECGDSA");
+        }
     }
 }

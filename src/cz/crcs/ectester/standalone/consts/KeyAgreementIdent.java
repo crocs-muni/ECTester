@@ -28,13 +28,13 @@ public class KeyAgreementIdent extends Ident {
         ALL.add(new KeyAgreementIdent("ECCDHwithSHA384KDF", "1.3.132.1.14.2"));
         ALL.add(new KeyAgreementIdent("ECDHwithSHA512KDF", "1.3.132.1.11.3"));
         ALL.add(new KeyAgreementIdent("ECCDHwithSHA512KDF", "1.3.132.1.14.3"));
-        // ECMQV
-        ALL.add(new KeyAgreementIdent("ECMQV"));
-        ALL.add(new KeyAgreementIdent("ECMQVwithSHA1CKDF", "1.3.133.16.840.63.0.16"));
-        ALL.add(new KeyAgreementIdent("ECMQVwithSHA224CKDF", "1.3.132.1.15.0"));
-        ALL.add(new KeyAgreementIdent("ECMQVwithSHA256CKDF", "1.3.132.1.15.1"));
-        ALL.add(new KeyAgreementIdent("ECMQVwithSHA384CKDF", "1.3.132.1.15.2"));
-        ALL.add(new KeyAgreementIdent("ECMQVwithSHA512CKDF", "1.3.132.1.15.3"));
+        // ECMQV - Disable for now as it needs diferent params(too different from DH)
+        //ALL.add(new KeyAgreementIdent("ECMQV"));
+        //ALL.add(new KeyAgreementIdent("ECMQVwithSHA1CKDF", "1.3.133.16.840.63.0.16"));
+        //ALL.add(new KeyAgreementIdent("ECMQVwithSHA224CKDF", "1.3.132.1.15.0"));
+        //ALL.add(new KeyAgreementIdent("ECMQVwithSHA256CKDF", "1.3.132.1.15.1"));
+        //ALL.add(new KeyAgreementIdent("ECMQVwithSHA384CKDF", "1.3.132.1.15.2"));
+        //ALL.add(new KeyAgreementIdent("ECMQVwithSHA512CKDF", "1.3.132.1.15.3"));
         // ECVKO
         ALL.add(new KeyAgreementIdent("ECVKO", "ECGOST3410", "1.2.643.2.2.19", "GOST-3410-2001", "1.2.643.2.2.96"));
         ALL.add(new KeyAgreementIdent("ECVKO256", "ECGOST3410-2012-256", "1.2.643.7.1.1.6.1", "1.2.643.7.1.1.1.1"));

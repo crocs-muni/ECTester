@@ -2,20 +2,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <tomcrypt.h>
+#include "c_utils.h"
 
 static prng_state ltc_prng;
 static jclass provider_class;
-static jclass ec_parameter_spec_class;
-static jclass ecgen_parameter_spec_class;
-static jclass pubkey_class;
-static jclass privkey_class;
-static jclass keypair_class;
-static jclass elliptic_curve_class;
-static jclass fp_field_class;
-static jclass f2m_field_class;
-static jclass point_class;
-static jclass biginteger_class;
-static jclass illegal_state_exception_class;
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_createProvider(JNIEnv *env, jobject this) {
     /* Create the custom provider. */
@@ -60,38 +50,7 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
         fprintf(stderr, "Error setting up PRNG, %s\n", error_to_string(err));
     }
 
-    jclass local_ec_parameter_spec_class = (*env)->FindClass(env, "java/security/spec/ECParameterSpec");
-    ec_parameter_spec_class = (*env)->NewGlobalRef(env, local_ec_parameter_spec_class);
-
-    jclass local_ecgen_parameter_spec_class = (*env)->FindClass(env, "java/security/spec/ECGenParameterSpec");
-    ecgen_parameter_spec_class = (*env)->NewGlobalRef(env, local_ecgen_parameter_spec_class);
-
-    jclass local_pubkey_class = (*env)->FindClass(env, "cz/crcs/ectester/standalone/libs/jni/NativeECPublicKey$TomCrypt");
-    pubkey_class = (*env)->NewGlobalRef(env, local_pubkey_class);
-
-    jclass local_privkey_class = (*env)->FindClass(env, "cz/crcs/ectester/standalone/libs/jni/NativeECPrivateKey$TomCrypt");
-    privkey_class = (*env)->NewGlobalRef(env, local_privkey_class);
-
-    jclass local_keypair_class = (*env)->FindClass(env, "java/security/KeyPair");
-    keypair_class = (*env)->NewGlobalRef(env, local_keypair_class);
-
-    jclass local_elliptic_curve_class = (*env)->FindClass(env, "java/security/spec/EllipticCurve");
-    elliptic_curve_class = (*env)->NewGlobalRef(env, local_elliptic_curve_class);
-
-    jclass local_fp_field_class = (*env)->FindClass(env, "java/security/spec/ECFieldFp");
-    fp_field_class = (*env)->NewGlobalRef(env, local_fp_field_class);
-
-    jclass local_f2m_field_class = (*env)->FindClass(env, "java/security/spec/ECFieldF2m");
-    f2m_field_class = (*env)->NewGlobalRef(env, local_f2m_field_class);
-
-    jclass local_biginteger_class = (*env)->FindClass(env, "java/math/BigInteger");
-    biginteger_class = (*env)->NewGlobalRef(env, local_biginteger_class);
-
-    jclass local_point_class = (*env)->FindClass(env, "java/security/spec/ECPoint");
-    point_class = (*env)->NewGlobalRef(env, local_point_class);
-
-    jclass local_illegal_state_exception_class = (*env)->FindClass(env, "java/lang/IllegalStateException");
-    illegal_state_exception_class = (*env)->NewGlobalRef(env, local_illegal_state_exception_class);
+    init_classes(env, "TomCrypt");
 }
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_getCurves(JNIEnv *env, jobject this) {

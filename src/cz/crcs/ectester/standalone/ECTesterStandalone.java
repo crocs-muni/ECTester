@@ -96,6 +96,7 @@ public class ECTesterStandalone {
             System.err.println("Invalid algorithm parameter: " + e.getMessage());
         } catch (NoSuchAlgorithmException nsaex) {
             System.err.println("Algorithm not supported by the selected library: " + nsaex.getMessage());
+            nsaex.printStackTrace();
         } catch (InvalidKeyException | SignatureException | TestException e) {
             e.printStackTrace();
         }
@@ -208,9 +209,12 @@ public class ECTesterStandalone {
                 .filter((ident) -> ident.contains(algo))
                 .findFirst()
                 .orElse(lib.getKPGs().stream()
-                        .filter((ident) -> ident.contains("EC"))
+                        .filter((ident) -> ident.contains("ECDH"))
                         .findFirst()
-                        .orElse(null));
+                        .orElse(lib.getKPGs().stream()
+                                .filter((ident) -> ident.contains("EC"))
+                                .findFirst()
+                                .orElse(null)));
 
 
         if (kaIdent == null || kpIdent == null) {
@@ -231,7 +235,7 @@ public class ECTesterStandalone {
                 }
                 spec = curve.toSpec();
                 kpg.initialize(spec);
-            }
+            }//TODO: allow ECGenNamedSpec
 
             System.out.println("index;nanotime;pubW;privS;secret");
 

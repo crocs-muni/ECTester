@@ -37,20 +37,31 @@ LOCAL_LIBS = /usr/local/lib
 CC?=gcc
 CXX?=g++
 
+CFLAGS+=-fPIC -g -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
+CXXFLAGS+=-fPIC -g -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
+
 
 all: tomcrypt_provider.so botan_provider.so
 
-tomcrypt_provider.so: tomcrypt.o
-	$(CC) -fPIC -g -shared -o $@ $< -L. -ltommath -ltomcrypt
+c_utils.o: c_utils.c
+	$(CC) $(CFLAGS) -c $<
+
+cpp_utils.o: cpp_utils.cpp
+	$(CXX) $(CXXFLAGS) -c $<
+
+
+tomcrypt_provider.so: tomcrypt.o c_utils.o
+	$(CC) -fPIC -g -shared -o $@ $^ -L. -ltommath -ltomcrypt
 
 tomcrypt.o: tomcrypt.c
-	$(CC) -DLTM_DESC -fPIC -g -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I. -c $<
+	$(CC) -DLTM_DESC $(CFLAGS) -c $<
 
-botan_provider.so: botan.o
-	$(CXX) -fPIC -g -shared -o $@ $< -L. -L"$(LOCAL_LIBS)" -lbotan-2 -fstack-protector -m64 -pthread
+
+botan_provider.so: botan.o cpp_utils.o
+	$(CXX) -fPIC -g -shared -o $@ $^ -L. -L"$(LOCAL_LIBS)" -lbotan-2 -fstack-protector -m64 -pthread
 
 botan.o: botan.cpp
-	$(CXX) -fPIC -g -I"$(LOCAL_INCLUDES)/botan-2" -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I. -c $<
+	$(CXX) -I"$(LOCAL_INCLUDES)/botan-2" $(CFLAGS) -c $<
 
 clean:
 	rm -rf *.o

@@ -89,9 +89,49 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
     }
 
-    public static class Botan extends NativeKeyAgreementSpi {
+    public abstract static class Botan extends NativeKeyAgreementSpi {
+        private String type;
+        public Botan(String type) {
+            this.type = type;
+        }
 
         @Override
         native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
+    }
+
+    public static class BotanECDH extends Botan {
+        public BotanECDH() {
+            super("ECDH");
+        }
+    }
+
+    public static class BotanECDHwithSHA1KDF extends Botan {
+        public BotanECDHwithSHA1KDF() {
+            super("ECDHwithSHA1KDF");
+        }
+    }
+
+    public static class BotanECDHwithSHA224KDF extends Botan {
+        public BotanECDHwithSHA224KDF() {
+            super("ECDHwithSHA224KDF");
+        }
+    }
+
+    public static class BotanECDHwithSHA256KDF extends Botan {
+        public BotanECDHwithSHA256KDF() {
+            super("ECDHwithSHA256KDF");
+        }
+    }
+
+    public static class BotanECDHwithSHA384KDF extends Botan {
+        public BotanECDHwithSHA384KDF() {
+            super("ECDHwithSHA384KDF");
+        }
+    }
+
+    public static class BotanECDHwithSHA512KDF extends Botan {
+        public BotanECDHwithSHA512KDF() {
+            super("ECDHwithSHA512KDF");
+        }
     }
 }
