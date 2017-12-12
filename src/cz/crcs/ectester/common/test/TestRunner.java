@@ -1,8 +1,6 @@
-package cz.crcs.ectester.reader.test;
+package cz.crcs.ectester.common.test;
 
-import cz.crcs.ectester.common.test.Test;
-import cz.crcs.ectester.common.test.TestException;
-import cz.crcs.ectester.reader.output.TestWriter;
+import cz.crcs.ectester.common.output.TestWriter;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk

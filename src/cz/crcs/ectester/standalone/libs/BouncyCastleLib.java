@@ -1,21 +1,28 @@
 package cz.crcs.ectester.standalone.libs;
+
+import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import java.security.Security;
+import java.util.Enumeration;
+import java.util.Set;
+import java.util.TreeSet;
 
-public class BouncyCastleLib {
+/**
+ * @author Jan Jancar johny@neuromancer.sk
+ */
+public class BouncyCastleLib extends ProviderECLibrary {
 
     public BouncyCastleLib() {
-
+        super(new BouncyCastleProvider());
     }
 
-    public boolean setUp() {
-        try {
-            Security.addProvider(new BouncyCastleProvider());
-        } catch (NullPointerException | SecurityException ignored) {
-            return false;
+    @Override
+    public Set<String> getCurves() {
+        Set<String> result = new TreeSet<>();
+        Enumeration names = ECNamedCurveTable.getNames();
+        while (names.hasMoreElements()) {
+            result.add((String) names.nextElement());
         }
-        return true;
+        return result;
     }
-
 }

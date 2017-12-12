@@ -75,4 +75,40 @@
         <property name="store.jar.name" value="ECTesterStandalone-dist"/>
         <antcall target="dist-build.package"/>
     </target>
+
+    <target name="libs-try">
+        <exec dir="src/cz/crcs/ectester/standalone/libs/jni" executable="make" osfamily="unix">
+            <arg value="-k"/>
+        </exec>
+    </target>
+    <target name="libs">
+        <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="make" osfamily="unix">
+            <arg value="-k"/>
+        </exec>
+    </target>
+
+    <target name="-post-compile" depends="libs-try"/>
+    <target name="-post-clean">
+        <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="make clean"
+              osfamily="unix"/>
+    </target>
+
+    <target name="headers" depends="compile">
+        <javah classpath="${build.classes.dir}" outputfile="src/cz/crcs/ectester/standalone/libs/jni/native.h">
+            <class name="cz.crcs.ectester.standalone.libs.TomcryptLib"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeProvider$TomCrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$TomCrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$TomCrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$TomCrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$TomCrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$TomCryptRaw"/>
+            <class name="cz.crcs.ectester.standalone.libs.BotanLib"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeProvider$Botan"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Botan"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$Botan"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Botan"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Botan"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Botan"/>
+        </javah>
+    </target>
 </project>

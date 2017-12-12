@@ -1,12 +1,13 @@
-package cz.crcs.ectester.reader.output;
+package cz.crcs.ectester.common.output;
 
 import cz.crcs.ectester.common.test.CompoundTest;
-import cz.crcs.ectester.common.Util;
+import cz.crcs.ectester.common.test.Test;
+import cz.crcs.ectester.common.test.TestSuite;
+import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
-import cz.crcs.ectester.common.test.Test;
-import cz.crcs.ectester.reader.test.SimpleTest;
-import cz.crcs.ectester.reader.test.TestSuite;
+import cz.crcs.ectester.reader.test.CommandTest;
+import cz.crcs.ectester.standalone.test.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -21,6 +22,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.OutputStream;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -51,7 +54,7 @@ public class XMLTestWriter implements TestWriter {
         Element commandElem = doc.createElement("command");
 
         Element apdu = doc.createElement("apdu");
-        apdu.setTextContent(Util.bytesToHex(c.getAPDU().getBytes()));
+        apdu.setTextContent(ByteUtil.bytesToHex(c.getAPDU().getBytes()));
         commandElem.appendChild(apdu);
 
         return commandElem;
@@ -62,7 +65,7 @@ public class XMLTestWriter implements TestWriter {
         responseElem.setAttribute("successful", r.successful() ? "true" : "false");
 
         Element apdu = doc.createElement("apdu");
-        apdu.setTextContent(Util.bytesToHex(r.getAPDU().getBytes()));
+        apdu.setTextContent(ByteUtil.bytesToHex(r.getAPDU().getBytes()));
         responseElem.appendChild(apdu);
 
         Element naturalSW = doc.createElement("natural-sw");
@@ -88,14 +91,68 @@ public class XMLTestWriter implements TestWriter {
         return responseElem;
     }
 
+    private Element kaElement(KeyAgreementTestable kat) {
+        Element katElem = doc.createElement("key-agreement");
+
+        Element secret = doc.createElement("secret");
+        secret.setTextContent(ByteUtil.bytesToHex(kat.getSecret()));
+        katElem.appendChild(secret);
+
+        return katElem;
+    }
+
+    private Element kgtElement(KeyGeneratorTestable kgt) {
+        Element kgtElem = doc.createElement("key-pair-generator");
+
+        Element keyPair = doc.createElement("key-pair");
+        Element pubkey = doc.createElement("pubkey");
+        PublicKey pkey = kgt.getKeyPair().getPublic();
+        pubkey.setAttribute("algorithm", pkey.getAlgorithm());
+        pubkey.setAttribute("format", pkey.getFormat());
+        pubkey.setTextContent(ByteUtil.bytesToHex(pkey.getEncoded()));
+        keyPair.appendChild(pubkey);
+
+        Element privkey = doc.createElement("privkey");
+        PrivateKey skey = kgt.getKeyPair().getPrivate();
+        privkey.setAttribute("algorithm", skey.getAlgorithm());
+        privkey.setAttribute("format", skey.getFormat());
+        privkey.setTextContent(ByteUtil.bytesToHex(skey.getEncoded()));
+        keyPair.appendChild(privkey);
+
+        return kgtElem;
+    }
+
+    private Element sigElement(SignatureTestable sig) {
+        Element sigElem = doc.createElement("signature");
+        sigElem.setAttribute("verified", sig.getVerified() ? "true" : "false");
+
+        Element raw = doc.createElement("raw");
+        raw.setTextContent(ByteUtil.bytesToHex(sig.getSignature()));
+        sigElem.appendChild(raw);
+
+        return sigElem;
+    }
+
     private Element testElement(Test t) {
         Element testElem = doc.createElement("test");
 
-        if (t instanceof SimpleTest) {
-            SimpleTest test = (SimpleTest) t;
-            testElem.setAttribute("type", "simple");
+        if (t instanceof CommandTest) {
+            CommandTest test = (CommandTest) t;
+            testElem.setAttribute("type", "command");
             testElem.appendChild(commandElement(test.getCommand()));
             testElem.appendChild(responseElement(test.getResponse()));
+        } else if (t instanceof KeyAgreementTest) {
+            KeyAgreementTest test = (KeyAgreementTest) t;
+            testElem.setAttribute("type", "key-agreement");
+            testElem.appendChild(kaElement(test.getTestable()));
+        } else if (t instanceof KeyGeneratorTest) {
+            KeyGeneratorTest test = (KeyGeneratorTest) t;
+            testElem.setAttribute("type", "key-pair-generator");
+            testElem.appendChild(kgtElement(test.getTestable()));
+        } else if (t instanceof SignatureTest) {
+            SignatureTest test = (SignatureTest) t;
+            testElem.setAttribute("type", "signature");
+            testElem.appendChild(sigElement(test.getTestable()));
         } else if (t instanceof CompoundTest) {
             CompoundTest test = (CompoundTest) t;
             testElem.setAttribute("type", "compound");

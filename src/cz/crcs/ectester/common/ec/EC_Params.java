@@ -1,7 +1,7 @@
 package cz.crcs.ectester.common.ec;
 
 import cz.crcs.ectester.applet.EC_Consts;
-import cz.crcs.ectester.common.Util;
+import cz.crcs.ectester.common.util.ByteUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -125,12 +125,12 @@ public class EC_Params extends EC_Data {
                 byte[] param = data[i];
                 if (masked == EC_Consts.PARAMETER_F2M) {
                     //add m, e_1, e_2, e_3
-                    param = Util.concatenate(param, data[i + 1]);
-                    if (!Util.allValue(data[i + 2], (byte) 0)) {
-                        param = Util.concatenate(param, data[i + 2]);
+                    param = ByteUtil.concatenate(param, data[i + 1]);
+                    if (!ByteUtil.allValue(data[i + 2], (byte) 0)) {
+                        param = ByteUtil.concatenate(param, data[i + 2]);
                     }
-                    if (!Util.allValue(data[i + 3], (byte) 0)) {
-                        param = Util.concatenate(param, data[i + 3]);
+                    if (!ByteUtil.allValue(data[i + 3], (byte) 0)) {
+                        param = ByteUtil.concatenate(param, data[i + 3]);
                     }
                     if (!(param.length == 4 || param.length == 8))
                         throw new RuntimeException("PARAMETER_F2M length is not 8.(should be)");
@@ -138,14 +138,14 @@ public class EC_Params extends EC_Data {
                 if (masked == EC_Consts.PARAMETER_G || masked == EC_Consts.PARAMETER_W) {
                     //read another param (the y coord) and put into X962 format.
                     byte[] y = data[i + 1];
-                    param = Util.concatenate(new byte[]{4}, param, y); //<- ugly but works!
+                    param = ByteUtil.concatenate(new byte[]{4}, param, y); //<- ugly but works!
                 }
                 if (param.length == 0)
                     throw new RuntimeException("Empty parameter read?");
 
                 //write length
                 byte[] length = new byte[2];
-                Util.setShort(length, 0, (short) param.length);
+                ByteUtil.setShort(length, 0, (short) param.length);
                 out.write(length, 0, 2);
                 //write data
                 out.write(param, 0, param.length);
@@ -175,15 +175,15 @@ public class EC_Params extends EC_Data {
                 byte[] param = data[index];
                 if (masked == EC_Consts.PARAMETER_F2M) {
                     for (int i = 0; i < 4; ++i) {
-                        out.add(Util.bytesToHex(data[index + i], false));
+                        out.add(ByteUtil.bytesToHex(data[index + i], false));
                     }
                     index += 4;
                 } else if (masked == EC_Consts.PARAMETER_G || masked == EC_Consts.PARAMETER_W) {
-                    out.add(Util.bytesToHex(param, false));
-                    out.add(Util.bytesToHex(data[index + 1], false));
+                    out.add(ByteUtil.bytesToHex(param, false));
+                    out.add(ByteUtil.bytesToHex(data[index + 1], false));
                     index += 2;
                 } else {
-                    out.add(Util.bytesToHex(param, false));
+                    out.add(ByteUtil.bytesToHex(param, false));
                     index++;
                 }
             }

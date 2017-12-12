@@ -2,7 +2,7 @@ package cz.crcs.ectester.reader;
 
 import com.licel.jcardsim.io.CAD;
 import com.licel.jcardsim.io.JavaxSmartCardInterface;
-import cz.crcs.ectester.common.Util;
+import cz.crcs.ectester.common.util.ByteUtil;
 import javacard.framework.AID;
 
 import javax.smartcardio.*;
@@ -80,7 +80,7 @@ public class CardMngr {
 
                 //reset the card
                 if (verbose)
-                    System.out.println(Util.bytesToHex(card.getATR().getBytes()));
+                    System.out.println(ByteUtil.bytesToHex(card.getATR().getBytes()));
 
                 cardFound = true;
             }
@@ -109,7 +109,7 @@ public class CardMngr {
                     try {
                         card = terminal.connect("*");
                         ATR atr = card.getATR();
-                        System.out.println(terminalIndex + " : " + terminal.getName() + " - " + Util.bytesToHex(atr.getBytes()));
+                        System.out.println(terminalIndex + " : " + terminal.getName() + " - " + ByteUtil.bytesToHex(atr.getBytes()));
                         terminalIndex++;
                     } catch (CardException ex) {
                         ex.printStackTrace(System.out);
@@ -227,7 +227,7 @@ public class CardMngr {
             System.out.println(">>>>");
             System.out.println(apdu);
 
-            System.out.println(Util.bytesToHex(apdu.getBytes()));
+            System.out.println(ByteUtil.bytesToHex(apdu.getBytes()));
         }
 
         long elapsed = -System.nanoTime();
@@ -238,7 +238,7 @@ public class CardMngr {
 
         if (verbose) {
             System.out.println(responseAPDU);
-            System.out.println(Util.bytesToHex(responseAPDU.getBytes()));
+            System.out.println(ByteUtil.bytesToHex(responseAPDU.getBytes()));
         }
 
         if (responseAPDU.getSW1() == (byte) 0x61) {
@@ -248,7 +248,7 @@ public class CardMngr {
 
             responseAPDU = channel.transmit(apduToSend);
             if (verbose)
-                System.out.println(Util.bytesToHex(responseAPDU.getBytes()));
+                System.out.println(ByteUtil.bytesToHex(responseAPDU.getBytes()));
         }
 
         if (verbose) {
@@ -277,7 +277,7 @@ public class CardMngr {
         if (verbose) {
             System.out.println(">>>>");
             System.out.println(apdu);
-            System.out.println(Util.bytesToHex(apdu.getBytes()));
+            System.out.println(ByteUtil.bytesToHex(apdu.getBytes()));
         }
 
         ResponseAPDU response = simulator.transmitCommand(apdu);
@@ -285,7 +285,7 @@ public class CardMngr {
 
         if (verbose) {
             System.out.println(response);
-            System.out.println(Util.bytesToHex(responseBytes));
+            System.out.println(ByteUtil.bytesToHex(responseBytes));
             System.out.println("<<<<");
         }
 

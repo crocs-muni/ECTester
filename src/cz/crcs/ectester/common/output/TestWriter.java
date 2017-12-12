@@ -1,7 +1,7 @@
-package cz.crcs.ectester.reader.output;
+package cz.crcs.ectester.common.output;
 
 import cz.crcs.ectester.common.test.Test;
-import cz.crcs.ectester.reader.test.TestSuite;
+import cz.crcs.ectester.common.test.TestSuite;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk

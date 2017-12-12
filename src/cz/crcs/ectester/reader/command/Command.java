@@ -2,11 +2,11 @@ package cz.crcs.ectester.reader.command;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
+import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.response.Response;
-import cz.crcs.ectester.common.Util;
 import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.common.ec.EC_Key;
 import cz.crcs.ectester.common.ec.EC_Keypair;
@@ -174,7 +174,7 @@ public abstract class Command {
             if (privkey == null) {
                 throw new IOException("Couldn't read the private key file correctly.");
             }
-            data = Util.concatenate(data, privkey);
+            data = ByteUtil.concatenate(data, privkey);
         }
         return new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, params, data);
     }
@@ -203,7 +203,7 @@ public abstract class Command {
             this.keyClass = keyClass;
 
             byte[] data = new byte[]{0, 0, keyClass};
-            Util.setShort(data, 0, keyLength);
+            ByteUtil.setShort(data, 0, keyLength);
             this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ALLOCATE, keyPair, 0x00, data);
         }
 
@@ -214,12 +214,18 @@ public abstract class Command {
             elapsed += System.nanoTime();
             return new Response.Allocate(response, elapsed, keyPair, keyLength, keyClass);
         }
+
+        @Override
+        public String toString() {
+            return "Allocate";
+        }
     }
-    
+
+    /**
+     *
+     */
     public static class AllocateKeyAgreement extends Command {
-
         private byte kaType;
-
 
         /**
          * Creates the INS_ALLOCATE_KA instruction.
@@ -240,6 +246,11 @@ public abstract class Command {
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
             return new Response.AllocateKeyAgreement(response, elapsed, kaType);
+        }
+
+        @Override
+        public String toString() {
+            return "AllocateKeyAgreement";
         }
     }    
 
@@ -266,6 +277,11 @@ public abstract class Command {
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
             return new Response.Clear(response, elapsed, keyPair);
+        }
+
+        @Override
+        public String toString() {
+            return "Clear";
         }
     }
 
@@ -296,7 +312,7 @@ public abstract class Command {
 
             int len = external != null ? 2 + external.length : 2;
             byte[] data = new byte[len];
-            Util.setShort(data, 0, params);
+            ByteUtil.setShort(data, 0, params);
             if (external != null) {
                 System.arraycopy(external, 0, data, 2, external.length);
             }
@@ -310,6 +326,11 @@ public abstract class Command {
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
             return new Response.Set(response, elapsed, keyPair, curve, params);
+        }
+
+        @Override
+        public String toString() {
+            return "Set";
         }
     }
 
@@ -337,7 +358,7 @@ public abstract class Command {
             this.corruption = corruption;
 
             byte[] data = new byte[3];
-            Util.setShort(data, 0, params);
+            ByteUtil.setShort(data, 0, params);
             data[2] = corruption;
 
             this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_CORRUPT, keyPair, key, data);
@@ -349,6 +370,11 @@ public abstract class Command {
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
             return new Response.Corrupt(response, elapsed, keyPair, key, params, corruption);
+        }
+
+        @Override
+        public String toString() {
+            return "Corrupt";
         }
     }
 
@@ -378,6 +404,11 @@ public abstract class Command {
             elapsed += System.nanoTime();
             return new Response.Generate(response, elapsed, keyPair);
         }
+
+        @Override
+        public String toString() {
+            return "Generate";
+        }
     }
 
     /**
@@ -403,7 +434,7 @@ public abstract class Command {
             this.params = params;
 
             byte[] data = new byte[2];
-            Util.setShort(data, 0, params);
+            ByteUtil.setShort(data, 0, params);
 
             this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_EXPORT, keyPair, key, data);
         }
@@ -414,6 +445,11 @@ public abstract class Command {
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
             return new Response.Export(response, elapsed, keyPair, key, params);
+        }
+
+        @Override
+        public String toString() {
+            return "Export";
         }
     }
 
@@ -446,7 +482,7 @@ public abstract class Command {
             this.type = type;
 
             byte[] data = new byte[]{export, 0,0, type};
-            Util.setShort(data, 1, corruption);
+            ByteUtil.setShort(data, 1, corruption);
 
             this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ECDH, pubkey, privkey, data);
         }
@@ -457,6 +493,11 @@ public abstract class Command {
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
             return new Response.ECDH(response, elapsed, pubkey, privkey, export, corruption, type);
+        }
+
+        @Override
+        public String toString() {
+            return "ECDH";
         }
     }
 
@@ -489,7 +530,7 @@ public abstract class Command {
             this.pubkey = pubkey;
 
             byte[] data = new byte[3 + pubkey.length];
-            Util.setShort(data, 0, corruption);
+            ByteUtil.setShort(data, 0, corruption);
             data[2] = type;
             System.arraycopy(pubkey, 0, data, 3, pubkey.length);
 
@@ -502,6 +543,11 @@ public abstract class Command {
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
             return new Response.ECDH(response, elapsed, ECTesterApplet.KEYPAIR_REMOTE, privkey, export, corruption, type);
+        }
+
+        @Override
+        public String toString() {
+            return "ECDH_direct";
         }
     }
 
@@ -526,7 +572,7 @@ public abstract class Command {
 
             int len = raw != null ? raw.length : 0;
             byte[] data = new byte[2 + len];
-            Util.setShort(data, 0, (short) len);
+            ByteUtil.setShort(data, 0, (short) len);
             if (raw != null) {
                 System.arraycopy(raw, 0, data, 2, len);
             }
@@ -540,6 +586,11 @@ public abstract class Command {
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
             return new Response.ECDSA(response, elapsed, keyPair, export, raw);
+        }
+
+        @Override
+        public String toString() {
+            return "ECDSA";
         }
     }
 
@@ -564,6 +615,11 @@ public abstract class Command {
             elapsed += System.nanoTime();
             return new Response.Cleanup(response, elapsed);
         }
+
+        @Override
+        public String toString() {
+            return "Cleanup";
+        }
     }
 
     /**
@@ -586,6 +642,11 @@ public abstract class Command {
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
             return new Response.Support(response, elapsed);
+        }
+
+        @Override
+        public String toString() {
+            return "Support";
         }
     }
 }

@@ -1,5 +1,8 @@
 package cz.crcs.ectester.common.test;
 
+import java.util.Collections;
+import java.util.Map;
+
 import static cz.crcs.ectester.common.test.Result.Value;
 
 /**
@@ -8,8 +11,9 @@ import static cz.crcs.ectester.common.test.Result.Value;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public abstract class Test implements Testable {
-    protected boolean hasRun = false;
+    protected boolean hasRun;
     protected Result result;
+    protected Map<String, Object> meta;
 
     public Result getResult() {
         if (!hasRun) {
@@ -39,6 +43,7 @@ public abstract class Test implements Testable {
         return result.ok();
     }
 
+    @Override
     public boolean error() {
         if (!hasRun) {
             return false;
@@ -46,12 +51,19 @@ public abstract class Test implements Testable {
         return result.compareTo(Value.ERROR);
     }
 
-    public abstract String getDescription();
-
+    @Override
     public boolean hasRun() {
         return hasRun;
     }
 
+    @Override
+    public Map<String, Object> meta() {
+        return Collections.unmodifiableMap(meta);
+    }
+
+    public abstract String getDescription();
+
+    @Override
     public abstract void run() throws TestException;
 
 }

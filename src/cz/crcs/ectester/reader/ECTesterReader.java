@@ -23,12 +23,12 @@ package cz.crcs.ectester.reader;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
-import cz.crcs.ectester.common.Util;
-import cz.crcs.ectester.common.ec.EC_Category;
-import cz.crcs.ectester.common.ec.EC_Data;
+import cz.crcs.ectester.common.cli.CLITools;
 import cz.crcs.ectester.common.ec.EC_Params;
-import cz.crcs.ectester.common.output.OutputLogger;
+import cz.crcs.ectester.common.output.*;
 import cz.crcs.ectester.common.test.TestException;
+import cz.crcs.ectester.common.test.TestRunner;
+import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.output.*;
@@ -79,11 +79,10 @@ public class ECTesterReader {
 
             //if help, print and quit
             if (cli.hasOption("help")) {
-                help();
+                CLITools.help("ECTesterReader.jar", CLI_HEADER, opts, CLI_FOOTER, true);
                 return;
             } else if (cli.hasOption("version")) {
-                System.out.println(DESCRIPTION);
-                System.out.println(LICENSE);
+                CLITools.version(DESCRIPTION, LICENSE);
                 return;
             }
             cfg = new Config();
@@ -96,7 +95,7 @@ public class ECTesterReader {
             dataStore = new EC_Store();
             //if list, print and quit
             if (cli.hasOption("list-named")) {
-                list();
+                CLITools.listNamed(dataStore, cli.getOptionValue("list-named"));
                 return;
             }
 
@@ -312,39 +311,6 @@ public class ECTesterReader {
     }
 
     /**
-     * Prints help.
-     */
-    private void help() {
-        HelpFormatter help = new HelpFormatter();
-        help.setOptionComparator(null);
-        help.printHelp("ECTesterReader.jar", CLI_HEADER, opts, CLI_FOOTER, true);
-    }
-
-    /**
-     * List categories and named curves.
-     */
-    private void list() {
-        Map<String, EC_Category> categories = dataStore.getCategories();
-        if (cfg.listNamed == null) {
-            // print all categories, briefly
-            for (EC_Category cat : categories.values()) {
-                System.out.println(cat);
-            }
-        } else if (categories.containsKey(cfg.listNamed)) {
-            // print given category
-            System.out.println(categories.get(cfg.listNamed));
-        } else {
-            // print given object
-            EC_Data object = dataStore.getObject(EC_Data.class, cfg.listNamed);
-            if (object != null) {
-                System.out.println(object);
-            } else {
-                System.err.println("Named object " + cfg.listNamed + " not found!");
-            }
-        }
-    }
-
-    /**
      * Exports default card/simulation EC domain parameters to output file.
      *
      * @throws CardException if APDU transmission fails
@@ -420,8 +386,8 @@ public class ECTesterReader {
             }
             respWriter.outputResponse(response);
 
-            String pub = Util.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_W), false);
-            String priv = Util.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S), false);
+            String pub = ByteUtil.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_W), false);
+            String priv = ByteUtil.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S), false);
             String line = String.format("%d;%d;%s;%s\n", generated, elapsed / 1000000, pub, priv);
             keysFile.write(line);
             keysFile.flush();
@@ -440,14 +406,14 @@ public class ECTesterReader {
      * @throws IOException   if an IO error occurs when writing to key file.
      */
     private void test() throws IOException, TestException {
-        TestSuite suite;
+        CardTestSuite suite;
 
         switch (cfg.testSuite) {
             case "default":
-                suite = new DefaultSuite(dataStore, cfg);
+                suite = new CardDefaultSuite(dataStore, cfg);
                 break;
             case "test-vectors":
-                suite = new TestVectorSuite(dataStore, cfg);
+                suite = new CardTestVectorSuite(dataStore, cfg);
                 break;
             default:
                 // These tests are dangerous, prompt before them.
@@ -466,13 +432,13 @@ public class ECTesterReader {
 
                 switch (cfg.testSuite) {
                     case "wrong":
-                        suite = new WrongCurvesSuite(dataStore, cfg);
+                        suite = new CardWrongCurvesSuite(dataStore, cfg);
                         break;
                     case "composite":
-                        suite = new CompositeCurvesSuite(dataStore, cfg);
+                        suite = new CardCompositeCurvesSuite(dataStore, cfg);
                         break;
                     case "invalid":
-                        suite = new InvalidCurvesSuite(dataStore, cfg);
+                        suite = new CardInvalidCurvesSuite(dataStore, cfg);
                         break;
                     default:
                         System.err.println("Unknown test suite.");
@@ -542,7 +508,7 @@ public class ECTesterReader {
             }
 
             if (out != null) {
-                out.write(String.format("%d;%d;%s\n", done, perform.getDuration() / 1000000, Util.bytesToHex(perform.getSecret(), false)));
+                out.write(String.format("%d;%d;%s\n", done, perform.getDuration() / 1000000, ByteUtil.bytesToHex(perform.getSecret(), false)));
             }
 
             ++done;
@@ -619,7 +585,7 @@ public class ECTesterReader {
             }
 
             if (out != null) {
-                out.write(String.format("%d;%d;%s\n", done, perform.getDuration() / 1000000, Util.bytesToHex(perform.getSignature(), false)));
+                out.write(String.format("%d;%d;%s\n", done, perform.getDuration() / 1000000, ByteUtil.bytesToHex(perform.getSignature(), false)));
             }
 
             ++done;

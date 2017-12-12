@@ -1,10 +1,10 @@
 # ECTester
 
-Tests support and behavior of smartcards with JavaCard platform with focus on Eliptic curves (`TYPE_EC_FP` and `TYPE_EC_F2M`).
+Tests support and behavior of elliptic curve cryptography implementations on JavaCards (`TYPE_EC_FP` and `TYPE_EC_F2M`) and on selected software libraries.
 
 ## Build
 
-ECTester uses ant.
+ECTester uses ant. There are three parts of ECTester, the JavaCard applet used for testing, the reader app which controls it and the standalone app which tests software libraries.
 ```bash
 ant -f build-reader.xml package               # To build the reader tool (jar).
 ant -f build-standalone.xml package           # To build the standalone tool (jar).
@@ -13,8 +13,10 @@ ant -f build-applet.xml build                 # To build the applet (cap).
 
 ## Usage
 
+### JavaCard testing
+
 1. Upload `!uploader/ectester.cap` using your favorite tool (e.g., [GlobalPlatformPro tool](https://github.com/martinpaljak/GlobalPlatform))
-2. Run `java -jar dist/ECTester.jar -t -a`
+2. Run `java -jar dist/ECTesterReader.jar -t -a`
 3. Inspect output log with annotated results
 
 Following operations are tested:
@@ -25,9 +27,9 @@ Following operations are tested:
 - Signature via ECDSA
 - Behavior of card when invalid curves/points are provided (should fail)
 
-See `java -jar ECTester.jar -h` for more.
+See `java -jar ECTesterReader.jar -h` for more.
 
-### Options
+#### Options
 
 ```
  -ln,--list-named <what>           Print the list of supported named

@@ -1,6 +1,6 @@
 package cz.crcs.ectester.common.ec;
 
-import cz.crcs.ectester.common.Util;
+import cz.crcs.ectester.common.util.CardUtil;
 
 /**
  * A result of EC based Key agreement operation.
@@ -56,7 +56,7 @@ public class EC_KAResult extends EC_Data {
 
     @Override
     public String toString() {
-        String algo = Util.getKA(ka);
+        String algo = CardUtil.getKA(ka);
         return "<" + getId() + "> " + algo + " result over " + curve + ", " + oneKey + " + " + otherKey + (desc == null ? "" : ": " + desc);
     }
 

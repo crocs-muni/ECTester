@@ -2,7 +2,8 @@ package cz.crcs.ectester.reader.response;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
-import cz.crcs.ectester.common.Util;
+import cz.crcs.ectester.common.util.ByteUtil;
+import cz.crcs.ectester.common.util.CardUtil;
 import javacard.framework.ISO7816;
 import javacard.security.KeyPair;
 
@@ -12,7 +13,6 @@ import javax.smartcardio.ResponseAPDU;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public abstract class Response {
-
     private ResponseAPDU resp;
     private long time;
     private short[] sws;
@@ -36,7 +36,7 @@ public abstract class Response {
         //parse SWs in response
         for (int i = 0; i < numSW; ++i) {
             if (getLength() >= (offset + 2)) {
-                short sw = Util.getShort(data, offset);
+                short sw = ByteUtil.getShort(data, offset);
                 offset += 2;
                 sws[i] = sw;
                 if (sw != ISO7816.SW_NO_ERROR) {
@@ -62,7 +62,7 @@ public abstract class Response {
                 error = true;
                 break;
             }
-            short paramLength = Util.getShort(data, offset);
+            short paramLength = ByteUtil.getShort(data, offset);
             offset += 2;
             if (data.length < offset + paramLength) {
                 error = true;
@@ -85,6 +85,10 @@ public abstract class Response {
 
     public short getNaturalSW() {
         return (short) resp.getSW();
+    }
+
+    public short[] getSWs() {
+        return sws;
     }
 
     public short getSW(int index) {
@@ -140,7 +144,7 @@ public abstract class Response {
 
         @Override
         public String getDescription() {
-            return String.format("Allocated KeyAgreement(%s) object", Util.getKATypeString(this.kaType));
+            return String.format("Allocated KeyAgreement(%s) object", CardUtil.getKATypeString(this.kaType));
         }
 
     }
@@ -289,7 +293,7 @@ public abstract class Response {
 
         @Override
         public String getDescription() {
-            String corrupt = Util.getCorruption(corruption);
+            String corrupt = CardUtil.getCorruption(corruption);
 
             String pair;
             if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
@@ -476,7 +480,7 @@ public abstract class Response {
 
         @Override
         public String getDescription() {
-            String algo = Util.getKA(type);
+            String algo = CardUtil.getKA(type);
 
             String pub = pubkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
             String priv = privkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
@@ -485,7 +489,7 @@ public abstract class Response {
             if (corruption == EC_Consts.CORRUPTION_NONE) {
                 validity = "unchanged";
             } else {
-                validity = Util.getCorruption(corruption);
+                validity = CardUtil.getCorruption(corruption);
             }
             return String.format("%s of %s pubkey and %s privkey(%s point)", algo, pub, priv, validity);
         }
