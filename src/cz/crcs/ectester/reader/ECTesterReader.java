@@ -25,10 +25,12 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.cli.CLITools;
 import cz.crcs.ectester.common.ec.EC_Params;
-import cz.crcs.ectester.common.output.*;
+import cz.crcs.ectester.common.output.OutputLogger;
+import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.TestException;
 import cz.crcs.ectester.common.test.TestRunner;
 import cz.crcs.ectester.common.util.ByteUtil;
+import cz.crcs.ectester.common.util.CardUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.output.ResponseWriter;
@@ -44,7 +46,10 @@ import javax.smartcardio.CardException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
 
 import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH;
 import static cz.crcs.ectester.applet.ECTesterApplet.Signature_ALG_ECDSA_SHA;
@@ -745,7 +750,6 @@ public class ECTesterReader {
                     System.err.println("You have to specify curve bit-size with -b");
                     return false;
                 }
-
             } else if (cli.hasOption("generate")) {
                 if (primeField == binaryField) {
                     System.err.print("Need to specify field with -fp or -f2m. (not both)");
@@ -781,7 +785,6 @@ public class ECTesterReader {
                     System.err.println("Unknown test suite " + testSuite + ". Should be one of: " + Arrays.toString(tests));
                     return false;
                 }
-
             } else if (cli.hasOption("ecdh")) {
                 if (primeField == binaryField) {
                     System.err.print("Need to specify field with -fp or -f2m. (not both)");
@@ -798,8 +801,7 @@ public class ECTesterReader {
                     return false;
                 }
 
-                ECKAType = Byte.parseByte(cli.getOptionValue("ka-type", "1"));
-
+                ECKAType = CardUtil.parseKAType(cli.getOptionValue("ka-type", "1"));
             } else if (cli.hasOption("ecdsa")) {
                 if (primeField == binaryField) {
                     System.err.print("Need to specify field with -fp or -f2m. (but not both)");
@@ -821,7 +823,7 @@ public class ECTesterReader {
                     return false;
                 }
 
-                ECDSAType = Byte.parseByte(cli.getOptionValue("sig-type", "17"));
+                ECDSAType = CardUtil.parseSigType(cli.getOptionValue("sig-type", "17"));
             }
             return true;
         }

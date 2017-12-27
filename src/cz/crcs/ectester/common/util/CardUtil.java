@@ -20,8 +20,9 @@ public class CardUtil {
             case "DHC":
             case "ECDHC":
                 return ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DHC;
+            default:
+                return ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH;
         }
-        return ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH;
     }
 
     public static String getSWSource(short sw) {
@@ -69,112 +70,76 @@ public class CardUtil {
     }
 
     public static String getSW(short sw) {
-        String str;
         switch (sw) {
             case ISO7816.SW_APPLET_SELECT_FAILED:
-                str = "APPLET_SELECT_FAILED";
-                break;
+                return "APPLET_SELECT_FAILED";
             case ISO7816.SW_BYTES_REMAINING_00:
-                str = "BYTES_REMAINING";
-                break;
+                return "BYTES_REMAINING";
             case ISO7816.SW_CLA_NOT_SUPPORTED:
-                str = "CLA_NOT_SUPPORTED";
-                break;
+                return "CLA_NOT_SUPPORTED";
             case ISO7816.SW_COMMAND_NOT_ALLOWED:
-                str = "COMMAND_NOT_ALLOWED";
-                break;
+                return "COMMAND_NOT_ALLOWED";
             case ISO7816.SW_CONDITIONS_NOT_SATISFIED:
-                str = "CONDITIONS_NOT_SATISFIED";
-                break;
+                return "CONDITIONS_NOT_SATISFIED";
             case ISO7816.SW_CORRECT_LENGTH_00:
-                str = "CORRECT_LENGTH";
-                break;
+                return "CORRECT_LENGTH";
             case ISO7816.SW_DATA_INVALID:
-                str = "DATA_INVALID";
-                break;
+                return "DATA_INVALID";
             case ISO7816.SW_FILE_FULL:
-                str = "FILE_FULL";
-                break;
+                return "FILE_FULL";
             case ISO7816.SW_FILE_INVALID:
-                str = "FILE_INVALID";
-                break;
+                return "FILE_INVALID";
             case ISO7816.SW_FILE_NOT_FOUND:
-                str = "FILE_NOT_FOUND";
-                break;
+                return "FILE_NOT_FOUND";
             case ISO7816.SW_FUNC_NOT_SUPPORTED:
-                str = "FUNC_NOT_SUPPORTED";
-                break;
+                return "FUNC_NOT_SUPPORTED";
             case ISO7816.SW_INCORRECT_P1P2:
-                str = "INCORRECT_P1P2";
-                break;
+                return "INCORRECT_P1P2";
             case ISO7816.SW_INS_NOT_SUPPORTED:
-                str = "INS_NOT_SUPPORTED";
-                break;
+                return "INS_NOT_SUPPORTED";
             case ISO7816.SW_LOGICAL_CHANNEL_NOT_SUPPORTED:
-                str = "LOGICAL_CHANNEL_NOT_SUPPORTED";
-                break;
+                return "LOGICAL_CHANNEL_NOT_SUPPORTED";
             case ISO7816.SW_RECORD_NOT_FOUND:
-                str = "RECORD_NOT_FOUND";
-                break;
+                return "RECORD_NOT_FOUND";
             case ISO7816.SW_SECURE_MESSAGING_NOT_SUPPORTED:
-                str = "SECURE_MESSAGING_NOT_SUPPORTED";
-                break;
+                return "SECURE_MESSAGING_NOT_SUPPORTED";
             case ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED:
-                str = "SECURITY_STATUS_NOT_SATISFIED";
-                break;
+                return "SECURITY_STATUS_NOT_SATISFIED";
             case ISO7816.SW_UNKNOWN:
-                str = "UNKNOWN";
-                break;
+                return "UNKNOWN";
             case ISO7816.SW_WARNING_STATE_UNCHANGED:
-                str = "WARNING_STATE_UNCHANGED";
-                break;
+                return "WARNING_STATE_UNCHANGED";
             case ISO7816.SW_WRONG_DATA:
-                str = "WRONG_DATA";
-                break;
+                return "WRONG_DATA";
             case ISO7816.SW_WRONG_LENGTH:
-                str = "WRONG_LENGTH";
-                break;
+                return "WRONG_LENGTH";
             case ISO7816.SW_WRONG_P1P2:
-                str = "WRONG_P1P2";
-                break;
+                return "WRONG_P1P2";
             case CryptoException.ILLEGAL_VALUE:
-                str = "ILLEGAL_VALUE";
-                break;
+                return "ILLEGAL_VALUE";
             case CryptoException.UNINITIALIZED_KEY:
-                str = "UNINITIALIZED_KEY";
-                break;
+                return "UNINITIALIZED_KEY";
             case CryptoException.NO_SUCH_ALGORITHM:
-                str = "NO_SUCH_ALG";
-                break;
+                return "NO_SUCH_ALG";
             case CryptoException.INVALID_INIT:
-                str = "INVALID_INIT";
-                break;
+                return "INVALID_INIT";
             case CryptoException.ILLEGAL_USE:
-                str = "ILLEGAL_USE";
-                break;
+                return "ILLEGAL_USE";
             case ECTesterApplet.SW_SIG_VERIFY_FAIL:
-                str = "SIG_VERIFY_FAIL";
-                break;
+                return "SIG_VERIFY_FAIL";
             case ECTesterApplet.SW_DH_DHC_MISMATCH:
-                str = "DH_DHC_MISMATCH";
-                break;
+                return "DH_DHC_MISMATCH";
             case ECTesterApplet.SW_KEYPAIR_NULL:
-                str = "KEYPAIR_NULL";
-                break;
+                return "KEYPAIR_NULL";
             case ECTesterApplet.SW_KA_NULL:
-                str = "KA_NULL";
-                break;
+                return "KA_NULL";
             case ECTesterApplet.SW_SIGNATURE_NULL:
-                str = "SIGNATURE_NULL";
-                break;
+                return "SIGNATURE_NULL";
             case ECTesterApplet.SW_OBJECT_NULL:
-                str = "OBJECT_NULL";
-                break;
+                return "OBJECT_NULL";
             default:
-                str = "unknown";
-                break;
+                return "unknown";
         }
-        return str;
     }
 
     public static String getSWString(short sw) {
@@ -187,93 +152,121 @@ public class CardUtil {
     }
 
     public static String getCorruption(short corruptionType) {
-        String corrupt;
         switch (corruptionType) {
             case EC_Consts.CORRUPTION_NONE:
-                corrupt = "NONE";
-                break;
+                return "NONE";
             case EC_Consts.CORRUPTION_FIXED:
-                corrupt = "FIXED";
-                break;
+                return "FIXED";
             case EC_Consts.CORRUPTION_ONE:
-                corrupt = "ONE";
-                break;
+                return "ONE";
             case EC_Consts.CORRUPTION_ZERO:
-                corrupt = "ZERO";
-                break;
+                return "ZERO";
             case EC_Consts.CORRUPTION_ONEBYTERANDOM:
-                corrupt = "ONE_BYTE_RANDOM";
-                break;
+                return "ONE_BYTE_RANDOM";
             case EC_Consts.CORRUPTION_FULLRANDOM:
-                corrupt = "FULL_RANDOM";
-                break;
+                return "FULL_RANDOM";
             case EC_Consts.CORRUPTION_INCREMENT:
-                corrupt = "INCREMENT";
-                break;
+                return "INCREMENT";
             case EC_Consts.CORRUPTION_INFINITY:
-                corrupt = "INFINITY";
-                break;
+                return "INFINITY";
             case EC_Consts.CORRUPTION_COMPRESS:
-                corrupt = "COMPRESSED";
-                break;
+                return "COMPRESSED";
             case EC_Consts.CORRUPTION_MAX:
-                corrupt = "MAX";
-                break;
+                return "MAX";
             default:
-                corrupt = "unknown";
-                break;
+                return "unknown";
         }
-        return corrupt;
     }
 
     public static String getKATypeString(byte kaType) {
-        String kaTypeString;
         switch (kaType) {
             case KeyAgreement_ALG_EC_SVDP_DH:
-                kaTypeString = "ALG_EC_SVDP_DH";
-                break;
+                return "ALG_EC_SVDP_DH";
             case KeyAgreement_ALG_EC_SVDP_DH_PLAIN:
-                kaTypeString = "ALG_EC_SVDP_DH_PLAIN";
-                break;
+                return "ALG_EC_SVDP_DH_PLAIN";
             case KeyAgreement_ALG_EC_PACE_GM:
-                kaTypeString = "ALG_EC_PACE_GM";
-                break;
+                return "ALG_EC_PACE_GM";
             case KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY:
-                kaTypeString = "ALG_EC_SVDP_DH_PLAIN_XY";
-                break;
+                return "ALG_EC_SVDP_DH_PLAIN_XY";
             case KeyAgreement_ALG_EC_SVDP_DHC:
-                kaTypeString = "ALG_EC_SVDP_DHC";
-                break;
+                return "ALG_EC_SVDP_DHC";
             case KeyAgreement_ALG_EC_SVDP_DHC_PLAIN:
-                kaTypeString = "ALG_EC_SVDP_DHC_PLAIN";
-                break;
+                return "ALG_EC_SVDP_DHC_PLAIN";
             default:
-                kaTypeString = "unknown";
+                return "unknown";
         }
-        return kaTypeString;
+    }
+
+    public static byte getKAType(String kaTypeString) {
+        switch (kaTypeString) {
+            case "ALG_EC_SVDP_DH":
+                return KeyAgreement_ALG_EC_SVDP_DH;
+            case "ALG_EC_SVDP_DH_PLAIN":
+                return KeyAgreement_ALG_EC_SVDP_DH_PLAIN;
+            case "ALG_EC_PACE_GM":
+                return KeyAgreement_ALG_EC_PACE_GM;
+            case "ALG_EC_SVDP_DH_PLAIN_XY":
+                return KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY;
+            case "ALG_EC_SVDP_DHC":
+                return KeyAgreement_ALG_EC_SVDP_DHC;
+            case "ALG_EC_SVDP_DHC_PLAIN":
+                return KeyAgreement_ALG_EC_SVDP_DHC_PLAIN;
+            default:
+                return 0;
+        }
+    }
+
+    public static byte parseKAType(String kaTypeString) {
+        byte kaType;
+        try {
+            kaType = Byte.parseByte(kaTypeString);
+        } catch (NumberFormatException nfex) {
+            kaType = getKAType(kaTypeString);
+        }
+        return kaType;
     }
 
     public static String getSigTypeString(byte sigType) {
-        String sigTypeString;
         switch (sigType) {
             case Signature_ALG_ECDSA_SHA:
-                sigTypeString = "ALG_ECDSA_SHA";
-                break;
+                return "ALG_ECDSA_SHA";
             case Signature_ALG_ECDSA_SHA_224:
-                sigTypeString = "ALG_ECDSA_SHA_224";
-                break;
+                return "ALG_ECDSA_SHA_224";
             case Signature_ALG_ECDSA_SHA_256:
-                sigTypeString = "ALG_ECDSA_SHA_256";
-                break;
+                return "ALG_ECDSA_SHA_256";
             case Signature_ALG_ECDSA_SHA_384:
-                sigTypeString = "ALG_ECDSA_SHA_384";
-                break;
+                return "ALG_ECDSA_SHA_384";
             case Signature_ALG_ECDSA_SHA_512:
-                sigTypeString = "ALG_ECDSA_SHA_512";
-                break;
+                return "ALG_ECDSA_SHA_512";
             default:
-                sigTypeString = "unknown";
+                return "unknown";
         }
-        return sigTypeString;
+    }
+
+    public static byte getSigType(String sigTypeString) {
+        switch (sigTypeString) {
+            case "ALG_ECDSA_SHA":
+                return Signature_ALG_ECDSA_SHA;
+            case "ALG_ECDSA_SHA_224":
+                return Signature_ALG_ECDSA_SHA_224;
+            case "ALG_ECDSA_SHA_256":
+                return Signature_ALG_ECDSA_SHA_256;
+            case "ALG_ECDSA_SHA_384":
+                return Signature_ALG_ECDSA_SHA_384;
+            case "ALG_ECDSA_SHA_512":
+                return Signature_ALG_ECDSA_SHA_512;
+            default:
+                return 0;
+        }
+    }
+
+    public static byte parseSigType(String sigTypeString) {
+        byte sigType;
+        try {
+            sigType = Byte.parseByte(sigTypeString);
+        } catch (NumberFormatException nfex) {
+            sigType = getSigType(sigTypeString);
+        }
+        return sigType;
     }
 }
