@@ -1,9 +1,5 @@
 package cz.crcs.ectester.common.test;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.TreeMap;
-
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
@@ -11,8 +7,6 @@ public abstract class BaseTestable implements Testable {
     protected boolean hasRun;
     protected boolean ok;
     protected boolean error;
-
-    protected Map<String, Object> meta = new TreeMap<>();
 
     @Override
     public boolean hasRun() {
@@ -27,10 +21,5 @@ public abstract class BaseTestable implements Testable {
     @Override
     public boolean error() {
         return error;
-    }
-
-    @Override
-    public Map<String, Object> meta() {
-        return Collections.unmodifiableMap(meta);
     }
 }

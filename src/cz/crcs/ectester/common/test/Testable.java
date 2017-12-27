@@ -1,7 +1,5 @@
 package cz.crcs.ectester.common.test;
 
-import java.util.Map;
-
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
@@ -28,11 +26,4 @@ public interface Testable {
      * @return Whether an error happened.
      */
     boolean error();
-
-    /**
-     * Get the metadata of this Testable.
-     *
-     * @return The metadata of the testable.
-     */
-    Map<String, Object> meta();
 }

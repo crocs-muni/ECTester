@@ -18,8 +18,8 @@ public abstract class BaseTextTestWriter implements TestWriter {
 
     @Override
     public void begin(TestSuite suite) {
-        output.println("=== Running test suite: " + suite.getName() + " ===");
-        output.println("=== " + suite.getDescription());
+        output.println("═══ Running test suite: " + suite.getName() + " ═══");
+        output.println("═══ " + suite.getDescription());
     }
 
     protected abstract String testableString(Testable t);
@@ -28,10 +28,11 @@ public abstract class BaseTextTestWriter implements TestWriter {
         if (!t.hasRun()) {
             return null;
         }
+        boolean compound = t instanceof CompoundTest;
 
         StringBuilder out = new StringBuilder();
-        out.append(t.ok() ? "OK  " : "NOK ");
-        out.append("━ ");
+        out.append(t.ok() ? " OK " : "NOK ");
+        out.append(compound ? "┳ " : "━ ");
         int width = BASE_WIDTH - (offset + out.length());
         String widthSpec = "%-" + String.valueOf(width) + "s";
         out.append(String.format(widthSpec, t.getDescription()));
@@ -39,7 +40,7 @@ public abstract class BaseTextTestWriter implements TestWriter {
         out.append(String.format("%-9s", t.getResultValue().name()));
         out.append(" ┃ ");
 
-        if (t instanceof CompoundTest) {
+        if (compound) {
             CompoundTest test = (CompoundTest) t;
             out.append(test.getResultCause());
             out.append(System.lineSeparator());

@@ -40,8 +40,5 @@ public class CommandTestable extends BaseTestable {
         } else if (response.successful()) {
             ok = true;
         }
-        meta.clear();
-        meta.put("natural-sw", response.getNaturalSW());
-        meta.put("sws", response.getSWs());
     }
 }
