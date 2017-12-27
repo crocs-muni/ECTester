@@ -1,24 +1,19 @@
 package cz.crcs.ectester.common.output;
 
-import cz.crcs.ectester.common.test.CompoundTest;
-import cz.crcs.ectester.common.test.SimpleTest;
-import cz.crcs.ectester.common.test.Test;
-import cz.crcs.ectester.common.test.TestSuite;
+import cz.crcs.ectester.common.test.*;
 
 import java.io.PrintStream;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class TextTestWriter implements TestWriter {
+public abstract class BaseTextTestWriter implements TestWriter {
     private PrintStream output;
-    private TestableWriter testableWriter;
 
     public static int BASE_WIDTH = 76;
 
-    public TextTestWriter(PrintStream output) {
+    public BaseTextTestWriter(PrintStream output) {
         this.output = output;
-        this.testableWriter = new TestableWriter(output);
     }
 
     @Override
@@ -26,6 +21,8 @@ public class TextTestWriter implements TestWriter {
         output.println("=== Running test suite: " + suite.getName() + " ===");
         output.println("=== " + suite.getDescription());
     }
+
+    protected abstract String testableString(Testable t);
 
     private String testString(Test t, int offset) {
         if (!t.hasRun()) {
@@ -60,7 +57,7 @@ public class TextTestWriter implements TestWriter {
             }
         } else {
             SimpleTest test = (SimpleTest) t;
-            out.append(testableWriter.outputTestableSuffix(test.getTestable()));
+            out.append(testableString(test.getTestable()));
         }
         return out.toString();
     }

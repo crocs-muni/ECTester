@@ -2,7 +2,6 @@ package cz.crcs.ectester.standalone;
 
 import cz.crcs.ectester.common.cli.*;
 import cz.crcs.ectester.common.ec.EC_Curve;
-import cz.crcs.ectester.common.output.TextTestWriter;
 import cz.crcs.ectester.common.test.TestException;
 import cz.crcs.ectester.common.test.TestRunner;
 import cz.crcs.ectester.common.util.ByteUtil;
@@ -12,6 +11,7 @@ import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
 import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
 import cz.crcs.ectester.standalone.consts.SignatureIdent;
 import cz.crcs.ectester.standalone.libs.*;
+import cz.crcs.ectester.standalone.output.TextTestWriter;
 import cz.crcs.ectester.standalone.test.StandaloneDefaultSuite;
 import cz.crcs.ectester.standalone.test.StandaloneTestSuite;
 import org.apache.commons.cli.DefaultParser;
