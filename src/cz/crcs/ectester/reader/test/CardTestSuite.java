@@ -47,13 +47,13 @@ public abstract class CardTestSuite extends TestSuite {
         List<Test> tests = new LinkedList<>();
 
         tests.add(CommandTest.expect(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH), generateExpected));
-        tests.add(CommandTest.expect(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, EC_Consts.KA_ECDH), ecdhExpected));
-        tests.add(CommandTest.expect(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_COMPRESS, EC_Consts.KA_ECDH), ecdhExpected));
-        tests.add(CommandTest.expect(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ONE, EC_Consts.KA_ECDH), ExpectedValue.FAILURE));
-        tests.add(CommandTest.expect(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ZERO, EC_Consts.KA_ECDH), ExpectedValue.FAILURE));
-        tests.add(CommandTest.expect(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_MAX, EC_Consts.KA_ECDH), ExpectedValue.FAILURE));
-        tests.add(CommandTest.expect(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_FULLRANDOM, EC_Consts.KA_ECDH), ExpectedValue.FAILURE));
-        tests.add(CommandTest.expect(new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, null), ecdsaExpected));
+        tests.add(CommandTest.expect(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH), ecdhExpected));
+        tests.add(CommandTest.expect(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_COMPRESS, ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH), ecdhExpected));
+        tests.add(CommandTest.expect(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ONE, ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH), ExpectedValue.FAILURE));
+        tests.add(CommandTest.expect(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_ZERO, ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH), ExpectedValue.FAILURE));
+        tests.add(CommandTest.expect(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_MAX, ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH), ExpectedValue.FAILURE));
+        tests.add(CommandTest.expect(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_FULLRANDOM, ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH), ExpectedValue.FAILURE));
+        tests.add(CommandTest.expect(new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.Signature_ALG_ECDSA_SHA, ECTesterApplet.EXPORT_FALSE, null), ecdsaExpected));
 
         return CompoundTest.function((testArray) -> {
             Function<ExpectedValue, String> shouldHave = (expected) -> {

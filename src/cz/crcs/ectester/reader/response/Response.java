@@ -133,24 +133,44 @@ public abstract class Response {
      *
      */
     public static class AllocateKeyAgreement extends Response {
-        byte kaType;
+        private byte kaType;
 
         public AllocateKeyAgreement(ResponseAPDU response, long time, byte kaType) {
             super(response, time);
             this.kaType = kaType;
 
-            parse(2, 0);
+            parse(1, 0);
         }
 
         @Override
         public String getDescription() {
             return String.format("Allocated KeyAgreement(%s) object", CardUtil.getKATypeString(this.kaType));
         }
-
     }
 
-    public static class Allocate extends Response {
+    /**
+     *
+     */
+    public static class AllocateSignature extends Response {
+        private byte sigType;
 
+        public AllocateSignature(ResponseAPDU response, long time, byte sigType) {
+            super(response, time);
+            this.sigType = sigType;
+
+            parse(1, 0);
+        }
+
+        @Override
+        public String getDescription() {
+            return String.format("Allocated Signature(%s) object", CardUtil.getSigTypeString(this.sigType));
+        }
+    }
+
+    /**
+     *
+     */
+    public static class Allocate extends Response {
         private byte keyPair;
         private short keyLength;
         private byte keyClass;
@@ -184,7 +204,6 @@ public abstract class Response {
      *
      */
     public static class Clear extends Response {
-
         private byte keyPair;
 
         public Clear(ResponseAPDU response, long time, byte keyPair) {
@@ -213,7 +232,6 @@ public abstract class Response {
      *
      */
     public static class Set extends Response {
-
         private byte keyPair;
         private byte curve;
         private short parameters;
@@ -271,7 +289,6 @@ public abstract class Response {
      *
      */
     public static class Corrupt extends Response {
-
         private byte keyPair;
         private byte key;
         private short params;
@@ -309,7 +326,6 @@ public abstract class Response {
      *
      */
     public static class Generate extends Response {
-
         private byte keyPair;
 
         public Generate(ResponseAPDU response, long time, byte keyPair) {
@@ -339,7 +355,6 @@ public abstract class Response {
      *
      */
     public static class Export extends Response {
-
         private byte keyPair;
         private byte key;
         private short parameters;
@@ -448,7 +463,6 @@ public abstract class Response {
      *
      */
     public static class ECDH extends Response {
-
         private byte pubkey;
         private byte privkey;
         private byte export;
@@ -480,7 +494,7 @@ public abstract class Response {
 
         @Override
         public String getDescription() {
-            String algo = CardUtil.getKA(type);
+            String algo = CardUtil.getKATypeString(type);
 
             String pub = pubkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
             String priv = privkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
@@ -499,14 +513,15 @@ public abstract class Response {
      *
      */
     public static class ECDSA extends Response {
-
         private byte keyPair;
+        private byte sigType;
         private byte export;
         private byte[] raw;
 
-        public ECDSA(ResponseAPDU response, long time, byte keyPair, byte export, byte[] raw) {
+        public ECDSA(ResponseAPDU response, long time, byte keyPair, byte sigType,  byte export, byte[] raw) {
             super(response, time);
             this.keyPair = keyPair;
+            this.sigType = sigType;
             this.export = export;
             this.raw = raw;
 
@@ -523,9 +538,10 @@ public abstract class Response {
 
         @Override
         public String getDescription() {
+            String algo = CardUtil.getSigTypeString(sigType);
             String key = keyPair == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
             String data = raw == null ? "random" : "provided";
-            return String.format("ECDSA with %s keypair(%s data)", key, data);
+            return String.format("%s with %s keypair(%s data)", algo, key, data);
         }
     }
 
@@ -545,22 +561,5 @@ public abstract class Response {
             return "Requested JCSystem object deletion";
         }
 
-    }
-
-    /**
-     *
-     */
-    public static class Support extends Response {
-
-        public Support(ResponseAPDU response, long time) {
-            super(response, time);
-
-            parse(3, 0);
-        }
-
-        @Override
-        public String getDescription() {
-            return "Support of ECDH, ECDHC, ECDSA allocation";
-        }
     }
 }

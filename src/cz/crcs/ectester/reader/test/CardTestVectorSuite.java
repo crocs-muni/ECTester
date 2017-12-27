@@ -67,7 +67,7 @@ public class CardTestVectorSuite extends CardTestSuite {
             //tests.add(new Test.Simple(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH), ExpectedValue.SUCCESS));
             testVector.add(CommandTest.expect(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, onekey.flatten(EC_Consts.PARAMETER_S)), ExpectedValue.SUCCESS));
             testVector.add(CommandTest.expect(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_W, otherkey.flatten(EC_Consts.PARAMETER_W)), ExpectedValue.SUCCESS));
-            testVector.add(CommandTest.function(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, result.getKA()), new TestCallback<CommandTestable>() {
+            testVector.add(CommandTest.function(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, result.getJavaCardKA()), new TestCallback<CommandTestable>() {
                 @Override
                 public Result apply(CommandTestable testable) {
                     Response.ECDH dh = (Response.ECDH) testable.getResponse();

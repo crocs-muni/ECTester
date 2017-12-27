@@ -47,6 +47,7 @@ import java.nio.file.Files;
 import java.util.*;
 
 import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH;
+import static cz.crcs.ectester.applet.ECTesterApplet.Signature_ALG_ECDSA_SHA;
 
 /**
  * Reader part of ECTester, a tool for testing Elliptic curve support on javacards.
@@ -218,8 +219,7 @@ public class ECTesterReader {
          * -e / --export
          * -g / --generate [amount]
          * -t / --test [test_suite]
-         * -dh / --ecdh [count]
-         * -dhc / --ecdhc [count]
+         * -dh / --ecdh [count]]
          * -dsa / --ecdsa [count]
          * -ln / --list-named [obj]
          *
@@ -253,6 +253,7 @@ public class ECTesterReader {
          * -s / --simulate
          * -y / --yes
          * -ka/ --ka-type <type>
+         * -sig/--sig-type <type>
          */
         OptionGroup actions = new OptionGroup();
         actions.setRequired(true);
@@ -262,8 +263,7 @@ public class ECTesterReader {
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate [amount] of EC keys.").hasArg().argName("amount").optionalArg(true).build());
         actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. [test_suite]:\n- default:\n- invalid:\n- wrong:\n- composite:\n- test-vectors:").hasArg().argName("test_suite").optionalArg(true).build());
-        actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do ECDH, [count] times.").hasArg().argName("count").optionalArg(true).build());
-        actions.addOption(Option.builder("dhc").longOpt("ecdhc").desc("Do ECDHC, [count] times.").hasArg().argName("count").optionalArg(true).build());
+        actions.addOption(Option.builder("ka").longOpt("ecka").desc("Do EC KeyAgreement (ECDH...), [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
 
         opts.addOptionGroup(actions);
@@ -308,6 +308,7 @@ public class ECTesterReader {
         opts.addOption(Option.builder("y").longOpt("yes").desc("Accept all warnings and prompts.").build());
 
         opts.addOption(Option.builder("ka").longOpt("ka-type").desc("Set KeyAgreement object [type], corresponds to JC.KeyAgreement constants.").hasArg().argName("type").optionalArg(true).build());
+        opts.addOption(Option.builder("sig").longOpt("sig-type").desc("Set Signature object [type], corresponds to JC.Signature constants.").hasArg().argName("type").optionalArg(true).build());
 
         CommandLineParser parser = new DefaultParser();
         return parser.parse(opts, args);
@@ -464,7 +465,7 @@ public class ECTesterReader {
     private void ecdh() throws IOException, CardException {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
         List<Response> prepare = new LinkedList<>();
-        prepare.add(new Command.AllocateKeyAgreement(cardManager, cfg.kaType).send()); // Prepare KeyAgreement or required type
+        prepare.add(new Command.AllocateKeyAgreement(cardManager, cfg.ECKAType).send()); // Prepare KeyAgreement or required type
         prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, keyClass).send());
         Command curve = Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, keyClass);
         if (curve != null)
@@ -491,10 +492,10 @@ public class ECTesterReader {
 
         int retry = 0;
         int done = 0;
-        while (done < cfg.ECDHCount) {
+        while (done < cfg.ECKACount) {
             List<Response> ecdh = Command.sendAll(generate);
 
-            Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, cfg.ECDHKA).send();
+            Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, cfg.ECKAType).send();
             ecdh.add(perform);
             for (Response r : ecdh) {
                 respWriter.outputResponse(r);
@@ -550,6 +551,7 @@ public class ECTesterReader {
 
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
         List<Response> prepare = new LinkedList<>();
+        prepare.add(new Command.AllocateSignature(cardManager, cfg.ECDSAType).send());
         prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass).send());
         Command curve = Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass);
         if (curve != null)
@@ -571,7 +573,7 @@ public class ECTesterReader {
             List<Response> ecdsa = new LinkedList<>();
             ecdsa.add(generate.send());
 
-            Response.ECDSA perform = new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, data).send();
+            Response.ECDSA perform = new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.ECDSAType, ECTesterApplet.EXPORT_TRUE, data).send();
             ecdsa.add(perform);
             for (Response r : ecdsa) {
                 respWriter.outputResponse(r);
@@ -612,7 +614,7 @@ public class ECTesterReader {
         public boolean all;
         public boolean primeField = false;
         public boolean binaryField = false;
-        public byte kaType = KeyAgreement_ALG_EC_SVDP_DH;
+
 
         public String namedCurve;
         public String curveFile;
@@ -646,9 +648,10 @@ public class ECTesterReader {
         public String listNamed;
         public String testSuite;
         public int generateAmount;
-        public int ECDHCount;
-        public byte ECDHKA;
+        public int ECKACount;
+        public byte ECKAType = KeyAgreement_ALG_EC_SVDP_DH;
         public int ECDSACount;
+        public byte ECDSAType = Signature_ALG_ECDSA_SHA;
 
         /**
          * Reads and validates options, also sets defaults.
@@ -661,7 +664,7 @@ public class ECTesterReader {
             all = cli.hasOption("all");
             primeField = cli.hasOption("fp");
             binaryField = cli.hasOption("f2m");
-            kaType = Byte.parseByte(cli.getOptionValue("ka-type", "1"));
+
 
             namedCurve = cli.getOptionValue("named-curve");
             customCurve = cli.hasOption("custom");
@@ -779,7 +782,7 @@ public class ECTesterReader {
                     return false;
                 }
 
-            } else if (cli.hasOption("ecdh") || cli.hasOption("ecdhc")) {
+            } else if (cli.hasOption("ecka")) {
                 if (primeField == binaryField) {
                     System.err.print("Need to specify field with -fp or -f2m. (not both)");
                     return false;
@@ -789,17 +792,13 @@ public class ECTesterReader {
                     return false;
                 }
 
-                if (cli.hasOption("ecdh")) {
-                    ECDHCount = Integer.parseInt(cli.getOptionValue("ecdh", "1"));
-                    ECDHKA = EC_Consts.KA_ECDH;
-                } else if (cli.hasOption("ecdhc")) {
-                    ECDHCount = Integer.parseInt(cli.getOptionValue("ecdhc", "1"));
-                    ECDHKA = EC_Consts.KA_ECDHC;
-                }
-                if (ECDHCount <= 0) {
-                    System.err.println("ECDH count cannot be <= 0.");
+                ECKACount = Integer.parseInt(cli.getOptionValue("ecka", "1"));
+                if (ECKACount <= 0) {
+                    System.err.println("ECKA count cannot be <= 0.");
                     return false;
                 }
+
+                ECKAType = Byte.parseByte(cli.getOptionValue("ka-type", "1"));
 
             } else if (cli.hasOption("ecdsa")) {
                 if (primeField == binaryField) {
@@ -821,6 +820,8 @@ public class ECTesterReader {
                     System.err.println("ECDSA count cannot be <= 0.");
                     return false;
                 }
+
+                ECDSAType = Byte.parseByte(cli.getOptionValue("sig-type", "17"));
             }
             return true;
         }

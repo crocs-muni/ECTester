@@ -12,6 +12,18 @@ import static cz.crcs.ectester.applet.ECTesterApplet.*;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class CardUtil {
+    public static byte getKA(String name) {
+        switch (name) {
+            case "DH":
+            case "ECDH":
+                return ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH;
+            case "DHC":
+            case "ECDHC":
+                return ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DHC;
+        }
+        return ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH;
+    }
+
     public static String getSWSource(short sw) {
         switch (sw) {
             case ISO7816.SW_NO_ERROR:
@@ -214,22 +226,6 @@ public class CardUtil {
         return corrupt;
     }
 
-    public static String getKA(byte ka) {
-        String algo = "";
-        if ((ka & EC_Consts.KA_ECDH) != 0 || ka == EC_Consts.KA_ANY) {
-            algo += "ECDH";
-        }
-        if (ka == EC_Consts.KA_BOTH) {
-            algo += "+";
-        } else if (ka == EC_Consts.KA_ANY) {
-            algo += "/";
-        }
-        if ((ka & EC_Consts.KA_ECDHC) != 0 || ka == EC_Consts.KA_ANY) {
-            algo += "ECDHC";
-        }
-        return algo;
-    }
-
     public static String getKATypeString(byte kaType) {
         String kaTypeString;
         switch (kaType) {
@@ -255,5 +251,29 @@ public class CardUtil {
                 kaTypeString = "unknown";
         }
         return kaTypeString;
+    }
+
+    public static String getSigTypeString(byte sigType) {
+        String sigTypeString;
+        switch (sigType) {
+            case Signature_ALG_ECDSA_SHA:
+                sigTypeString = "ALG_ECDSA_SHA";
+                break;
+            case Signature_ALG_ECDSA_SHA_224:
+                sigTypeString = "ALG_ECDSA_SHA_224";
+                break;
+            case Signature_ALG_ECDSA_SHA_256:
+                sigTypeString = "ALG_ECDSA_SHA_256";
+                break;
+            case Signature_ALG_ECDSA_SHA_384:
+                sigTypeString = "ALG_ECDSA_SHA_384";
+                break;
+            case Signature_ALG_ECDSA_SHA_512:
+                sigTypeString = "ALG_ECDSA_SHA_512";
+                break;
+            default:
+                sigTypeString = "unknown";
+        }
+        return sigTypeString;
     }
 }

@@ -8,15 +8,14 @@ import cz.crcs.ectester.common.util.CardUtil;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class EC_KAResult extends EC_Data {
-
-    private byte ka;
+    private String ka;
     private String curve;
     private String oneKey;
     private String otherKey;
 
     private String desc;
 
-    public EC_KAResult(byte ka, String curve, String oneKey, String otherKey) {
+    public EC_KAResult(String ka, String curve, String oneKey, String otherKey) {
         super(1);
         this.ka = ka;
         this.curve = curve;
@@ -24,18 +23,22 @@ public class EC_KAResult extends EC_Data {
         this.otherKey = otherKey;
     }
 
-    public EC_KAResult(String id, byte ka, String curve, String oneKey, String otherKey) {
+    public EC_KAResult(String id, String ka, String curve, String oneKey, String otherKey) {
         this(ka, curve, oneKey, otherKey);
         this.id = id;
     }
 
-    public EC_KAResult(String id, byte ka, String curve, String oneKey, String otherKey, String desc) {
+    public EC_KAResult(String id, String ka, String curve, String oneKey, String otherKey, String desc) {
         this(id, ka, curve, oneKey, otherKey);
         this.desc = desc;
     }
 
-    public byte getKA() {
+    public String getKA() {
         return ka;
+    }
+
+    public byte getJavaCardKA() {
+        return CardUtil.getKA(ka);
     }
 
     public String getCurve() {
@@ -56,8 +59,7 @@ public class EC_KAResult extends EC_Data {
 
     @Override
     public String toString() {
-        String algo = CardUtil.getKA(ka);
-        return "<" + getId() + "> " + algo + " result over " + curve + ", " + oneKey + " + " + otherKey + (desc == null ? "" : ": " + desc);
+        return "<" + getId() + "> " + ka + " result over " + curve + ", " + oneKey + " + " + otherKey + (desc == null ? "" : ": " + desc);
     }
 
 }

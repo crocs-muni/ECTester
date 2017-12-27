@@ -10,7 +10,7 @@ import java.io.PrintStream;
 public abstract class BaseTextTestWriter implements TestWriter {
     private PrintStream output;
 
-    public static int BASE_WIDTH = 76;
+    public static int BASE_WIDTH = 80;
 
     public BaseTextTestWriter(PrintStream output) {
         this.output = output;

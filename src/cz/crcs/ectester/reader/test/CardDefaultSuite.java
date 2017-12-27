@@ -23,7 +23,7 @@ public class CardDefaultSuite extends CardTestSuite {
 
     @Override
     public void setup(CardMngr cardManager) throws IOException {
-        tests.add(CommandTest.expect(new Command.Support(cardManager), ExpectedValue.ANY));
+        //tests.add(CommandTest.expect(new Command.Support(cardManager), ExpectedValue.ANY));
         if (cfg.namedCurve != null) {
             String desc = "Default tests over the " + cfg.namedCurve + " curve category.";
             if (cfg.primeField) {

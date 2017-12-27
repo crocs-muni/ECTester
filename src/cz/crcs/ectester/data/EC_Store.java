@@ -2,6 +2,7 @@ package cz.crcs.ectester.data;
 
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.ec.*;
+import cz.crcs.ectester.common.util.CardUtil;
 import javacard.security.KeyPair;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -217,25 +218,7 @@ public class EC_Store {
                         descs = descc.item(0).getTextContent();
                     }
 
-                    byte kab = EC_Consts.KA_ANY;
-                    switch (ka.getTextContent()) {
-                        case "DH":
-                        case "ECDH":
-                            kab = EC_Consts.KA_ECDH;
-                            break;
-                        case "DHC":
-                        case "ECDHC":
-                            kab = EC_Consts.KA_ECDHC;
-                            break;
-                        case "ANY":
-                            kab = EC_Consts.KA_ANY;
-                            break;
-                        case "BOTH":
-                            kab = EC_Consts.KA_BOTH;
-                            break;
-                    }
-
-                    EC_KAResult kaResult = new EC_KAResult(id.getTextContent(), kab, curve.getTextContent(), onekey.getTextContent(), otherkey.getTextContent(), descs);
+                    EC_KAResult kaResult = new EC_KAResult(id.getTextContent(), ka.getTextContent(), curve.getTextContent(), onekey.getTextContent(), otherkey.getTextContent(), descs);
 
                     InputStream csv = parseDataElement(dir, elem);
                     if (!kaResult.readCSV(csv)) {
