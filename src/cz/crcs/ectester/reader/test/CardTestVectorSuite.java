@@ -3,10 +3,7 @@ package cz.crcs.ectester.reader.test;
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.ec.*;
-import cz.crcs.ectester.common.test.CompoundTest;
-import cz.crcs.ectester.common.test.Result;
-import cz.crcs.ectester.common.test.Test;
-import cz.crcs.ectester.common.test.TestCallback;
+import cz.crcs.ectester.common.test.*;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
@@ -64,7 +61,7 @@ public class CardTestVectorSuite extends CardTestSuite {
 
             testVector.add(CommandTest.expect(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS));
             testVector.add(CommandTest.expect(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.SUCCESS));
-            //tests.add(new Test.Simple(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH), ExpectedValue.SUCCESS));
+            //run.add(new Test.Simple(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH), ExpectedValue.SUCCESS));
             testVector.add(CommandTest.expect(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, onekey.flatten(EC_Consts.PARAMETER_S)), ExpectedValue.SUCCESS));
             testVector.add(CommandTest.expect(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_W, otherkey.flatten(EC_Consts.PARAMETER_W)), ExpectedValue.SUCCESS));
             testVector.add(CommandTest.function(new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, result.getJavaCardKA()), new TestCallback<CommandTestable>() {
@@ -82,9 +79,8 @@ public class CardTestVectorSuite extends CardTestSuite {
                     return new Result(Value.SUCCESS);
                 }
             }));
-            tests.add(CompoundTest.all(ExpectedValue.SUCCESS, "Test vector " + result.getId(), testVector.toArray(new Test[0])));
-            tests.add(CommandTest.expect(new Command.Cleanup(cardManager), ExpectedValue.ANY));
-
+            run.add(CompoundTest.all(ExpectedValue.SUCCESS, "Test vector " + result.getId(), testVector.toArray(new Test[0])));
+            run.add(new BaseRunnable(() -> new Command.Cleanup(cardManager)));
         }
     }
 }

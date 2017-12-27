@@ -33,7 +33,7 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
         testSuite.put("desc", suite.getDescription());
 
         testRun.put("suite", testSuite);
-        testRun.put("tests", tests);
+        testRun.put("run", tests);
     }
 
     abstract protected Map<String, Object> testableObject(Testable t);
@@ -48,7 +48,7 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
             for (Test innerTest : test.getTests()) {
                 innerTests.add(testObject(innerTest));
             }
-            testObj.put("tests", innerTests);
+            testObj.put("run", innerTests);
         } else {
             SimpleTest test = (SimpleTest) t;
             testObj = testableObject(test.getTestable());

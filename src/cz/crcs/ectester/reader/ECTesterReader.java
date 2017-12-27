@@ -425,9 +425,9 @@ public class ECTesterReader {
                 suite = new CardTestVectorSuite(dataStore, cfg);
                 break;
             default:
-                // These tests are dangerous, prompt before them.
+                // These run are dangerous, prompt before them.
                 System.out.println("The test you selected (" + cfg.testSuite + ") is potentially dangerous.");
-                System.out.println("Some of these tests have caused temporary DoS of some cards.");
+                System.out.println("Some of these run have caused temporary DoS of some cards.");
                 if (!cfg.yes) {
                     System.out.print("Do you want to proceed? (y/n): ");
                     Scanner in = new Scanner(System.in);

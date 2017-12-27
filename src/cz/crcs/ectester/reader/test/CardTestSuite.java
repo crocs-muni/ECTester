@@ -3,10 +3,8 @@ package cz.crcs.ectester.reader.test;
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.ec.EC_Curve;
-import cz.crcs.ectester.common.test.CompoundTest;
-import cz.crcs.ectester.common.test.Result;
-import cz.crcs.ectester.common.test.Test;
-import cz.crcs.ectester.common.test.TestSuite;
+import cz.crcs.ectester.common.test.*;
+import cz.crcs.ectester.common.test.Runnable;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
@@ -98,10 +96,10 @@ public abstract class CardTestSuite extends TestSuite {
      * @param ecdhCompressedExpected expected result of the ECDH command with a compressed point.
      * @param ecdsaExpected          expected result of the ordinary ECDSA command
      * @param description            compound test description
-     * @return tests to run
+     * @return run to run
      */
-    List<Test> defaultCategoryTests(CardMngr cardManager, String category, byte field, ExpectedValue setExpected, ExpectedValue generateExpected, ExpectedValue ecdhExpected, ExpectedValue ecdhCompressedExpected, ExpectedValue ecdsaExpected, String description) {
-        List<Test> tests = new LinkedList<>();
+    List<Runnable> defaultCategoryTests(CardMngr cardManager, String category, byte field, ExpectedValue setExpected, ExpectedValue generateExpected, ExpectedValue ecdhExpected, ExpectedValue ecdhCompressedExpected, ExpectedValue ecdsaExpected, String description) {
+        List<Runnable> tests = new LinkedList<>();
         Map<String, EC_Curve> curves = dataStore.getObjects(EC_Curve.class, category);
         if (curves == null)
             return tests;
@@ -111,7 +109,7 @@ public abstract class CardTestSuite extends TestSuite {
                 tests.add(CommandTest.expect(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), field), ExpectedValue.SUCCESS));
                 tests.add(CommandTest.expect(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), setExpected));
                 tests.add(defaultCurveTests(cardManager, generateExpected, ecdhExpected, ecdhCompressedExpected, ecdsaExpected, description));
-                tests.add(CommandTest.expect(new Command.Cleanup(cardManager), ExpectedValue.ANY));
+                run.add(new BaseRunnable(() -> new Command.Cleanup(cardManager)));
             }
         }
 

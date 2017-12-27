@@ -21,7 +21,7 @@ import java.security.spec.ECParameterSpec;
 public class StandaloneDefaultSuite extends StandaloneTestSuite {
 
     public StandaloneDefaultSuite(EC_Store dataStore, ECTesterStandalone.Config cfg, TreeCommandLine cli) {
-        super(dataStore, cfg, cli, "default", "The default test suite tests basic support of ECDH and ECDSA.");
+        super(dataStore, cfg, cli, "default", "The default test suite run basic support of ECDH and ECDSA.");
     }
 
     @Override
@@ -57,19 +57,19 @@ public class StandaloneDefaultSuite extends StandaloneTestSuite {
             kgtOther = new KeyGeneratorTestable(kpg);
         }
 
-        tests.add(KeyGeneratorTest.expect(kgtOne, Result.ExpectedValue.SUCCESS));
-        tests.add(KeyGeneratorTest.expect(kgtOther, Result.ExpectedValue.SUCCESS));
+        run.add(KeyGeneratorTest.expect(kgtOne, Result.ExpectedValue.SUCCESS));
+        run.add(KeyGeneratorTest.expect(kgtOther, Result.ExpectedValue.SUCCESS));
 
         for (KeyAgreementIdent kaIdent : cfg.selected.getKAs()) {
             if (kaAlgo == null || kaIdent.contains(kaAlgo)) {
                 KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                tests.add(KeyAgreementTest.expect(new KeyAgreementTestable(ka, kgtOne, kgtOther, spec), Result.ExpectedValue.SUCCESS));
+                run.add(KeyAgreementTest.expect(new KeyAgreementTestable(ka, kgtOne, kgtOther, spec), Result.ExpectedValue.SUCCESS));
             }
         }
         for (SignatureIdent sigIdent : cfg.selected.getSigs()) {
             if (sigAlgo == null || sigIdent.contains(sigAlgo)) {
                 Signature sig = sigIdent.getInstance(cfg.selected.getProvider());
-                tests.add(SignatureTest.expect(new SignatureTestable(sig, kgtOne, null), Result.ExpectedValue.SUCCESS));
+                run.add(SignatureTest.expect(new SignatureTestable(sig, kgtOne, null), Result.ExpectedValue.SUCCESS));
             }
         }
     }

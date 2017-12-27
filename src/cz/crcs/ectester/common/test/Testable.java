@@ -3,20 +3,7 @@ package cz.crcs.ectester.common.test;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public interface Testable {
-
-    /**
-     * @return Whether this testable was run.
-     */
-    boolean hasRun();
-
-    /**
-     * Run this Testable.
-     *
-     * @throws TestException
-     */
-    void run() throws TestException;
-
+public interface Testable extends Runnable {
     /**
      * @return Whether this Testable was OK.
      */

@@ -16,10 +16,12 @@ public class TestRunner {
 
     public void run() throws TestException {
         writer.begin(suite);
-        for (Test t : suite.getTests()) {
+        for (Runnable t : suite.getRunnables()) {
             if (!t.hasRun()) {
                 t.run();
-                writer.outputTest(t);
+                if (t instanceof Test) {
+                    writer.outputTest((Test) t);
+                }
             }
         }
         writer.end();

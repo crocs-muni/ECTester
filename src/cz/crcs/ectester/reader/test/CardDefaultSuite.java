@@ -2,6 +2,7 @@ package cz.crcs.ectester.reader.test;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
+import cz.crcs.ectester.common.test.BaseRunnable;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
@@ -18,19 +19,19 @@ import static cz.crcs.ectester.common.test.Result.ExpectedValue;
 public class CardDefaultSuite extends CardTestSuite {
 
     public CardDefaultSuite(EC_Store dataStore, ECTesterReader.Config cfg) {
-        super(dataStore, cfg, "default", "The default test suite tests basic support of ECDH and ECDSA.");
+        super(dataStore, cfg, "default", "The default test suite run basic support of ECDH and ECDSA.");
     }
 
     @Override
     public void setup(CardMngr cardManager) throws IOException {
-        //tests.add(CommandTest.expect(new Command.Support(cardManager), ExpectedValue.ANY));
+        //run.add(CommandTest.expect(new Command.Support(cardManager), ExpectedValue.ANY));
         if (cfg.namedCurve != null) {
-            String desc = "Default tests over the " + cfg.namedCurve + " curve category.";
+            String desc = "Default run over the " + cfg.namedCurve + " curve category.";
             if (cfg.primeField) {
-                tests.addAll(defaultCategoryTests(cardManager, cfg.namedCurve, KeyPair.ALG_EC_FP, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.ANY, ExpectedValue.SUCCESS, desc));
+                run.addAll(defaultCategoryTests(cardManager, cfg.namedCurve, KeyPair.ALG_EC_FP, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.ANY, ExpectedValue.SUCCESS, desc));
             }
             if (cfg.binaryField) {
-                tests.addAll(defaultCategoryTests(cardManager, cfg.namedCurve, KeyPair.ALG_EC_F2M, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.ANY, ExpectedValue.SUCCESS, desc));
+                run.addAll(defaultCategoryTests(cardManager, cfg.namedCurve, KeyPair.ALG_EC_F2M, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.ANY, ExpectedValue.SUCCESS, desc));
             }
         } else {
             if (cfg.all) {
@@ -59,11 +60,11 @@ public class CardDefaultSuite extends CardTestSuite {
     }
 
     private void defaultTests(CardMngr cardManager, short keyLength, byte keyType) throws IOException {
-        tests.add(CommandTest.expect(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, keyType), ExpectedValue.SUCCESS));
+        run.add(CommandTest.expect(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, keyLength, keyType), ExpectedValue.SUCCESS));
         Command curve = Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_BOTH, keyLength, keyType);
         if (curve != null)
-            tests.add(CommandTest.expect(curve, ExpectedValue.SUCCESS));
-        tests.add(defaultCurveTests(cardManager, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.ANY, ExpectedValue.SUCCESS, "Default tests."));
-        tests.add(CommandTest.expect(new Command.Cleanup(cardManager), ExpectedValue.ANY));
+            run.add(CommandTest.expect(curve, ExpectedValue.SUCCESS));
+        run.add(defaultCurveTests(cardManager, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.ANY, ExpectedValue.SUCCESS, "Default run."));
+        run.add(new BaseRunnable(() -> new Command.Cleanup(cardManager)));
     }
 }
