@@ -263,7 +263,7 @@ public class ECTesterReader {
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate [amount] of EC keys.").hasArg().argName("amount").optionalArg(true).build());
         actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. [test_suite]:\n- default:\n- invalid:\n- wrong:\n- composite:\n- test-vectors:").hasArg().argName("test_suite").optionalArg(true).build());
-        actions.addOption(Option.builder("ka").longOpt("ecka").desc("Do EC KeyAgreement (ECDH...), [count] times.").hasArg().argName("count").optionalArg(true).build());
+        actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do EC KeyAgreement (ECDH...), [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
 
         opts.addOptionGroup(actions);
@@ -782,7 +782,7 @@ public class ECTesterReader {
                     return false;
                 }
 
-            } else if (cli.hasOption("ecka")) {
+            } else if (cli.hasOption("ecdh")) {
                 if (primeField == binaryField) {
                     System.err.print("Need to specify field with -fp or -f2m. (not both)");
                     return false;
@@ -792,9 +792,9 @@ public class ECTesterReader {
                     return false;
                 }
 
-                ECKACount = Integer.parseInt(cli.getOptionValue("ecka", "1"));
+                ECKACount = Integer.parseInt(cli.getOptionValue("ecdh", "1"));
                 if (ECKACount <= 0) {
-                    System.err.println("ECKA count cannot be <= 0.");
+                    System.err.println("ECDH count cannot be <= 0.");
                     return false;
                 }
 
