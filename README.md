@@ -9,7 +9,7 @@ ECTester uses ant. There are three parts of ECTester, the JavaCard applet used f
 ```bash
 ant -f build-reader.xml package               # To build the reader tool (jar) -> "dist/ECTesterReader.jar"
 ant -f build-standalone.xml package           # To build the standalone tool (jar) -> "dist/ECTesterStandalone.jar"
-ant -f build-applet.xml build                 # To build the applet (cap) -> "!uploader/ectester.cap".
+ant -f build-applet.xml build                 # To build the applet (cap) -> "applet/ectester.cap".
 ```
 Build produces both a lightweight version of the JARs and a full version of the JARs with dependencies included, the latter has the `*-dist.jar` suffix.
 The standalone build tries building test binaries for all the supported libraries, and silently fails if the library is not properly supported.

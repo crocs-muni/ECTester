@@ -25,7 +25,7 @@ deploy:
   file:
     - "dist/ECTesterReader-dist.jar"
     - "dist/ECTesterReader.jar"
-    - "!uploader/ectester.cap"
+    - "applet/ectester.cap"
     - "dist/ECTesterStandalone-dist.jar"
     - "dist/ECTesterStandalone.jar"
   skip_cleanup: true
