@@ -71,6 +71,10 @@
     nbproject/build-impl.xml file. 
 
     -->
+    <target name="-pre-jar">
+        <copy file="LICENSE" todir="${build.classes.dir}"/>
+    </target>
+
     <target name="package" depends="jar">
         <property name="store.jar.name" value="ECTesterStandalone-dist"/>
         <antcall target="dist-build.package"/>
