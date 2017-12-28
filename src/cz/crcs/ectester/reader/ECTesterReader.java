@@ -492,13 +492,18 @@ public class ECTesterReader {
         FileWriter out = null;
         if (cfg.output != null) {
             out = new FileWriter(cfg.output);
-            out.write("index;time;secret\n");
+            out.write("index;time;pubW;privS;secret\n");
         }
 
         int retry = 0;
         int done = 0;
         while (done < cfg.ECKACount) {
             List<Response> ecdh = Command.sendAll(generate);
+
+            Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR).send();
+            ecdh.add(export);
+            byte pubkey_bytes[] = export.getParameter(pubkey, EC_Consts.PARAMETER_W);
+            byte privkey_bytes[] = export.getParameter(privkey, EC_Consts.PARAMETER_S);
 
             Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, cfg.ECKAType).send();
             ecdh.add(perform);
@@ -517,7 +522,7 @@ public class ECTesterReader {
             }
 
             if (out != null) {
-                out.write(String.format("%d;%d;%s\n", done, perform.getDuration() / 1000000, ByteUtil.bytesToHex(perform.getSecret(), false)));
+                out.write(String.format("%d;%d;%s;%s;%s\n", done, perform.getDuration() / 1000000, ByteUtil.bytesToHex(pubkey_bytes, false), ByteUtil.bytesToHex(privkey_bytes, false), ByteUtil.bytesToHex(perform.getSecret(), false)));
             }
 
             ++done;
