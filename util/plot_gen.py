@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 #
 # Script for plotting ECTester key generation results.
 #
@@ -26,6 +27,10 @@ if __name__ == "__main__":
 
     opts = parser.parse_args()
 
+    with open(opts.file, "r") as f:
+        header = f.readline()
+    header_names = header.split(";")
+
     plots = [opts.priv, opts.pub, opts.hist]
     n_plots = sum(plots)
     if n_plots == 0:
@@ -35,7 +40,12 @@ if __name__ == "__main__":
     hx = lambda x: int(x, 16)
     data = np.genfromtxt(opts.file, delimiter=";", skip_header=1, converters={2: hx, 3: hx}, dtype=np.dtype([("index","u4"), ("time","u4"), ("pub", "O"), ("priv", "O")]))
 
-    time_data = map(itemgetter(1), data)
+    if "nano" in header_names[1]:
+        unit = r"$\mu s$"
+        time_data = map(lambda x: x[1]/1000, data)
+    else:
+        unit = r"ms"
+        time_data = map(itemgetter(1), data)
     priv_data = map(itemgetter(2), data)
     pub_data = map(itemgetter(3), data)
 
@@ -47,14 +57,14 @@ if __name__ == "__main__":
         axe_private = fig.add_subplot(n_plots, 1, plot_i)
         axe_private.scatter(time_data, priv_data, marker="x", s=10)
         axe_private.set_ylabel("private key value\n(big endian)")
-        axe_private.set_xlabel("time (ms)")
+        axe_private.set_xlabel("time ({})".format(unit))
         plot_i += 1
 
     if plots[1]:
         axe_public = fig.add_subplot(n_plots, 1, plot_i)
         axe_public.scatter(time_data, pub_data, marker="x", s=10)
         axe_public.set_ylabel("public key value\n(big endian)")
-        axe_public.set_xlabel("time (ms)")
+        axe_public.set_xlabel("time ({})".format(unit))
         plot_i += 1
 
     if plots[2]:
@@ -66,11 +76,14 @@ if __name__ == "__main__":
         axe_hist.axvline(x=time_avg, alpha=0.7, linestyle="dotted", color="red", label="avg = {}".format(time_avg))
         axe_hist.axvline(x=time_median, alpha=0.7, linestyle="dotted", color="green", label="median = {}".format(time_median))
         axe_hist.set_ylabel("count\n(log)")
-        axe_hist.set_xlabel("time (ms)")
+        axe_hist.set_xlabel("time ({})".format(unit))
         axe_hist.xaxis.set_major_locator(ticker.MaxNLocator())
         axe_hist.legend(loc="best")
+
+    fig.text(0.01, 0.02, "Data size: {}".format(len(time_data)), size="small")
 
     if opts.output is None:
         plt.show()
     else:
+        fig.set_size_inches(12, 10)
         plt.savefig(opts.output, dpi=400)
