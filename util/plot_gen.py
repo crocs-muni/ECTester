@@ -12,6 +12,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 from operator import itemgetter
 import argparse
 
@@ -58,9 +59,16 @@ if __name__ == "__main__":
 
     if plots[2]:
         axe_hist = fig.add_subplot(n_plots, 1, plot_i)
-        axe_hist.hist(time_data, bins=400, log=True)
+        time_max = max(time_data)
+        time_avg = np.average(time_data)
+        time_median = np.median(time_data)
+        axe_hist.hist(time_data, bins=time_max/3, log=True)
+        axe_hist.axvline(x=time_avg, alpha=0.7, linestyle="dotted", color="red", label="avg = {}".format(time_avg))
+        axe_hist.axvline(x=time_median, alpha=0.7, linestyle="dotted", color="green", label="median = {}".format(time_median))
         axe_hist.set_ylabel("count\n(log)")
         axe_hist.set_xlabel("time (ms)")
+        axe_hist.xaxis.set_major_locator(ticker.MaxNLocator())
+        axe_hist.legend(loc="best")
 
     if opts.output is None:
         plt.show()
