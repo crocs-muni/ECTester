@@ -84,6 +84,9 @@ public class ByteUtil {
     }
 
     public static String bytesToHex(byte[] data, boolean addSpace) {
+        if (data == null) {
+            return "";
+        }
         return bytesToHex(data, 0, data.length, addSpace);
     }
 
@@ -92,6 +95,9 @@ public class ByteUtil {
     }
 
     public static String bytesToHex(byte[] data, int offset, int len, boolean addSpace) {
+        if (data == null) {
+            return "";
+        }
         StringBuilder buf = new StringBuilder();
         for (int i = offset; i < (offset + len); i++) {
             buf.append(byteToHex(data[i]));

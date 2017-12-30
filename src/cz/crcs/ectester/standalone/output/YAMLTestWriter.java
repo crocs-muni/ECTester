@@ -8,6 +8,7 @@ import cz.crcs.ectester.standalone.test.KeyGeneratorTestable;
 import cz.crcs.ectester.standalone.test.SignatureTestable;
 
 import java.io.PrintStream;
+import java.security.Key;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.HashMap;
@@ -21,32 +22,52 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
         super(output);
     }
 
+    private Map<String, Object> keyObject(Key key) {
+        Map<String, Object> kObject = new HashMap<>();
+        if (key == null) {
+            return kObject;
+        }
+        kObject.put("algo", key.getAlgorithm());
+        kObject.put("format", key.getFormat());
+        kObject.put("raw", ByteUtil.bytesToHex(key.getEncoded()));
+        return kObject;
+    }
+
     private Map<String, Object> kaObject(KeyAgreementTestable kat) {
         Map<String, Object> katObject = new HashMap<>();
+        katObject.put("algo", kat.getKa().getAlgorithm());
         katObject.put("secret", ByteUtil.bytesToHex(kat.getSecret()));
+
+        PublicKey pkey = kat.getPublicKey();
+        katObject.put("pubkey", keyObject(pkey));
+
+        PrivateKey skey = kat.getPrivateKey();
+        katObject.put("privkey", keyObject(skey));
         return katObject;
     }
 
     private Map<String, Object> kgtObject(KeyGeneratorTestable kgt) {
         Map<String, Object> kgtObject = new HashMap<>();
-        Map<String, Object> pubObject = new HashMap<>();
-        PublicKey pkey = kgt.getKeyPair().getPublic();
-        pubObject.put("algorithm", pkey.getAlgorithm());
-        pubObject.put("format", pkey.getFormat());
-        pubObject.put("raw", ByteUtil.bytesToHex(pkey.getEncoded()));
-        kgtObject.put("pubkey", pubObject);
+        kgtObject.put("algo", kgt.getKpg().getAlgorithm());
 
-        Map<String, Object> privObject = new HashMap<>();
-        PrivateKey skey = kgt.getKeyPair().getPrivate();
-        privObject.put("algorithm", skey.getAlgorithm());
-        privObject.put("format", skey.getFormat());
-        privObject.put("raw", ByteUtil.bytesToHex(skey.getEncoded()));
-        kgtObject.put("privkey", privObject);
+        Map<String, Object> keypair = new HashMap<>();
+        if (kgt.getKeyPair() != null) {
+            PublicKey pkey = kgt.getKeyPair().getPublic();
+            Map<String, Object> pubObject = keyObject(pkey);
+            keypair.put("pubkey", pubObject);
+
+            PrivateKey skey = kgt.getKeyPair().getPrivate();
+            Map<String, Object> privObject = keyObject(skey);
+            keypair.put("privkey", privObject);
+        }
+
+        kgtObject.put("keypair", keypair);
         return kgtObject;
     }
 
     private Map<String, Object> sigObject(SignatureTestable sig) {
         Map<String, Object> sigObject = new HashMap<>();
+        sigObject.put("algo", sig.getSig().getAlgorithm());
         sigObject.put("verified", sig.getVerified());
         sigObject.put("raw", ByteUtil.bytesToHex(sig.getSignature()));
         return sigObject;

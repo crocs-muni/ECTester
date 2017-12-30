@@ -28,7 +28,7 @@ public class SignatureTest extends SimpleTest<SignatureTestable> {
 
     @Override
     public String getDescription() {
-        return "Signature test";
+        return "Signature " + testable.getSig().getAlgorithm();
     }
 
     @Override

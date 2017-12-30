@@ -41,6 +41,7 @@ if __name__ == "__main__":
     pub_data = map(itemgetter(3), data)
     secret_data = map(itemgetter(4), data)
 
+    plt.style.use("ggplot")
     fig = plt.figure(tight_layout=True)
     fig.suptitle(opts.file)
 

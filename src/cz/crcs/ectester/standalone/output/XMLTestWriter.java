@@ -24,6 +24,9 @@ public class XMLTestWriter extends BaseXMLTestWriter {
 
     private Element pkeyElement(PublicKey pkey) {
         Element pubkey = doc.createElement("pubkey");
+        if (pkey == null) {
+            return pubkey;
+        }
         pubkey.setAttribute("algorithm", pkey.getAlgorithm());
         pubkey.setAttribute("format", pkey.getFormat());
         pubkey.setTextContent(ByteUtil.bytesToHex(pkey.getEncoded()));
@@ -32,6 +35,9 @@ public class XMLTestWriter extends BaseXMLTestWriter {
 
     private Element skeyElement(PrivateKey skey) {
         Element privkey = doc.createElement("privkey");
+        if (skey == null) {
+            return privkey;
+        }
         privkey.setAttribute("algorithm", skey.getAlgorithm());
         privkey.setAttribute("format", skey.getFormat());
         privkey.setTextContent(ByteUtil.bytesToHex(skey.getEncoded()));
@@ -62,13 +68,15 @@ public class XMLTestWriter extends BaseXMLTestWriter {
         kgtElem.setAttribute("algo", kgt.getKpg().getAlgorithm());
 
         Element keyPair = doc.createElement("key-pair");
-        PublicKey pkey = kgt.getKeyPair().getPublic();
-        Element pubkey = pkeyElement(pkey);
-        keyPair.appendChild(pubkey);
+        if (kgt.getKeyPair() != null) {
+            PublicKey pkey = kgt.getKeyPair().getPublic();
+            Element pubkey = pkeyElement(pkey);
+            keyPair.appendChild(pubkey);
 
-        PrivateKey skey = kgt.getKeyPair().getPrivate();
-        Element privkey = skeyElement(skey);
-        keyPair.appendChild(privkey);
+            PrivateKey skey = kgt.getKeyPair().getPrivate();
+            Element privkey = skeyElement(skey);
+            keyPair.appendChild(privkey);
+        }
 
         kgtElem.appendChild(keyPair);
         return kgtElem;

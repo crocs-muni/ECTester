@@ -49,6 +49,7 @@ if __name__ == "__main__":
     priv_data = map(itemgetter(2), data)
     pub_data = map(itemgetter(3), data)
 
+    plt.style.use("ggplot")
     fig = plt.figure(tight_layout=True)
     fig.suptitle(opts.file)
 

@@ -28,7 +28,7 @@ public class KeyGeneratorTest extends SimpleTest<KeyGeneratorTestable> {
 
     @Override
     public String getDescription() {
-        return "KeyPairGenerator test";
+        return "KeyPairGenerator " + testable.getKpg().getAlgorithm();
     }
 
     @Override
