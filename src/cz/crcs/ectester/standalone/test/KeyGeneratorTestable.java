@@ -28,6 +28,10 @@ public class KeyGeneratorTestable extends BaseTestable {
         this.spec = spec;
     }
 
+    public KeyPairGenerator getKpg() {
+        return kpg;
+    }
+
     public KeyPair getKeyPair() {
         return kp;
     }

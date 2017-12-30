@@ -22,40 +22,62 @@ public class XMLTestWriter extends BaseXMLTestWriter {
         super(output);
     }
 
+    private Element pkeyElement(PublicKey pkey) {
+        Element pubkey = doc.createElement("pubkey");
+        pubkey.setAttribute("algorithm", pkey.getAlgorithm());
+        pubkey.setAttribute("format", pkey.getFormat());
+        pubkey.setTextContent(ByteUtil.bytesToHex(pkey.getEncoded()));
+        return pubkey;
+    }
+
+    private Element skeyElement(PrivateKey skey) {
+        Element privkey = doc.createElement("privkey");
+        privkey.setAttribute("algorithm", skey.getAlgorithm());
+        privkey.setAttribute("format", skey.getFormat());
+        privkey.setTextContent(ByteUtil.bytesToHex(skey.getEncoded()));
+        return privkey;
+    }
+
     private Element kaElement(KeyAgreementTestable kat) {
         Element katElem = doc.createElement("key-agreement");
+        katElem.setAttribute("algo", kat.getKa().getAlgorithm());
 
         Element secret = doc.createElement("secret");
         secret.setTextContent(ByteUtil.bytesToHex(kat.getSecret()));
         katElem.appendChild(secret);
+
+        PublicKey pkey = kat.getPublicKey();
+        Element pubkey = pkeyElement(pkey);
+        katElem.appendChild(pubkey);
+
+        PrivateKey skey = kat.getPrivateKey();
+        Element privkey = skeyElement(skey);
+        katElem.appendChild(privkey);
 
         return katElem;
     }
 
     private Element kgtElement(KeyGeneratorTestable kgt) {
         Element kgtElem = doc.createElement("key-pair-generator");
+        kgtElem.setAttribute("algo", kgt.getKpg().getAlgorithm());
 
         Element keyPair = doc.createElement("key-pair");
-        Element pubkey = doc.createElement("pubkey");
         PublicKey pkey = kgt.getKeyPair().getPublic();
-        pubkey.setAttribute("algorithm", pkey.getAlgorithm());
-        pubkey.setAttribute("format", pkey.getFormat());
-        pubkey.setTextContent(ByteUtil.bytesToHex(pkey.getEncoded()));
+        Element pubkey = pkeyElement(pkey);
         keyPair.appendChild(pubkey);
 
-        Element privkey = doc.createElement("privkey");
         PrivateKey skey = kgt.getKeyPair().getPrivate();
-        privkey.setAttribute("algorithm", skey.getAlgorithm());
-        privkey.setAttribute("format", skey.getFormat());
-        privkey.setTextContent(ByteUtil.bytesToHex(skey.getEncoded()));
+        Element privkey = skeyElement(skey);
         keyPair.appendChild(privkey);
 
+        kgtElem.appendChild(keyPair);
         return kgtElem;
     }
 
     private Element sigElement(SignatureTestable sig) {
         Element sigElem = doc.createElement("signature");
         sigElem.setAttribute("verified", sig.getVerified() ? "true" : "false");
+        sigElem.setAttribute("algo", sig.getSig().getAlgorithm());
 
         Element raw = doc.createElement("raw");
         raw.setTextContent(ByteUtil.bytesToHex(sig.getSignature()));

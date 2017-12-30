@@ -36,6 +36,10 @@ public class SignatureTestable extends BaseTestable {
         this.kgt = kgt;
     }
 
+    public Signature getSig() {
+        return sig;
+    }
+
     public byte[] getData() {
         return data;
     }

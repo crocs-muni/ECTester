@@ -50,6 +50,18 @@ public class KeyAgreementTestable extends BaseTestable {
         this.kgtPublic = pubKgt;
     }
 
+    public KeyAgreement getKa() {
+        return ka;
+    }
+
+    public ECPublicKey getPublicKey() {
+        return publicKey;
+    }
+
+    public ECPrivateKey getPrivateKey() {
+        return privateKey;
+    }
+
     public byte[] getSecret() {
         if (!hasRun) {
             return null;

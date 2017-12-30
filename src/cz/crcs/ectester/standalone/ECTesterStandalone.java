@@ -2,6 +2,7 @@ package cz.crcs.ectester.standalone;
 
 import cz.crcs.ectester.common.cli.*;
 import cz.crcs.ectester.common.ec.EC_Curve;
+import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.TestException;
 import cz.crcs.ectester.common.test.TestRunner;
 import cz.crcs.ectester.common.util.ByteUtil;
@@ -12,6 +13,8 @@ import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
 import cz.crcs.ectester.standalone.consts.SignatureIdent;
 import cz.crcs.ectester.standalone.libs.*;
 import cz.crcs.ectester.standalone.output.TextTestWriter;
+import cz.crcs.ectester.standalone.output.XMLTestWriter;
+import cz.crcs.ectester.standalone.output.YAMLTestWriter;
 import cz.crcs.ectester.standalone.test.StandaloneDefaultSuite;
 import cz.crcs.ectester.standalone.test.StandaloneTestSuite;
 import org.apache.commons.cli.DefaultParser;
@@ -20,6 +23,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import javax.crypto.KeyAgreement;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -90,7 +94,7 @@ public class ECTesterStandalone {
                 export();
             }
 
-        } catch (ParseException | IOException ex) {
+        } catch (ParseException | ParserConfigurationException | IOException ex) {
             System.err.println(ex.getMessage());
         } catch (InvalidAlgorithmParameterException | InvalidParameterException e) {
             System.err.println("Invalid algorithm parameter: " + e.getMessage());
@@ -105,43 +109,49 @@ public class ECTesterStandalone {
     private TreeCommandLine parseArgs(String[] args) throws ParseException {
         Map<String, ParserOptions> actions = new TreeMap<>();
 
+        Option namedCurve = Option.builder("nc").longOpt("named-curve").desc("Use a named curve, from CurveDB: <cat/id>").hasArg().argName("cat/id").build();
+        Option bits = Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").build();
+
         Options testOpts = new Options();
-        ParserOptions test = new ParserOptions(new DefaultParser(), testOpts);
+        testOpts.addOption(bits);
+        testOpts.addOption(namedCurve);
         testOpts.addOption(Option.builder("gt").longOpt("kpg-type").desc("Set the KeyPairGenerator object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("kt").longOpt("ka-type").desc("Set the KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("st").longOpt("sig-type").desc("Set the Signature object [type].").hasArg().argName("type").optionalArg(false).build());
-        testOpts.addOption(Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").build());
-        testOpts.addOption(Option.builder("nc").longOpt("named-curve").desc("Use a named curve, from CurveDB: <cat/id>").hasArg().argName("cat/id").build());
+        testOpts.addOption(Option.builder("f").longOpt("format").desc("Set the output format, one of text,yaml,xml.").hasArg().argName("format").optionalArg(false).build());
+        List<Argument> testArgs = new LinkedList<>();
+        testArgs.add(new Argument("test_suite", "The test suite to run.", true));
+        ParserOptions test = new ParserOptions(new DefaultParser(), testOpts, testArgs);
         actions.put("test", test);
 
         Options ecdhOpts = new Options();
+        ecdhOpts.addOption(bits);
+        ecdhOpts.addOption(namedCurve);
         ecdhOpts.addOption(Option.builder("t").longOpt("type").desc("Set KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdhOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDH [amount] times.").build());
-        ecdhOpts.addOption(Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").build());
-        ecdhOpts.addOption(Option.builder("nc").longOpt("named-curve").desc("Use a named curve, from CurveDB: <cat/id>").hasArg().argName("cat/id").build());
         ParserOptions ecdh = new ParserOptions(new DefaultParser(), ecdhOpts);
         actions.put("ecdh", ecdh);
 
         Options ecdsaOpts = new Options();
+        ecdsaOpts.addOption(bits);
+        ecdsaOpts.addOption(namedCurve);
         ecdsaOpts.addOption(Option.builder("t").longOpt("type").desc("Set Signature object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdsaOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDSA [amount] times.").build());
-        ecdsaOpts.addOption(Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").build());
-        ecdsaOpts.addOption(Option.builder("nc").longOpt("named-curve").desc("Use a named curve, from CurveDB: <cat/id>").hasArg().argName("cat/id").build());
         ecdsaOpts.addOption(Option.builder("f").longOpt("file").hasArg().argName("file").optionalArg(false).desc("Input [file] to sign.").build());
         ParserOptions ecdsa = new ParserOptions(new DefaultParser(), ecdsaOpts);
         actions.put("ecdsa", ecdsa);
 
         Options generateOpts = new Options();
-        generateOpts.addOption(Option.builder("nc").longOpt("named-curve").desc("Use a named curve, from CurveDB: <cat/id>").hasArg().argName("cat/id").build());
+        generateOpts.addOption(bits);
+        generateOpts.addOption(namedCurve);
         generateOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Generate [amount] of EC keys.").build());
         generateOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPairGenerator object [type].").build());
-        generateOpts.addOption(Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").build());
         ParserOptions generate = new ParserOptions(new DefaultParser(), generateOpts);
         actions.put("generate", generate);
 
         Options exportOpts = new Options();
         exportOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPair object [type].").build());
-        exportOpts.addOption(Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").build());
+        exportOpts.addOption(bits);
         ParserOptions export = new ParserOptions(new DefaultParser(), exportOpts);
         actions.put("export", export);
 
@@ -403,9 +413,24 @@ public class ECTesterStandalone {
     /**
      *
      */
-    private void test() throws NoSuchAlgorithmException, TestException {
+    private void test() throws NoSuchAlgorithmException, TestException, ParserConfigurationException {
+        TestWriter writer;
+        switch (cli.getOptionValue("test.format", "text").toLowerCase()) {
+            case "yaml":
+            case "yml":
+                writer = new YAMLTestWriter(System.out);
+                break;
+            case "xml":
+                writer = new XMLTestWriter(System.out);
+                break;
+            case "text":
+            default:
+                writer = new TextTestWriter(System.out);
+                break;
+        }
+
         StandaloneTestSuite suite = new StandaloneDefaultSuite(dataStore, cfg, cli);
-        TestRunner runner = new TestRunner(suite, new TextTestWriter(System.out));
+        TestRunner runner = new TestRunner(suite, writer);
         suite.setup();
         runner.run();
     }
@@ -487,6 +512,15 @@ public class ECTesterStandalone {
                     return false;
                 } else {
                     selected = matchedLibs.get(0);
+                }
+            }
+
+            if (cli.hasOption("test.format")) {
+                String fmt = cli.getOptionValue("test.format");
+                String formats[] = new String[]{"text", "xml", "yaml", "yml"};
+                if (!Arrays.asList(formats).contains(fmt.toLowerCase())) {
+                    System.err.println("Invalid format specified.");
+                    return false;
                 }
             }
 
