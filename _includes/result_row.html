@@ -12,22 +12,43 @@
 {% capture hidden %}{% if include.depth > 1 %}display: none;{% endif %}{% endcapture %}
 {% capture color %}background-color: rgb({{color_channel}},{{color_channel}},{{color_channel}});{% endcapture %}
 
-{% if include.test.type == "simple" %}
-<tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
-    <td></td>
-    {{ ok }}
-    <td>{{ include.test.desc }}</td>
-    <td class="tooltip sw-tooltip" data-natural-sw="'{{ include.test.response.natural_sw }}'" data-sws="'{{ include.test.response.sws | join: ',' }}'">{{ include.test.result.value }}</td>
-</tr>
-{% else %}
-<tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
-    <td class="clickable" data-rows="{{ include.test.tests | size }}"><i class="fa fa-plus-square"></i></td>
-    {{ ok }}
-    <td><i class="fa fa-clone"></i> {{ include.test.desc }}</td>
-    <td>{{ include.test.result.value }}</td>
-</tr>
-{% assign new_depth=include.depth | plus: 1 %}
-{% for test in include.test.tests %}
-    {% include result_row.html test=test depth=new_depth %}
-{% endfor %}
+{% if include.test.type == "command" %}
+	<tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
+	    <td></td>
+	    {{ ok }}
+	    <td>{{ include.test.desc }}</td>
+	    <td class="tooltip sw-tooltip" data-natural-sw="'{{ include.test.response.natural_sw }}'" data-sws="'{{ include.test.response.sws | join: ',' }}'">{{ include.test.result.value }}</td>
+	</tr>
+{% elsif include.test.type == "compound" %}
+	<tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
+	    <td class="clickable" data-rows="{{ include.test.tests | size }}"><i class="fa fa-plus-square"></i></td>
+	    {{ ok }}
+	    <td><i class="fa fa-clone"></i> {{ include.test.desc }}</td>
+	    <td>{{ include.test.result.value }}</td>
+	</tr>
+	{% assign new_depth=include.depth | plus: 1 %}
+	{% for test in include.test.tests %}
+	    {% include result_row.html test=test depth=new_depth %}
+	{% endfor %}
+{% elsif include.test.type == "key-pair-generator" %}
+	<tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
+		<td></td>
+		{{ ok }}
+		<td>{{ include.test.desc }}</td>
+		<td class="tooltip kpg-tooltip" data-pubkey="{{ include.test.key-pair-generator.pubkey.raw }}" data-privkey="{{ include.test.key-pair-generator.privkey.raw }}">{{ include.test.result.value }}</td>
+	</tr>
+{% elsif include.test.type == "key-agreement" %}
+	<tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
+		<td></td>
+		{{ ok }}
+		<td>{{ include.test.desc }}</td>
+		<td class="tooltip ka-tooltip" data-pubkey="{{ include.test.key-agreement.pubkey.raw }}" data-privkey="{{ include.test.key-agreement.privkey.raw }}" data-secret="{{ include.test.key-agreement.secret }}">{{ include.test.result.value }}</td>
+	</tr>
+{% elsif include.test.type == "signature" %}
+	<tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
+		<td></td>
+		{{ ok }}
+		<td>{{ include.test.desc }}</td>
+		<td class="tooltip sig-tooptip" data-signature="{{ include.test.signature.raw }}">{{ include.test.result.value }}</td>
+	</tr>
 {% endif %}

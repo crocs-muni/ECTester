@@ -23,7 +23,7 @@ testRun:
         - 36864
         successful: true
         desc: Allocated both keypairs 163b ALG_EC_F2M
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 00 a3 04
       desc: Allocated both keypairs 163b ALG_EC_F2M
@@ -40,7 +40,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff 82 00 7e 00 08 00 a3 00 07 00 06 00 03 00 15 00 00 00 00
           00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 15 02 0a 60 19 07
@@ -61,7 +61,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 19 01 00 00 15 03 ed ae 17 3d e8 fa 0c f0 41 2d 6a 7b dc
           81 fd bd 06 17 ad f8
@@ -78,7 +78,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 2f 00 80 00 2b 04 03 a6 47 ba 32 da c7 1e c6 78 0b 06 38
           a7 0c d2 4f c3 bd 4c 8e 02 e6 9e 96 15 41 84 4a 4a a3 37 69 a7 bc e7 10
@@ -97,7 +97,7 @@ testRun:
         - 36864
         successful: true
         desc: ECDHC of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
       desc: ECDHC of remote pubkey and local privkey(unchanged point)
@@ -115,7 +115,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -137,7 +137,7 @@ testRun:
         - 1
         successful: false
         desc: Allocated both keypairs 233b ALG_EC_F2M
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 00 e9 04
       desc: Allocated both keypairs 233b ALG_EC_F2M
@@ -154,7 +154,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff ab 00 7e 00 04 00 e9 00 4a 00 1e 00 00 00 00 00 00 00 00
           00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 1e
@@ -177,7 +177,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 22 01 00 00 1e 00 3c 3e e4 74 ac 0d 0b c1 df 56 7e 3c 35
           f5 f7 66 c5 33 2b 2d 67 30 ff 0e 4d 8e 75 ae db
@@ -194,7 +194,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 41 00 80 00 3d 04 00 47 56 ba dd ef c3 dc 33 7a b2 7b 54
           52 eb 10 af fd 9e 31 f5 b5 5c 33 0e 90 f0 f6 86 a2 01 2a 79 f6 52 32 30
@@ -212,7 +212,7 @@ testRun:
         - 3811
         successful: false
         desc: ECDHC of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
       desc: ECDHC of remote pubkey and local privkey(unchanged point)
@@ -230,7 +230,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -252,7 +252,7 @@ testRun:
         - 1
         successful: false
         desc: Allocated both keypairs 283b ALG_EC_F2M
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 01 1b 04
       desc: Allocated both keypairs 283b ALG_EC_F2M
@@ -269,7 +269,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff cd 00 7e 00 08 01 1b 00 0c 00 07 00 05 00 24 00 00 00 00
           00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
@@ -293,7 +293,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 28 01 00 00 24 02 f4 34 55 84 22 46 a2 cc 8e c0 68 e9 d6
           c6 e4 16 0f 6b a4 e3 b5 d8 31 d9 3c 1d aa 8f d3 d5 a9 66 0c 7b b1
@@ -310,7 +310,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 4d 00 80 00 49 04 02 50 4e 1a 17 81 9d 39 f0 10 a4 a6 9a
           05 68 29 94 02 b5 8f 94 4a 38 4c 7d 1a 62 c9 c9 3e a4 d1 ff 30 0e 13 02
@@ -329,7 +329,7 @@ testRun:
         - 3811
         successful: false
         desc: ECDHC of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
       desc: ECDHC of remote pubkey and local privkey(unchanged point)
@@ -347,7 +347,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -369,7 +369,7 @@ testRun:
         - 1
         successful: false
         desc: Allocated both keypairs 409b ALG_EC_F2M
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 01 99 04
       desc: Allocated both keypairs 409b ALG_EC_F2M
@@ -386,7 +386,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff 00 01 19 00 7e 00 04 01 99 00 57 00 34 00 00 00 00 00 00
           00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
@@ -414,7 +414,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 38 01 00 00 34 00 ac e9 21 03 ff e2 62 ac 17 ad 42 a4 6d
           43 66 f4 cb 4c 58 0e ff 3a b1 dd e6 bd df db b7 37 48 11 d5 2b 1f a9 93
@@ -432,7 +432,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 6d 00 80 00 69 04 01 46 98 9a 50 29 7b e3 73 dd 66 5c 45
           45 5a 2a e4 c2 21 da 5c d4 24 00 7b d9 7f 9e 8e 84 6f 96 74 0f 3f a5 8c
@@ -452,7 +452,7 @@ testRun:
         - 3811
         successful: false
         desc: ECDHC of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
       desc: ECDHC of remote pubkey and local privkey(unchanged point)
@@ -470,7 +470,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -492,7 +492,7 @@ testRun:
         - 1
         successful: false
         desc: Allocated both keypairs 571b ALG_EC_F2M
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 02 3b 04
       desc: Allocated both keypairs 571b ALG_EC_F2M
@@ -509,7 +509,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff 00 01 81 00 7e 00 08 02 3b 00 0a 00 05 00 02 00 48 00 00
           00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
@@ -541,7 +541,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 4c 01 00 00 48 03 44 f2 2b e8 79 99 b9 5b 22 87 f6 74 30
           ea 8f e6 46 c6 2f e3 8b 7c e6 1f 1f 95 65 97 c2 7b dd d9 90 2e 20 d4 43
@@ -560,7 +560,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 95 00 80 00 91 04 03 b6 3f 5f a1 12 ae 6b 5f 11 3c 76 51
           44 fe 4c bd 60 20 e2 6d 40 0c 11 60 9a 3a 63 4b 9a 32 5f 41 6b 0e 3d 32
@@ -582,7 +582,7 @@ testRun:
         - 3811
         successful: false
         desc: ECDHC of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
       desc: ECDHC of remote pubkey and local privkey(unchanged point)
@@ -600,7 +600,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -622,7 +622,7 @@ testRun:
         - 1
         successful: false
         desc: Allocated both keypairs 224b ALG_EC_FP
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 00 e0 05
       desc: Allocated both keypairs 224b ALG_EC_FP
@@ -639,7 +639,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff b9 00 7d 00 1c d7 c1 34 aa 26 43 66 86 2a 18 30 25 75 d1
           d7 87 b0 9f 07 57 97 da 89 f5 7e c8 c0 ff 00 1c 68 a5 e6 2c a9 ce 6c 1c
@@ -662,7 +662,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 20 01 00 00 1c 7c 4b 7a 2c 8a 4b ad 1f bb 7d 79 cc 09 55
           db 7c 6a 46 60 ca 64 cc 47 78 15 9b 49 5e
@@ -679,7 +679,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 3d 00 80 00 39 04 2a 97 08 9a 92 96 14 7b 71 b2 1a 4b 57
           4e 12 78 24 5b 53 6f 14 d8 c2 b9 d0 7a 87 4e 9b 90 0d 7c 77 a7 09 a7 97
@@ -697,7 +697,7 @@ testRun:
         - 3811
         successful: false
         desc: ECDH of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 01
       desc: ECDH of remote pubkey and local privkey(unchanged point)
@@ -715,7 +715,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -737,7 +737,7 @@ testRun:
         - 36864
         successful: true
         desc: Allocated both keypairs 256b ALG_EC_FP
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 01 00 05
       desc: Allocated both keypairs 256b ALG_EC_FP
@@ -754,7 +754,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff d1 00 7d 00 20 a9 fb 57 db a1 ee a9 bc 3e 66 0a 90 9d 83
           8d 72 6e 3b f6 23 d5 26 20 28 20 13 48 1d 1f 6e 53 77 00 20 7d 5a 09 75
@@ -778,7 +778,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 24 01 00 00 20 81 db 1e e1 00 15 0f f2 ea 33 8d 70 82 71
           be 38 30 0c b5 42 41 d7 99 50 f7 7b 06 30 39 80 4f 1d
@@ -795,7 +795,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 45 00 80 00 41 04 8d 2d 68 8c 6c f9 3e 11 60 ad 04 cc 44
           29 11 7d c2 c4 18 25 e1 e9 fc a0 ad dd 34 e6 f1 b3 9f 7b 99 0c 57 52 08
@@ -816,7 +816,7 @@ testRun:
         - 36864
         successful: true
         desc: ECDH of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 01
       desc: ECDH of remote pubkey and local privkey(unchanged point)
@@ -834,7 +834,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -856,7 +856,7 @@ testRun:
         - 1
         successful: false
         desc: Allocated both keypairs 384b ALG_EC_FP
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 01 80 05
       desc: Allocated both keypairs 384b ALG_EC_FP
@@ -873,7 +873,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff 00 01 31 00 7d 00 30 8c b9 1e 82 a3 38 6d 28 0f 5d 6f 7e
           50 e6 41 df 15 2f 71 09 ed 54 56 b4 12 b1 da 19 7f b7 11 23 ac d3 a7 29
@@ -902,7 +902,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 34 01 00 00 30 1e 20 f5 e0 48 a5 88 6f 1f 15 7c 74 e9 1b
           de 2b 98 c8 b5 2d 58 e5 00 3d 57 05 3f c4 b0 bd 65 d6 f1 5e b5 d1 ee 16
@@ -920,7 +920,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 65 00 80 00 61 04 4d 44 32 6f 26 9a 59 7a 5b 58 bb a5 65
           da 55 56 ed 7f d9 a8 a9 eb 76 c2 5f 46 db 69 d1 9d c8 ce 6a d1 8e 40 4b
@@ -940,7 +940,7 @@ testRun:
         - 3811
         successful: false
         desc: ECDH of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 01
       desc: ECDH of remote pubkey and local privkey(unchanged point)
@@ -958,7 +958,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -980,7 +980,7 @@ testRun:
         - 1
         successful: false
         desc: Allocated both keypairs 512b ALG_EC_FP
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 02 00 05
       desc: Allocated both keypairs 512b ALG_EC_FP
@@ -997,7 +997,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff 00 01 91 00 7d 00 40 aa dd 9d b8 db e9 c4 8b 3f d4 e6 ae
           33 c9 fc 07 cb 30 8d b3 b3 c9 d2 0e d6 63 9c ca 70 33 08 71 7d 4d 9b 00
@@ -1030,7 +1030,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 44 01 00 00 40 16 30 2f f0 db bb 5a 8d 73 3d ab 71 41 c1
           b4 5a cb c8 71 59 39 67 7f 6a 56 85 0a 38 bd 87 bd 59 b0 9e 80 27 96 09
@@ -1049,7 +1049,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 85 00 80 00 81 04 9d 45 f6 6d e5 d6 7e 2e 6d b6 e9 3a 59
           ce 0b b4 81 06 09 7f f7 8a 08 1d e7 81 cd b3 1f ce 8c cb aa ea 8d d4 32
@@ -1070,7 +1070,7 @@ testRun:
         - 3811
         successful: false
         desc: ECDH of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 01
       desc: ECDH of remote pubkey and local privkey(unchanged point)
@@ -1088,7 +1088,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -1110,7 +1110,7 @@ testRun:
         - 36864
         successful: true
         desc: Allocated both keypairs 163b ALG_EC_F2M
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 00 a3 04
       desc: Allocated both keypairs 163b ALG_EC_F2M
@@ -1127,7 +1127,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff 82 00 7e 00 08 00 a3 00 07 00 06 00 03 00 15 00 00 00 00
           00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 15 02 0a 60 19 07
@@ -1148,7 +1148,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 19 01 00 00 15 00 66 53 b6 07 73 98 fa dc 7b f5 e6 01 58
           17 01 48 c3 dc 45 27
@@ -1165,7 +1165,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 2f 00 80 00 2b 04 05 74 23 6f 14 28 c4 32 13 09 46 78 3a
           5b 3a ab b6 c2 7e a5 d6 07 90 8c 25 1b 8d a0 21 cb ac 28 1f 12 3f 7a f4
@@ -1184,7 +1184,7 @@ testRun:
         - 36864
         successful: true
         desc: ECDHC of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
       desc: ECDHC of remote pubkey and local privkey(unchanged point)
@@ -1202,7 +1202,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -1224,7 +1224,7 @@ testRun:
         - 1
         successful: false
         desc: Allocated both keypairs 233b ALG_EC_F2M
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 00 e9 04
       desc: Allocated both keypairs 233b ALG_EC_F2M
@@ -1241,7 +1241,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff ab 00 7e 00 04 00 e9 00 4a 00 1e 00 00 00 00 00 00 00 00
           00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 1e
@@ -1264,7 +1264,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 22 01 00 00 1e 00 13 5a 5b 8c 3c e0 47 fb c5 df 26 27 7d
           3b f8 3a c3 3d da db 5c f4 a0 50 ca 82 be 48 f0
@@ -1281,7 +1281,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 41 00 80 00 3d 04 01 f4 0e 34 b3 ed 4a 1b 2d 40 c0 56 fb
           75 f2 ad 54 3c 89 7c fd 82 f5 42 cf 74 6a 0f 20 2f 00 c1 30 a1 ab e9 2b
@@ -1299,7 +1299,7 @@ testRun:
         - 3811
         successful: false
         desc: ECDHC of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
       desc: ECDHC of remote pubkey and local privkey(unchanged point)
@@ -1317,7 +1317,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -1339,7 +1339,7 @@ testRun:
         - 1
         successful: false
         desc: Allocated both keypairs 283b ALG_EC_F2M
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 01 1b 04
       desc: Allocated both keypairs 283b ALG_EC_F2M
@@ -1356,7 +1356,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff cd 00 7e 00 08 01 1b 00 0c 00 07 00 05 00 24 00 00 00 00
           00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
@@ -1380,7 +1380,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 28 01 00 00 24 01 5f de 49 b8 02 54 2a 52 c7 0b 23 a0 b1
           78 4e 5f 87 80 b5 68 53 f9 a5 f8 c3 a5 26 6e 87 27 dc e9 7d 4a 17
@@ -1397,7 +1397,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 4d 00 80 00 49 04 03 f0 75 c2 4c 35 a9 dc 99 52 be 6f d3
           2b 76 1d ce 63 f4 72 0a 22 40 8e 3a 14 bb d0 97 e0 12 b5 69 4c 22 a0 06
@@ -1416,7 +1416,7 @@ testRun:
         - 3811
         successful: false
         desc: ECDHC of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
       desc: ECDHC of remote pubkey and local privkey(unchanged point)
@@ -1434,7 +1434,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -1456,7 +1456,7 @@ testRun:
         - 1
         successful: false
         desc: Allocated both keypairs 409b ALG_EC_F2M
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 01 99 04
       desc: Allocated both keypairs 409b ALG_EC_F2M
@@ -1473,7 +1473,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff 00 01 19 00 7e 00 04 01 99 00 57 00 34 00 00 00 00 00 00
           00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
@@ -1501,7 +1501,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 38 01 00 00 34 00 08 4b 71 1e 3c 60 82 2e 70 fa 68 28 b5
           ab fb 0e 44 88 88 b3 5b 0c 8b b0 9f 80 66 16 dc 1e cf 22 dd 86 23 7d 93
@@ -1519,7 +1519,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 6d 00 80 00 69 04 01 77 f7 36 f6 11 63 20 ca fb b5 b4 de
           c2 02 d4 05 08 18 2f e0 11 18 9b 81 e1 f3 99 8f 54 08 60 7a 46 bb 15 0a
@@ -1539,7 +1539,7 @@ testRun:
         - 3811
         successful: false
         desc: ECDHC of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
       desc: ECDHC of remote pubkey and local privkey(unchanged point)
@@ -1557,7 +1557,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -1579,7 +1579,7 @@ testRun:
         - 1
         successful: false
         desc: Allocated both keypairs 571b ALG_EC_F2M
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 02 3b 04
       desc: Allocated both keypairs 571b ALG_EC_F2M
@@ -1596,7 +1596,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff 00 01 81 00 7e 00 08 02 3b 00 0a 00 05 00 02 00 48 00 00
           00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
@@ -1628,7 +1628,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 4c 01 00 00 48 01 73 cd 16 31 e1 8e ce 01 b7 3b 35 72 ff
           aa 74 95 c4 bc 81 f4 07 8a e5 0d 69 cb 1e 33 8a cf 13 46 91 17 11 29 21
@@ -1647,7 +1647,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 95 00 80 00 91 04 03 10 6a 5c 1d 92 3a 09 90 ea 8c 60 08
           c3 6c 36 6b 53 e5 62 2b 98 46 40 44 74 1f bc 78 40 28 4d b8 bb f6 02 86
@@ -1669,7 +1669,7 @@ testRun:
         - 3811
         successful: false
         desc: ECDHC of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
       desc: ECDHC of remote pubkey and local privkey(unchanged point)
@@ -1687,7 +1687,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -1709,7 +1709,7 @@ testRun:
         - 36864
         successful: true
         desc: Allocated both keypairs 192b ALG_EC_FP
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 00 c0 05
       desc: Allocated both keypairs 192b ALG_EC_FP
@@ -1726,7 +1726,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff a1 00 7d 00 18 ff ff ff ff ff ff ff ff ff ff ff ff ff ff
           ff fe ff ff ff ff ff ff ff ff 00 18 ff ff ff ff ff ff ff ff ff ff ff ff
@@ -1748,7 +1748,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 1c 01 00 00 18 f1 7d 3f ea 36 7b 74 d3 40 85 1c a4 27 0d
           cb 24 c2 71 f4 45 be d9 d5 27
@@ -1765,7 +1765,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 35 00 80 00 31 04 42 ea 6d d9 96 9d d2 a6 1f ea 1a ac 7f
           8e 98 ed cc 89 6c 6e 55 85 7c c0 df be 5d 7c 61 fa c8 8b 11 81 1b de 32
@@ -1785,7 +1785,7 @@ testRun:
         - 36864
         successful: true
         desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 04
       desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
@@ -1803,7 +1803,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -1825,7 +1825,7 @@ testRun:
         - 1
         successful: false
         desc: Allocated both keypairs 224b ALG_EC_FP
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 00 e0 05
       desc: Allocated both keypairs 224b ALG_EC_FP
@@ -1842,7 +1842,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff b9 00 7d 00 1c ff ff ff ff ff ff ff ff ff ff ff ff ff ff
           ff ff 00 00 00 00 00 00 00 00 00 00 00 01 00 1c ff ff ff ff ff ff ff ff
@@ -1865,7 +1865,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 20 01 00 00 1c 83 46 a6 0f c6 f2 93 ca 5a 0d 2a f6 8b a7
           1d 1d d3 89 e5 e4 08 37 94 2d f3 e4 3c bd
@@ -1882,7 +1882,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 3d 00 80 00 39 04 af 33 cd 06 29 bc 7e 99 63 20 a3 f4 03
           68 f7 4d e8 70 4f a3 7b 8f ab 69 ab aa e2 80 88 20 92 cc bb a7 93 0f 41
@@ -1900,7 +1900,7 @@ testRun:
         - 3811
         successful: false
         desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 04
       desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
@@ -1918,7 +1918,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -1940,7 +1940,7 @@ testRun:
         - 36864
         successful: true
         desc: Allocated both keypairs 256b ALG_EC_FP
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 01 00 05
       desc: Allocated both keypairs 256b ALG_EC_FP
@@ -1957,7 +1957,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff d1 00 7d 00 20 ff ff ff ff 00 00 00 01 00 00 00 00 00 00
           00 00 00 00 00 00 ff ff ff ff ff ff ff ff ff ff ff ff 00 20 ff ff ff ff
@@ -1981,7 +1981,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 24 01 00 00 20 7d 7d c5 f7 1e b2 9d da f8 0d 62 14 63 2e
           ea e0 3d 90 58 af 1f b6 d2 2e d8 0b ad b6 2b c1 a5 34
@@ -1998,7 +1998,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 45 00 80 00 41 04 70 0c 48 f7 7f 56 58 4c 5c c6 32 ca 65
           64 0d b9 1b 6b ac ce 3a 4d f6 b4 2c e7 cc 83 88 33 d2 87 db 71 e5 09 e3
@@ -2018,7 +2018,7 @@ testRun:
         - 36864
         successful: true
         desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 04
       desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
@@ -2036,7 +2036,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -2058,7 +2058,7 @@ testRun:
         - 1
         successful: false
         desc: Allocated both keypairs 384b ALG_EC_FP
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 01 80 05
       desc: Allocated both keypairs 384b ALG_EC_FP
@@ -2075,7 +2075,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff 00 01 31 00 7d 00 30 ff ff ff ff ff ff ff ff ff ff ff ff
           ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff fe ff ff ff ff
@@ -2104,7 +2104,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 34 01 00 00 30 3c c3 12 2a 68 f0 d9 50 27 ad 38 c0 67 91
           6b a0 eb 8c 38 89 4d 22 e1 b1 56 18 b6 81 8a 66 17 74 ad 46 3b 20 5d a8
@@ -2122,7 +2122,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 65 00 80 00 61 04 a7 c7 6b 97 0c 3b 5f e8 b0 5d 28 38 ae
           04 ab 47 69 7b 9e af 52 e7 64 59 2e fd a2 7f e7 51 32 72 73 44 66 b4 00
@@ -2142,7 +2142,7 @@ testRun:
         - 3811
         successful: false
         desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 04
       desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
@@ -2160,7 +2160,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -2182,7 +2182,7 @@ testRun:
         - 1
         successful: false
         desc: Allocated both keypairs 521b ALG_EC_FP
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 02 09 05
       desc: Allocated both keypairs 521b ALG_EC_FP
@@ -2199,7 +2199,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff 00 01 9d 00 7d 00 42 01 ff ff ff ff ff ff ff ff ff ff ff
           ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
@@ -2232,7 +2232,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 46 01 00 00 42 01 7e ec c0 7a b4 b3 29 06 8f ba 65 e5 6a
           1f 88 90 aa 93 5e 57 13 4a e0 ff cc e8 02 73 51 51 f4 ea c6 56 4f 6e e9
@@ -2251,7 +2251,7 @@ testRun:
         - 3811
         successful: false
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 89 00 80 00 85 04 00 68 5a 48 e8 6c 79 f0 f0 87 5f 7b c1
           8d 25 eb 5f c8 c0 b0 7e 5d a4 f4 37 0f 3a 94 90 34 08 54 33 4b 1e 1b 87
@@ -2272,7 +2272,7 @@ testRun:
         - 3811
         successful: false
         desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 04
       desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
@@ -2290,7 +2290,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -2312,7 +2312,7 @@ testRun:
         - 36864
         successful: true
         desc: Allocated both keypairs 160b ALG_EC_FP
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 00 a0 05
       desc: Allocated both keypairs 160b ALG_EC_FP
@@ -2329,7 +2329,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff 8a 00 7d 00 14 ff ff ff ff ff ff ff ff ff ff ff ff ff ff
           ff ff 7f ff ff ff 00 14 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
@@ -2350,7 +2350,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 18 01 00 00 14 aa 37 4f fc 3c e1 44 e6 b0 73 30 79 72 cb
           6d 57 b2 a4 e9 82
@@ -2367,7 +2367,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 2d 00 80 00 29 04 49 b4 1e 0e 9c 03 69 c2 32 87 39 d9 0f
           63 d5 67 07 c6 e5 bc 26 e0 08 b5 67 01 5e d9 6d 23 2a 03 11 1c 3e dc 0e
@@ -2387,7 +2387,7 @@ testRun:
         - 36864
         successful: true
         desc: ECDH of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 01
       desc: ECDH of remote pubkey and local privkey(unchanged point)
@@ -2405,7 +2405,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion
@@ -2427,7 +2427,7 @@ testRun:
         - 36864
         successful: true
         desc: Allocated both keypairs 163b ALG_EC_F2M
-      type: simple
+      type: command
       command:
         apdu: b0 5a 03 00 03 00 a3 04
       desc: Allocated both keypairs 163b ALG_EC_F2M
@@ -2444,7 +2444,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external curve parameters on both keypairs
-      type: simple
+      type: command
       command:
         apdu: b0 5c 03 ff 82 00 7e 00 08 00 a3 00 07 00 06 00 03 00 15 00 00 00 00
           00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 15 00 00 00 00 00
@@ -2465,7 +2465,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external privkey parameters on local keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 01 ff 19 01 00 00 15 03 a4 14 34 aa 99 c2 ef 40 c8 49 5b 2e d9
           73 9c b2 15 5a 1e 0d
@@ -2482,7 +2482,7 @@ testRun:
         - 36864
         successful: true
         desc: Set external pubkey parameters on remote keypair
-      type: simple
+      type: command
       command:
         apdu: b0 5c 02 ff 2f 00 80 00 2b 04 07 27 83 fa ab 95 49 00 2b 4f 13 14 0b
           88 13 2d 1c 75 b3 88 6c 05 a9 76 79 4e a7 9a 4d e2 6e 2e 19 41 8f 09 79
@@ -2501,7 +2501,7 @@ testRun:
         - 36864
         successful: true
         desc: ECDH of remote pubkey and local privkey(unchanged point)
-      type: simple
+      type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 01
       desc: ECDH of remote pubkey and local privkey(unchanged point)
@@ -2519,7 +2519,7 @@ testRun:
       - 36864
       successful: true
       desc: Requested JCSystem object deletion
-    type: simple
+    type: command
     command:
       apdu: b0 73 00 00
     desc: Requested JCSystem object deletion

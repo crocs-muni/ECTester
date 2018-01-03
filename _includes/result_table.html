@@ -28,9 +28,7 @@
 </table>
 
 <script>
-    /**
-     *
-     */
+    // Let compound tests expand their children.
     $(".clickable").click(function () {
         var parent = $(this).parent();
         var parent_depth = parent.data("depth");
@@ -46,11 +44,13 @@
         });
         $(this).children().toggleClass("fa-plus-square").toggleClass("fa-minus-square");
     });
+    // Common settings of all tooltips.
     var common_tooltip = {
         position: {
             my: "left center",
             at: "right center"
         },
+        // Let the tooltip stay up if the mouse is over it.
         show: null,
         hide: {
             effect: ""
@@ -85,5 +85,35 @@
         content: function () {
             return $(this).data("cause");
         }
+    }));
+    $(".kpg-tooltip").tooltip($.extend({}, common_tooltip, {
+    	items: ".kpg-tooltip",
+    	content: function () {
+    		var pubkey = $(this).data("pubkey");
+    		var privkey = $(this).data("privkey");
+    		var pubkey_label = $("<b>Public key:</b>");
+    		var privkey_label = $("<b>Private key:</b>");
+    		return pubkey_label.add($("<span></span>").text(pubkey)).add($("<br/")).add(privkey_label).add($("<span></span>").text(privkey));
+    	}
+    }));
+    $(".ka-tooltip").tooltip($.extend({}, common_tooltip, {
+    	items: ".ka-tooltip",
+    	content: function () {
+    		var pubkey = $(this).data("pubkey");
+    		var privkey = $(this).data("privkey");
+    		var secret = $(this).data("secret");
+    		var pubkey_label = $("<b>Public key:</b>");
+    		var privkey_label = $("<b>Private key:</b>");
+    		var secret_label = $("<b>Derived secret:</b>");
+    		return pubkey_label.add($("<span></span>").text(pubkey)).add($("<br/>")).add(privkey_label).add($("<span></span>").text(privkey)).add(secret_label).add($("<span></span>").text(secret));
+    	}
+    }));
+    $(".sig-tooltip").tooltip($.extend({}, common_tooltip, {
+    	items: ".kig-tooltip",
+    	content: function () {
+    		var sig = $(this).data("signature");
+    		var sig_label = $("<b>Public key:</b>");
+    		return sig_label.add($("<span></span>").text(sig));
+    	}
     }));
 </script>
