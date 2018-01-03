@@ -35,7 +35,7 @@
 		<td></td>
 		{{ ok }}
 		<td>{{ include.test.desc }}</td>
-		<td class="tooltip kpg-tooltip" data-pubkey="{{ include.test.key-pair-generator.pubkey.raw }}" data-privkey="{{ include.test.key-pair-generator.privkey.raw }}">{{ include.test.result.value }}</td>
+		<td class="tooltip kpg-tooltip" data-pubkey="{{ include.test.key-pair-generator.keypair.pubkey.raw }}" data-privkey="{{ include.test.key-pair-generator.keypair.privkey.raw }}">{{ include.test.result.value }}</td>
 	</tr>
 {% elsif include.test.type == "key-agreement" %}
 	<tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
@@ -49,6 +49,6 @@
 		<td></td>
 		{{ ok }}
 		<td>{{ include.test.desc }}</td>
-		<td class="tooltip sig-tooptip" data-signature="{{ include.test.signature.raw }}">{{ include.test.result.value }}</td>
+		<td class="tooltip sig-tooltip" data-signature="{{ include.test.signature.raw }}">{{ include.test.result.value }}</td>
 	</tr>
 {% endif %}

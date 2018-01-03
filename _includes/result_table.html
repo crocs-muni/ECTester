@@ -71,8 +71,7 @@
         content: function () {
             var natural_sw = $(this).data("natural-sw").replace(/'/g, "");
             var sws = $(this).data("sws").replace(/'/g, "").split(",");
-            sws.pop();
-            sws = sws.map(parseInt).map(function (t) { return "0x" + t.toString(16); }).join(" ");
+            sws = sws.map(function (t) { return "0x" + parseInt(t).toString(16); }).join(" ");
             var nat_sws = $("<span></span>").text("0x" + parseInt(natural_sw).toString(16));
             var ectester_sws = $("<span></span>").text(sws);
             var natural_label = $("<b>Natural SW:</b>");
@@ -93,7 +92,7 @@
     		var privkey = $(this).data("privkey");
     		var pubkey_label = $("<b>Public key:</b>");
     		var privkey_label = $("<b>Private key:</b>");
-    		return pubkey_label.add($("<span></span>").text(pubkey)).add($("<br/")).add(privkey_label).add($("<span></span>").text(privkey));
+    		return pubkey_label.add($("<span></span>").text(pubkey)).add($("<br/>")).add(privkey_label).add($("<span></span>").text(privkey));
     	}
     }));
     $(".ka-tooltip").tooltip($.extend({}, common_tooltip, {
@@ -105,14 +104,14 @@
     		var pubkey_label = $("<b>Public key:</b>");
     		var privkey_label = $("<b>Private key:</b>");
     		var secret_label = $("<b>Derived secret:</b>");
-    		return pubkey_label.add($("<span></span>").text(pubkey)).add($("<br/>")).add(privkey_label).add($("<span></span>").text(privkey)).add(secret_label).add($("<span></span>").text(secret));
+    		return pubkey_label.add($("<span></span>").text(pubkey)).add($("<br/>")).add(privkey_label).add($("<span></span>").text(privkey)).add($("<br/>")).add(secret_label).add($("<span></span>").text(secret));
     	}
     }));
     $(".sig-tooltip").tooltip($.extend({}, common_tooltip, {
-    	items: ".kig-tooltip",
+    	items: ".sig-tooltip",
     	content: function () {
     		var sig = $(this).data("signature");
-    		var sig_label = $("<b>Public key:</b>");
+    		var sig_label = $("<b>Signature:</b>");
     		return sig_label.add($("<span></span>").text(sig));
     	}
     }));
