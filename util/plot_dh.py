@@ -20,6 +20,7 @@ from operator import itemgetter
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Plot ECTester ECDH timing.")
     parser.add_argument("-o", "--output", dest="output", type=argparse.FileType("wb"), help="Write image to [file], do not display.", metavar="file")
+    parser.add_argument("--skip-first", dest="skip_first", action="store_true", help="Skip first entry, as it's usually a large outlier.")
     parser.add_argument("file", type=str, help="The file to plot(csv).")
 
     opts = parser.parse_args()
@@ -30,6 +31,8 @@ if __name__ == "__main__":
 
     hx = lambda x: int(x, 16)
     data = np.genfromtxt(opts.file, delimiter=";", skip_header=1, converters={2: hx, 3: hx, 4: hx}, dtype=np.dtype([("index","u4"), ("time","u4"), ("pub", "O"), ("priv", "O"), ("secret","O")]))
+    if opts.skip_first:
+        data = data[1:]
 
     if "nano" in header_names[1]:
         unit = r"$\mu s$"

@@ -229,11 +229,6 @@ static ltc_ecc_set_type* create_curve(JNIEnv *env, jobject params) {
     return curve;
 }
 
-static void throw_new(JNIEnv *env, const char *class, const char *message) {
-    jclass clazz = (*env)->FindClass(env, class);
-    (*env)->ThrowNew(env, clazz, message);
-}
-
 static jobject generate_from_curve(JNIEnv *env, const ltc_ecc_set_type *curve) {
     ecc_key key;
     int err;
@@ -280,6 +275,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
     }
 
     if (curve->size == 0) {
+        throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve for given bitsize not found.");
         return NULL;
     }
 
@@ -307,6 +303,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
 
         return generate_from_curve(env, curve);
     } else {
+        throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
         return NULL;
     }
 }

@@ -52,3 +52,8 @@ void init_classes(JNIEnv *env, std::string lib_name) {
     jclass local_illegal_state_exception_class = env->FindClass("java/lang/IllegalStateException");
     illegal_state_exception_class = (jclass) env->NewGlobalRef(local_illegal_state_exception_class);
 }
+
+void throw_new(JNIEnv *env, const std::string& klass, const std::string& message) {
+    jclass clazz = env->FindClass(klass.c_str());
+    env->ThrowNew(clazz, message.c_str());
+}

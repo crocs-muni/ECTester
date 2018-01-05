@@ -23,6 +23,7 @@ if __name__ == "__main__":
     parser.add_argument("--pub", dest="pub", action="store_true", help="Show public key scatter plot.")
     parser.add_argument("--priv", dest="priv", action="store_true", help="Show private key scatter plot.")
     parser.add_argument("--hist", dest="hist", action="store_true", help="Show histogram.")
+    parser.add_argument("--skip-first", dest="skip_first", action="store_true", help="Skip first entry, as it's usually a large outlier.")
     parser.add_argument("file", type=str, help="The file to plot(csv).")
 
     opts = parser.parse_args()
@@ -39,6 +40,8 @@ if __name__ == "__main__":
 
     hx = lambda x: int(x, 16)
     data = np.genfromtxt(opts.file, delimiter=";", skip_header=1, converters={2: hx, 3: hx}, dtype=np.dtype([("index","u4"), ("time","u4"), ("pub", "O"), ("priv", "O")]))
+    if opts.skip_first:
+        data = data[1:]
 
     if "nano" in header_names[1]:
         unit = r"$\mu s$"

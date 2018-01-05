@@ -347,14 +347,19 @@ static jobject generate_from_group(JNIEnv* env, jobject self, Botan::EC_Group gr
     env->ReleaseStringUTFChars(type, type_data);
 
     std::unique_ptr<Botan::EC_PrivateKey> skey;
-    if (type_str == "ECDH") {
-        skey = std::make_unique<Botan::ECDH_PrivateKey>(rng, group);
-    } else if (type_str == "ECDSA") {
-        skey = std::make_unique<Botan::ECDSA_PrivateKey>(rng, group);
-    } else if (type_str == "ECKCDSA") {
-        skey = std::make_unique<Botan::ECKCDSA_PrivateKey>(rng, group);
-    } else if (type_str == "ECGDSA") {
-        skey = std::make_unique<Botan::ECGDSA_PrivateKey>(rng, group);
+    try {
+        if (type_str == "ECDH") {
+            skey = std::make_unique<Botan::ECDH_PrivateKey>(rng, group);
+        } else if (type_str == "ECDSA") {
+            skey = std::make_unique<Botan::ECDSA_PrivateKey>(rng, group);
+        } else if (type_str == "ECKCDSA") {
+            skey = std::make_unique<Botan::ECKCDSA_PrivateKey>(rng, group);
+        } else if (type_str == "ECGDSA") {
+            skey = std::make_unique<Botan::ECGDSA_PrivateKey>(rng, group);
+        }
+    } catch (Botan::Exception & ex) {
+        throw_new(env, "java/security/GeneralSecurityException", ex.what());
+        return NULL;
     }
 
     jobject ec_param_spec = params_from_group(env, group);
@@ -403,7 +408,8 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
             return generate_from_group(env, self, curve_group);
         }
     }
-    //TODO throw an exception here? InvalidAlgorithmParameters one?
+
+    throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
     return NULL;
 }
 
@@ -469,13 +475,17 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     } else if (type_str == "ECDHwithSHA512KDF") {
         kdf = "KDF1(SHA-512)";
         key_len = 64;
-    } else {
-        //TODO what?
     }
 
     Botan::PK_Key_Agreement ka(skey, rng, kdf);
 
-    std::vector<uint8_t> derived = Botan::unlock(ka.derive_key(key_len, pkey.public_value()).bits_of());
+    std::vector<uint8_t> derived;
+    try {
+        derived = Botan::unlock(ka.derive_key(key_len, pkey.public_value()).bits_of());
+    } catch (Botan::Exception & ex) {
+        throw_new(env, "java/security/GeneralSecurityException", ex.what());
+        return NULL;
+    }
     jbyteArray result = env->NewByteArray(derived.size());
     jbyte *result_data = env->GetByteArrayElements(result, NULL);
     std::copy(derived.begin(), derived.end(), result_data);
@@ -534,7 +544,14 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 
     jsize data_length = env->GetArrayLength(data);
     jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
-    std::vector<uint8_t> sig = signer.sign_message((uint8_t*) data_bytes, data_length, rng);
+    std::vector<uint8_t> sig;
+    try {
+        sig = signer.sign_message((uint8_t*) data_bytes, data_length, rng);
+    } catch (Botan::Exception & ex) {
+        throw_new(env, "java/security/GeneralSecurityException", ex.what());
+        env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
+        return NULL;
+    }
     env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
 
     jbyteArray result = env->NewByteArray(sig.size());
@@ -596,7 +613,15 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
     jbyte *sig_bytes = env->GetByteArrayElements(signature, NULL);
 
-    bool result = verifier.verify_message((uint8_t*)data_bytes, data_length, (uint8_t*)sig_bytes, sig_length);
+    bool result;
+    try {
+        result = verifier.verify_message((uint8_t*)data_bytes, data_length, (uint8_t*)sig_bytes, sig_length);
+    } catch (Botan::Exception & ex) {
+        throw_new(env, "java/security/GeneralSecurityException", ex.what());
+        env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
+        env->ReleaseByteArrayElements(signature, sig_bytes, JNI_ABORT);
+        return JNI_FALSE;
+    }
     env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
     env->ReleaseByteArrayElements(signature, sig_bytes, JNI_ABORT);
     if (result) {
