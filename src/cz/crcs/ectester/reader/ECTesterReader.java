@@ -364,7 +364,8 @@ public class ECTesterReader {
     private void generate() throws CardException, IOException {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
 
-        new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass).send();
+		Response allocate = new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass).send();
+		respWriter.outputResponse(allocate);
         Command curve = Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass);
 
         FileWriter keysFile = new FileWriter(cfg.output);
