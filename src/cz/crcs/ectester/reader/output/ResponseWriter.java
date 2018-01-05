@@ -24,7 +24,7 @@ public class ResponseWriter {
             }
         }
         if (suffix.length() == 0) {
-            suffix.append(" [").append(CardUtil.getSW(r.getNaturalSW())).append("]");
+            suffix.append(" [").append(CardUtil.getSW(r.getNaturalSW())).append(String.format(" 0x%04x", r.getNaturalSW())).append("]");
         }
         return String.format("%4d ms ┃ %s", r.getDuration() / 1000000, suffix);
     }
