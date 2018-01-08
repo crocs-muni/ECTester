@@ -62,7 +62,6 @@ import static cz.crcs.ectester.applet.ECTesterApplet.Signature_ALG_ECDSA_SHA;
  * @version v0.1.0
  */
 public class ECTesterReader {
-
     private CardMngr cardManager;
     private OutputLogger logger;
     private TestWriter testWriter;

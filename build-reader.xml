@@ -75,10 +75,12 @@
         <copy file="LICENSE" todir="${build.classes.dir}"/>
     </target>
 
+    <!--
     <target name="-post-jar">
         <copy file="src/cz/crcs/ectester/scripts/ectester-reader.sh" todir="${dist.dir}"/>
         <copy file="src/cz/crcs/ectester/scripts/ectester-reader.bat" todir="${dist.dir}"/>
     </target>
+    -->
 
     <target name="package" depends="jar">
         <property name="store.jar.name" value="ECTesterReader-dist"/>
