@@ -28,7 +28,6 @@ import cz.crcs.ectester.common.ec.EC_Params;
 import cz.crcs.ectester.common.output.OutputLogger;
 import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.TestException;
-import cz.crcs.ectester.common.test.TestRunner;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.common.util.CardUtil;
 import cz.crcs.ectester.data.EC_Store;
@@ -64,9 +63,7 @@ import static cz.crcs.ectester.applet.ECTesterApplet.Signature_ALG_ECDSA_SHA;
 public class ECTesterReader {
     private CardMngr cardManager;
     private OutputLogger logger;
-    private TestWriter testWriter;
     private ResponseWriter respWriter;
-    private EC_Store dataStore;
     private Config cfg;
 
     private Options opts = new Options();
@@ -100,10 +97,9 @@ public class ECTesterReader {
                 return;
             }
 
-            dataStore = new EC_Store();
             //if list, print and quit
             if (cli.hasOption("list-named")) {
-                CLITools.listNamed(dataStore, cli.getOptionValue("list-named"));
+                CLITools.listNamed(EC_Store.getInstance(), cli.getOptionValue("list-named"));
                 return;
             }
 
@@ -126,22 +122,7 @@ public class ECTesterReader {
 
             // Setup logger, testWriter and respWriter
             logger = new OutputLogger(true, cfg.log);
-            if (cfg.format == null) {
-                testWriter = new TextTestWriter(logger.getPrintStream());
-            } else {
-                switch (cfg.format) {
-                    case "text":
-                        testWriter = new TextTestWriter(logger.getPrintStream());
-                        break;
-                    case "xml":
-                        testWriter = new XMLTestWriter(logger.getOutputStream());
-                        break;
-                    case "yaml":
-                    case "yml":
-                        testWriter = new YAMLTestWriter(logger.getPrintStream());
-                        break;
-                }
-            }
+
             respWriter = new ResponseWriter(logger.getPrintStream());
 
             //do action
@@ -363,9 +344,9 @@ public class ECTesterReader {
     private void generate() throws CardException, IOException {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
 
-		Response allocate = new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass).send();
-		respWriter.outputResponse(allocate);
-        Command curve = Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass);
+        Response allocate = new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass).send();
+        respWriter.outputResponse(allocate);
+        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass);
 
         FileWriter keysFile = new FileWriter(cfg.output);
         keysFile.write("index;time;pubW;privS\n");
@@ -414,15 +395,33 @@ public class ECTesterReader {
      * @throws CardException if APDU transmission fails
      * @throws IOException   if an IO error occurs when writing to key file.
      */
-    private void test() throws IOException, TestException {
+    private void test() throws IOException, TestException, ParserConfigurationException {
+        TestWriter writer = null;
+        if (cfg.format == null) {
+            writer = new TextTestWriter(logger.getPrintStream());
+        } else {
+            switch (cfg.format) {
+                case "text":
+                    writer = new TextTestWriter(logger.getPrintStream());
+                    break;
+                case "xml":
+                    writer = new XMLTestWriter(logger.getOutputStream());
+                    break;
+                case "yaml":
+                case "yml":
+                    writer = new YAMLTestWriter(logger.getPrintStream());
+                    break;
+            }
+        }
+
         CardTestSuite suite;
 
         switch (cfg.testSuite) {
             case "default":
-                suite = new CardDefaultSuite(dataStore, cfg);
+                suite = new CardDefaultSuite(writer, cfg, cardManager);
                 break;
             case "test-vectors":
-                suite = new CardTestVectorSuite(dataStore, cfg);
+                suite = new CardTestVectorSuite(writer, cfg, cardManager);
                 break;
             default:
                 // These run are dangerous, prompt before them.
@@ -437,17 +436,15 @@ public class ECTesterReader {
                     }
                     in.close();
                 }
-
-
                 switch (cfg.testSuite) {
                     case "wrong":
-                        suite = new CardWrongCurvesSuite(dataStore, cfg);
+                        suite = new CardWrongCurvesSuite(writer, cfg, cardManager);
                         break;
                     case "composite":
-                        suite = new CardCompositeCurvesSuite(dataStore, cfg);
+                        suite = new CardCompositeCurvesSuite(writer, cfg, cardManager);
                         break;
                     case "invalid":
-                        suite = new CardInvalidCurvesSuite(dataStore, cfg);
+                        suite = new CardInvalidCurvesSuite(writer, cfg, cardManager);
                         break;
                     default:
                         System.err.println("Unknown test suite.");
@@ -456,9 +453,7 @@ public class ECTesterReader {
                 break;
         }
 
-        TestRunner runner = new TestRunner(suite, testWriter);
-        suite.setup(cardManager);
-        runner.run();
+        suite.run();
     }
 
     /**
@@ -472,7 +467,7 @@ public class ECTesterReader {
         List<Response> prepare = new LinkedList<>();
         prepare.add(new Command.AllocateKeyAgreement(cardManager, cfg.ECKAType).send()); // Prepare KeyAgreement or required type
         prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, keyClass).send());
-        Command curve = Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, keyClass);
+        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, keyClass);
         if (curve != null)
             prepare.add(curve.send());
 
@@ -486,7 +481,7 @@ public class ECTesterReader {
         List<Command> generate = new LinkedList<>();
         generate.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH));
         if (cfg.anyPublicKey || cfg.anyPrivateKey || cfg.anyKey) {
-            generate.add(Command.prepareKey(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_REMOTE));
+            generate.add(Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_REMOTE));
         }
 
         FileWriter out = null;
@@ -554,7 +549,7 @@ public class ECTesterReader {
 
         Command generate;
         if (cfg.anyKeypart) {
-            generate = Command.prepareKey(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_LOCAL);
+            generate = Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL);
         } else {
             generate = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL);
         }
@@ -563,7 +558,7 @@ public class ECTesterReader {
         List<Response> prepare = new LinkedList<>();
         prepare.add(new Command.AllocateSignature(cardManager, cfg.ECDSAType).send());
         prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass).send());
-        Command curve = Command.prepareCurve(cardManager, dataStore, cfg, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass);
+        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass);
         if (curve != null)
             prepare.add(curve.send());
 
@@ -620,7 +615,7 @@ public class ECTesterReader {
     public static class Config {
 
         //Options
-        public int bits;
+        public short bits;
         public boolean all;
         public boolean primeField = false;
         public boolean binaryField = false;
@@ -670,7 +665,7 @@ public class ECTesterReader {
          * @return whether the options are valid.
          */
         boolean readOptions(CommandLine cli) {
-            bits = Integer.parseInt(cli.getOptionValue("bit-size", "0"));
+            bits = Short.parseShort(cli.getOptionValue("bit-size", "0"));
             all = cli.hasOption("all");
             primeField = cli.hasOption("fp");
             binaryField = cli.hasOption("f2m");

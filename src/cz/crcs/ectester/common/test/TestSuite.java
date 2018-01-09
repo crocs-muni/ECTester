@@ -1,5 +1,6 @@
 package cz.crcs.ectester.common.test;
 
+import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.data.EC_Store;
 
 import java.util.Collections;
@@ -13,26 +14,36 @@ import java.util.stream.Collectors;
 public abstract class TestSuite {
     protected String name;
     protected String description;
-    protected List<Runnable> run = new LinkedList<>();
-    protected EC_Store dataStore;
+    protected TestWriter writer;
 
-    public TestSuite(EC_Store dataStore, String name, String description) {
-        this.dataStore = dataStore;
+    public TestSuite(TestWriter writer, String name, String description) {
+        this.writer = writer;
         this.name = name;
         this.description = description;
     }
 
-    public List<Runnable> getRunnables() {
-        return Collections.unmodifiableList(run);
+    public void run() throws TestException {
+        writer.begin(this);
+        try {
+            runTests();
+        } catch (Exception e) {
+            throw new TestException(e);
+        }
+        writer.end();
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Test> getTests() {
-        return Collections.unmodifiableList((List<Test>)(List<?>) run
-                .stream()
-                .filter(runnable -> (runnable instanceof Test))
-                .collect(Collectors.toList()));
+    protected Test runTest(Test t) throws TestException {
+        t.run();
+        return t;
     }
+
+    protected Test doTest(Test t) throws TestException {
+        t.run();
+        writer.outputTest(t);
+        return t;
+    }
+
+    protected abstract void runTests() throws Exception;
 
     public String getName() {
         return name;

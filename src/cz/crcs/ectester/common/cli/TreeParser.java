@@ -86,6 +86,7 @@ public class TreeParser implements CommandLineParser {
             }
         }
 
+        int maxArgs = args.size();
         long requiredArgs = args.stream().filter(Argument::isRequired).count();
         String reqArgs = String.join(" ", args.stream().filter(Argument::isRequired).map(Argument::getName).collect(Collectors.toList()));
 
@@ -99,6 +100,8 @@ public class TreeParser implements CommandLineParser {
 
             if (lastCli.getArgs().length < requiredArgs) {
                 throw new MissingArgumentException("Not enough arguments: " + reqArgs);
+            } else if (lastCli.getArgs().length > maxArgs) {
+                throw new MissingArgumentException("Too many arguments.");
             }
 
             subTreeCli.setName(sub);
@@ -106,6 +109,8 @@ public class TreeParser implements CommandLineParser {
         } else if (subCli != null) {
             if (subCli.getArgs().length < requiredArgs) {
                 throw new MissingArgumentException("Not enough arguments: " + reqArgs);
+            } else if (subCli.getArgs().length > maxArgs) {
+                throw new MissingArgumentException("Too many arguments.");
             }
 
             TreeCommandLine subTreeCli = new TreeCommandLine(sub, subCli, null);
@@ -113,7 +118,10 @@ public class TreeParser implements CommandLineParser {
         } else {
             if (cliArgs.length < requiredArgs) {
                 throw new MissingArgumentException("Not enough arguments: " + reqArgs);
+            } else if (cliArgs.length > maxArgs) {
+                throw new MissingArgumentException("Too many arguments.");
             }
+
             return new TreeCommandLine(cli, null);
         }
     }

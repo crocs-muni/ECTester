@@ -3,14 +3,16 @@ package cz.crcs.ectester.reader.test;
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.ec.EC_Curve;
-import cz.crcs.ectester.common.test.*;
-import cz.crcs.ectester.common.test.Runnable;
+import cz.crcs.ectester.common.output.TestWriter;
+import cz.crcs.ectester.common.test.CompoundTest;
+import cz.crcs.ectester.common.test.Result;
+import cz.crcs.ectester.common.test.Test;
+import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -24,13 +26,13 @@ import static cz.crcs.ectester.common.test.Result.Value;
  */
 public abstract class CardTestSuite extends TestSuite {
     ECTesterReader.Config cfg;
+    CardMngr card;
 
-    CardTestSuite(EC_Store dataStore, ECTesterReader.Config cfg, String name, String description) {
-        super(dataStore, name, description);
+    CardTestSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager, String name, String description) {
+        super(writer, name, description);
+        this.card = cardManager;
         this.cfg = cfg;
     }
-
-    public abstract void setup(CardMngr cardManager) throws IOException;
 
     /**
      * @param cardManager          cardManager to send APDU through
@@ -98,21 +100,20 @@ public abstract class CardTestSuite extends TestSuite {
      * @param description            compound test description
      * @return run to run
      */
-    List<Runnable> defaultCategoryTests(CardMngr cardManager, String category, byte field, ExpectedValue setExpected, ExpectedValue generateExpected, ExpectedValue ecdhExpected, ExpectedValue ecdhCompressedExpected, ExpectedValue ecdsaExpected, String description) {
-        List<Runnable> tests = new LinkedList<>();
-        Map<String, EC_Curve> curves = dataStore.getObjects(EC_Curve.class, category);
+    List<Test> defaultCategoryTests(CardMngr cardManager, String category, byte field, ExpectedValue setExpected, ExpectedValue generateExpected, ExpectedValue ecdhExpected, ExpectedValue ecdhCompressedExpected, ExpectedValue ecdsaExpected, String description) {
+        Map<String, EC_Curve> curves = EC_Store.getInstance().getObjects(EC_Curve.class, category);
         if (curves == null)
-            return tests;
+            return null;
         for (Map.Entry<String, EC_Curve> entry : curves.entrySet()) {
             EC_Curve curve = entry.getValue();
             if (curve.getField() == field && (curve.getBits() == cfg.bits || cfg.all)) {
-                tests.add(CommandTest.expect(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), field), ExpectedValue.SUCCESS));
-                tests.add(CommandTest.expect(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), setExpected));
-                tests.add(defaultCurveTests(cardManager, generateExpected, ecdhExpected, ecdhCompressedExpected, ecdsaExpected, description));
-                run.add(new BaseRunnable(() -> new Command.Cleanup(cardManager)));
+                //tests.add(CommandTest.expect(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), field), ExpectedValue.SUCCESS));
+                //tests.add(CommandTest.expect(new Command.Set(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), setExpected));
+                //tests.add(defaultCurveTests(cardManager, generateExpected, ecdhExpected, ecdhCompressedExpected, ecdsaExpected, description));
+                //run.add(new BaseRunnable(() -> new Command.Cleanup(cardManager)));
             }
         }
 
-        return tests;
+        return null;
     }
 }

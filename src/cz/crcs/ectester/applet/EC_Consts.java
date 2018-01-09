@@ -1002,7 +1002,7 @@ public class EC_Consts {
     public static final byte CURVE_default = (byte) 0;
     public static final byte CURVE_external = (byte) 0xff;
 
-    // SECP recommended curves over FP
+    // SECG recommended curves over FP
     public static final byte CURVE_secp112r1 = (byte) 1;
     public static final byte CURVE_secp128r1 = (byte) 2;
     public static final byte CURVE_secp160r1 = (byte) 3;
@@ -1014,7 +1014,7 @@ public class EC_Consts {
 
     public static final byte FP_CURVES = (byte) 8;
 
-    // SECP recommended curves over F2M
+    // SECG recommended curves over F2M
     public static final byte CURVE_sect163r1 = (byte) 9;
     public static final byte CURVE_sect233r1 = (byte) 10;
     public static final byte CURVE_sect283r1 = (byte) 11;
@@ -1025,6 +1025,25 @@ public class EC_Consts {
 
     public static final short[] FP_SIZES = new short[]{112, 128, 160, 192, 224, 256, 384, 521};
     public static final short[] F2M_SIZES = new short[]{163, 233, 283, 409, 571};
+
+    public static final byte[] KA_TYPES = new byte[]{
+            ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH,
+            //ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH_KDF, //duplicate
+            ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DHC,
+            //ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DHC_KDF, //duplicate
+            ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH_PLAIN,
+            ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DHC_PLAIN,
+            ECTesterApplet.KeyAgreement_ALG_EC_PACE_GM,
+            ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY
+    };
+
+    public static final byte[] SIG_TYPES = new byte[]{
+            ECTesterApplet.Signature_ALG_ECDSA_SHA,
+            ECTesterApplet.Signature_ALG_ECDSA_SHA_224,
+            ECTesterApplet.Signature_ALG_ECDSA_SHA_256,
+            ECTesterApplet.Signature_ALG_ECDSA_SHA_384,
+            ECTesterApplet.Signature_ALG_ECDSA_SHA_512
+    };
 
     public static byte getCurve(short keyLength, byte keyClass) {
         if (keyClass == KeyPair.ALG_EC_FP) {

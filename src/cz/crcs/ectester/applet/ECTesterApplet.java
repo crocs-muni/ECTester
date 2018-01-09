@@ -83,7 +83,6 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     public static final byte KeyAgreement_ALG_EC_SVDP_DHC_PLAIN = 4;
     public static final byte KeyAgreement_ALG_EC_PACE_GM = 5;
     public static final byte KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY = 6;
-    public static final byte KeyAgreement_ALG_DH_PLAIN = 7;
 
     // Class javacard.security.Signature
     // javacard.security.Signature Fields:

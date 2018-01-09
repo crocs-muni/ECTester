@@ -1,8 +1,6 @@
 package cz.crcs.ectester.data;
 
-import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.ec.*;
-import cz.crcs.ectester.common.util.CardUtil;
 import javacard.security.KeyPair;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -31,12 +29,11 @@ import java.util.TreeMap;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class EC_Store {
-
     private DocumentBuilder db;
-
     private Map<String, EC_Category> categories;
+    private static EC_Store instance;
 
-    public EC_Store() throws IOException {
+    private EC_Store() {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
         try {
@@ -85,7 +82,7 @@ public class EC_Store {
             });
 
             parse();
-        } catch (ParserConfigurationException | SAXException e) {
+        } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -320,6 +317,13 @@ public class EC_Store {
             return null;
         }
         return getObject(objClass, query.substring(0, split), query.substring(split + 1));
+    }
+
+    public static EC_Store getInstance() {
+        if (instance == null) {
+            instance = new EC_Store();
+        }
+        return instance;
     }
 
 }

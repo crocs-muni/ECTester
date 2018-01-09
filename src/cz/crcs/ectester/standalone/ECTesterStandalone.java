@@ -4,7 +4,6 @@ import cz.crcs.ectester.common.cli.*;
 import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.TestException;
-import cz.crcs.ectester.common.test.TestRunner;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.common.util.ECUtil;
 import cz.crcs.ectester.data.EC_Store;
@@ -44,7 +43,6 @@ import java.util.stream.Collectors;
  */
 public class ECTesterStandalone {
     private ProviderECLibrary[] libs = new ProviderECLibrary[]{new SunECLib(), new BouncyCastleLib(), new TomcryptLib(), new BotanLib()};
-    private EC_Store dataStore;
     private Config cfg;
 
     private Options opts = new Options();
@@ -76,12 +74,11 @@ public class ECTesterStandalone {
             if (!cfg.readOptions(cli)) {
                 return;
             }
-            dataStore = new EC_Store();
 
             if (cli.isNext("list-libs")) {
                 listLibraries();
             } else if (cli.isNext("list-data")) {
-                CLITools.listNamed(dataStore, cli.getNext().getArg(0));
+                CLITools.listNamed(EC_Store.getInstance(), cli.getNext().getArg(0));
             } else if (cli.isNext("ecdh")) {
                 ecdh();
             } else if (cli.isNext("ecdsa")) {
@@ -238,7 +235,7 @@ public class ECTesterStandalone {
                 kpg.initialize(bits);
             } else if (cli.hasOption("ecdh.named-curve")) {
                 String curveName = cli.getOptionValue("ecdh.named-curve");
-                EC_Curve curve = dataStore.getObject(EC_Curve.class, curveName);
+                EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
                 if (curve == null) {
                     System.err.println("Curve not found: " + curveName);
                     return;
@@ -324,7 +321,7 @@ public class ECTesterStandalone {
                 kpg.initialize(bits);
             } else if (cli.hasOption("ecdsa.named-curve")) {
                 String curveName = cli.getOptionValue("ecdsa.named-curve");
-                EC_Curve curve = dataStore.getObject(EC_Curve.class, curveName);
+                EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
                 if (curve == null) {
                     System.err.println("Curve not found: " + curveName);
                     return;
@@ -386,7 +383,7 @@ public class ECTesterStandalone {
                 kpg.initialize(bits);
             } else if (cli.hasOption("generate.named-curve")) {
                 String curveName = cli.getOptionValue("generate.named-curve");
-                EC_Curve curve = dataStore.getObject(EC_Curve.class, curveName);
+                EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
                 if (curve == null) {
                     System.err.println("Curve not found: " + curveName);
                     return;
@@ -429,10 +426,8 @@ public class ECTesterStandalone {
                 break;
         }
 
-        StandaloneTestSuite suite = new StandaloneDefaultSuite(dataStore, cfg, cli);
-        TestRunner runner = new TestRunner(suite, writer);
-        suite.setup();
-        runner.run();
+        StandaloneTestSuite suite = new StandaloneDefaultSuite(writer, cfg, cli);
+        suite.run();
     }
 
     /**
