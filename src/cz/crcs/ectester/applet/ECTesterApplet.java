@@ -446,10 +446,10 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
 
         short len = 0;
         if ((keyPair & KEYPAIR_LOCAL) != 0) {
-            len += ecdsa(localKeypair, sigType, export, apduArray, cdata, apdu.getBuffer(), (short) 0);
+            len += ecdsa(localKeypair, sigType, export, apduArray, (short) (cdata + 1), apdu.getBuffer(), (short) 0);
         }
         if ((keyPair & KEYPAIR_REMOTE) != 0) {
-            len += ecdsa(remoteKeypair, sigType, export, apduArray, cdata, apdu.getBuffer(), len);
+            len += ecdsa(remoteKeypair, sigType, export, apduArray, (short) (cdata + 1), apdu.getBuffer(), len);
         }
 
         return len;
