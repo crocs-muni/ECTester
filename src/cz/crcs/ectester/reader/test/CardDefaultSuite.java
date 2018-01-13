@@ -11,6 +11,9 @@ import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 import javacard.security.KeyPair;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import static cz.crcs.ectester.common.test.Result.ExpectedValue;
 
 /**
@@ -34,30 +37,47 @@ public class CardDefaultSuite extends CardTestSuite {
 
     private void runDefault(byte field) throws Exception {
         for (short keyLength : EC_Consts.FP_SIZES) {
-            Test key = doTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, keyLength, field), ExpectedValue.SUCCESS));
+            String description = "Tests of " + keyLength + "b " + (field == KeyPair.ALG_EC_FP ? "ALG_EC_FP" : "ALG_EC_F2M") + " support.";
+
+            List<Test> supportTests = new LinkedList<>();
+            Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, keyLength, field), ExpectedValue.SUCCESS));
             if (!key.ok()) {
+                doTest(CompoundTest.all(ExpectedValue.SUCCESS, description + " None.", key));
                 continue;
             }
-            doTest(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_BOTH), ExpectedValue.SUCCESS));
-            doTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.getCurve(keyLength, field), EC_Consts.PARAMETERS_DOMAIN_FP, null), ExpectedValue.SUCCESS));
-            doTest(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_BOTH), ExpectedValue.SUCCESS));
+            supportTests.add(key);
+
+            Test genDefault = runTest(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_BOTH), ExpectedValue.SUCCESS));
+            Test setCustom = runTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.getCurve(keyLength, field), EC_Consts.PARAMETERS_DOMAIN_FP, null), ExpectedValue.SUCCESS));
+            Test genCustom = runTest(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_BOTH), ExpectedValue.SUCCESS));
+            supportTests.add(genDefault);
+            supportTests.add(setCustom);
+            supportTests.add(genCustom);
+
             for (byte kaType : EC_Consts.KA_TYPES) {
-                Test allocate = CommandTest.expect(new Command.AllocateKeyAgreement(this.card, kaType), ExpectedValue.SUCCESS);
-                allocate.run();
+                Test allocate = runTest(CommandTest.expect(new Command.AllocateKeyAgreement(this.card, kaType), ExpectedValue.SUCCESS));
                 if (allocate.ok()) {
-                    Test ka = CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, kaType), ExpectedValue.SUCCESS);
-                    ka.run();
-                    Test kaCompressed = CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_COMPRESS, kaType), ExpectedValue.SUCCESS);
-                    kaCompressed.run();
-                    doTest(CompoundTest.all(ExpectedValue.SUCCESS, "Test of the " + CardUtil.getKATypeString(kaType) + " KeyAgreement.", allocate, ka, kaCompressed));
+                    Test ka = runTest(CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, kaType), ExpectedValue.SUCCESS));
+                    Test kaCompressed = runTest(CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_COMPRESS, kaType), ExpectedValue.SUCCESS));
+                    Test compound = runTest(CompoundTest.all(ExpectedValue.SUCCESS, "Test of the " + CardUtil.getKATypeString(kaType) + " KeyAgreement.", allocate, ka, kaCompressed));
+                    supportTests.add(compound);
+                } else {
+                    runTest(allocate);
+                    supportTests.add(allocate);
                 }
             }
             for (byte sigType : EC_Consts.SIG_TYPES) {
-                Test allocate = doTest(CommandTest.expect(new Command.AllocateSignature(this.card, sigType), ExpectedValue.SUCCESS));
+                Test allocate = runTest(CommandTest.expect(new Command.AllocateSignature(this.card, sigType), ExpectedValue.SUCCESS));
                 if (allocate.ok()) {
-                    doTest(CommandTest.expect(new Command.ECDSA(this.card, ECTesterApplet.KEYPAIR_LOCAL, sigType, ECTesterApplet.EXPORT_FALSE, null), ExpectedValue.SUCCESS));
+                    Test expect = runTest(CommandTest.expect(new Command.ECDSA(this.card, ECTesterApplet.KEYPAIR_LOCAL, sigType, ECTesterApplet.EXPORT_FALSE, null), ExpectedValue.SUCCESS));
+                    Test compound = runTest(CompoundTest.all(ExpectedValue.SUCCESS, "Test of the " + CardUtil.getSigTypeString(sigType) + " signature.", allocate, expect));
+                    supportTests.add(compound);
+                } else {
+                    supportTests.add(allocate);
                 }
             }
+            doTest(CompoundTest.all(ExpectedValue.SUCCESS, description + " Some.", supportTests.toArray(new Test[0])));
+            new Command.Cleanup(this.card).send();
         }
     }
 }

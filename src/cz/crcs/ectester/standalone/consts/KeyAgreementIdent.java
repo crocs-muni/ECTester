@@ -35,10 +35,10 @@ public class KeyAgreementIdent extends Ident {
         //ALL.add(new KeyAgreementIdent("ECMQVwithSHA256CKDF", "1.3.132.1.15.1"));
         //ALL.add(new KeyAgreementIdent("ECMQVwithSHA384CKDF", "1.3.132.1.15.2"));
         //ALL.add(new KeyAgreementIdent("ECMQVwithSHA512CKDF", "1.3.132.1.15.3"));
-        // ECVKO
-        ALL.add(new KeyAgreementIdent("ECVKO", "ECGOST3410", "1.2.643.2.2.19", "GOST-3410-2001", "1.2.643.2.2.96"));
-        ALL.add(new KeyAgreementIdent("ECVKO256", "ECGOST3410-2012-256", "1.2.643.7.1.1.6.1", "1.2.643.7.1.1.1.1"));
-        ALL.add(new KeyAgreementIdent("ECVKO512", "ECGOST3410-2012-512", "1.2.643.7.1.1.6.2", "1.2.643.7.1.1.1.2"));
+        // ECVKO - Disable for now as it needs diferent params(too different from DH)
+        //ALL.add(new KeyAgreementIdent("ECVKO", "ECGOST3410", "1.2.643.2.2.19", "GOST-3410-2001", "1.2.643.2.2.96"));
+        //ALL.add(new KeyAgreementIdent("ECVKO256", "ECGOST3410-2012-256", "1.2.643.7.1.1.6.1", "1.2.643.7.1.1.1.1"));
+        //ALL.add(new KeyAgreementIdent("ECVKO512", "ECGOST3410-2012-512", "1.2.643.7.1.1.6.2", "1.2.643.7.1.1.1.2"));
     }
 
     public static KeyAgreementIdent get(String ident) {

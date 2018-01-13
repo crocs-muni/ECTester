@@ -10,7 +10,7 @@ import java.io.PrintStream;
 public abstract class BaseTextTestWriter implements TestWriter {
     private PrintStream output;
 
-    public static int BASE_WIDTH = 80;
+    public static int BASE_WIDTH = 90;
 
     public BaseTextTestWriter(PrintStream output) {
         this.output = output;
@@ -24,7 +24,7 @@ public abstract class BaseTextTestWriter implements TestWriter {
 
     protected abstract String testableString(Testable t);
 
-    private String testString(Test t, int offset) {
+    private String testString(Test t, String prefix) {
         if (!t.hasRun()) {
             return null;
         }
@@ -33,7 +33,7 @@ public abstract class BaseTextTestWriter implements TestWriter {
         StringBuilder out = new StringBuilder();
         out.append(t.ok() ? " OK " : "NOK ");
         out.append(compound ? "┳ " : "━ ");
-        int width = BASE_WIDTH - (offset + out.length());
+        int width = BASE_WIDTH - (prefix.length() + out.length());
         String widthSpec = "%-" + String.valueOf(width) + "s";
         out.append(String.format(widthSpec, t.getDescription()));
         out.append(" ┃ ");
@@ -47,11 +47,13 @@ public abstract class BaseTextTestWriter implements TestWriter {
             Test[] tests = test.getTests();
             for (int i = 0; i < tests.length; ++i) {
                 if (i == tests.length - 1) {
-                    out.append("    ┗ ");
+                    out.append(prefix).append("    ┗ ");
+                    out.append(testString(tests[i], prefix + "      "));
                 } else {
-                    out.append("    ┣ ");
+                    out.append(prefix).append("    ┣ ");
+                    out.append(testString(tests[i], prefix + "    ┃ "));
                 }
-                out.append(testString(tests[i], offset + 6));
+
                 if (i != tests.length - 1) {
                     out.append(System.lineSeparator());
                 }
@@ -67,7 +69,7 @@ public abstract class BaseTextTestWriter implements TestWriter {
     public void outputTest(Test t) {
         if (!t.hasRun())
             return;
-        output.println(testString(t, 0));
+        output.println(testString(t, ""));
         output.flush();
     }
 

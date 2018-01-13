@@ -34,7 +34,7 @@ public class CompoundTest extends Test {
         return new CompoundTest((tests) -> {
             for (Test test : tests) {
                 if (!Result.Value.fromExpected(what, test.ok()).ok()) {
-                    return new Result(Result.Value.FAILURE, "At least one of the sub-tests did not have the expected result.");
+                    return new Result(Result.Value.FAILURE, "Some sub-tests did not have the expected result.");
                 }
             }
             return new Result(Result.Value.SUCCESS, "All sub-tests had the expected result.");
@@ -51,7 +51,7 @@ public class CompoundTest extends Test {
         return new CompoundTest((tests) -> {
             for (Test test : tests) {
                 if (Result.Value.fromExpected(what, test.ok()).ok()) {
-                    return new Result(Result.Value.SUCCESS, "At least one of the sub-tests did have the expected result.");
+                    return new Result(Result.Value.SUCCESS, "Some sub-tests did have the expected result.");
                 }
             }
             return new Result(Result.Value.FAILURE, "None of the sub-tests had the expected result.");
@@ -68,7 +68,7 @@ public class CompoundTest extends Test {
         return new CompoundTest((tests) -> {
             for (int i = 0; i < results.length; ++i) {
                 if (!Result.Value.fromExpected(results[i], tests[i].ok()).ok()) {
-                    return new Result(Result.Value.FAILURE, "At least one of the sub-tests did not match the result mask.");
+                    return new Result(Result.Value.FAILURE, "Some sub-tests did not match the result mask.");
                 }
             }
             return new Result(Result.Value.SUCCESS, "All sub-tests matched the expected mask.");
@@ -93,6 +93,7 @@ public class CompoundTest extends Test {
         for (Test test : tests) {
             test.run();
         }
+
         result = callback.apply(tests);
         this.hasRun = true;
     }
