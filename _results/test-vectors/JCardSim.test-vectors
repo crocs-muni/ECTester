@@ -15,7 +15,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 73765936
+        duration: 72416975
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -32,7 +32,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 289254
+        duration: 227164
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -54,7 +54,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 105640
+        duration: 82150
         natural_sw: 36864
         apdu: 90 00 90 00
         sws:
@@ -71,7 +71,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 67297
+        duration: 76284
         natural_sw: 36864
         apdu: 90 00 90 00
         sws:
@@ -89,38 +89,22 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 49947891
+        duration: 43986049
         natural_sw: 36864
         apdu: 90 00 00 14 10 f4 dd cf 79 c2 3f d7 dc 11 56 3b f1 8b 2b e7 5a 13 9e
           4f 90 00
         sws:
         - 36864
         successful: true
-        desc: ECDHC of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
       type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
-      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector b163-dhc
   - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 1129744
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
-  - result:
-      cause: At least one of the sub-tests did not have the expected result.
+      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
     tests:
@@ -129,7 +113,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 854264
+        duration: 815059
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -146,7 +130,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 130691
+        duration: 133892
         natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
@@ -170,7 +154,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 83966
+        duration: 71083
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -187,7 +171,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 66294
+        duration: 68153
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -205,37 +189,21 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 84653
+        duration: 82564
         natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
         successful: false
-        desc: ECDHC of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
       type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
-      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector b233-dhc
   - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 91170
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
-  - result:
-      cause: At least one of the sub-tests did not have the expected result.
+      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
     tests:
@@ -244,7 +212,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 258211
+        duration: 194552
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -261,7 +229,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 88900
+        duration: 77559
         natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
@@ -286,7 +254,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 73340
+        duration: 72711
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -303,7 +271,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 65010
+        duration: 63805
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -322,37 +290,21 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 64778
+        duration: 63920
         natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
         successful: false
-        desc: ECDHC of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
       type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
-      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector b283-dhc
   - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 95462
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
-  - result:
-      cause: At least one of the sub-tests did not have the expected result.
+      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
     tests:
@@ -361,7 +313,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 237914
+        duration: 198096
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -378,7 +330,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 1006870
+        duration: 846233
         natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
@@ -407,7 +359,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 99127
+        duration: 70413
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -425,7 +377,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 73300
+        duration: 64571
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -445,37 +397,21 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 75869
+        duration: 70223
         natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
         successful: false
-        desc: ECDHC of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
       type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
-      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector b409-dhc
   - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 152254
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
-  - result:
-      cause: At least one of the sub-tests did not have the expected result.
+      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
     tests:
@@ -484,7 +420,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 362412
+        duration: 176159
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -501,7 +437,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 785349
+        duration: 810817
         natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
@@ -534,7 +470,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 404685
+        duration: 69952
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -553,7 +489,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 87635
+        duration: 69744
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -575,37 +511,21 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 74116
+        duration: 66118
         natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
         successful: false
-        desc: ECDHC of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
       type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
-      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector b571-dhc
   - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 129276
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
-  - result:
-      cause: At least one of the sub-tests did not have the expected result.
+      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
     tests:
@@ -614,7 +534,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 255048
+        duration: 175516
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -631,7 +551,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 92221
+        duration: 71841
         natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
@@ -655,7 +575,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 80246
+        duration: 89308
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -672,7 +592,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 66050
+        duration: 61724
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -690,37 +610,21 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 83021
+        duration: 730197
         natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
         successful: false
-        desc: ECDH of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
       type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 01
-      desc: ECDH of remote pubkey and local privkey(unchanged point)
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector brainpoolP224r1-dh
   - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 99006
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
-  - result:
-      cause: At least one of the sub-tests did not have the expected result.
+      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
     tests:
@@ -729,7 +633,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 3116212
+        duration: 2955665
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -746,7 +650,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 139657
+        duration: 200196
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -771,7 +675,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 70784
+        duration: 52350
         natural_sw: 36864
         apdu: 90 00 90 00
         sws:
@@ -788,7 +692,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 102409
+        duration: 85221
         natural_sw: 36864
         apdu: 90 00 90 00
         sws:
@@ -803,43 +707,27 @@ testRun:
           7c ec 6a
       desc: Set external pubkey parameters on remote keypair
     - result:
-        cause: ECDH derived secret does not match the test, first difference was at
-          byte 0.
+        cause: ECDH derived secret does not match the test-vector, first difference
+          was at byte 0.
         ok: false
         value: FAILURE
       response:
-        duration: 85453088
+        duration: 59744126
         natural_sw: 36864
         apdu: 90 00 00 14 bd 4e da d9 61 4e 42 39 27 e3 ce 90 ed 33 01 0b 4d 6d 39
           9b 90 00
         sws:
         - 36864
         successful: true
-        desc: ECDH of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
       type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 01
-      desc: ECDH of remote pubkey and local privkey(unchanged point)
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector brainpoolP256r1-dh
   - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 75906
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
-  - result:
-      cause: At least one of the sub-tests did not have the expected result.
+      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
     tests:
@@ -848,7 +736,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 3017849
+        duration: 846577
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -865,7 +753,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 833220
+        duration: 220052
         natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
@@ -895,7 +783,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 66581
+        duration: 65136
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -913,7 +801,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 59964
+        duration: 58166
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -933,37 +821,21 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 4294647
+        duration: 59210
         natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
         successful: false
-        desc: ECDH of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
       type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 01
-      desc: ECDH of remote pubkey and local privkey(unchanged point)
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector brainpoolP384r1-dh
   - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 192170
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
-  - result:
-      cause: At least one of the sub-tests did not have the expected result.
+      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
     tests:
@@ -972,7 +844,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 8254600
+        duration: 206214
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -989,7 +861,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 801620
+        duration: 220759
         natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
@@ -1023,7 +895,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 70703
+        duration: 59571
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -1042,7 +914,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 2693371
+        duration: 110654
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -1063,35 +935,19 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 109697
+        duration: 60249
         natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
         successful: false
-        desc: ECDH of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
       type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 01
-      desc: ECDH of remote pubkey and local privkey(unchanged point)
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector brainpoolP512r1-dh
-  - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 90029
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
   - result:
       cause: All sub-tests had the expected result.
       ok: true
@@ -1102,7 +958,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 464832
+        duration: 322702
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1119,7 +975,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 97065
+        duration: 73774
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1141,7 +997,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 74309
+        duration: 43807
         natural_sw: 36864
         apdu: 90 00 90 00
         sws:
@@ -1158,7 +1014,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 125835
+        duration: 45170
         natural_sw: 36864
         apdu: 90 00 90 00
         sws:
@@ -1176,38 +1032,22 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 36932590
+        duration: 13625198
         natural_sw: 36864
         apdu: 90 00 00 14 5e 13 84 ed 2d 3d 5e fc 77 e8 95 81 bb b4 67 93 4e cb 7b
           03 90 00
         sws:
         - 36864
         successful: true
-        desc: ECDHC of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
       type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
-      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector k163-dhc
   - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 4379086
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
-  - result:
-      cause: At least one of the sub-tests did not have the expected result.
+      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
     tests:
@@ -1216,7 +1056,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 2407986
+        duration: 225483
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -1233,7 +1073,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 4745816
+        duration: 83115
         natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
@@ -1257,7 +1097,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 82466
+        duration: 63428
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -1274,7 +1114,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 54782
+        duration: 55894
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -1292,37 +1132,21 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 57776
+        duration: 51547
         natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
         successful: false
-        desc: ECDHC of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
       type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
-      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector k233-dhc
   - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 79931
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
-  - result:
-      cause: At least one of the sub-tests did not have the expected result.
+      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
     tests:
@@ -1331,7 +1155,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 169499
+        duration: 149891
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -1348,7 +1172,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 62388
+        duration: 60557
         natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
@@ -1373,7 +1197,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 50743
+        duration: 46301
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -1390,7 +1214,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 59791
+        duration: 53039
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -1409,37 +1233,21 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 51584
+        duration: 43848
         natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
         successful: false
-        desc: ECDHC of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
       type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
-      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector k283-dhc
   - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 89277
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
-  - result:
-      cause: At least one of the sub-tests did not have the expected result.
+      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
     tests:
@@ -1448,7 +1256,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 188139
+        duration: 163064
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -1465,7 +1273,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 68108
+        duration: 206191
         natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
@@ -1494,7 +1302,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 57396
+        duration: 57922
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -1512,7 +1320,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 54260
+        duration: 46440
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -1532,37 +1340,21 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 58209
+        duration: 54014
         natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
         successful: false
-        desc: ECDHC of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
       type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
-      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector k409-dhc
   - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 105735
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
-  - result:
-      cause: At least one of the sub-tests did not have the expected result.
+      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
     tests:
@@ -1571,7 +1363,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 223504
+        duration: 175277
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -1588,7 +1380,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 76725
+        duration: 189596
         natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
@@ -1621,7 +1413,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 73162
+        duration: 32487
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -1640,7 +1432,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 51650
+        duration: 30648
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -1662,37 +1454,21 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 57071
+        duration: 31729
         natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
         successful: false
-        desc: ECDHC of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
       type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 02
-      desc: ECDHC of remote pubkey and local privkey(unchanged point)
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector k571-dhc
   - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 1004038
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
-  - result:
-      cause: At least one of the sub-tests did not have the expected result.
+      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
     tests:
@@ -1701,7 +1477,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 571832
+        duration: 336077
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1718,7 +1494,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 11674608
+        duration: 75348
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1741,7 +1517,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 63704
+        duration: 45363
         natural_sw: 36864
         apdu: 90 00 90 00
         sws:
@@ -1758,7 +1534,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 39309
+        duration: 36197
         natural_sw: 36864
         apdu: 90 00 90 00
         sws:
@@ -1772,43 +1548,27 @@ testRun:
           8e 8a 0d 12 bf 01 a9 d2 04 b5 23
       desc: Set external pubkey parameters on remote keypair
     - result:
-        cause: ECDH derived secret does not match the test, first difference was at
-          byte 0.
+        cause: ECDH derived secret does not match the test-vector, first difference
+          was at byte 0.
         ok: false
         value: FAILURE
       response:
-        duration: 23042542
+        duration: 8380586
         natural_sw: 36864
         apdu: 90 00 00 14 c9 f5 a4 4f 0e 78 42 67 9b ff f9 97 85 0a fa 05 cb df c5
           b3 90 00
         sws:
         - 36864
         successful: true
-        desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
       type: command
       command:
-        apdu: b0 70 02 01 04 ff 00 00 04
-      desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+        apdu: b0 70 02 01 04 ff 00 00 01
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector p192-dhc
   - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 67564
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
-  - result:
-      cause: At least one of the sub-tests did not have the expected result.
+      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
     tests:
@@ -1817,7 +1577,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 695849
+        duration: 182824
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -1834,7 +1594,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 66170
+        duration: 62694
         natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
@@ -1858,7 +1618,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 47418
+        duration: 47615
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -1875,7 +1635,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 43486
+        duration: 46743
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -1893,35 +1653,19 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 69272
+        duration: 46743
         natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
         successful: false
-        desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
       type: command
       command:
-        apdu: b0 70 02 01 04 ff 00 00 04
-      desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+        apdu: b0 70 02 01 04 ff 00 00 01
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector p224-dhc
-  - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 77482
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
   - result:
       cause: All sub-tests had the expected result.
       ok: true
@@ -1932,7 +1676,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 1048504
+        duration: 335178
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1949,7 +1693,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 101061
+        duration: 73673
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1974,7 +1718,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 51416
+        duration: 38394
         natural_sw: 36864
         apdu: 90 00 90 00
         sws:
@@ -1991,7 +1735,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 43040
+        duration: 90351
         natural_sw: 36864
         apdu: 90 00 90 00
         sws:
@@ -2010,38 +1754,22 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 22348552
+        duration: 12702813
         natural_sw: 36864
         apdu: 90 00 00 14 38 1a e0 83 bf 9f f3 bb 49 73 0a 96 d4 e5 5a ab ae 1c 42
           da 90 00
         sws:
         - 36864
         successful: true
-        desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
       type: command
       command:
-        apdu: b0 70 02 01 04 ff 00 00 04
-      desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+        apdu: b0 70 02 01 04 ff 00 00 01
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector p256-dhc
   - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 440454
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
-  - result:
-      cause: At least one of the sub-tests did not have the expected result.
+      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
     tests:
@@ -2050,7 +1778,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 268949
+        duration: 161025
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -2067,7 +1795,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 68223
+        duration: 43299
         natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
@@ -2097,7 +1825,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 46201
+        duration: 29929
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -2115,7 +1843,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 43792
+        duration: 29342
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -2135,37 +1863,21 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 57321
+        duration: 29949
         natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
         successful: false
-        desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
       type: command
       command:
-        apdu: b0 70 02 01 04 ff 00 00 04
-      desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+        apdu: b0 70 02 01 04 ff 00 00 01
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector p384-dhc
   - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 63532
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
-  - result:
-      cause: At least one of the sub-tests did not have the expected result.
+      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
     tests:
@@ -2174,7 +1886,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 156252
+        duration: 106703
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -2191,7 +1903,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 567032
+        duration: 74009
         natural_sw: 36864
         apdu: 0e e3 0e e3 90 00
         sws:
@@ -2225,7 +1937,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 588804
+        duration: 43606
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -2244,7 +1956,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 68416
+        duration: 48630
         natural_sw: 36864
         apdu: 0e e3 90 00
         sws:
@@ -2265,37 +1977,21 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 58921
+        duration: 50983
         natural_sw: 36864
         apdu: 0e e3 00 00 90 00
         sws:
         - 3811
         successful: false
-        desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
       type: command
       command:
-        apdu: b0 70 02 01 04 ff 00 00 04
-      desc: ECDH/ECDHC of remote pubkey and local privkey(unchanged point)
+        apdu: b0 70 02 01 04 ff 00 00 01
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector p521-dhc
   - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 100055
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
-  - result:
-      cause: At least one of the sub-tests did not have the expected result.
+      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
     tests:
@@ -2304,7 +2000,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 508279
+        duration: 357209
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2321,7 +2017,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 91433
+        duration: 57164
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2343,7 +2039,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 372432
+        duration: 43958
         natural_sw: 36864
         apdu: 90 00 90 00
         sws:
@@ -2360,7 +2056,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 50789
+        duration: 37711
         natural_sw: 36864
         apdu: 90 00 90 00
         sws:
@@ -2374,41 +2070,25 @@ testRun:
           9c 8f 83
       desc: Set external pubkey parameters on remote keypair
     - result:
-        cause: ECDH derived secret does not match the test, first difference was at
-          byte 0.
+        cause: ECDH derived secret does not match the test-vector, first difference
+          was at byte 0.
         ok: false
         value: FAILURE
       response:
-        duration: 8666780
+        duration: 4805560
         natural_sw: 36864
         apdu: 90 00 00 14 62 c1 dc 07 28 c2 1c bf 21 6f 98 26 4e 1c 74 64 cb 1e 26
           59 90 00
         sws:
         - 36864
         successful: true
-        desc: ECDH of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
       type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 01
-      desc: ECDH of remote pubkey and local privkey(unchanged point)
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector secp160r1-dh
-  - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 72128
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
   - result:
       cause: All sub-tests had the expected result.
       ok: true
@@ -2419,7 +2099,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 309814
+        duration: 231353
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2436,7 +2116,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 1395406
+        duration: 68200
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2458,7 +2138,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 83224
+        duration: 38265
         natural_sw: 36864
         apdu: 90 00 90 00
         sws:
@@ -2475,7 +2155,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 1086367
+        duration: 44761
         natural_sw: 36864
         apdu: 90 00 90 00
         sws:
@@ -2493,35 +2173,19 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 15403385
+        duration: 8323249
         natural_sw: 36864
         apdu: 90 00 00 14 13 13 2f 80 88 d6 0f 9f e0 d9 55 ae 04 c9 d2 0d a8 29 a3
           8b 90 00
         sws:
         - 36864
         successful: true
-        desc: ECDH of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
       type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 01
-      desc: ECDH of remote pubkey and local privkey(unchanged point)
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
     type: compound
     desc: Test vector sect163k1-dh
-  - result:
-      cause: null
-      ok: true
-      value: SUCCESS
-    response:
-      duration: 2258529
-      natural_sw: 36864
-      apdu: 90 00 90 00
-      sws:
-      - 36864
-      successful: true
-      desc: Requested JCSystem object deletion
-    type: command
-    command:
-      apdu: b0 73 00 00
-    desc: Requested JCSystem object deletion
 
 ---
