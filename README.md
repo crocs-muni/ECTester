@@ -143,26 +143,35 @@ For more info about the curves see [CURVES](docs/CURVES.md).
 
 ### Example
 
+    > java -jar ECTesterReader.jar -t -a -s
+    ═══ Running test suite: default ═══
+    ═══ The default test suite run basic support of ECDH and ECDSA.
+    ═══ Card ATR: 3bfa1800008131fe454a434f5033315632333298
+    NOK ┳ Tests of 112b ALG_EC_FP support. Some.                                               ┃ FAILURE   ┃ Some sub-tests did not have the expected result.
+        ┣  OK ━ Allocated both keypairs 112b ALG_EC_FP                                         ┃ SUCCESS   ┃   50 ms ┃  OK   (0x9000) OK   (0x9000)
+        ┣  OK ━ Generated both keypairs                                                        ┃ SUCCESS   ┃   37 ms ┃  OK   (0x9000) OK   (0x9000)
+        ┣  OK ━ Set custom curve parameters on both keypairs                                   ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000) OK   (0x9000)
+        ┣  OK ━ Generated both keypairs                                                        ┃ SUCCESS   ┃   16 ms ┃  OK   (0x9000) OK   (0x9000)
+        ┣  OK ┳ Test of the ALG_EC_SVDP_DH KeyAgreement.                                       ┃ SUCCESS   ┃ All sub-tests had the expected result.
+        ┃     ┣  OK ━ Allocated KeyAgreement(ALG_EC_SVDP_DH) object                            ┃ SUCCESS   ┃    2 ms ┃  OK   (0x9000)
+        ┃     ┣  OK ━ ALG_EC_SVDP_DH of local pubkey and remote privkey(unchanged point)       ┃ SUCCESS   ┃    7 ms ┃  OK   (0x9000)
+        ┃     ┗  OK ━ ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)      ┃ SUCCESS   ┃   14 ms ┃  OK   (0x9000)
+        ┣  OK ┳ Test of the ALG_EC_SVDP_DHC KeyAgreement.                                      ┃ SUCCESS   ┃ All sub-tests had the expected result.
+        ┃     ┣  OK ━ Allocated KeyAgreement(ALG_EC_SVDP_DHC) object                           ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000)
+        ┃     ┣  OK ━ ALG_EC_SVDP_DHC of local pubkey and remote privkey(unchanged point)      ┃ SUCCESS   ┃    3 ms ┃  OK   (0x9000)
+        ┃     ┗  OK ━ ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)     ┃ SUCCESS   ┃    5 ms ┃  OK   (0x9000)
+        ┣ NOK ━ Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object                            ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+        ┣ NOK ━ Allocated KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object                           ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+        ┣ NOK ━ Allocated KeyAgreement(ALG_EC_PACE_GM) object                                  ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+        ┣ NOK ━ Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object                         ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+        ┣  OK ┳ Test of the ALG_ECDSA_SHA signature.                                           ┃ SUCCESS   ┃ All sub-tests had the expected result.
+        ┃     ┣  OK ━ Allocated Signature(ALG_ECDSA_SHA) object                                ┃ SUCCESS   ┃    7 ms ┃  OK   (0x9000)
+        ┃     ┗  OK ━ ALG_ECDSA_SHA with local keypair(random data)                            ┃ SUCCESS   ┃   43 ms ┃  OK   (0x9000)
+        ┣ NOK ━ Allocated Signature(ALG_ECDSA_SHA_224) object                                  ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+        ┣ NOK ━ Allocated Signature(ALG_ECDSA_SHA_256) object                                  ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+        ┣ NOK ━ Allocated Signature(ALG_ECDSA_SHA_384) object                                  ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+        ┗ NOK ━ Allocated Signature(ALG_ECDSA_SHA_512) object                                  ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
 
-    ### Test for support and with valid and invalid EC curves
-    EC type:                                             ALG_EC_FP
-    EC key length (bits):                                256 bits
-       KeyPair object allocation:                           OK	(0x9000)
-       Generate key with def curve (fails if no def):       OK	(0x9000)
-       Set valid custom curve:                              OK	(0x9000)
-       Generate key with valid curve:                       OK	(0x9000)
-    !! ECDH agreement with valid point:                     fail	(unknown,	0x6f00)
-       ECDH agreement with invalid point (fail is good):    fail	(ILLEGAL_VALUE,	0x   1)
-       ECDSA signature on random data:                      OK	(0x9000)
-       Set anomalous custom curve (may fail):               OK	(0x9000)
-       Generate key with anomalous curve (may fail):        fail	(unknown,	0x6f00)
-       ECDH agreement with small order point (fail is good):fail	(skipped,	0x ee1)
-       Set invalid custom curve (may fail):                 OK	(0x9000)
-       Generate key with invalid curve (fail is good):      fail	(unknown,	0x6f00)
-       Set invalid field (may fail):                        OK	(0x9000)
-       Generate key with invalid field (fail si good):      fail	(unknown,	0x6f00)
-   
-*Explanation: ALG_EC_FP with 256b curve was tested. Is supported by card (KeyPair object allocation: OK), don't have preset default curve (Generate key with def curve: fail), custom curve can be set (Set valid custom curve: OK), new keypair can be generated (Generate key with valid curve: OK), ECDH key agreement failed to execute (ECDH agreement with valid point: fail) although it was supposed to succeed (log line is therefore marked with !!), ECDH wil fail (expected behavior) if invalid point is provided (ECDH agreement with invalid point: fail), ECDSA signature worked and verified correctly (ECDSA signature on random data: OK), anomalous curve can be set (Set anomalous custom curve: OK), however generating a key on it will fail (Generate key with anomalous curve: fail), ECDH with small-order public key provided will fail as intended (ECDH agreement with small order point: fail), invalid custom curve could be set (Set invalid custom curve: OK), new keypair cannot be generated with invalid curve (Generate key with invalid curve: fail), invalid field (non-prime) could be set (Set invalid field: OK), however a key could not be generated (Generate key with invalid field: fail).*
 
 If you are interested in testing support for other JavaCard algorithms, please visit JCAlgTester project: https://github.com/crocs-muni/JCAlgTest
 
