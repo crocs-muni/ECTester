@@ -1,0 +1,2192 @@
+---
+testRun:
+  suite:
+    name: test
+    desc: The test-vectors suite contains a collection of test vectors which test
+      basic ECDH correctness.
+  tests:
+  - result:
+      cause: Some sub-tests did not have the expected result.
+      ok: false
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 88296731
+        natural_sw: 36864
+        apdu: 00 03 00 03 90 00
+        sws:
+        - 3
+        - 3
+        successful: false
+        desc: Allocated both keypairs 163b ALG_EC_F2M
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 00 a3 04
+      desc: Allocated both keypairs 163b ALG_EC_F2M
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 96185090
+        natural_sw: 36864
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff 82 00 7e 00 08 00 a3 00 07 00 06 00 03 00 15 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 15 02 0a 60 19 07
+          b8 c9 53 ca 14 81 eb 10 51 2f 78 74 4a 32 05 fd 00 2b 04 03 f0 eb a1 62
+          86 a2 d5 7e a0 99 11 68 d4 99 46 37 e8 34 3e 36 00 d5 1f bc 6c 71 a0 09
+          4f a2 cd d5 45 b1 1c 5c 0c 79 73 24 f1 00 15 04 00 00 00 00 00 00 00 00
+          00 02 92 fe 77 e7 0c 12 a4 23 4c 33 00 02 00 02
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 41131916
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 19 01 00 00 15 03 ed ae 17 3d e8 fa 0c f0 41 2d 6a 7b dc
+          81 fd bd 06 17 ad f8
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 47347918
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 2f 00 80 00 2b 04 03 a6 47 ba 32 da c7 1e c6 78 0b 06 38
+          a7 0c d2 4f c3 bd 4c 8e 02 e6 9e 96 15 41 84 4a 4a a3 37 69 a7 bc e7 10
+          f6 64 0a 56 0c
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: ECDH was unsuccessful.
+        ok: false
+        value: FAILURE
+      response:
+        duration: 33000831
+        natural_sw: 36864
+        apdu: 00 03 00 00 90 00
+        sws:
+        - 3
+        successful: false
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 02
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector b163-dhc
+  - result:
+      cause: Some sub-tests did not have the expected result.
+      ok: false
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 87748264
+        natural_sw: 36864
+        apdu: 00 03 00 03 90 00
+        sws:
+        - 3
+        - 3
+        successful: false
+        desc: Allocated both keypairs 233b ALG_EC_F2M
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 00 e9 04
+      desc: Allocated both keypairs 233b ALG_EC_F2M
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 109324279
+        natural_sw: 36864
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff ab 00 7e 00 04 00 e9 00 4a 00 1e 00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 1e
+          00 66 64 7e de 6c 33 2c 7f 8c 09 23 bb 58 21 3b 33 3b 20 e9 ce 42 81 fe
+          11 5f 7d 8f 90 ad 00 3d 04 00 fa c9 df cb ac 83 13 bb 21 39 f1 bb 75 5f
+          ef 65 bc 39 1f 8b 36 f8 f8 eb 73 71 fd 55 8b 01 00 6a 08 a4 19 03 35 06
+          78 e5 85 28 be bf 8a 0b ef f8 67 a7 ca 36 71 6f 7e 01 f8 10 52 00 1e 01
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 13 e9 74 e7 2f 8a 69 22 03 1d
+          26 03 cf e0 d7 00 02 00 02
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 44038200
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 22 01 00 00 1e 00 3c 3e e4 74 ac 0d 0b c1 df 56 7e 3c 35
+          f5 f7 66 c5 33 2b 2d 67 30 ff 0e 4d 8e 75 ae db
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 53199642
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 41 00 80 00 3d 04 00 47 56 ba dd ef c3 dc 33 7a b2 7b 54
+          52 eb 10 af fd 9e 31 f5 b5 5c 33 0e 90 f0 f6 86 a2 01 2a 79 f6 52 32 30
+          8a 21 c9 8c 01 55 5c ca fc 7d ce 15 c8 fe d3 02 5a 76 0c bd 6c 23 27
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: ECDH was unsuccessful.
+        ok: false
+        value: FAILURE
+      response:
+        duration: 32787364
+        natural_sw: 36864
+        apdu: 00 03 00 00 90 00
+        sws:
+        - 3
+        successful: false
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 02
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector b233-dhc
+  - result:
+      cause: Some sub-tests did not have the expected result.
+      ok: false
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 87685323
+        natural_sw: 36864
+        apdu: 00 03 00 03 90 00
+        sws:
+        - 3
+        - 3
+        successful: false
+        desc: Allocated both keypairs 283b ALG_EC_F2M
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 01 1b 04
+      desc: Allocated both keypairs 283b ALG_EC_F2M
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 120601776
+        natural_sw: 36864
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff cd 00 7e 00 08 01 1b 00 0c 00 07 00 05 00 24 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 01 00 24 02 7b 68 0a c8 b8 59 6d a5 a4 af 8a 19 a0
+          30 3f ca 97 fd 76 45 30 9f a2 a5 81 48 5a f6 26 3e 31 3b 79 a2 f5 00 49
+          04 05 f9 39 25 8d b7 dd 90 e1 93 4f 8c 70 b0 df ec 2e ed 25 b8 55 7e ac
+          9c 80 e2 e1 98 f8 cd be cd 86 b1 20 53 03 67 68 54 fe 24 14 1c b9 8f e6
+          d4 b2 0d 02 b4 51 6f f7 02 35 0e dd b0 82 67 79 c8 13 f0 df 45 be 81 12
+          f4 00 24 03 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ef 90 39
+          96 60 fc 93 8a 90 16 5b 04 2a 7c ef ad b3 07 00 02 00 02
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 44976056
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 28 01 00 00 24 02 f4 34 55 84 22 46 a2 cc 8e c0 68 e9 d6
+          c6 e4 16 0f 6b a4 e3 b5 d8 31 d9 3c 1d aa 8f d3 d5 a9 66 0c 7b b1
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 58209637
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 4d 00 80 00 49 04 02 50 4e 1a 17 81 9d 39 f0 10 a4 a6 9a
+          05 68 29 94 02 b5 8f 94 4a 38 4c 7d 1a 62 c9 c9 3e a4 d1 ff 30 0e 13 02
+          65 13 2f 7b 4c 64 b7 4b 91 79 ed 0f 2e 21 1f 43 28 d6 25 40 50 22 f5 54
+          17 0d a9 32 b8 0f df 7c 1a ab 12
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: ECDH was unsuccessful.
+        ok: false
+        value: FAILURE
+      response:
+        duration: 32850803
+        natural_sw: 36864
+        apdu: 00 03 00 00 90 00
+        sws:
+        - 3
+        successful: false
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 02
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector b283-dhc
+  - result:
+      cause: Some sub-tests did not have the expected result.
+      ok: false
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 86932640
+        natural_sw: 36864
+        apdu: 00 03 00 03 90 00
+        sws:
+        - 3
+        - 3
+        successful: false
+        desc: Allocated both keypairs 409b ALG_EC_F2M
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 01 99 04
+      desc: Allocated both keypairs 409b ALG_EC_F2M
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 152646124
+        natural_sw: 36864
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff 00 01 19 00 7e 00 04 01 99 00 57 00 34 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 34
+          00 21 a5 c2 c8 ee 9f eb 5c 4b 9a 75 3b 7b 47 6b 7f d6 42 2e f1 f3 dd 67
+          47 61 fa 99 d6 ac 27 c8 a9 a1 97 b2 72 82 2f 6c d5 7a 55 aa 4f 50 ae 31
+          7b 13 54 5f 00 69 04 01 5d 48 60 d0 88 dd b3 49 6b 0c 60 64 75 62 60 44
+          1c de 4a f1 77 1d 4d b0 1f fe 5b 34 e5 97 03 dc 25 5a 86 8a 11 80 51 56
+          03 ae ab 60 79 4e 54 bb 79 96 a7 00 61 b1 cf ab 6b e5 f3 2b bf a7 83 24
+          ed 10 6a 76 36 b9 c5 a7 bd 19 8d 01 58 aa 4f 54 88 d0 8f 38 51 4f 1f df
+          4b 4f 40 d2 18 1b 36 81 c3 64 ba 02 73 c7 06 00 34 01 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 e2 aa d6 a6
+          12 f3 33 07 be 5f a4 7c 3c 9e 05 2f 83 81 64 cd 37 d9 a2 11 73 00 02 00
+          02
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 50555548
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 38 01 00 00 34 00 ac e9 21 03 ff e2 62 ac 17 ad 42 a4 6d
+          43 66 f4 cb 4c 58 0e ff 3a b1 dd e6 bd df db b7 37 48 11 d5 2b 1f a9 93
+          20 b4 af 5d 4e 92 08 c1 4e b8 ef a8 91 6c
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 67800920
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 6d 00 80 00 69 04 01 46 98 9a 50 29 7b e3 73 dd 66 5c 45
+          45 5a 2a e4 c2 21 da 5c d4 24 00 7b d9 7f 9e 8e 84 6f 96 74 0f 3f a5 8c
+          3c 94 12 96 71 cd d4 d7 ea 65 0a 2a ad e9 d7 01 b4 2b ff da 84 39 46 a1
+          4a d6 08 0f 95 b8 fc 6b 7e 17 35 28 d0 8e d3 6f e6 40 aa f8 5a a0 0f b5
+          ed d5 90 5a 38 b3 c7 96 1b 77 22 b7 7b 8d cb 44 bb 25 f5
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: ECDH was unsuccessful.
+        ok: false
+        value: FAILURE
+      response:
+        duration: 33907884
+        natural_sw: 36864
+        apdu: 00 03 00 00 90 00
+        sws:
+        - 3
+        successful: false
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 02
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector b409-dhc
+  - result:
+      cause: Some sub-tests did not have the expected result.
+      ok: false
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 86887166
+        natural_sw: 36864
+        apdu: 00 03 00 03 90 00
+        sws:
+        - 3
+        - 3
+        successful: false
+        desc: Allocated both keypairs 571b ALG_EC_F2M
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 02 3b 04
+      desc: Allocated both keypairs 571b ALG_EC_F2M
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 187148699
+        natural_sw: 36864
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff 00 01 81 00 7e 00 08 02 3b 00 0a 00 05 00 02 00 48 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 48
+          02 f4 0e 7e 22 21 f2 95 de 29 71 17 b7 f3 d6 2f 5c 6a 97 ff cb 8c ef f1
+          cd 6b a8 ce 4a 9a 18 ad 84 ff ab bd 8e fa 59 33 2b e7 ad 67 56 a6 6e 29
+          4a fd 18 5a 78 ff 12 aa 52 0e 4d e7 39 ba ca 0c 7f fe ff 7f 29 55 72 7a
+          00 91 04 03 03 00 1d 34 b8 56 29 6c 16 c0 d4 0d 3c d7 75 0a 93 d1 d2 95
+          5f a8 0a a5 f4 0f c8 db 7b 2a bd bd e5 39 50 f4 c0 d2 93 cd d7 11 a3 5b
+          67 fb 14 99 ae 60 03 86 14 f1 39 4a bf a3 b4 c8 50 d9 27 e1 e7 76 9c 8e
+          ec 2d 19 03 7b f2 73 42 da 63 9b 6d cc ff fe b7 3d 69 d7 8c 6c 27 a6 00
+          9c bb ca 19 80 f8 53 39 21 e8 a6 84 42 3e 43 ba b0 8a 57 62 91 af 8f 46
+          1b b2 a8 b3 53 1d 2f 04 85 c1 9b 16 e2 f1 51 6e 23 dd 3c 1a 48 27 af 1b
+          8a c1 5b 00 48 03 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff e6 61 ce 18 ff 55 98
+          73 08 05 9b 18 68 23 85 1e c7 dd 9c a1 16 1d e9 3d 51 74 d6 6e 83 82 e9
+          bb 2f e8 4e 47 00 02 00 02
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 57025587
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 4c 01 00 00 48 03 44 f2 2b e8 79 99 b9 5b 22 87 f6 74 30
+          ea 8f e6 46 c6 2f e3 8b 7c e6 1f 1f 95 65 97 c2 7b dd d9 90 2e 20 d4 43
+          6a bf 3b eb d8 24 3e c2 9a 00 48 1a 8a 2c 19 f5 50 e9 96 41 b5 f1 4a af
+          bb 5b da 95 3a 75 59 f8 65 3a
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 81085231
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 95 00 80 00 91 04 03 b6 3f 5f a1 12 ae 6b 5f 11 3c 76 51
+          44 fe 4c bd 60 20 e2 6d 40 0c 11 60 9a 3a 63 4b 9a 32 5f 41 6b 0e 3d 32
+          15 73 4c 68 a1 c2 c8 fa d1 d0 bb 9e b3 93 9a 41 af 22 42 1f 68 78 1e 7e
+          b0 66 4b 9d f5 ce a4 48 de aa 3b 00 8e 6c c7 7b cd dc 81 6e 84 cf c1 f6
+          26 82 4f a2 4d 3d 5f d3 3d 80 93 cb fe 1f c4 d8 81 b6 3b 49 41 23 bc 75
+          96 70 ed cb 18 87 bb 3b 9d 5a 8b 51 6b c5 03 82 81 63 70 9d 4d ac b5 94
+          d2 77 a1 5a 92 c0 64 e5 77 0d 1b
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: ECDH was unsuccessful.
+        ok: false
+        value: FAILURE
+      response:
+        duration: 32919623
+        natural_sw: 36864
+        apdu: 00 03 00 00 90 00
+        sws:
+        - 3
+        successful: false
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 02
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector b571-dhc
+  - result:
+      cause: All sub-tests had the expected result.
+      ok: true
+      value: SUCCESS
+    tests:
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 512461072
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Allocated both keypairs 224b ALG_EC_FP
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 00 e0 05
+      desc: Allocated both keypairs 224b ALG_EC_FP
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 976369235
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff b9 00 7d 00 1c d7 c1 34 aa 26 43 66 86 2a 18 30 25 75 d1
+          d7 87 b0 9f 07 57 97 da 89 f5 7e c8 c0 ff 00 1c 68 a5 e6 2c a9 ce 6c 1c
+          29 98 03 a6 c1 53 0b 51 4e 18 2a d8 b0 04 2a 59 ca d2 9f 43 00 1c 25 80
+          f6 3c cf e4 41 38 87 07 13 b1 a9 23 69 e3 3e 21 35 d2 66 db b3 72 38 6c
+          40 0b 00 39 04 0d 90 29 ad 2c 7e 5c f4 34 08 23 b2 a8 7d c6 8c 9e 4c e3
+          17 4c 1e 6e fd ee 12 c0 7d 58 aa 56 f7 72 c0 72 6f 24 c6 b8 9e 4e cd ac
+          24 35 4b 9e 99 ca a3 f6 d3 76 14 02 cd 00 1c d7 c1 34 aa 26 43 66 86 2a
+          18 30 25 75 d0 fb 98 d1 16 bc 4b 6d de bc a3 a5 a7 93 9f 00 02 00 01
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 66962325
+        natural_sw: 36864
+        apdu: 90 00 90 00
+        sws:
+        - 36864
+        successful: true
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 20 01 00 00 1c 7c 4b 7a 2c 8a 4b ad 1f bb 7d 79 cc 09 55
+          db 7c 6a 46 60 ca 64 cc 47 78 15 9b 49 5e
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 78856868
+        natural_sw: 36864
+        apdu: 90 00 90 00
+        sws:
+        - 36864
+        successful: true
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 3d 00 80 00 39 04 2a 97 08 9a 92 96 14 7b 71 b2 1a 4b 57
+          4e 12 78 24 5b 53 6f 14 d8 c2 b9 d0 7a 87 4e 9b 90 0d 7c 77 a7 09 a7 97
+          27 6b 8c a1 ba 61 bb 95 b5 46 fc 29 f8 62 e4 4d 59 d2 5b
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 631910071
+        natural_sw: 36864
+        apdu: 90 00 00 14 4a dc a2 e2 cf e8 db d4 f0 b9 ce 27 e4 42 2c 57 ee 0a 6b
+          98 90 00
+        sws:
+        - 36864
+        successful: true
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 01
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector brainpoolP224r1-dh
+  - result:
+      cause: All sub-tests had the expected result.
+      ok: true
+      value: SUCCESS
+    tests:
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 508803213
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Allocated both keypairs 256b ALG_EC_FP
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 01 00 05
+      desc: Allocated both keypairs 256b ALG_EC_FP
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 984786785
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff d1 00 7d 00 20 a9 fb 57 db a1 ee a9 bc 3e 66 0a 90 9d 83
+          8d 72 6e 3b f6 23 d5 26 20 28 20 13 48 1d 1f 6e 53 77 00 20 7d 5a 09 75
+          fc 2c 30 57 ee f6 75 30 41 7a ff e7 fb 80 55 c1 26 dc 5c 6c e9 4a 4b 44
+          f3 30 b5 d9 00 20 26 dc 5c 6c e9 4a 4b 44 f3 30 b5 d9 bb d7 7c bf 95 84
+          16 29 5c f7 e1 ce 6b cc dc 18 ff 8c 07 b6 00 41 04 8b d2 ae b9 cb 7e 57
+          cb 2c 4b 48 2f fc 81 b7 af b9 de 27 e1 e3 bd 23 c2 3a 44 53 bd 9a ce 32
+          62 54 7e f8 35 c3 da c4 fd 97 f8 46 1a 14 61 1d c9 c2 77 45 13 2d ed 8e
+          54 5c 1d 54 c7 2f 04 69 97 00 20 a9 fb 57 db a1 ee a9 bc 3e 66 0a 90 9d
+          83 8d 71 8c 39 7a a3 b5 61 a6 f7 90 1e 0e 82 97 48 56 a7 00 02 00 01
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 70802575
+        natural_sw: 36864
+        apdu: 90 00 90 00
+        sws:
+        - 36864
+        successful: true
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 24 01 00 00 20 81 db 1e e1 00 15 0f f2 ea 33 8d 70 82 71
+          be 38 30 0c b5 42 41 d7 99 50 f7 7b 06 30 39 80 4f 1d
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 79763002
+        natural_sw: 36864
+        apdu: 90 00 90 00
+        sws:
+        - 36864
+        successful: true
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 45 00 80 00 41 04 8d 2d 68 8c 6c f9 3e 11 60 ad 04 cc 44
+          29 11 7d c2 c4 18 25 e1 e9 fc a0 ad dd 34 e6 f1 b3 9f 7b 99 0c 57 52 08
+          12 be 51 26 41 e4 70 34 83 21 06 bc 7d 3e 8d d0 e4 c7 f1 13 6d 70 06 54
+          7c ec 6a
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 603389347
+        natural_sw: 36864
+        apdu: 90 00 00 14 4f 1c cf fb b2 a1 4d a1 f1 7d e2 91 da bc dd 10 9e b1 3b
+          b7 90 00
+        sws:
+        - 36864
+        successful: true
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 01
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector brainpoolP256r1-dh
+  - result:
+      cause: Some sub-tests did not have the expected result.
+      ok: false
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 93647509
+        natural_sw: 36864
+        apdu: 00 03 00 03 90 00
+        sws:
+        - 3
+        - 3
+        successful: false
+        desc: Allocated both keypairs 384b ALG_EC_FP
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 01 80 05
+      desc: Allocated both keypairs 384b ALG_EC_FP
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 160256912
+        natural_sw: 36864
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff 00 01 31 00 7d 00 30 8c b9 1e 82 a3 38 6d 28 0f 5d 6f 7e
+          50 e6 41 df 15 2f 71 09 ed 54 56 b4 12 b1 da 19 7f b7 11 23 ac d3 a7 29
+          90 1d 1a 71 87 47 00 13 31 07 ec 53 00 30 7b c3 82 c6 3d 8c 15 0c 3c 72
+          08 0a ce 05 af a0 c2 be a2 8e 4f b2 27 87 13 91 65 ef ba 91 f9 0f 8a a5
+          81 4a 50 3a d4 eb 04 a8 c7 dd 22 ce 28 26 00 30 04 a8 c7 dd 22 ce 28 26
+          8b 39 b5 54 16 f0 44 7c 2f b7 7d e1 07 dc d2 a6 2e 88 0e a5 3e eb 62 d5
+          7c b4 39 02 95 db c9 94 3a b7 86 96 fa 50 4c 11 00 61 04 1d 1c 64 f0 68
+          cf 45 ff a2 a6 3a 81 b7 c1 3f 6b 88 47 a3 e7 7e f1 4f e3 db 7f ca fe 0c
+          bd 10 e8 e8 26 e0 34 36 d6 46 aa ef 87 b2 e2 47 d4 af 1e 8a be 1d 75 20
+          f9 c2 a4 5c b1 eb 8e 95 cf d5 52 62 b7 0b 29 fe ec 58 64 e1 9c 05 4f f9
+          91 29 28 0e 46 46 21 77 91 81 11 42 82 03 41 26 3c 53 15 00 30 8c b9 1e
+          82 a3 38 6d 28 0f 5d 6f 7e 50 e6 41 df 15 2f 71 09 ed 54 56 b3 1f 16 6e
+          6c ac 04 25 a7 cf 3a b6 af 6b 7f c3 10 3b 88 32 02 e9 04 65 65 00 02 00
+          01
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 49073788
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 34 01 00 00 30 1e 20 f5 e0 48 a5 88 6f 1f 15 7c 74 e9 1b
+          de 2b 98 c8 b5 2d 58 e5 00 3d 57 05 3f c4 b0 bd 65 d6 f1 5e b5 d1 ee 16
+          10 df 87 07 95 14 36 27 d0 42
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 65378615
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 65 00 80 00 61 04 4d 44 32 6f 26 9a 59 7a 5b 58 bb a5 65
+          da 55 56 ed 7f d9 a8 a9 eb 76 c2 5f 46 db 69 d1 9d c8 ce 6a d1 8e 40 4b
+          15 73 8b 20 86 df 37 e7 1d 1e b4 62 d6 92 13 6d e5 6c be 93 bf 5f a3 18
+          8e f5 8b c8 a3 a0 ec 6c 1e 15 1a 21 03 8a 42 e9 18 53 29 b5 b2 75 90 3d
+          19 2f 8d 4e 1f 32 fe 9c c7 8c 48
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: ECDH was unsuccessful.
+        ok: false
+        value: FAILURE
+      response:
+        duration: 24947635
+        natural_sw: 36864
+        apdu: 0e e3 00 00 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 01
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector brainpoolP384r1-dh
+  - result:
+      cause: Some sub-tests did not have the expected result.
+      ok: false
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 86854154
+        natural_sw: 36864
+        apdu: 00 03 00 03 90 00
+        sws:
+        - 3
+        - 3
+        successful: false
+        desc: Allocated both keypairs 512b ALG_EC_FP
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 02 00 05
+      desc: Allocated both keypairs 512b ALG_EC_FP
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 192203270
+        natural_sw: 36864
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff 00 01 91 00 7d 00 40 aa dd 9d b8 db e9 c4 8b 3f d4 e6 ae
+          33 c9 fc 07 cb 30 8d b3 b3 c9 d2 0e d6 63 9c ca 70 33 08 71 7d 4d 9b 00
+          9b c6 68 42 ae cd a1 2a e6 a3 80 e6 28 81 ff 2f 2d 82 c6 85 28 aa 60 56
+          58 3a 48 f3 00 40 78 30 a3 31 8b 60 3b 89 e2 32 71 45 ac 23 4c c5 94 cb
+          dd 8d 3d f9 16 10 a8 34 41 ca ea 98 63 bc 2d ed 5d 5a a8 25 3a a1 0a 2e
+          f1 c9 8b 9a c8 b5 7f 11 17 a7 2b f2 c7 b9 e7 c1 ac 4d 77 fc 94 ca 00 40
+          3d f9 16 10 a8 34 41 ca ea 98 63 bc 2d ed 5d 5a a8 25 3a a1 0a 2e f1 c9
+          8b 9a c8 b5 7f 11 17 a7 2b f2 c7 b9 e7 c1 ac 4d 77 fc 94 ca dc 08 3e 67
+          98 40 50 b7 5e ba e5 dd 28 09 bd 63 80 16 f7 23 00 81 04 81 ae e4 bd d8
+          2e d9 64 5a 21 32 2e 9c 4c 6a 93 85 ed 9f 70 b5 d9 16 c1 b4 3b 62 ee f4
+          d0 09 8e ff 3b 1f 78 e2 d0 d4 8d 50 d1 68 7b 93 b9 7d 5f 7c 6d 50 47 40
+          6a 5e 68 8b 35 22 09 bc b9 f8 22 7d de 38 5d 56 63 32 ec c0 ea bf a9 cf
+          78 22 fd f2 09 f7 00 24 a5 7b 1a a0 00 c5 5b 88 1f 81 11 b2 dc de 49 4a
+          5f 48 5e 5b ca 4b d8 8a 27 63 ae d1 ca 2b 2f a8 f0 54 06 78 cd 1e 0f 3a
+          d8 08 92 00 40 aa dd 9d b8 db e9 c4 8b 3f d4 e6 ae 33 c9 fc 07 cb 30 8d
+          b3 b3 c9 d2 0e d6 63 9c ca 70 33 08 70 55 3e 5c 41 4c a9 26 19 41 86 61
+          19 7f ac 10 47 1d b1 d3 81 08 5d da dd b5 87 96 82 9c a9 00 69 00 02 00
+          01
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 54372781
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 44 01 00 00 40 16 30 2f f0 db bb 5a 8d 73 3d ab 71 41 c1
+          b4 5a cb c8 71 59 39 67 7f 6a 56 85 0a 38 bd 87 bd 59 b0 9e 80 27 96 09
+          ff 33 3e b9 d4 c0 61 23 1f b2 6f 92 ee b0 49 82 a5 f1 d1 76 4c ad 57 66
+          54 22
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 75849876
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 85 00 80 00 81 04 9d 45 f6 6d e5 d6 7e 2e 6d b6 e9 3a 59
+          ce 0b b4 81 06 09 7f f7 8a 08 1d e7 81 cd b3 1f ce 8c cb aa ea 8d d4 32
+          0c 41 19 f1 e9 cd 43 7a 2e ab 37 31 fa 96 68 ab 26 8d 87 1d ed a5 5a 54
+          73 19 9f 2f dc 31 30 95 bc dd 5f b3 a9 16 36 f0 7a 95 9c 8e 86 b5 63 6a
+          1e 93 0e 83 96 04 9c b4 81 96 1d 36 5c c1 14 53 a0 6c 71 98 35 47 5b 12
+          cb 52 fc 3c 38 3b ce 35 e2 7e f1 94 51 2b 71 87 62 85 fa
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: ECDH was unsuccessful.
+        ok: false
+        value: FAILURE
+      response:
+        duration: 33764314
+        natural_sw: 36864
+        apdu: 0e e3 00 00 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 01
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector brainpoolP512r1-dh
+  - result:
+      cause: Some sub-tests did not have the expected result.
+      ok: false
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 87859757
+        natural_sw: 36864
+        apdu: 00 03 00 03 90 00
+        sws:
+        - 3
+        - 3
+        successful: false
+        desc: Allocated both keypairs 163b ALG_EC_F2M
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 00 a3 04
+      desc: Allocated both keypairs 163b ALG_EC_F2M
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 95816763
+        natural_sw: 36864
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff 82 00 7e 00 08 00 a3 00 07 00 06 00 03 00 15 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 15 02 0a 60 19 07
+          b8 c9 53 ca 14 81 eb 10 51 2f 78 74 4a 32 05 fd 00 2b 04 03 f0 eb a1 62
+          86 a2 d5 7e a0 99 11 68 d4 99 46 37 e8 34 3e 36 00 d5 1f bc 6c 71 a0 09
+          4f a2 cd d5 45 b1 1c 5c 0c 79 73 24 f1 00 15 04 00 00 00 00 00 00 00 00
+          00 02 92 fe 77 e7 0c 12 a4 23 4c 33 00 02 00 02
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 40989547
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 19 01 00 00 15 00 66 53 b6 07 73 98 fa dc 7b f5 e6 01 58
+          17 01 48 c3 dc 45 27
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 47248099
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 2f 00 80 00 2b 04 05 74 23 6f 14 28 c4 32 13 09 46 78 3a
+          5b 3a ab b6 c2 7e a5 d6 07 90 8c 25 1b 8d a0 21 cb ac 28 1f 12 3f 7a f4
+          fa c5 b3 db b8
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: ECDH was unsuccessful.
+        ok: false
+        value: FAILURE
+      response:
+        duration: 32900852
+        natural_sw: 36864
+        apdu: 00 03 00 00 90 00
+        sws:
+        - 3
+        successful: false
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 02
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector k163-dhc
+  - result:
+      cause: Some sub-tests did not have the expected result.
+      ok: false
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 87951777
+        natural_sw: 36864
+        apdu: 00 03 00 03 90 00
+        sws:
+        - 3
+        - 3
+        successful: false
+        desc: Allocated both keypairs 233b ALG_EC_F2M
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 00 e9 04
+      desc: Allocated both keypairs 233b ALG_EC_F2M
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 109416505
+        natural_sw: 36864
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff ab 00 7e 00 04 00 e9 00 4a 00 1e 00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 1e
+          00 66 64 7e de 6c 33 2c 7f 8c 09 23 bb 58 21 3b 33 3b 20 e9 ce 42 81 fe
+          11 5f 7d 8f 90 ad 00 3d 04 00 fa c9 df cb ac 83 13 bb 21 39 f1 bb 75 5f
+          ef 65 bc 39 1f 8b 36 f8 f8 eb 73 71 fd 55 8b 01 00 6a 08 a4 19 03 35 06
+          78 e5 85 28 be bf 8a 0b ef f8 67 a7 ca 36 71 6f 7e 01 f8 10 52 00 1e 01
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 13 e9 74 e7 2f 8a 69 22 03 1d
+          26 03 cf e0 d7 00 02 00 02
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 43064727
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 22 01 00 00 1e 00 13 5a 5b 8c 3c e0 47 fb c5 df 26 27 7d
+          3b f8 3a c3 3d da db 5c f4 a0 50 ca 82 be 48 f0
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 54275028
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 41 00 80 00 3d 04 01 f4 0e 34 b3 ed 4a 1b 2d 40 c0 56 fb
+          75 f2 ad 54 3c 89 7c fd 82 f5 42 cf 74 6a 0f 20 2f 00 c1 30 a1 ab e9 2b
+          c4 c9 77 c8 00 77 79 96 cc c5 0b 90 df 99 1a 2e 81 dd 51 5c 18 85 99
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: ECDH was unsuccessful.
+        ok: false
+        value: FAILURE
+      response:
+        duration: 32910259
+        natural_sw: 36864
+        apdu: 00 03 00 00 90 00
+        sws:
+        - 3
+        successful: false
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 02
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector k233-dhc
+  - result:
+      cause: Some sub-tests did not have the expected result.
+      ok: false
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 86853116
+        natural_sw: 36864
+        apdu: 00 03 00 03 90 00
+        sws:
+        - 3
+        - 3
+        successful: false
+        desc: Allocated both keypairs 283b ALG_EC_F2M
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 01 1b 04
+      desc: Allocated both keypairs 283b ALG_EC_F2M
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 121712945
+        natural_sw: 36864
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff cd 00 7e 00 08 01 1b 00 0c 00 07 00 05 00 24 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 01 00 24 02 7b 68 0a c8 b8 59 6d a5 a4 af 8a 19 a0
+          30 3f ca 97 fd 76 45 30 9f a2 a5 81 48 5a f6 26 3e 31 3b 79 a2 f5 00 49
+          04 05 f9 39 25 8d b7 dd 90 e1 93 4f 8c 70 b0 df ec 2e ed 25 b8 55 7e ac
+          9c 80 e2 e1 98 f8 cd be cd 86 b1 20 53 03 67 68 54 fe 24 14 1c b9 8f e6
+          d4 b2 0d 02 b4 51 6f f7 02 35 0e dd b0 82 67 79 c8 13 f0 df 45 be 81 12
+          f4 00 24 03 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ef 90 39
+          96 60 fc 93 8a 90 16 5b 04 2a 7c ef ad b3 07 00 02 00 02
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 45103165
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 28 01 00 00 24 01 5f de 49 b8 02 54 2a 52 c7 0b 23 a0 b1
+          78 4e 5f 87 80 b5 68 53 f9 a5 f8 c3 a5 26 6e 87 27 dc e9 7d 4a 17
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 57292812
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 4d 00 80 00 49 04 03 f0 75 c2 4c 35 a9 dc 99 52 be 6f d3
+          2b 76 1d ce 63 f4 72 0a 22 40 8e 3a 14 bb d0 97 e0 12 b5 69 4c 22 a0 06
+          75 82 5b 40 20 2e 95 be 7d ab 5a 82 61 47 e0 4b 8c 51 a0 9b 00 34 57 7c
+          1f 31 f8 c1 6a 70 c8 e1 c8 5b 89
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: ECDH was unsuccessful.
+        ok: false
+        value: FAILURE
+      response:
+        duration: 33970050
+        natural_sw: 36864
+        apdu: 00 03 00 00 90 00
+        sws:
+        - 3
+        successful: false
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 02
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector k283-dhc
+  - result:
+      cause: Some sub-tests did not have the expected result.
+      ok: false
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 86804063
+        natural_sw: 36864
+        apdu: 00 03 00 03 90 00
+        sws:
+        - 3
+        - 3
+        successful: false
+        desc: Allocated both keypairs 409b ALG_EC_F2M
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 01 99 04
+      desc: Allocated both keypairs 409b ALG_EC_F2M
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 152325603
+        natural_sw: 36864
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff 00 01 19 00 7e 00 04 01 99 00 57 00 34 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 34
+          00 21 a5 c2 c8 ee 9f eb 5c 4b 9a 75 3b 7b 47 6b 7f d6 42 2e f1 f3 dd 67
+          47 61 fa 99 d6 ac 27 c8 a9 a1 97 b2 72 82 2f 6c d5 7a 55 aa 4f 50 ae 31
+          7b 13 54 5f 00 69 04 01 5d 48 60 d0 88 dd b3 49 6b 0c 60 64 75 62 60 44
+          1c de 4a f1 77 1d 4d b0 1f fe 5b 34 e5 97 03 dc 25 5a 86 8a 11 80 51 56
+          03 ae ab 60 79 4e 54 bb 79 96 a7 00 61 b1 cf ab 6b e5 f3 2b bf a7 83 24
+          ed 10 6a 76 36 b9 c5 a7 bd 19 8d 01 58 aa 4f 54 88 d0 8f 38 51 4f 1f df
+          4b 4f 40 d2 18 1b 36 81 c3 64 ba 02 73 c7 06 00 34 01 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 e2 aa d6 a6
+          12 f3 33 07 be 5f a4 7c 3c 9e 05 2f 83 81 64 cd 37 d9 a2 11 73 00 02 00
+          02
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 50305534
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 38 01 00 00 34 00 08 4b 71 1e 3c 60 82 2e 70 fa 68 28 b5
+          ab fb 0e 44 88 88 b3 5b 0c 8b b0 9f 80 66 16 dc 1e cf 22 dd 86 23 7d 93
+          7c 1b fd e6 2b 75 ae 65 59 53 fc 6b 2f 7e
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 67718651
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 6d 00 80 00 69 04 01 77 f7 36 f6 11 63 20 ca fb b5 b4 de
+          c2 02 d4 05 08 18 2f e0 11 18 9b 81 e1 f3 99 8f 54 08 60 7a 46 bb 15 0a
+          c4 7b ca aa fd e4 7b 8a 7b 72 f4 78 bc 22 d2 01 df 4e f4 b3 7e 01 24 e5
+          5b 67 f3 58 6d e2 4a 88 a6 c5 d9 88 54 00 7d 4b 0c 4b 4c cd 68 d5 1f af
+          a7 63 8b be 55 5d 60 b7 4d ef 21 7c 6a 63 c5 b4 06 8f b7
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: ECDH was unsuccessful.
+        ok: false
+        value: FAILURE
+      response:
+        duration: 32831372
+        natural_sw: 36864
+        apdu: 00 03 00 00 90 00
+        sws:
+        - 3
+        successful: false
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 02
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector k409-dhc
+  - result:
+      cause: Some sub-tests did not have the expected result.
+      ok: false
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 87832129
+        natural_sw: 36864
+        apdu: 00 03 00 03 90 00
+        sws:
+        - 3
+        - 3
+        successful: false
+        desc: Allocated both keypairs 571b ALG_EC_F2M
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 02 3b 04
+      desc: Allocated both keypairs 571b ALG_EC_F2M
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 185891254
+        natural_sw: 36864
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff 00 01 81 00 7e 00 08 02 3b 00 0a 00 05 00 02 00 48 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 48
+          02 f4 0e 7e 22 21 f2 95 de 29 71 17 b7 f3 d6 2f 5c 6a 97 ff cb 8c ef f1
+          cd 6b a8 ce 4a 9a 18 ad 84 ff ab bd 8e fa 59 33 2b e7 ad 67 56 a6 6e 29
+          4a fd 18 5a 78 ff 12 aa 52 0e 4d e7 39 ba ca 0c 7f fe ff 7f 29 55 72 7a
+          00 91 04 03 03 00 1d 34 b8 56 29 6c 16 c0 d4 0d 3c d7 75 0a 93 d1 d2 95
+          5f a8 0a a5 f4 0f c8 db 7b 2a bd bd e5 39 50 f4 c0 d2 93 cd d7 11 a3 5b
+          67 fb 14 99 ae 60 03 86 14 f1 39 4a bf a3 b4 c8 50 d9 27 e1 e7 76 9c 8e
+          ec 2d 19 03 7b f2 73 42 da 63 9b 6d cc ff fe b7 3d 69 d7 8c 6c 27 a6 00
+          9c bb ca 19 80 f8 53 39 21 e8 a6 84 42 3e 43 ba b0 8a 57 62 91 af 8f 46
+          1b b2 a8 b3 53 1d 2f 04 85 c1 9b 16 e2 f1 51 6e 23 dd 3c 1a 48 27 af 1b
+          8a c1 5b 00 48 03 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff e6 61 ce 18 ff 55 98
+          73 08 05 9b 18 68 23 85 1e c7 dd 9c a1 16 1d e9 3d 51 74 d6 6e 83 82 e9
+          bb 2f e8 4e 47 00 02 00 02
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 57957742
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 4c 01 00 00 48 01 73 cd 16 31 e1 8e ce 01 b7 3b 35 72 ff
+          aa 74 95 c4 bc 81 f4 07 8a e5 0d 69 cb 1e 33 8a cf 13 46 91 17 11 29 21
+          16 6d df 2d 29 f3 a9 f8 e1 0c 67 e8 8c 9a 99 20 3a 83 45 65 be 76 ac 59
+          12 64 36 73 9a 6a fa 02 9c c5
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 81080686
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 95 00 80 00 91 04 03 10 6a 5c 1d 92 3a 09 90 ea 8c 60 08
+          c3 6c 36 6b 53 e5 62 2b 98 46 40 44 74 1f bc 78 40 28 4d b8 bb f6 02 86
+          6c 30 cc bf 5f 9b 7e 59 cc 1d 9b fc c5 b9 70 fa 62 4d a9 b1 5f 6c b3 36
+          f5 dd a7 e6 b9 92 4d 5d ce 45 43 00 5c 5c 7b bd 5a 78 9a c4 c6 28 3d eb
+          0d 0d 37 c4 85 2b aa 57 d6 bc 2b 0a c6 33 7f eb 09 70 4c 44 d1 b3 85 b7
+          0c c3 94 fa 23 5d 83 e6 e7 11 17 87 e5 7d 09 02 c0 cb 13 2a 19 0a 6e 62
+          f3 98 51 1c 0c 2c 4c d5 0d 45 70
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: ECDH was unsuccessful.
+        ok: false
+        value: FAILURE
+      response:
+        duration: 32880765
+        natural_sw: 36864
+        apdu: 00 03 00 00 90 00
+        sws:
+        - 3
+        successful: false
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 02
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector k571-dhc
+  - result:
+      cause: All sub-tests had the expected result.
+      ok: true
+      value: SUCCESS
+    tests:
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 510905722
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Allocated both keypairs 192b ALG_EC_FP
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 00 c0 05
+      desc: Allocated both keypairs 192b ALG_EC_FP
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 938131106
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff a1 00 7d 00 18 ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff fe ff ff ff ff ff ff ff ff 00 18 ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff ff fe ff ff ff ff ff ff ff fc 00 18 64 21 05 19 e5 9c 80 e7 0f a7
+          e9 ab 72 24 30 49 fe b8 de ec c1 46 b9 b1 00 31 04 18 8d a8 0e b0 30 90
+          f6 7c bf 20 eb 43 a1 88 00 f4 ff 0a fd 82 ff 10 12 07 19 2b 95 ff c8 da
+          78 63 10 11 ed 6b 24 cd d5 73 f9 77 a1 1e 79 48 11 00 18 ff ff ff ff ff
+          ff ff ff ff ff ff ff 99 de f8 36 14 6b c9 b1 b4 d2 28 31 00 02 00 01
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 66445658
+        natural_sw: 36864
+        apdu: 90 00 90 00
+        sws:
+        - 36864
+        successful: true
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 1c 01 00 00 18 f1 7d 3f ea 36 7b 74 d3 40 85 1c a4 27 0d
+          cb 24 c2 71 f4 45 be d9 d5 27
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 71286405
+        natural_sw: 36864
+        apdu: 90 00 90 00
+        sws:
+        - 36864
+        successful: true
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 35 00 80 00 31 04 42 ea 6d d9 96 9d d2 a6 1f ea 1a ac 7f
+          8e 98 ed cc 89 6c 6e 55 85 7c c0 df be 5d 7c 61 fa c8 8b 11 81 1b de 32
+          8e 8a 0d 12 bf 01 a9 d2 04 b5 23
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 390914711
+        natural_sw: 36864
+        apdu: 90 00 00 14 cb 0f fa a3 d3 f9 d5 87 67 65 cf 08 2e e0 b8 93 c8 17 9d
+          19 90 00
+        sws:
+        - 36864
+        successful: true
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 01
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector p192-dhc
+  - result:
+      cause: All sub-tests had the expected result.
+      ok: true
+      value: SUCCESS
+    tests:
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 506774175
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Allocated both keypairs 224b ALG_EC_FP
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 00 e0 05
+      desc: Allocated both keypairs 224b ALG_EC_FP
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 977113153
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff b9 00 7d 00 1c ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff 00 00 00 00 00 00 00 00 00 00 00 01 00 1c ff ff ff ff ff ff ff ff
+          ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff fe 00 1c b4 05
+          0a 85 0c 04 b3 ab f5 41 32 56 50 44 b0 b7 d7 bf d8 ba 27 0b 39 43 23 55
+          ff b4 00 39 04 b7 0e 0c bd 6b b4 bf 7f 32 13 90 b9 4a 03 c1 d3 56 c2 11
+          22 34 32 80 d6 11 5c 1d 21 bd 37 63 88 b5 f7 23 fb 4c 22 df e6 cd 43 75
+          a0 5a 07 47 64 44 d5 81 99 85 00 7e 34 00 1c ff ff ff ff ff ff ff ff ff
+          ff ff ff ff ff 16 a2 e0 b8 f0 3e 13 dd 29 45 5c 5c 2a 3d 00 02 00 01
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 68146469
+        natural_sw: 36864
+        apdu: 90 00 90 00
+        sws:
+        - 36864
+        successful: true
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 20 01 00 00 1c 83 46 a6 0f c6 f2 93 ca 5a 0d 2a f6 8b a7
+          1d 1d d3 89 e5 e4 08 37 94 2d f3 e4 3c bd
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 75751128
+        natural_sw: 36864
+        apdu: 90 00 90 00
+        sws:
+        - 36864
+        successful: true
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 3d 00 80 00 39 04 af 33 cd 06 29 bc 7e 99 63 20 a3 f4 03
+          68 f7 4d e8 70 4f a3 7b 8f ab 69 ab aa e2 80 88 20 92 cc bb a7 93 0f 41
+          9a 8a 4f 9b b1 69 78 bb c3 83 87 29 99 25 59 a6 f2 e2 d7
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 448096328
+        natural_sw: 36864
+        apdu: 90 00 00 14 d0 22 bc f6 ea ef 77 89 ef 8d 2a ea a9 ab 9d 50 89 44 ce
+          03 90 00
+        sws:
+        - 36864
+        successful: true
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 01
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector p224-dhc
+  - result:
+      cause: All sub-tests had the expected result.
+      ok: true
+      value: SUCCESS
+    tests:
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 508848461
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Allocated both keypairs 256b ALG_EC_FP
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 01 00 05
+      desc: Allocated both keypairs 256b ALG_EC_FP
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 984510573
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff d1 00 7d 00 20 ff ff ff ff 00 00 00 01 00 00 00 00 00 00
+          00 00 00 00 00 00 ff ff ff ff ff ff ff ff ff ff ff ff 00 20 ff ff ff ff
+          00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 ff ff ff ff ff ff ff ff
+          ff ff ff fc 00 20 5a c6 35 d8 aa 3a 93 e7 b3 eb bd 55 76 98 86 bc 65 1d
+          06 b0 cc 53 b0 f6 3b ce 3c 3e 27 d2 60 4b 00 41 04 6b 17 d1 f2 e1 2c 42
+          47 f8 bc e6 e5 63 a4 40 f2 77 03 7d 81 2d eb 33 a0 f4 a1 39 45 d8 98 c2
+          96 4f e3 42 e2 fe 1a 7f 9b 8e e7 eb 4a 7c 0f 9e 16 2b ce 33 57 6b 31 5e
+          ce cb b6 40 68 37 bf 51 f5 00 20 ff ff ff ff 00 00 00 00 ff ff ff ff ff
+          ff ff ff bc e6 fa ad a7 17 9e 84 f3 b9 ca c2 fc 63 25 51 00 02 00 01
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 70921568
+        natural_sw: 36864
+        apdu: 90 00 90 00
+        sws:
+        - 36864
+        successful: true
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 24 01 00 00 20 7d 7d c5 f7 1e b2 9d da f8 0d 62 14 63 2e
+          ea e0 3d 90 58 af 1f b6 d2 2e d8 0b ad b6 2b c1 a5 34
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 79886409
+        natural_sw: 36864
+        apdu: 90 00 90 00
+        sws:
+        - 36864
+        successful: true
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 45 00 80 00 41 04 70 0c 48 f7 7f 56 58 4c 5c c6 32 ca 65
+          64 0d b9 1b 6b ac ce 3a 4d f6 b4 2c e7 cc 83 88 33 d2 87 db 71 e5 09 e3
+          fd 9b 06 0d db 20 ba 5c 51 dc c5 94 8d 46 fb f6 40 df e0 44 17 82 ca b8
+          5f a4 ac
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 604830194
+        natural_sw: 36864
+        apdu: 90 00 00 14 38 1a e0 83 bf 9f f3 bb 49 73 0a 96 d4 e5 5a ab ae 1c 42
+          da 90 00
+        sws:
+        - 36864
+        successful: true
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 01
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector p256-dhc
+  - result:
+      cause: Some sub-tests did not have the expected result.
+      ok: false
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 93772490
+        natural_sw: 36864
+        apdu: 00 03 00 03 90 00
+        sws:
+        - 3
+        - 3
+        successful: false
+        desc: Allocated both keypairs 384b ALG_EC_FP
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 01 80 05
+      desc: Allocated both keypairs 384b ALG_EC_FP
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 160336344
+        natural_sw: 36864
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff 00 01 31 00 7d 00 30 ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff fe ff ff ff ff
+          00 00 00 00 00 00 00 00 ff ff ff ff 00 30 ff ff ff ff ff ff ff ff ff ff
+          ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff fe ff ff
+          ff ff 00 00 00 00 00 00 00 00 ff ff ff fc 00 30 b3 31 2f a7 e2 3e e7 e4
+          98 8e 05 6b e3 f8 2d 19 18 1d 9c 6e fe 81 41 12 03 14 08 8f 50 13 87 5a
+          c6 56 39 8d 8a 2e d1 9d 2a 85 c8 ed d3 ec 2a ef 00 61 04 aa 87 ca 22 be
+          8b 05 37 8e b1 c7 1e f3 20 ad 74 6e 1d 3b 62 8b a7 9b 98 59 f7 41 e0 82
+          54 2a 38 55 02 f2 5d bf 55 29 6c 3a 54 5e 38 72 76 0a b7 36 17 de 4a 96
+          26 2c 6f 5d 9e 98 bf 92 92 dc 29 f8 f4 1d bd 28 9a 14 7c e9 da 31 13 b5
+          f0 b8 c0 0a 60 b1 ce 1d 7e 81 9d 7a 43 1d 7c 90 ea 0e 5f 00 30 ff ff ff
+          ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff c7 63 4d
+          81 f4 37 2d df 58 1a 0d b2 48 b0 a7 7a ec ec 19 6a cc c5 29 73 00 02 00
+          01
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 49213363
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 34 01 00 00 30 3c c3 12 2a 68 f0 d9 50 27 ad 38 c0 67 91
+          6b a0 eb 8c 38 89 4d 22 e1 b1 56 18 b6 81 8a 66 17 74 ad 46 3b 20 5d a8
+          8c f6 99 ab 4d 43 c9 cf 98 a1
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 65236773
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 65 00 80 00 61 04 a7 c7 6b 97 0c 3b 5f e8 b0 5d 28 38 ae
+          04 ab 47 69 7b 9e af 52 e7 64 59 2e fd a2 7f e7 51 32 72 73 44 66 b4 00
+          09 1a db f2 d6 8c 58 e0 c5 00 66 ac 68 f1 9f 2e 1c b8 79 ae d4 3a 99 69
+          b9 1a 08 39 c4 c3 8a 49 74 9b 66 1e fe df 24 34 51 91 5e d0 90 5a 32 b0
+          60 99 2b 46 8c 64 76 6f c8 43 7a
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: ECDH was unsuccessful.
+        ok: false
+        value: FAILURE
+      response:
+        duration: 24736316
+        natural_sw: 36864
+        apdu: 0e e3 00 00 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 01
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector p384-dhc
+  - result:
+      cause: Some sub-tests did not have the expected result.
+      ok: false
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 86784249
+        natural_sw: 36864
+        apdu: 00 03 00 03 90 00
+        sws:
+        - 3
+        - 3
+        successful: false
+        desc: Allocated both keypairs 521b ALG_EC_FP
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 02 09 05
+      desc: Allocated both keypairs 521b ALG_EC_FP
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 196019315
+        natural_sw: 36864
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff 00 01 9d 00 7d 00 42 01 ff ff ff ff ff ff ff ff ff ff ff
+          ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff ff ff ff ff 00 42 01 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff fc 00 42 00 51 95 3e b9 61 8e 1c 9a 1f 92 9a 21 a0 b6 85 40 ee a2 da
+          72 5b 99 b3 15 f3 b8 b4 89 91 8e f1 09 e1 56 19 39 51 ec 7e 93 7b 16 52
+          c0 bd 3b b1 bf 07 35 73 df 88 3d 2c 34 f1 ef 45 1f d4 6b 50 3f 00 00 85
+          04 00 c6 85 8e 06 b7 04 04 e9 cd 9e 3e cb 66 23 95 b4 42 9c 64 81 39 05
+          3f b5 21 f8 28 af 60 6b 4d 3d ba a1 4b 5e 77 ef e7 59 28 fe 1d c1 27 a2
+          ff a8 de 33 48 b3 c1 85 6a 42 9b f9 7e 7e 31 c2 e5 bd 66 01 18 39 29 6a
+          78 9a 3b c0 04 5c 8a 5f b4 2c 7d 1b d9 98 f5 44 49 57 9b 44 68 17 af bd
+          17 27 3e 66 2c 97 ee 72 99 5e f4 26 40 c5 50 b9 01 3f ad 07 61 35 3c 70
+          86 a2 72 c2 40 88 be 94 76 9f d1 66 50 00 42 01 ff ff ff ff ff ff ff ff
+          ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          fa 51 86 87 83 bf 2f 96 6b 7f cc 01 48 f7 09 a5 d0 3b b5 c9 b8 89 9c 47
+          ae bb 6f b7 1e 91 38 64 09 00 02 00 01
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 54956197
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 46 01 00 00 42 01 7e ec c0 7a b4 b3 29 06 8f ba 65 e5 6a
+          1f 88 90 aa 93 5e 57 13 4a e0 ff cc e8 02 73 51 51 f4 ea c6 56 4f 6e e9
+          97 4c 5e 68 87 a1 fe fe e5 74 3a e2 24 1b fe b9 5d 5c e3 1d dc b6 f9 ed
+          b4 d6 fc 47
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 77084167
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 89 00 80 00 85 04 00 68 5a 48 e8 6c 79 f0 f0 87 5f 7b c1
+          8d 25 eb 5f c8 c0 b0 7e 5d a4 f4 37 0f 3a 94 90 34 08 54 33 4b 1e 1b 87
+          fa 39 54 64 c6 06 26 12 4a 4e 70 d0 f7 85 60 1d 37 c0 98 70 eb f1 76 66
+          68 77 a2 04 6d 01 ba 52 c5 6f c8 77 6d 9e 8f 5d b4 f0 cc 27 63 6d 0b 74
+          1b be 05 40 06 97 94 2e 80 b7 39 88 4a 83 bd e9 9e 0f 67 16 93 9e 63 2b
+          c8 98 6f a1 8d cc d4 43 a3 48 b6 c3 e5 22 49 79 55 a4 f3 c3 02 f6 76
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: ECDH was unsuccessful.
+        ok: false
+        value: FAILURE
+      response:
+        duration: 33693572
+        natural_sw: 36864
+        apdu: 0e e3 00 00 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 01
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector p521-dhc
+  - result:
+      cause: All sub-tests had the expected result.
+      ok: true
+      value: SUCCESS
+    tests:
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 509939179
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Allocated both keypairs 160b ALG_EC_FP
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 00 a0 05
+      desc: Allocated both keypairs 160b ALG_EC_FP
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 925930316
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff 8a 00 7d 00 14 ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff 7f ff ff ff 00 14 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          7f ff ff fc 00 14 1c 97 be fc 54 bd 7a 8b 65 ac f8 9f 81 d4 d4 ad c5 65
+          fa 45 00 29 04 4a 96 b5 68 8e f5 73 28 46 64 69 89 68 c3 8b b9 13 cb fc
+          82 23 a6 28 55 31 68 94 7d 59 dc c9 12 04 23 51 37 7a c5 fb 32 00 15 01
+          00 00 00 00 00 00 00 00 00 01 f4 c8 f9 27 ae d3 ca 75 22 57 00 02 00 01
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 63549680
+        natural_sw: 36864
+        apdu: 90 00 90 00
+        sws:
+        - 36864
+        successful: true
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 18 01 00 00 14 aa 37 4f fc 3c e1 44 e6 b0 73 30 79 72 cb
+          6d 57 b2 a4 e9 82
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 69329475
+        natural_sw: 36864
+        apdu: 90 00 90 00
+        sws:
+        - 36864
+        successful: true
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 2d 00 80 00 29 04 49 b4 1e 0e 9c 03 69 c2 32 87 39 d9 0f
+          63 d5 67 07 c6 e5 bc 26 e0 08 b5 67 01 5e d9 6d 23 2a 03 11 1c 3e dc 0e
+          9c 8f 83
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 335175169
+        natural_sw: 36864
+        apdu: 90 00 00 14 d2 48 31 3e 86 5a 1a e6 77 78 2b 54 b2 4d 8a ba f1 1a 53
+          c2 90 00
+        sws:
+        - 36864
+        successful: true
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 01
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector secp160r1-dh
+  - result:
+      cause: Some sub-tests did not have the expected result.
+      ok: false
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 94827498
+        natural_sw: 36864
+        apdu: 00 03 00 03 90 00
+        sws:
+        - 3
+        - 3
+        successful: false
+        desc: Allocated both keypairs 163b ALG_EC_F2M
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 00 a3 04
+      desc: Allocated both keypairs 163b ALG_EC_F2M
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 95944582
+        natural_sw: 36864
+        apdu: 0e e3 0e e3 90 00
+        sws:
+        - 3811
+        - 3811
+        successful: false
+        desc: Set external curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 ff 82 00 7e 00 08 00 a3 00 07 00 06 00 03 00 15 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 15 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 2b 04 02 fe 13 c0 53
+          7b bc 11 ac aa 07 d7 93 de 4e 6d 5e 5c 94 ee e8 02 89 07 0f b0 5d 38 ff
+          58 32 1f 2e 80 05 36 d5 38 cc da a3 d9 00 15 04 00 00 00 00 00 00 00 00
+          00 02 01 08 a2 e0 cc 0d 99 f8 a5 ef 00 02 00 02
+      desc: Set external curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 41035002
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external privkey parameters on local keypair
+      type: command
+      command:
+        apdu: b0 5c 01 ff 19 01 00 00 15 03 a4 14 34 aa 99 c2 ef 40 c8 49 5b 2e d9
+          73 9c b2 15 5a 1e 0d
+      desc: Set external privkey parameters on local keypair
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 47345348
+        natural_sw: 36864
+        apdu: 0e e3 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: Set external pubkey parameters on remote keypair
+      type: command
+      command:
+        apdu: b0 5c 02 ff 2f 00 80 00 2b 04 07 27 83 fa ab 95 49 00 2b 4f 13 14 0b
+          88 13 2d 1c 75 b3 88 6c 05 a9 76 79 4e a7 9a 4d e2 6e 2e 19 41 8f 09 79
+          42 c0 86 41 c7
+      desc: Set external pubkey parameters on remote keypair
+    - result:
+        cause: ECDH was unsuccessful.
+        ok: false
+        value: FAILURE
+      response:
+        duration: 24834293
+        natural_sw: 36864
+        apdu: 0e e3 00 00 90 00
+        sws:
+        - 3811
+        successful: false
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+      type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 01
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+    type: compound
+    desc: Test vector sect163k1-dh
+  device:
+    cplc: {
+      }
+    type: card
+    ATR: 3bf01300008131fe45e8
+
+---
