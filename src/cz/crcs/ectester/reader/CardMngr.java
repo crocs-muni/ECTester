@@ -4,10 +4,10 @@ import com.licel.jcardsim.io.CAD;
 import com.licel.jcardsim.io.JavaxSmartCardInterface;
 import cz.crcs.ectester.common.util.ByteUtil;
 import javacard.framework.AID;
+import javacard.framework.ISO7816;
 
 import javax.smartcardio.*;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * @author Petr Svenda petr@svenda.com
@@ -165,50 +165,127 @@ public class CardMngr {
         }
     }
 
-    public byte[] getCPLCData() throws Exception {
-        byte[] data;
+    // Functions for CPLC taken and modified from https://github.com/martinpaljak/GlobalPlatformPro
+    private static final byte CLA_GP = (byte) 0x80;
+    private static final byte ISO7816_INS_GET_DATA = (byte) 0xCA;
+    private static final byte[] FETCH_GP_CPLC_APDU = {CLA_GP, ISO7816_INS_GET_DATA, (byte) 0x9F, (byte) 0x7F, (byte) 0x00};
+    private static final byte[] FETCH_ISO_CPLC_APDU = {ISO7816.CLA_ISO7816, ISO7816_INS_GET_DATA, (byte) 0x9F, (byte) 0x7F, (byte) 0x00};
+    private static final byte[] FETCH_GP_CARDDATA_APDU = {CLA_GP, ISO7816_INS_GET_DATA, (byte) 0x00, (byte) 0x66, (byte) 0x00};
 
-        // TODO: Modify to obtain CPLC data
-        byte apdu[] = new byte[HEADER_LENGTH];
-        apdu[OFFSET_CLA] = (byte) 0x00;
-        apdu[OFFSET_INS] = (byte) 0x00;
-        apdu[OFFSET_P1] = (byte) 0x00;
-        apdu[OFFSET_P2] = (byte) 0x00;
-        apdu[OFFSET_LC] = (byte) 0x00;
-
-        ResponseAPDU resp = send(apdu);
-        if (resp.getSW() != 0x9000) { // 0x9000 is "OK"
-            System.err.println("Fail to obtain card's response data");
-            data = null;
-        } else {
-            byte temp[] = resp.getBytes();
-            data = new byte[temp.length - 2];
-            System.arraycopy(temp, 0, data, 0, temp.length - 2);
-            // Last two bytes are status word (also obtainable by resp.getSW())
-            // Take a look at ISO7816_status_words.txt for common codes
+    public byte[] fetchCPLC() throws CardException {
+        // Try CPLC via GP
+        ResponseAPDU resp = sendAPDU(FETCH_GP_CPLC_APDU);
+        // If GP CLA fails, try with ISO
+        if (resp.getSW() == (ISO7816.SW_CLA_NOT_SUPPORTED & 0xffff)) {
+            resp = sendAPDU(FETCH_ISO_CPLC_APDU);
         }
-
-        return data;
+        if (resp.getSW() == (ISO7816.SW_NO_ERROR & 0xffff)) {
+            return resp.getData();
+        }
+        return null;
     }
 
-    public void probeCardCommands() throws Exception {
-        // TODO: modify to probe for instruction
-        for (int i = 0; i <= 0; i++) {
-            byte apdu[] = new byte[HEADER_LENGTH];
-            apdu[OFFSET_CLA] = (byte) 0x00;
-            apdu[OFFSET_INS] = (byte) 0x00;
-            apdu[OFFSET_P1] = (byte) 0x00;
-            apdu[OFFSET_P2] = (byte) 0x00;
-            apdu[OFFSET_LC] = (byte) 0x00;
+    public static final class CPLC {
+        public enum Field {
+            ICFabricator,
+            ICType,
+            OperatingSystemID,
+            OperatingSystemReleaseDate,
+            OperatingSystemReleaseLevel,
+            ICFabricationDate,
+            ICSerialNumber,
+            ICBatchIdentifier,
+            ICModuleFabricator,
+            ICModulePackagingDate,
+            ICCManufacturer,
+            ICEmbeddingDate,
+            ICPrePersonalizer,
+            ICPrePersonalizationEquipmentDate,
+            ICPrePersonalizationEquipmentID,
+            ICPersonalizer,
+            ICPersonalizationDate,
+            ICPersonalizationEquipmentID
+        }
 
-            ResponseAPDU resp = send(apdu);
+        private Map<Field, byte[]> values = new HashMap<>();
 
-            if (verbose)
-                System.out.println("Response: " + Integer.toHexString(resp.getSW()));
-
-            if (resp.getSW() != 0x6D00) { // Note: 0x6D00 is SW_INS_NOT_SUPPORTED
-                // something?
+        public CPLC(byte[] data) {
+            if (data == null || data.length < 3 || data[2] != 0x2A) {
+                throw new IllegalArgumentException("CPLC must be 0x2A bytes long");
             }
+            //offset = TLVUtils.skipTag(data, offset, (short)0x9F7F);
+            short offset = 3;
+            values.put(Field.ICFabricator, Arrays.copyOfRange(data, offset, offset + 2));
+            offset += 2;
+            values.put(Field.ICType, Arrays.copyOfRange(data, offset, offset + 2));
+            offset += 2;
+            values.put(Field.OperatingSystemID, Arrays.copyOfRange(data, offset, offset + 2));
+            offset += 2;
+            values.put(Field.OperatingSystemReleaseDate, Arrays.copyOfRange(data, offset, offset + 2));
+            offset += 2;
+            values.put(Field.OperatingSystemReleaseLevel, Arrays.copyOfRange(data, offset, offset + 2));
+            offset += 2;
+            values.put(Field.ICFabricationDate, Arrays.copyOfRange(data, offset, offset + 2));
+            offset += 2;
+            values.put(Field.ICSerialNumber, Arrays.copyOfRange(data, offset, offset + 4));
+            offset += 4;
+            values.put(Field.ICBatchIdentifier, Arrays.copyOfRange(data, offset, offset + 2));
+            offset += 2;
+            values.put(Field.ICModuleFabricator, Arrays.copyOfRange(data, offset, offset + 2));
+            offset += 2;
+            values.put(Field.ICModulePackagingDate, Arrays.copyOfRange(data, offset, offset + 2));
+            offset += 2;
+            values.put(Field.ICCManufacturer, Arrays.copyOfRange(data, offset, offset + 2));
+            offset += 2;
+            values.put(Field.ICEmbeddingDate, Arrays.copyOfRange(data, offset, offset + 2));
+            offset += 2;
+            values.put(Field.ICPrePersonalizer, Arrays.copyOfRange(data, offset, offset + 2));
+            offset += 2;
+            values.put(Field.ICPrePersonalizationEquipmentDate, Arrays.copyOfRange(data, offset, offset + 2));
+            offset += 2;
+            values.put(Field.ICPrePersonalizationEquipmentID, Arrays.copyOfRange(data, offset, offset + 4));
+            offset += 4;
+            values.put(Field.ICPersonalizer, Arrays.copyOfRange(data, offset, offset + 2));
+            offset += 2;
+            values.put(Field.ICPersonalizationDate, Arrays.copyOfRange(data, offset, offset + 2));
+            offset += 2;
+            values.put(Field.ICPersonalizationEquipmentID, Arrays.copyOfRange(data, offset, offset + 4));
+            offset += 4;
+        }
+
+        public Map<Field, byte[]> values() {
+            return values;
+        }
+    }
+
+    public CPLC getCPLC() throws CardException {
+        byte[] data = fetchCPLC();
+        return new CPLC(data);
+    }
+
+    public String mapCPLCField(CPLC.Field field, byte[] value) {
+        switch (field) {
+            case ICFabricator:
+                String id = ByteUtil.bytesToHex(value, false);
+                String fabricatorName = "unknown";
+                if (id.equals("3060")) {
+                    fabricatorName = "Renesas";
+                }
+                if (id.equals("4090")) {
+                    fabricatorName = "Infineon";
+                }
+                if (id.equals("4180")) {
+                    fabricatorName = "Atmel";
+                }
+                if (id.equals("4250")) {
+                    fabricatorName = "Samsung";
+                }
+                if (id.equals("4790")) {
+                    fabricatorName = "NXP";
+                }
+                return id + " (" + fabricatorName + ")";
+            default:
+                return ByteUtil.bytesToHex(value, false);
         }
     }
 
