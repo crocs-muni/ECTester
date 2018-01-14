@@ -39,9 +39,12 @@ public abstract class BaseXMLTestWriter implements TestWriter {
 
         root = rootElem;
         doc.appendChild(root);
+        root.appendChild(deviceElement(suite));
     }
 
     protected abstract Element testableElement(Testable t);
+
+    protected abstract Element deviceElement(TestSuite suite);
 
     private Element testElement(Test t) {
         Element testElem;

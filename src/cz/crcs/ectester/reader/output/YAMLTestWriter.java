@@ -1,12 +1,16 @@
 package cz.crcs.ectester.reader.output;
 
 import cz.crcs.ectester.common.output.BaseYAMLTestWriter;
+import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.test.Testable;
 import cz.crcs.ectester.common.util.ByteUtil;
+import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
+import cz.crcs.ectester.reader.test.CardTestSuite;
 import cz.crcs.ectester.reader.test.CommandTestable;
 
+import javax.smartcardio.CardException;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -50,6 +54,35 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
             result.put("type", "command");
             result.put("command", commandObject(cmd.getCommand()));
             result.put("response", responseObject(cmd.getResponse()));
+            return result;
+        }
+        return null;
+    }
+
+    private Map<String, Object> cplcObject(CardMngr card) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            CardMngr.CPLC cplc = card.getCPLC();
+            if (!cplc.values().isEmpty()) {
+                for (Map.Entry<CardMngr.CPLC.Field, byte[]> entry : cplc.values().entrySet()) {
+                    CardMngr.CPLC.Field field = entry.getKey();
+                    byte[] value = entry.getValue();
+                    result.put(field.name(), ByteUtil.bytesToHex(value, false));
+                }
+            }
+        } catch (CardException ignored) {
+        }
+        return result;
+    }
+
+    @Override
+    protected Map<String, Object> deviceObject(TestSuite suite) {
+        if (suite instanceof CardTestSuite) {
+            CardTestSuite cardSuite = (CardTestSuite) suite;
+            Map<String, Object> result = new HashMap<>();
+            result.put("type", "card");
+            result.put("cplc", cplcObject(cardSuite.getCard()));
+            result.put("ATR", ByteUtil.bytesToHex(cardSuite.getCard().getATR().getBytes(), false));
             return result;
         }
         return null;

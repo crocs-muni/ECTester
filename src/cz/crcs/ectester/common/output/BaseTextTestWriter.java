@@ -20,9 +20,12 @@ public abstract class BaseTextTestWriter implements TestWriter {
     public void begin(TestSuite suite) {
         output.println("═══ Running test suite: " + suite.getName() + " ═══");
         output.println("═══ " + suite.getDescription());
+        output.print(deviceString(suite));
     }
 
     protected abstract String testableString(Testable t);
+
+    protected abstract String deviceString(TestSuite suite);
 
     private String testString(Test t, String prefix) {
         if (!t.hasRun()) {

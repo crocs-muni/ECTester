@@ -116,4 +116,8 @@ public abstract class CardTestSuite extends TestSuite {
 
         return null;
     }
+
+    public CardMngr getCard() {
+        return card;
+    }
 }

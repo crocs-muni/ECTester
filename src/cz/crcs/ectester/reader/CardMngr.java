@@ -174,10 +174,10 @@ public class CardMngr {
 
     public byte[] fetchCPLC() throws CardException {
         // Try CPLC via GP
-        ResponseAPDU resp = sendAPDU(FETCH_GP_CPLC_APDU);
+        ResponseAPDU resp = send(FETCH_GP_CPLC_APDU);
         // If GP CLA fails, try with ISO
         if (resp.getSW() == (ISO7816.SW_CLA_NOT_SUPPORTED & 0xffff)) {
-            resp = sendAPDU(FETCH_ISO_CPLC_APDU);
+            resp = send(FETCH_ISO_CPLC_APDU);
         }
         if (resp.getSW() == (ISO7816.SW_NO_ERROR & 0xffff)) {
             return resp.getData();
@@ -207,10 +207,13 @@ public class CardMngr {
             ICPersonalizationEquipmentID
         }
 
-        private Map<Field, byte[]> values = new HashMap<>();
+        private Map<Field, byte[]> values = new TreeMap<>();
 
         public CPLC(byte[] data) {
-            if (data == null || data.length < 3 || data[2] != 0x2A) {
+            if (data == null) {
+                return;
+            }
+            if (data.length < 3 || data[2] != 0x2A) {
                 throw new IllegalArgumentException("CPLC must be 0x2A bytes long");
             }
             //offset = TLVUtils.skipTag(data, offset, (short)0x9F7F);
@@ -263,7 +266,7 @@ public class CardMngr {
         return new CPLC(data);
     }
 
-    public String mapCPLCField(CPLC.Field field, byte[] value) {
+    public static String mapCPLCField(CPLC.Field field, byte[] value) {
         switch (field) {
             case ICFabricator:
                 String id = ByteUtil.bytesToHex(value, false);
@@ -286,6 +289,14 @@ public class CardMngr {
                 return id + " (" + fabricatorName + ")";
             default:
                 return ByteUtil.bytesToHex(value, false);
+        }
+    }
+
+    public ATR getATR() {
+        if (simulate) {
+            return new ATR(simulator.getATR());
+        } else {
+            return card.getATR();
         }
     }
 

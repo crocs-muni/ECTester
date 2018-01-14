@@ -33,10 +33,13 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
         testSuite.put("desc", suite.getDescription());
 
         testRun.put("suite", testSuite);
+        testRun.put("device", deviceObject(suite));
         testRun.put("tests", tests);
     }
 
     abstract protected Map<String, Object> testableObject(Testable t);
+
+    abstract protected Map<String, Object> deviceObject(TestSuite suite);
 
     private Map<String, Object> testObject(Test t) {
         Map<String, Object> testObj;

@@ -1,6 +1,7 @@
 package cz.crcs.ectester.standalone.output;
 
 import cz.crcs.ectester.common.output.BaseXMLTestWriter;
+import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.test.Testable;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.standalone.test.KeyAgreementTestable;
@@ -108,5 +109,11 @@ public class XMLTestWriter extends BaseXMLTestWriter {
             result.appendChild(sigElement((SignatureTestable) t));
         }
         return result;
+    }
+
+    @Override
+    protected Element deviceElement(TestSuite suite) {
+        //TODO
+        return null;
     }
 }

@@ -1,6 +1,7 @@
 package cz.crcs.ectester.standalone.output;
 
 import cz.crcs.ectester.common.output.BaseYAMLTestWriter;
+import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.test.Testable;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.standalone.test.KeyAgreementTestable;
@@ -87,5 +88,11 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
             result.put("signature", sigObject((SignatureTestable) t));
         }
         return result;
+    }
+
+    @Override
+    protected Map<String, Object> deviceObject(TestSuite suite) {
+        //TODO
+        return null;
     }
 }
