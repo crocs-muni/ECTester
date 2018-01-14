@@ -4,9 +4,9 @@ layout: default
 
 {% include result_header.html testRun=page.testRun suite="Default" %}
 
-The default suite tests the default curves present on the card. These might not be present or the card might not even support ECC.
-Tests keypair allocation, generation, ECDH and ECDSA. ECDH is first tested with two valid generated keypairs, then a with a
-public key that is corrupted in various ways, these tests should fail.
+Tests the default curves present on the card. These might not be present or the card might not even support ECC.
+Tests keypair allocation, generation, ECDH and ECDSA. ECDH is first tested with two valid generated keypairs, then
+with a compressed public key to test support for compressed points.
 <br/>
 
 {% include result_table.html testRun=page.testRun %}
