@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pubkey>
+	<id>sect233r1/0</id>
+	<inline>0x000000000000000000000000000000000000000000000000000000000000,0x0187f85627b97874e747ee31e06d71caaeea52f21253e5f946d061da9138</inline>
+	<curve>secg/sect233r1</curve>
+	<desc>twist order = 0x2</desc>
+</pubkey>
+<pubkey>
+	<id>sect233r1/1</id>
+	<inline>0x00c5f754b03ae354c9cce8386a31436157eaa590a9cfb892dc40d56f66cf,0x01294608d589c250bed15f0e63887c961fa149c68881c1ec242e441ad1a3</inline>
+	<curve>secg/sect233r1</curve>
+	<desc>twist order = 0x5</desc>
+</pubkey>
+<pubkey>
+	<id>sect233r1/2</id>
+	<inline>0x0024806b9e973c082da34fadd43d94d6966e16b147450db7ddd6e5a3f4e2,0x0083fb9fa68aba9805c0a747897fd1bf12defaa7d8efee174060ac0ef3b0</inline>
+	<curve>secg/sect233r1</curve>
+	<desc>twist order = 0x11b</desc>
+</pubkey>
+<pubkey>
+	<id>sect233r1/3</id>
+	<inline>0x004bde91214e1b76dbe01fe34c68135178639f0453632209fd9da04d22fc,0x0030256812c97f8763815acc7fd00ca87d86cde0517ad2afc92b21c593d7</inline>
+	<curve>secg/sect233r1</curve>
+	<desc>twist order = 0x21d</desc>
+</pubkey>
+<pubkey>
+	<id>sect233r1/4</id>
+	<inline>0x00ca85e22408b271206c05630370c75c7c678392eb5ed54903ed3196eb5e,0x00c3e55b408782683364c3ea0191e4aaadc888f95c5d4a0e0e06e979f77c</inline>
+	<curve>secg/sect233r1</curve>
+	<desc>twist order = 0x22dba0b9</desc>
+</pubkey>
+<pubkey>
+	<id>sect233r1/5</id>
+	<inline>0x0159c22cd6ea5fe56041b75f3b21594ae94161363576338717d9b393ed85,0x00ec9f09736dbd80af6efd0f16419fd24982f9d5de455414057a6b57ac0c</inline>
+	<curve>secg/sect233r1</curve>
+	<desc>twist order = 0x2a7504c0fda95a2311</desc>
+</pubkey>
+<pubkey>
+	<id>sect233r1/6</id>
+	<inline>0x00fe6311a7ee2de94e57f9e632e184a8f9cc21d6a5865a820b6dd62371c3,0x0002dfd2fbdb68965f56f478b7a345950a5ef1e7a7f570962d389efc4612</inline>
+	<curve>secg/sect233r1</curve>
+	<desc>twist order = 0x1e53fa33649df4ef97d6b29ded5a7</desc>
+</pubkey>

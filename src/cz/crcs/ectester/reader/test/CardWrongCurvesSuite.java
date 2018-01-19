@@ -50,7 +50,7 @@ public class CardWrongCurvesSuite extends CardTestSuite {
                 Test allocate = runTest(CommandTest.expect(new Command.AllocateKeyAgreement(this.card, kaType), Result.ExpectedValue.SUCCESS));
                 if (allocate.ok()) {
                     Test ka = runTest(CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, kaType), Result.ExpectedValue.FAILURE));
-                    doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Allocate and perform KA, should fail.", allocate, ka));
+                    doTest(CompoundTest.any(Result.ExpectedValue.FAILURE, "Allocate and perform KA, should fail.", allocate, ka));
                 }
             }
         }

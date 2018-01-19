@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pubkey>
+	<id>secp521r1/0</id>
+	<inline>0x0099cfe88fe446b8eaeefc4094833b1ab0853c7bc4d906aef04d9f57be2de53e3678551217b736cd26d1b217dcb806c747f17e29bee7490161f86726d59f2129c16b,0x0079651e0bf51bd1bd86a1f520c528705862589c5b78843d523be3e980e93ef3ddf3366175a1567b88d54689e6bfcafee863ad3d93411d54ca3db6ad2ce27eae309d</inline>
+	<curve>secg/secp521r1</curve>
+	<desc>twist order = 0x5</desc>
+</pubkey>
+<pubkey>
+	<id>secp521r1/1</id>
+	<inline>0x0140ba8e264bfcbc2dae3e498236fdb502cdbcd053476d148143bb0a38f72d4bb4d0c53b971cd36ba19f0a35cfb6af2f82c1a9bc5978873e0edf753282e11fdfd045,0x0041833aebb70b75c471c35ca5cdbbdfb8c64dd10f2e977e254f081e2566e8010e80d69ff11cf3140561586e917070d2a0443d3f3eba20688f0e48e4132d0eb0a5b4</inline>
+	<curve>secg/secp521r1</curve>
+	<desc>twist order = 0x7</desc>
+</pubkey>
+<pubkey>
+	<id>secp521r1/2</id>
+	<inline>0x00925139c9b4c7788add3ec38be6c9799dcd4794f9f3e708bd66130b2d21abc953035a3bd6cbae7fc2cc02b0be12cd0b0fbfe0d190844bb3e346899f6c03908bb73b,0x006a86cb7307e9901bcf819e1cf2deecc0e2a35b0cb06998ec1e354267294a17f872179cad4f80e79ad06fd4200cbf142d18779a8e4633824265a0cae30aacd38418</inline>
+	<curve>secg/secp521r1</curve>
+	<desc>twist order = 0x4277ffb</desc>
+</pubkey>
+<pubkey>
+	<id>secp521r1/3</id>
+	<inline>0x013dec992b39d75718ca8ea86f481bec0d4717e18b86f0716e807374317bf4bd93cd036f6969d2d85e19f2b9a375c0c5cc3a46af11048671bb9c8aac21bd8a02bb9d,0x01f629b94eadd014680a318a29a743585e7b8a9a315accccf7dcd8b2f6d012f301eeb2477fb8c822b07f09cc2089c3be07896502cbf1e86f72635718dd2ae3004c65</inline>
+	<curve>secg/secp521r1</curve>
+	<desc>twist order = 0x25e6d2cd</desc>
+</pubkey>
+<pubkey>
+	<id>secp521r1/4</id>
+	<inline>0x013189c93b04b69426269fbadbee6379a6752ca1cbbe972ca1f14edbb4fefdc437bd96912266a83fb0482b6a291d74326a1d2b6a170f0cd24896e93323049fea281d,0x01a05a94d5e7481d42d3af74994f6f7bfacd231123cd6abcd31e3e99c571a84d032aeee65aa3fff8cda497aa77900910a897188f87fc4d502162349ec1d2345a307e</inline>
+	<curve>secg/secp521r1</curve>
+	<desc>twist order = 0x17c8b8fa594c0fc63a5c0043ab498c1762d92f18fdfe2fea8f074695615d886d81bf930a0ac77d01bf9dd8c1a1ae121dab4e860c5dc18e265de3</desc>
+</pubkey>

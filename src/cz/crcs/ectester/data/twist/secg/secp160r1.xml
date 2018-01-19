@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pubkey>
+	<id>secp160r1/0</id>
+	<inline>0xdfe49462b5a10a4cf944801e93a444d4951c54f4,0x9ef1de44c53a4814eb31f616175922327cd2e112</inline>
+	<curve>secg/secp160r1</curve>
+	<desc>twist order = 0x20b</desc>
+</pubkey>
+<pubkey>
+	<id>secp160r1/1</id>
+	<inline>0x5cf0cd60ea345232884895f01b4e1760927f5d94,0x0bb00af378e1f0f69589a2da5b8fd6b2669b5402</inline>
+	<curve>secg/secp160r1</curve>
+	<desc>twist order = 0x2c29d39e9</desc>
+</pubkey>
+<pubkey>
+	<id>secp160r1/2</id>
+	<inline>0xeb8957704438337bbddb0d6ce1e28b635d5db134,0x631bad39571cfea33639a76c774e46fecaadc9b1</inline>
+	<curve>secg/secp160r1</curve>
+	<desc>twist order = 0x2d65dd7cc36e3baf234efd9dea9ae3</desc>
+</pubkey>

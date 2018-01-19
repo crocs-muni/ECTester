@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pubkey>
+	<id>secp256k1/0</id>
+	<inline>0x1f5f34663a612761136c07de53d91039f82644aa7706e90b37ac2dc5154d79ed,0xb32d76a9b3c7a9fac50c6da11a9953d11b262206cf26f33a9feb20a6bb1bb70c</inline>
+	<curve>secg/secp256k1</curve>
+	<desc>twist order = 0x3</desc>
+</pubkey>
+<pubkey>
+	<id>secp256k1/1</id>
+	<inline>0x9537931b68257bb2ef5782a3df24719668c70029522ba296c076996231e5c790,0x236617decf9b2f14223d798de8de3bca791fe36603a312e572048e89609379d4</inline>
+	<curve>secg/secp256k1</curve>
+	<desc>twist order = 0xd</desc>
+</pubkey>
+<pubkey>
+	<id>secp256k1/2</id>
+	<inline>0xaa45c03ebb0dd5ef1eb604802b97cef9694d5b9f37b253a475be99927dc28d55,0xb6762cffb2eacc3504b6c2e25908c4b9af12a62450fab97690c137a1102d64d4</inline>
+	<curve>secg/secp256k1</curve>
+	<desc>twist order = 0xcf7</desc>
+</pubkey>
+<pubkey>
+	<id>secp256k1/3</id>
+	<inline>0x4c5029ee7f3f340b328d6db4e6195a21a43ddc42152137922e7ed27a2723ff87,0x2309f5db4cb59337fabd8ca6b1b8866fd3a96429c4aec311e315983bf3b6864f</inline>
+	<curve>secg/secp256k1</curve>
+	<desc>twist order = 0x586f</desc>
+</pubkey>
+<pubkey>
+	<id>secp256k1/4</id>
+	<inline>0x4234a6acce09563862bc78f46c93dbb9e8ca3579ec58d08f273911178ae88e25,0x5d3e9733e02e6b94f297d8d5905265d1ddfeacb2633f0db3fd255d0177d2de46</inline>
+	<curve>secg/secp256k1</curve>
+	<desc>twist order = 0x99ee564ea5d84f508913936a761b0d5d792a426a7779817ae2f5b67</desc>
+</pubkey>

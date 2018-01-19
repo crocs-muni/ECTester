@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pubkey>
+	<id>secp192k1/0</id>
+	<inline>0x000000000000000000000000000000000000000000000000,0x50f36a853090dc8aaeab4e45e31a9476899ac91c98622974</inline>
+	<curve>secg/secp192k1</curve>
+	<desc>twist order = 0x3</desc>
+</pubkey>
+<pubkey>
+	<id>secp192k1/1</id>
+	<inline>0xc1ee9eeacca70968c68149d7ea884f4d2081c7f135a3c0db,0xcd1fcc8fa5650d5b63c2e4e3529845200fe959e2bf7aa743</inline>
+	<curve>secg/secp192k1</curve>
+	<desc>twist order = 0x175</desc>
+</pubkey>
+<pubkey>
+	<id>secp192k1/2</id>
+	<inline>0xa5e8d7e243f29335b7f9067cc2a99334e5504dab66de2b61,0xe488e628f21a0d13439c912ad6dd6a4c017deb6d1bd9ac91</inline>
+	<curve>secg/secp192k1</curve>
+	<desc>twist order = 0xdc3f</desc>
+</pubkey>
+<pubkey>
+	<id>secp192k1/3</id>
+	<inline>0xc3ad3754b5199729816ba49f459caa03c63e8580f66c03a9,0xce4bc350ed04ecb8634147d9a9cd1cf6d06268fdc6a11fdd</inline>
+	<curve>secg/secp192k1</curve>
+	<desc>twist order = 0x24e7164b</desc>
+</pubkey>
+<pubkey>
+	<id>secp192k1/4</id>
+	<inline>0x14fc875f81ce7d409013996fa7d8d75dab7b750f41e7aeee,0xb16e153045429ab589746734c0fb13ad11a81ef95e41cdad</inline>
+	<curve>secg/secp192k1</curve>
+	<desc>twist order = 0x1d83dac42196d3629c6baf0247e0157a469</desc>
+</pubkey>

@@ -47,6 +47,11 @@
         <desc></desc>
     </category>
     <category>
+        <name>twist</name>
+        <directory>twist</directory>
+        <desc></desc>
+    </category>
+    <category>
         <name>test</name>
         <directory>test</directory>
         <desc>Test vectors</desc>

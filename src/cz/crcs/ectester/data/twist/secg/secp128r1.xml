@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pubkey>
+	<id>secp128r1/0</id>
+	<inline>0x7ad6f2458364dc3bc253564a0f55f047,0x24ca1c658f7572c87528e6b9db2b6a76</inline>
+	<curve>secg/secp128r1</curve>
+	<desc>twist order = 0x29</desc>
+</pubkey>
+<pubkey>
+	<id>secp128r1/1</id>
+	<inline>0xd831601d766cc45f62eb7cf7937ee642,0xf9e0a4e6fec14da13d27d248a190d230</inline>
+	<curve>secg/secp128r1</curve>
+	<desc>twist order = 0xc0034f</desc>
+</pubkey>
+<pubkey>
+	<id>secp128r1/2</id>
+	<inline>0x8867a9a49ff8c47c6d10d32783cd69b0,0xc2d9ae698d287ecdadce470328485477</inline>
+	<curve>secg/secp128r1</curve>
+	<desc>twist order = 0x56a1f8d</desc>
+</pubkey>
+<pubkey>
+	<id>secp128r1/3</id>
+	<inline>0xeb842468d2d732452a3044e8558fbf60,0x35022342302a1fc4f2bbd4ddca43892d</inline>
+	<curve>secg/secp128r1</curve>
+	<desc>twist order = 0x18996f4e0882951e9d1</desc>
+</pubkey>
