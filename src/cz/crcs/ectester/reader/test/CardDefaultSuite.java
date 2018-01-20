@@ -36,7 +36,8 @@ public class CardDefaultSuite extends CardTestSuite {
     }
 
     private void runDefault(byte field) throws Exception {
-        for (short keyLength : EC_Consts.FP_SIZES) {
+        short[] keySizes = field == KeyPair.ALG_EC_FP ? EC_Consts.FP_SIZES : EC_Consts.F2M_SIZES;
+        for (short keyLength : keySizes) {
             String description = "Tests of " + keyLength + "b " + (field == KeyPair.ALG_EC_FP ? "ALG_EC_FP" : "ALG_EC_F2M") + " support.";
 
             List<Test> supportTests = new LinkedList<>();
@@ -62,7 +63,7 @@ public class CardDefaultSuite extends CardTestSuite {
                     Test kaCompressed = runTest(CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_COMPRESS, kaType), ExpectedValue.SUCCESS));
                     Test perfTest = null;
                     if (ka.ok()) {
-                        perfTest = runTest(PerformanceTest.repeat(ecdh, 100));
+                        perfTest = runTest(PerformanceTest.repeat(ecdh, 10));
                     }
                     Test compound = runTest(CompoundTest.all(ExpectedValue.SUCCESS, "Test of the " + CardUtil.getKATypeString(kaType) + " KeyAgreement.", allocate, ka, kaCompressed, perfTest));
                     supportTests.add(compound);
@@ -78,7 +79,7 @@ public class CardDefaultSuite extends CardTestSuite {
                     Test expect = runTest(CommandTest.expect(ecdsa, ExpectedValue.SUCCESS));
                     Test perfTest = null;
                     if (expect.ok()) {
-                        perfTest = runTest(PerformanceTest.repeat(ecdsa, 100));
+                        perfTest = runTest(PerformanceTest.repeat(ecdsa, 10));
                     }
                     Test compound = runTest(CompoundTest.all(ExpectedValue.SUCCESS, "Test of the " + CardUtil.getSigTypeString(sigType) + " signature.", allocate, expect, perfTest));
                     supportTests.add(compound);

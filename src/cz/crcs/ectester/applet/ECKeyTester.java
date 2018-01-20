@@ -62,9 +62,7 @@ public class ECKeyTester {
             sw = AppletUtil.keypairCheck(privatePair);
             sw = AppletUtil.keypairCheck(publicPair);
             short pubkeyLength = ((ECPublicKey) publicPair.getPublic()).getW(pubkeyBuffer, pubkeyOffset);
-            // reached ok
-            ecKeyAgreement.init(privatePair.getPrivate()); // throws UNITIALIZED KEY when ALG_EC_SVDP_DHC_PLAIN is used
-            //ISOException.throwIt((short) 0x666);
+            ecKeyAgreement.init(privatePair.getPrivate());
 
             pubkeyLength = EC_Consts.corruptParameter(corruption, pubkeyBuffer, pubkeyOffset, pubkeyLength);
             length = ecKeyAgreement.generateSecret(pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);

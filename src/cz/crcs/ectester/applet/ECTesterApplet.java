@@ -70,7 +70,6 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     public static final short SW_KA_NULL = (short) 0x0ee4;
     public static final short SW_SIGNATURE_NULL = (short) 0x0ee5;
     public static final short SW_OBJECT_NULL = (short) 0x0ee6;
-    public static final short SW_KA_UNSUPPORTED = (short) 0x0ee7;
 
 
     // Class javacard.security.KeyAgreement
