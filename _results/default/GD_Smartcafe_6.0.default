@@ -14,7 +14,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 186540437
+        duration: 186466820
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -31,7 +31,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 33056000
+        duration: 33162072
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -48,7 +48,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 283304430
+        duration: 283092992
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -65,7 +65,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 447696562
+        duration: 447536729
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -87,7 +87,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 29830088
+          duration: 30123723
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -103,7 +103,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 79041244
+          duration: 79152602
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -119,7 +119,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 19337254
+          duration: 19613986
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -135,7 +135,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 77114431
+          duration: 77131787
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -145,7 +145,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 01
-        desc: Mean = 77489224 ns, Median = 77085635 ns, Mode = 77030472 ns
+        desc: Mean = 77495690 ns, Median = 77112680 ns, Mode = 76932993 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DH KeyAgreement.
     - result:
@@ -158,7 +158,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 33897672
+          duration: 34107356
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -174,7 +174,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 79673244
+          duration: 79795370
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -190,7 +190,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 20221617
+          duration: 20138429
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -206,7 +206,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 77975043
+          duration: 77730413
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -216,7 +216,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 02
-        desc: Mean = 78134743 ns, Median = 77760808 ns, Mode = 77609181 ns
+        desc: Mean = 78127149 ns, Median = 77747837 ns, Mode = 77638359 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DHC KeyAgreement.
     - result:
@@ -229,7 +229,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 33965051
+          duration: 32960026
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -245,7 +245,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 77401626
+          duration: 77573328
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -262,7 +262,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 19375699
+          duration: 19561540
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -279,7 +279,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 75500944
+          duration: 75637153
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -290,7 +290,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 03
-        desc: Mean = 75840738 ns, Median = 75457663 ns, Mode = 75404893 ns
+        desc: Mean = 75924057 ns, Median = 75526419 ns, Mode = 75480211 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DH_PLAIN KeyAgreement.
     - result:
@@ -303,7 +303,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 29406880
+          duration: 29578477
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -319,7 +319,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 81496131
+          duration: 81507056
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -336,7 +336,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 19928826
+          duration: 20085237
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -354,7 +354,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 76068189
+          duration: 76293873
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -365,7 +365,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 04
-        desc: Mean = 76814293 ns, Median = 76105331 ns, Mode = 76060045 ns
+        desc: Mean = 76688604 ns, Median = 76307690 ns, Mode = 76213171 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DHC_PLAIN KeyAgreement.
     - result:
@@ -373,7 +373,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 11488279
+        duration: 11626617
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -389,7 +389,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 15361903
+        duration: 15400629
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -410,7 +410,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 90441271
+          duration: 90483042
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -426,7 +426,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 170429614
+          duration: 170441136
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -442,7 +442,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 173308866
+          duration: 173019711
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -452,7 +452,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 11 00 00
-        desc: Mean = 173828595 ns, Median = 173832982 ns, Mode = 173129039 ns
+        desc: Mean = 173754218 ns, Median = 173762375 ns, Mode = 173019711 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA signature.
     - result:
@@ -465,7 +465,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 83944994
+          duration: 83917102
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -481,7 +481,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 195777571
+          duration: 195738506
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -497,7 +497,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 196373549
+          duration: 195979522
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -507,7 +507,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 25 00 00
-        desc: Mean = 198749691 ns, Median = 199760689 ns, Mode = 196318044 ns
+        desc: Mean = 198534536 ns, Median = 199484454 ns, Mode = 195979522 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_224 signature.
     - result:
@@ -520,7 +520,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 85519087
+          duration: 85476486
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -536,7 +536,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 195904168
+          duration: 195427945
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -552,7 +552,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 196524024
+          duration: 196081652
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -562,7 +562,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 21 00 00
-        desc: Mean = 198983391 ns, Median = 199147524 ns, Mode = 196524024 ns
+        desc: Mean = 198807938 ns, Median = 198860568 ns, Mode = 196081652 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_256 signature.
     - result:
@@ -575,7 +575,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 83944288
+          duration: 83779334
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -591,7 +591,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 205815700
+          duration: 205468592
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -607,7 +607,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 205444741
+          duration: 205206289
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -617,7 +617,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 22 00 00
-        desc: Mean = 208069910 ns, Median = 208774735 ns, Mode = 205353645 ns
+        desc: Mean = 207746864 ns, Median = 208432499 ns, Mode = 205108748 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_384 signature.
     - result:
@@ -630,7 +630,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 83972659
+          duration: 83899583
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -646,7 +646,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 205122394
+          duration: 204552602
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -662,7 +662,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 205480617
+          duration: 205267696
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -672,7 +672,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 26 00 00
-        desc: Mean = 208132447 ns, Median = 208812220 ns, Mode = 205480617 ns
+        desc: Mean = 207798786 ns, Median = 208554965 ns, Mode = 205042523 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_512 signature.
     type: compound
@@ -687,7 +687,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 186560465
+        duration: 186276474
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -704,7 +704,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 35084602
+        duration: 35039203
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -721,7 +721,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 279759387
+        duration: 279453342
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -738,7 +738,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 462802315
+        duration: 462268006
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -760,7 +760,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 30003185
+          duration: 29802313
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -776,7 +776,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 84094641
+          duration: 84044066
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -792,7 +792,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 22913328
+          duration: 22879068
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -808,7 +808,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 82110459
+          duration: 82143309
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -818,7 +818,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 01
-        desc: Mean = 82451884 ns, Median = 82065422 ns, Mode = 81937766 ns
+        desc: Mean = 82434931 ns, Median = 82026599 ns, Mode = 81946510 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DH KeyAgreement.
     - result:
@@ -831,7 +831,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 29372236
+          duration: 29409730
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -847,7 +847,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 84535941
+          duration: 84758331
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -863,7 +863,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 20010287
+          duration: 20166389
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -879,7 +879,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 82745122
+          duration: 82850129
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -889,7 +889,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 02
-        desc: Mean = 83472768 ns, Median = 82752079 ns, Mode = 82633608 ns
+        desc: Mean = 83440663 ns, Median = 82771801 ns, Mode = 82498886 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DHC KeyAgreement.
     - result:
@@ -902,7 +902,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 29353324
+          duration: 29515513
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -918,7 +918,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 82528857
+          duration: 82530627
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -935,7 +935,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 19451150
+          duration: 19660743
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -952,7 +952,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 80493746
+          duration: 80258162
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -963,7 +963,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 03
-        desc: Mean = 80865051 ns, Median = 80473873 ns, Mode = 80386228 ns
+        desc: Mean = 80833558 ns, Median = 80466417 ns, Mode = 80258162 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DH_PLAIN KeyAgreement.
     - result:
@@ -976,7 +976,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 32823522
+          duration: 32665489
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -992,7 +992,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 83182484
+          duration: 82952310
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1009,7 +1009,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 20193400
+          duration: 20094126
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -1027,7 +1027,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 81081780
+          duration: 81123481
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1038,7 +1038,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 04
-        desc: Mean = 81548187 ns, Median = 81160682 ns, Mode = 81081780 ns
+        desc: Mean = 81480410 ns, Median = 81089601 ns, Mode = 80976366 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DHC_PLAIN KeyAgreement.
     - result:
@@ -1046,7 +1046,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 13864477
+        duration: 14034833
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1062,7 +1062,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 17683085
+        duration: 17746857
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1083,7 +1083,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 85734815
+          duration: 85818687
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1099,7 +1099,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 174050427
+          duration: 174176781
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1115,7 +1115,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 182950042
+          duration: 183149438
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1125,7 +1125,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 11 00 00
-        desc: Mean = 180833187 ns, Median = 181354641 ns, Mode = 177877487 ns
+        desc: Mean = 180617464 ns, Median = 181277274 ns, Mode = 177854560 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA signature.
     - result:
@@ -1138,7 +1138,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 76273561
+          duration: 76570282
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1154,7 +1154,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 202833821
+          duration: 202661473
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1170,7 +1170,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 208339841
+          duration: 208060919
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1180,7 +1180,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 25 00 00
-        desc: Mean = 205785673 ns, Median = 206621408 ns, Mode = 203129494 ns
+        desc: Mean = 205721895 ns, Median = 206581721 ns, Mode = 202974498 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_224 signature.
     - result:
@@ -1193,7 +1193,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 75315792
+          duration: 75429035
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1209,7 +1209,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 202684948
+          duration: 202554519
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1225,7 +1225,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 206583475
+          duration: 206542031
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1235,7 +1235,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 21 00 00
-        desc: Mean = 206136295 ns, Median = 206579621 ns, Mode = 203211042 ns
+        desc: Mean = 205998292 ns, Median = 206432070 ns, Mode = 203030017 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_256 signature.
     - result:
@@ -1248,7 +1248,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 75461863
+          duration: 75737596
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1264,7 +1264,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 208396255
+          duration: 208391833
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1280,7 +1280,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 215650465
+          duration: 215595008
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1290,7 +1290,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 22 00 00
-        desc: Mean = 215250459 ns, Median = 215659487 ns, Mode = 212233797 ns
+        desc: Mean = 215128752 ns, Median = 215579664 ns, Mode = 212185022 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_384 signature.
     - result:
@@ -1303,7 +1303,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 77032812
+          duration: 77276867
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1319,7 +1319,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 211561323
+          duration: 211644193
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1335,7 +1335,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 212269572
+          duration: 211912107
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1345,7 +1345,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 26 00 00
-        desc: Mean = 214822166 ns, Median = 215611539 ns, Mode = 212255481 ns
+        desc: Mean = 214618768 ns, Median = 215453591 ns, Mode = 211897138 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_512 signature.
     type: compound
@@ -1360,7 +1360,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 185680187
+        duration: 185578005
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1377,7 +1377,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 35101910
+        duration: 35186784
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -1394,7 +1394,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 284344434
+        duration: 284238446
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1411,7 +1411,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 567754514
+        duration: 567490240
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1433,7 +1433,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 30909060
+          duration: 30981698
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1449,7 +1449,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 105264656
+          duration: 105233249
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1465,7 +1465,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 23302541
+          duration: 22793271
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -1481,7 +1481,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 103325692
+          duration: 103289418
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1491,7 +1491,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 01
-        desc: Mean = 103762216 ns, Median = 103376242 ns, Mode = 103268175 ns
+        desc: Mean = 103809348 ns, Median = 103452252 ns, Mode = 103282941 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DH KeyAgreement.
     - result:
@@ -1504,7 +1504,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 29475507
+          duration: 29419480
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1520,7 +1520,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 107613977
+          duration: 106077737
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1536,7 +1536,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 20138529
+          duration: 20226496
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -1552,7 +1552,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 104083435
+          duration: 104114485
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1562,7 +1562,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 02
-        desc: Mean = 104790430 ns, Median = 104078146 ns, Mode = 104012025 ns
+        desc: Mean = 104793619 ns, Median = 104079551 ns, Mode = 103896267 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DHC KeyAgreement.
     - result:
@@ -1575,7 +1575,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 29360018
+          duration: 29478170
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1591,7 +1591,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 103686624
+          duration: 103869891
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1608,7 +1608,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 19488365
+          duration: 19587185
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -1625,7 +1625,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 101830040
+          duration: 101993840
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1636,7 +1636,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 03
-        desc: Mean = 102191955 ns, Median = 101826484 ns, Mode = 101728279 ns
+        desc: Mean = 102166114 ns, Median = 101783444 ns, Mode = 101595103 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DH_PLAIN KeyAgreement.
     - result:
@@ -1649,7 +1649,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 32737287
+          duration: 32884225
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1665,7 +1665,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 104481766
+          duration: 104400753
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1682,7 +1682,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 20120188
+          duration: 20107141
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -1700,7 +1700,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 102523954
+          duration: 102285967
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1711,7 +1711,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 04
-        desc: Mean = 102847096 ns, Median = 102461263 ns, Mode = 102379991 ns
+        desc: Mean = 102708000 ns, Median = 102333256 ns, Mode = 102203864 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DHC_PLAIN KeyAgreement.
     - result:
@@ -1719,7 +1719,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 13700745
+        duration: 13760399
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1735,7 +1735,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 17524075
+        duration: 17541499
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1756,7 +1756,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 84565565
+          duration: 84553905
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1772,7 +1772,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 205527230
+          duration: 205467830
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1788,7 +1788,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 214623355
+          duration: 214501999
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1798,7 +1798,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 11 00 00
-        desc: Mean = 212322989 ns, Median = 212803497 ns, Mode = 209391868 ns
+        desc: Mean = 212181595 ns, Median = 212599541 ns, Mode = 209262562 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA signature.
     - result:
@@ -1811,7 +1811,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 75351948
+          duration: 75209591
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1827,7 +1827,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 238341937
+          duration: 238104950
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1843,7 +1843,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 244104693
+          duration: 243748617
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1853,7 +1853,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 25 00 00
-        desc: Mean = 241412539 ns, Median = 242203879 ns, Mode = 238710660 ns
+        desc: Mean = 241120260 ns, Median = 241921195 ns, Mode = 238519720 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_224 signature.
     - result:
@@ -1866,7 +1866,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 76761084
+          duration: 76848717
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1882,7 +1882,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 238288819
+          duration: 238133675
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1898,7 +1898,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 242220067
+          duration: 242032332
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1908,7 +1908,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 21 00 00
-        desc: Mean = 241728195 ns, Median = 242222063 ns, Mode = 238750216 ns
+        desc: Mean = 241485505 ns, Median = 241949500 ns, Mode = 238573724 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_256 signature.
     - result:
@@ -1921,7 +1921,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 75637590
+          duration: 75587479
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1937,7 +1937,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 244009719
+          duration: 243673150
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1953,7 +1953,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 251384215
+          duration: 251033893
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1963,7 +1963,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 22 00 00
-        desc: Mean = 250693680 ns, Median = 251308527 ns, Mode = 247963784 ns
+        desc: Mean = 250505240 ns, Median = 251019462 ns, Mode = 247610916 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_384 signature.
     - result:
@@ -1976,7 +1976,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 81599851
+          duration: 81697085
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1992,7 +1992,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 246169904
+          duration: 245869951
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2008,7 +2008,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 251240288
+          duration: 251162149
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2018,7 +2018,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 26 00 00
-        desc: Mean = 250917790 ns, Median = 251272608 ns, Mode = 248021604 ns
+        desc: Mean = 250713791 ns, Median = 251075162 ns, Mode = 247675141 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_512 signature.
     type: compound
@@ -2033,7 +2033,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 183719504
+        duration: 183837191
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2050,7 +2050,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 35319565
+        duration: 35503317
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -2067,7 +2067,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 293816212
+        duration: 293553253
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2084,7 +2084,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 688431896
+        duration: 688121367
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2106,7 +2106,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 29944165
+          duration: 30059205
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2122,7 +2122,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 129305045
+          duration: 129262362
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2138,7 +2138,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 22943885
+          duration: 25529317
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -2154,7 +2154,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 127257344
+          duration: 127259375
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2164,7 +2164,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 01
-        desc: Mean = 127693318 ns, Median = 127299298 ns, Mode = 127193201 ns
+        desc: Mean = 127786744 ns, Median = 127395240 ns, Mode = 127259375 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DH KeyAgreement.
     - result:
@@ -2177,7 +2177,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 30570977
+          duration: 30604249
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2193,7 +2193,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 129928986
+          duration: 129928925
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2209,7 +2209,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 20304917
+          duration: 20268157
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -2225,7 +2225,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 127954913
+          duration: 128066621
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2235,7 +2235,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 02
-        desc: Mean = 128698932 ns, Median = 127996159 ns, Mode = 127851804 ns
+        desc: Mean = 128763539 ns, Median = 128041083 ns, Mode = 127947678 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DHC KeyAgreement.
     - result:
@@ -2248,7 +2248,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 29512055
+          duration: 29675820
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2264,7 +2264,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 127691065
+          duration: 127875750
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2281,7 +2281,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 19622216
+          duration: 19772253
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -2298,7 +2298,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 125803611
+          duration: 125799267
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2309,7 +2309,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 03
-        desc: Mean = 126086297 ns, Median = 125702530 ns, Mode = 125567088 ns
+        desc: Mean = 126158158 ns, Median = 125809006 ns, Mode = 125646900 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DH_PLAIN KeyAgreement.
     - result:
@@ -2322,7 +2322,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 32819961
+          duration: 32938356
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2338,7 +2338,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 128295099
+          duration: 128430172
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2355,7 +2355,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 20153703
+          duration: 20429322
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -2373,7 +2373,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 126340737
+          duration: 126524620
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2384,7 +2384,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 04
-        desc: Mean = 126718324 ns, Median = 126330326 ns, Mode = 126228958 ns
+        desc: Mean = 126774327 ns, Median = 126379709 ns, Mode = 126230037 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DHC_PLAIN KeyAgreement.
     - result:
@@ -2392,7 +2392,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 13818071
+        duration: 14062175
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -2408,7 +2408,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 17617161
+        duration: 17826849
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -2429,7 +2429,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 84786220
+          duration: 84922043
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2445,7 +2445,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 239994085
+          duration: 239932548
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2461,7 +2461,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 248947499
+          duration: 248844544
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2471,7 +2471,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 11 00 00
-        desc: Mean = 246586098 ns, Median = 247079014 ns, Mode = 243578366 ns
+        desc: Mean = 246609855 ns, Median = 247102547 ns, Mode = 243698157 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA signature.
     - result:
@@ -2484,7 +2484,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 75462243
+          duration: 75575913
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2500,7 +2500,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 267970515
+          duration: 268020437
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2516,7 +2516,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 273481670
+          duration: 273671174
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2526,7 +2526,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 25 00 00
-        desc: Mean = 270975501 ns, Median = 271814505 ns, Mode = 268382333 ns
+        desc: Mean = 270934806 ns, Median = 271685274 ns, Mode = 268312657 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_224 signature.
     - result:
@@ -2539,7 +2539,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 76651107
+          duration: 77007738
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2555,7 +2555,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 267807110
+          duration: 267966570
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2571,7 +2571,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 271750388
+          duration: 271761393
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2581,7 +2581,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 21 00 00
-        desc: Mean = 271335246 ns, Median = 271803426 ns, Mode = 268469905 ns
+        desc: Mean = 271115505 ns, Median = 271767893 ns, Mode = 268519709 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_256 signature.
     - result:
@@ -2594,7 +2594,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 75694478
+          duration: 75711857
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2610,7 +2610,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 273524464
+          duration: 273352923
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2626,7 +2626,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 280842450
+          duration: 280915708
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2636,7 +2636,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 22 00 00
-        desc: Mean = 280413435 ns, Median = 280874581 ns, Mode = 277532408 ns
+        desc: Mean = 280349624 ns, Median = 280850074 ns, Mode = 277422890 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_384 signature.
     - result:
@@ -2649,7 +2649,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 77120681
+          duration: 77390505
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2665,7 +2665,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 277033978
+          duration: 276976232
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2681,7 +2681,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 277696540
+          duration: 277655736
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2691,7 +2691,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 26 00 00
-        desc: Mean = 280106404 ns, Median = 280880863 ns, Mode = 277476498 ns
+        desc: Mean = 280007945 ns, Median = 280761899 ns, Mode = 277517065 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_512 signature.
     type: compound
@@ -2706,7 +2706,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 186222826
+        duration: 186320562
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2723,7 +2723,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 35436198
+        duration: 35731015
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -2740,7 +2740,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 289700787
+        duration: 289712581
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2757,7 +2757,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 835391529
+        duration: 835151600
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2779,7 +2779,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 29750396
+          duration: 30075957
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2795,7 +2795,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 158670228
+          duration: 158863768
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2811,7 +2811,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 22932270
+          duration: 23174919
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -2827,7 +2827,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 157062276
+          duration: 156940576
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2837,7 +2837,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 01
-        desc: Mean = 157289392 ns, Median = 156942668 ns, Mode = 156774558 ns
+        desc: Mean = 157210953 ns, Median = 156840082 ns, Mode = 156728787 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DH KeyAgreement.
     - result:
@@ -2850,7 +2850,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 30700003
+          duration: 30801858
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2866,7 +2866,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 159624486
+          duration: 159550303
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2882,7 +2882,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 20324476
+          duration: 20492316
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -2898,7 +2898,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 157610866
+          duration: 157705256
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2908,7 +2908,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 02
-        desc: Mean = 158287596 ns, Median = 157563368 ns, Mode = 157472116 ns
+        desc: Mean = 158235463 ns, Median = 157492686 ns, Mode = 157415898 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DHC KeyAgreement.
     - result:
@@ -2921,7 +2921,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 29573637
+          duration: 29658785
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2937,7 +2937,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 157252912
+          duration: 157306921
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2954,7 +2954,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 19965623
+          duration: 20932640
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -2971,7 +2971,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 155326589
+          duration: 155295806
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -2982,7 +2982,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 03
-        desc: Mean = 155686465 ns, Median = 155296983 ns, Mode = 155236791 ns
+        desc: Mean = 155702393 ns, Median = 155320644 ns, Mode = 155252215 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DH_PLAIN KeyAgreement.
     - result:
@@ -2995,7 +2995,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 32712333
+          duration: 32969978
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3011,7 +3011,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 157882506
+          duration: 158014940
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3028,7 +3028,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 20274429
+          duration: 20536661
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -3046,7 +3046,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 156004661
+          duration: 156075451
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3057,7 +3057,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 04
-        desc: Mean = 156358970 ns, Median = 156005359 ns, Mode = 155858058 ns
+        desc: Mean = 156437599 ns, Median = 156062951 ns, Mode = 155783256 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DHC_PLAIN KeyAgreement.
     - result:
@@ -3065,7 +3065,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 13732440
+        duration: 13815065
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -3081,7 +3081,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 17548233
+        duration: 17764784
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -3102,7 +3102,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 84673328
+          duration: 84861690
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3118,7 +3118,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 283294991
+          duration: 283128369
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3134,7 +3134,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 292385149
+          duration: 292330105
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3144,7 +3144,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 11 00 00
-        desc: Mean = 290094944 ns, Median = 290591552 ns, Mode = 287132182 ns
+        desc: Mean = 290025688 ns, Median = 290511731 ns, Mode = 287173979 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA signature.
     - result:
@@ -3157,7 +3157,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 75328432
+          duration: 75531210
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3173,7 +3173,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 311467259
+          duration: 311337986
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3189,7 +3189,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 316935716
+          duration: 316990735
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3199,7 +3199,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 25 00 00
-        desc: Mean = 314482008 ns, Median = 315283982 ns, Mode = 311953036 ns
+        desc: Mean = 314340016 ns, Median = 315111131 ns, Mode = 311674346 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_224 signature.
     - result:
@@ -3212,7 +3212,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 76754052
+          duration: 76994701
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3228,7 +3228,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 311425134
+          duration: 311209976
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3244,7 +3244,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 315608842
+          duration: 315110289
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3254,7 +3254,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 21 00 00
-        desc: Mean = 314832635 ns, Median = 315366704 ns, Mode = 311842226 ns
+        desc: Mean = 314726732 ns, Median = 315218414 ns, Mode = 311767544 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_256 signature.
     - result:
@@ -3267,7 +3267,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 75735551
+          duration: 75910399
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3283,7 +3283,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 317138979
+          duration: 316863348
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3299,7 +3299,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 324520836
+          duration: 324398264
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3309,7 +3309,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 22 00 00
-        desc: Mean = 324101110 ns, Median = 324505445 ns, Mode = 321052544 ns
+        desc: Mean = 323769753 ns, Median = 324267525 ns, Mode = 320883339 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_384 signature.
     - result:
@@ -3322,7 +3322,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 81671166
+          duration: 81908340
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3338,7 +3338,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 319341930
+          duration: 319020311
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3354,7 +3354,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 324648049
+          duration: 324316670
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3364,7 +3364,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 26 00 00
-        desc: Mean = 323916762 ns, Median = 324430884 ns, Mode = 319345007 ns
+        desc: Mean = 323939654 ns, Median = 324236913 ns, Mode = 321035009 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_512 signature.
     type: compound
@@ -3379,7 +3379,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 187193283
+        duration: 187155844
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -3396,7 +3396,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 35727411
+        duration: 35905571
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -3413,7 +3413,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 307962664
+        duration: 307937993
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -3430,7 +3430,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 1007460292
+        duration: 1007418309
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -3452,7 +3452,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 29873431
+          duration: 30146182
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3468,7 +3468,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 193866312
+          duration: 193975384
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3484,7 +3484,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 23135635
+          duration: 23292640
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -3500,7 +3500,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 191930274
+          duration: 191735418
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3510,7 +3510,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 01
-        desc: Mean = 192301153 ns, Median = 191925578 ns, Mode = 191822949 ns
+        desc: Mean = 192241451 ns, Median = 191904182 ns, Mode = 191710242 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DH KeyAgreement.
     - result:
@@ -3523,7 +3523,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 30577203
+          duration: 30649000
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3539,7 +3539,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 194515365
+          duration: 194353494
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3555,7 +3555,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 20375382
+          duration: 20342777
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -3571,7 +3571,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 192578946
+          duration: 192311128
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3581,7 +3581,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 02
-        desc: Mean = 193355813 ns, Median = 192604404 ns, Mode = 192452458 ns
+        desc: Mean = 193162736 ns, Median = 192450731 ns, Mode = 192311128 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DHC KeyAgreement.
     - result:
@@ -3594,7 +3594,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 29539378
+          duration: 29328410
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3610,7 +3610,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 192313779
+          duration: 192068143
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3627,7 +3627,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 19850721
+          duration: 19605430
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -3644,7 +3644,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 190271471
+          duration: 190273288
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3655,7 +3655,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 03
-        desc: Mean = 190700336 ns, Median = 190295081 ns, Mode = 190181041 ns
+        desc: Mean = 190625007 ns, Median = 190266433 ns, Mode = 190113386 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DH_PLAIN KeyAgreement.
     - result:
@@ -3668,7 +3668,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 32930987
+          duration: 32812918
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3684,7 +3684,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 193004015
+          duration: 192944940
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3701,7 +3701,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 20460116
+          duration: 20437074
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -3719,7 +3719,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 190986349
+          duration: 191041649
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3730,7 +3730,7 @@ testRun:
         type: command
         command:
           apdu: b0 70 01 02 04 00 00 00 04
-        desc: Mean = 191392030 ns, Median = 190985856 ns, Mode = 190921442 ns
+        desc: Mean = 191296454 ns, Median = 190989132 ns, Mode = 190752686 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DHC_PLAIN KeyAgreement.
     - result:
@@ -3738,7 +3738,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 13886997
+        duration: 14119256
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -3754,7 +3754,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 17739308
+        duration: 17871682
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -3775,7 +3775,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 84837054
+          duration: 84933666
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3791,7 +3791,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 334045216
+          duration: 334103112
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3807,7 +3807,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 343379754
+          duration: 343280123
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3817,7 +3817,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 11 00 00
-        desc: Mean = 340873895 ns, Median = 341303715 ns, Mode = 337962834 ns
+        desc: Mean = 340803505 ns, Median = 341262421 ns, Mode = 337861769 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA signature.
     - result:
@@ -3830,7 +3830,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 75520868
+          duration: 75498858
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3846,7 +3846,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 362840427
+          duration: 363071049
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3862,7 +3862,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 368533951
+          duration: 368583820
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3872,7 +3872,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 25 00 00
-        desc: Mean = 366029530 ns, Median = 366816532 ns, Mode = 363470180 ns
+        desc: Mean = 366036466 ns, Median = 366788640 ns, Mode = 363426079 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_224 signature.
     - result:
@@ -3885,7 +3885,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 76831776
+          duration: 76767846
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3901,7 +3901,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 362228709
+          duration: 362282860
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3917,7 +3917,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 365943121
+          duration: 366200331
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3927,7 +3927,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 21 00 00
-        desc: Mean = 365543328 ns, Median = 366053008 ns, Mode = 362451449 ns
+        desc: Mean = 365540625 ns, Median = 366003167 ns, Mode = 362560943 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_256 signature.
     - result:
@@ -3940,7 +3940,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 75773551
+          duration: 75823212
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3956,7 +3956,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 368103666
+          duration: 367741771
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3972,7 +3972,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 375065932
+          duration: 375170643
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -3982,7 +3982,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 22 00 00
-        desc: Mean = 374609288 ns, Median = 375084505 ns, Mode = 371584815 ns
+        desc: Mean = 374382410 ns, Median = 375010889 ns, Mode = 370007689 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_384 signature.
     - result:
@@ -3995,7 +3995,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 77215253
+          duration: 77194667
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -4011,7 +4011,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 371264844
+          duration: 371100312
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -4027,7 +4027,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 371545047
+          duration: 371993817
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -4037,7 +4037,7 @@ testRun:
         type: command
         command:
           apdu: b0 72 01 00 03 26 00 00
-        desc: Mean = 374266139 ns, Median = 375110999 ns, Mode = 371545047 ns
+        desc: Mean = 374381761 ns, Median = 375113459 ns, Mode = 371783903 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA_512 signature.
     type: compound
@@ -4052,7 +4052,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 52531375
+        duration: 52722690
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
@@ -4076,7 +4076,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 52240947
+        duration: 52476475
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
@@ -4100,20 +4100,20 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 49768070
+        duration: 49773299
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
         - 3
         - 3
         successful: false
-        desc: Allocated both keypairs 112b ALG_EC_F2M
+        desc: Allocated both keypairs 163b ALG_EC_F2M
       type: command
       command:
-        apdu: b0 5a 03 00 03 00 70 04
-      desc: Allocated both keypairs 112b ALG_EC_F2M
+        apdu: b0 5a 03 00 03 00 a3 04
+      desc: Allocated both keypairs 163b ALG_EC_F2M
     type: compound
-    desc: Tests of 112b ALG_EC_F2M support. None.
+    desc: Tests of 163b ALG_EC_F2M support. None.
   - result:
       cause: Some sub-tests did not have the expected result.
       ok: false
@@ -4124,20 +4124,20 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 48630778
+        duration: 48704879
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
         - 3
         - 3
         successful: false
-        desc: Allocated both keypairs 128b ALG_EC_F2M
+        desc: Allocated both keypairs 233b ALG_EC_F2M
       type: command
       command:
-        apdu: b0 5a 03 00 03 00 80 04
-      desc: Allocated both keypairs 128b ALG_EC_F2M
+        apdu: b0 5a 03 00 03 00 e9 04
+      desc: Allocated both keypairs 233b ALG_EC_F2M
     type: compound
-    desc: Tests of 128b ALG_EC_F2M support. None.
+    desc: Tests of 233b ALG_EC_F2M support. None.
   - result:
       cause: Some sub-tests did not have the expected result.
       ok: false
@@ -4148,20 +4148,20 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 48629630
+        duration: 48632797
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
         - 3
         - 3
         successful: false
-        desc: Allocated both keypairs 160b ALG_EC_F2M
+        desc: Allocated both keypairs 283b ALG_EC_F2M
       type: command
       command:
-        apdu: b0 5a 03 00 03 00 a0 04
-      desc: Allocated both keypairs 160b ALG_EC_F2M
+        apdu: b0 5a 03 00 03 01 1b 04
+      desc: Allocated both keypairs 283b ALG_EC_F2M
     type: compound
-    desc: Tests of 160b ALG_EC_F2M support. None.
+    desc: Tests of 283b ALG_EC_F2M support. None.
   - result:
       cause: Some sub-tests did not have the expected result.
       ok: false
@@ -4172,20 +4172,20 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 53813570
+        duration: 53829112
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
         - 3
         - 3
         successful: false
-        desc: Allocated both keypairs 192b ALG_EC_F2M
+        desc: Allocated both keypairs 409b ALG_EC_F2M
       type: command
       command:
-        apdu: b0 5a 03 00 03 00 c0 04
-      desc: Allocated both keypairs 192b ALG_EC_F2M
+        apdu: b0 5a 03 00 03 01 99 04
+      desc: Allocated both keypairs 409b ALG_EC_F2M
     type: compound
-    desc: Tests of 192b ALG_EC_F2M support. None.
+    desc: Tests of 409b ALG_EC_F2M support. None.
   - result:
       cause: Some sub-tests did not have the expected result.
       ok: false
@@ -4196,92 +4196,20 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 50812793
+        duration: 50819388
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
         - 3
         - 3
         successful: false
-        desc: Allocated both keypairs 224b ALG_EC_F2M
+        desc: Allocated both keypairs 571b ALG_EC_F2M
       type: command
       command:
-        apdu: b0 5a 03 00 03 00 e0 04
-      desc: Allocated both keypairs 224b ALG_EC_F2M
+        apdu: b0 5a 03 00 03 02 3b 04
+      desc: Allocated both keypairs 571b ALG_EC_F2M
     type: compound
-    desc: Tests of 224b ALG_EC_F2M support. None.
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
-      response:
-        duration: 48656723
-        natural_sw: 36864
-        apdu: 00 03 00 03 90 00
-        sws:
-        - 3
-        - 3
-        successful: false
-        desc: Allocated both keypairs 256b ALG_EC_F2M
-      type: command
-      command:
-        apdu: b0 5a 03 00 03 01 00 04
-      desc: Allocated both keypairs 256b ALG_EC_F2M
-    type: compound
-    desc: Tests of 256b ALG_EC_F2M support. None.
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
-      response:
-        duration: 48718342
-        natural_sw: 36864
-        apdu: 00 03 00 03 90 00
-        sws:
-        - 3
-        - 3
-        successful: false
-        desc: Allocated both keypairs 384b ALG_EC_F2M
-      type: command
-      command:
-        apdu: b0 5a 03 00 03 01 80 04
-      desc: Allocated both keypairs 384b ALG_EC_F2M
-    type: compound
-    desc: Tests of 384b ALG_EC_F2M support. None.
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
-      response:
-        duration: 48694098
-        natural_sw: 36864
-        apdu: 00 03 00 03 90 00
-        sws:
-        - 3
-        - 3
-        successful: false
-        desc: Allocated both keypairs 521b ALG_EC_F2M
-      type: command
-      command:
-        apdu: b0 5a 03 00 03 02 09 04
-      desc: Allocated both keypairs 521b ALG_EC_F2M
-    type: compound
-    desc: Tests of 521b ALG_EC_F2M support. None.
+    desc: Tests of 571b ALG_EC_F2M support. None.
   device:
     cplc: {
       }

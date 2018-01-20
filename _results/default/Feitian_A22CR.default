@@ -14,7 +14,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 529480880
+        duration: 517700103
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -31,7 +31,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21541116
+        duration: 21301004
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -48,7 +48,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 158352771
+        duration: 172634705
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -65,7 +65,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21470621
+        duration: 21439709
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -82,7 +82,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 31783821
+        duration: 31330123
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -98,7 +98,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 10754351
+        duration: 10699199
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -114,7 +114,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7913414
+        duration: 7733055
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -130,7 +130,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7967332
+        duration: 7732373
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -146,7 +146,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 8066393
+        duration: 7696919
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -162,7 +162,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7923330
+        duration: 7670846
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -178,7 +178,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 67125401
+        duration: 63001546
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -194,7 +194,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 62907735
+        duration: 63305498
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -210,7 +210,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63195886
+        duration: 63670419
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -226,7 +226,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63669223
+        duration: 64073387
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -242,7 +242,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63898452
+        duration: 62877170
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -265,7 +265,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 529077901
+        duration: 521854638
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -282,7 +282,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21346362
+        duration: 21270619
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -299,7 +299,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 158442452
+        duration: 158285590
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -316,7 +316,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21461352
+        duration: 21475867
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -333,7 +333,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 31737468
+        duration: 31718617
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -349,7 +349,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 10806015
+        duration: 10716913
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -365,7 +365,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7812226
+        duration: 7801248
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -381,7 +381,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7924365
+        duration: 7680914
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -397,7 +397,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7853546
+        duration: 7670811
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -413,7 +413,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7804006
+        duration: 7663563
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -429,7 +429,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63379800
+        duration: 63647222
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -445,7 +445,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 62735328
+        duration: 63095266
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -461,7 +461,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 62959499
+        duration: 63406868
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -477,7 +477,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63509222
+        duration: 63777892
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -493,7 +493,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63830915
+        duration: 64202964
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -516,7 +516,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 521472500
+        duration: 522462139
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -533,7 +533,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21377936
+        duration: 21486068
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -550,7 +550,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 186720568
+        duration: 185338421
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -567,7 +567,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21528158
+        duration: 21405530
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -584,7 +584,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 31590152
+        duration: 31318112
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -600,7 +600,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 10712203
+        duration: 10579187
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -616,7 +616,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7799631
+        duration: 7674952
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -632,7 +632,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7780208
+        duration: 7807253
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -648,7 +648,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7795448
+        duration: 7771170
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -664,7 +664,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7814718
+        duration: 7741970
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -680,7 +680,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63451787
+        duration: 63259807
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -696,7 +696,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63734684
+        duration: 63614520
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -712,7 +712,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 66304712
+        duration: 66180033
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -728,7 +728,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 62975539
+        duration: 62952637
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -744,7 +744,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63311954
+        duration: 63206201
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -767,7 +767,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 532638409
+        duration: 528587403
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -784,7 +784,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21524620
+        duration: 21467425
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -801,7 +801,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 185965230
+        duration: 185776811
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -818,7 +818,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21503828
+        duration: 21487475
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -835,7 +835,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 31544400
+        duration: 31545764
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -851,7 +851,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 10672434
+        duration: 10786111
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -867,7 +867,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7720936
+        duration: 7870837
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -883,7 +883,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7759735
+        duration: 7739731
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -899,7 +899,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7708614
+        duration: 7806413
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -915,7 +915,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7688478
+        duration: 7728396
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -931,7 +931,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63532676
+        duration: 63253541
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -947,7 +947,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63540077
+        duration: 63555368
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -963,7 +963,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63251680
+        duration: 63146604
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -979,7 +979,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 62929833
+        duration: 62799253
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -995,7 +995,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63398204
+        duration: 63235384
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1018,7 +1018,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 524284684
+        duration: 524866440
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1035,7 +1035,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21427573
+        duration: 21287372
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1052,7 +1052,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 209368143
+        duration: 207820814
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1069,7 +1069,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21613456
+        duration: 21384164
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1086,7 +1086,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 31546884
+        duration: 31339373
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1102,7 +1102,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 10777036
+        duration: 10771281
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1118,7 +1118,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7783928
+        duration: 7790878
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1134,7 +1134,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7731000
+        duration: 7777301
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1150,7 +1150,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7739499
+        duration: 7778004
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1166,7 +1166,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7745058
+        duration: 7724038
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1182,7 +1182,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63313415
+        duration: 63129078
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1198,7 +1198,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63464625
+        duration: 63240787
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1214,7 +1214,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63909214
+        duration: 63585630
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1230,7 +1230,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 66340000
+        duration: 66167715
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1246,7 +1246,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63241600
+        duration: 63095858
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1269,7 +1269,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 540876867
+        duration: 536862026
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1286,7 +1286,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21497747
+        duration: 21460949
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1303,7 +1303,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 212896201
+        duration: 212637823
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1320,7 +1320,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21513398
+        duration: 21517177
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1337,7 +1337,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 31372396
+        duration: 31481731
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1353,7 +1353,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 10769990
+        duration: 10792810
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1369,7 +1369,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7804049
+        duration: 7840976
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1385,7 +1385,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7776929
+        duration: 7838132
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1401,7 +1401,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7713193
+        duration: 7846777
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1417,7 +1417,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7658867
+        duration: 7843782
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1433,7 +1433,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63269888
+        duration: 63047264
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1449,7 +1449,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63510838
+        duration: 63238942
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1465,7 +1465,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63763433
+        duration: 63571892
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1481,7 +1481,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63533904
+        duration: 66526070
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1497,7 +1497,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63241624
+        duration: 62825816
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1520,7 +1520,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 538576350
+        duration: 539334045
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1537,7 +1537,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21481278
+        duration: 21344359
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1554,7 +1554,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 235043244
+        duration: 234080042
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1571,7 +1571,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21606148
+        duration: 21377149
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1588,7 +1588,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 31750818
+        duration: 31485853
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1604,7 +1604,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 10864155
+        duration: 10701089
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1620,7 +1620,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7831917
+        duration: 7725049
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1636,7 +1636,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7747733
+        duration: 7730777
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1652,7 +1652,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7852451
+        duration: 7716334
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1668,7 +1668,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7823117
+        duration: 7676022
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1684,7 +1684,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63672841
+        duration: 63398030
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1700,7 +1700,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63756683
+        duration: 63391861
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1716,7 +1716,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 62886409
+        duration: 62664258
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1732,7 +1732,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63241199
+        duration: 65959315
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1748,7 +1748,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63567413
+        duration: 63337188
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1771,7 +1771,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 540124936
+        duration: 535383200
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1788,7 +1788,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21348434
+        duration: 21352466
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1805,7 +1805,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 236561845
+        duration: 237027539
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1822,7 +1822,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21587216
+        duration: 21507571
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1839,7 +1839,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 31806352
+        duration: 31699685
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1855,7 +1855,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 10863154
+        duration: 10752782
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1871,7 +1871,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7805186
+        duration: 7797660
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1887,7 +1887,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7846207
+        duration: 7838320
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1903,7 +1903,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7795511
+        duration: 7815561
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1919,7 +1919,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 7872791
+        duration: 7857768
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1935,7 +1935,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 60516436
+        duration: 60304149
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1951,7 +1951,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 63398095
+        duration: 63086977
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1967,7 +1967,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 59902726
+        duration: 59652795
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1983,7 +1983,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 60258305
+        duration: 60099371
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -1999,7 +1999,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 60643691
+        duration: 60401594
         natural_sw: 36864
         apdu: 00 02 90 00
         sws:
@@ -2019,23 +2019,1003 @@ testRun:
     tests:
     - result:
         cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 524261086
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Allocated both keypairs 163b ALG_EC_F2M
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 00 a3 04
+      desc: Allocated both keypairs 163b ALG_EC_F2M
+    - result:
+        cause: null
         ok: false
         value: FAILURE
       response:
-        duration: 71905518
+        duration: 21552339
         natural_sw: 36864
-        apdu: 00 03 00 03 90 00
+        apdu: 00 02 00 02 90 00
         sws:
-        - 3
-        - 3
+        - 2
+        - 2
         successful: false
-        desc: Allocated both keypairs 112b ALG_EC_F2M
+        desc: Generated both keypairs
       type: command
       command:
-        apdu: b0 5a 03 00 03 00 70 04
-      desc: Allocated both keypairs 112b ALG_EC_F2M
+        apdu: b0 5e 03 00
+      desc: Generated both keypairs
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 161742082
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Set custom curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 09 02 00 7d
+      desc: Set custom curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 21364539
+        natural_sw: 36864
+        apdu: 00 02 00 02 90 00
+        sws:
+        - 2
+        - 2
+        successful: false
+        desc: Generated both keypairs
+      type: command
+      command:
+        apdu: b0 5e 03 00
+      desc: Generated both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 31894530
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DH) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 01
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DH) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 10665690
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DHC) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 02
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DHC) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 7653842
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 03
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 7700829
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 04
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 7655988
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_PACE_GM) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 05
+      desc: Allocated KeyAgreement(ALG_EC_PACE_GM) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 7652720
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 06
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 63572519
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 11
+      desc: Allocated Signature(ALG_ECDSA_SHA) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 66141146
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA_224) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 25
+      desc: Allocated Signature(ALG_ECDSA_SHA_224) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 62723118
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA_256) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 21
+      desc: Allocated Signature(ALG_ECDSA_SHA_256) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 63136675
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA_384) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 22
+      desc: Allocated Signature(ALG_ECDSA_SHA_384) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 63525189
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA_512) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 26
+      desc: Allocated Signature(ALG_ECDSA_SHA_512) object
     type: compound
-    desc: Tests of 112b ALG_EC_F2M support. None.
+    desc: Tests of 163b ALG_EC_F2M support. Some.
+  - result:
+      cause: Some sub-tests did not have the expected result.
+      ok: false
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 529965812
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Allocated both keypairs 233b ALG_EC_F2M
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 00 e9 04
+      desc: Allocated both keypairs 233b ALG_EC_F2M
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 21341408
+        natural_sw: 36864
+        apdu: 00 02 00 02 90 00
+        sws:
+        - 2
+        - 2
+        successful: false
+        desc: Generated both keypairs
+      type: command
+      command:
+        apdu: b0 5e 03 00
+      desc: Generated both keypairs
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 171758826
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Set custom curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 0a 02 00 7d
+      desc: Set custom curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 21601145
+        natural_sw: 36864
+        apdu: 00 02 00 02 90 00
+        sws:
+        - 2
+        - 2
+        successful: false
+        desc: Generated both keypairs
+      type: command
+      command:
+        apdu: b0 5e 03 00
+      desc: Generated both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 31656953
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DH) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 01
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DH) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 10749982
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DHC) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 02
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DHC) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 7676840
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 03
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 7665172
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 04
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 7629069
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_PACE_GM) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 05
+      desc: Allocated KeyAgreement(ALG_EC_PACE_GM) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 7632351
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 06
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 63230701
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 11
+      desc: Allocated Signature(ALG_ECDSA_SHA) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 63496145
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA_224) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 25
+      desc: Allocated Signature(ALG_ECDSA_SHA_224) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 66168827
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA_256) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 21
+      desc: Allocated Signature(ALG_ECDSA_SHA_256) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 62828957
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA_384) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 22
+      desc: Allocated Signature(ALG_ECDSA_SHA_384) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 63236460
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA_512) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 26
+      desc: Allocated Signature(ALG_ECDSA_SHA_512) object
+    type: compound
+    desc: Tests of 233b ALG_EC_F2M support. Some.
+  - result:
+      cause: Some sub-tests did not have the expected result.
+      ok: false
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 538289199
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Allocated both keypairs 283b ALG_EC_F2M
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 01 1b 04
+      desc: Allocated both keypairs 283b ALG_EC_F2M
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 21425153
+        natural_sw: 36864
+        apdu: 00 02 00 02 90 00
+        sws:
+        - 2
+        - 2
+        successful: false
+        desc: Generated both keypairs
+      type: command
+      command:
+        apdu: b0 5e 03 00
+      desc: Generated both keypairs
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 180696078
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Set custom curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 0b 02 00 7d
+      desc: Set custom curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 21348676
+        natural_sw: 36864
+        apdu: 00 02 00 02 90 00
+        sws:
+        - 2
+        - 2
+        successful: false
+        desc: Generated both keypairs
+      type: command
+      command:
+        apdu: b0 5e 03 00
+      desc: Generated both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 31126850
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DH) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 01
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DH) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 10644557
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DHC) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 02
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DHC) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 7695503
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 03
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 7680567
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 04
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 7698808
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_PACE_GM) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 05
+      desc: Allocated KeyAgreement(ALG_EC_PACE_GM) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 7695027
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 06
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 62691313
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 11
+      desc: Allocated Signature(ALG_ECDSA_SHA) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 63038792
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA_224) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 25
+      desc: Allocated Signature(ALG_ECDSA_SHA_224) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 63493171
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA_256) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 21
+      desc: Allocated Signature(ALG_ECDSA_SHA_256) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 63930306
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA_384) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 22
+      desc: Allocated Signature(ALG_ECDSA_SHA_384) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 66315148
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA_512) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 26
+      desc: Allocated Signature(ALG_ECDSA_SHA_512) object
+    type: compound
+    desc: Tests of 283b ALG_EC_F2M support. Some.
+  - result:
+      cause: Some sub-tests did not have the expected result.
+      ok: false
+      value: FAILURE
+    tests:
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 540057258
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Allocated both keypairs 409b ALG_EC_F2M
+      type: command
+      command:
+        apdu: b0 5a 03 00 03 01 99 04
+      desc: Allocated both keypairs 409b ALG_EC_F2M
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 21464953
+        natural_sw: 36864
+        apdu: 00 02 00 02 90 00
+        sws:
+        - 2
+        - 2
+        successful: false
+        desc: Generated both keypairs
+      type: command
+      command:
+        apdu: b0 5e 03 00
+      desc: Generated both keypairs
+    - result:
+        cause: null
+        ok: true
+        value: SUCCESS
+      response:
+        duration: 199786251
+        natural_sw: 36864
+        apdu: 90 00 90 00 90 00
+        sws:
+        - 36864
+        - 36864
+        successful: true
+        desc: Set custom curve parameters on both keypairs
+      type: command
+      command:
+        apdu: b0 5c 03 0c 02 00 7d
+      desc: Set custom curve parameters on both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 21526632
+        natural_sw: 36864
+        apdu: 00 02 00 02 90 00
+        sws:
+        - 2
+        - 2
+        successful: false
+        desc: Generated both keypairs
+      type: command
+      command:
+        apdu: b0 5e 03 00
+      desc: Generated both keypairs
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 31585598
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DH) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 01
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DH) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 10759386
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DHC) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 02
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DHC) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 7835768
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 03
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 7918399
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 04
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 7851934
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_PACE_GM) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 05
+      desc: Allocated KeyAgreement(ALG_EC_PACE_GM) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 7809006
+        natural_sw: 36864
+        apdu: 00 03 90 00
+        sws:
+        - 3
+        successful: false
+        desc: Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+      type: command
+      command:
+        apdu: b0 75 00 00 01 06
+      desc: Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 63496158
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 11
+      desc: Allocated Signature(ALG_ECDSA_SHA) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 63616223
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA_224) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 25
+      desc: Allocated Signature(ALG_ECDSA_SHA_224) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 65979829
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA_256) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 21
+      desc: Allocated Signature(ALG_ECDSA_SHA_256) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 62978601
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA_384) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 22
+      desc: Allocated Signature(ALG_ECDSA_SHA_384) object
+    - result:
+        cause: null
+        ok: false
+        value: FAILURE
+      response:
+        duration: 63286466
+        natural_sw: 36864
+        apdu: 00 02 90 00
+        sws:
+        - 2
+        successful: false
+        desc: Allocated Signature(ALG_ECDSA_SHA_512) object
+      type: command
+      command:
+        apdu: b0 76 00 00 01 26
+      desc: Allocated Signature(ALG_ECDSA_SHA_512) object
+    type: compound
+    desc: Tests of 409b ALG_EC_F2M support. Some.
   - result:
       cause: Some sub-tests did not have the expected result.
       ok: false
@@ -2046,164 +3026,20 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 59207526
+        duration: 71857472
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
         - 3
         - 3
         successful: false
-        desc: Allocated both keypairs 128b ALG_EC_F2M
+        desc: Allocated both keypairs 571b ALG_EC_F2M
       type: command
       command:
-        apdu: b0 5a 03 00 03 00 80 04
-      desc: Allocated both keypairs 128b ALG_EC_F2M
+        apdu: b0 5a 03 00 03 02 3b 04
+      desc: Allocated both keypairs 571b ALG_EC_F2M
     type: compound
-    desc: Tests of 128b ALG_EC_F2M support. None.
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
-      response:
-        duration: 59198231
-        natural_sw: 36864
-        apdu: 00 03 00 03 90 00
-        sws:
-        - 3
-        - 3
-        successful: false
-        desc: Allocated both keypairs 160b ALG_EC_F2M
-      type: command
-      command:
-        apdu: b0 5a 03 00 03 00 a0 04
-      desc: Allocated both keypairs 160b ALG_EC_F2M
-    type: compound
-    desc: Tests of 160b ALG_EC_F2M support. None.
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
-      response:
-        duration: 59340798
-        natural_sw: 36864
-        apdu: 00 03 00 03 90 00
-        sws:
-        - 3
-        - 3
-        successful: false
-        desc: Allocated both keypairs 192b ALG_EC_F2M
-      type: command
-      command:
-        apdu: b0 5a 03 00 03 00 c0 04
-      desc: Allocated both keypairs 192b ALG_EC_F2M
-    type: compound
-    desc: Tests of 192b ALG_EC_F2M support. None.
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
-      response:
-        duration: 59579655
-        natural_sw: 36864
-        apdu: 00 03 00 03 90 00
-        sws:
-        - 3
-        - 3
-        successful: false
-        desc: Allocated both keypairs 224b ALG_EC_F2M
-      type: command
-      command:
-        apdu: b0 5a 03 00 03 00 e0 04
-      desc: Allocated both keypairs 224b ALG_EC_F2M
-    type: compound
-    desc: Tests of 224b ALG_EC_F2M support. None.
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
-      response:
-        duration: 59171811
-        natural_sw: 36864
-        apdu: 00 03 00 03 90 00
-        sws:
-        - 3
-        - 3
-        successful: false
-        desc: Allocated both keypairs 256b ALG_EC_F2M
-      type: command
-      command:
-        apdu: b0 5a 03 00 03 01 00 04
-      desc: Allocated both keypairs 256b ALG_EC_F2M
-    type: compound
-    desc: Tests of 256b ALG_EC_F2M support. None.
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
-      response:
-        duration: 58982365
-        natural_sw: 36864
-        apdu: 00 03 00 03 90 00
-        sws:
-        - 3
-        - 3
-        successful: false
-        desc: Allocated both keypairs 384b ALG_EC_F2M
-      type: command
-      command:
-        apdu: b0 5a 03 00 03 01 80 04
-      desc: Allocated both keypairs 384b ALG_EC_F2M
-    type: compound
-    desc: Tests of 384b ALG_EC_F2M support. None.
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
-      response:
-        duration: 59127499
-        natural_sw: 36864
-        apdu: 00 03 00 03 90 00
-        sws:
-        - 3
-        - 3
-        successful: false
-        desc: Allocated both keypairs 521b ALG_EC_F2M
-      type: command
-      command:
-        apdu: b0 5a 03 00 03 02 09 04
-      desc: Allocated both keypairs 521b ALG_EC_F2M
-    type: compound
-    desc: Tests of 521b ALG_EC_F2M support. None.
+    desc: Tests of 571b ALG_EC_F2M support. None.
   device:
     cplc: {
       }
