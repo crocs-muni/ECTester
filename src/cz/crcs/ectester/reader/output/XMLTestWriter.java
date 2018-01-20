@@ -107,6 +107,7 @@ public class XMLTestWriter extends BaseXMLTestWriter {
             Element atr = doc.createElement("ATR");
             atr.setTextContent(ByteUtil.bytesToHex(cardSuite.getCard().getATR().getBytes(), false));
             result.appendChild(atr);
+            return result;
         }
         return null;
     }
