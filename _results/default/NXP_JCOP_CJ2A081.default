@@ -14,7 +14,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 66862245
+        duration: 74965418
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
@@ -38,7 +38,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 378005731
+        duration: 382373685
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -55,7 +55,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 853961029
+        duration: 855779619
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -72,7 +72,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 400323660
+        duration: 410955908
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -89,7 +89,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 374452957
+        duration: 380353853
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -111,7 +111,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 97479610
+          duration: 118107701
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -127,7 +127,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 69859766
+          duration: 69296162
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -143,7 +143,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 31829022
+          duration: 31885864
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -154,6 +154,22 @@ testRun:
         command:
           apdu: b0 70 01 02 04 00 01 00 01
         desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+      - result:
+          cause: null
+          ok: true
+          value: SUCCESS
+        response:
+          duration: 62604307
+          natural_sw: 36864
+          apdu: 90 00 90 00
+          sws:
+          - 36864
+          successful: true
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(unchanged point)
+        type: command
+        command:
+          apdu: b0 70 01 02 04 00 00 00 01
+        desc: Mean = 63445914 ns, Median = 62597942 ns, Mode = 62391358 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DH KeyAgreement.
     - result:
@@ -166,7 +182,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 111683031
+          duration: 110700982
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -182,7 +198,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 69763071
+          duration: 69359484
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -198,7 +214,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 32242917
+          duration: 32066289
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -209,6 +225,22 @@ testRun:
         command:
           apdu: b0 70 01 02 04 00 01 00 02
         desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+      - result:
+          cause: null
+          ok: true
+          value: SUCCESS
+        response:
+          duration: 62903082
+          natural_sw: 36864
+          apdu: 90 00 90 00
+          sws:
+          - 36864
+          successful: true
+          desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(unchanged point)
+        type: command
+        command:
+          apdu: b0 70 01 02 04 00 00 00 02
+        desc: Mean = 63606143 ns, Median = 62895339 ns, Mode = 62347377 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DHC KeyAgreement.
     - result:
@@ -216,7 +248,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 28929103
+        duration: 20208658
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -232,7 +264,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 28900796
+        duration: 28950609
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -248,7 +280,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 28877580
+        duration: 29188871
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -264,7 +296,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29164597
+        duration: 28957366
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -285,7 +317,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 94069830
+          duration: 89475238
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -301,7 +333,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 147708271
+          duration: 146512130
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -312,6 +344,22 @@ testRun:
         command:
           apdu: b0 72 01 00 03 11 00 00
         desc: ALG_ECDSA_SHA with local keypair(random data)
+      - result:
+          cause: null
+          ok: true
+          value: SUCCESS
+        response:
+          duration: 129410793
+          natural_sw: 36864
+          apdu: 90 00 90 00
+          sws:
+          - 36864
+          successful: true
+          desc: ALG_ECDSA_SHA with local keypair(random data)
+        type: command
+        command:
+          apdu: b0 72 01 00 03 11 00 00
+        desc: Mean = 129745766 ns, Median = 129827752 ns, Mode = 128945402 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA signature.
     - result:
@@ -319,7 +367,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 20394485
+        duration: 20551833
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -335,7 +383,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29225644
+        duration: 29371624
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -351,7 +399,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29257687
+        duration: 29589869
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -367,7 +415,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29436911
+        duration: 29351197
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -390,7 +438,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 376908974
+        duration: 376947710
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -407,7 +455,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 885066411
+        duration: 884793531
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -424,7 +472,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 415209747
+        duration: 415319228
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -441,7 +489,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 400944961
+        duration: 401732969
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -463,7 +511,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 117830128
+          duration: 117834830
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -479,7 +527,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 71124103
+          duration: 71846702
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -495,7 +543,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 31874294
+          duration: 31925984
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -506,6 +554,22 @@ testRun:
         command:
           apdu: b0 70 01 02 04 00 01 00 01
         desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+      - result:
+          cause: null
+          ok: true
+          value: SUCCESS
+        response:
+          duration: 65057759
+          natural_sw: 36864
+          apdu: 90 00 90 00
+          sws:
+          - 36864
+          successful: true
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(unchanged point)
+        type: command
+        command:
+          apdu: b0 70 01 02 04 00 00 00 01
+        desc: Mean = 65736377 ns, Median = 64957587 ns, Mode = 64521601 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DH KeyAgreement.
     - result:
@@ -518,7 +582,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 117797326
+          duration: 109174438
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -534,7 +598,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 71979199
+          duration: 72061794
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -550,7 +614,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 31981949
+          duration: 32006383
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -561,6 +625,22 @@ testRun:
         command:
           apdu: b0 70 01 02 04 00 01 00 02
         desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+      - result:
+          cause: null
+          ok: true
+          value: SUCCESS
+        response:
+          duration: 64969116
+          natural_sw: 36864
+          apdu: 90 00 90 00
+          sws:
+          - 36864
+          successful: true
+          desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(unchanged point)
+        type: command
+        command:
+          apdu: b0 70 01 02 04 00 00 00 02
+        desc: Mean = 65859193 ns, Median = 65016103 ns, Mode = 64642097 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DHC KeyAgreement.
     - result:
@@ -568,7 +648,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29065504
+        duration: 20330127
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -584,7 +664,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29298259
+        duration: 29351547
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -600,7 +680,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29034376
+        duration: 28988721
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -616,7 +696,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 28948135
+        duration: 28910089
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -637,7 +717,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 90395558
+          duration: 90363825
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -653,7 +733,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 149623019
+          duration: 150332850
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -664,6 +744,22 @@ testRun:
         command:
           apdu: b0 72 01 00 03 11 00 00
         desc: ALG_ECDSA_SHA with local keypair(random data)
+      - result:
+          cause: null
+          ok: true
+          value: SUCCESS
+        response:
+          duration: 133483588
+          natural_sw: 36864
+          apdu: 90 00 90 00
+          sws:
+          - 36864
+          successful: true
+          desc: ALG_ECDSA_SHA with local keypair(random data)
+        type: command
+        command:
+          apdu: b0 72 01 00 03 11 00 00
+        desc: Mean = 133013490 ns, Median = 133265679 ns, Mode = 131874360 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA signature.
     - result:
@@ -671,7 +767,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 20566226
+        duration: 20532737
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -687,7 +783,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29307270
+        duration: 29285700
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -703,7 +799,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29589384
+        duration: 29662927
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -719,7 +815,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29425656
+        duration: 29337968
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -742,7 +838,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 376822689
+        duration: 376567263
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -759,7 +855,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 964560269
+        duration: 963939130
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -776,7 +872,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 413369073
+        duration: 413523411
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -793,7 +889,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 479030679
+        duration: 479131304
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -815,7 +911,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 118714269
+          duration: 118866605
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -831,7 +927,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 82812249
+          duration: 82645484
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -847,7 +943,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 31818639
+          duration: 32151921
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -858,6 +954,22 @@ testRun:
         command:
           apdu: b0 70 01 02 04 00 01 00 01
         desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+      - result:
+          cause: null
+          ok: true
+          value: SUCCESS
+        response:
+          duration: 75801494
+          natural_sw: 36864
+          apdu: 90 00 90 00
+          sws:
+          - 36864
+          successful: true
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(unchanged point)
+        type: command
+        command:
+          apdu: b0 70 01 02 04 00 00 00 01
+        desc: Mean = 76429832 ns, Median = 75544562 ns, Mode = 75411618 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DH KeyAgreement.
     - result:
@@ -870,7 +982,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 118019053
+          duration: 108983509
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -886,7 +998,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 82777738
+          duration: 83030343
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -902,7 +1014,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 32082067
+          duration: 32057404
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -913,6 +1025,22 @@ testRun:
         command:
           apdu: b0 70 01 02 04 00 01 00 02
         desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+      - result:
+          cause: null
+          ok: true
+          value: SUCCESS
+        response:
+          duration: 75643841
+          natural_sw: 36864
+          apdu: 90 00 90 00
+          sws:
+          - 36864
+          successful: true
+          desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(unchanged point)
+        type: command
+        command:
+          apdu: b0 70 01 02 04 00 00 00 02
+        desc: Mean = 76608327 ns, Median = 75830423 ns, Mode = 75266866 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DHC KeyAgreement.
     - result:
@@ -920,7 +1048,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 28894558
+        duration: 20260769
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -936,7 +1064,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 28927546
+        duration: 29002918
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -952,7 +1080,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29136082
+        duration: 28936898
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -968,7 +1096,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29463453
+        duration: 29209372
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -989,7 +1117,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 88973860
+          duration: 89038382
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1005,7 +1133,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 169549839
+          duration: 169540963
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1016,6 +1144,22 @@ testRun:
         command:
           apdu: b0 72 01 00 03 11 00 00
         desc: ALG_ECDSA_SHA with local keypair(random data)
+      - result:
+          cause: null
+          ok: true
+          value: SUCCESS
+        response:
+          duration: 151456660
+          natural_sw: 36864
+          apdu: 90 00 90 00
+          sws:
+          - 36864
+          successful: true
+          desc: ALG_ECDSA_SHA with local keypair(random data)
+        type: command
+        command:
+          apdu: b0 72 01 00 03 11 00 00
+        desc: Mean = 151890242 ns, Median = 151938603 ns, Mode = 151167931 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA signature.
     - result:
@@ -1023,7 +1167,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 20447205
+        duration: 20582199
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1039,7 +1183,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29223608
+        duration: 29302849
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1055,7 +1199,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29428041
+        duration: 29306785
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1071,7 +1215,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29182437
+        duration: 29639878
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1094,7 +1238,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 378784237
+        duration: 378823933
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1111,7 +1255,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 44441826
+        duration: 44104106
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -1128,7 +1272,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 653095470
+        duration: 653301255
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1145,7 +1289,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 598527249
+        duration: 598875955
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1167,7 +1311,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 114393429
+          duration: 114342831
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1183,7 +1327,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 95728439
+          duration: 96017009
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1199,7 +1343,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 32088458
+          duration: 32055970
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -1210,6 +1354,22 @@ testRun:
         command:
           apdu: b0 70 01 02 04 00 01 00 01
         desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+      - result:
+          cause: null
+          ok: true
+          value: SUCCESS
+        response:
+          duration: 88637371
+          natural_sw: 36864
+          apdu: 90 00 90 00
+          sws:
+          - 36864
+          successful: true
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(unchanged point)
+        type: command
+        command:
+          apdu: b0 70 01 02 04 00 00 00 01
+        desc: Mean = 89450895 ns, Median = 88572692 ns, Mode = 88440111 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DH KeyAgreement.
     - result:
@@ -1222,7 +1382,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 119043092
+          duration: 110201517
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1238,7 +1398,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 95687995
+          duration: 95355298
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1254,7 +1414,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 32116435
+          duration: 32101245
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -1265,6 +1425,22 @@ testRun:
         command:
           apdu: b0 70 01 02 04 00 01 00 02
         desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+      - result:
+          cause: null
+          ok: true
+          value: SUCCESS
+        response:
+          duration: 88463991
+          natural_sw: 36864
+          apdu: 90 00 90 00
+          sws:
+          - 36864
+          successful: true
+          desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(unchanged point)
+        type: command
+        command:
+          apdu: b0 70 01 02 04 00 00 00 02
+        desc: Mean = 89679312 ns, Median = 88816112 ns, Mode = 88306745 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DHC KeyAgreement.
     - result:
@@ -1272,7 +1448,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29163308
+        duration: 20475701
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1288,7 +1464,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 28885576
+        duration: 29091189
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1304,7 +1480,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 28921615
+        duration: 29050981
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1320,7 +1496,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 28997008
+        duration: 28964916
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1341,7 +1517,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 89280372
+          duration: 89239408
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1357,7 +1533,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 191795920
+          duration: 193487979
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1368,6 +1544,22 @@ testRun:
         command:
           apdu: b0 72 01 00 03 11 00 00
         desc: ALG_ECDSA_SHA with local keypair(random data)
+      - result:
+          cause: null
+          ok: true
+          value: SUCCESS
+        response:
+          duration: 176851642
+          natural_sw: 36864
+          apdu: 90 00 90 00
+          sws:
+          - 36864
+          successful: true
+          desc: ALG_ECDSA_SHA with local keypair(random data)
+        type: command
+        command:
+          apdu: b0 72 01 00 03 11 00 00
+        desc: Mean = 175731597 ns, Median = 175825891 ns, Mode = 174623278 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA signature.
     - result:
@@ -1375,7 +1567,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 20677663
+        duration: 20393040
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1391,7 +1583,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29391288
+        duration: 29322385
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1407,7 +1599,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29599077
+        duration: 29528167
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1423,7 +1615,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29338226
+        duration: 29248494
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1446,7 +1638,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 379980912
+        duration: 379642883
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1463,7 +1655,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 44344507
+        duration: 44424841
         natural_sw: 36864
         apdu: 00 01 00 01 90 00
         sws:
@@ -1480,7 +1672,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 652355818
+        duration: 652197920
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1497,7 +1689,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 856906810
+        duration: 858945420
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1519,7 +1711,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 114294508
+          duration: 114475689
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1535,7 +1727,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 129589396
+          duration: 129936534
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1551,7 +1743,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 31919950
+          duration: 32123705
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -1562,6 +1754,22 @@ testRun:
         command:
           apdu: b0 70 01 02 04 00 01 00 01
         desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+      - result:
+          cause: null
+          ok: true
+          value: SUCCESS
+        response:
+          duration: 121992458
+          natural_sw: 36864
+          apdu: 90 00 90 00
+          sws:
+          - 36864
+          successful: true
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(unchanged point)
+        type: command
+        command:
+          apdu: b0 70 01 02 04 00 00 00 01
+        desc: Mean = 124079401 ns, Median = 123414178 ns, Mode = 121992458 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DH KeyAgreement.
     - result:
@@ -1574,7 +1782,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 117886963
+          duration: 109273153
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1590,7 +1798,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 130730128
+          duration: 130473549
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1606,7 +1814,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 32453436
+          duration: 32297570
           natural_sw: 36864
           apdu: 00 01 90 00
           sws:
@@ -1617,6 +1825,22 @@ testRun:
         command:
           apdu: b0 70 01 02 04 00 01 00 02
         desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+      - result:
+          cause: null
+          ok: true
+          value: SUCCESS
+        response:
+          duration: 123398997
+          natural_sw: 36864
+          apdu: 90 00 90 00
+          sws:
+          - 36864
+          successful: true
+          desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(unchanged point)
+        type: command
+        command:
+          apdu: b0 70 01 02 04 00 00 00 02
+        desc: Mean = 124295071 ns, Median = 123409755 ns, Mode = 123133166 ns
       type: compound
       desc: Test of the ALG_EC_SVDP_DHC KeyAgreement.
     - result:
@@ -1624,7 +1848,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29022528
+        duration: 20908336
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1640,7 +1864,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29063938
+        duration: 28931843
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1656,7 +1880,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29057299
+        duration: 28953279
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1672,7 +1896,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29270105
+        duration: 28892604
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1693,7 +1917,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 89088482
+          duration: 89301468
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1709,7 +1933,7 @@ testRun:
           ok: true
           value: SUCCESS
         response:
-          duration: 259970249
+          duration: 259044145
           natural_sw: 36864
           apdu: 90 00 90 00
           sws:
@@ -1720,6 +1944,22 @@ testRun:
         command:
           apdu: b0 72 01 00 03 11 00 00
         desc: ALG_ECDSA_SHA with local keypair(random data)
+      - result:
+          cause: null
+          ok: true
+          value: SUCCESS
+        response:
+          duration: 240818668
+          natural_sw: 36864
+          apdu: 90 00 90 00
+          sws:
+          - 36864
+          successful: true
+          desc: ALG_ECDSA_SHA with local keypair(random data)
+        type: command
+        command:
+          apdu: b0 72 01 00 03 11 00 00
+        desc: Mean = 241955435 ns, Median = 241697485 ns, Mode = 240389598 ns
       type: compound
       desc: Test of the ALG_ECDSA_SHA signature.
     - result:
@@ -1727,7 +1967,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 20509356
+        duration: 20492975
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1743,7 +1983,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29397646
+        duration: 29396920
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1759,7 +1999,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29446031
+        duration: 29496919
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1775,7 +2015,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 29642336
+        duration: 29353332
         natural_sw: 36864
         apdu: 00 03 90 00
         sws:
@@ -1798,7 +2038,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 81124741
+        duration: 81071333
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
@@ -1822,7 +2062,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 74784132
+        duration: 74725203
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
@@ -1846,7 +2086,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 74804658
+        duration: 74556857
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
@@ -1870,7 +2110,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 75048980
+        duration: 74812696
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
@@ -1894,7 +2134,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 75893375
+        duration: 75909716
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
@@ -1918,7 +2158,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 75071024
+        duration: 74902105
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
@@ -1942,7 +2182,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 74873900
+        duration: 74769574
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
@@ -1966,7 +2206,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 75136044
+        duration: 75046564
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
@@ -1990,7 +2230,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 74878056
+        duration: 74726917
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
@@ -2014,7 +2254,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 75185289
+        duration: 75047646
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
