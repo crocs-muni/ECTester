@@ -1,22 +1,23 @@
 ---
 ---
 
-<h1>ECTester <a href="https://github.com/crocs-muni/ECTester"><i class="fa fa-github" aria-hidden="true"></i></a></h1>
+<h1>ECTester</h1> <a href="https://travis-ci.org/crocs-muni/ECTester"><img src="https://api.travis-ci.org/crocs-muni/ECTester.svg?branch=master" alt="Build status"></a>  <a href="https://github.com/crocs-muni/ECTester/releases"><img src="https://img.shields.io/github/release/crocs-muni/ECTEster.svg" alt="GitHub release"></a>  <a href="https://github.com/crocs-muni/ECTester/blob/master/LICENSE"><img src="https://img.shields.io/github/license/crocs-muni/ECTester.svg" alt="license"></a>
 
 <p>Tests support and behavior of elliptic curve cryptography implementations on JavaCards (<code>TYPE_EC_FP</code> and <code>TYPE_EC_F2M</code>) and on selected software libraries.</p>
 
-<h2>Docs</h2>
-<ul>
-    <li><a href="tests">Test suites</a></li>
-    <li><a href="curves">Curve categories</a></li>
-</ul>
+<p>See our <a href="https://github.com/crocs-muni/ECTester">github</a> for more info.</p>
 
 <h2>Results</h2>
 
+<h3>Support table</h3>
+See it <a href="support">here</a>.
+
 <h3>Test suite runs</h3>
+The results of various <a href="tests">test suites</a>, run on a set of cards are available below:
+
 {% assign result_categories = site.results | group_by:"category" %}
 {% assign cards = site.results | group_by_exp:"item", "item.path | split: '.' | reverse | shift | split: '/' | reverse | pop | pop " %}
-<table>
+<table style="margin-top: 1em">
     <tr>
         <th>Card name</th>
         {% for cat in result_categories %}
@@ -62,4 +63,11 @@
     {% for report in keygen %}
     <li><a href="{{ report.url }}">{{ report.id | split: "/" | shift | shift | shift}}</a></li>
     {% endfor %}
+</ul>
+
+<h2>Docs</h2>
+
+<ul>
+    <li><a href="tests">Test suites</a> - Contains a list of implemented test suites and their descriptions.</li>
+    <li><a href="curves">Curve categories</a> - Contains a list of known curve categories and their descriptions.</li>
 </ul>

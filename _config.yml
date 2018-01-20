@@ -1,5 +1,5 @@
 title: "ECTester"
-description: "Tester of Eliptic curve support on the JavaCard smartcard platform."
+description: "Tests support and behavior of elliptic curve cryptography implementations on JavaCards (TYPE_EC_FP and TYPE_EC_F2M) and on selected software libraries."
 repository: crocs-muni/ECTester
 theme: jekyll-theme-cayman
 
