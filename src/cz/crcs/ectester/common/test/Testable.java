@@ -13,10 +13,16 @@ public interface Testable {
      * @return Whether an error happened.
      */
     boolean error();
+
     /**
      * @return Whether this runnable was run.
      */
     boolean hasRun();
+
+    /**
+     *
+     */
+    void reset();
 
     /**
      * Run this Runnable.

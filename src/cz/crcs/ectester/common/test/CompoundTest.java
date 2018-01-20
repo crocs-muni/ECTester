@@ -1,5 +1,7 @@
 package cz.crcs.ectester.common.test;
 
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -14,7 +16,7 @@ public class CompoundTest extends Test {
 
     private CompoundTest(Function<Test[], Result> callback, Test... tests) {
         this.callback = callback;
-        this.tests = tests;
+        this.tests = Arrays.stream(tests).filter(Objects::nonNull).toArray(Test[]::new);
     }
 
     private CompoundTest(Function<Test[], Result> callback, String descripiton, Test... tests) {

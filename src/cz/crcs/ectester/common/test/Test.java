@@ -52,6 +52,12 @@ public abstract class Test implements Testable {
         return hasRun;
     }
 
+    @Override
+    public void reset() {
+        hasRun = false;
+        result = null;
+    }
+
     public abstract String getDescription();
 
     @Override

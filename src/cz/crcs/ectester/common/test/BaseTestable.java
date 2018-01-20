@@ -22,4 +22,11 @@ public abstract class BaseTestable implements Testable {
     public boolean error() {
         return error;
     }
+
+    @Override
+    public void reset() {
+        hasRun = false;
+        ok = false;
+        error = false;
+    }
 }

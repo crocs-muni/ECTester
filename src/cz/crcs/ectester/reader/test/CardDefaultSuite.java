@@ -57,9 +57,14 @@ public class CardDefaultSuite extends CardTestSuite {
             for (byte kaType : EC_Consts.KA_TYPES) {
                 Test allocate = runTest(CommandTest.expect(new Command.AllocateKeyAgreement(this.card, kaType), ExpectedValue.SUCCESS));
                 if (allocate.ok()) {
-                    Test ka = runTest(CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, kaType), ExpectedValue.SUCCESS));
+                    Command ecdh = new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, kaType);
+                    Test ka = runTest(CommandTest.expect(ecdh, ExpectedValue.SUCCESS));
                     Test kaCompressed = runTest(CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_COMPRESS, kaType), ExpectedValue.SUCCESS));
-                    Test compound = runTest(CompoundTest.all(ExpectedValue.SUCCESS, "Test of the " + CardUtil.getKATypeString(kaType) + " KeyAgreement.", allocate, ka, kaCompressed));
+                    Test perfTest = null;
+                    if (ka.ok()) {
+                        perfTest = runTest(PerformanceTest.repeat(ecdh, 100));
+                    }
+                    Test compound = runTest(CompoundTest.all(ExpectedValue.SUCCESS, "Test of the " + CardUtil.getKATypeString(kaType) + " KeyAgreement.", allocate, ka, kaCompressed, perfTest));
                     supportTests.add(compound);
                 } else {
                     runTest(allocate);
@@ -69,8 +74,13 @@ public class CardDefaultSuite extends CardTestSuite {
             for (byte sigType : EC_Consts.SIG_TYPES) {
                 Test allocate = runTest(CommandTest.expect(new Command.AllocateSignature(this.card, sigType), ExpectedValue.SUCCESS));
                 if (allocate.ok()) {
-                    Test expect = runTest(CommandTest.expect(new Command.ECDSA(this.card, ECTesterApplet.KEYPAIR_LOCAL, sigType, ECTesterApplet.EXPORT_FALSE, null), ExpectedValue.SUCCESS));
-                    Test compound = runTest(CompoundTest.all(ExpectedValue.SUCCESS, "Test of the " + CardUtil.getSigTypeString(sigType) + " signature.", allocate, expect));
+                    Command ecdsa = new Command.ECDSA(this.card, ECTesterApplet.KEYPAIR_LOCAL, sigType, ECTesterApplet.EXPORT_FALSE, null);
+                    Test expect = runTest(CommandTest.expect(ecdsa, ExpectedValue.SUCCESS));
+                    Test perfTest = null;
+                    if (expect.ok()) {
+                        perfTest = runTest(PerformanceTest.repeat(ecdsa, 100));
+                    }
+                    Test compound = runTest(CompoundTest.all(ExpectedValue.SUCCESS, "Test of the " + CardUtil.getSigTypeString(sigType) + " signature.", allocate, expect, perfTest));
                     supportTests.add(compound);
                 } else {
                     supportTests.add(allocate);

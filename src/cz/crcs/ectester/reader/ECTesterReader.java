@@ -181,6 +181,7 @@ public class ECTesterReader {
         } catch (CardException | TestException ex) {
             if (logger != null)
                 logger.println(ex.getMessage());
+            ex.printStackTrace();
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         } finally {
