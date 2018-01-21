@@ -221,7 +221,7 @@ layout: default
 <div style="clear:both"></div>
 
 <h2>Implementation guide</h2>
-
+A basic example of EC KeyPair generation is visible below, for a more complete example see <a href="{{ site.baseurl}}/assets/ECExample.java">ECExample.java</a>.
 <pre>
     <code class="java">
     // secp256r1 from http://www.secg.org/sec2-v2.pdf
@@ -257,7 +257,10 @@ layout: default
             (byte) 0xF3, (byte) 0xB9, (byte) 0xCA, (byte) 0xC2, (byte) 0xFC, (byte) 0x63, (byte) 0x25, (byte) 0x51};
     short EC256_FP_K = 1;
 
+    // 1. Allocate the KeyPair object.
     KeyPair example = new KeyPair(KeyPair.ALG_EC_FP, (short) 256);
+
+    // 2. If the key parts are not available, call genKeyPair.
     if (example.getPrivate() == null || example.getPublic() == null) {
         // Sometimes cards require this so we have the keyparts, to
         // set parameters on.
@@ -266,8 +269,9 @@ layout: default
         } catch (Exception ignored) {}
     }
 
-    ECPrivateKey priv = (ECPrivateKey) result.getPrivate();
-    ECPublicKey pub = (ECPublicKey) result.getPublic();
+    // 3. Get the key parts and set custom domain parameters on them.
+    ECPrivateKey priv = (ECPrivateKey) example.getPrivate();
+    ECPublicKey pub = (ECPublicKey) example.getPublic();
 
     priv.setFieldFP(EC256_FP_P, (short) 0, EC256_FP_P.length);
     pub.setFieldFP(EC256_FP_P, (short) 0, EC256_FP_P.length);
@@ -287,11 +291,11 @@ layout: default
     priv.setK(EC256_FP_K);
     pub.setK(EC256_FP_K);
 
+    // 4. Generate the KeyPair over the custom set domain parameters.
     example.genKeyPair();
     // Now, the example keypair is ready for use.
     </code>
 </pre>
-
 
 <h2>Common pitfalls</h2>
 

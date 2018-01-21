@@ -1288,10 +1288,28 @@ public class ECExample {
         return curve <= FP_CURVES ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
     }
 
+    /**
+     * Generate a new EC KeyPair, uses SECG curves.
+     *
+     * @param keyLength The size of the KeyPair in bits.
+     * @param keyClass  The type of te KeyPair, one of KeyPair.ALG_EC_FP, KeyPair.ALG_EC_F2M.
+     * @param buffer    A byte buffer(in RAM preferrably), this method will use to copy the domain parameters into the keypair.
+     * @param offset    An offset in the buffer, from which it's contents will get overridden.
+     * @throws ISOException: - SW_FUNC_NOT_SUPPORTED if no SECG curve for given size and type can be found.
+     *                       - SW_WRONG_LENGTH if the usable buffer length after offset is shorter than necessary.
+     * @return the generated KeyPair
+     */
     public static KeyPair generatKeyPair(short keyLength, short keyClass, byte[] buffer, short offset) {
         byte curve = getCurve(keyLength, keyClass);
         if (curve == 0) {
+            // No SECG curve for given size and type.
             ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+        }
+
+        short byteLength = (short) ((keyLength / 8) + keyLength % 8 == 0 ? 0 : 1);
+        if (buffer.length - offset < 2 * byteLength + 1) {
+            // The curve data will not fit in the provided buffer.
+            ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
         }
 
         KeyPair result = new KeyPair(keyClass, keyLength);
