@@ -1,6 +1,7 @@
 ---
 layout: default
 ---
+<h1>Card support</h1>
 <style>
     .yes {
         background-color: rgba(0, 255, 0, 0.2);
@@ -14,8 +15,6 @@ layout: default
         background-color: rgba(255, 0, 0, 0.2);
     }
 </style>
-
-<h1>Card support</h1>
 
 <h2>$ \mathbb{F}_p $</h2>
 
@@ -298,9 +297,22 @@ A basic example of EC KeyPair generation is visible below, for a more complete e
 </pre>
 
 <h2>Common pitfalls</h2>
+The JavaCard ECC API is quite general in its requirements for implementations, which means different cards can behave
+differently and cause errors.
 
 <h3>No default curve</h3>
+KeyPairs allocated with <code class="java">new KeyPair(type, size)</code> might or might not have set some default domain parameters.
+Which means using <code class="java">keypair.genKeyPair()</code> just after allocating a KeyPair object will probably result in an exception.
+Thus, it is always better to explicitly setup custom domain parameters, using a known/standard curve, before trying to generate the KeyPair.
 
 <h3>genKeyPair() behaviour</h3>
+On some cards a newly allocated KeyPair does not yet contain the individual key parts (the <code>ECPublicKey</code> and <code>ECPrivateKey</code>).
+Thus doing <code class="java">keypair.getPrivate()</code> or <code class="java">keypair.getPublic()</code> will return <code>null</code>. Which makes setting
+custom domain parameters on the key parts harder. This can usually be fixed by calling <code>keypair.genKeyPair()</code>, which however might throw an exception,
+and then setting the custom domain parameters on the now accessible key parts.
 
 <h3>clearKey() behaviour</h3>
+The <code>keypair.clearKey()</code> method might clear out the set domain parameters of the keypair as well as the key contents.
+
+<h3>getK() behaviour</h3>
+The <code>ECKey.getK()</code> method might throw an exception if the card does not support working with the cofactor value.

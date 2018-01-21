@@ -31,12 +31,9 @@
 </head>
 <body>
 <section class="page-header">
-    <h1 class="project-name">{{ site.title | default: site.github.repository_name }}</h1>
+    <h1 class="project-name"><a href="{{ '/' | relative_url }}" class="clear-a">{{ site.title | default: site.github.repository_name }}</a></h1>
     {% if site.github.is_project_page %}
     <a href="{{ site.github.repository_url }}" class="btn header-btn">View on GitHub</a>
-    {% endif %}
-    {% if page.url != "/" %}
-    <a href="{{ '/' | relative_url }}" class="btn header-btn">Home</a>
     {% endif %}
     {% if site.show_downloads %}
     <a href="{{ site.github.zip_url }}" class="btn header-btn">Download .zip</a>

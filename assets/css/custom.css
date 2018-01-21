@@ -94,3 +94,11 @@
     bottom: 1%;
     right: 1%;
 }
+
+.clear-a {
+    color: #fff;
+}
+
+.clear-a:hover {
+    text-decoration: none;
+}
