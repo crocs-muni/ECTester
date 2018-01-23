@@ -36,12 +36,12 @@ Some of these are from Atsuko Miyaji's [paper](https://dspace.jaist.ac.jp/dspace
 ## invalid
 This category contains pre-generated invalid curves for a large subset of NIST, SECG and Brainpool curves. Invalid curves for a given curve, are short Weierstrass curves with all parameters equal to the given curve except the `b` parameter. These curves can be used to [attack some implementations](https://www.nds.rub.de/media/nds/veroeffentlichungen/2015/09/14/main-full.pdf).
 
-Generated using [ecgen](https://github.com/J08nY/ecgen)
+Generated using [ecgen](https://github.com/J08nY/ecgen).
 
 ## composite
 Contains curves of composite order, with small order points.
 
-Generated using [ecgen](https://github.com/J08nY/ecgen)
+Generated using [ecgen](https://github.com/J08nY/ecgen).
 
 ## wrong
 Contains parameters that are not elliptic curves(over Fp and F2m), such as `p` parameter that is not prime, irreducible polynomial that is not irreducible and similar.

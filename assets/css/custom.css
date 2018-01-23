@@ -88,6 +88,18 @@
     }
 }
 
+.body-btn {
+	background-color: rgba(128,128,128,0.1);
+	border-color: #606c71;
+	color: #606c71;
+}
+
+.body-btn:hover {
+	background-color: rgba(128,128,128,0.6);
+	border-color: #606c71;
+	color: #606c71;
+}
+
 #up-top-icon {
     font-size: small !important;
     position: fixed;
@@ -102,3 +114,9 @@
 .clear-a:hover {
     text-decoration: none;
 }
+
+*:target {
+    padding-top: 8%;
+    margin-top: -8%;
+}
+
