@@ -1288,18 +1288,29 @@ public class ECExample {
         return curve <= FP_CURVES ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
     }
 
+	/**
+	 * Allocate a new EC KeyPair, this should be done in the Applet constructor.
+	 *
+	 * @param keyLength The size of the KeyPair in bits.
+     * @param keyClass  The type of te KeyPair, one of KeyPair.ALG_EC_FP, KeyPair.ALG_EC_F2M.
+     * @return The allocated KeyPair(not yet generated/usable!!).
+	 */
+    public static KeyPair allocateKeyPair(short keyLength, short keyClass) {
+    	return new KeyPair(keyClass, keyLength);
+    }
+
     /**
-     * Generate a new EC KeyPair, uses SECG curves.
+     * Generate an EC KeyPair, uses SECG curves.
      *
+     * @param keypair The KeyPair to generate.
      * @param keyLength The size of the KeyPair in bits.
      * @param keyClass  The type of te KeyPair, one of KeyPair.ALG_EC_FP, KeyPair.ALG_EC_F2M.
      * @param buffer    A byte buffer(in RAM preferrably), this method will use to copy the domain parameters into the keypair.
      * @param offset    An offset in the buffer, from which it's contents will get overridden.
      * @throws ISOException: - SW_FUNC_NOT_SUPPORTED if no SECG curve for given size and type can be found.
      *                       - SW_WRONG_LENGTH if the usable buffer length after offset is shorter than necessary.
-     * @return the generated KeyPair
      */
-    public static KeyPair generatKeyPair(short keyLength, short keyClass, byte[] buffer, short offset) {
+    public static void generateKeyPair(KeyPair keypair, short keyLength, short keyClass, byte[] buffer, short offset) {
         byte curve = getCurve(keyLength, keyClass);
         if (curve == 0) {
             // No SECG curve for given size and type.
@@ -1307,22 +1318,21 @@ public class ECExample {
         }
 
         short byteLength = (short) ((keyLength / 8) + keyLength % 8 == 0 ? 0 : 1);
-        if (buffer.length - offset < 2 * byteLength + 1) {
+        if (buffer.length - offset < 2 * byteLength + 1) {
             // The curve data will not fit in the provided buffer.
             ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
         }
 
-        KeyPair result = new KeyPair(keyClass, keyLength);
-        if (result.getPrivate() == null || result.getPublic() == null) {
+        if (keypair.getPrivate() == null || keypair.getPublic() == null) {
             // Sometimes cards require this so we have the keyparts, to
             // set parameters on.
             try {
-                result.genKeyPair();
+                keypair.genKeyPair();
             } catch (Exception ignored) {}
         }
 
-        ECPrivateKey priv = (ECPrivateKey) result.getPrivate();
-        ECPublicKey pub = (ECPublicKey) result.getPublic();
+        ECPrivateKey priv = (ECPrivateKey) keypair.getPrivate();
+        ECPublicKey pub = (ECPublicKey) keypair.getPublic();
 
         short length = 0;
         if (keyClass == KeyPair.ALG_EC_FP) {
@@ -1331,7 +1341,7 @@ public class ECExample {
             pub.setFieldFP(buffer, offset, length);
         } else {
             length = getCurveParameter(curve, PARAMETER_F2M, buffer, offset);
-            if (length == 2) {
+            if (length == 2) {
                 short i = Util.getShort(buffer, offset);
                 priv.setFieldF2M(i);
                 pub.setFieldF2M(i);
@@ -1364,9 +1374,7 @@ public class ECExample {
         priv.setK(k);
         pub.setK(k);
 
-        result.genKeyPair();
-
-        return result;
+        keypair.genKeyPair();
     }
 
     public static short toX962(byte form, byte[] outputBuffer, short outputOffset, byte[] xBuffer, short xOffset, short xLength, byte[] yBuffer, short yOffset, short yLength) {

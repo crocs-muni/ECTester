@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-<h1>Card support</h1>
+<h1>JavaCard Elliptic curve algorithm support</h1>
 <style>
     .yes {
         background-color: rgba(0, 255, 0, 0.2);
@@ -16,11 +16,36 @@ layout: default
     }
 </style>
 
+
+<h2>Legend</h2>
+<div style="float:left">
+    *ECDH types
+    <ul>
+        <li>1 - ALG_EC_SVDP_DH</li>
+        <li>2 - ALG_EC_SVDP_DHC</li>
+        <li>3 - ALG_EC_SVDP_DH_PLAIN</li>
+        <li>4 - ALG_EC_SVDP_DHC_PLAIN</li>
+        <li>5 - ALG_EC_PACE_GM</li>
+        <li>6 - ALG_EC_SVDP_DH_PLAIN_XY</li>
+    </ul>
+</div>
+<div style="float:left">
+    *ECDSA types
+    <ul>
+        <li>a - ALG_ECDSA_SHA</li>
+        <li>b - ALG_ECDSA_SHA_224</li>
+        <li>c - ALG_ECDSA_SHA_256</li>
+        <li>d - ALG_ECDSA_SHA_384</li>
+        <li>e - ALG_ECDSA_SHA_512</li>
+    </ul>
+</div>
+<div style="clear:both"></div>
+
 <h2>$ \mathbb{F}_p $</h2>
 
-<table>
+<table style="text-align: center">
     <colgroup>
-        <col span="1" style="width: 12%">
+        <col span="1" style="width: 20%">
         <col span="1" style="width: 10%">
         <col span="1" style="width: 10%">
         <col span="1" style="width: 10%">
@@ -62,49 +87,52 @@ layout: default
     <tr>
         <td><a href="{{ site.baseurl }}/results/default/GD_Smartcafe_6.0/">GD SmartCafe 6.0</a></td>
         <td class="yes">1,2,3,4<br/>128ms</td>
-        <td class="yes">1,2,3,4,5<br/>270ms</td>
+        <td class="yes">a,b,c,d,e<br/>270ms</td>
         <td class="yes">1,2,4,3<br/>190ms</td>
-        <td class="yes">1,2,3,4,5<br/>355ms</td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
+        <td class="yes">a,b,c,d,e<br/>355ms</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
     </tr>
     <tr>
         <td><a href="{{ site.baseurl }}/results/default/JCOP31_v2.4.1/">JCOP31 v2.4.1</a></td>
         <td class="yes">1,2<br/>122ms</td>
-        <td class="yes">1<br/>257ms</td>
+        <td class="yes">a<br/>257ms</td>
         <td class="yes">1,2<br/>189ms</td>
-        <td class="yes">1<br/>392ms</td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
+        <td class="yes">a<br/>392ms</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
     </tr>
     <tr>
         <td><a href="{{ site.baseurl }}/results/default/NXP_JCOP_CJ2A081/">NXP JCOP CJ2A081</a></td>
         <td class="yes">1,2<br/>75ms</td>
-        <td class="yes">1<br/>151ms</td>
+        <td class="yes">a<br/>151ms</td>
         <td class="yes">1,2<br/>123ms</td>
-        <td class="yes">1<br/>241ms</td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
+        <td class="yes">a<br/>241ms</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
     </tr>
     <tr>
         <td><a href="{{ site.baseurl }}/results/default/NXP_JCOP_v2.4.2_R3/">NXP JCOP v2.4.2 R3</a></td>
         <td class="yes">1,2<br/>99ms</td>
-        <td class="yes">1,2,3<br/>180ms</td>
+        <td class="yes">a,b,c<br/>180ms</td>
         <td class="yes">1,2<br/>150ms</td>
-        <td class="yes">1,2,3<br/>275ms</td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
+        <td class="yes">a,b,c<br/>275ms</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
     </tr>
 </table>
 
+<h2>$ \mathbb{F}_{2^m} $</h2>
+Support for binary field curves on cards is very weak, very little cards have any. For more inform\tion see <a href="https://www.fi.muni.cz/~xsvenda/jcalgtest/table.html">JCAlgTest</a> support table.
+<!--
 <h2>$ \mathbb{F}_{2^m} $</h2>
 
 <table>
@@ -193,31 +221,7 @@ layout: default
         <td class="no"></td>
     </tr>
 </table>
-
-<h2>Legend</h2>
-<br/>
-<div style="float:left">
-    *ECDH types
-    <ul>
-        <li>1 - ALG_EC_SVDP_DH</li>
-        <li>2 - ALG_EC_SVDP_DHC</li>
-        <li>3 - ALG_EC_SVDP_DH_PLAIN</li>
-        <li>4 - ALG_EC_SVDP_DHC_PLAIN</li>
-        <li>5 - ALG_EC_PACE_GM</li>
-        <li>6 - ALG_EC_SVDP_DH_PLAIN_XY</li>
-    </ul>
-</div>
-<div style="float:left">
-    *ECDSA types
-    <ul>
-        <li>1 - ALG_ECDSA_SHA</li>
-        <li>2 - ALG_ECDSA_SHA_224</li>
-        <li>3 - ALG_ECDSA_SHA_256</li>
-        <li>4 - ALG_ECDSA_SHA_384</li>
-        <li>5 - ALG_ECDSA_SHA_512</li>
-    </ul>
-</div>
-<div style="clear:both"></div>
+-->
 
 <h2>Implementation guide</h2>
 A basic example of EC KeyPair generation is visible below, for a more complete example see <a href="{{ site.baseurl}}/assets/ECExample.java">ECExample.java</a>.
@@ -257,6 +261,7 @@ A basic example of EC KeyPair generation is visible below, for a more complete e
     short EC256_FP_K = 1;
 
     // 1. Allocate the KeyPair object.
+    // ! This should be done in the Applet constructor !
     KeyPair example = new KeyPair(KeyPair.ALG_EC_FP, (short) 256);
 
     // 2. If the key parts are not available, call genKeyPair.
@@ -296,16 +301,16 @@ A basic example of EC KeyPair generation is visible below, for a more complete e
     </code>
 </pre>
 
-<h2>Common pitfalls</h2>
+<h2>Common JavaCard ECC usage pitfalls</h2>
 The JavaCard ECC API is quite general in its requirements for implementations, which means different cards can behave
 differently and cause errors.
 
-<h3>No default curve</h3>
+<h3>No curve is set by default</h3>
 KeyPairs allocated with <code class="java">new KeyPair(type, size)</code> might or might not have set some default domain parameters.
 Which means using <code class="java">keypair.genKeyPair()</code> just after allocating a KeyPair object will probably result in an exception.
 Thus, it is always better to explicitly setup custom domain parameters, using a known/standard curve, before trying to generate the KeyPair.
 
-<h3>genKeyPair() behaviour</h3>
+<h3>genKeyPair() required to get key parts</h3>
 On some cards a newly allocated KeyPair does not yet contain the individual key parts (the <code>ECPublicKey</code> and <code>ECPrivateKey</code>).
 Thus doing <code class="java">keypair.getPrivate()</code> or <code class="java">keypair.getPublic()</code> will return <code>null</code>. Which makes setting
 custom domain parameters on the key parts harder. This can usually be fixed by calling <code>keypair.genKeyPair()</code>, which however might throw an exception,
