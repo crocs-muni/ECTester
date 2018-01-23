@@ -1,0 +1,14 @@
+# Built artifacts in /dist and /applet.
+/dist/lib/
+/dist/ECTesterReader.jar
+/dist/ECTesterReader-dist.jar
+/dist/ectester-reader.sh
+/dist/ectester-reader.bat
+/dist/ECTesterStandalone.jar
+/dist/ECTesterStandalone-dist.jar
+/applet/ectester.cap
+
+# Built binaries in /src.
+/src/**/*.a
+/src/**/*.o
+/src/**/*.so

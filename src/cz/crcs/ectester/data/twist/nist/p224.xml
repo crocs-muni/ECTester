@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pubkey>
+	<id>p224/0</id>
+	<inline>0x90427f4a141f94c26f98d40060292350fcace2356961ef27dda08d7b,0x58877d4992c377c33459aa0caeb0526881326f201beb519fc11aadc8</inline>
+	<curve>nist/P-224</curve>
+	<desc>twist order = 0x3</desc>
+</pubkey>
+<pubkey>
+	<id>p224/1</id>
+	<inline>0x7f87c1db4213f1032c251a514e324f4360390476e0f7cd025547df58,0x2498f43e46af6fa0ad6480cfd61fb40caa78e349db0766a8760ff021</inline>
+	<curve>nist/P-224</curve>
+	<desc>twist order = 0xb</desc>
+</pubkey>
+<pubkey>
+	<id>p224/2</id>
+	<inline>0x2a2d61174fd561e9da2f279b96f7a69ae50a78d87f09674f465c9184,0xc9c7232ca8a50587181d8c96204c1eec6e976bcbd58e3c7181dbb2a7</inline>
+	<curve>nist/P-224</curve>
+	<desc>twist order = 0x2f</desc>
+</pubkey>
+<pubkey>
+	<id>p224/3</id>
+	<inline>0x15da8f68bfe51bc75f0cd892f7400c3d5ce5a9c6da126171527767cc,0x0cee3612475887d31963b62c69580191d1158df3f0c0305765175c9c</inline>
+	<curve>nist/P-224</curve>
+	<desc>twist order = 0x2e0273</desc>
+</pubkey>
+<pubkey>
+	<id>p224/4</id>
+	<inline>0xbd813fcdea2281a452733516e4e2625fac96573c41f3b37c56d0d1d7,0x351de92e6b06928fec37ee0ffd03606fecc5022edc1a72453c433ef4</inline>
+	<curve>nist/P-224</curve>
+	<desc>twist order = 0x268160f</desc>
+</pubkey>
+<pubkey>
+	<id>p224/5</id>
+	<inline>0x2a379d972d016116067b5bf2c23937b6182b4dc6bf8aa0625eb58b9f,0xb9ec1e372728d3334a762e5d64faca1e0cd47f46c3e5402ff14cb140</inline>
+	<curve>nist/P-224</curve>
+	<desc>twist order = 0xf3bac7aa52cf</desc>
+</pubkey>
+<pubkey>
+	<id>p224/6</id>
+	<inline>0xc5e229bfc9f4e0992ecf51a3c354e6aac1a4673056bee9a673beae5a,0x73a2e7d530b13c281d460ea2d2c3bddb49a8eb3446b9308ec64d5a70</inline>
+	<curve>nist/P-224</curve>
+	<desc>twist order = 0x22340ff0f7eba57b33ac73e28a14d1</desc>
+</pubkey>

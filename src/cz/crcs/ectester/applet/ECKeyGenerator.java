@@ -201,13 +201,13 @@ public class ECKeyGenerator {
                     break;
                 case EC_Consts.PARAMETER_F2M:
                     if (length == 4) {
-                        short i = Util.makeShort(data[(short) (offset + 2)], data[(short) (offset + 3)]);
+                        short i = Util.getShort(data, (short) (offset + 2));
                         if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i);
                         if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i);
                     } else if (length == 8) {
-                        short i1 = Util.makeShort(data[(short) (offset + 2)], data[(short) (offset + 3)]);
-                        short i2 = Util.makeShort(data[(short) (offset + 4)], data[(short) (offset + 5)]);
-                        short i3 = Util.makeShort(data[(short) (offset + 6)], data[(short) (offset + 7)]);
+                        short i1 = Util.getShort(data, (short) (offset + 2));
+                        short i2 = Util.getShort(data, (short) (offset + 4));
+                        short i3 = Util.getShort(data, (short) (offset + 6));
 //                        if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i1, i2, i3);
 //                        if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i1, i2, i3);
                         // TODO: fix this, ^^ fails on jcardsim, but is up to spec

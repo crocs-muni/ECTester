@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pubkey>
+	<id>sect163r1/0</id>
+	<inline>0x000000000000000000000000000000000000000000,0x009917a2556e1856bc7ea9a472cd01bfb889b95835</inline>
+	<curve>secg/sect163r1</curve>
+	<desc>twist order = 0x2</desc>
+</pubkey>
+<pubkey>
+	<id>sect163r1/1</id>
+	<inline>0x06deb836183f1f185aa782845b7e30b87aac87cc86,0x02a07ec119c487e132b464ea54e7f2264103fbf6f3</inline>
+	<curve>secg/sect163r1</curve>
+	<desc>twist order = 0x7</desc>
+</pubkey>
+<pubkey>
+	<id>sect163r1/2</id>
+	<inline>0x01dbb909b594a1b8db65b2de7cffe586d10ea658c8,0x031e430590c0ca5707f54a0463dbd329ca9088d1f2</inline>
+	<curve>secg/sect163r1</curve>
+	<desc>twist order = 0x923</desc>
+</pubkey>
+<pubkey>
+	<id>sect163r1/3</id>
+	<inline>0x029d7e51e1b8552d0fe88a48bcfb1913b4d0adac52,0x073688d2e575b20328f70560be4ba53b575498d23d</inline>
+	<curve>secg/sect163r1</curve>
+	<desc>twist order = 0xcd4110cf690bd</desc>
+</pubkey>
+<pubkey>
+	<id>sect163r1/4</id>
+	<inline>0x010175375db66e9ce0060fc3785804ebe2d96b8a3a,0x04d4cc08f4975602d69520023bb0505fe701339146</inline>
+	<curve>secg/sect163r1</curve>
+	<desc>twist order = 0x9fc0d375facf703681f32693</desc>
+</pubkey>

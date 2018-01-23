@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE keys [
+        <!ENTITY k163 SYSTEM "twist/nist/k163.xml">
+        <!ENTITY k233 SYSTEM "twist/nist/k233.xml">
+        <!ENTITY k283 SYSTEM "twist/nist/k283.xml">
+        <!ENTITY b163 SYSTEM "twist/nist/b163.xml">
+        <!ENTITY b233 SYSTEM "twist/nist/b233.xml">
+        <!ENTITY b283 SYSTEM "twist/nist/b283.xml">
+
+        <!ENTITY secp112r1 SYSTEM "twist/secg/secp112r1.xml">
+        <!ENTITY secp112r2 SYSTEM "twist/secg/secp112r2.xml">
+        <!ENTITY secp128r1 SYSTEM "twist/secg/secp128r1.xml">
+        <!ENTITY secp128r2 SYSTEM "twist/secg/secp128r2.xml">
+        <!ENTITY secp160k1 SYSTEM "twist/secg/secp160k1.xml">
+        <!ENTITY secp160r1 SYSTEM "twist/secg/secp160r1.xml">
+        <!ENTITY secp160r2 SYSTEM "twist/secg/secp160r2.xml">
+        <!ENTITY secp192k1 SYSTEM "twist/secg/secp192k1.xml">
+        <!ENTITY secp192r1 SYSTEM "twist/secg/secp192r1.xml">
+        <!ENTITY secp224r1 SYSTEM "twist/secg/secp224r1.xml">
+        <!ENTITY secp256k1 SYSTEM "twist/secg/secp256k1.xml">
+        <!ENTITY secp256r1 SYSTEM "twist/secg/secp256r1.xml">
+        <!ENTITY secp384r1 SYSTEM "twist/secg/secp384r1.xml">
+        <!ENTITY secp521r1 SYSTEM "twist/secg/secp521r1.xml">
+        ]>
+<keys xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../schema.xsd"
+      category="twist"
+      desc="">
+    &k163;
+    &k233;
+    &k283;
+    &b163;
+    &b233;
+    &b283;
+      
+    &secp112r1;
+    &secp112r2;
+    &secp128r1;
+    &secp128r2;
+    &secp160k1;
+    &secp160r1;
+    &secp160r2;
+    &secp192k1;
+    &secp192r1;
+    &secp224r1;
+    &secp256k1;
+	&secp256r1;
+	&secp384r1;
+	&secp521r1;
+</keys>

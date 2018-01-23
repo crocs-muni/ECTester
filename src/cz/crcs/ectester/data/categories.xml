@@ -47,8 +47,18 @@
         <desc></desc>
     </category>
     <category>
+        <name>twist</name>
+        <directory>twist</directory>
+        <desc></desc>
+    </category>
+    <category>
         <name>test</name>
         <directory>test</directory>
         <desc>Test vectors</desc>
+    </category>
+    <category>
+        <name>x962</name>
+        <directory>x962</directory>
+        <desc>ANSI X9.62 example curves.</desc>
     </category>
 </categories>

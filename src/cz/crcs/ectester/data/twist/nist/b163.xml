@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pubkey>
+	<id>b163/0</id>
+	<inline>0x000000000000000000000000000000000000000000,0x02c25b85badf8927593d21c366da89c03969f34da5</inline>
+	<curve>nist/B-163</curve>
+	<desc>twist order = 0x2</desc>
+</pubkey>
+<pubkey>
+	<id>b163/1</id>
+	<inline>0x03a98eb9fc1007f0a2b0e8de7da23cc6a7f7dd76b1,0x019971752926a2aca5407bffbf2a73f3f884b97127</inline>
+	<curve>nist/B-163</curve>
+	<desc>twist order = 0x1f</desc>
+</pubkey>
+<pubkey>
+	<id>b163/2</id>
+	<inline>0x023ae22e69bac70ca24078fdf63753eaf6cb89e857,0x03674a33443dc657c24685eb761ab7efbb63a8adbc</inline>
+	<curve>nist/B-163</curve>
+	<desc>twist order = 0x38b</desc>
+</pubkey>
+<pubkey>
+	<id>b163/3</id>
+	<inline>0x04feb095cf083a783cac4107305889efa9f401cc27,0x0403abb00aa4712e4b9120391d59745e9fbad39db3</inline>
+	<curve>nist/B-163</curve>
+	<desc>twist order = 0x1208485</desc>
+</pubkey>
+<pubkey>
+	<id>b163/4</id>
+	<inline>0x00a72a640e05acc0e6c6956ab5be24240b92623add,0x031dfc8af709b3db0a05126f17a7b4d703de503475</inline>
+	<curve>nist/B-163</curve>
+	<desc>twist order = 0xb78fc77</desc>
+</pubkey>
+<pubkey>
+	<id>b163/5</id>
+	<inline>0x031b5fc734d73023a06e4fe1b7921811221c6d1b2a,0x05432357b4a42a7b8f51b04dfab95a5ecf03547500</inline>
+	<curve>nist/B-163</curve>
+	<desc>twist order = 0x5c4bf9b1205a07afbe718429</desc>
+</pubkey>

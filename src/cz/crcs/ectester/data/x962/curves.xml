@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<curves xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../schema.xsd">
+    <curve>
+        <id>prime192v1</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>prime192v1.csv</file>
+    </curve>
+    <curve>
+        <id>prime192v2</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>prime192v2.csv</file>
+    </curve>
+    <curve>
+        <id>prime192v3</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>prime192v3.csv</file>
+    </curve>
+
+    <curve>
+        <id>prime239v1</id>
+        <bits>239</bits>
+        <field>prime</field>
+        <file>prime239v1.csv</file>
+    </curve>
+    <curve>
+        <id>prime239v2</id>
+        <bits>239</bits>
+        <field>prime</field>
+        <file>prime239v2.csv</file>
+    </curve>
+    <curve>
+        <id>prime239v3</id>
+        <bits>239</bits>
+        <field>prime</field>
+        <file>prime239v3.csv</file>
+    </curve>
+
+    <curve>
+        <id>prime256v1</id>
+        <bits>256</bits>
+        <field>prime</field>
+        <file>prime256v1.csv</file>
+    </curve>
+</curves>

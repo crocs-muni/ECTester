@@ -3,7 +3,6 @@ package cz.crcs.ectester.applet;
 
 import javacard.framework.CardRuntimeException;
 import javacard.framework.ISO7816;
-import javacard.framework.ISOException;
 import javacard.security.*;
 
 /**
@@ -13,75 +12,33 @@ import javacard.security.*;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class ECKeyTester {
-
-    private KeyAgreement ecdhKeyAgreement = null;
-    private KeyAgreement ecdhcKeyAgreement = null;
+    private KeyAgreement ecKeyAgreement = null;
+    private short kaType = 0;
     private Signature ecdsaSignature = null;
+    private short sigType = 0;
 
     private short sw = ISO7816.SW_NO_ERROR;
 
-    public short allocateECDH(byte algorithm) {
+    public short allocateKA(byte algorithm) {
         sw = ISO7816.SW_NO_ERROR;
         try {
-            ecdhKeyAgreement = KeyAgreement.getInstance(algorithm, false);
+            ecKeyAgreement = KeyAgreement.getInstance(algorithm, false);
+            kaType = algorithm;
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
         }
         return sw;
     }
 
-    public short allocateECDHC(byte algorithm) {
+    public short allocateSig(byte algorithm) {
         sw = ISO7816.SW_NO_ERROR;
         try {
-            ecdhcKeyAgreement = KeyAgreement.getInstance(algorithm, false);
+            ecdsaSignature = Signature.getInstance(algorithm, false);
+            sigType = algorithm;
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
         }
         return sw;
-    }
-
-    public short allocateECDSA() {
-        sw = ISO7816.SW_NO_ERROR;
-        try {
-            ecdsaSignature = Signature.getInstance(Signature.ALG_ECDSA_SHA, false);
-        } catch (CardRuntimeException ce) {
-            sw = ce.getReason();
-        }
-        return sw;
-    }
-
-    private short testKA(KeyAgreement ka, KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, short corruption) {
-        short length = 0;
-        try {
-            sw = AppletUtil.kaCheck(ka);
-            sw = AppletUtil.keypairCheck(privatePair);
-            sw = AppletUtil.keypairCheck(publicPair);
-            short pubkeyLength = ((ECPublicKey) publicPair.getPublic()).getW(pubkeyBuffer, pubkeyOffset);
-            // reached ok
-            ka.init(privatePair.getPrivate()); // throws UNITIALIZED KEY when ALG_EC_SVDP_DHC_PLAIN is used
-            //ISOException.throwIt((short) 0x666);
-            
-            pubkeyLength = EC_Consts.corruptParameter(corruption, pubkeyBuffer, pubkeyOffset, pubkeyLength);
-            length = ka.generateSecret(pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);
-        } catch (CardRuntimeException ce) {
-            sw = ce.getReason();
-        }
-        return length;
-    }
-
-    private short testKA_direct(KeyAgreement ka, KeyPair privatePair, byte[] pubkey, short pubkeyOffset, short pubkeyLength, byte[] outpuBuffer, short outputOffset, short corruption) {
-        short length = 0;
-        try {
-            sw = AppletUtil.kaCheck(ka);
-            sw = AppletUtil.keypairCheck(privatePair);
-
-            ka.init(privatePair.getPrivate());
-            pubkeyLength = EC_Consts.corruptParameter(corruption, pubkey, pubkeyOffset, pubkeyLength);
-            length = ka.generateSecret(pubkey, pubkeyOffset, pubkeyLength, outpuBuffer, outputOffset);
-        } catch (CardRuntimeException ce)  {
-            sw = ce.getReason();
-        }
-        return length;
     }
 
     /**
@@ -98,100 +55,46 @@ public class ECKeyTester {
      * @param corruption   (EC_Consts.CORRUPTION_* | ...)
      * @return derived secret length
      **/
-    public short testECDH(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, short corruption) {
-        return testKA(ecdhKeyAgreement, privatePair, publicPair, pubkeyBuffer, pubkeyOffset, outputBuffer, outputOffset, corruption);
-    }
+    public short testKA(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, short corruption) {
+        short length = 0;
+        try {
+            sw = AppletUtil.kaCheck(ecKeyAgreement);
+            sw = AppletUtil.keypairCheck(privatePair);
+            sw = AppletUtil.keypairCheck(publicPair);
+            short pubkeyLength = ((ECPublicKey) publicPair.getPublic()).getW(pubkeyBuffer, pubkeyOffset);
+            ecKeyAgreement.init(privatePair.getPrivate());
 
-    public short testECDH_direct(KeyPair privatePair, byte[] pubkey, short pubkeyOffset, short pubkeyLength, byte[] outpuBuffer, short outputOffset, short corruption) {
-        return testKA_direct(ecdhKeyAgreement, privatePair, pubkey, pubkeyOffset, pubkeyLength, outpuBuffer, outputOffset, corruption);
-    }
-
-    /**
-     * Tests ECDHC secret generation with keys from given {@code privatePair} and {@code publicPair}.
-     * Uses {@code pubkeyBuffer} at {@code pubkeyOffset} for computations.
-     * Output should equal to ECDH output.
-     *
-     * @param privatePair  KeyPair from which the private key is used
-     * @param publicPair   KeyPair from which the public key is used
-     * @param pubkeyBuffer buffer to be used for the public key
-     * @param pubkeyOffset offset into pubkeyBuffer that can be used for the public key
-     * @param outputBuffer buffer to be used for the secret output
-     * @param outputOffset offset into the outputBuffer
-     * @param corruption   (EC_Consts.CORRUPTION_* | ...)
-     * @return derived secret length
-     */
-    public short testECDHC(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, short corruption) {
-        return testKA(ecdhcKeyAgreement, privatePair, publicPair, pubkeyBuffer, pubkeyOffset, outputBuffer, outputOffset, corruption);
-    }
-
-    public short testECDHC_direct(KeyPair privatePair, byte[] pubkey, short pubkeyOffset, short pubkeyLength, byte[] outpuBuffer, short outputOffset, short corruption) {
-        return testKA_direct(ecdhcKeyAgreement, privatePair, pubkey, pubkeyOffset, pubkeyLength, outpuBuffer, outputOffset, corruption);
-    }
-
-    /**
-     * @param privatePair  KeyPair from which the private key is used
-     * @param publicPair   KeyPair from which the public key is used
-     * @param pubkeyBuffer buffer to be used for the public key
-     * @param pubkeyOffset offset into pubkeyBuffer that can be used for the public key
-     * @param outputBuffer buffer to be used for the secret output
-     * @param outputOffset offset into the outputBuffer
-     * @param corruption   (EC_Consts.CORRUPTION_* | ...)
-     * @return
-     */
-    public short testBOTH(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, short corruption) {
-        short ecdhLength = testECDH(privatePair, publicPair, pubkeyBuffer, pubkeyOffset, outputBuffer, outputOffset, corruption);
-        if (sw != ISO7816.SW_NO_ERROR) {
-            return ecdhLength;
-        }
-        short ecdhcLength = testECDHC(privatePair, publicPair, pubkeyBuffer, pubkeyOffset, outputBuffer, (short) (outputOffset + ecdhLength), corruption);
-        short length = (short) (ecdhLength + ecdhcLength);
-        if (sw != ISO7816.SW_NO_ERROR) {
-            return length;
-        }
-        if (javacard.framework.Util.arrayCompare(outputBuffer, outputOffset, outputBuffer, (short) (outputOffset + ecdhLength), ecdhLength) != 0) {
-            sw = ECTesterApplet.SW_DH_DHC_MISMATCH;
-        }
-        return length;
-    }
-
-    public short testBOTH_direct(KeyPair privatePair, byte[] pubkey, short pubkeyOffset, short pubkeyLength, byte[] outputBuffer, short outputOffset, short corruption) {
-        short ecdhLength = testECDH_direct(privatePair, pubkey, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset, corruption);
-        if (sw != ISO7816.SW_NO_ERROR) {
-            return ecdhLength;
-        }
-        short ecdhcLength = testECDHC_direct(privatePair, pubkey, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset, corruption);
-        short length = (short) (ecdhLength + ecdhcLength);
-        if (sw != ISO7816.SW_NO_ERROR) {
-            return length;
-        }
-        if (javacard.framework.Util.arrayCompare(outputBuffer, outputOffset, outputBuffer, (short) (outputOffset + ecdhLength), ecdhLength) != 0) {
-            sw = ECTesterApplet.SW_DH_DHC_MISMATCH;
+            pubkeyLength = EC_Consts.corruptParameter(corruption, pubkeyBuffer, pubkeyOffset, pubkeyLength);
+            length = ecKeyAgreement.generateSecret(pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);
+        } catch (CardRuntimeException ce) {
+            sw = ce.getReason();
         }
         return length;
     }
 
     /**
-     * @param privatePair  KeyPair from which the private key is used
-     * @param publicPair   KeyPair from which the public key is used
-     * @param pubkeyBuffer buffer to be used for the public key
-     * @param pubkeyOffset offset into pubkeyBuffer that can be used for the public key
-     * @param outputBuffer buffer to be used for the secret output
-     * @param outputOffset offset into the outputBuffer
-     * @param corruption   (EC_Consts.CORRUPTION_* | ...)
+     * @param privatePair
+     * @param pubkey
+     * @param pubkeyOffset
+     * @param pubkeyLength
+     * @param outpuBuffer
+     * @param outputOffset
+     * @param corruption
      * @return
      */
-    public short testANY(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, short corruption) {
-        short ecdhLength = testECDH(privatePair, publicPair, pubkeyBuffer, pubkeyOffset, outputBuffer, outputOffset, corruption);
-        if (sw == ISO7816.SW_NO_ERROR)
-            return ecdhLength;
-        return testECDHC(privatePair, publicPair, pubkeyBuffer, pubkeyOffset, outputBuffer, outputOffset, corruption);
-    }
+    public short testKA_direct(KeyPair privatePair, byte[] pubkey, short pubkeyOffset, short pubkeyLength, byte[] outpuBuffer, short outputOffset, short corruption) {
+        short length = 0;
+        try {
+            sw = AppletUtil.kaCheck(ecKeyAgreement);
+            sw = AppletUtil.keypairCheck(privatePair);
 
-    public short testANY_direct(KeyPair privatePair, byte[] pubkey, short pubkeyOffset, short pubkeyLength, byte[] outputBuffer, short outputOffset, short corruption) {
-        short ecdhLength = testECDH_direct(privatePair, pubkey, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset, corruption);
-        if (sw == ISO7816.SW_NO_ERROR)
-            return ecdhLength;
-        return testECDHC_direct(privatePair, pubkey, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset, corruption);
+            ecKeyAgreement.init(privatePair.getPrivate());
+            pubkeyLength = EC_Consts.corruptParameter(corruption, pubkey, pubkeyOffset, pubkeyLength);
+            length = ecKeyAgreement.generateSecret(pubkey, pubkeyOffset, pubkeyLength, outpuBuffer, outputOffset);
+        } catch (CardRuntimeException ce) {
+            sw = ce.getReason();
+        }
+        return length;
     }
 
     /**
@@ -227,32 +130,31 @@ public class ECKeyTester {
         return length;
     }
 
-    public KeyAgreement getECDH() {
-        return ecdhKeyAgreement;
+    public KeyAgreement getKA() {
+        return ecKeyAgreement;
     }
 
-    public KeyAgreement getECDHC() {
-        return ecdhcKeyAgreement;
-    }
-
-    public Signature getECDSA() {
+    public Signature getSig() {
         return ecdsaSignature;
     }
 
-    public boolean hasECDH() {
-        return ecdhKeyAgreement != null;
+    public boolean hasKA() {
+        return ecKeyAgreement != null;
     }
 
-    public boolean hasECDHC() {
-        return ecdhcKeyAgreement != null;
-    }
-
-    public boolean hasECDSA() {
+    public boolean hasSig() {
         return ecdsaSignature != null;
+    }
+
+    public short getKaType() {
+        return kaType;
+    }
+
+    public short getSigType() {
+        return sigType;
     }
 
     public short getSW() {
         return sw;
     }
-
 }

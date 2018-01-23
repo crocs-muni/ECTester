@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pubkey>
+	<id>b283/0</id>
+	<inline>0x000000000000000000000000000000000000000000000000000000000000000000000000,0x072bcc9c5792b1ebe81983089fb6f835a2fd220a304424ca17c082ae17442aede9b9b3f6</inline>
+	<curve>nist/B-283</curve>
+	<desc>twist order = 0x2</desc>
+</pubkey>
+<pubkey>
+	<id>b283/1</id>
+	<inline>0x0297e6d1f2b857a79f5dc85c2f1259d5d801c61a4d0a4312a04f65f09a887a7b93cf7ae1,0x051963c38ac61f05fef93707abcfbda7bc0f39eacddb2bdd3077f19c0e65c8be66ecb30e</inline>
+	<curve>nist/B-283</curve>
+	<desc>twist order = 0x7</desc>
+</pubkey>
+<pubkey>
+	<id>b283/2</id>
+	<inline>0x022b522e9e120300e74563dee496f8feb64209b858abd5da50f31c92ae4a1eee751c92d6,0x012647d0d771016622e899c2a54afad773907e42e15d45e1db3e4fb0ae6a6df2934dba63</inline>
+	<curve>nist/B-283</curve>
+	<desc>twist order = 0x13</desc>
+</pubkey>
+<pubkey>
+	<id>b283/3</id>
+	<inline>0x02597a5336d18d9effde2820bed7352dccc8824abc81cde80914ea3cd072da55e9f91368,0x04a6d2c92a1ee699cda25dafa88191ef34218e9ea5c996d37e9ce507c318e7649b3b02d9</inline>
+	<curve>nist/B-283</curve>
+	<desc>twist order = 0x1623ab619</desc>
+</pubkey>
+<pubkey>
+	<id>b283/4</id>
+	<inline>0x01b011689cef74d9b2be4e8fb548eeabe31a678f560fc7b893c330b3939da9451a0cff78,0x022fd9ba4762f742a18e299f035a837b0525d7030e6b061eaa9242237d0767e7c28b608d</inline>
+	<curve>nist/B-283</curve>
+	<desc>twist order = 0x2a4aa67aaaf5413fb</desc>
+</pubkey>
+<pubkey>
+	<id>b283/5</id>
+	<inline>0x06ac85dce72aa795b5b90d43849dec9d4ee0ffc4d41f87fe8d48de2ac3cf84dfc5c20263,0x008e5147dba15ff3cb287457b3f41d32ca6c074df014f85033368d982c1670907d6afa05</inline>
+	<curve>nist/B-283</curve>
+	<desc>twist order = 0x25a8cdb1f2e470f3ac1ba7</desc>
+</pubkey>
+<pubkey>
+	<id>b283/6</id>
+	<inline>0x0132803a996ebd53ffa3553fc994b583cdb9514e4476c79336acf72f82ac36add519e655,0x004d30604436960af06b2eab63027ca8f59ca105f505afcd3413e1e72f5fb9c0f29d3a20</inline>
+	<curve>nist/B-283</curve>
+	<desc>twist order = 0x606749a9c147da03ad3f37</desc>
+</pubkey>

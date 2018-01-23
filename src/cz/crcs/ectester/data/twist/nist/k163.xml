@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pubkey>
+	<id>k163/0</id>
+	<inline>0x000000000000000000000000000000000000000000,0x000000000000000000000000000000000000000001</inline>
+	<curve>nist/K-163</curve>
+	<desc>twist order = 0x2</desc>
+</pubkey>
+<pubkey>
+	<id>k163/1</id>
+	<inline>0x04410857858628f16bd3ef77fce6732525d6d75f6c,0x00c51e38c5eb613ff4c8b594d754a218f30e8b1c39</inline>
+	<curve>nist/K-163</curve>
+	<desc>twist order = 0x28d</desc>
+</pubkey>
+<pubkey>
+	<id>k163/2</id>
+	<inline>0x004c291913c2e75103b38481fbda3830850ee4c026,0x0403ff8ccadf20f12e10e40b8eed4872d4c128aaa2</inline>
+	<curve>nist/K-163</curve>
+	<desc>twist order = 0x1979</desc>
+</pubkey>
+<pubkey>
+	<id>k163/3</id>
+	<inline>0x03868f9f75e8d0056c6e1aabed4a3df1437a56b386,0x07473bb4e85044c95af468d5374da860c4e563159c</inline>
+	<curve>nist/K-163</curve>
+	<desc>twist order = 0x7926bec180108d</desc>
+</pubkey>
+<pubkey>
+	<id>k163/4</id>
+	<inline>0x0162deb07d5848fc45fd580549a6f17fecea1b7497,0x0297440c5cfd9e8fe781004db92f9f106b9d33235f</inline>
+	<curve>nist/K-163</curve>
+	<desc>twist order = 0x10a6989de57d15c65ba229</desc>
+</pubkey>

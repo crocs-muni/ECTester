@@ -26,11 +26,7 @@
 package cz.crcs.ectester.applet;
 
 import javacard.framework.*;
-import javacard.security.ECPrivateKey;
-import javacard.security.ECPublicKey;
-import javacard.security.KeyAgreement;
-import javacard.security.KeyPair;
-import javacard.security.RandomData;
+import javacard.security.*;
 import javacardx.apdu.ExtendedLength;
 
 /**
@@ -55,10 +51,11 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     public static final byte INS_ECDH_DIRECT = (byte) 0x71;
     public static final byte INS_ECDSA = (byte) 0x72;
     public static final byte INS_CLEANUP = (byte) 0x73;
-    public static final byte INS_SUPPORT = (byte) 0x74;
+    //public static final byte INS_SUPPORT = (byte) 0x74;
     public static final byte INS_ALLOCATE_KA = (byte) 0x75;
-    
-            
+    public static final byte INS_ALLOCATE_SIG = (byte) 0x76;
+
+
     // PARAMETERS for P1 and P2
     public static final byte KEYPAIR_LOCAL = (byte) 0x01;
     public static final byte KEYPAIR_REMOTE = (byte) 0x02;
@@ -72,10 +69,9 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     public static final short SW_KEYPAIR_NULL = (short) 0x0ee3;
     public static final short SW_KA_NULL = (short) 0x0ee4;
     public static final short SW_SIGNATURE_NULL = (short) 0x0ee5;
-    public static final short SW_OBJECT_NULL = (short) 0x0ee6;    
-    public static final short SW_KA_UNSUPPORTED = (short) 0x0ee7;
+    public static final short SW_OBJECT_NULL = (short) 0x0ee6;
 
-    
+
     // Class javacard.security.KeyAgreement
     // javacard.security.KeyAgreement Fields:
     public static final byte KeyAgreement_ALG_EC_SVDP_DH = 1;
@@ -86,8 +82,14 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     public static final byte KeyAgreement_ALG_EC_SVDP_DHC_PLAIN = 4;
     public static final byte KeyAgreement_ALG_EC_PACE_GM = 5;
     public static final byte KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY = 6;
-    public static final byte KeyAgreement_ALG_DH_PLAIN = 7;    
 
+    // Class javacard.security.Signature
+    // javacard.security.Signature Fields:
+    public static final byte Signature_ALG_ECDSA_SHA = 17;
+    public static final byte Signature_ALG_ECDSA_SHA_256 = 33;
+    public static final byte Signature_ALG_ECDSA_SHA_384 = 34;
+    public static final byte Signature_ALG_ECDSA_SHA_224 = 37;
+    public static final byte Signature_ALG_ECDSA_SHA_512 = 38;
 
     private static final short ARRAY_LENGTH = (short) 0xff;
     private static final short APDU_MAX_LENGTH = (short) 1024;
@@ -98,13 +100,9 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     // PERSISTENT ARRAY IN EEPROM
     private byte[] dataArray = null; // unused
 
-
     private RandomData randomData = null;
 
     private ECKeyTester keyTester = null;
-    private short ecdhSW;
-    private short ecdhcSW;
-    private short ecdsaSW;
     private ECKeyGenerator keyGenerator = null;
     private KeyPair localKeypair = null;
     private KeyPair remoteKeypair = null;
@@ -133,11 +131,6 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
 
             keyGenerator = new ECKeyGenerator();
             keyTester = new ECKeyTester();
-            ecdhSW = keyTester.allocateECDH(KeyAgreement.ALG_EC_SVDP_DH);
-            ecdhcSW = keyTester.allocateECDHC(KeyAgreement.ALG_EC_SVDP_DHC);
-            //ecdhSW = keyTester.allocateECDH((byte) 3);
-            //ecdhcSW = keyTester.allocateECDHC((byte) 4);
-            ecdsaSW = keyTester.allocateECDSA();
         }
         register();
     }
@@ -163,8 +156,11 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
 
             short length = 0;
             switch (ins) {
-                case INS_ALLOCATE_KA: 
+                case INS_ALLOCATE_KA:
                     length = insAllocateKA(apdu);
+                    break;
+                case INS_ALLOCATE_SIG:
+                    length = insAllocateSig(apdu);
                     break;
                 case INS_ALLOCATE:
                     length = insAllocate(apdu);
@@ -196,9 +192,6 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
                 case INS_CLEANUP:
                     length = insCleanup(apdu);
                     break;
-                case INS_SUPPORT:
-                    length = insSupport(apdu);
-                    break;
                 default:
                     // The INS code is not supported by the dispatcher
                     ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);
@@ -208,9 +201,9 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
             apdu.setOutgoingAndSend((short) 0, length);
         } else ISOException.throwIt(ISO7816.SW_CLA_NOT_SUPPORTED);
     }
-    
+
     /**
-     * Allocates KeyAgreement object. returns allocate SW
+     * Allocates KeyAgreement object, returns allocate SW.
      *
      * @param apdu DATA = byte KeyAgreementType
      * @return length of response
@@ -218,35 +211,25 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     private short insAllocateKA(APDU apdu) {
         short cdata = apdu.getOffsetCdata();
         byte kaType = apduArray[cdata];
-/*
-        short sw = SW_KA_UNSUPPORTED;
-        switch (kaType) {
-            case KeyAgreement_ALG_EC_SVDP_DH: // no break
-            case KeyAgreement_ALG_EC_SVDP_DH_PLAIN:
-            case KeyAgreement_ALG_EC_PACE_GM:
-            case KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY:
-                sw = keyTester.allocateECDH(kaType);
-                break;
-            case KeyAgreement_ALG_EC_SVDP_DHC:
-            case KeyAgreement_ALG_EC_SVDP_DHC_PLAIN: 
-                sw = keyTester.allocateECDHC(kaType);
-                break;
-            default:
-                sw = SW_KA_UNSUPPORTED;
-                break;
-        }
-*/        
-        // Allocate given type into both DH and DHC objects
-        short sw = keyTester.allocateECDH(kaType);
-        short offset = 0;
-        Util.setShort(apdu.getBuffer(), offset, sw);
-        offset += 2;
-        
-        //sw = keyTester.allocateECDHC(kaType);
-        Util.setShort(apdu.getBuffer(), offset, sw);
-        offset += 2;
-        return offset;
-    }    
+        short sw = keyTester.allocateKA(kaType);
+        Util.setShort(apdu.getBuffer(), (short) 0, sw);
+        return 2;
+    }
+
+    /**
+     * Allocates a Signature object, returns allocate SW.
+     *
+     * @param apdu DATA = byte SignatureType
+     * @return length of response
+     */
+    private short insAllocateSig(APDU apdu) {
+        short cdata = apdu.getOffsetCdata();
+        byte sigType = apduArray[cdata];
+        short sw = keyTester.allocateSig(sigType);
+        Util.setShort(apdu.getBuffer(), (short) 0, sw);
+        return 2;
+    }
+
     /**
      * Allocates local and remote keyPairs.
      * returns allocate SWs
@@ -422,13 +405,15 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     }
 
     /**
+     * Performs ECDH, directly between the privkey specified in P1(local/remote) and the raw data
      *
      * @param apdu P1   = byte privkey (KEYPAIR_*)
-     * @return     P2   = byte export (EXPORT_TRUE || EXPORT_FALSE)
+     *             P2   = byte export (EXPORT_TRUE || EXPORT_FALSE)
      *             DATA = short corruption (EC_Consts.CORRUPTION_* | ...)
      *             byte type (EC_Consts.KA_* | ...)
      *             short length
      *             byte[] pubkey
+     * @return length of response
      */
     private short insECDH_direct(APDU apdu) {
         byte privkey = apduArray[ISO7816.OFFSET_P1];
@@ -447,7 +432,8 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
      *
      * @param apdu P1   = byte keyPair (KEYPAIR_*)
      *             P2   = byte export (EXPORT_TRUE || EXPORT_FALSE)
-     *             DATA = short dataLength (00 = random data generated, !00 = data length)
+     *             DATA = byte sigType
+     *             short dataLength (00 = random data generated, !00 = data length)
      *             byte[] data
      * @return length of response
      */
@@ -455,13 +441,14 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
         byte keyPair = apduArray[ISO7816.OFFSET_P1];
         byte export = apduArray[ISO7816.OFFSET_P2];
         short cdata = apdu.getOffsetCdata();
+        byte sigType = apduArray[cdata];
 
         short len = 0;
         if ((keyPair & KEYPAIR_LOCAL) != 0) {
-            len += ecdsa(localKeypair, export, apduArray, cdata, apdu.getBuffer(), (short) 0);
+            len += ecdsa(localKeypair, sigType, export, apduArray, (short) (cdata + 1), apdu.getBuffer(), (short) 0);
         }
         if ((keyPair & KEYPAIR_REMOTE) != 0) {
-            len += ecdsa(remoteKeypair, export, apduArray, cdata, apdu.getBuffer(), len);
+            len += ecdsa(remoteKeypair, sigType, export, apduArray, (short) (cdata + 1), apdu.getBuffer(), len);
         }
 
         return len;
@@ -477,19 +464,6 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
         byte[] apdubuf = apdu.getBuffer();
 
         return cleanup(apdubuf, (short) 0);
-    }
-
-    /**
-     * Returns data about card support for various EC related tasks collected on applet
-     * install.
-     *
-     * @param apdu no data
-     * @return length of response
-     */
-    private short insSupport(APDU apdu) {
-        byte[] apdubuf = apdu.getBuffer();
-
-        return support(apdubuf, (short) 0);
     }
 
     /**
@@ -623,7 +597,7 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
      * @param privkey    keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
      * @param export     whether to export ECDH secret
      * @param corruption whether to invalidate the pubkey before ECDH
-     * @param type       KeyAgreement type to test (EC_Consts.KA_* || ...)
+     * @param type       KeyAgreement type to test
      * @param outBuffer  buffer to write sw to, and export ECDH secret {@code if(export == EXPORT_TRUE)}
      * @param outOffset  output offset in buffer
      * @return length of data written to the buffer
@@ -635,23 +609,14 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
         KeyPair priv = ((privkey & KEYPAIR_LOCAL) != 0) ? localKeypair : remoteKeypair;
 
         short secretLength = 0;
-        switch (type) {
-            case EC_Consts.KA_ECDH:
-                secretLength = keyTester.testECDH(priv, pub, ramArray, (short) 0, ramArray2, (short) 0, corruption);
-                break;
-            case EC_Consts.KA_ECDHC:
-                secretLength = keyTester.testECDHC(priv, pub, ramArray, (short) 0, ramArray2, (short) 0, corruption);
-                break;
-            case EC_Consts.KA_BOTH:
-                secretLength = keyTester.testBOTH(priv, pub, ramArray, (short) 0, ramArray2, (short) 0, corruption);
-                break;
-            case EC_Consts.KA_ANY:
-                secretLength = keyTester.testANY(priv, pub, ramArray, (short) 0, ramArray2, (short) 0, corruption);
-                break;
-            default:
-                ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+        if (keyTester.getKaType() == type) {
+            secretLength = keyTester.testKA(priv, pub, ramArray, (short) 0, ramArray2, (short) 0, corruption);
+        } else {
+            short allocateSW = keyTester.allocateKA(type);
+            if (allocateSW == ISO7816.SW_NO_ERROR) {
+                secretLength = keyTester.testKA(priv, pub, ramArray, (short) 0, ramArray2, (short) 0, corruption);
+            }
         }
-
         Util.setShort(outBuffer, outOffset, keyTester.getSW());
         length += 2;
 
@@ -671,21 +636,13 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
         KeyPair priv = ((privkey & KEYPAIR_LOCAL) != 0) ? localKeypair : remoteKeypair;
 
         short secretLength = 0;
-        switch (type) {
-            case EC_Consts.KA_ECDH:
-                secretLength = keyTester.testECDH_direct(priv, apduArray, keyOffset, keyLength, outBuffer, outOffset, corruption);
-                break;
-            case EC_Consts.KA_ECDHC:
-                secretLength = keyTester.testECDHC_direct(priv, apduArray, keyOffset, keyLength, outBuffer, outOffset, corruption);
-                break;
-            case EC_Consts.KA_BOTH:
-                secretLength = keyTester.testBOTH_direct(priv, apduArray, keyOffset, keyLength, outBuffer, outOffset, corruption);
-                break;
-            case EC_Consts.KA_ANY:
-                secretLength = keyTester.testANY_direct(priv, apduArray, keyOffset, keyLength, outBuffer, outOffset, corruption);
-                break;
-            default:
-                ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+        if (keyTester.getKaType() == type) {
+            secretLength = keyTester.testKA_direct(priv, apduArray, keyOffset, keyLength, ramArray2, (short) 0, corruption);
+        } else {
+            short allocateSW = keyTester.allocateKA(type);
+            if (allocateSW == ISO7816.SW_NO_ERROR) {
+                secretLength = keyTester.testKA_direct(priv, apduArray, keyOffset, keyLength, ramArray2, (short) 0, corruption);
+            }
         }
 
         Util.setShort(outBuffer, outOffset, keyTester.getSW());
@@ -702,6 +659,7 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
 
     /**
      * @param sign      keyPair to use for signing and verification
+     * @param sigType   Signature type to use
      * @param export    whether to export ECDSA signature
      * @param inBuffer  buffer to read dataLength and data to sign from
      * @param inOffset  input offset in buffer
@@ -709,7 +667,7 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
      * @param outOffset output offset in buffer
      * @return length of data written to the buffer
      */
-    private short ecdsa(KeyPair sign, byte export, byte[] inBuffer, short inOffset, byte[] outBuffer, short outOffset) {
+    private short ecdsa(KeyPair sign, byte sigType, byte export, byte[] inBuffer, short inOffset, byte[] outBuffer, short outOffset) {
         short length = 0;
 
         short dataLength = Util.getShort(inBuffer, inOffset);
@@ -721,7 +679,15 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
             Util.arrayCopyNonAtomic(inBuffer, (short) (inOffset + 2), ramArray, (short) 0, dataLength);
         }
 
-        short signatureLength = keyTester.testECDSA((ECPrivateKey) sign.getPrivate(), (ECPublicKey) sign.getPublic(), ramArray, (short) 0, dataLength, ramArray2, (short) 0);
+        short signatureLength = 0;
+        if (keyTester.getSigType() == sigType) {
+            signatureLength = keyTester.testECDSA((ECPrivateKey) sign.getPrivate(), (ECPublicKey) sign.getPublic(), ramArray, (short) 0, dataLength, ramArray2, (short) 0);
+        } else {
+            short allocateSW = keyTester.allocateSig(sigType);
+            if (allocateSW == ISO7816.SW_NO_ERROR) {
+                signatureLength = keyTester.testECDSA((ECPrivateKey) sign.getPrivate(), (ECPublicKey) sign.getPublic(), ramArray, (short) 0, dataLength, ramArray2, (short) 0);
+            }
+        }
         Util.setShort(outBuffer, outOffset, keyTester.getSW());
         length += 2;
 
@@ -752,31 +718,5 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
 
         Util.setShort(buffer, offset, sw);
         return 2;
-    }
-
-    /**
-     * @param buffer buffer to write sw to
-     * @param offset output offset in buffer
-     * @return length of data written to the buffer
-     */
-    private short support(byte[] buffer, short offset) {
-
-        if (keyTester.hasECDH()) {
-            Util.setShort(buffer, offset, ecdhSW);
-        } else {
-            Util.setShort(buffer, offset, ISO7816.SW_FUNC_NOT_SUPPORTED);
-        }
-        if (keyTester.hasECDHC()) {
-            Util.setShort(buffer, (short) (offset + 2), ecdhcSW);
-        } else {
-            Util.setShort(buffer, (short) (offset + 2), ISO7816.SW_FUNC_NOT_SUPPORTED);
-        }
-        if (keyTester.hasECDSA()) {
-            Util.setShort(buffer, (short) (offset + 4), ecdsaSW);
-        } else {
-            Util.setShort(buffer, (short) (offset + 4), ISO7816.SW_FUNC_NOT_SUPPORTED);
-        }
-
-        return 6;
     }
 }

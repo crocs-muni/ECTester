@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pubkey>
+	<id>sect283r1/0</id>
+	<inline>0x000000000000000000000000000000000000000000000000000000000000000000000000,0x072bcc9c5792b1ebe81983089fb6f835a2fd220a304424ca17c082ae17442aede9b9b3f6</inline>
+	<curve>secg/sect283r1</curve>
+	<desc>twist order = 0x2</desc>
+</pubkey>
+<pubkey>
+	<id>sect283r1/1</id>
+	<inline>0x0297e6d1f2b857a79f5dc85c2f1259d5d801c61a4d0a4312a04f65f09a887a7b93cf7ae1,0x051963c38ac61f05fef93707abcfbda7bc0f39eacddb2bdd3077f19c0e65c8be66ecb30e</inline>
+	<curve>secg/sect283r1</curve>
+	<desc>twist order = 0x7</desc>
+</pubkey>
+<pubkey>
+	<id>sect283r1/2</id>
+	<inline>0x06909a8eacbed1942bc0a6d606ad1ce284dd223d8ce569dba8525c5a5f799f137112c7ad,0x02e4300b6ce278700db70764e810c1a8d4645b57db3d3974027a1a106598ceba86a61ab5</inline>
+	<curve>secg/sect283r1</curve>
+	<desc>twist order = 0x13</desc>
+</pubkey>
+<pubkey>
+	<id>sect283r1/3</id>
+	<inline>0x01287256c9848e3bd11dddf8f34ecca845b535e84adfdf0154f0e7c4ae1a9f0e6719b9b2,0x0119bf5a2c413f730a1576f577873a6f0a603fd571084d584df0a12601b80fe9b607401f</inline>
+	<curve>secg/sect283r1</curve>
+	<desc>twist order = 0x1623ab619</desc>
+</pubkey>
+<pubkey>
+	<id>sect283r1/4</id>
+	<inline>0x0598a8e3f2a3e06680ab11b84a01d59adee54f329dfc2b65f8a517c2a5f03b8f1aedb021,0x02943952200eb1ab69c2ac5811d32ea4a528af7cc917d2f2883ca5ca55e464f673f5c2f0</inline>
+	<curve>secg/sect283r1</curve>
+	<desc>twist order = 0x2a4aa67aaaf5413fb</desc>
+</pubkey>
+<pubkey>
+	<id>sect283r1/5</id>
+	<inline>0x02e22724a4462bbca361607163bb9ab9926e8fe6859adb397e5eeb8d0972de359e37eebc,0x05b15d8c245bfd0c2ed3930a5742f747e12f4fe0e018ab32fc790711bfdb060514cf8400</inline>
+	<curve>secg/sect283r1</curve>
+	<desc>twist order = 0x25a8cdb1f2e470f3ac1ba7</desc>
+</pubkey>
+<pubkey>
+	<id>sect283r1/6</id>
+	<inline>0x032a8c3ac7583c8f599fe6cba343b26f66fe13906c96e11db396ad939d43b55260e5fcef,0x046a4cbc0d05bf6ebad4b5f2bfa6f1a486519ff332ebc49136067916f188af2f5bce0782</inline>
+	<curve>secg/sect283r1</curve>
+	<desc>twist order = 0x606749a9c147da03ad3f37</desc>
+</pubkey>

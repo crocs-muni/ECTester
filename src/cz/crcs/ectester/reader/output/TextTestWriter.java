@@ -1,85 +1,57 @@
 package cz.crcs.ectester.reader.output;
 
-import cz.crcs.ectester.reader.test.Test;
-import cz.crcs.ectester.reader.test.TestSuite;
+import cz.crcs.ectester.common.output.BaseTextTestWriter;
+import cz.crcs.ectester.common.test.TestSuite;
+import cz.crcs.ectester.common.test.Testable;
+import cz.crcs.ectester.common.util.ByteUtil;
+import cz.crcs.ectester.reader.CardMngr;
+import cz.crcs.ectester.reader.test.CardTestSuite;
+import cz.crcs.ectester.reader.test.CommandTestable;
 
+import javax.smartcardio.CardException;
 import java.io.PrintStream;
+import java.util.Map;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class TextTestWriter implements TestWriter {
-    private PrintStream output;
-    private ResponseWriter respWriter;
-
-    public static int BASE_WIDTH = 76;
+public class TextTestWriter extends BaseTextTestWriter {
+    private ResponseWriter writer;
 
     public TextTestWriter(PrintStream output) {
-        this.output = output;
-        this.respWriter = new ResponseWriter(output);
+        super(output);
+        this.writer = new ResponseWriter(output);
     }
 
     @Override
-    public void begin(TestSuite suite) {
-        output.println("=== Running test suite: " + suite.getName() + " ===");
-        output.println("=== " + suite.getDescription());
+    protected String testableString(Testable t) {
+        if (t instanceof CommandTestable) {
+            CommandTestable cmd = (CommandTestable) t;
+            return writer.responseSuffix(cmd.getResponse());
+        }
+        return "";
     }
 
-    private String testString(Test t, int offset) {
-        if (!t.hasRun()) {
-            return null;
-        }
-
-        StringBuilder out = new StringBuilder();
-        if (t instanceof Test.Simple) {
-            Test.Simple test = (Test.Simple) t;
-            out.append(test.ok() ? "OK  " : "NOK ");
-            out.append("━ ");
-            int width = BASE_WIDTH - (offset + out.length());
-            String widthSpec = "%-" + String.valueOf(width) + "s";
-            out.append(String.format(widthSpec, t.getDescription()));
-            out.append(" ┃ ");
-            out.append(String.format("%-9s", test.getResultValue().name()));
-            out.append(" ┃ ");
-            out.append(respWriter.responseSuffix(test.getResponse()));
-        } else {
-            Test.Compound test = (Test.Compound) t;
-            out.append(test.ok() ? "OK  " : "NOK ");
-            out.append("┳ ");
-            int width = BASE_WIDTH - (offset + out.length());
-            String widthSpec = "%-" + String.valueOf(width) + "s";
-            out.append(String.format(widthSpec, t.getDescription()));
-            out.append(" ┃ ");
-            out.append(String.format("%-9s", test.getResultValue().name()));
-            out.append(" ┃ ");
-            out.append(test.getResultCause());
-            out.append(System.lineSeparator());
-            Test[] tests = test.getTests();
-            for (int i = 0; i < tests.length; ++i) {
-                if (i == tests.length - 1) {
-                    out.append("    ┗ ");
-                } else {
-                    out.append("    ┣ ");
+    @Override
+    protected String deviceString(TestSuite suite) {
+        if (suite instanceof CardTestSuite) {
+            CardTestSuite cardSuite = (CardTestSuite) suite;
+            StringBuilder sb = new StringBuilder();
+            sb.append("═══ Card ATR: ").append(ByteUtil.bytesToHex(cardSuite.getCard().getATR().getBytes(), false)).append(System.lineSeparator());
+            try {
+                CardMngr.CPLC cplc = cardSuite.getCard().getCPLC();
+                if (!cplc.values().isEmpty()) {
+                    sb.append("═══ Card CPLC data:").append(System.lineSeparator());
+                    for (Map.Entry<CardMngr.CPLC.Field, byte[]> entry : cplc.values().entrySet()) {
+                        CardMngr.CPLC.Field field = entry.getKey();
+                        byte[] value = entry.getValue();
+                        sb.append("═══ ").append(field.name()).append(": ").append(CardMngr.mapCPLCField(field, value));
+                    }
                 }
-                out.append(testString(tests[i], offset + 6));
-                if (i != tests.length - 1) {
-                    out.append(System.lineSeparator());
-                }
+            } catch (CardException ignored) {
             }
+            return sb.toString();
         }
-
-        return out.toString();
-    }
-
-    @Override
-    public void outputTest(Test t) {
-        if (!t.hasRun())
-            return;
-        output.println(testString(t, 0));
-        output.flush();
-    }
-
-    @Override
-    public void end() {
+        return "";
     }
 }

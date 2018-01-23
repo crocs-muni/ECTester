@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pubkey>
+	<id>secp112r1/0</id>
+	<inline>0x873a74a2da300cab1c8761d8f67b,0x46e03cbcc61d00aa9fe5a8077494</inline>
+	<curve>secg/secp112r1</curve>
+	<desc>twist order = 0x8a5</desc>
+</pubkey>
+<pubkey>
+	<id>secp112r1/1</id>
+	<inline>0x218f000fe41ffd98b55fc9b756c7,0x62a1bd48c034935e4367f392fbaa</inline>
+	<curve>secg/secp112r1</curve>
+	<desc>twist order = 0x1835</desc>
+</pubkey>
+<pubkey>
+	<id>secp112r1/2</id>
+	<inline>0xadf84193c633787f17ff7c789296,0x19b5613c0ee78be5954a104fad0b</inline>
+	<curve>secg/secp112r1</curve>
+	<desc>twist order = 0x11167</desc>
+</pubkey>
+<pubkey>
+	<id>secp112r1/3</id>
+	<inline>0x4b3b746903493367fd076f6e73bb,0x030545f11165bac7cbf381c48879</inline>
+	<curve>secg/secp112r1</curve>
+	<desc>twist order = 0x44015</desc>
+</pubkey>
+<pubkey>
+	<id>secp112r1/4</id>
+	<inline>0x51132c4c92342942c8027b71890e,0x43beab4961a59cf10d1b30531f5a</inline>
+	<curve>secg/secp112r1</curve>
+	<desc>twist order = 0x3b273570eb27b9</desc>
+</pubkey>

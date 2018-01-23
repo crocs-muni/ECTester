@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pubkey>
+	<id>p192/0</id>
+	<inline>0x489ba2a146ac0e7bb9f008fb780005e48d3588893c7ebca9,0x7caac0b203223010fb59940946a12e35d227fcb3ee6c9afc</inline>
+	<curve>nist/P-192</curve>
+	<desc>twist order = 0x17</desc>
+</pubkey>
+<pubkey>
+	<id>p192/1</id>
+	<inline>0xfaebaecd2737a6c22b5023d236ad48ab9acacb2cac075379,0x43810e9a10dabc2f835af837ac83fc4f0225773f3a84103f</inline>
+	<curve>nist/P-192</curve>
+	<desc>twist order = 0x231acce82af76d32ca5d526f</desc>
+</pubkey>
+<pubkey>
+	<id>p192/2</id>
+	<inline>0x7af6e161dcb8cd7852d5102ab42974af5179706d4616cce0,0xa3177747f0de49227575d2afc449187ab546e9ab827fcac9</inline>
+	<curve>nist/P-192</curve>
+	<desc>twist order = 0x512b1bfde874086edba50007</desc>
+</pubkey>

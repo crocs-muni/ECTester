@@ -11,29 +11,21 @@ confirmation before running, be cautious.**
 
 ## Default
 Tests the default curves present on the card. These might not be present or the card might not even support ECC.
-Tests keypair allocation, generation, ECDH and ECDSA. ECDH is first tested with two valid generated keypairs, then a with a
-public key that is corrupted in various ways, these tests should fail.
+Tests keypair allocation, generation, ECDH and ECDSA. ECDH is first tested with two valid generated keypairs, then
+with a compressed public key to test support for compressed points.
 
 This test suite is run if no argument is provided to `-t / --test`.
 
-Supports the `-nc / --named-curve` option so you can specify a category of curves or a curve to use if the card doesn't
-have default curves preset.
-
 For example:
 ```bash
-java -jar ECTester.jar -nc secg -a -fp -t
+java -jar ECTester.jar -a -fp -t
 ```
-tests all(`-a`), prime field(`-fp`) SECG curves, using the default test suite.
+tests all(`-a`), prime field(`-fp`), using the default test suite.
 
 ```bash
-java -jar ECTester.jar -u -a -f2m -t
+java -jar ECTester.jar-a -f2m -t
 ```
-tests all(`-a`), binary field(`-f2m`), custom(`-u`) curves.
-
-```bash
-java -jar ECTester.jar -b 128 -fp -t
-```
-tests a 128 bit(`-b`), prime field(`-fp`) curve, (if a default one is present).
+tests all(`-a`), binary field(`-f2m`), curves.
 
 ## Test-Vectors
 Tests using known test vectors provided by NIST/SECG/Brainpool:

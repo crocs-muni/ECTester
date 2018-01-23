@@ -1,7 +1,6 @@
 package cz.crcs.ectester.data;
 
-import cz.crcs.ectester.applet.EC_Consts;
-import cz.crcs.ectester.reader.ec.*;
+import cz.crcs.ectester.common.ec.*;
 import javacard.security.KeyPair;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -30,12 +29,11 @@ import java.util.TreeMap;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class EC_Store {
-
     private DocumentBuilder db;
-
     private Map<String, EC_Category> categories;
+    private static EC_Store instance;
 
-    public EC_Store() throws IOException {
+    private EC_Store() {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
         try {
@@ -84,7 +82,7 @@ public class EC_Store {
             });
 
             parse();
-        } catch (ParserConfigurationException | SAXException e) {
+        } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -217,25 +215,7 @@ public class EC_Store {
                         descs = descc.item(0).getTextContent();
                     }
 
-                    byte kab = EC_Consts.KA_ANY;
-                    switch (ka.getTextContent()) {
-                        case "DH":
-                        case "ECDH":
-                            kab = EC_Consts.KA_ECDH;
-                            break;
-                        case "DHC":
-                        case "ECDHC":
-                            kab = EC_Consts.KA_ECDHC;
-                            break;
-                        case "ANY":
-                            kab = EC_Consts.KA_ANY;
-                            break;
-                        case "BOTH":
-                            kab = EC_Consts.KA_BOTH;
-                            break;
-                    }
-
-                    EC_KAResult kaResult = new EC_KAResult(id.getTextContent(), kab, curve.getTextContent(), onekey.getTextContent(), otherkey.getTextContent(), descs);
+                    EC_KAResult kaResult = new EC_KAResult(id.getTextContent(), ka.getTextContent(), curve.getTextContent(), onekey.getTextContent(), otherkey.getTextContent(), descs);
 
                     InputStream csv = parseDataElement(dir, elem);
                     if (!kaResult.readCSV(csv)) {
@@ -337,6 +317,13 @@ public class EC_Store {
             return null;
         }
         return getObject(objClass, query.substring(0, split), query.substring(split + 1));
+    }
+
+    public static EC_Store getInstance() {
+        if (instance == null) {
+            instance = new EC_Store();
+        }
+        return instance;
     }
 
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pubkey>
+	<id>p256/0</id>
+	<inline>0x92787586fc8a5d065a2a754e229a66ea3c845c8d5f7120792ee3aacee88ca01c,0xee95a42047d9eae3bb007aa7aed3a87ee6986df813f6c76d8f19866a1b1f9c20</inline>
+	<curve>nist/P-256</curve>
+	<desc>twist order = 0x3</desc>
+</pubkey>
+<pubkey>
+	<id>p256/1</id>
+	<inline>0x40d27c77cf9fb36e49a850b1ae7357c9ab3f1d917d52ba3edb648bd33354d3da,0xd30662382d8440919f4decbc58c6d9ca8745d39cdd71c26063fd2fa8bcbb69f7</inline>
+	<curve>nist/P-256</curve>
+	<desc>twist order = 0x5</desc>
+</pubkey>
+<pubkey>
+	<id>p256/2</id>
+	<inline>0x33961ae81d08958d1dbc42bdadb05e7cb7bdda383b1c49e18c3a2f5908c833a2,0xc4a96d4f905a1d7e32d4c82d6e79f1ef7047d09bf1d1518be2c65d13815306fe</inline>
+	<curve>nist/P-256</curve>
+	<desc>twist order = 0xd</desc>
+</pubkey>
+<pubkey>
+	<id>p256/3</id>
+	<inline>0x21fa3bf4b7d23dea73a1751d3b02dd8724a2a5a0ae9b28fdd98b8ef18bb610f5,0x7d933ab51ac8bc7e5d3c5a44d9875c64a080eba393c6492e4e5ce2367f133dd1</inline>
+	<curve>nist/P-256</curve>
+	<desc>twist order = 0xb3</desc>
+</pubkey>
+<pubkey>
+	<id>p256/4</id>
+	<inline>0x3819da45c7b025be543fd40ec49b2613891c12f2ae2daf014396c70270eff92c,0xbec84d62254dbc67864ced51966d4f419ad5b1ec9ee1d72cce291a8a034518da</inline>
+	<curve>nist/P-256</curve>
+	<desc>twist order = 0x1e0a75640070a738557cc30f68bd56eaea65c94f98411d17ac4e16ece1a47</desc>
+</pubkey>

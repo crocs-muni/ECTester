@@ -1,17 +1,33 @@
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - libtomcrypt-dev
+    - libtommath-dev
+    - gcc-6
+    - g++-6
 language: java
 jdk:
-- oraclejdk8
+  - oraclejdk8
+env:
+  - CC=gcc-6 CXX=g++-6
+
 script:
-- ant -f jcbuild.xml build
-- ant -f build.xml package
+  - ant -f build-applet.xml build
+  - ant -f build-reader.xml package
+  - ant -f build-standalone.xml package
+
 deploy:
   provider: releases
   api_key:
     secure: q2aJvu32K+nfbMR60nFCEkn+jYCKprlCRlIoPjuRz1HySX233Ccwpx1CAdNzEjY6FDFcoReKAg6r5vdPjJ4FRPAQ23TxffIYZPkykL5K/pUZJbM5xkazJY0Fp8i6Vyl0JfeanVib1PTyOSugplhCttFk5nb9JUFV36Tre66XntOl5y80Trn94F5aTlRjfW26UH65W7Aa6WZ0N4OX/ZsX+vEOJPAu+RLfOq9oBOx/loB8ntYM/e/6bEwJp6EedRQLDsiS4NavP3svH+GXsPLs5p3soyRXYsvvGKVnVjcjZURxDDdxv5YuCWUUfl9PbNB+Mqmx/HQxl50BKoKFqwap1+TnlbuTAiWaXeh3zdXuGB+TPg8KE8h6ueDneHd3Lpivgq79IvPWIH+N4b3Pa952+rD+JKBZ807efB+97OtWrkQL7/sLZESQUdIszE724HHOiArKpNajIX+kN6NJdul5xFCiQQHG+O7iDFQBavCGM9fk63mZRyGPxZQzS06BV2vIIHg0yx3igN+OKKMFCH+P3hYR1zL6o65OlgbL1ifTZ18GDvmVRNdi53/fxQ2n/mQmI4tQpn4ZB7Ddoxx4GlpjFjzdKk/P9nKwng0M9wrp8row/vb5S+1aPwSxp9/4ASP9dkvLcNjTkWhmGPrWe+82Y9JPK47uesx0YeaVI2C7IR0=
   file:
-    - "dist/ECTester-dist.jar"
-    - "dist/ECTester.jar"
-    - "!uploader/ectester.cap"
+    - "dist/ECTesterReader-dist.jar"
+    - "dist/ECTesterReader.jar"
+    - "applet/ectester.cap"
+    - "dist/ECTesterStandalone-dist.jar"
+    - "dist/ECTesterStandalone.jar"
   skip_cleanup: true
   on:
     tags: true

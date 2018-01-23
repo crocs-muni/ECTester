@@ -1,55 +1,34 @@
 package cz.crcs.ectester.reader.output;
 
-import cz.crcs.ectester.reader.Util;
+import cz.crcs.ectester.common.output.BaseXMLTestWriter;
+import cz.crcs.ectester.common.test.TestSuite;
+import cz.crcs.ectester.common.test.Testable;
+import cz.crcs.ectester.common.util.ByteUtil;
+import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
-import cz.crcs.ectester.reader.test.Test;
-import cz.crcs.ectester.reader.test.TestSuite;
-import org.w3c.dom.Document;
+import cz.crcs.ectester.reader.test.CardTestSuite;
+import cz.crcs.ectester.reader.test.CommandTestable;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.smartcardio.CardException;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.OutputStream;
+import java.util.Map;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class XMLTestWriter implements TestWriter {
-    private OutputStream output;
-    private DocumentBuilder db;
-    private Document doc;
-    private Node root;
-
+public class XMLTestWriter extends BaseXMLTestWriter {
     public XMLTestWriter(OutputStream output) throws ParserConfigurationException {
-        this.output = output;
-        this.db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-    }
-
-    @Override
-    public void begin(TestSuite suite) {
-        doc = db.newDocument();
-        Element rootElem = doc.createElement("testSuite");
-        rootElem.setAttribute("name", suite.getName());
-        rootElem.setAttribute("desc", suite.getDescription());
-
-        root = rootElem;
-        doc.appendChild(root);
+        super(output);
     }
 
     private Element commandElement(Command c) {
         Element commandElem = doc.createElement("command");
 
         Element apdu = doc.createElement("apdu");
-        apdu.setTextContent(Util.bytesToHex(c.getAPDU().getBytes()));
+        apdu.setTextContent(ByteUtil.bytesToHex(c.getAPDU().getBytes()));
         commandElem.appendChild(apdu);
 
         return commandElem;
@@ -60,7 +39,7 @@ public class XMLTestWriter implements TestWriter {
         responseElem.setAttribute("successful", r.successful() ? "true" : "false");
 
         Element apdu = doc.createElement("apdu");
-        apdu.setTextContent(Util.bytesToHex(r.getAPDU().getBytes()));
+        apdu.setTextContent(ByteUtil.bytesToHex(r.getAPDU().getBytes()));
         responseElem.appendChild(apdu);
 
         Element naturalSW = doc.createElement("natural-sw");
@@ -86,60 +65,50 @@ public class XMLTestWriter implements TestWriter {
         return responseElem;
     }
 
-    private Element testElement(Test t) {
-        Element testElem = doc.createElement("test");
-
-        if (t instanceof Test.Simple) {
-            Test.Simple test = (Test.Simple) t;
-            testElem.setAttribute("type", "simple");
-            testElem.appendChild(commandElement(test.getCommand()));
-            testElem.appendChild(responseElement(test.getResponse()));
-        } else if (t instanceof Test.Compound) {
-            Test.Compound test = (Test.Compound) t;
-            testElem.setAttribute("type", "compound");
-            for (Test innerTest : test.getTests()) {
-                testElem.appendChild(testElement(innerTest));
-            }
+    @Override
+    protected Element testableElement(Testable t) {
+        if (t instanceof CommandTestable) {
+            CommandTestable cmd = (CommandTestable) t;
+            Element result = doc.createElement("test");
+            result.setAttribute("type", "command");
+            result.appendChild(commandElement(cmd.getCommand()));
+            result.appendChild(responseElement(cmd.getResponse()));
+            return result;
         }
-
-        Element description = doc.createElement("desc");
-        description.setTextContent(t.getDescription());
-        testElem.appendChild(description);
-
-        Element result = doc.createElement("result");
-        Element ok = doc.createElement("ok");
-        ok.setTextContent(String.valueOf(t.ok()));
-        Element value = doc.createElement("value");
-        value.setTextContent(t.getResultValue().name());
-        Element cause = doc.createElement("cause");
-        cause.setTextContent(t.getResultCause());
-        result.appendChild(ok);
-        result.appendChild(value);
-        result.appendChild(cause);
-        testElem.appendChild(result);
-
-        return testElem;
+        return null;
     }
 
-    @Override
-    public void outputTest(Test t) {
-        if (!t.hasRun())
-            return;
-        root.appendChild(testElement(t));
-    }
-
-    @Override
-    public void end() {
+    private Element cplcElement(CardMngr card) {
+        Element result = doc.createElement("cplc");
         try {
-            DOMSource domSource = new DOMSource(doc);
-            StreamResult result = new StreamResult(output);
-            TransformerFactory tf = TransformerFactory.newInstance();
-            Transformer transformer = tf.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-            transformer.transform(domSource, result);
-        } catch (TransformerException e) {
-            e.printStackTrace();
+            CardMngr.CPLC cplc = card.getCPLC();
+            if (!cplc.values().isEmpty()) {
+                for (Map.Entry<CardMngr.CPLC.Field, byte[]> entry : cplc.values().entrySet()) {
+                    CardMngr.CPLC.Field field = entry.getKey();
+                    byte[] value = entry.getValue();
+                    Element keyVal = doc.createElement(field.name());
+                    keyVal.setTextContent(ByteUtil.bytesToHex(value, false));
+                    result.appendChild(keyVal);
+                }
+            }
+        } catch (CardException ignored) {
         }
+        return result;
+    }
+
+    @Override
+    protected Element deviceElement(TestSuite suite) {
+        if (suite instanceof CardTestSuite) {
+            CardTestSuite cardSuite = (CardTestSuite) suite;
+            Element result = doc.createElement("device");
+            result.setAttribute("type", "card");
+            result.appendChild(cplcElement(cardSuite.getCard()));
+
+            Element atr = doc.createElement("ATR");
+            atr.setTextContent(ByteUtil.bytesToHex(cardSuite.getCard().getATR().getBytes(), false));
+            result.appendChild(atr);
+            return result;
+        }
+        return null;
     }
 }
