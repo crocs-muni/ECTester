@@ -4,6 +4,7 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import javacard.framework.ISO7816;
 import javacard.security.CryptoException;
+import javacard.security.KeyPair;
 
 import static cz.crcs.ectester.applet.ECTesterApplet.*;
 
@@ -268,5 +269,16 @@ public class CardUtil {
             sigType = getSigType(sigTypeString);
         }
         return sigType;
+    }
+
+    public static String getKeyTypeString(byte keyClass) {
+        switch (keyClass) {
+            case KeyPair.ALG_EC_FP:
+                return "ALG_EC_FP";
+            case KeyPair.ALG_EC_F2M:
+                return "ALG_EC_F2M";
+            default:
+                return "";
+        }
     }
 }

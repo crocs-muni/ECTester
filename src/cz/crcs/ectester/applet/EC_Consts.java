@@ -1368,7 +1368,6 @@ public class EC_Consts {
                     length = 1;
                     break;
                 case CORRUPTION_COMPRESS:
-
                     if ((short) (length % 2) != 1) {
                         // an uncompressed point should have odd length (since 1 byte type, + 2 * coords)
                         ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);

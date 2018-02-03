@@ -37,8 +37,9 @@ public class CardDefaultSuite extends CardTestSuite {
 
     private void runDefault(byte field) throws Exception {
         short[] keySizes = field == KeyPair.ALG_EC_FP ? EC_Consts.FP_SIZES : EC_Consts.F2M_SIZES;
+        short domain = field == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
         for (short keyLength : keySizes) {
-            String description = "Tests of " + keyLength + "b " + (field == KeyPair.ALG_EC_FP ? "ALG_EC_FP" : "ALG_EC_F2M") + " support.";
+            String description = "Tests of " + keyLength + "b " + CardUtil.getKeyTypeString(field) + " support.";
 
             List<Test> supportTests = new LinkedList<>();
             Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, keyLength, field), ExpectedValue.SUCCESS));
@@ -49,7 +50,7 @@ public class CardDefaultSuite extends CardTestSuite {
             supportTests.add(key);
 
             Test genDefault = runTest(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_BOTH), ExpectedValue.SUCCESS));
-            Test setCustom = runTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.getCurve(keyLength, field), EC_Consts.PARAMETERS_DOMAIN_FP, null), ExpectedValue.SUCCESS));
+            Test setCustom = runTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.getCurve(keyLength, field), domain, null), ExpectedValue.SUCCESS));
             Test genCustom = runTest(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_BOTH), ExpectedValue.SUCCESS));
             supportTests.add(genDefault);
             supportTests.add(setCustom);
