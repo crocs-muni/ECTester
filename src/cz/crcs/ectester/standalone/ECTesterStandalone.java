@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * Standalone part of ECTester, a tool for testing Elliptic curve implementations in software libraries.
  *
  * @author Jan Jancar johny@neuromancer.sk
- * @version v0.1.0
+ * @version v0.2.0
  */
 public class ECTesterStandalone {
     private ProviderECLibrary[] libs = new ProviderECLibrary[]{new SunECLib(), new BouncyCastleLib(), new TomcryptLib(), new BotanLib()};
@@ -48,7 +48,7 @@ public class ECTesterStandalone {
     private Options opts = new Options();
     private TreeParser optParser;
     private TreeCommandLine cli;
-    private static final String VERSION = "v0.1.0";
+    private static final String VERSION = "v0.2.0";
     private static final String DESCRIPTION = "ECTesterStandalone " + VERSION + ", an Elliptic Curve Cryptography support tester/utility.";
     private static final String LICENSE = "MIT Licensed\nCopyright (c) 2016-2017 Petr Svenda <petr@svenda.com>";
     private static final String CLI_HEADER = "\n" + DESCRIPTION + "\n\n";
@@ -410,7 +410,7 @@ public class ECTesterStandalone {
     /**
      *
      */
-    private void test() throws NoSuchAlgorithmException, TestException, ParserConfigurationException {
+    private void test() throws TestException, ParserConfigurationException {
         TestWriter writer;
         switch (cli.getOptionValue("test.format", "text").toLowerCase()) {
             case "yaml":
@@ -434,7 +434,7 @@ public class ECTesterStandalone {
      *
      */
     private void export() throws NoSuchAlgorithmException, IOException {
-        ProviderECLibrary lib = (ProviderECLibrary) cfg.selected;
+        ProviderECLibrary lib = cfg.selected;
         KeyPairGeneratorIdent ident = null;
         String algo = cli.getOptionValue("export.type", "EC");
         for (KeyPairGeneratorIdent kpIdent : lib.getKPGs()) {

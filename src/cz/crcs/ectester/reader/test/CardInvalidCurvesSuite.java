@@ -38,12 +38,6 @@ public class CardInvalidCurvesSuite extends CardTestSuite {
         Map<EC_Curve, List<EC_Key.Public>> curves = new HashMap<>();
         for (EC_Key.Public key : pubkeys.values()) {
             EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, key.getCurve());
-            if (curve.getBits() != cfg.bits && !cfg.all) {
-                continue;
-            }
-            if (curve.getField() == KeyPair.ALG_EC_FP && !cfg.primeField || curve.getField() == KeyPair.ALG_EC_F2M && !cfg.binaryField) {
-                continue;
-            }
             List<EC_Key.Public> keys = curves.getOrDefault(curve, new LinkedList<>());
             keys.add(key);
             curves.putIfAbsent(curve, keys);

@@ -1,7 +1,8 @@
 # ECTester
-[![Build status](https://api.travis-ci.org/crocs-muni/ECTester.svg?branch=master)](https://travis-ci.org/crocs-muni/ECTester)  [![GitHub release](https://img.shields.io/github/release/crocs-muni/ECTEster.svg)](https://github.com/crocs-muni/ECTester/releases)  [![license](https://img.shields.io/github/license/crocs-muni/ECTester.svg)](https://github.com/crocs-muni/ECTester/blob/master/LICENSE)
+[![Build status](https://api.travis-ci.org/crocs-muni/ECTester.svg?branch=master)](https://travis-ci.org/crocs-muni/ECTester)  [![GitHub release](https://img.shields.io/github/release/crocs-muni/ECTEster.svg)](https://github.com/crocs-muni/ECTester/releases)  [![license](https://img.shields.io/github/license/crocs-muni/ECTester.svg)](https://github.com/crocs-muni/ECTester/blob/master/LICENSE) [![docs](https://img.shields.io/badge/docs-github.io-brightgreen.svg)](https://crocs-muni.github.io/ECTester/)
 
 Tests support and behavior of elliptic curve cryptography implementations on JavaCards (`TYPE_EC_FP` and `TYPE_EC_F2M`) and on selected software libraries.
+For more information on ECC support on JavaCards see the [github page](https://crocs-muni.github.io/ECTester/).
 
 ## Build
 
@@ -17,7 +18,7 @@ The standalone build tries building test binaries for all the supported librarie
 ## JavaCard testing
 
 1. Upload `!uploader/ectester.cap` using your favorite tool (e.g., [GlobalPlatformPro tool](https://github.com/martinpaljak/GlobalPlatform))
-2. Run `java -jar dist/ECTesterReader.jar -t -a`
+2. Run `java -jar dist/ECTesterReader.jar -t`
 3. Inspect output log with annotated results
 
 Following operations are tested:
@@ -112,13 +113,16 @@ For more info about the test suites see [TESTS](docs/TESTS.md).
 
 Generates batches of EC keypairs and exports them.
 Use with `-o / --output [out_file]` to output the generated keys to a file.
+For format of this file see [FORMAT](docs/FORMAT.md).
 
 #### ECDH
 `-dh / --ecdh [count]`
 
 Performs ECDH.
 Use with `-o / --output [out_file]` to output into a file.
+For format of this file see [FORMAT](docs/FORMAT.md).
 Respects the KeyAgreement type specified in `-ka / --ka-type [type]`.
+
 
 #### ECDSA
 `-dsa / --ecdsa [count]`
@@ -126,6 +130,7 @@ Respects the KeyAgreement type specified in `-ka / --ka-type [type]`.
 Performs ECDSA.
 Useful with `-i / --input [in_file]` to sign the contents of a file.
 Use with `-o / --output [out_file]` to output into a file.
+For format of these files see [FORMAT](docs/FORMAT.md).
 Respects the Signature type specified in `-sig / --sig-type [type]`.
 
 #### List named curves
@@ -139,11 +144,14 @@ With the format: `category/name`.
 For example:
 `secg/secp192r1` identifies the SECG 192 bit prime field curve known as `secp192r1`.
 
-For more info about the curves see [CURVES](docs/CURVES.md).
+For more info about the curves and curve categories see [CURVES](docs/CURVES.md).
 
 ### Example
 
-    > java -jar ECTesterReader.jar -t -a -s
+Snippet below shows running the default test suite while simulating(`-s`), so using JCardSim.
+This shows that JCardsim simulates 112b Fp support with default curve present and supports ECDH, ECDHC and ECDSA.
+
+    > java -jar ECTesterReader.jar -t -s
     ═══ Running test suite: default ═══
     ═══ The default test suite run basic support of ECDH and ECDSA.
     ═══ Card ATR: 3bfa1800008131fe454a434f5033315632333298
@@ -172,6 +180,18 @@ For more info about the curves see [CURVES](docs/CURVES.md).
         ┣ NOK ━ Allocated Signature(ALG_ECDSA_SHA_384) object                                  ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
         ┗ NOK ━ Allocated Signature(ALG_ECDSA_SHA_512) object                                  ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
 
+#### Legend
+ - Some general information about the test suite and card is output first, test data follows after.
+ - The **OK**/**NOK** values on the left represent the complete evaluated result of a test, as a test can be expected
+   to succeed or fail, this is different than the values on the right:
+   - **SUCCESS**: Is **OK**, the test was expected to pass and it did.
+   - **FAILURE**: Is **NOK**, the test was expected to pass, but it did not.
+   - **UXSUCCESS**: Is **NOK**, the test was expected to fail, but it did not.
+   - **XFAILURE**: Is **OK**, the test was expected to fail, and it did.
+   - **ERROR**: Is **NOK** an unexpected error during testing arose.
+ - The tests can be compounded into compound tests, which are visible as a tree of tests and sub-tests.
+ - The duration of non-compound tests is shown in the third column, this is a rough estimate, measured from before the APDU is sent, to just after the response is received.
+ - The cause of the test result, is shown in the last column, for non-compound tests, these are JavaCard(or custom) status words, from operations done on the card.
 
 If you are interested in testing support for other JavaCard algorithms, please visit JCAlgTester project: https://github.com/crocs-muni/JCAlgTest
 
@@ -184,6 +204,7 @@ Currently supported libraries include:
  - libtomcrypt
  - botan
  
+For more information on ECC libraries see [LIBS](docs/LIBS.md).
 
 ```
 usage: ECTesterStandalone.jar [-V] [-h] [ (ecdh [-t <type>] [-n <amount>] [-b <n>] [-nc <cat/id>]) |

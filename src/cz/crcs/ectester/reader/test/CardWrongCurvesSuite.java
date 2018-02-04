@@ -39,12 +39,6 @@ public class CardWrongCurvesSuite extends CardTestSuite {
         Map<String, EC_Curve> curves = EC_Store.getInstance().getObjects(EC_Curve.class, "wrong");
         for (Map.Entry<String, EC_Curve> e : curves.entrySet()) {
             EC_Curve curve = e.getValue();
-            if (curve.getBits() != cfg.bits && !cfg.all) {
-                continue;
-            }
-            if (curve.getField() == KeyPair.ALG_EC_FP && !cfg.primeField || curve.getField() == KeyPair.ALG_EC_F2M && !cfg.binaryField) {
-                continue;
-            }
             Test key = doTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), Result.ExpectedValue.SUCCESS));
             if (!key.ok()) {
                 continue;

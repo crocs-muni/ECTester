@@ -1,12 +1,13 @@
-# Tests
+# Test suites
 
  - `default`
  - `test-vectors`
  - `wrong`
  - `composite`
  - `invalid`
+ - `twist`
  
-**NOTE: The `wrong`, `composite` and `invalid` test suites caused temporary DoS of some cards. These test suites prompt you for
+**NOTE: The `wrong`, `composite`, `invalid` and `twist` test suites caused temporary/permanent DoS of some cards. These test suites prompt you for
 confirmation before running, be cautious.**
 
 ## Default
@@ -18,14 +19,10 @@ This test suite is run if no argument is provided to `-t / --test`.
 
 For example:
 ```bash
-java -jar ECTester.jar -a -fp -t
+java -jar ECTester.jar -t
 ```
-tests all(`-a`), prime field(`-fp`), using the default test suite.
+tests prime field and binary field curves, using the default test suite.
 
-```bash
-java -jar ECTester.jar-a -f2m -t
-```
-tests all(`-a`), binary field(`-f2m`), curves.
 
 ## Test-Vectors
 Tests using known test vectors provided by NIST/SECG/Brainpool:
@@ -40,25 +37,33 @@ Tests using known test vectors provided by NIST/SECG/Brainpool:
 
 For example:
 ```bash
-java -jar ECTester.jar -t test-vectors -nc nist -a -f2m
+java -jar ECTester.jar -t test-vectors
 ```
-tests all(`-a`), binary field(`-f2m`) NIST curves for which test-vectors are provided. Although this test suite is better for general testing:
-```bash
-java -jar ECTester.jar -t test-vectors -a
-```
+tests all curves for which test-vectors are provided.
+
+
 ## Wrong
-Tests using the default tests on a category of wrong curves. These curves are not really curves as they have:
+Tests on a category of wrong curves. These curves are not really curves as they have:
  - non-prime field in the prime-field case
  - reducible polynomial as the field polynomial in the binary case
+This test suite also does some additional tests with corrupting the field parameter:
+ - Fp:
+   - p = 0
+   - p = 1
+   - p = q^2; q prime
+   - p = q * s; q and s prime
+ - F2m:
+   - e1 = e2 = e3 = 0
+   - m < e1 < e2 < e3
 
-These tests should fail generally. They are equivalent with `java -jar ECTester.jar -nc wrong -t`, the default tests over the `wrong` category
-of curves.
- 
+These tests should fail generally.
+
 For example:
 ```bash
-java -jar ECTester.jar -t wrong -b 521 -fp
+java -jar ECTester.jar -t wrong
 ```
-tests a 521 bit(`-b`), prime-field(`-fp`) wrong curve.
+does all wrong curve tests.
+
 
 ## Composite
 Tests using curves that don't have a prime order/nearly prime order.
@@ -67,16 +72,31 @@ by the applet. Operations over such curves are susceptible to small-subgroup att
 
 For example:
 ```bash
-java -jar ECTester.jar -t composite -b 160 -fp
+java -jar ECTester.jar -t composite
 ```
 
-## Invalid
-Tests using known named curves from several categories(SECG/NIST/Brainpool) against pregenerated *invalid* public keys.
-These tests should definitely fail, a success here implies the card is susceptible to invalid curve attacks.
 
+## Invalid
+Tests using known named curves from several categories(SECG/NIST/Brainpool) against pre-generated *invalid* public keys.
+ECDH should definitely fail, a success here implies the card is susceptible to invalid curve attacks.
+
+See [Practical Invalid Curve Attacks on TLS-ECDH](https://www.nds.rub.de/media/nds/veroeffentlichungen/2015/09/14/main-full.pdf) for more information.
 
 For example:
 ```bash
-java -jar ECTester.jar -t invalid -nc nist -a -fp
+java -jar ECTester.jar -t invalid
 ```
-tests using all(`-a`), prime-field(`-fp`) NIST curves and pregenerated *invalid* public keys for these curves.
+tests using all curves with pregenerated *invalid* public keys for these curves.
+
+
+## Twist
+Tests using known named curves froms several categories(SECG/NIST) against pre-generated points on twists of said curves.
+ECDH should fail, a success here implies the card is not twist secure, if a curve with an unsecure twist is used,
+the card might compute on the twist, if a point on the twist is supplied.
+
+See [SafeCurves on twist security](https://safecurves.cr.yp.to/twist.html) for more information.
+
+For example:
+```bash
+java -jar ECTester.jar -t twist
+```

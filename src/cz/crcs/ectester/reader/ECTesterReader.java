@@ -58,7 +58,7 @@ import static cz.crcs.ectester.applet.ECTesterApplet.Signature_ALG_ECDSA_SHA;
  *
  * @author Petr Svenda petr@svenda.com
  * @author Jan Jancar johny@neuromancer.sk
- * @version v0.1.0
+ * @version v0.2.0
  */
 public class ECTesterReader {
     private CardMngr cardManager;
@@ -67,7 +67,7 @@ public class ECTesterReader {
     private Config cfg;
 
     private Options opts = new Options();
-    private static final String VERSION = "v0.1.0";
+    private static final String VERSION = "v0.2.0";
     private static final String DESCRIPTION = "ECTesterReader " + VERSION + ", a javacard Elliptic Curve Cryptography support tester/utility.";
     private static final String LICENSE = "MIT Licensed\nCopyright (c) 2016-2017 Petr Svenda <petr@svenda.com>";
     private static final String CLI_HEADER = "\n" + DESCRIPTION + "\n\n";
@@ -427,7 +427,7 @@ public class ECTesterReader {
             default:
                 // These run are dangerous, prompt before them.
                 System.out.println("The test you selected (" + cfg.testSuite + ") is potentially dangerous.");
-                System.out.println("Some of these run have caused temporary DoS of some cards.");
+                System.out.println("Some of these run have caused temporary(or even permanent) DoS of some cards.");
                 if (!cfg.yes) {
                     System.out.print("Do you want to proceed? (y/n): ");
                     Scanner in = new Scanner(System.in);
@@ -721,10 +721,6 @@ public class ECTesterReader {
             }
             if (bits < 0) {
                 System.err.println("Bit-size must not be negative.");
-                return false;
-            }
-            if (bits == 0 && !all) {
-                System.err.println("You must specify either bit-size with -b or all bit-sizes with -a.");
                 return false;
             }
 

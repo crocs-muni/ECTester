@@ -38,12 +38,6 @@ public class CardTestVectorSuite extends CardTestSuite {
         Map<String, EC_KAResult> results = EC_Store.getInstance().getObjects(EC_KAResult.class, "test");
         for (EC_KAResult result : results.values()) {
             EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, result.getCurve());
-            if (curve.getBits() != cfg.bits && !cfg.all) {
-                continue;
-            }
-            if (curve.getField() == KeyPair.ALG_EC_FP && !cfg.primeField || curve.getField() == KeyPair.ALG_EC_F2M && !cfg.binaryField) {
-                continue;
-            }
             EC_Params onekey = EC_Store.getInstance().getObject(EC_Keypair.class, result.getOneKey());
             if (onekey == null) {
                 onekey = EC_Store.getInstance().getObject(EC_Key.Private.class, result.getOneKey());

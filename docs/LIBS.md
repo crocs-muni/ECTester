@@ -1,15 +1,13 @@
-# Libraries with ECC
+# Libraries with ECC support
 
 Libraries with at least some ECC support:
 
  - [Crypto++](https://cryptopp.com/)
  - [libgcrypt](https://www.gnupg.org/related_software/libgcrypt/)
-
  - [mbedTLS](https://tls.mbed.org/)
  - [Nettle](http://www.lysator.liu.se/~nisse/nettle/)
  - [OpenSSL](https://www.openssl.org/)
  - [OpenSSL (FIPS mode)](https://www.openssl.org/docs/fipsnotes.html)
-
  - [Microsoft CNG](https://msdn.microsoft.com/en-us/library/windows/desktop/aa376210(v=vs.85).aspx)
  - [Microsoft .NET crypto](https://docs.microsoft.com/en-us/dotnet/standard/security/cryptography-model)
  
