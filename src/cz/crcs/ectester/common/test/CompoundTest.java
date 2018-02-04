@@ -12,7 +12,7 @@ import java.util.function.Function;
 public class CompoundTest extends Test {
     private Function<Test[], Result> callback;
     private Test[] tests;
-    private String description;
+    private String description = "";
 
     private CompoundTest(Function<Test[], Result> callback, Test... tests) {
         this.callback = callback;

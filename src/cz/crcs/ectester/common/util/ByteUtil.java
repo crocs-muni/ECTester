@@ -39,6 +39,23 @@ public class ByteUtil {
         return true;
     }
 
+    public static byte[] shortToBytes(short value) {
+        byte[] result = new byte[2];
+        setShort(result, 0, value);
+        return result;
+    }
+
+    public static byte[] shortToBytes(short[] shorts) {
+        if (shorts == null) {
+            return null;
+        }
+        byte[] result = new byte[shorts.length * 2];
+        for (int i = 0; i < shorts.length; ++i) {
+            setShort(result, 2 * i, shorts[i]);
+        }
+        return result;
+    }
+
     public static byte[] hexToBytes(String hex) {
         return hexToBytes(hex, true);
     }

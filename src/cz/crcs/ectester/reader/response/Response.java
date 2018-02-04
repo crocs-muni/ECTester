@@ -292,9 +292,9 @@ public abstract class Response {
         private byte keyPair;
         private byte key;
         private short params;
-        private byte corruption;
+        private short corruption;
 
-        public Corrupt(ResponseAPDU response, long time, byte keyPair, byte key, short params, byte corruption) {
+        public Corrupt(ResponseAPDU response, long time, byte keyPair, byte key, short params, short corruption) {
             super(response, time);
             this.keyPair = keyPair;
             this.key = key;

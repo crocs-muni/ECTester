@@ -310,7 +310,7 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
      * @param apdu P1 = byte keyPair (KEYPAIR_* | ...)
      *             P2 = byte key (EC_Consts.KEY_* | ...)
      *             DATA = short params (EC_Consts.PARAMETER_* | ...)
-     *             byte corruption (EC_Consts.CORRUPTION_* || ...)
+     *             short corruption (EC_Consts.CORRUPTION_* || ...)
      * @return length of response
      */
     private short insCorrupt(APDU apdu) {
@@ -318,7 +318,7 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
         byte key = apduArray[ISO7816.OFFSET_P2];
         short cdata = apdu.getOffsetCdata();
         short params = Util.getShort(apduArray, cdata);
-        byte corruption = apduArray[(short) (cdata + 2)];
+        short corruption = Util.getShort(apduArray, (short) (cdata + 2));
 
         short len = 0;
         if ((keyPair & KEYPAIR_LOCAL) != 0) {
@@ -544,7 +544,7 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
      * @param outOffset  output offset in buffer
      * @return length of data written to the buffer
      */
-    private short corrupt(KeyPair keyPair, byte key, short params, byte corruption, byte[] outBuffer, short outOffset) {
+    private short corrupt(KeyPair keyPair, byte key, short params, short corruption, byte[] outBuffer, short outOffset) {
         short sw = keyGenerator.corruptCurve(keyPair, key, params, corruption, ramArray, (short) 0);
         Util.setShort(outBuffer, outOffset, sw);
         return 2;

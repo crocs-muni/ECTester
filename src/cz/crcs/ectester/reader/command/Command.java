@@ -374,7 +374,7 @@ public abstract class Command {
         private byte keyPair;
         private byte key;
         private short params;
-        private byte corruption;
+        private short corruption;
 
         /**
          * @param cardManager cardManager to send APDU through
@@ -383,16 +383,16 @@ public abstract class Command {
          * @param params      parameters to corrupt (EC_Consts.PARAMETER_* | ...)
          * @param corruption  corruption type (EC_Consts.CORRUPTION_*)
          */
-        public Corrupt(CardMngr cardManager, byte keyPair, byte key, short params, byte corruption) {
+        public Corrupt(CardMngr cardManager, byte keyPair, byte key, short params, short corruption) {
             super(cardManager);
             this.keyPair = keyPair;
             this.key = key;
             this.params = params;
             this.corruption = corruption;
 
-            byte[] data = new byte[3];
+            byte[] data = new byte[4];
             ByteUtil.setShort(data, 0, params);
-            data[2] = corruption;
+            ByteUtil.setShort(data, 2, corruption);
 
             this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_CORRUPT, keyPair, key, data);
         }

@@ -32,11 +32,23 @@ public abstract class TestSuite {
         writer.end();
     }
 
+    /**
+     * Run the given test and return it back.
+     * @param t The test to run.
+     * @return The test that was run.
+     * @throws TestException
+     */
     protected Test runTest(Test t) throws TestException {
         t.run();
         return t;
     }
 
+    /**
+     * Run the given test, output it and return it back.
+     * @param t The test to run.
+     * @return The test that was run.
+     * @throws TestException
+     */
     protected Test doTest(Test t) throws TestException {
         t.run();
         writer.outputTest(t);

@@ -145,7 +145,7 @@ public class ECKeyGenerator {
      * @param offset
      * @return
      */
-    public short corruptCurve(KeyPair keypair, short corruptParams, byte corruption, byte[] buffer, short offset) {
+    public short corruptCurve(KeyPair keypair, short corruptParams, short corruption, byte[] buffer, short offset) {
         return corruptCurve(keypair, EC_Consts.KEY_BOTH, corruptParams, corruption, buffer, offset);
     }
 
@@ -158,7 +158,7 @@ public class ECKeyGenerator {
      * @param offset
      * @return
      */
-    public short corruptCurve(KeyPair keypair, byte key, short corruptParams, byte corruption, byte[] buffer, short offset) {
+    public short corruptCurve(KeyPair keypair, byte key, short corruptParams, short corruption, byte[] buffer, short offset) {
         sw = ISO7816.SW_NO_ERROR;
         if (corruptParams == EC_Consts.PARAMETERS_NONE) {
             return sw;
