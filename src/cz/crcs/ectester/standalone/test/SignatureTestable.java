@@ -10,6 +10,9 @@ import java.security.SignatureException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 
+/**
+ * @author Jan Jancar johny@neuromancer.sk
+ */
 public class SignatureTestable extends BaseTestable {
     private Signature sig;
     private ECPrivateKey signKey;

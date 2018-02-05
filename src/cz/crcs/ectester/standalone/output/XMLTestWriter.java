@@ -7,6 +7,7 @@ import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.standalone.test.KeyAgreementTestable;
 import cz.crcs.ectester.standalone.test.KeyGeneratorTestable;
 import cz.crcs.ectester.standalone.test.SignatureTestable;
+import cz.crcs.ectester.standalone.test.StandaloneTestSuite;
 import org.w3c.dom.Element;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -113,7 +114,16 @@ public class XMLTestWriter extends BaseXMLTestWriter {
 
     @Override
     protected Element deviceElement(TestSuite suite) {
-        //TODO
+        if (suite instanceof StandaloneTestSuite) {
+            StandaloneTestSuite standaloneSuite = (StandaloneTestSuite) suite;
+            Element result = doc.createElement("device");
+            result.setAttribute("type", "library");
+
+            Element name = doc.createElement("name");
+            name.setTextContent(standaloneSuite.getLibrary().name());
+            result.appendChild(name);
+            return result;
+        }
         return null;
     }
 }

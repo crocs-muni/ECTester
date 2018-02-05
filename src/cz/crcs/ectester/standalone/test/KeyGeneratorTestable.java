@@ -8,6 +8,9 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.spec.ECParameterSpec;
 
+/**
+ * @author Jan Jancar johny@neuromancer.sk
+ */
 public class KeyGeneratorTestable extends BaseTestable {
     private KeyPair kp;
     private KeyPairGenerator kpg;

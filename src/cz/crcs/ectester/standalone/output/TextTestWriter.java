@@ -3,6 +3,7 @@ package cz.crcs.ectester.standalone.output;
 import cz.crcs.ectester.common.output.BaseTextTestWriter;
 import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.test.Testable;
+import cz.crcs.ectester.standalone.test.StandaloneTestSuite;
 
 import java.io.PrintStream;
 
@@ -22,7 +23,10 @@ public class TextTestWriter extends BaseTextTestWriter {
 
     @Override
     protected String deviceString(TestSuite suite) {
-        //TODO
+        if (suite instanceof StandaloneTestSuite) {
+            StandaloneTestSuite standaloneSuite = (StandaloneTestSuite) suite;
+            return standaloneSuite.getLibrary().name();
+        }
         return "";
     }
 }

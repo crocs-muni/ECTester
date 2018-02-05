@@ -9,6 +9,7 @@ import cz.crcs.ectester.standalone.ECTesterStandalone;
 import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
 import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
 import cz.crcs.ectester.standalone.consts.SignatureIdent;
+import cz.crcs.ectester.standalone.libs.ECLibrary;
 
 import javax.crypto.KeyAgreement;
 import java.security.KeyPairGenerator;

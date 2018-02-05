@@ -7,6 +7,7 @@ import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.standalone.test.KeyAgreementTestable;
 import cz.crcs.ectester.standalone.test.KeyGeneratorTestable;
 import cz.crcs.ectester.standalone.test.SignatureTestable;
+import cz.crcs.ectester.standalone.test.StandaloneTestSuite;
 
 import java.io.PrintStream;
 import java.security.Key;
@@ -92,7 +93,13 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
 
     @Override
     protected Map<String, Object> deviceObject(TestSuite suite) {
-        //TODO
+        if (suite instanceof StandaloneTestSuite) {
+            StandaloneTestSuite standaloneSuite = (StandaloneTestSuite) suite;
+            Map<String, Object> result = new HashMap<>();
+            result.put("type", "library");
+            result.put("name", standaloneSuite.getLibrary().name());
+            return result;
+        }
         return null;
     }
 }
