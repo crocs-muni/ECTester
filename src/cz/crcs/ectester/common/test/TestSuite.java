@@ -1,12 +1,6 @@
 package cz.crcs.ectester.common.test;
 
 import cz.crcs.ectester.common.output.TestWriter;
-import cz.crcs.ectester.data.EC_Store;
-
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -34,6 +28,7 @@ public abstract class TestSuite {
 
     /**
      * Run the given test and return it back.
+     *
      * @param t The test to run.
      * @return The test that was run.
      * @throws TestException
@@ -45,6 +40,7 @@ public abstract class TestSuite {
 
     /**
      * Run the given test, output it and return it back.
+     *
      * @param t The test to run.
      * @return The test that was run.
      * @throws TestException

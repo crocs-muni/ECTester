@@ -19,6 +19,8 @@ import cz.crcs.ectester.reader.command.Command;
 import javacard.security.KeyPair;
 
 import java.math.BigInteger;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -39,21 +41,27 @@ public class CardWrongCurvesSuite extends CardTestSuite {
         Map<String, EC_Curve> curves = EC_Store.getInstance().getObjects(EC_Curve.class, "wrong");
         for (Map.Entry<String, EC_Curve> e : curves.entrySet()) {
             EC_Curve curve = e.getValue();
-            Test key = doTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), Result.ExpectedValue.SUCCESS));
+            List<Test> tests = new LinkedList<>();
+            Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), Result.ExpectedValue.SUCCESS));
             if (!key.ok()) {
+                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS,  "No support for " + curve.getBits() + "b " + CardUtil.getKeyTypeString(curve.getField()), key));
                 continue;
             }
+            tests.add(key);
             Test set = runTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.ExpectedValue.SUCCESS));
             Test generate = runTest(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_BOTH), Result.ExpectedValue.SUCCESS));
-            doTest(CompoundTest.any(Result.ExpectedValue.FAILURE, "Set wrong curve and generate keypairs, should fail.", set, generate));
+            Test setup = runTest(CompoundTest.any(Result.ExpectedValue.FAILURE, "Set wrong curve and generate keypairs, should fail.", set, generate));
+            tests.add(setup);
 
             for (byte kaType : EC_Consts.KA_TYPES) {
                 Test allocate = runTest(CommandTest.expect(new Command.AllocateKeyAgreement(this.card, kaType), Result.ExpectedValue.SUCCESS));
                 if (allocate.ok()) {
                     Test ka = runTest(CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, kaType), Result.ExpectedValue.FAILURE));
-                    doTest(CompoundTest.any(Result.ExpectedValue.FAILURE, "Allocate and perform KA, should fail.", allocate, ka));
+                    Test kaTest = runTest(CompoundTest.all(Result.ExpectedValue.FAILURE, "Allocate and perform KA, should fail.", allocate, ka));
+                    tests.add(kaTest);
                 }
             }
+            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Wrong curve test of " + curve.getBits() + "b " + CardUtil.getKeyTypeString(curve.getField()), tests.toArray(new Test[0])));
         }
         /*
          * Do some interesting tests with corrupting the custom curves.
