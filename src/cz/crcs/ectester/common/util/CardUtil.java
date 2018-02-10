@@ -281,4 +281,18 @@ public class CardUtil {
                 return "";
         }
     }
+
+    public static String getParameterString(short params) {
+        String what = "";
+        if (params == EC_Consts.PARAMETERS_DOMAIN_F2M || params == EC_Consts.PARAMETERS_DOMAIN_FP) {
+            what = "curve";
+        } else if (params == EC_Consts.PARAMETER_W) {
+            what = "pubkey";
+        } else if (params == EC_Consts.PARAMETER_S) {
+            what = "privkey";
+        } else if (params == EC_Consts.PARAMETERS_KEYPAIR) {
+            what = "keypair";
+        }
+        return what;
+    }
 }

@@ -3,9 +3,7 @@ package cz.crcs.ectester.reader.response;
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.util.ByteUtil;
-import cz.crcs.ectester.common.util.CardUtil;
 import javacard.framework.ISO7816;
-import javacard.security.KeyPair;
 
 import javax.smartcardio.ResponseAPDU;
 
@@ -20,9 +18,11 @@ public abstract class Response {
     private byte[][] params;
     private boolean success = true;
     private boolean error = false;
+    private String description;
 
-    public Response(ResponseAPDU response, long time) {
+    public Response(ResponseAPDU response, String description, long time) {
         this.resp = response;
+        this.description = description;
         this.time = time;
     }
 
@@ -127,7 +127,9 @@ public abstract class Response {
         return this.error;
     }
 
-    public abstract String getDescription();
+    public String getDescription() {
+        return description;
+    }
 
     /**
      *
@@ -135,16 +137,11 @@ public abstract class Response {
     public static class AllocateKeyAgreement extends Response {
         private byte kaType;
 
-        public AllocateKeyAgreement(ResponseAPDU response, long time, byte kaType) {
-            super(response, time);
+        public AllocateKeyAgreement(ResponseAPDU response, String description, long time, byte kaType) {
+            super(response, description, time);
             this.kaType = kaType;
 
             parse(1, 0);
-        }
-
-        @Override
-        public String getDescription() {
-            return String.format("Allocated KeyAgreement(%s) object", CardUtil.getKATypeString(this.kaType));
         }
     }
 
@@ -154,16 +151,11 @@ public abstract class Response {
     public static class AllocateSignature extends Response {
         private byte sigType;
 
-        public AllocateSignature(ResponseAPDU response, long time, byte sigType) {
-            super(response, time);
+        public AllocateSignature(ResponseAPDU response, String description, long time, byte sigType) {
+            super(response, description, time);
             this.sigType = sigType;
 
             parse(1, 0);
-        }
-
-        @Override
-        public String getDescription() {
-            return String.format("Allocated Signature(%s) object", CardUtil.getSigTypeString(this.sigType));
         }
     }
 
@@ -175,8 +167,8 @@ public abstract class Response {
         private short keyLength;
         private byte keyClass;
 
-        public Allocate(ResponseAPDU response, long time, byte keyPair, short keyLength, byte keyClass) {
-            super(response, time);
+        public Allocate(ResponseAPDU response, String description, long time, byte keyPair, short keyLength, byte keyClass) {
+            super(response, description, time);
             this.keyPair = keyPair;
             this.keyLength = keyLength;
             this.keyClass = keyClass;
@@ -186,18 +178,6 @@ public abstract class Response {
             if ((keyPair & ECTesterApplet.KEYPAIR_REMOTE) != 0) pairs++;
             parse(pairs, 0);
         }
-
-        @Override
-        public String getDescription() {
-            String field = keyClass == KeyPair.ALG_EC_FP ? "ALG_EC_FP" : "ALG_EC_F2M";
-            String key;
-            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
-                key = "both keypairs";
-            } else {
-                key = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
-            }
-            return String.format("Allocated %s %db %s", key, keyLength, field);
-        }
     }
 
     /**
@@ -206,25 +186,14 @@ public abstract class Response {
     public static class Clear extends Response {
         private byte keyPair;
 
-        public Clear(ResponseAPDU response, long time, byte keyPair) {
-            super(response, time);
+        public Clear(ResponseAPDU response, String description, long time, byte keyPair) {
+            super(response, description, time);
             this.keyPair = keyPair;
 
             int pairs = 0;
             if ((keyPair & ECTesterApplet.KEYPAIR_LOCAL) != 0) pairs++;
             if ((keyPair & ECTesterApplet.KEYPAIR_REMOTE) != 0) pairs++;
             parse(pairs, 0);
-        }
-
-        @Override
-        public String getDescription() {
-            String key;
-            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
-                key = "both keypairs";
-            } else {
-                key = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
-            }
-            return String.format("Cleared %s", key);
         }
     }
 
@@ -236,8 +205,8 @@ public abstract class Response {
         private byte curve;
         private short parameters;
 
-        public Set(ResponseAPDU response, long time, byte keyPair, byte curve, short parameters) {
-            super(response, time);
+        public Set(ResponseAPDU response, String description, long time, byte keyPair, byte curve, short parameters) {
+            super(response, description, time);
             this.keyPair = keyPair;
             this.curve = curve;
             this.parameters = parameters;
@@ -248,41 +217,6 @@ public abstract class Response {
 
             parse(pairs, 0);
         }
-
-        @Override
-        public String getDescription() {
-            String name;
-            switch (curve) {
-                case EC_Consts.CURVE_default:
-                    name = "default";
-                    break;
-                case EC_Consts.CURVE_external:
-                    name = "external";
-                    break;
-                default:
-                    name = "custom";
-                    break;
-            }
-            String what = "";
-            if (parameters == EC_Consts.PARAMETERS_DOMAIN_F2M || parameters == EC_Consts.PARAMETERS_DOMAIN_FP) {
-                what = "curve";
-            } else if (parameters == EC_Consts.PARAMETER_W) {
-                what = "pubkey";
-            } else if (parameters == EC_Consts.PARAMETER_S) {
-                what = "privkey";
-            } else if (parameters == EC_Consts.PARAMETERS_KEYPAIR) {
-                what = "keypair";
-            }
-
-            String pair;
-            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
-                pair = "both keypairs";
-            } else {
-                pair = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
-            }
-            return String.format("Set %s %s parameters on %s", name, what, pair);
-        }
-
     }
 
     /**
@@ -294,8 +228,8 @@ public abstract class Response {
         private short params;
         private short corruption;
 
-        public Corrupt(ResponseAPDU response, long time, byte keyPair, byte key, short params, short corruption) {
-            super(response, time);
+        public Corrupt(ResponseAPDU response, String description, long time, byte keyPair, byte key, short params, short corruption) {
+            super(response, description, time);
             this.keyPair = keyPair;
             this.key = key;
             this.params = params;
@@ -307,19 +241,6 @@ public abstract class Response {
 
             parse(pairs, 0);
         }
-
-        @Override
-        public String getDescription() {
-            String corrupt = CardUtil.getCorruption(corruption);
-
-            String pair;
-            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
-                pair = "both keypairs";
-            } else {
-                pair = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
-            }
-            return String.format("Corrupted params of %s, %s", pair, corrupt);
-        }
     }
 
     /**
@@ -328,8 +249,8 @@ public abstract class Response {
     public static class Generate extends Response {
         private byte keyPair;
 
-        public Generate(ResponseAPDU response, long time, byte keyPair) {
-            super(response, time);
+        public Generate(ResponseAPDU response, String description, long time, byte keyPair) {
+            super(response, description, time);
             this.keyPair = keyPair;
 
             int generated = 0;
@@ -337,18 +258,6 @@ public abstract class Response {
             if ((keyPair & ECTesterApplet.KEYPAIR_REMOTE) != 0) generated++;
             parse(generated, 0);
         }
-
-        @Override
-        public String getDescription() {
-            String key;
-            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
-                key = "both keypairs";
-            } else {
-                key = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
-            }
-            return String.format("Generated %s", key);
-        }
-
     }
 
     /**
@@ -359,8 +268,8 @@ public abstract class Response {
         private byte key;
         private short parameters;
 
-        public Export(ResponseAPDU response, long time, byte keyPair, byte key, short parameters) {
-            super(response, time);
+        public Export(ResponseAPDU response, String description, long time, byte keyPair, byte key, short parameters) {
+            super(response, description, time);
             this.keyPair = keyPair;
             this.key = key;
             this.parameters = parameters;
@@ -440,23 +349,6 @@ public abstract class Response {
         public byte[] getParameter(byte keyPair, short param) {
             return getParam(getIndex(keyPair, param));
         }
-
-        @Override
-        public String getDescription() {
-            String source;
-            if (key == EC_Consts.KEY_BOTH) {
-                source = "both keys";
-            } else {
-                source = ((key == EC_Consts.KEY_PUBLIC) ? "public" : "private") + " key";
-            }
-            String pair;
-            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
-                pair = "both keypairs";
-            } else {
-                pair = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
-            }
-            return String.format("Exported params from %s of %s", source, pair);
-        }
     }
 
     /**
@@ -469,8 +361,8 @@ public abstract class Response {
         private short corruption;
         private byte type;
 
-        public ECDH(ResponseAPDU response, long time, byte pubkey, byte privkey, byte export, short corruption, byte type) {
-            super(response, time);
+        public ECDH(ResponseAPDU response, String description, long time, byte pubkey, byte privkey, byte export, short corruption, byte type) {
+            super(response, description, time);
             this.pubkey = pubkey;
             this.privkey = privkey;
             this.export = export;
@@ -491,22 +383,6 @@ public abstract class Response {
         public int secretLength() {
             return getParamLength(0);
         }
-
-        @Override
-        public String getDescription() {
-            String algo = CardUtil.getKATypeString(type);
-
-            String pub = pubkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
-            String priv = privkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
-
-            String validity;
-            if (corruption == EC_Consts.CORRUPTION_NONE) {
-                validity = "unchanged";
-            } else {
-                validity = CardUtil.getCorruption(corruption);
-            }
-            return String.format("%s of %s pubkey and %s privkey(%s point)", algo, pub, priv, validity);
-        }
     }
 
     /**
@@ -518,8 +394,8 @@ public abstract class Response {
         private byte export;
         private byte[] raw;
 
-        public ECDSA(ResponseAPDU response, long time, byte keyPair, byte sigType,  byte export, byte[] raw) {
-            super(response, time);
+        public ECDSA(ResponseAPDU response, String description, long time, byte keyPair, byte sigType, byte export, byte[] raw) {
+            super(response, description, time);
             this.keyPair = keyPair;
             this.sigType = sigType;
             this.export = export;
@@ -535,14 +411,6 @@ public abstract class Response {
         public byte[] getSignature() {
             return getParam(0);
         }
-
-        @Override
-        public String getDescription() {
-            String algo = CardUtil.getSigTypeString(sigType);
-            String key = keyPair == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
-            String data = raw == null ? "random" : "provided";
-            return String.format("%s with %s keypair(%s data)", algo, key, data);
-        }
     }
 
     /**
@@ -550,16 +418,10 @@ public abstract class Response {
      */
     public static class Cleanup extends Response {
 
-        public Cleanup(ResponseAPDU response, long time) {
-            super(response, time);
+        public Cleanup(ResponseAPDU response, String description, long time) {
+            super(response, description, time);
 
             parse(1, 0);
         }
-
-        @Override
-        public String getDescription() {
-            return "Requested JCSystem object deletion";
-        }
-
     }
 }

@@ -8,13 +8,13 @@ package cz.crcs.ectester.common.test;
 public class Result {
 
     private Value value;
-    private String cause;
+    private Object cause;
 
     public Result(Value value) {
         this.value = value;
     }
 
-    public Result(Value value, String cause) {
+    public Result(Value value, Object cause) {
         this(value);
         this.cause = cause;
     }
@@ -23,7 +23,7 @@ public class Result {
         return value;
     }
 
-    public String getCause() {
+    public Object getCause() {
         return cause;
     }
 

@@ -56,7 +56,7 @@ public class SignatureTestable extends BaseTestable {
     }
 
     @Override
-    public void run() throws TestException {
+    public void run() {
         if (kgt != null) {
             signKey = (ECPrivateKey) kgt.getKeyPair().getPrivate();
             verifyKey = (ECPublicKey) kgt.getKeyPair().getPublic();

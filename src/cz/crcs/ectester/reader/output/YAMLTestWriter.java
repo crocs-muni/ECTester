@@ -27,12 +27,19 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
 
     private Map<String, Object> commandObject(Command c) {
         Map<String, Object> commandObj = new HashMap<>();
+        if (c == null) {
+            return commandObj;
+        }
         commandObj.put("apdu", ByteUtil.bytesToHex(c.getAPDU().getBytes()));
+        commandObj.put("desc", c.getDescription());
         return commandObj;
     }
 
     private Map<String, Object> responseObject(Response r) {
         Map<String, Object> responseObj = new HashMap<>();
+        if (r == null) {
+            return responseObj;
+        }
         responseObj.put("successful", r.successful());
         responseObj.put("apdu", ByteUtil.bytesToHex(r.getAPDU().getBytes()));
         responseObj.put("natural_sw", Short.toUnsignedInt(r.getNaturalSW()));

@@ -179,7 +179,7 @@ public class ECTesterReader {
             System.err.println("File " + fnfe.getMessage() + " not found.");
         } catch (ParseException | IOException ex) {
             System.err.println(ex.getMessage());
-        } catch (CardException | TestException ex) {
+        } catch (CardException ex) {
             if (logger != null)
                 logger.println(ex.getMessage());
             ex.printStackTrace();
@@ -394,10 +394,9 @@ public class ECTesterReader {
     /**
      * Tests Elliptic curve support for a given curve/curves.
      *
-     * @throws CardException if APDU transmission fails
      * @throws IOException   if an IO error occurs when writing to key file.
      */
-    private void test() throws IOException, TestException, ParserConfigurationException {
+    private void test() throws IOException, ParserConfigurationException {
         TestWriter writer = null;
         if (cfg.format == null) {
             writer = new TextTestWriter(logger.getPrintStream());

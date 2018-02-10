@@ -24,6 +24,7 @@ public abstract class BaseXMLTestWriter implements TestWriter {
     private DocumentBuilder db;
     protected Document doc;
     private Node root;
+    private Node tests;
 
     public BaseXMLTestWriter(OutputStream output) throws ParserConfigurationException {
         this.output = output;
@@ -40,11 +41,47 @@ public abstract class BaseXMLTestWriter implements TestWriter {
         root = rootElem;
         doc.appendChild(root);
         root.appendChild(deviceElement(suite));
+        tests = doc.createElement("tests");
+        root.appendChild(tests);
     }
 
     protected abstract Element testableElement(Testable t);
 
     protected abstract Element deviceElement(TestSuite suite);
+
+    private String causeString(Object cause) {
+        if (cause == null) {
+            return "null";
+        } else if (cause instanceof String) {
+            return (String) cause;
+        } else if (cause instanceof Throwable) {
+            StringBuilder sb = new StringBuilder();
+            for (Throwable t = (Throwable) cause; t != null; t = t.getCause()) {
+                sb.append(t.toString());
+                sb.append(System.lineSeparator());
+            }
+            return sb.toString();
+        } else {
+            return cause.toString();
+        }
+    }
+
+    private Element resultElement(Result result) {
+        Element resultElem = doc.createElement("result");
+
+        Element ok = doc.createElement("ok");
+        ok.setTextContent(String.valueOf(result.ok()));
+        Element value = doc.createElement("value");
+        value.setTextContent(result.getValue().name());
+        Element cause = doc.createElement("cause");
+        cause.setTextContent(causeString(cause));
+
+        resultElem.appendChild(ok);
+        resultElem.appendChild(value);
+        resultElem.appendChild(cause);
+
+        return resultElem;
+    }
 
     private Element testElement(Test t) {
         Element testElem;
@@ -52,7 +89,7 @@ public abstract class BaseXMLTestWriter implements TestWriter {
             CompoundTest test = (CompoundTest) t;
             testElem = doc.createElement("test");
             testElem.setAttribute("type", "compound");
-            for (Test innerTest : test.getTests()) {
+            for (Test innerTest : test.getStartedTests()) {
                 testElem.appendChild(testElement(innerTest));
             }
         } else {
@@ -64,16 +101,7 @@ public abstract class BaseXMLTestWriter implements TestWriter {
         description.setTextContent(t.getDescription());
         testElem.appendChild(description);
 
-        Element result = doc.createElement("result");
-        Element ok = doc.createElement("ok");
-        ok.setTextContent(String.valueOf(t.ok()));
-        Element value = doc.createElement("value");
-        value.setTextContent(t.getResultValue().name());
-        Element cause = doc.createElement("cause");
-        cause.setTextContent(t.getResultCause());
-        result.appendChild(ok);
-        result.appendChild(value);
-        result.appendChild(cause);
+        Element result = resultElement(t.getResult());
         testElem.appendChild(result);
 
         return testElem;
@@ -83,7 +111,12 @@ public abstract class BaseXMLTestWriter implements TestWriter {
     public void outputTest(Test t) {
         if (!t.hasRun())
             return;
-        root.appendChild(testElement(t));
+        tests.appendChild(testElement(t));
+    }
+
+    @Override
+    public void outputError(Test t, Throwable cause) {
+        tests.appendChild(testElement(t));
     }
 
     @Override

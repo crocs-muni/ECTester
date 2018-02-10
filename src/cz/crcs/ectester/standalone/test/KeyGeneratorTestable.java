@@ -40,7 +40,7 @@ public class KeyGeneratorTestable extends BaseTestable {
     }
 
     @Override
-    public void run() throws TestException {
+    public void run() {
         try {
             if (spec != null) {
                 kpg.initialize(spec);

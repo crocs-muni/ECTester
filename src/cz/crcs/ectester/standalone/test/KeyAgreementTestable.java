@@ -70,7 +70,7 @@ public class KeyAgreementTestable extends BaseTestable {
     }
 
     @Override
-    public void run() throws TestException {
+    public void run() {
         if (kgtPrivate != null) {
             privateKey = (ECPrivateKey) kgtPrivate.getKeyPair().getPrivate();
         }

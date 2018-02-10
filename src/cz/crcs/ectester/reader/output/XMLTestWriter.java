@@ -26,16 +26,27 @@ public class XMLTestWriter extends BaseXMLTestWriter {
 
     private Element commandElement(Command c) {
         Element commandElem = doc.createElement("command");
+        if (c == null) {
+            return commandElem;
+        }
 
         Element apdu = doc.createElement("apdu");
         apdu.setTextContent(ByteUtil.bytesToHex(c.getAPDU().getBytes()));
         commandElem.appendChild(apdu);
+
+        Element description = doc.createElement("desc");
+        description.setTextContent(c.getDescription());
+        commandElem.appendChild(description);
 
         return commandElem;
     }
 
     private Element responseElement(Response r) {
         Element responseElem = doc.createElement("response");
+        if (r == null) {
+            return responseElem;
+        }
+
         responseElem.setAttribute("successful", r.successful() ? "true" : "false");
 
         Element apdu = doc.createElement("apdu");

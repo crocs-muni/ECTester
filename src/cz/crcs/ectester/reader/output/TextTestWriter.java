@@ -5,6 +5,7 @@ import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.test.Testable;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.reader.CardMngr;
+import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.test.CardTestSuite;
 import cz.crcs.ectester.reader.test.CommandTestable;
 
@@ -27,7 +28,10 @@ public class TextTestWriter extends BaseTextTestWriter {
     protected String testableString(Testable t) {
         if (t instanceof CommandTestable) {
             CommandTestable cmd = (CommandTestable) t;
-            return writer.responseSuffix(cmd.getResponse());
+            Response response = cmd.getResponse();
+            if (response != null) {
+                return writer.responseSuffix(response);
+            }
         }
         return "";
     }

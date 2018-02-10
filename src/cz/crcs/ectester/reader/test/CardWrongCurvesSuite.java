@@ -8,7 +8,6 @@ import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.CompoundTest;
 import cz.crcs.ectester.common.test.Result;
 import cz.crcs.ectester.common.test.Test;
-import cz.crcs.ectester.common.test.TestException;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.common.util.CardUtil;
 import cz.crcs.ectester.common.util.ECUtil;
@@ -44,7 +43,7 @@ public class CardWrongCurvesSuite extends CardTestSuite {
             List<Test> tests = new LinkedList<>();
             Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), Result.ExpectedValue.SUCCESS));
             if (!key.ok()) {
-                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS,  "No support for " + curve.getBits() + "b " + CardUtil.getKeyTypeString(curve.getField()), key));
+                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "No support for " + curve.getBits() + "b " + CardUtil.getKeyTypeString(curve.getField()), key));
                 continue;
             }
             tests.add(key);
@@ -143,7 +142,7 @@ public class CardWrongCurvesSuite extends CardTestSuite {
          */
     }
 
-    private Test ecdhTest(Command setupCmd, String prepareDesc, String fullDesc) throws TestException {
+    private Test ecdhTest(Command setupCmd, String prepareDesc, String fullDesc) {
         Test setup = runTest(CommandTest.expect(setupCmd, Result.ExpectedValue.FAILURE));
         Test generate = runTest(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_BOTH), Result.ExpectedValue.FAILURE));
         Test preparePhase = runTest(CompoundTest.any(Result.ExpectedValue.SUCCESS, prepareDesc, setup, generate));

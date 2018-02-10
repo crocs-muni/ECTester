@@ -16,4 +16,10 @@ public abstract class SimpleTest<T extends BaseTestable> extends Test {
     public T getTestable() {
         return testable;
     }
+
+    @Override
+    protected void runSelf() {
+        testable.run();
+        result = callback.apply(testable);
+    }
 }

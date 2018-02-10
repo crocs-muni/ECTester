@@ -41,6 +41,14 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
 
     abstract protected Map<String, Object> deviceObject(TestSuite suite);
 
+    private Map<String, Object> resultObject(Result result) {
+        Map<String, Object> resultObject = new HashMap<>();
+        resultObject.put("ok", result.ok());
+        resultObject.put("value", result.getValue().name());
+        resultObject.put("cause", result.getCause());
+        return resultObject;
+    }
+
     private Map<String, Object> testObject(Test t) {
         Map<String, Object> testObj;
         if (t instanceof CompoundTest) {
@@ -48,7 +56,7 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
             testObj = new HashMap<>();
             testObj.put("type", "compound");
             List<Map<String, Object>> innerTests = new LinkedList<>();
-            for (Test innerTest : test.getTests()) {
+            for (Test innerTest : test.getStartedTests()) {
                 innerTests.add(testObject(innerTest));
             }
             testObj.put("tests", innerTests);
@@ -58,11 +66,7 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
         }
 
         testObj.put("desc", t.getDescription());
-        Map<String, Object> result = new HashMap<>();
-        result.put("ok", t.ok());
-        result.put("value", t.getResultValue().name());
-        result.put("cause", t.getResultCause());
-        testObj.put("result", result);
+        testObj.put("result", resultObject(t.getResult()));
 
         return testObj;
     }
@@ -71,6 +75,11 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
     public void outputTest(Test t) {
         if (!t.hasRun())
             return;
+        tests.add(testObject(t));
+    }
+
+    @Override
+    public void outputError(Test t, Throwable cause) {
         tests.add(testObject(t));
     }
 

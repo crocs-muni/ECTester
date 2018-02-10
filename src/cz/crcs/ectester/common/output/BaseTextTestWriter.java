@@ -28,10 +28,9 @@ public abstract class BaseTextTestWriter implements TestWriter {
     protected abstract String deviceString(TestSuite suite);
 
     private String testString(Test t, String prefix) {
-        if (!t.hasRun()) {
-            return null;
-        }
         boolean compound = t instanceof CompoundTest;
+
+        Result result = t.getResult();
 
         StringBuilder out = new StringBuilder();
         out.append(t.ok() ? " OK " : "NOK ");
@@ -40,14 +39,14 @@ public abstract class BaseTextTestWriter implements TestWriter {
         String widthSpec = "%-" + String.valueOf(width) + "s";
         out.append(String.format(widthSpec, t.getDescription()));
         out.append(" ┃ ");
-        out.append(String.format("%-9s", t.getResultValue().name()));
+        out.append(String.format("%-9s", result.getValue().name()));
         out.append(" ┃ ");
 
         if (compound) {
             CompoundTest test = (CompoundTest) t;
-            out.append(test.getResultCause());
+            out.append(result.getCause().toString());
             out.append(System.lineSeparator());
-            Test[] tests = test.getTests();
+            Test[] tests = test.getStartedTests();
             for (int i = 0; i < tests.length; ++i) {
                 if (i == tests.length - 1) {
                     out.append(prefix).append("    ┗ ");
@@ -73,6 +72,22 @@ public abstract class BaseTextTestWriter implements TestWriter {
         if (!t.hasRun())
             return;
         output.println(testString(t, ""));
+        output.flush();
+    }
+
+    private String errorString(Throwable error) {
+        StringBuilder sb = new StringBuilder();
+        for (Throwable t = error; t != null; t = t.getCause()) {
+            sb.append("═══ ").append(t.toString()).append(" ═══");
+            sb.append(System.lineSeparator());
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public void outputError(Test t, Throwable cause) {
+        output.println(testString(t, ""));
+        output.print(errorString(cause));
         output.flush();
     }
 

@@ -120,7 +120,7 @@ public class ECTesterStandalone {
         } catch (NoSuchAlgorithmException nsaex) {
             System.err.println("Algorithm not supported by the selected library: " + nsaex.getMessage());
             nsaex.printStackTrace();
-        } catch (InvalidKeyException | SignatureException | TestException e) {
+        } catch (InvalidKeyException | SignatureException e) {
             e.printStackTrace();
         }
     }

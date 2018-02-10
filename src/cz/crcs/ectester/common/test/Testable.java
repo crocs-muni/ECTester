@@ -29,5 +29,5 @@ public interface Testable {
      *
      * @throws TestException If an unexpected exception/error is encountered.
      */
-    void run() throws TestException;
+    void run();
 }

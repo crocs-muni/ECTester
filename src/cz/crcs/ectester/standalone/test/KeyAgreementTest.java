@@ -3,7 +3,6 @@ package cz.crcs.ectester.standalone.test;
 import cz.crcs.ectester.common.test.Result;
 import cz.crcs.ectester.common.test.SimpleTest;
 import cz.crcs.ectester.common.test.TestCallback;
-import cz.crcs.ectester.common.test.TestException;
 
 import java.util.Arrays;
 
@@ -44,14 +43,5 @@ public class KeyAgreementTest extends SimpleTest<KeyAgreementTestable> {
     @Override
     public String getDescription() {
         return "KeyAgreement " + testable.getKa().getAlgorithm();
-    }
-
-    @Override
-    public void run() throws TestException {
-        if (hasRun)
-            return;
-        testable.run();
-        result = callback.apply(testable);
-        hasRun = true;
     }
 }

@@ -30,13 +30,4 @@ public class KeyGeneratorTest extends SimpleTest<KeyGeneratorTestable> {
     public String getDescription() {
         return "KeyPairGenerator " + testable.getKpg().getAlgorithm();
     }
-
-    @Override
-    public void run() throws TestException {
-        if (hasRun)
-            return;
-        testable.run();
-        result = callback.apply(testable);
-        hasRun = true;
-    }
 }

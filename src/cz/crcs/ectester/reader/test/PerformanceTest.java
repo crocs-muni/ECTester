@@ -38,10 +38,7 @@ public class PerformanceTest extends SimpleTest<CommandTestable> {
     }
 
     @Override
-    public void run() throws TestException {
-        if (hasRun)
-            return;
-
+    protected void runSelf() {
         times = new long[count];
         for (int i = 0; i < count; ++i) {
             testable.run();
@@ -73,7 +70,6 @@ public class PerformanceTest extends SimpleTest<CommandTestable> {
                 mode = current_value;
             }
         }
-        hasRun = true;
         result = callback.apply(testable);
     }
 

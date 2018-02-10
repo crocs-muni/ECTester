@@ -2,11 +2,12 @@ package cz.crcs.ectester.common.test;
 
 /**
  * A TestException is an Exception that can be thrown during the running of a Testable,
- * or a TestSuite. It means that the Testable/TestSuite encountered an unexpected error
- * during it's run which points to an error in ECTester or it's runtime environment.cd
+ * or a Test. It means that the Testable/TestSuite encountered an unexpected error
+ * and has to terminate.
+ *
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class TestException extends Exception {
+public class TestException extends RuntimeException {
     public TestException(Throwable e) {
         super(e);
     }

@@ -9,6 +9,7 @@ public abstract class TestSuite {
     protected String name;
     protected String description;
     protected TestWriter writer;
+    private Test running;
 
     public TestSuite(TestWriter writer, String name, String description) {
         this.writer = writer;
@@ -16,12 +17,18 @@ public abstract class TestSuite {
         this.description = description;
     }
 
-    public void run() throws TestException {
+    /**
+     *
+     */
+    public void run() {
         writer.begin(this);
         try {
             runTests();
+        } catch (TestException e) {
+            writer.outputError(running, e);
         } catch (Exception e) {
-            throw new TestException(e);
+            writer.end();
+            throw new TestSuiteException(e);
         }
         writer.end();
     }
@@ -33,8 +40,10 @@ public abstract class TestSuite {
      * @return The test that was run.
      * @throws TestException
      */
-    protected Test runTest(Test t) throws TestException {
+    protected Test runTest(Test t) {
+        running = t;
         t.run();
+        running = null;
         return t;
     }
 
@@ -45,12 +54,15 @@ public abstract class TestSuite {
      * @return The test that was run.
      * @throws TestException
      */
-    protected Test doTest(Test t) throws TestException {
-        t.run();
+    protected Test doTest(Test t) {
+        runTest(t);
         writer.outputTest(t);
         return t;
     }
 
+    /**
+     *
+     */
     protected abstract void runTests() throws Exception;
 
     public String getName() {
