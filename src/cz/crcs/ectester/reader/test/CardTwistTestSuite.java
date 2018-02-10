@@ -12,7 +12,6 @@ import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
-import javacard.security.KeyPair;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -41,15 +40,20 @@ public class CardTwistTestSuite extends CardTestSuite {
             EC_Curve curve = e.getKey();
             List<EC_Key.Public> keys = e.getValue();
 
-            doTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), Result.ExpectedValue.SUCCESS));
-            doTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.ExpectedValue.SUCCESS));
-            doTest(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_LOCAL), Result.ExpectedValue.SUCCESS));
+            Test allocate = CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), Result.ExpectedValue.SUCCESS);
+            Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.ExpectedValue.SUCCESS);
+            Test generate = CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_LOCAL), Result.ExpectedValue.SUCCESS);
+
+            Test prepare = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Prepare and generate keypair on " + curve.getId(), allocate, set, generate);
+
             List<Test> ecdhTests = new LinkedList<>();
             for (EC_Key.Public pub : keys) {
                 Command ecdhCommand = new Command.ECDH_direct(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH, pub.flatten());
                 ecdhTests.add(CommandTest.expect(ecdhCommand, Result.ExpectedValue.FAILURE, "Card correctly rejected point on twist.", "Card incorrectly accepted point on twist."));
             }
-            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Twist test of " + curve.getId(), ecdhTests.toArray(new Test[0])));
+            Test ecdh = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform ECDH with public points on twist", ecdhTests.toArray(new Test[0]));
+
+            doTest(CompoundTest.greedyAll(Result.ExpectedValue.SUCCESS, "Twist test of " + curve.getId(), prepare, ecdh));
             new Command.Cleanup(this.card).send();
         }
     }
