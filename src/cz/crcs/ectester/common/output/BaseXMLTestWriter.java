@@ -74,7 +74,7 @@ public abstract class BaseXMLTestWriter implements TestWriter {
         Element value = doc.createElement("value");
         value.setTextContent(result.getValue().name());
         Element cause = doc.createElement("cause");
-        cause.setTextContent(causeString(cause));
+        cause.setTextContent(causeString(result.getCause()));
 
         resultElem.appendChild(ok);
         resultElem.appendChild(value);
