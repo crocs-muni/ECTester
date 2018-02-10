@@ -70,7 +70,7 @@ public class CardTestVectorSuite extends CardTestSuite {
                     return new Result(Value.SUCCESS);
                 }
             }));
-            doTest(CompoundTest.all(ExpectedValue.SUCCESS, "Test vector " + result.getId(), testVector.toArray(new Test[0])));
+            doTest(CompoundTest.greedyAll(ExpectedValue.SUCCESS, "Test vector " + result.getId(), testVector.toArray(new Test[0])));
             new Command.Cleanup(this.card).send();
         }
     }
