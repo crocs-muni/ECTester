@@ -5,6 +5,8 @@ import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.common.ec.EC_Key;
 import cz.crcs.ectester.common.output.TestWriter;
+import cz.crcs.ectester.common.test.CompoundTest;
+import cz.crcs.ectester.common.test.Test;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
@@ -20,7 +22,7 @@ import static cz.crcs.ectester.common.test.Result.ExpectedValue;
 public class CardCompositeCurvesSuite extends CardTestSuite {
 
     public CardCompositeCurvesSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "composite", "The composite suite run ECDH over curves with composite order. This should generally fail, as using such a curve is unsafe.");
+        super(writer, cfg, cardManager, "composite", "The composite suite runs ECDH over curves with composite order. This should generally fail, as using such a curve is unsafe.");
     }
 
     @Override
@@ -34,11 +36,13 @@ public class CardCompositeCurvesSuite extends CardTestSuite {
         Map<String, EC_Key> keys = EC_Store.getInstance().getObjects(EC_Key.class, "composite");
         for (EC_Key key : keys.values()) {
             EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, key.getCurve());
-            doTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS));
-            doTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.ANY));
-            doTest(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_LOCAL), ExpectedValue.ANY));
+            Test allocate = CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS);
+            Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.ANY);
+            Test generate = CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_LOCAL), ExpectedValue.ANY);
             Command ecdhCommand = new Command.ECDH_direct(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH, key.flatten());
-            doTest(CommandTest.expect(ecdhCommand, ExpectedValue.FAILURE, "Card correctly rejected to do ECDH over a composite order curve.", "Card incorrectly does ECDH over a composite order curve, leaks bits of private key."));
+            Test ecdh = CommandTest.expect(ecdhCommand, ExpectedValue.FAILURE, "Card correctly rejected to do ECDH over a composite order curve.", "Card incorrectly does ECDH over a composite order curve, leaks bits of private key.");
+
+            doTest(CompoundTest.greedyAll(ExpectedValue.SUCCESS, "Composite test of " + curve.getId() + ", " + key.getDesc(), allocate, set, generate, ecdh));
             new Command.Cleanup(this.card).send();
         }
     }
