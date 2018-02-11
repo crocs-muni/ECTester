@@ -28,15 +28,12 @@ import cz.crcs.ectester.common.cli.CLITools;
 import cz.crcs.ectester.common.ec.EC_Params;
 import cz.crcs.ectester.common.output.OutputLogger;
 import cz.crcs.ectester.common.output.TestWriter;
-import cz.crcs.ectester.common.test.TestException;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.common.util.CardUtil;
+import cz.crcs.ectester.common.util.FileUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.command.Command;
-import cz.crcs.ectester.reader.output.ResponseWriter;
-import cz.crcs.ectester.reader.output.TextTestWriter;
-import cz.crcs.ectester.reader.output.XMLTestWriter;
-import cz.crcs.ectester.reader.output.YAMLTestWriter;
+import cz.crcs.ectester.reader.output.*;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.test.*;
 import javacard.security.KeyPair;
@@ -285,7 +282,7 @@ public class ECTesterReader {
         opts.addOptionGroup(key);
 
         opts.addOption(Option.builder("i").longOpt("input").desc("Input from file <input_file>, for ECDSA signing.").hasArg().argName("input_file").build());
-        opts.addOption(Option.builder("o").longOpt("output").desc("Output into file <output_file>.").hasArg().argName("output_file").build());
+        opts.addOption(Option.builder("o").longOpt("output").desc("Output into file <output_file>. The file can be prefixed by the format (one of text,yml,xml), such as: xml:<output_file>.").hasArgs().argName("output_file").build());
         opts.addOption(Option.builder("l").longOpt("log").desc("Log output into file [log_file].").hasArg().argName("log_file").optionalArg(true).build());
         opts.addOption(Option.builder("v").longOpt("verbose").desc("Turn on verbose logging.").build());
         opts.addOption(Option.builder().longOpt("format").desc("Output format to use. One of: text,yml,xml.").hasArg().argName("format").build());
@@ -332,7 +329,7 @@ public class ECTesterReader {
 
         EC_Params exported = new EC_Params(domain, export.getParams());
 
-        FileOutputStream out = new FileOutputStream(cfg.output);
+        OutputStream out = FileUtil.openStream(cfg.outputs);
         exported.writeCSV(out);
         out.close();
     }
@@ -346,11 +343,11 @@ public class ECTesterReader {
     private void generate() throws CardException, IOException {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
 
-        Response allocate = new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass).send();
+        Response allocate = new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send();
         respWriter.outputResponse(allocate);
         Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass);
 
-        FileWriter keysFile = new FileWriter(cfg.output);
+        OutputStreamWriter keysFile = FileUtil.openFiles(cfg.outputs);
         keysFile.write("index;time;pubW;privS\n");
 
         int generated = 0;
@@ -394,26 +391,10 @@ public class ECTesterReader {
     /**
      * Tests Elliptic curve support for a given curve/curves.
      *
-     * @throws IOException   if an IO error occurs when writing to key file.
+     * @throws IOException if an IO error occurs
      */
-    private void test() throws IOException, ParserConfigurationException {
-        TestWriter writer = null;
-        if (cfg.format == null) {
-            writer = new TextTestWriter(logger.getPrintStream());
-        } else {
-            switch (cfg.format) {
-                case "text":
-                    writer = new TextTestWriter(logger.getPrintStream());
-                    break;
-                case "xml":
-                    writer = new XMLTestWriter(logger.getOutputStream());
-                    break;
-                case "yaml":
-                case "yml":
-                    writer = new YAMLTestWriter(logger.getPrintStream());
-                    break;
-            }
-        }
+    private void test() throws ParserConfigurationException, IOException {
+        TestWriter writer = new FileTestWriter(cfg.format, true, cfg.outputs);
 
         CardTestSuite suite;
 
@@ -488,9 +469,9 @@ public class ECTesterReader {
             generate.add(Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_REMOTE));
         }
 
-        FileWriter out = null;
-        if (cfg.output != null) {
-            out = new FileWriter(cfg.output);
+        OutputStreamWriter out = null;
+        if (cfg.outputs != null) {
+            out = FileUtil.openFiles(cfg.outputs);
             out.write("index;time;pubW;privS;secret\n");
         }
 
@@ -570,9 +551,8 @@ public class ECTesterReader {
             respWriter.outputResponse(r);
         }
 
-        FileWriter out = null;
-        if (cfg.output != null) {
-            out = new FileWriter(cfg.output);
+        OutputStreamWriter out = FileUtil.openFiles(cfg.outputs);
+        if (out != null) {
             out.write("index;time;signature\n");
         }
 
@@ -647,7 +627,7 @@ public class ECTesterReader {
 
         public boolean verbose = false;
         public String input;
-        public String output;
+        public String[] outputs;
         public boolean fresh = false;
         public boolean simulate = false;
         public boolean yes = false;
@@ -698,7 +678,7 @@ public class ECTesterReader {
 
             verbose = cli.hasOption("verbose");
             input = cli.getOptionValue("input");
-            output = cli.getOptionValue("output");
+            outputs = cli.getOptionValues("output");
             fresh = cli.hasOption("fresh");
             simulate = cli.hasOption("simulate");
             yes = cli.hasOption("yes");
@@ -708,9 +688,9 @@ public class ECTesterReader {
                 return true;
             }
 
-            format = cli.getOptionValue("format", "text");
+            format = cli.getOptionValue("format");
             String formats[] = new String[]{"text", "xml", "yaml", "yml"};
-            if (!Arrays.asList(formats).contains(format)) {
+            if (format != null && !Arrays.asList(formats).contains(format)) {
                 System.err.println("Wrong output format " + format + ". Should be one of " + Arrays.toString(formats));
                 return false;
             }
@@ -742,7 +722,7 @@ public class ECTesterReader {
                     System.err.println("Specifying a curve for curve export makes no sense.");
                     return false;
                 }
-                if (output == null) {
+                if (outputs == null) {
                     System.err.println("You have to specify an output file for curve parameter export.");
                     return false;
                 }
@@ -759,7 +739,7 @@ public class ECTesterReader {
                     System.err.println("Keys should not be specified when generating keys.");
                     return false;
                 }
-                if (output == null) {
+                if (outputs == null) {
                     System.err.println("You have to specify an output file for the key generation process.");
                     return false;
                 }
