@@ -41,11 +41,26 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
 
     abstract protected Map<String, Object> deviceObject(TestSuite suite);
 
+    private Object causeObject(Object cause) {
+        if (cause == null) {
+            return null;
+        } else if (cause instanceof Throwable) {
+            StringBuilder sb = new StringBuilder();
+            for (Throwable t = (Throwable) cause; t != null; t = t.getCause()) {
+                sb.append(t.toString());
+                sb.append(System.lineSeparator());
+            }
+            return sb.toString();
+        } else {
+            return cause.toString();
+        }
+    }
+
     private Map<String, Object> resultObject(Result result) {
         Map<String, Object> resultObject = new HashMap<>();
         resultObject.put("ok", result.ok());
         resultObject.put("value", result.getValue().name());
-        resultObject.put("cause", result.getCause());
+        resultObject.put("cause", causeObject(result.getCause()));
         return resultObject;
     }
 

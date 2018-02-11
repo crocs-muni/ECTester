@@ -52,8 +52,6 @@ public abstract class BaseXMLTestWriter implements TestWriter {
     private String causeString(Object cause) {
         if (cause == null) {
             return "null";
-        } else if (cause instanceof String) {
-            return (String) cause;
         } else if (cause instanceof Throwable) {
             StringBuilder sb = new StringBuilder();
             for (Throwable t = (Throwable) cause; t != null; t = t.getCause()) {
