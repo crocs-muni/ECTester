@@ -14,7 +14,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+import matplotlib.colors as colors
 from operator import itemgetter
+from copy import deepcopy
 import argparse
 
 if __name__ == "__main__":
@@ -23,6 +25,7 @@ if __name__ == "__main__":
     parser.add_argument("--pub", dest="pub", action="store_true", help="Show public key scatter plot.")
     parser.add_argument("--priv", dest="priv", action="store_true", help="Show private key scatter plot.")
     parser.add_argument("--hist", dest="hist", action="store_true", help="Show histogram.")
+    parser.add_argument("--hw-hist", dest="hw_hist", action="store_true", help="Show Hamming weight 2D histogram (private key Hamming weight and generation time).")
     parser.add_argument("--skip-first", dest="skip_first", action="store_true", help="Skip first entry, as it's usually a large outlier.")
     parser.add_argument("file", type=str, help="The file to plot(csv).")
 
@@ -32,11 +35,11 @@ if __name__ == "__main__":
         header = f.readline()
     header_names = header.split(";")
 
-    plots = [opts.priv, opts.pub, opts.hist]
+    plots = [opts.priv, opts.pub, opts.hist, opts.hw_hist]
     n_plots = sum(plots)
     if n_plots == 0:
-        n_plots = 3
-        plots = [True, True, True]
+        n_plots = 4
+        plots = [True, True, True, True]
 
     hx = lambda x: int(x, 16)
     data = np.genfromtxt(opts.file, delimiter=";", skip_header=1, converters={2: hx, 3: hx}, dtype=np.dtype([("index","u4"), ("time","u4"), ("pub", "O"), ("priv", "O")]))
@@ -83,7 +86,35 @@ if __name__ == "__main__":
         axe_hist.set_xlabel("time ({})".format(unit))
         axe_hist.xaxis.set_major_locator(ticker.MaxNLocator())
         axe_hist.legend(loc="best")
+        plot_i += 1
 
+    if plots[3]:
+        priv_bit_bins = {}
+        for i in range(len(data)):
+            skey = priv_data[i]
+            time = time_data[i]
+            skey_hw = 0
+            while skey:
+                skey_hw += 1
+                skey &= skey - 1
+            if skey_hw in priv_bit_bins:
+                priv_bit_bins[skey_hw].append(time)
+            else:
+                priv_bit_bins[skey_hw] = [time]
+        priv_bit_x = []
+        priv_bit_y = []
+        for k,v in priv_bit_bins.items():
+            priv_bit_x.extend([k] * len(v))
+            priv_bit_y.extend(v)
+        axe_priv_hist = fig.add_subplot(n_plots, 1, plot_i)
+        h, xe, ye = np.histogram2d(priv_bit_x, priv_bit_y, bins=[max(priv_bit_bins) - min(priv_bit_bins), (max(time_data) - min(time_data))/5])
+        cmap = deepcopy(plt.cm.plasma)
+        cmap.set_bad("black")
+        im = axe_priv_hist.imshow(h.T, origin="low", cmap=cmap, aspect="auto", extent=[xe[0], xe[-1], ye[0], ye[-1]], norm=colors.LogNorm())
+        axe_priv_hist.set_xlabel("private key Hamming weight")
+        axe_priv_hist.set_ylabel("time ({})".format(unit))
+        fig.colorbar(im, ax=axe_priv_hist)
+        
     fig.text(0.01, 0.02, "Data size: {}".format(len(time_data)), size="small")
 
     if opts.output is None:

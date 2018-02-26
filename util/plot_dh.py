@@ -13,8 +13,9 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
+from matplotlib import ticker, colors
 import argparse
+from copy import deepcopy
 from operator import itemgetter
 
 if __name__ == "__main__":
@@ -48,7 +49,7 @@ if __name__ == "__main__":
     fig = plt.figure(tight_layout=True)
     fig.suptitle(opts.file)
 
-    axe_hist = fig.add_subplot(1,1,1)
+    axe_hist = fig.add_subplot(2,1,1)
     time_max = max(time_data)
     time_avg = np.average(time_data)
     time_median = np.median(time_data)
@@ -59,6 +60,33 @@ if __name__ == "__main__":
     axe_hist.set_xlabel("time ({})".format(unit))
     axe_hist.xaxis.set_major_locator(ticker.MaxNLocator())
     axe_hist.legend(loc="best")
+
+    priv_bit_bins = {}
+    for i in range(len(data)):
+        skey = priv_data[i]
+        time = time_data[i]
+        skey_hw = 0
+        while skey:
+            skey_hw += 1
+            skey &= skey - 1
+        if skey_hw in priv_bit_bins:
+            priv_bit_bins[skey_hw].append(time)
+        else:
+            priv_bit_bins[skey_hw] = [time]
+    priv_bit_x = []
+    priv_bit_y = []
+    for k,v in priv_bit_bins.items():
+        priv_bit_x.extend([k] * len(v))
+        priv_bit_y.extend(v)
+
+    axe_priv_hist = fig.add_subplot(2,1,2)
+    h, xe, ye = np.histogram2d(priv_bit_x, priv_bit_y, bins=[max(priv_bit_bins) - min(priv_bit_bins), (time_max - min(time_data))/5])
+    cmap = deepcopy(plt.cm.plasma)
+    cmap.set_bad("black")
+    im = axe_priv_hist.imshow(h.T, origin="low", cmap=cmap, aspect="auto", extent=[xe[0], xe[-1], ye[0], ye[-1]], norm=colors.LogNorm())
+    axe_priv_hist.set_xlabel("private key Hamming weight")
+    axe_priv_hist.set_ylabel("time ({})".format(unit))
+    fig.colorbar(im, ax=axe_priv_hist)
 
     fig.text(0.01, 0.02, "Data size: {}".format(len(time_data)), size="small")
 
