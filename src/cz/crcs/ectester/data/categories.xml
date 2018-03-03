@@ -52,6 +52,11 @@
         <desc></desc>
     </category>
     <category>
+        <name>cofactor</name>
+        <directory>cofactor</directory>
+        <desc></desc>
+    </category>
+    <category>
         <name>test</name>
         <directory>test</directory>
         <desc>Test vectors</desc>

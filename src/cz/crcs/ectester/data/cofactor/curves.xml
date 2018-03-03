@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<curves xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../schema.xsd">
+
+    <curve>
+        <id>cofactor2p128</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>cofactor2p128.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor4p128</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>cofactor4p128.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor8p128</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>cofactor8p128.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor16p128</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>cofactor16p128.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor32p128</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>cofactor32p128.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor64p128</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>cofactor64p128.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor128p128</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>cofactor128p128.csv</file>
+    </curve>
+</curves>
