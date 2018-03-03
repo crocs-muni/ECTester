@@ -19,7 +19,6 @@ public class FileTestWriter extends TeeTestWriter {
     public FileTestWriter(String defaultFormat, boolean systemOut, String[] files) throws ParserConfigurationException, FileNotFoundException {
         int fLength = files == null ? 0 : files.length;
         writers = new TestWriter[systemOut ? fLength + 1 : fLength];
-        System.err.println(writers.length);
         if (systemOut) {
             writers[0] = createWriter(defaultFormat, System.out);
         }

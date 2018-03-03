@@ -56,4 +56,8 @@ Output of the `-dsa/--ecdsa` option.
 
 ## Test runs
 By default test runs are output in a human readable format, however YAML and XML is also supported and can be selected
-by using the `-o/--output` option.
+by using the `--format` option. Also, prefixing the output file name when using the `-o/--output` option allows to output 
+the same test run in different formats to different files.
+
+For example:
+`--format yaml -o default_output.yaml -o xml:output_file.xml -o text:readable_text_file.txt `

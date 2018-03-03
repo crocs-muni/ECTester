@@ -2,7 +2,7 @@
 [![Build status](https://api.travis-ci.org/crocs-muni/ECTester.svg?branch=master)](https://travis-ci.org/crocs-muni/ECTester)  [![GitHub release](https://img.shields.io/github/release/crocs-muni/ECTEster.svg)](https://github.com/crocs-muni/ECTester/releases)  [![license](https://img.shields.io/github/license/crocs-muni/ECTester.svg)](https://github.com/crocs-muni/ECTester/blob/master/LICENSE) [![docs](https://img.shields.io/badge/docs-github.io-brightgreen.svg)](https://crocs-muni.github.io/ECTester/)
 
 Tests support and behavior of elliptic curve cryptography implementations on JavaCards (`TYPE_EC_FP` and `TYPE_EC_F2M`) and on selected software libraries.
-For more information on ECC support on JavaCards see the [github page](https://crocs-muni.github.io/ECTester/).
+For more information on ECC support on JavaCards see the [github page](https://crocs-muni.github.io/ECTester/), with results, tables and docs.
 
 ## Build
 
@@ -106,6 +106,8 @@ For format of this file see [FORMAT](docs/FORMAT.md).
 
 Perform support and performance tests of ECC.
 
+Use with `-o / --output [out_type:]<out_file>` to output the test results to a file.
+For possible formats of this file see [FORMAT](docs/FORMAT.md).
 For more info about the test suites see [TESTS](docs/TESTS.md).
 
 #### Generate
@@ -206,6 +208,19 @@ Currently supported libraries include:
  
 For more information on ECC libraries see [LIBS](docs/LIBS.md).
 
+### Setup
+
+Installing the Java Cryptography Extension Unlimited Strength policy files is necessary to do testing
+with quite a lot of practical key sizes, they are available for download:
+
+ * [Java 6](http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html)
+ * [Java 7](http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html)
+ * [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html)
+
+To install, place them in `${java.home}/jre/lib/security/`.
+
+### Options
+
 ```
 usage: ECTesterStandalone.jar [-V] [-h] [ (ecdh [-t <type>] [-n <amount>] [-b <n>] [-nc <cat/id>]) |
 (ecdsa [-t <type>] [-n <amount>] [-b <n>] [-nc <cat/id>] [-f <file>]) |
@@ -251,5 +266,5 @@ usage: ECTesterStandalone.jar [-V] [-h] [ (ecdh [-t <type>] [-n <amount>] [-b <n
    -st,--sig-type <type>        Set the Signature object [type].
    -b,--bits <n>                What size of curve to use.
    -nc,--named-curve <cat/id>   Use a named curve, from CurveDB: <cat/id>
-
 ```
+
