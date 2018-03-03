@@ -582,7 +582,6 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
             length += keyGenerator.exportParameters(keyPair, EC_Consts.KEY_PUBLIC, params, outBuffer, outOffset);
             sw = keyGenerator.getSW();
         }
-        //TODO unify this, now that param key == the passed on param.
         if ((key & EC_Consts.KEY_PRIVATE) != 0 && sw == ISO7816.SW_NO_ERROR) {
             //export params from private
             length += keyGenerator.exportParameters(keyPair, EC_Consts.KEY_PRIVATE, params, outBuffer, (short) (outOffset + length));

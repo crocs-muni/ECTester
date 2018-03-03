@@ -18,7 +18,7 @@ public abstract class TestSuite {
     }
 
     /**
-     *
+     * Run the <code>TestSuite</code>.
      */
     public void run() {
         writer.begin(this);

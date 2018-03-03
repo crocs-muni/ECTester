@@ -8,7 +8,13 @@ import cz.crcs.ectester.common.test.TestSuite;
  */
 public interface TestWriter {
     /**
-     * @param suite
+     * Begin writing the <code>TestSuite suite</code>.
+     * This should reset all the internal state of the writer
+     * and prepare it to output tests from <code>suite</code>.
+     * It may also write any header part of the output of the
+     * writer but doesn't have to.
+     *
+     * @param suite The <code>TestSuite</code> to start writing.
      */
     void begin(TestSuite suite);
 

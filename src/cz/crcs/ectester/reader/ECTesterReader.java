@@ -726,7 +726,7 @@ public class ECTesterReader {
                     System.err.println("You have to specify an output file for curve parameter export.");
                     return false;
                 }
-                if (all) {
+                if (all || bits == 0) {
                     System.err.println("You have to specify curve bit-size with -b");
                     return false;
                 }
@@ -743,7 +743,7 @@ public class ECTesterReader {
                     System.err.println("You have to specify an output file for the key generation process.");
                     return false;
                 }
-                if (all) {
+                if (all || bits == 0) {
                     System.err.println("You have to specify curve bit-size with -b");
                     return false;
                 }
@@ -770,7 +770,7 @@ public class ECTesterReader {
                     System.err.print("Need to specify field with -fp or -f2m. (not both)");
                     return false;
                 }
-                if (all) {
+                if (all || bits == 0) {
                     System.err.println("You have to specify curve bit-size with -b");
                     return false;
                 }
@@ -787,7 +787,7 @@ public class ECTesterReader {
                     System.err.print("Need to specify field with -fp or -f2m. (but not both)");
                     return false;
                 }
-                if (all) {
+                if (all || bits == 0) {
                     System.err.println("You have to specify curve bit-size with -b");
                     return false;
                 }

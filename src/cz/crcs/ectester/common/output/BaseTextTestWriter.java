@@ -5,6 +5,11 @@ import cz.crcs.ectester.common.test.*;
 import java.io.PrintStream;
 
 /**
+ * An absctract basis of a TextTestWriter, which outputs in a human readable format, into console.
+ * Requires the implementation of:
+ * <code>String testableString(Testable t)</code>
+ * <code>String deviceString(TestSuite t)</code>
+ *
  * @author Jan Jancar johny@neuromancer.sk
  */
 public abstract class BaseTextTestWriter implements TestWriter {
@@ -23,8 +28,18 @@ public abstract class BaseTextTestWriter implements TestWriter {
         output.print(deviceString(suite));
     }
 
+    /**
+     *
+     * @param t
+     * @return
+     */
     protected abstract String testableString(Testable t);
 
+    /**
+     *
+     * @param suite
+     * @return
+     */
     protected abstract String deviceString(TestSuite suite);
 
     private String testString(Test t, String prefix) {
