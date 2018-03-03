@@ -14,7 +14,7 @@
         <echo message="Backed up ${store.jar} into ${temp.previous_jar}"/>
 
         <delete file="${store.jar}" failonerror="false"/>
-        <jar destfile="${temp.file}" filesetmanifest="skip">
+        <jar destfile="${temp.file}" filesetmanifest="skip" compress="true" level="8">
             <zipgroupfileset dir="dist" includes="*.jar"/>
             <zipgroupfileset dir="dist/lib" includes="*.jar"/>
 
@@ -23,7 +23,7 @@
             </manifest>
         </jar>
 
-        <zip destfile="${store.jar}">
+        <zip destfile="${store.jar}" compress="true" level="8">
             <zipfileset src="${temp.file}"
                         excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA"/>
         </zip>
