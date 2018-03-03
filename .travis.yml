@@ -18,6 +18,9 @@ script:
   - ant -f build-reader.xml package
   - ant -f build-standalone.xml package
 
+before_deploy:
+  - zip "dist/ECTester.zip" "dist/ECTesterReader-dist.jar" "dist/ECTesterReader.jar" "applet/ectester.cap" "dist/ECTesterStandalone-dist.jar" "dist/ECTesterStandalone.jar"
+
 deploy:
   provider: releases
   api_key:
@@ -28,6 +31,7 @@ deploy:
     - "applet/ectester.cap"
     - "dist/ECTesterStandalone-dist.jar"
     - "dist/ECTesterStandalone.jar"
+    - "dist/ECTester.zip"
   skip_cleanup: true
   on:
     tags: true
