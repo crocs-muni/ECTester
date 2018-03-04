@@ -44,4 +44,47 @@
         <field>prime</field>
         <file>cofactor128p128.csv</file>
     </curve>
+    
+    <curve>
+        <id>cofactor2t163</id>
+        <bits>163</bits>
+        <field>binary</field>
+        <file>cofactor2t163.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor4t163</id>
+        <bits>163</bits>
+        <field>binary</field>
+        <file>cofactor4t163.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor8t163</id>
+        <bits>163</bits>
+        <field>binary</field>
+        <file>cofactor8t163.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor16t163</id>
+        <bits>163</bits>
+        <field>binary</field>
+        <file>cofactor16t163.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor32t163</id>
+        <bits>163</bits>
+        <field>binary</field>
+        <file>cofactor32t163.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor64t163</id>
+        <bits>163</bits>
+        <field>binary</field>
+        <file>cofactor64t163.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor128t163</id>
+        <bits>163</bits>
+        <field>binary</field>
+        <file>cofactor128t163.csv</file>
+    </curve>
 </curves>

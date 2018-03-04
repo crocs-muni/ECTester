@@ -45,4 +45,47 @@
         <curve>cofactor/cofactor128p128</curve>
         <desc></desc>
     </pubkey>
+
+    <pubkey>
+        <id>cofactor2t163_1</id>
+        <inline>0x000000000000000000000000000000000000000000,0x0132720c6aa3f2ca65d18f2de81e5e6b8ad4a3ef9d</inline>
+        <curve>cofactor/cofactor2t163</curve>
+        <desc></desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor4t163_1</id>
+        <inline>0x000000000000000000000000000000000000000000,0x00b93d46bc80b487e7738644e85bb6d29c2dca2600</inline>
+        <curve>cofactor/cofactor4t163</curve>
+        <desc></desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor8t163_1</id>
+        <inline>0x000000000000000000000000000000000000000000,0x0569879d9674b06578f62ec2f341ddd3b648dfdf51</inline>
+        <curve>cofactor/cofactor8t163</curve>
+        <desc></desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor16t163_1</id>
+        <inline>0x000000000000000000000000000000000000000000,0x04274cf55c49c32ca4c0e30b891e03b3b1c6597df0</inline>
+        <curve>cofactor/cofactor16t163</curve>
+        <desc></desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor32t163_1</id>
+        <inline>0x000000000000000000000000000000000000000000,0x0409969efb468e8f07954a3b4bf7610a0d8b5d4753</inline>
+        <curve>cofactor/cofactor32t163</curve>
+        <desc></desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor64t163_1</id>
+        <inline>0x000000000000000000000000000000000000000000,0x068c5445c03a59d697573b09ae0804e2891bb98208</inline>
+        <curve>cofactor/cofactor64t163</curve>
+        <desc></desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128t163_1</id>
+        <inline>0x000000000000000000000000000000000000000000,0x06be374502a948489de2e7d8d82cb6b62a493b77a0</inline>
+        <curve>cofactor/cofactor128t163</curve>
+        <desc></desc>
+    </pubkey>
 </keys>
