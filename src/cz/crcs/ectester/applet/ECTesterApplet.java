@@ -71,6 +71,17 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     public static final short SW_KA_NULL = (short) 0x0ee4;
     public static final short SW_SIGNATURE_NULL = (short) 0x0ee5;
     public static final short SW_OBJECT_NULL = (short) 0x0ee6;
+    public static final short SW_Exception = (short) 0xff01;
+    public static final short SW_ArrayIndexOutOfBoundsException = (short) 0xff02;
+    public static final short SW_ArithmeticException = (short) 0xff03;
+    public static final short SW_ArrayStoreException = (short) 0xff04;
+    public static final short SW_NullPointerException = (short) 0xff05;
+    public static final short SW_NegativeArraySizeException = (short) 0xff06;
+    public static final short SW_CryptoException_prefix = (short) 0xf100;
+    public static final short SW_SystemException_prefix = (short) 0xf200;
+    public static final short SW_PINException_prefix = (short) 0xf300;
+    public static final short SW_TransactionException_prefix = (short) 0xf400;
+    public static final short SW_CardRuntimeException_prefix = (short) 0xf500;
 
 
     // Class javacard.security.KeyAgreement
@@ -153,53 +164,81 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
         }
 
         if (cla == CLA_ECTESTERAPPLET) {
-            AppletUtil.readAPDU(apdu, apduArray, APDU_MAX_LENGTH);
+            try {
 
-            short length = 0;
-            switch (ins) {
-                case INS_ALLOCATE_KA:
-                    length = insAllocateKA(apdu);
-                    break;
-                case INS_ALLOCATE_SIG:
-                    length = insAllocateSig(apdu);
-                    break;
-                case INS_ALLOCATE:
-                    length = insAllocate(apdu);
-                    break;
-                case INS_CLEAR:
-                    length = insClear(apdu);
-                    break;
-                case INS_SET:
-                    length = insSet(apdu);
-                    break;
-                case INS_CORRUPT:
-                    length = insCorrupt(apdu);
-                    break;
-                case INS_GENERATE:
-                    length = insGenerate(apdu);
-                    break;
-                case INS_EXPORT:
-                    length = insExport(apdu);
-                    break;
-                case INS_ECDH:
-                    length = insECDH(apdu);
-                    break;
-                case INS_ECDH_DIRECT:
-                    length = insECDH_direct(apdu);
-                    break;
-                case INS_ECDSA:
-                    length = insECDSA(apdu);
-                    break;
-                case INS_CLEANUP:
-                    length = insCleanup(apdu);
-                    break;
-                default:
-                    // The INS code is not supported by the dispatcher
-                    ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);
-                    break;
+                AppletUtil.readAPDU(apdu, apduArray, APDU_MAX_LENGTH);
+
+                short length = 0;
+                switch (ins) {
+                    case INS_ALLOCATE_KA:
+                        length = insAllocateKA(apdu);
+                        break;
+                    case INS_ALLOCATE_SIG:
+                        length = insAllocateSig(apdu);
+                        break;
+                    case INS_ALLOCATE:
+                        length = insAllocate(apdu);
+                        break;
+                    case INS_CLEAR:
+                        length = insClear(apdu);
+                        break;
+                    case INS_SET:
+                        length = insSet(apdu);
+                        break;
+                    case INS_CORRUPT:
+                        length = insCorrupt(apdu);
+                        break;
+                    case INS_GENERATE:
+                        length = insGenerate(apdu);
+                        break;
+                    case INS_EXPORT:
+                        length = insExport(apdu);
+                        break;
+                    case INS_ECDH:
+                        length = insECDH(apdu);
+                        break;
+                    case INS_ECDH_DIRECT:
+                        length = insECDH_direct(apdu);
+                        break;
+                    case INS_ECDSA:
+                        length = insECDSA(apdu);
+                        break;
+                    case INS_CLEANUP:
+                        length = insCleanup(apdu);
+                        break;
+                    default:
+                        // The INS code is not supported by the dispatcher
+                        ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);
+                        break;
+                }
+                apdu.setOutgoingAndSend((short) 0, length);
+
+            } catch (ISOException e) {
+                throw e; // Our exception from code, just re-emit
+            } catch (ArrayIndexOutOfBoundsException e) {
+                ISOException.throwIt(SW_ArrayIndexOutOfBoundsException);
+            } catch (ArithmeticException e) {
+                ISOException.throwIt(SW_ArithmeticException);
+            } catch (ArrayStoreException e) {
+                ISOException.throwIt(SW_ArrayStoreException);
+            } catch (NullPointerException e) {
+                ISOException.throwIt(SW_NullPointerException);
+            } catch (NegativeArraySizeException e) {
+                ISOException.throwIt(SW_NegativeArraySizeException);
+            } catch (CryptoException e) {
+                ISOException.throwIt((short) (SW_CryptoException_prefix | e.getReason()));
+            } catch (SystemException e) {
+                ISOException.throwIt((short) (SW_SystemException_prefix | e.getReason()));
+            } catch (PINException e) {
+                ISOException.throwIt((short) (SW_PINException_prefix | e.getReason()));
+            } catch (TransactionException e) {
+                ISOException.throwIt((short) (SW_TransactionException_prefix | e.getReason()));
+            } catch (CardRuntimeException e) {
+                ISOException.throwIt((short) (SW_CardRuntimeException_prefix | e.getReason()));
+            } catch (Exception e) {
+                ISOException.throwIt(SW_Exception);
             }
 
-            apdu.setOutgoingAndSend((short) 0, length);
         } else ISOException.throwIt(ISO7816.SW_CLA_NOT_SUPPORTED);
     }
 
