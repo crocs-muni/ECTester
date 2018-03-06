@@ -71,75 +71,102 @@ public class CardUtil {
     }
 
     public static String getSW(short sw) {
-        switch (sw) {
-            case ISO7816.SW_APPLET_SELECT_FAILED:
-                return "APPLET_SELECT_FAILED";
-            case ISO7816.SW_BYTES_REMAINING_00:
-                return "BYTES_REMAINING";
-            case ISO7816.SW_CLA_NOT_SUPPORTED:
-                return "CLA_NOT_SUPPORTED";
-            case ISO7816.SW_COMMAND_NOT_ALLOWED:
-                return "COMMAND_NOT_ALLOWED";
-            case ISO7816.SW_CONDITIONS_NOT_SATISFIED:
-                return "CONDITIONS_NOT_SATISFIED";
-            case ISO7816.SW_CORRECT_LENGTH_00:
-                return "CORRECT_LENGTH";
-            case ISO7816.SW_DATA_INVALID:
-                return "DATA_INVALID";
-            case ISO7816.SW_FILE_FULL:
-                return "FILE_FULL";
-            case ISO7816.SW_FILE_INVALID:
-                return "FILE_INVALID";
-            case ISO7816.SW_FILE_NOT_FOUND:
-                return "FILE_NOT_FOUND";
-            case ISO7816.SW_FUNC_NOT_SUPPORTED:
-                return "FUNC_NOT_SUPPORTED";
-            case ISO7816.SW_INCORRECT_P1P2:
-                return "INCORRECT_P1P2";
-            case ISO7816.SW_INS_NOT_SUPPORTED:
-                return "INS_NOT_SUPPORTED";
-            case ISO7816.SW_LOGICAL_CHANNEL_NOT_SUPPORTED:
-                return "LOGICAL_CHANNEL_NOT_SUPPORTED";
-            case ISO7816.SW_RECORD_NOT_FOUND:
-                return "RECORD_NOT_FOUND";
-            case ISO7816.SW_SECURE_MESSAGING_NOT_SUPPORTED:
-                return "SECURE_MESSAGING_NOT_SUPPORTED";
-            case ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED:
-                return "SECURITY_STATUS_NOT_SATISFIED";
-            case ISO7816.SW_UNKNOWN:
-                return "UNKNOWN";
-            case ISO7816.SW_WARNING_STATE_UNCHANGED:
-                return "WARNING_STATE_UNCHANGED";
-            case ISO7816.SW_WRONG_DATA:
-                return "WRONG_DATA";
-            case ISO7816.SW_WRONG_LENGTH:
-                return "WRONG_LENGTH";
-            case ISO7816.SW_WRONG_P1P2:
-                return "WRONG_P1P2";
-            case CryptoException.ILLEGAL_VALUE:
-                return "ILLEGAL_VALUE";
-            case CryptoException.UNINITIALIZED_KEY:
-                return "UNINITIALIZED_KEY";
-            case CryptoException.NO_SUCH_ALGORITHM:
-                return "NO_SUCH_ALG";
-            case CryptoException.INVALID_INIT:
-                return "INVALID_INIT";
-            case CryptoException.ILLEGAL_USE:
-                return "ILLEGAL_USE";
-            case ECTesterApplet.SW_SIG_VERIFY_FAIL:
-                return "SIG_VERIFY_FAIL";
-            case ECTesterApplet.SW_DH_DHC_MISMATCH:
-                return "DH_DHC_MISMATCH";
-            case ECTesterApplet.SW_KEYPAIR_NULL:
-                return "KEYPAIR_NULL";
-            case ECTesterApplet.SW_KA_NULL:
-                return "KA_NULL";
-            case ECTesterApplet.SW_SIGNATURE_NULL:
-                return "SIGNATURE_NULL";
-            case ECTesterApplet.SW_OBJECT_NULL:
-                return "OBJECT_NULL";
+        int upper = (sw & 0xff00) >> 8;
+        int lower = (sw & 0xff);
+        switch (upper) {
+            case 0xf1:
+                return String.format("CryptoException(%d)", lower);
+            case 0xf2:
+                return String.format("SystemException(%d)", lower);
+            case 0xf3:
+                return String.format("PINException(%d)", lower);
+            case 0xf4:
+                return String.format("TransactionException(%d)", lower);
+            case 0xf5:
+                return String.format("CardRuntimeException(%d)", lower);
             default:
-                return "unknown";
+                switch (sw) {
+                    case ISO7816.SW_APPLET_SELECT_FAILED:
+                        return "APPLET_SELECT_FAILED";
+                    case ISO7816.SW_BYTES_REMAINING_00:
+                        return "BYTES_REMAINING";
+                    case ISO7816.SW_CLA_NOT_SUPPORTED:
+                        return "CLA_NOT_SUPPORTED";
+                    case ISO7816.SW_COMMAND_NOT_ALLOWED:
+                        return "COMMAND_NOT_ALLOWED";
+                    case ISO7816.SW_CONDITIONS_NOT_SATISFIED:
+                        return "CONDITIONS_NOT_SATISFIED";
+                    case ISO7816.SW_CORRECT_LENGTH_00:
+                        return "CORRECT_LENGTH";
+                    case ISO7816.SW_DATA_INVALID:
+                        return "DATA_INVALID";
+                    case ISO7816.SW_FILE_FULL:
+                        return "FILE_FULL";
+                    case ISO7816.SW_FILE_INVALID:
+                        return "FILE_INVALID";
+                    case ISO7816.SW_FILE_NOT_FOUND:
+                        return "FILE_NOT_FOUND";
+                    case ISO7816.SW_FUNC_NOT_SUPPORTED:
+                        return "FUNC_NOT_SUPPORTED";
+                    case ISO7816.SW_INCORRECT_P1P2:
+                        return "INCORRECT_P1P2";
+                    case ISO7816.SW_INS_NOT_SUPPORTED:
+                        return "INS_NOT_SUPPORTED";
+                    case ISO7816.SW_LOGICAL_CHANNEL_NOT_SUPPORTED:
+                        return "LOGICAL_CHANNEL_NOT_SUPPORTED";
+                    case ISO7816.SW_RECORD_NOT_FOUND:
+                        return "RECORD_NOT_FOUND";
+                    case ISO7816.SW_SECURE_MESSAGING_NOT_SUPPORTED:
+                        return "SECURE_MESSAGING_NOT_SUPPORTED";
+                    case ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED:
+                        return "SECURITY_STATUS_NOT_SATISFIED";
+                    case ISO7816.SW_UNKNOWN:
+                        return "UNKNOWN";
+                    case ISO7816.SW_WARNING_STATE_UNCHANGED:
+                        return "WARNING_STATE_UNCHANGED";
+                    case ISO7816.SW_WRONG_DATA:
+                        return "WRONG_DATA";
+                    case ISO7816.SW_WRONG_LENGTH:
+                        return "WRONG_LENGTH";
+                    case ISO7816.SW_WRONG_P1P2:
+                        return "WRONG_P1P2";
+                    case CryptoException.ILLEGAL_VALUE:
+                        return "ILLEGAL_VALUE";
+                    case CryptoException.UNINITIALIZED_KEY:
+                        return "UNINITIALIZED_KEY";
+                    case CryptoException.NO_SUCH_ALGORITHM:
+                        return "NO_SUCH_ALG";
+                    case CryptoException.INVALID_INIT:
+                        return "INVALID_INIT";
+                    case CryptoException.ILLEGAL_USE:
+                        return "ILLEGAL_USE";
+                    case ECTesterApplet.SW_SIG_VERIFY_FAIL:
+                        return "SIG_VERIFY_FAIL";
+                    case ECTesterApplet.SW_DH_DHC_MISMATCH:
+                        return "DH_DHC_MISMATCH";
+                    case ECTesterApplet.SW_KEYPAIR_NULL:
+                        return "KEYPAIR_NULL";
+                    case ECTesterApplet.SW_KA_NULL:
+                        return "KA_NULL";
+                    case ECTesterApplet.SW_SIGNATURE_NULL:
+                        return "SIGNATURE_NULL";
+                    case ECTesterApplet.SW_OBJECT_NULL:
+                        return "OBJECT_NULL";
+                    case ECTesterApplet.SW_Exception:
+                        return "Exception";
+                    case ECTesterApplet.SW_ArrayIndexOutOfBoundsException:
+                        return "ArrayIndexOutOfBoundsException";
+                    case ECTesterApplet.SW_ArithmeticException:
+                        return "ArithmeticException";
+                    case ECTesterApplet.SW_ArrayStoreException:
+                        return "ArrayStoreException";
+                    case ECTesterApplet.SW_NullPointerException:
+                        return "NullPointerException";
+                    case ECTesterApplet.SW_NegativeArraySizeException:
+                        return "NegativeArraySizeException";
+                    default:
+                        return "unknown";
+                }
         }
     }
 

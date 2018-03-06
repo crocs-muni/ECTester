@@ -123,7 +123,7 @@ public abstract class EC_Data implements Comparable<EC_Data> {
     public boolean readCSV(InputStream in) {
         Scanner s = new Scanner(in);
 
-        s.useDelimiter(",|;");
+        s.useDelimiter("[,;]");
         List<String> data = new LinkedList<>();
         while (s.hasNext()) {
             String field = s.next();
