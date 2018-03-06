@@ -47,6 +47,7 @@ tests all curves for which test-vectors are provided.
 Tests on a category of wrong curves. These curves are not really curves as they have:
  - non-prime field in the prime-field case
  - reducible polynomial as the field polynomial in the binary case
+
 This test suite also does some additional tests with corrupting the field parameter:
  - Fp:
    - p = 0
@@ -68,7 +69,7 @@ does all wrong curve tests.
 
 ## Composite
 Tests using curves that don't have a prime order/nearly prime order.
-These tests should generally fail, a success here implies the card **WILL** use a non-secure curve if such curve is set
+These tests should generally fail, a success here implies the card will use a non-secure curve if such curve is set
 by the applet. Operations over such curves are susceptible to small-subgroup attacks.
 
 For example:

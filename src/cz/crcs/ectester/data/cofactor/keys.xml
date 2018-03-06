@@ -1,91 +1,97 @@
 <?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE keys [
+	<!ENTITY secg SYSTEM "cofactor/secg_keys.xml">
+	]>
 <keys xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="../schema.xsd"
       category="cofactor"
       desc="">
+
     <pubkey>
-        <id>cofactor2p128_1</id>
+        <id>cofactor2p128/0</id>
         <inline>0x1274cf343b12c9de044a312c7e0d88b1,0x00000000000000000000000000000000</inline>
         <curve>cofactor/cofactor2p128</curve>
-        <desc></desc>
+        <desc>order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor4p128_1</id>
+        <id>cofactor4p128/0</id>
         <inline>0x4e5a1eb60f6d2cb5c24f6ea54a675cd6,0x00000000000000000000000000000000</inline>
         <curve>cofactor/cofactor4p128</curve>
-        <desc></desc>
+        <desc>order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor8p128_1</id>
+        <id>cofactor8p128/0</id>
         <inline>0x31eb5f732057b0ea57eed55f4259d85d,0x00000000000000000000000000000000</inline>
         <curve>cofactor/cofactor8p128</curve>
-        <desc></desc>
+        <desc>order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor16p128_1</id>
+        <id>cofactor16p128/0</id>
         <inline>0x89578c4527e2d5e8a95905e30f0889e3,0x00000000000000000000000000000000</inline>
         <curve>cofactor/cofactor16p128</curve>
-        <desc></desc>
+        <desc>order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor32p128_1</id>
+        <id>cofactor32p128/0</id>
         <inline>0x097191ee5ded1c36f2ec6bba78e7e6ea,0x00000000000000000000000000000000</inline>
         <curve>cofactor/cofactor32p128</curve>
-        <desc></desc>
+        <desc>order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor64p128_1</id>
+        <id>cofactor64p128/0</id>
         <inline>0x1d360b7f2f805be59aedeaae2813ee1f,0x00000000000000000000000000000000</inline>
         <curve>cofactor/cofactor64p128</curve>
-        <desc></desc>
+        <desc>order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor128p128_1</id>
+        <id>cofactor128p128/0</id>
         <inline>0x485b34188824c54f115f31891c18795c,0x00000000000000000000000000000000</inline>
         <curve>cofactor/cofactor128p128</curve>
-        <desc></desc>
+        <desc>order = 2</desc>
     </pubkey>
 
     <pubkey>
-        <id>cofactor2t163_1</id>
+        <id>cofactor2t163/0</id>
         <inline>0x000000000000000000000000000000000000000000,0x0132720c6aa3f2ca65d18f2de81e5e6b8ad4a3ef9d</inline>
         <curve>cofactor/cofactor2t163</curve>
-        <desc></desc>
+        <desc>order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor4t163_1</id>
+        <id>cofactor4t163/0</id>
         <inline>0x000000000000000000000000000000000000000000,0x00b93d46bc80b487e7738644e85bb6d29c2dca2600</inline>
         <curve>cofactor/cofactor4t163</curve>
-        <desc></desc>
+        <desc>order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor8t163_1</id>
+        <id>cofactor8t163/0</id>
         <inline>0x000000000000000000000000000000000000000000,0x0569879d9674b06578f62ec2f341ddd3b648dfdf51</inline>
         <curve>cofactor/cofactor8t163</curve>
-        <desc></desc>
+        <desc>order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor16t163_1</id>
+        <id>cofactor16t163/0</id>
         <inline>0x000000000000000000000000000000000000000000,0x04274cf55c49c32ca4c0e30b891e03b3b1c6597df0</inline>
         <curve>cofactor/cofactor16t163</curve>
-        <desc></desc>
+        <desc>order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor32t163_1</id>
+        <id>cofactor32t163/0</id>
         <inline>0x000000000000000000000000000000000000000000,0x0409969efb468e8f07954a3b4bf7610a0d8b5d4753</inline>
         <curve>cofactor/cofactor32t163</curve>
-        <desc></desc>
+        <desc>order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor64t163_1</id>
+        <id>cofactor64t163/0</id>
         <inline>0x000000000000000000000000000000000000000000,0x068c5445c03a59d697573b09ae0804e2891bb98208</inline>
         <curve>cofactor/cofactor64t163</curve>
-        <desc></desc>
+        <desc>order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor128t163_1</id>
+        <id>cofactor128t163/0</id>
         <inline>0x000000000000000000000000000000000000000000,0x06be374502a948489de2e7d8d82cb6b62a493b77a0</inline>
         <curve>cofactor/cofactor128t163</curve>
-        <desc></desc>
+        <desc>order = 2</desc>
     </pubkey>
+
+    &secg;
 </keys>
