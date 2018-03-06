@@ -334,7 +334,7 @@ The <code>ECKey.getK()</code> method might throw an exception if the card does n
 The results of various <a href="tests">test suites</a>, run on a set of cards are available below:
 
 {% assign result_categories = site.results | group_by:"category" %}
-{% assign cards = site.results | group_by_exp:"item", "item.path | split: '.' | reverse | shift | split: '/' | reverse | pop | pop " %}
+{% assign cards = site.results | group_by_exp:"item", "item.path | split: '/' | shift | shift | sample | split: '.' | pop | join: '.' " %}
 <table style="margin-top: 1em">
     <tr>
         <th>Card name</th>
@@ -344,13 +344,13 @@ The results of various <a href="tests">test suites</a>, run on a set of cards ar
     </tr>
     {% for card in cards %}
     <tr>
-        <td>{{ card.name.first | remove: '"' | remove: ']' }}</td>
+        <td>{{ card.name | replace: '_', ' ' }}</td>
         {% for cat in result_categories %}
         <td>
             {% for document in card.items %}
-            {% if document.category == cat.name %}
-            <a href="{{ site.baseurl }}{{ document.url }}">results</a>
-            {% endif %}
+		        {% if document.category == cat.name %}
+	            <a href="{{ site.baseurl }}{{ document.url }}">results</a>
+	            {% endif %}
             {% endfor %}
         </td>
         {% endfor %}
