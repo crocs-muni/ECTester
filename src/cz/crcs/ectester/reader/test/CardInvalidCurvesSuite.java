@@ -11,12 +11,11 @@ import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
-import javacard.security.KeyPair;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static cz.crcs.ectester.common.test.Result.ExpectedValue;
 
@@ -35,7 +34,7 @@ public class CardInvalidCurvesSuite extends CardTestSuite {
          * Try ECDH with invalid public keys of increasing order.
          */
         Map<String, EC_Key.Public> pubkeys = EC_Store.getInstance().getObjects(EC_Key.Public.class, "invalid");
-        Map<EC_Curve, List<EC_Key.Public>> curves = new HashMap<>();
+        Map<EC_Curve, List<EC_Key.Public>> curves = new TreeMap<>();
         for (EC_Key.Public key : pubkeys.values()) {
             EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, key.getCurve());
             List<EC_Key.Public> keys = curves.getOrDefault(curve, new LinkedList<>());

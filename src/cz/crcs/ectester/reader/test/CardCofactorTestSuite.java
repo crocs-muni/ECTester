@@ -13,10 +13,10 @@ import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -29,7 +29,7 @@ public class CardCofactorTestSuite extends CardTestSuite {
     @Override
     protected void runTests() throws Exception {
         Map<String, EC_Key.Public> pubkeys = EC_Store.getInstance().getObjects(EC_Key.Public.class, "cofactor");
-        Map<EC_Curve, List<EC_Key.Public>> curves = new HashMap<>();
+        Map<EC_Curve, List<EC_Key.Public>> curves = new TreeMap<>();
         for (EC_Key.Public key : pubkeys.values()) {
             EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, key.getCurve());
             List<EC_Key.Public> keys = curves.getOrDefault(curve, new LinkedList<>());
