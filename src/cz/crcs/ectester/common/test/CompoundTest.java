@@ -82,6 +82,43 @@ public class CompoundTest extends Test {
         return result;
     }
 
+    public static CompoundTest greedyAllTry(Result.ExpectedValue what, Test... all) {
+        return new CompoundTest((tests) -> {
+            int run = 0;
+            int ok = 0;
+            for (Test test : tests) {
+                if (test.hasRun()) {
+                    run++;
+                    if (Result.Value.fromExpected(what, test.ok()).ok()) {
+                        ok++;
+                    }
+                }
+            }
+            if (run == tests.length) {
+                if (ok == run) {
+                    return new Result(Result.Value.SUCCESS, "All sub-tests had the expected result.");
+                } else {
+                    return new Result(Result.Value.FAILURE, "Some sub-tests did not have the expected result.");
+                }
+            } else {
+                return new Result(Result.Value.SUCCESS, "All considered sub-tests had the expected result.");
+            }
+        }, (tests) -> {
+            for (Test t : tests) {
+                t.run();
+                if (!t.ok()) {
+                    break;
+                }
+            }
+        }, all);
+    }
+
+    public static CompoundTest greedyAllTry(Result.ExpectedValue what, String description, Test... all) {
+        CompoundTest result = CompoundTest.greedyAllTry(what, all);
+        result.setDescription(description);
+        return result;
+    }
+
     public static CompoundTest greedyAny(Result.ExpectedValue what, Test... any) {
         return new CompoundTest((tests) -> {
             for (Test test : tests) {

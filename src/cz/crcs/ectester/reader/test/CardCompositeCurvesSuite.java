@@ -42,7 +42,7 @@ public class CardCompositeCurvesSuite extends CardTestSuite {
             Command ecdhCommand = new Command.ECDH_direct(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH, key.flatten());
             Test ecdh = CommandTest.expect(ecdhCommand, ExpectedValue.FAILURE, "Card correctly rejected to do ECDH over a composite order curve.", "Card incorrectly does ECDH over a composite order curve, leaks bits of private key.");
 
-            doTest(CompoundTest.greedyAll(ExpectedValue.SUCCESS, "Composite test of " + curve.getId() + ", " + key.getDesc(), allocate, set, generate, ecdh));
+            doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Composite test of " + curve.getId() + ", " + key.getDesc(), allocate, set, generate, ecdh));
             new Command.Cleanup(this.card).send();
         }
     }

@@ -58,7 +58,7 @@ public class CardInvalidCurvesSuite extends CardTestSuite {
             }
             Test ecdh = CompoundTest.all(ExpectedValue.SUCCESS, "Perform ECDH with invalid public points", ecdhTests.toArray(new Test[0]));
 
-            doTest(CompoundTest.greedyAll(ExpectedValue.SUCCESS, "Invalid curve test of " + curve.getId(), prepare, ecdh));
+            doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Invalid curve test of " + curve.getId(), prepare, ecdh));
             new Command.Cleanup(this.card).send();
         }
     }
