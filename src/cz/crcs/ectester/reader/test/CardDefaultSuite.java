@@ -59,9 +59,9 @@ public class CardDefaultSuite extends CardTestSuite {
             for (byte kaType : EC_Consts.KA_TYPES) {
                 Test allocate = runTest(CommandTest.expect(new Command.AllocateKeyAgreement(this.card, kaType), ExpectedValue.SUCCESS));
                 if (allocate.ok()) {
-                    Command ecdh = new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, kaType);
+                    Command ecdh = new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, kaType);
                     Test ka = runTest(CommandTest.expect(ecdh, ExpectedValue.SUCCESS));
-                    Test kaCompressed = runTest(CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_COMPRESS, kaType), ExpectedValue.SUCCESS));
+                    Test kaCompressed = runTest(CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_COMPRESS, kaType), ExpectedValue.SUCCESS));
                     Test perfTest = null;
                     if (ka.ok()) {
                         perfTest = runTest(PerformanceTest.repeat(ecdh, 10));

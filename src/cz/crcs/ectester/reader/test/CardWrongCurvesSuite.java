@@ -55,7 +55,7 @@ public class CardWrongCurvesSuite extends CardTestSuite {
             for (byte kaType : EC_Consts.KA_TYPES) {
                 Test allocate = runTest(CommandTest.expect(new Command.AllocateKeyAgreement(this.card, kaType), Result.ExpectedValue.SUCCESS));
                 if (allocate.ok()) {
-                    Test ka = runTest(CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, kaType), Result.ExpectedValue.FAILURE));
+                    Test ka = runTest(CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, kaType), Result.ExpectedValue.FAILURE));
                     Test kaTest = runTest(CompoundTest.all(Result.ExpectedValue.FAILURE, "Allocate and perform KA, should fail.", allocate, ka));
                     tests.add(kaTest);
                 }
@@ -81,8 +81,8 @@ public class CardWrongCurvesSuite extends CardTestSuite {
             Test set = runTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, curve, EC_Consts.PARAMETERS_DOMAIN_FP, null), Result.ExpectedValue.SUCCESS));
             Test setup = runTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "KeyPair setup.", key, set));
 
-            Test prime0 = ecdhTest(new Command.Corrupt(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_FP, EC_Consts.CORRUPTION_ZERO), "Set p = 0.", "ECDH with p = 0.");
-            Test prime1 = ecdhTest(new Command.Corrupt(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_FP, EC_Consts.CORRUPTION_ONE), "Set p = 1.", "ECDH with p = 1.");
+            Test prime0 = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_FP, EC_Consts.TRANSFORMATION_ZERO), "Set p = 0.", "ECDH with p = 0.");
+            Test prime1 = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_FP, EC_Consts.TRANSFORMATION_ONE), "Set p = 1.", "ECDH with p = 1.");
 
             short keyHalf = (short) (keyLength / 2);
             BigInteger prime = new BigInteger(keyHalf, r);
@@ -116,7 +116,7 @@ public class CardWrongCurvesSuite extends CardTestSuite {
             Test set = runTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, curve, EC_Consts.PARAMETERS_DOMAIN_F2M, null), Result.ExpectedValue.SUCCESS));
             Test setup = runTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "KeyPair setup.", key, set));
 
-            Test coeff0 = ecdhTest(new Command.Corrupt(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_F2M, EC_Consts.CORRUPTION_ZERO), "Set e1 = e2 = e3 = 0.", "ECDH with wrong field polynomial: x^" + keyLength);
+            Test coeff0 = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_F2M, EC_Consts.TRANSFORMATION_ZERO), "Set e1 = e2 = e3 = 0.", "ECDH with wrong field polynomial: x^" + keyLength);
 
             short e1 = (short) (2 * keyLength);
             short e2 = (short) (3 * keyLength);
@@ -147,7 +147,7 @@ public class CardWrongCurvesSuite extends CardTestSuite {
         Test generate = runTest(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_BOTH), Result.ExpectedValue.FAILURE));
         Test preparePhase = runTest(CompoundTest.any(Result.ExpectedValue.SUCCESS, prepareDesc, setup, generate));
         Test allocateECDH = runTest(CommandTest.expect(new Command.AllocateKeyAgreement(this.card, ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH), Result.ExpectedValue.SUCCESS));
-        Test ecdh = runTest(CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH), Result.ExpectedValue.FAILURE));
+        Test ecdh = runTest(CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH), Result.ExpectedValue.FAILURE));
         return runTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, fullDesc, preparePhase, allocateECDH, ecdh));
     }
 }

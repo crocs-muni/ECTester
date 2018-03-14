@@ -139,38 +139,38 @@ public class ECKeyGenerator {
 
     /**
      * @param keypair
-     * @param corruptParams
-     * @param corruption
+     * @param params
+     * @param transformation
      * @param buffer
      * @param offset
      * @return
      */
-    public short corruptCurve(KeyPair keypair, short corruptParams, short corruption, byte[] buffer, short offset) {
-        return corruptCurve(keypair, EC_Consts.KEY_BOTH, corruptParams, corruption, buffer, offset);
+    public short transformCurve(KeyPair keypair, short params, short transformation, byte[] buffer, short offset) {
+        return transformCurve(keypair, EC_Consts.KEY_BOTH, params, transformation, buffer, offset);
     }
 
     /**
      * @param keypair
      * @param key
-     * @param corruptParams
-     * @param corruption
+     * @param params
+     * @param transformation
      * @param buffer
      * @param offset
      * @return
      */
-    public short corruptCurve(KeyPair keypair, byte key, short corruptParams, short corruption, byte[] buffer, short offset) {
+    public short transformCurve(KeyPair keypair, byte key, short params, short transformation, byte[] buffer, short offset) {
         sw = ISO7816.SW_NO_ERROR;
-        if (corruptParams == EC_Consts.PARAMETERS_NONE) {
+        if (params == EC_Consts.PARAMETERS_NONE) {
             return sw;
         }
 
         //go through param bit by bit, and invalidate all selected params
         short paramMask = EC_Consts.PARAMETER_FP;
         while (paramMask <= EC_Consts.PARAMETER_S) {
-            short masked = (short) (paramMask & corruptParams);
+            short masked = (short) (paramMask & params);
             if (masked != 0) {
                 short length = exportParameter(keypair, key, masked, buffer, offset);
-                length = EC_Consts.corruptParameter(corruption, buffer, offset, length);
+                length = EC_Consts.transformParameter(transformation, buffer, offset, length);
                 sw = setParameter(keypair, key, masked, buffer, offset, length);
                 if (sw != ISO7816.SW_NO_ERROR) break;
             }

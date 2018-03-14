@@ -179,27 +179,27 @@ public class CardUtil {
         }
     }
 
-    public static String getCorruption(short corruptionType) {
-        switch (corruptionType) {
-            case EC_Consts.CORRUPTION_NONE:
+    public static String getTransformation(short transformationType) {
+        switch (transformationType) {
+            case EC_Consts.TRANSFORMATION_NONE:
                 return "NONE";
-            case EC_Consts.CORRUPTION_FIXED:
+            case EC_Consts.TRANSFORMATION_FIXED:
                 return "FIXED";
-            case EC_Consts.CORRUPTION_ONE:
+            case EC_Consts.TRANSFORMATION_ONE:
                 return "ONE";
-            case EC_Consts.CORRUPTION_ZERO:
+            case EC_Consts.TRANSFORMATION_ZERO:
                 return "ZERO";
-            case EC_Consts.CORRUPTION_ONEBYTERANDOM:
+            case EC_Consts.TRANSFORMATION_ONEBYTERANDOM:
                 return "ONE_BYTE_RANDOM";
-            case EC_Consts.CORRUPTION_FULLRANDOM:
+            case EC_Consts.TRANSFORMATION_FULLRANDOM:
                 return "FULL_RANDOM";
-            case EC_Consts.CORRUPTION_INCREMENT:
+            case EC_Consts.TRANSFORMATION_INCREMENT:
                 return "INCREMENT";
-            case EC_Consts.CORRUPTION_INFINITY:
+            case EC_Consts.TRANSFORMATION_INFINITY:
                 return "INFINITY";
-            case EC_Consts.CORRUPTION_COMPRESS:
+            case EC_Consts.TRANSFORMATION_COMPRESS:
                 return "COMPRESSED";
-            case EC_Consts.CORRUPTION_MAX:
+            case EC_Consts.TRANSFORMATION_MAX:
                 return "MAX";
             default:
                 return "unknown";

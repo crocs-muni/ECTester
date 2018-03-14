@@ -222,18 +222,18 @@ public abstract class Response {
     /**
      *
      */
-    public static class Corrupt extends Response {
+    public static class Transform extends Response {
         private byte keyPair;
         private byte key;
         private short params;
-        private short corruption;
+        private short transformation;
 
-        public Corrupt(ResponseAPDU response, String description, long time, byte keyPair, byte key, short params, short corruption) {
+        public Transform(ResponseAPDU response, String description, long time, byte keyPair, byte key, short params, short transformation) {
             super(response, description, time);
             this.keyPair = keyPair;
             this.key = key;
             this.params = params;
-            this.corruption = corruption;
+            this.transformation = transformation;
 
             int pairs = 0;
             if ((keyPair & ECTesterApplet.KEYPAIR_LOCAL) != 0) pairs++;
@@ -358,15 +358,15 @@ public abstract class Response {
         private byte pubkey;
         private byte privkey;
         private byte export;
-        private short corruption;
+        private short transformation;
         private byte type;
 
-        public ECDH(ResponseAPDU response, String description, long time, byte pubkey, byte privkey, byte export, short corruption, byte type) {
+        public ECDH(ResponseAPDU response, String description, long time, byte pubkey, byte privkey, byte export, short transformation, byte type) {
             super(response, description, time);
             this.pubkey = pubkey;
             this.privkey = privkey;
             this.export = export;
-            this.corruption = corruption;
+            this.transformation = transformation;
             this.type = type;
 
             parse(1, (export == ECTesterApplet.EXPORT_TRUE) ? 1 : 0);

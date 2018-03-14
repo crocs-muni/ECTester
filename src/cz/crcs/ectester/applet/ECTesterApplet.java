@@ -45,7 +45,7 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     public static final byte INS_ALLOCATE = (byte) 0x5a;
     public static final byte INS_CLEAR = (byte) 0x5b;
     public static final byte INS_SET = (byte) 0x5c;
-    public static final byte INS_CORRUPT = (byte) 0x5d;
+    public static final byte INS_TRANSFORM = (byte) 0x5d;
     public static final byte INS_GENERATE = (byte) 0x5e;
     public static final byte INS_EXPORT = (byte) 0x5f;
     public static final byte INS_ECDH = (byte) 0x70;
@@ -185,8 +185,8 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
                     case INS_SET:
                         length = insSet(apdu);
                         break;
-                    case INS_CORRUPT:
-                        length = insCorrupt(apdu);
+                    case INS_TRANSFORM:
+                        length = insTransform(apdu);
                         break;
                     case INS_GENERATE:
                         length = insGenerate(apdu);
@@ -344,29 +344,29 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     }
 
     /**
-     * Corrupts curve paramaters of local and remote keyPairs.
-     * returns corruptCurve SWs
+     * Transforms curve paramaters of local and remote keyPairs.
+     * returns transformCurve SWs
      *
      * @param apdu P1 = byte keyPair (KEYPAIR_* | ...)
      *             P2 = byte key (EC_Consts.KEY_* | ...)
      *             DATA = short params (EC_Consts.PARAMETER_* | ...)
-     *             short corruption (EC_Consts.CORRUPTION_* || ...)
+     *             short transformation (EC_Consts.TRANSFORMATION_* || ...)
      * @return length of response
      */
-    private short insCorrupt(APDU apdu) {
+    private short insTransform(APDU apdu) {
         byte keyPair = apduArray[ISO7816.OFFSET_P1];
         byte key = apduArray[ISO7816.OFFSET_P2];
         short cdata = apdu.getOffsetCdata();
         short params = Util.getShort(apduArray, cdata);
-        short corruption = Util.getShort(apduArray, (short) (cdata + 2));
+        short transformation = Util.getShort(apduArray, (short) (cdata + 2));
 
         short len = 0;
         if ((keyPair & KEYPAIR_LOCAL) != 0) {
-            len += corrupt(localKeypair, key, params, corruption, apdu.getBuffer(), (short) 0);
+            len += transform(localKeypair, key, params, transformation, apdu.getBuffer(), (short) 0);
         }
 
         if ((keyPair & KEYPAIR_REMOTE) != 0) {
-            len += corrupt(remoteKeypair, key, params, corruption, apdu.getBuffer(), len);
+            len += transform(remoteKeypair, key, params, transformation, apdu.getBuffer(), len);
         }
 
         return len;
@@ -429,7 +429,7 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
      * @param apdu P1   = byte pubkey (KEYPAIR_*)
      *             P2   = byte privkey (KEYPAIR_*)
      *             DATA = byte export (EXPORT_TRUE || EXPORT_FALSE)
-     *             short corruption (EC_Consts.CORRUPTION_* | ...)
+     *             short transformation (EC_Consts.TRANSFORMATION_* | ...)
      *             byte type (EC_Consts.KA_* | ...)
      * @return length of response
      */
@@ -438,10 +438,10 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
         byte privkey = apduArray[ISO7816.OFFSET_P2];
         short cdata = apdu.getOffsetCdata();
         byte export = apduArray[cdata];
-        short corruption = Util.getShort(apduArray, (short) (cdata + 1));
+        short transformation = Util.getShort(apduArray, (short) (cdata + 1));
         byte type = apduArray[(short) (cdata + 3)];
 
-        return ecdh(pubkey, privkey, export, corruption, type, apdu.getBuffer(), (short) 0);
+        return ecdh(pubkey, privkey, export, transformation, type, apdu.getBuffer(), (short) 0);
     }
 
     /**
@@ -449,7 +449,7 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
      *
      * @param apdu P1   = byte privkey (KEYPAIR_*)
      *             P2   = byte export (EXPORT_TRUE || EXPORT_FALSE)
-     *             DATA = short corruption (EC_Consts.CORRUPTION_* | ...)
+     *             DATA = short transformation (EC_Consts.TRANSFORMATION_* | ...)
      *             byte type (EC_Consts.KA_* | ...)
      *             short length
      *             byte[] pubkey
@@ -459,11 +459,11 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
         byte privkey = apduArray[ISO7816.OFFSET_P1];
         byte export = apduArray[ISO7816.OFFSET_P2];
         short cdata = apdu.getOffsetCdata();
-        short corruption = Util.getShort(apduArray, cdata);
+        short transformation = Util.getShort(apduArray, cdata);
         byte type = apduArray[(short) (cdata + 2)];
         short length = Util.getShort(apduArray, (short) (cdata + 3));
 
-        return ecdh_direct(privkey, export, corruption, type, (short) (cdata + 5), length, apdu.getBuffer(), (short) 0);
+        return ecdh_direct(privkey, export, transformation, type, (short) (cdata + 5), length, apdu.getBuffer(), (short) 0);
     }
 
     /**
@@ -576,16 +576,16 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     }
 
     /**
-     * @param keyPair    KeyPair to corrupt
-     * @param key        key to corrupt (EC_Consts.KEY_* | ...)
-     * @param params     parameters to corrupt (EC_Consts.PARAMETER_* | ...)
-     * @param corruption corruption type (EC_Consts.CORRUPTION_*)
+     * @param keyPair    KeyPair to transform
+     * @param key        key to transform (EC_Consts.KEY_* | ...)
+     * @param params     parameters to transform (EC_Consts.PARAMETER_* | ...)
+     * @param transformation transformation type (EC_Consts.TRANSFORMATION_*)
      * @param outBuffer  buffer to output sw to
      * @param outOffset  output offset in buffer
      * @return length of data written to the buffer
      */
-    private short corrupt(KeyPair keyPair, byte key, short params, short corruption, byte[] outBuffer, short outOffset) {
-        short sw = keyGenerator.corruptCurve(keyPair, key, params, corruption, ramArray, (short) 0);
+    private short transform(KeyPair keyPair, byte key, short params, short transformation, byte[] outBuffer, short outOffset) {
+        short sw = keyGenerator.transformCurve(keyPair, key, params, transformation, ramArray, (short) 0);
         Util.setShort(outBuffer, outOffset, sw);
         return 2;
     }
@@ -635,13 +635,13 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
      * @param pubkey     keyPair to use for public key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
      * @param privkey    keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
      * @param export     whether to export ECDH secret
-     * @param corruption whether to invalidate the pubkey before ECDH
+     * @param transformation whether to transform the pubkey before ECDH
      * @param type       KeyAgreement type to test
      * @param outBuffer  buffer to write sw to, and export ECDH secret {@code if(export == EXPORT_TRUE)}
      * @param outOffset  output offset in buffer
      * @return length of data written to the buffer
      */
-    private short ecdh(byte pubkey, byte privkey, byte export, short corruption, byte type, byte[] outBuffer, short outOffset) {
+    private short ecdh(byte pubkey, byte privkey, byte export, short transformation, byte type, byte[] outBuffer, short outOffset) {
         short length = 0;
 
         KeyPair pub = ((pubkey & KEYPAIR_LOCAL) != 0) ? localKeypair : remoteKeypair;
@@ -649,11 +649,11 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
 
         short secretLength = 0;
         if (keyTester.getKaType() == type) {
-            secretLength = keyTester.testKA(priv, pub, ramArray, (short) 0, ramArray2, (short) 0, corruption);
+            secretLength = keyTester.testKA(priv, pub, ramArray, (short) 0, ramArray2, (short) 0, transformation);
         } else {
             short allocateSW = keyTester.allocateKA(type);
             if (allocateSW == ISO7816.SW_NO_ERROR) {
-                secretLength = keyTester.testKA(priv, pub, ramArray, (short) 0, ramArray2, (short) 0, corruption);
+                secretLength = keyTester.testKA(priv, pub, ramArray, (short) 0, ramArray2, (short) 0, transformation);
             }
         }
         Util.setShort(outBuffer, outOffset, keyTester.getSW());
@@ -669,18 +669,18 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
         return length;
     }
 
-    private short ecdh_direct(byte privkey, byte export, short corruption, byte type, short keyOffset, short keyLength, byte[] outBuffer, short outOffset) {
+    private short ecdh_direct(byte privkey, byte export, short transformation, byte type, short keyOffset, short keyLength, byte[] outBuffer, short outOffset) {
         short length = 0;
 
         KeyPair priv = ((privkey & KEYPAIR_LOCAL) != 0) ? localKeypair : remoteKeypair;
 
         short secretLength = 0;
         if (keyTester.getKaType() == type) {
-            secretLength = keyTester.testKA_direct(priv, apduArray, keyOffset, keyLength, ramArray2, (short) 0, corruption);
+            secretLength = keyTester.testKA_direct(priv, apduArray, keyOffset, keyLength, ramArray2, (short) 0, transformation);
         } else {
             short allocateSW = keyTester.allocateKA(type);
             if (allocateSW == ISO7816.SW_NO_ERROR) {
-                secretLength = keyTester.testKA_direct(priv, apduArray, keyOffset, keyLength, ramArray2, (short) 0, corruption);
+                secretLength = keyTester.testKA_direct(priv, apduArray, keyOffset, keyLength, ramArray2, (short) 0, transformation);
             }
         }
 

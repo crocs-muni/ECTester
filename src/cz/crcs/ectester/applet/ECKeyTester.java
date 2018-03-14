@@ -52,10 +52,10 @@ public class ECKeyTester {
      * @param pubkeyOffset offset into pubkeyBuffer that can be used for the public key
      * @param outputBuffer buffer to be used for the secret output
      * @param outputOffset offset into the outputBuffer
-     * @param corruption   (EC_Consts.CORRUPTION_* | ...)
+     * @param transformation   (EC_Consts.TRANSFORMATION_* | ...)
      * @return derived secret length
      **/
-    public short testKA(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, short corruption) {
+    public short testKA(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, short transformation) {
         short length = 0;
         try {
             sw = AppletUtil.kaCheck(ecKeyAgreement);
@@ -64,7 +64,7 @@ public class ECKeyTester {
             short pubkeyLength = ((ECPublicKey) publicPair.getPublic()).getW(pubkeyBuffer, pubkeyOffset);
             ecKeyAgreement.init(privatePair.getPrivate());
 
-            pubkeyLength = EC_Consts.corruptParameter(corruption, pubkeyBuffer, pubkeyOffset, pubkeyLength);
+            pubkeyLength = EC_Consts.transformParameter(transformation, pubkeyBuffer, pubkeyOffset, pubkeyLength);
             length = ecKeyAgreement.generateSecret(pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
@@ -79,17 +79,17 @@ public class ECKeyTester {
      * @param pubkeyLength
      * @param outpuBuffer
      * @param outputOffset
-     * @param corruption
+     * @param transformation
      * @return
      */
-    public short testKA_direct(KeyPair privatePair, byte[] pubkey, short pubkeyOffset, short pubkeyLength, byte[] outpuBuffer, short outputOffset, short corruption) {
+    public short testKA_direct(KeyPair privatePair, byte[] pubkey, short pubkeyOffset, short pubkeyLength, byte[] outpuBuffer, short outputOffset, short transformation) {
         short length = 0;
         try {
             sw = AppletUtil.kaCheck(ecKeyAgreement);
             sw = AppletUtil.keypairCheck(privatePair);
 
             ecKeyAgreement.init(privatePair.getPrivate());
-            pubkeyLength = EC_Consts.corruptParameter(corruption, pubkey, pubkeyOffset, pubkeyLength);
+            pubkeyLength = EC_Consts.transformParameter(transformation, pubkey, pubkeyOffset, pubkeyLength);
             length = ecKeyAgreement.generateSecret(pubkey, pubkeyOffset, pubkeyLength, outpuBuffer, outputOffset);
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();

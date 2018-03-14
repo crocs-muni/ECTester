@@ -981,17 +981,17 @@ public class EC_Consts {
     public static final short EC571_F2M_K = 2;
 
 
-    // getCorruptCurveParameter PARAMETER_CORRUPTION TYPES
-    public static final short CORRUPTION_NONE = (short) 0x00;
-    public static final short CORRUPTION_FIXED = (short) 0x01;
-    public static final short CORRUPTION_FULLRANDOM = (short) 0x02;
-    public static final short CORRUPTION_ONEBYTERANDOM = (short) 0x04;
-    public static final short CORRUPTION_ZERO = (short) 0x08;
-    public static final short CORRUPTION_ONE = (short) 0x10;
-    public static final short CORRUPTION_MAX = (short) 0x20;
-    public static final short CORRUPTION_INCREMENT = (short) 0x40;
-    public static final short CORRUPTION_INFINITY = (short) 0x80;
-    public static final short CORRUPTION_COMPRESS = (short) 0x0100;
+    // transformParameter TRANSFORMATION types
+    public static final short TRANSFORMATION_NONE = (short) 0x00;
+    public static final short TRANSFORMATION_FIXED = (short) 0x01;
+    public static final short TRANSFORMATION_FULLRANDOM = (short) 0x02;
+    public static final short TRANSFORMATION_ONEBYTERANDOM = (short) 0x04;
+    public static final short TRANSFORMATION_ZERO = (short) 0x08;
+    public static final short TRANSFORMATION_ONE = (short) 0x10;
+    public static final short TRANSFORMATION_MAX = (short) 0x20;
+    public static final short TRANSFORMATION_INCREMENT = (short) 0x40;
+    public static final short TRANSFORMATION_INFINITY = (short) 0x80;
+    public static final short TRANSFORMATION_COMPRESS = (short) 0x0100;
 
     // toX962 FORM types
     public static final byte X962_UNCOMPRESSED = (byte) 0x00;
@@ -1307,27 +1307,27 @@ public class EC_Consts {
         return length;
     }
 
-    public static short corruptParameter(short corruption, byte[] buffer, short offset, short length) {
-        if (corruption == CORRUPTION_NONE) {
+    public static short transformParameter(short transformation, byte[] buffer, short offset, short length) {
+        if (transformation == TRANSFORMATION_NONE) {
             return length;
         }
 
-        short corruptionMask = CORRUPTION_FIXED;
-        while (corruptionMask <= CORRUPTION_COMPRESS) {
-            short corruptionPart = (short) (corruptionMask & corruption);
-            switch (corruptionPart) {
+        short transformationMask = TRANSFORMATION_FIXED;
+        while (transformationMask <= TRANSFORMATION_COMPRESS) {
+            short transformationPart = (short) (transformationMask & transformation);
+            switch (transformationPart) {
                 case (short) 0:
                     break;
-                case CORRUPTION_FIXED:
+                case TRANSFORMATION_FIXED:
                     if (length >= 1) {
                         buffer[offset] = (byte) 0xcc;
                         buffer[(short) (offset + length - 1)] = (byte) 0xcc;
                     }
                     break;
-                case CORRUPTION_FULLRANDOM:
+                case TRANSFORMATION_FULLRANDOM:
                     randomData.generateData(buffer, offset, length);
                     break;
-                case CORRUPTION_ONEBYTERANDOM:
+                case TRANSFORMATION_ONEBYTERANDOM:
                     short first = Util.getShort(buffer, (short) 0); // save first two bytes
 
                     randomData.generateData(buffer, (short) 0, (short) 2); // generate position
@@ -1345,17 +1345,17 @@ public class EC_Consts {
                         randomData.generateData(buffer, rngPos, (short) 1);
                     } while (original == buffer[rngPos]);
                     break;
-                case CORRUPTION_ZERO:
+                case TRANSFORMATION_ZERO:
                     Util.arrayFillNonAtomic(buffer, offset, length, (byte) 0);
                     break;
-                case CORRUPTION_ONE:
+                case TRANSFORMATION_ONE:
                     Util.arrayFillNonAtomic(buffer, offset, length, (byte) 0);
                     buffer[(short) (offset + length)] = (byte) 1;
                     break;
-                case CORRUPTION_MAX:
+                case TRANSFORMATION_MAX:
                     Util.arrayFillNonAtomic(buffer, offset, length, (byte) 1);
                     break;
-                case CORRUPTION_INCREMENT:
+                case TRANSFORMATION_INCREMENT:
                     short index = (short) (offset + length - 1);
                     byte value;
                     do {
@@ -1363,11 +1363,11 @@ public class EC_Consts {
                         buffer[index--] = ++value;
                     } while (value == (byte) 0 && index >= offset);
                     break;
-                case CORRUPTION_INFINITY:
+                case TRANSFORMATION_INFINITY:
                     Util.arrayFillNonAtomic(buffer, offset, length, (byte) 0);
                     length = 1;
                     break;
-                case CORRUPTION_COMPRESS:
+                case TRANSFORMATION_COMPRESS:
                     if ((short) (length % 2) != 1) {
                         // an uncompressed point should have odd length (since 1 byte type, + 2 * coords)
                         ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
@@ -1387,7 +1387,7 @@ public class EC_Consts {
                 default:
                     ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
             }
-            corruptionMask = (short) (corruptionMask << 1);
+            transformationMask = (short) (transformationMask << 1);
         }
         return length;
     }

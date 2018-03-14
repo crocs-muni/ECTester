@@ -48,7 +48,7 @@ public class CardTwistTestSuite extends CardTestSuite {
 
             List<Test> ecdhTests = new LinkedList<>();
             for (EC_Key.Public pub : keys) {
-                Command ecdhCommand = new Command.ECDH_direct(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.CORRUPTION_NONE, ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH, pub.flatten());
+                Command ecdhCommand = new Command.ECDH_direct(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH, pub.flatten());
                 ecdhTests.add(CommandTest.expect(ecdhCommand, Result.ExpectedValue.FAILURE, "Card correctly rejected point on twist.", "Card incorrectly accepted point on twist."));
             }
             Test ecdh = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform ECDH with public points on twist", ecdhTests.toArray(new Test[0]));

@@ -405,44 +405,44 @@ public abstract class Command {
     /**
      *
      */
-    public static class Corrupt extends Command {
+    public static class Transform extends Command {
         private byte keyPair;
         private byte key;
         private short params;
-        private short corruption;
+        private short transformation;
 
         /**
          * @param cardManager cardManager to send APDU through
-         * @param keyPair     which keyPair to corrupt, local/remote (KEYPAIR_* || ...)
-         * @param key         key to corrupt (EC_Consts.KEY_* | ...)
-         * @param params      parameters to corrupt (EC_Consts.PARAMETER_* | ...)
-         * @param corruption  corruption type (EC_Consts.CORRUPTION_*)
+         * @param keyPair     which keyPair to transform, local/remote (KEYPAIR_* || ...)
+         * @param key         key to transform (EC_Consts.KEY_* | ...)
+         * @param params      parameters to transform (EC_Consts.PARAMETER_* | ...)
+         * @param transformation  transformation type (EC_Consts.TRANSFORMATION_*)
          */
-        public Corrupt(CardMngr cardManager, byte keyPair, byte key, short params, short corruption) {
+        public Transform(CardMngr cardManager, byte keyPair, byte key, short params, short transformation) {
             super(cardManager);
             this.keyPair = keyPair;
             this.key = key;
             this.params = params;
-            this.corruption = corruption;
+            this.transformation = transformation;
 
             byte[] data = new byte[4];
             ByteUtil.setShort(data, 0, params);
-            ByteUtil.setShort(data, 2, corruption);
+            ByteUtil.setShort(data, 2, transformation);
 
-            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_CORRUPT, keyPair, key, data);
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_TRANSFORM, keyPair, key, data);
         }
 
         @Override
-        public Response.Corrupt send() throws CardException {
+        public Response.Transform send() throws CardException {
             long elapsed = -System.nanoTime();
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
-            return new Response.Corrupt(response, getDescription(), elapsed, keyPair, key, params, corruption);
+            return new Response.Transform(response, getDescription(), elapsed, keyPair, key, params, transformation);
         }
 
         @Override
         public String getDescription() {
-            String corrupt = CardUtil.getCorruption(corruption);
+            String transform = CardUtil.getTransformation(transformation);
 
             String pair;
             if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
@@ -450,7 +450,7 @@ public abstract class Command {
             } else {
                 pair = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
             }
-            return String.format("Corrupt params of %s, %s", pair, corrupt);
+            return String.format("Transform params of %s, %s", pair, transform);
         }
     }
 
@@ -556,7 +556,7 @@ public abstract class Command {
         private byte pubkey;
         private byte privkey;
         private byte export;
-        private short corruption;
+        private short transformation;
         private byte type;
 
         /**
@@ -566,19 +566,19 @@ public abstract class Command {
          * @param pubkey      keyPair to use for public key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
          * @param privkey     keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
          * @param export      whether to export ECDH secret
-         * @param corruption  whether to invalidate the pubkey before ECDH (EC_Consts.CORRUPTION_* | ...)
+         * @param transformation  whether to transform the pubkey before ECDH (EC_Consts.TRANSFORMATION_* | ...)
          * @param type        ECDH algorithm type (EC_Consts.KA_* | ...)
          */
-        public ECDH(CardMngr cardManager, byte pubkey, byte privkey, byte export, short corruption, byte type) {
+        public ECDH(CardMngr cardManager, byte pubkey, byte privkey, byte export, short transformation, byte type) {
             super(cardManager);
             this.pubkey = pubkey;
             this.privkey = privkey;
             this.export = export;
-            this.corruption = corruption;
+            this.transformation = transformation;
             this.type = type;
 
             byte[] data = new byte[]{export, 0, 0, type};
-            ByteUtil.setShort(data, 1, corruption);
+            ByteUtil.setShort(data, 1, transformation);
 
             this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ECDH, pubkey, privkey, data);
         }
@@ -588,7 +588,7 @@ public abstract class Command {
             long elapsed = -System.nanoTime();
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
-            return new Response.ECDH(response, getDescription(), elapsed, pubkey, privkey, export, corruption, type);
+            return new Response.ECDH(response, getDescription(), elapsed, pubkey, privkey, export, transformation, type);
         }
 
         @Override
@@ -599,10 +599,10 @@ public abstract class Command {
             String priv = privkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
 
             String validity;
-            if (corruption == EC_Consts.CORRUPTION_NONE) {
+            if (transformation == EC_Consts.TRANSFORMATION_NONE) {
                 validity = "unchanged";
             } else {
-                validity = CardUtil.getCorruption(corruption);
+                validity = CardUtil.getTransformation(transformation);
             }
             return String.format("%s of %s pubkey and %s privkey(%s point)", algo, pub, priv, validity);
         }
@@ -614,7 +614,7 @@ public abstract class Command {
     public static class ECDH_direct extends Command {
         private byte privkey;
         private byte export;
-        private short corruption;
+        private short transformation;
         private byte type;
         private byte[] pubkey;
 
@@ -624,20 +624,20 @@ public abstract class Command {
          * @param cardManager cardManager to send APDU through
          * @param privkey     keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
          * @param export      whether to export ECDH secret
-         * @param corruption  whether to invalidate the pubkey before ECDH (EC_Consts.CORRUPTION_* | ...)
+         * @param transformation  whether to transform the pubkey before ECDH (EC_Consts.TRANSFORMATION_* | ...)
          * @param type        EC KeyAgreement type
          * @param pubkey      pubkey data to do ECDH with.
          */
-        public ECDH_direct(CardMngr cardManager, byte privkey, byte export, short corruption, byte type, byte[] pubkey) {
+        public ECDH_direct(CardMngr cardManager, byte privkey, byte export, short transformation, byte type, byte[] pubkey) {
             super(cardManager);
             this.privkey = privkey;
             this.export = export;
-            this.corruption = corruption;
+            this.transformation = transformation;
             this.type = type;
             this.pubkey = pubkey;
 
             byte[] data = new byte[3 + pubkey.length];
-            ByteUtil.setShort(data, 0, corruption);
+            ByteUtil.setShort(data, 0, transformation);
             data[2] = type;
             System.arraycopy(pubkey, 0, data, 3, pubkey.length);
 
@@ -649,7 +649,7 @@ public abstract class Command {
             long elapsed = -System.nanoTime();
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
-            return new Response.ECDH(response, getDescription(), elapsed, ECTesterApplet.KEYPAIR_REMOTE, privkey, export, corruption, type);
+            return new Response.ECDH(response, getDescription(), elapsed, ECTesterApplet.KEYPAIR_REMOTE, privkey, export, transformation, type);
         }
 
         @Override
@@ -659,10 +659,10 @@ public abstract class Command {
             String priv = privkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
 
             String validity;
-            if (corruption == EC_Consts.CORRUPTION_NONE) {
+            if (transformation == EC_Consts.TRANSFORMATION_NONE) {
                 validity = "unchanged";
             } else {
-                validity = CardUtil.getCorruption(corruption);
+                validity = CardUtil.getTransformation(transformation);
             }
             return String.format("%s of external pubkey and %s privkey(%s point)", algo, priv, validity);
         }

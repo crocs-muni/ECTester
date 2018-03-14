@@ -488,7 +488,7 @@ public class ECTesterReader {
             byte pubkey_bytes[] = export.getParameter(pubkey, EC_Consts.PARAMETER_W);
             byte privkey_bytes[] = export.getParameter(privkey, EC_Consts.PARAMETER_S);
 
-            Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, cfg.ECKAType).send();
+            Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, cfg.ECKAType).send();
             ecdh.add(perform);
             for (Response r : ecdh) {
                 respWriter.outputResponse(r);
