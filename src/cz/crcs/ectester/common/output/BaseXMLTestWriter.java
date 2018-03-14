@@ -91,7 +91,7 @@ public abstract class BaseXMLTestWriter implements TestWriter {
                 testElem.appendChild(testElement(innerTest));
             }
         } else {
-            SimpleTest test = (SimpleTest) t;
+            SimpleTest<? extends BaseTestable> test = (SimpleTest<? extends BaseTestable>) t;
             testElem = testableElement(test.getTestable());
         }
 

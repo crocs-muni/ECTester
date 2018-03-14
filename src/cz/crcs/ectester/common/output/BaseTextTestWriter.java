@@ -76,7 +76,7 @@ public abstract class BaseTextTestWriter implements TestWriter {
                 }
             }
         } else {
-            SimpleTest test = (SimpleTest) t;
+            SimpleTest<? extends BaseTestable> test = (SimpleTest<? extends BaseTestable>) t;
             out.append(testableString(test.getTestable()));
         }
         return out.toString();

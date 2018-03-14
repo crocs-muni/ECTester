@@ -76,7 +76,7 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
             }
             testObj.put("tests", innerTests);
         } else {
-            SimpleTest test = (SimpleTest) t;
+            SimpleTest<? extends BaseTestable> test = (SimpleTest<? extends BaseTestable>) t;
             testObj = testableObject(test.getTestable());
         }
 
