@@ -8,6 +8,7 @@ For more information on ECC support on JavaCards see the [github page](https://c
 
 ECTester uses ant. There are three parts of ECTester, the JavaCard applet used for testing, the reader app which controls it and the standalone app which tests software libraries.
 ```bash
+git submodule update --init --recursive       # To initialize submodules.
 ant -f build-reader.xml package               # To build the reader tool (jar) -> "dist/ECTesterReader.jar"
 ant -f build-standalone.xml package           # To build the standalone tool (jar) -> "dist/ECTesterStandalone.jar"
 ant -f build-applet.xml build                 # To build the applet (cap) -> "applet/ectester.cap".
