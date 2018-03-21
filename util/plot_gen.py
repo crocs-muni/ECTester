@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
     if "nano" in header_names[1]:
         unit = r"$\mu s$"
-        time_data = map(lambda x: x[1]/1000, data)
+        time_data = map(lambda x: x[1]//1000, data)
     else:
         unit = r"ms"
         time_data = map(itemgetter(1), data)
