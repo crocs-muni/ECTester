@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 #
 # Script for plotting ECTester key generation results.
@@ -52,8 +52,9 @@ if __name__ == "__main__":
     else:
         unit = r"ms"
         time_data = map(itemgetter(1), data)
-    priv_data = map(itemgetter(2), data)
-    pub_data = map(itemgetter(3), data)
+    time_data = list(time_data)
+    priv_data = list(map(itemgetter(2), data))
+    pub_data = list(map(itemgetter(3), data))
 
     plt.style.use("ggplot")
     fig = plt.figure(tight_layout=True)
@@ -79,7 +80,7 @@ if __name__ == "__main__":
         time_max = max(time_data)
         time_avg = np.average(time_data)
         time_median = np.median(time_data)
-        axe_hist.hist(time_data, bins=time_max/3, log=True)
+        axe_hist.hist(time_data, bins=time_max//3, log=True)
         axe_hist.axvline(x=time_avg, alpha=0.7, linestyle="dotted", color="red", label="avg = {}".format(time_avg))
         axe_hist.axvline(x=time_median, alpha=0.7, linestyle="dotted", color="green", label="median = {}".format(time_median))
         axe_hist.set_ylabel("count\n(log)")
@@ -107,7 +108,7 @@ if __name__ == "__main__":
             priv_bit_x.extend([k] * len(v))
             priv_bit_y.extend(v)
         axe_priv_hist = fig.add_subplot(n_plots, 1, plot_i)
-        h, xe, ye = np.histogram2d(priv_bit_x, priv_bit_y, bins=[max(priv_bit_bins) - min(priv_bit_bins), (max(time_data) - min(time_data))/5])
+        h, xe, ye = np.histogram2d(priv_bit_x, priv_bit_y, bins=[max(priv_bit_bins) - min(priv_bit_bins), (max(time_data) - min(time_data))//5])
         cmap = deepcopy(plt.cm.plasma)
         cmap.set_bad("black")
         im = axe_priv_hist.imshow(h.T, origin="low", cmap=cmap, aspect="auto", extent=[xe[0], xe[-1], ye[0], ye[-1]], norm=colors.LogNorm())
