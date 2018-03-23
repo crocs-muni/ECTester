@@ -57,7 +57,8 @@ if __name__ == "__main__":
     pub_data = list(map(itemgetter(3), data))
 
     plt.style.use("ggplot")
-    fig = plt.figure(tight_layout=True)
+    fig = plt.figure()
+    fig.tight_layout(rect=[0, 0.02, 1, 0.98])
     fig.suptitle(opts.file)
 
     plot_i = 1
@@ -122,4 +123,5 @@ if __name__ == "__main__":
         plt.show()
     else:
         fig.set_size_inches(12, 10)
-        plt.savefig(opts.output, dpi=400)
+        ext = opts.output.name.split(".")[-1]
+        plt.savefig(opts.output, format=ext, dpi=400)
