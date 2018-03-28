@@ -104,4 +104,4 @@ if __name__ == "__main__":
     else:
         fig.set_size_inches(12, 10)
         ext = opts.output.name.split(".")[-1]
-        plt.savefig(opts.output, format=ext, dpi=400)
+        plt.savefig(opts.output, format=ext, dpi=400, bbox_inches='tight')

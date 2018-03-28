@@ -269,3 +269,21 @@
     <curve>secg/secp128r1</curve>
     <desc>invalid order = 197</desc>
 </pubkey>
+<pubkey>
+    <id>secp128r1/45</id>
+    <inline>0xea08890b70e94ac5d53514b583580faf,0x6cc66b4eedab2a8f01a0b41195271853</inline>
+    <curve>secg/secp128r1</curve>
+    <desc>invalid order = 359</desc>
+</pubkey>
+<pubkey>
+    <id>secp128r1/46</id>
+    <inline>0x0ae9c73132e5ef2fd82d06b0f50bfe64,0x9b78c29bdf53038463fa4bf2edb4297a</inline>
+    <curve>secg/secp128r1</curve>
+    <desc>invalid order = 601</desc>
+</pubkey>
+<pubkey>
+    <id>secp128r1/47</id>
+    <inline>0xd3522b2fb7fd15b8fbaf10a9abc60ca9,0x21236ba59e5a40eb9881a0218a2c2359</inline>
+    <curve>secg/secp128r1</curve>
+    <desc>invalid order = 1103</desc>
+</pubkey>

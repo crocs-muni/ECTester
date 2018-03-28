@@ -245,3 +245,22 @@
     <curve>secg/secp112r2</curve>
     <desc>invalid order = 179</desc>
 </pubkey>
+<!-- Additional points of larger order. -->
+<pubkey>
+    <id>secp112r2/41</id>
+    <inline>0x6fffe4ca3cbda6828ddd63e9ab11,0xcf5e055aa2a94c0d7214d998c3a0</inline>
+    <curve>secg/secp112r2</curve>
+    <desc>invalid order = 353</desc>
+</pubkey>
+<pubkey>
+    <id>secp112r2/42</id>
+    <inline>0x3813064a869de8884025d85736c0,0xd71ae54681ffc105144c8f7ba5bb</inline>
+    <curve>secg/secp112r2</curve>
+    <desc>invalid order = 631</desc>
+</pubkey>
+<pubkey>
+    <id>secp112r2/43</id>
+    <inline>0x6906e5609f3d9e47c7cd961dc08e,0x7fccd8384db6b6fcc842a4f397fd</inline>
+    <curve>secg/secp112r2</curve>
+    <desc>invalid order = 1231</desc>
+</pubkey>

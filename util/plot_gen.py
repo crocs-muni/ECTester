@@ -123,12 +123,13 @@ if __name__ == "__main__":
         axe_priv_hist.set_xlabel("private key Hamming weight")
         axe_priv_hist.set_ylabel("time ({})".format(unit))
         fig.colorbar(im, ax=axe_priv_hist)
-        
-    fig.text(0.01, 0.02, "Data size: {}".format(len(time_data)), size="small")
+
+    if plot_i > 2:
+        fig.text(0.01, 0.02, "Data size: {}".format(len(time_data)), size="small")
 
     if opts.output is None:
         plt.show()
     else:
         fig.set_size_inches(12, 10)
         ext = opts.output.name.split(".")[-1]
-        plt.savefig(opts.output, format=ext, dpi=400)
+        plt.savefig(opts.output, format=ext, dpi=400, bbox_inches='tight')
