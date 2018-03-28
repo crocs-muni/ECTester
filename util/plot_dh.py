@@ -22,6 +22,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Plot ECTester ECDH timing.")
     parser.add_argument("-o", "--output", dest="output", type=argparse.FileType("wb"), help="Write image to [file], do not display.", metavar="file")
     parser.add_argument("--skip-first", dest="skip_first", action="store_true", help="Skip first entry, as it's usually a large outlier.")
+    parser.add_argument("-t", "--title", dest="title", nargs="?", default="", type=str, help="What title to give the figure.")
     parser.add_argument("file", type=str, help="The file to plot(csv).")
 
     opts = parser.parse_args()
@@ -48,8 +49,14 @@ if __name__ == "__main__":
 
     plt.style.use("ggplot")
     fig = plt.figure()
-    fig.tight_layout(rect=[0, 0.02, 1, 0.98])
-    fig.suptitle(opts.file)
+    layout_kwargs = {}
+    if opts.title is None:
+        fig.suptitle(opts.file)
+        layout_kwargs["rect"] = [0, 0.02, 1, 0.98]
+    elif opts.title:
+        fig.suptitle(opts.title)
+        layout_kwargs["rect"] = [0, 0.02, 1, 0.98]
+    fig.tight_layout(**layout_kwargs)
 
     axe_hist = fig.add_subplot(2,1,1)
     time_max = max(time_data)

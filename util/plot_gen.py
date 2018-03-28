@@ -27,6 +27,7 @@ if __name__ == "__main__":
     parser.add_argument("--hist", dest="hist", action="store_true", help="Show histogram.")
     parser.add_argument("--hw-hist", dest="hw_hist", action="store_true", help="Show Hamming weight 2D histogram (private key Hamming weight and generation time).")
     parser.add_argument("--skip-first", dest="skip_first", action="store_true", help="Skip first entry, as it's usually a large outlier.")
+    parser.add_argument("-t", "--title", dest="title", type=str, nargs="?", default="", help="What title to give the figure.")
     parser.add_argument("file", type=str, help="The file to plot(csv).")
 
     opts = parser.parse_args()
@@ -58,8 +59,14 @@ if __name__ == "__main__":
 
     plt.style.use("ggplot")
     fig = plt.figure()
-    fig.tight_layout(rect=[0, 0.02, 1, 0.98])
-    fig.suptitle(opts.file)
+    layout_kwargs = {}
+    if opts.title is None:
+        fig.suptitle(opts.file)
+        layout_kwargs["rect"] = [0, 0.02, 1, 0.98]
+    elif opts.title:
+        fig.suptitle(opts.title)
+        layout_kwargs["rect"] = [0, 0.02, 1, 0.98]
+    fig.tight_layout(**layout_kwargs)        
 
     plot_i = 1
     if plots[0]:
