@@ -49,8 +49,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH;
-import static cz.crcs.ectester.applet.ECTesterApplet.Signature_ALG_ECDSA_SHA;
+import static cz.crcs.ectester.applet.EC_Consts.KeyAgreement_ALG_EC_SVDP_DH;
+import static cz.crcs.ectester.applet.EC_Consts.Signature_ALG_ECDSA_SHA;
 
 /**
  * Reader part of ECTester, a tool for testing Elliptic curve support on javacards.

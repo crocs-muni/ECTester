@@ -12,6 +12,8 @@ import javacard.security.RandomData;
  */
 public class EC_Consts {
 
+    public static final byte KeyAgreement_ALG_EC_SVDP_DH_KDF = 1;
+    public static final byte KeyAgreement_ALG_EC_SVDP_DHC_KDF = 2;
     private static byte[] EC_FP_P = null;    //p
     private static byte[] EC_A = null;    //a
     private static byte[] EC_B = null;    //b
@@ -1026,23 +1028,40 @@ public class EC_Consts {
     public static final short[] FP_SIZES = new short[]{112, 128, 160, 192, 224, 256, 384, 521};
     public static final short[] F2M_SIZES = new short[]{163, 233, 283, 409, 571};
 
+    // Class javacard.security.KeyAgreement
+    // javacard.security.KeyAgreement Fields:
+    public static final byte KeyAgreement_ALG_EC_SVDP_DH = 1;
+    public static final byte KeyAgreement_ALG_EC_SVDP_DHC = 2;
+    public static final byte KeyAgreement_ALG_EC_SVDP_DH_PLAIN = 3;
+    public static final byte KeyAgreement_ALG_EC_SVDP_DHC_PLAIN = 4;
+    public static final byte KeyAgreement_ALG_EC_PACE_GM = 5;
+    public static final byte KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY = 6;
+
     public static final byte[] KA_TYPES = new byte[]{
-            ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH,
-            //ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH_KDF, //duplicate
-            ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DHC,
-            //ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DHC_KDF, //duplicate
-            ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH_PLAIN,
-            ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DHC_PLAIN,
-            ECTesterApplet.KeyAgreement_ALG_EC_PACE_GM,
-            ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY
+            KeyAgreement_ALG_EC_SVDP_DH,
+            //KeyAgreement_ALG_EC_SVDP_DH_KDF, //duplicate
+            KeyAgreement_ALG_EC_SVDP_DHC,
+            //KeyAgreement_ALG_EC_SVDP_DHC_KDF, //duplicate
+            KeyAgreement_ALG_EC_SVDP_DH_PLAIN,
+            KeyAgreement_ALG_EC_SVDP_DHC_PLAIN,
+            KeyAgreement_ALG_EC_PACE_GM,
+            KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY
     };
 
+    // Class javacard.security.Signature
+    // javacard.security.Signature Fields:
+    public static final byte Signature_ALG_ECDSA_SHA = 17;
+    public static final byte Signature_ALG_ECDSA_SHA_224 = 37;
+    public static final byte Signature_ALG_ECDSA_SHA_256 = 33;
+    public static final byte Signature_ALG_ECDSA_SHA_384 = 34;
+    public static final byte Signature_ALG_ECDSA_SHA_512 = 38;
+
     public static final byte[] SIG_TYPES = new byte[]{
-            ECTesterApplet.Signature_ALG_ECDSA_SHA,
-            ECTesterApplet.Signature_ALG_ECDSA_SHA_224,
-            ECTesterApplet.Signature_ALG_ECDSA_SHA_256,
-            ECTesterApplet.Signature_ALG_ECDSA_SHA_384,
-            ECTesterApplet.Signature_ALG_ECDSA_SHA_512
+            Signature_ALG_ECDSA_SHA,
+            Signature_ALG_ECDSA_SHA_224,
+            Signature_ALG_ECDSA_SHA_256,
+            Signature_ALG_ECDSA_SHA_384,
+            Signature_ALG_ECDSA_SHA_512
     };
 
     public static byte getCurve(short keyLength, byte keyClass) {

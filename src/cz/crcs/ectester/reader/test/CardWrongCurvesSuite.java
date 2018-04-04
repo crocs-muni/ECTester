@@ -146,8 +146,8 @@ public class CardWrongCurvesSuite extends CardTestSuite {
         Test setup = runTest(CommandTest.expect(setupCmd, Result.ExpectedValue.FAILURE));
         Test generate = runTest(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_BOTH), Result.ExpectedValue.FAILURE));
         Test preparePhase = runTest(CompoundTest.any(Result.ExpectedValue.SUCCESS, prepareDesc, setup, generate));
-        Test allocateECDH = runTest(CommandTest.expect(new Command.AllocateKeyAgreement(this.card, ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH), Result.ExpectedValue.SUCCESS));
-        Test ecdh = runTest(CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH), Result.ExpectedValue.FAILURE));
+        Test allocateECDH = runTest(CommandTest.expect(new Command.AllocateKeyAgreement(this.card, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH), Result.ExpectedValue.SUCCESS));
+        Test ecdh = runTest(CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH), Result.ExpectedValue.FAILURE));
         return runTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, fullDesc, preparePhase, allocateECDH, ecdh));
     }
 }

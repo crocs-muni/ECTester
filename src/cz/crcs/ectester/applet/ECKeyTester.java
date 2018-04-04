@@ -130,6 +130,56 @@ public class ECKeyTester {
         return length;
     }
 
+    /**
+     *
+     * @param signKey
+     * @param inputBuffer
+     * @param inputOffset
+     * @param inputLength
+     * @param sigBuffer
+     * @param sigOffset
+     * @return
+     */
+    public short testECDSA_sign(ECPrivateKey signKey, byte[] inputBuffer, short inputOffset, short inputLength, byte[] sigBuffer, short sigOffset) {
+        short length = 0;
+        try {
+            sw = AppletUtil.signCheck(ecdsaSignature);
+
+            ecdsaSignature.init(signKey, Signature.MODE_SIGN);
+            length = ecdsaSignature.sign(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset);
+        } catch (CardRuntimeException ce) {
+            sw = ce.getReason();
+        }
+        return length;
+    }
+
+    /**
+     *
+     * @param verifyKey
+     * @param inputBuffer
+     * @param inputOffset
+     * @param inputLength
+     * @param sigBuffer
+     * @param sigOffset
+     * @param sigLength
+     * @return
+     */
+    public short testECDSA_verify(ECPublicKey verifyKey, byte[] inputBuffer, short inputOffset, short inputLength, byte[] sigBuffer, short sigOffset, short sigLength) {
+        short length = 0;
+        try {
+            sw = AppletUtil.signCheck(ecdsaSignature);
+
+            ecdsaSignature.init(verifyKey, Signature.MODE_VERIFY);
+            boolean correct = ecdsaSignature.verify(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset, sigLength);
+            if (!correct) {
+                sw = ECTesterApplet.SW_SIG_VERIFY_FAIL;
+            }
+        } catch (CardRuntimeException ce) {
+            sw = ce.getReason();
+        }
+        return length;
+    }
+
     public KeyAgreement getKA() {
         return ecKeyAgreement;
     }

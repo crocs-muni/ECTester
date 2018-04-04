@@ -51,10 +51,11 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     public static final byte INS_ECDH = (byte) 0x70;
     public static final byte INS_ECDH_DIRECT = (byte) 0x71;
     public static final byte INS_ECDSA = (byte) 0x72;
-    public static final byte INS_CLEANUP = (byte) 0x73;
-    //public static final byte INS_SUPPORT = (byte) 0x74;
-    public static final byte INS_ALLOCATE_KA = (byte) 0x75;
-    public static final byte INS_ALLOCATE_SIG = (byte) 0x76;
+    public static final byte INS_ECDSA_SIGN = (byte) 0x73;
+    public static final byte INS_ECDSA_VERIFY = (byte) 0x74;
+    public static final byte INS_CLEANUP = (byte) 0x75;
+    public static final byte INS_ALLOCATE_KA = (byte) 0x76;
+    public static final byte INS_ALLOCATE_SIG = (byte) 0x77;
 
 
     // PARAMETERS for P1 and P2
@@ -83,34 +84,12 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     public static final short SW_TransactionException_prefix = (short) 0xf400;
     public static final short SW_CardRuntimeException_prefix = (short) 0xf500;
 
-
-    // Class javacard.security.KeyAgreement
-    // javacard.security.KeyAgreement Fields:
-    public static final byte KeyAgreement_ALG_EC_SVDP_DH = 1;
-    public static final byte KeyAgreement_ALG_EC_SVDP_DH_KDF = 1;
-    public static final byte KeyAgreement_ALG_EC_SVDP_DHC = 2;
-    public static final byte KeyAgreement_ALG_EC_SVDP_DHC_KDF = 2;
-    public static final byte KeyAgreement_ALG_EC_SVDP_DH_PLAIN = 3;
-    public static final byte KeyAgreement_ALG_EC_SVDP_DHC_PLAIN = 4;
-    public static final byte KeyAgreement_ALG_EC_PACE_GM = 5;
-    public static final byte KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY = 6;
-
-    // Class javacard.security.Signature
-    // javacard.security.Signature Fields:
-    public static final byte Signature_ALG_ECDSA_SHA = 17;
-    public static final byte Signature_ALG_ECDSA_SHA_256 = 33;
-    public static final byte Signature_ALG_ECDSA_SHA_384 = 34;
-    public static final byte Signature_ALG_ECDSA_SHA_224 = 37;
-    public static final byte Signature_ALG_ECDSA_SHA_512 = 38;
-
     private static final short ARRAY_LENGTH = (short) 0xff;
     private static final short APDU_MAX_LENGTH = (short) 1024;
     // TEMPORARRY ARRAY IN RAM
     private byte[] ramArray = null;
     private byte[] ramArray2 = null;
     private byte[] apduArray = null;
-    // PERSISTENT ARRAY IN EEPROM
-    private byte[] dataArray = null; // unused
 
     private RandomData randomData = null;
 
@@ -134,9 +113,6 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
             ramArray = JCSystem.makeTransientByteArray(ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
             ramArray2 = JCSystem.makeTransientByteArray(ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
             apduArray = JCSystem.makeTransientByteArray(APDU_MAX_LENGTH, JCSystem.CLEAR_ON_RESET);
-
-            dataArray = new byte[ARRAY_LENGTH];
-            Util.arrayFillNonAtomic(dataArray, (short) 0, ARRAY_LENGTH, (byte) 0);
 
             randomData = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
             EC_Consts.randomData = randomData;
@@ -202,6 +178,12 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
                         break;
                     case INS_ECDSA:
                         length = insECDSA(apdu);
+                        break;
+                    case INS_ECDSA_SIGN:
+                        length = insECDSA_sign(apdu);
+                        break;
+                    case INS_ECDSA_VERIFY:
+                        length = insECDSA_verify(apdu);
                         break;
                     case INS_CLEANUP:
                         length = insCleanup(apdu);
@@ -495,6 +477,57 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     }
 
     /**
+     *
+     * @param apdu P1   = byte keyPair (KEYPAIR_*)
+     *             P2   = byte export (EXPORT_TRUE || EXPORT_FALSE)
+     *             DATA = byte sigType
+     *             short dataLength (00 = random data generated, !00 = data length)
+     *             byte[] data
+     * @return length of response
+     */
+    private short insECDSA_sign(APDU apdu) {
+        byte keyPair = apduArray[ISO7816.OFFSET_P1];
+        byte export = apduArray[ISO7816.OFFSET_P2];
+        short cdata = apdu.getOffsetCdata();
+        byte sigType = apduArray[cdata];
+
+        short len = 0;
+        if ((keyPair & KEYPAIR_LOCAL) != 0) {
+            len += ecdsa_sign(localKeypair, sigType, export, apduArray, (short) (cdata + 1), apdu.getBuffer(), (short) 0);
+        }
+        if ((keyPair & KEYPAIR_REMOTE) != 0) {
+            len += ecdsa_sign(remoteKeypair, sigType, export, apduArray, (short) (cdata + 1), apdu.getBuffer(), len);
+        }
+        return len;
+    }
+
+    /**
+     *
+     * @param apdu P1   = byte keyPair (KEYPAIR_*)
+     *             P2   = byte sigType
+     *             DATA = short dataLength (00 = random data generated, !00 = data length)
+     *             byte[] data
+     *             short sigLength
+     *             byte[] signature
+     * @return length of response
+     */
+    private short insECDSA_verify(APDU apdu) {
+        byte keyPair = apduArray[ISO7816.OFFSET_P1];
+        byte sigType = apduArray[ISO7816.OFFSET_P2];
+        short cdata = apdu.getOffsetCdata();
+
+        short len = 0;
+        if ((keyPair & KEYPAIR_LOCAL) != 0) {
+            len += ecdsa_verify(localKeypair, sigType, apduArray, cdata, apdu.getBuffer(), (short) 0);
+        }
+        if ((keyPair & KEYPAIR_REMOTE) != 0) {
+            len += ecdsa_verify(remoteKeypair, sigType, apduArray, cdata, apdu.getBuffer(), len);
+        }
+        return len;
+    }
+
+
+    /**
      * Performs card memory cleanup via JCSystem.requestObjectDeletion()
      *
      * @param apdu no data
@@ -737,6 +770,63 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
             Util.arrayCopyNonAtomic(ramArray2, (short) 0, outBuffer, (short) (outOffset + length), signatureLength);
             length += signatureLength;
         }
+
+        return length;
+    }
+
+    private short ecdsa_sign(KeyPair sign, byte sigType, byte export, byte[] inBuffer, short inOffset, byte[] outBuffer, short outOffset) {
+        short length = 0;
+
+        short dataLength = Util.getShort(inBuffer, inOffset);
+        if (dataLength == 0) { //no data to sign
+            //generate random
+            dataLength = 64;
+            randomData.generateData(ramArray, (short) 0, dataLength);
+        } else {
+            Util.arrayCopyNonAtomic(inBuffer, (short) (inOffset + 2), ramArray, (short) 0, dataLength);
+        }
+
+        short signatureLength = 0;
+        if (keyTester.getSigType() == sigType) {
+            signatureLength = keyTester.testECDSA_sign((ECPrivateKey) sign.getPrivate(), ramArray, (short) 0, dataLength, ramArray2, (short) 0);
+        } else {
+            short allocateSW = keyTester.allocateSig(sigType);
+            if (allocateSW == ISO7816.SW_NO_ERROR) {
+                signatureLength = keyTester.testECDSA_sign((ECPrivateKey) sign.getPrivate(), ramArray, (short) 0, dataLength, ramArray2, (short) 0);
+            }
+        }
+        Util.setShort(outBuffer, outOffset, keyTester.getSW());
+        length += 2;
+
+        if (export == EXPORT_TRUE) {
+            Util.setShort(outBuffer, (short) (outOffset + length), signatureLength);
+            length += 2;
+
+            Util.arrayCopyNonAtomic(ramArray2, (short) 0, outBuffer, (short) (outOffset + length), signatureLength);
+            length += signatureLength;
+        }
+
+        return length;
+    }
+
+    private short ecdsa_verify(KeyPair verify, byte sigType, byte[] inBuffer, short inOffset, byte[] outBuffer, short outOffset) {
+        short length = 0;
+
+        short dataLength = Util.getShort(inBuffer, inOffset);
+        short dataOffset = (short)(inOffset + 2);
+        short sigLength = Util.getShort(inBuffer, (short)(dataOffset + dataLength));
+        short sigOffset = (short)(dataOffset + dataLength + 2);
+
+        if (keyTester.getSigType() == sigType) {
+            keyTester.testECDSA_verify((ECPublicKey) verify.getPublic(), inBuffer, dataOffset, dataLength, inBuffer, sigOffset, sigLength);
+        } else {
+            short allocateSW = keyTester.allocateSig(sigType);
+            if (allocateSW == ISO7816.SW_NO_ERROR) {
+                keyTester.testECDSA_verify((ECPublicKey) verify.getPublic(), inBuffer, dataOffset, dataLength, inBuffer, sigOffset, sigLength);
+            }
+        }
+        Util.setShort(outBuffer, outOffset, keyTester.getSW());
+        length += 2;
 
         return length;
     }

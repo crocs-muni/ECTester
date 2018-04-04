@@ -53,7 +53,7 @@ public class CardInvalidCurvesSuite extends CardTestSuite {
 
             List<Test> ecdhTests = new LinkedList<>();
             for (EC_Key.Public pub : keys) {
-                Command ecdhCommand = new Command.ECDH_direct(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH, pub.flatten());
+                Command ecdhCommand = new Command.ECDH_direct(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH, pub.flatten());
                 ecdhTests.add(CommandTest.expect(ecdhCommand, ExpectedValue.FAILURE, "Card correctly rejected point on invalid curve.", "Card incorrectly accepted point on invalid curve."));
             }
             Test ecdh = CompoundTest.all(ExpectedValue.SUCCESS, "Perform ECDH with invalid public points", ecdhTests.toArray(new Test[0]));

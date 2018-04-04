@@ -685,6 +685,10 @@ public abstract class Command {
          */
         public ECDSA(CardMngr cardManager, byte keyPair, byte sigType, byte export, byte[] raw) {
             super(cardManager);
+            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
+                throw new IllegalArgumentException();
+            }
+
             this.keyPair = keyPair;
             this.sigType = sigType;
             this.export = export;
@@ -715,6 +719,115 @@ public abstract class Command {
             String key = keyPair == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
             String data = raw == null ? "random" : "provided";
             return String.format("%s with %s keypair(%s data)", algo, key, data);
+        }
+    }
+
+    public static class ECDSA_sign extends Command {
+        private byte keyPair;
+        private byte sigType;
+        private byte export;
+        private byte[] raw;
+
+        /**
+         * Creates the INS_ECDSA_SIGN instruction.
+         *
+         * @param cardManager cardManager to send APDU through
+         * @param keyPair     keyPair to use for signing and verification (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
+         * @param sigType     Signature type to use
+         * @param export      whether to export ECDSA signature
+         * @param raw         data to sign, can be null, in which case random data is signed.
+         */
+        public ECDSA_sign(CardMngr cardManager, byte keyPair, byte sigType, byte export, byte[] raw) {
+            super(cardManager);
+            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
+                throw new IllegalArgumentException();
+            }
+
+            this.keyPair = keyPair;
+            this.sigType = sigType;
+            this.export = export;
+            this.raw = raw;
+
+            int len = raw != null ? raw.length : 0;
+            byte[] data = new byte[3 + len];
+            data[0] = sigType;
+            ByteUtil.setShort(data, 1, (short) len);
+            if (raw != null) {
+                System.arraycopy(raw, 0, data, 3, len);
+            }
+
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ECDSA_SIGN, keyPair, export, data);
+        }
+
+        @Override
+        public Response.ECDSA send() throws CardException {
+            long elapsed = -System.nanoTime();
+            ResponseAPDU response = cardManager.send(cmd);
+            elapsed += System.nanoTime();
+            return new Response.ECDSA(response, getDescription(), elapsed, keyPair, sigType, export, raw);
+        }
+
+        @Override
+        public String getDescription() {
+            String algo = CardUtil.getSigTypeString(sigType);
+            String key = keyPair == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
+            String data = raw == null ? "random" : "provided";
+            return String.format("%s signature with %s keypair(%s data)", algo, key, data);
+        }
+    }
+
+    public static class ECDSA_verify extends Command {
+        private byte keyPair;
+        private byte sigType;
+        private byte[] raw;
+        private byte[] signature;
+
+        /**
+         * Creates the INS_ECDSA_VERIFY instruction.
+         *
+         * @param cardManager cardManager to send APDU through
+         * @param keyPair     keyPair to use for signing and verification (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
+         * @param sigType     Signature type to use
+         * @param raw         data to sign
+         * @param signature   signature data
+         */
+        public ECDSA_verify(CardMngr cardManager, byte keyPair, byte sigType, byte[] raw, byte[] signature) {
+            super(cardManager);
+            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
+                throw new IllegalArgumentException();
+            }
+            if (raw == null || signature == null) {
+                throw new IllegalArgumentException();
+            }
+
+            this.keyPair = keyPair;
+            this.sigType = sigType;
+            this.raw = raw;
+            this.signature = signature;
+
+            byte[] data = new byte[4 + raw.length + signature.length];
+            ByteUtil.setShort(data, 0, (short) raw.length);
+            System.arraycopy(raw, 0, data, 2, raw.length);
+            ByteUtil.setShort(data, 2 + raw.length, (short) signature.length);
+            System.arraycopy(signature, 0, data, 2 + raw.length + 2, signature.length);
+
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ECDSA_SIGN, keyPair, sigType, data);
+        }
+
+        @Override
+        public Response.ECDSA send() throws CardException {
+            long elapsed = -System.nanoTime();
+            ResponseAPDU response = cardManager.send(cmd);
+            elapsed += System.nanoTime();
+            return new Response.ECDSA(response, getDescription(), elapsed, keyPair, sigType, ECTesterApplet.EXPORT_FALSE, raw);
+        }
+
+        @Override
+        public String getDescription() {
+            String algo = CardUtil.getSigTypeString(sigType);
+            String key = keyPair == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
+            String data = raw == null ? "random" : "provided";
+            return String.format("%s verification with %s keypair(%s data)", algo, key, data);
         }
     }
 

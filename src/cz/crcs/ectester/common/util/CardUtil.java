@@ -6,8 +6,6 @@ import javacard.framework.ISO7816;
 import javacard.security.CryptoException;
 import javacard.security.KeyPair;
 
-import static cz.crcs.ectester.applet.ECTesterApplet.*;
-
 /**
  * @author Petr Svenda petr@svenda.com
  * @author Jan Jancar johny@neuromancer.sk
@@ -17,12 +15,12 @@ public class CardUtil {
         switch (name) {
             case "DH":
             case "ECDH":
-                return ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH;
+                return EC_Consts.KeyAgreement_ALG_EC_SVDP_DH;
             case "DHC":
             case "ECDHC":
-                return ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DHC;
+                return EC_Consts.KeyAgreement_ALG_EC_SVDP_DHC;
             default:
-                return ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH;
+                return EC_Consts.KeyAgreement_ALG_EC_SVDP_DH;
         }
     }
 
@@ -208,17 +206,17 @@ public class CardUtil {
 
     public static String getKATypeString(byte kaType) {
         switch (kaType) {
-            case KeyAgreement_ALG_EC_SVDP_DH:
+            case EC_Consts.KeyAgreement_ALG_EC_SVDP_DH:
                 return "ALG_EC_SVDP_DH";
-            case KeyAgreement_ALG_EC_SVDP_DH_PLAIN:
+            case EC_Consts.KeyAgreement_ALG_EC_SVDP_DH_PLAIN:
                 return "ALG_EC_SVDP_DH_PLAIN";
-            case KeyAgreement_ALG_EC_PACE_GM:
+            case EC_Consts.KeyAgreement_ALG_EC_PACE_GM:
                 return "ALG_EC_PACE_GM";
-            case KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY:
+            case EC_Consts.KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY:
                 return "ALG_EC_SVDP_DH_PLAIN_XY";
-            case KeyAgreement_ALG_EC_SVDP_DHC:
+            case EC_Consts.KeyAgreement_ALG_EC_SVDP_DHC:
                 return "ALG_EC_SVDP_DHC";
-            case KeyAgreement_ALG_EC_SVDP_DHC_PLAIN:
+            case EC_Consts.KeyAgreement_ALG_EC_SVDP_DHC_PLAIN:
                 return "ALG_EC_SVDP_DHC_PLAIN";
             default:
                 return "unknown";
@@ -228,17 +226,17 @@ public class CardUtil {
     public static byte getKAType(String kaTypeString) {
         switch (kaTypeString) {
             case "ALG_EC_SVDP_DH":
-                return KeyAgreement_ALG_EC_SVDP_DH;
+                return EC_Consts.KeyAgreement_ALG_EC_SVDP_DH;
             case "ALG_EC_SVDP_DH_PLAIN":
-                return KeyAgreement_ALG_EC_SVDP_DH_PLAIN;
+                return EC_Consts.KeyAgreement_ALG_EC_SVDP_DH_PLAIN;
             case "ALG_EC_PACE_GM":
-                return KeyAgreement_ALG_EC_PACE_GM;
+                return EC_Consts.KeyAgreement_ALG_EC_PACE_GM;
             case "ALG_EC_SVDP_DH_PLAIN_XY":
-                return KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY;
+                return EC_Consts.KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY;
             case "ALG_EC_SVDP_DHC":
-                return KeyAgreement_ALG_EC_SVDP_DHC;
+                return EC_Consts.KeyAgreement_ALG_EC_SVDP_DHC;
             case "ALG_EC_SVDP_DHC_PLAIN":
-                return KeyAgreement_ALG_EC_SVDP_DHC_PLAIN;
+                return EC_Consts.KeyAgreement_ALG_EC_SVDP_DHC_PLAIN;
             default:
                 return 0;
         }
@@ -256,15 +254,15 @@ public class CardUtil {
 
     public static String getSigTypeString(byte sigType) {
         switch (sigType) {
-            case Signature_ALG_ECDSA_SHA:
+            case EC_Consts.Signature_ALG_ECDSA_SHA:
                 return "ALG_ECDSA_SHA";
-            case Signature_ALG_ECDSA_SHA_224:
+            case EC_Consts.Signature_ALG_ECDSA_SHA_224:
                 return "ALG_ECDSA_SHA_224";
-            case Signature_ALG_ECDSA_SHA_256:
+            case EC_Consts.Signature_ALG_ECDSA_SHA_256:
                 return "ALG_ECDSA_SHA_256";
-            case Signature_ALG_ECDSA_SHA_384:
+            case EC_Consts.Signature_ALG_ECDSA_SHA_384:
                 return "ALG_ECDSA_SHA_384";
-            case Signature_ALG_ECDSA_SHA_512:
+            case EC_Consts.Signature_ALG_ECDSA_SHA_512:
                 return "ALG_ECDSA_SHA_512";
             default:
                 return "unknown";
@@ -274,15 +272,15 @@ public class CardUtil {
     public static byte getSigType(String sigTypeString) {
         switch (sigTypeString) {
             case "ALG_ECDSA_SHA":
-                return Signature_ALG_ECDSA_SHA;
+                return EC_Consts.Signature_ALG_ECDSA_SHA;
             case "ALG_ECDSA_SHA_224":
-                return Signature_ALG_ECDSA_SHA_224;
+                return EC_Consts.Signature_ALG_ECDSA_SHA_224;
             case "ALG_ECDSA_SHA_256":
-                return Signature_ALG_ECDSA_SHA_256;
+                return EC_Consts.Signature_ALG_ECDSA_SHA_256;
             case "ALG_ECDSA_SHA_384":
-                return Signature_ALG_ECDSA_SHA_384;
+                return EC_Consts.Signature_ALG_ECDSA_SHA_384;
             case "ALG_ECDSA_SHA_512":
-                return Signature_ALG_ECDSA_SHA_512;
+                return EC_Consts.Signature_ALG_ECDSA_SHA_512;
             default:
                 return 0;
         }
