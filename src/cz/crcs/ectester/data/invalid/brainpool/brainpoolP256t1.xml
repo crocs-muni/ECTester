@@ -461,3 +461,22 @@
     <curve>brainpool/brainpoolP256t1</curve>
     <desc>invalid order = 389</desc>
 </pubkey>
+<!-- Additional points of larger order. -->
+<pubkey>
+    <id>brainpoolP256t1/77</id>
+    <inline>0x2bf8c11defcdac7379c1d81ab87d72d13d8b1a7a53e59a6c5eda6c5d7b615f4e,0x6bcef1b705223c36086a1a06cf6a55fecf4362c0444b4c73b8f8d402955e52fb</inline>
+    <curve>brainpool/brainpoolP256t1</curve>
+    <desc>invalid order = 419</desc>
+</pubkey>
+<pubkey>
+    <id>brainpoolP256t1/78</id>
+    <inline>0x67e3ba2a6485080a29384ddd38f8f5a476338a7b39fe411d18c49cb5ce5a04a2,0x25e146ab0e5b3e5a6ad5dca7bcc72d9afdfaec3e2c993a9166144aa0d9fbecd4</inline>
+    <curve>brainpool/brainpoolP256t1</curve>
+    <desc>invalid order = 719</desc>
+</pubkey>
+<pubkey>
+    <id>brainpoolP256t1/79</id>
+    <inline>0x93efaee7235082be3ce10f16207f91472aa336b7309edfebcfcc77182206949e,0x1ecb5b2db697f34ca887e4fe4fa00fcd9d50dff8c6183038469b67b6060f1030</inline>
+    <curve>brainpool/brainpoolP256t1</curve>
+    <desc>invalid order = 1531</desc>
+</pubkey>

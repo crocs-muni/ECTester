@@ -365,3 +365,22 @@
     <curve>brainpool/brainpoolP192r1</curve>
     <desc>invalid order = 283</desc>
 </pubkey>
+<!-- Additional points of larger order. -->
+<pubkey>
+    <id>brainpoolP192r1/61</id>
+    <inline>0x952940885d62715784f5501451fe20f56825f449830b8e1a,0xa2786768d1b25f41c2d1a9d219faa70284b4bbe583bf006b</inline>
+    <curve>brainpool/brainpoolP192r1</curve>
+    <desc>invalid order = 353</desc>
+</pubkey>
+<pubkey>
+    <id>brainpoolP192r1/62</id>
+    <inline>0x6e1bfe4453e3d7fffb26abd47a8eba7eeb601cea9b56f136,0x0549d43dafbe9b0651d9aff2fcfdc07e94c4ce07a8c75595</inline>
+    <curve>brainpool/brainpoolP192r1</curve>
+    <desc>invalid order = 631</desc>
+</pubkey>
+<pubkey>
+    <id>brainpoolP192r1/63</id>
+    <inline>0x5fa6f0d37e8ab6d27aa6214bb7f4a68feb979ad8d2ce1f48,0x29a93d6ef731d6ba7ae62173d9927012ecb52cf23c45f0d6</inline>
+    <curve>brainpool/brainpoolP192r1</curve>
+    <desc>invalid order = 1231</desc>
+</pubkey>
