@@ -38,7 +38,7 @@
 		if (toggled) {
 			parent.nextAll().each(function () {
 				if (cont) {
-					if ($(this).data("depth") == parent_depth) {
+					if ($(this).data("depth") <= parent_depth) {
 						cont = false;
 						return;
 					}
