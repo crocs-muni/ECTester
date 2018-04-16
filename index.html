@@ -22,6 +22,11 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
     .no {
         background-color: rgba(255, 0, 0, 0.2);
     }
+
+    .small {
+    	font-size: 0.8rem;
+    	font-style: italic;
+    }
 </style>
 
 
@@ -82,6 +87,17 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
         <th>ECDSA</th>
     </tr>
     <tr>
+    	<td><a href="{{ site.baseurl }}/results/default/Athena_IDProtect/">Athena IDProtect</a></td>
+    	<td class="yes">1,2,3,4<br/><span class="small">148ms</span></td>
+    	<td class="yes">a,b,c<br/><span class="small">265ms</span></td>
+    	<td class="yes">1,2,3,4<br/><span class="small">206ms</span></td>
+    	<td class="yes">a,b,c<br/><span class="small">365ms</span></td>
+    	<td class="yes">1,2,3,4<br/><span class="small">448ms</span></td>
+    	<td class="yes">a,b,c<br/><span class="small">737ms</span></td>
+    	<td class="yes">1,2,3,4<br/><span class="small">937ms</span></td>
+    	<td class="yes">a,b,c<br/><span class="small">1490ms</span></td>
+    </tr>
+    <tr>
         <td><a href="{{ site.baseurl }}/results/default/Feitian_A22CR/">Feitian A22CR</a></td>
         <td class="some"></td>
         <td></td>
@@ -94,21 +110,32 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
     </tr>
     <tr>
         <td><a href="{{ site.baseurl }}/results/default/GD_Smartcafe_6.0/">GD SmartCafe 6.0</a></td>
-        <td class="yes">1,2,3,4<br/>128ms</td>
-        <td class="yes">a,b,c,d,e<br/>270ms</td>
-        <td class="yes">1,2,4,3<br/>190ms</td>
-        <td class="yes">a,b,c,d,e<br/>355ms</td>
+        <td class="yes">1,2,3,4<br/><span class="small">128ms</span></td>
+        <td class="yes">a,b,c,d,e<br/><span class="small">270ms</span></td>
+        <td class="yes">1,2,4,3<br/><span class="small">190ms</span></td>
+        <td class="yes">a,b,c,d,e<br/><span class="small">355ms</span></td>
         <td class="no">✘</td>
         <td class="no">✘</td>
         <td class="no">✘</td>
         <td class="no">✘</td>
     </tr>
     <tr>
+       	<td><a href="{{ site.baseurl }}/results/default/Infineon_CJTOP/">Infineon CJTOP</a></td>
+       	<td class="yes">1,2,3,4<br/><span class="small">137ms(1) , 200ms</span></td>
+       	<td class="yes">a,b,c,d,e<br/><span class="small">210ms(a) - 280ms(e)</span></td>
+       	<td class="yes">1,2,3,4<br/><span class="small">166ms(1) , 266ms</span></td>
+       	<td class="yes">a,b,c,d,e<br/><span class="small">263ms(a) - 329ms(e)</span></td>
+       	<td class="yes">1,2,3,4<br/><span class="small">241ms(1) , 410ms</span></td>
+       	<td class="yes">a,b,c,d,e<br/><span class="small">397ms(a) - 464ms(e)</span></td>
+        <td class="no">✘</td>
+		<td class="no">✘</td>
+       </tr>
+    <tr>
         <td><a href="{{ site.baseurl }}/results/default/JCOP31_v2.4.1/">JCOP31 v2.4.1</a></td>
-        <td class="yes">1,2<br/>122ms</td>
-        <td class="yes">a<br/>257ms</td>
-        <td class="yes">1,2<br/>189ms</td>
-        <td class="yes">a<br/>392ms</td>
+        <td class="yes">1,2<br/><span class="small">122ms</span></td>
+        <td class="yes">a<br/><span class="small">257ms</span></td>
+        <td class="yes">1,2<br/><span class="small">189ms</span></td>
+        <td class="yes">a<br/><span class="small">392ms</span></td>
         <td class="no">✘</td>
         <td class="no">✘</td>
         <td class="no">✘</td>
@@ -116,10 +143,10 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
     </tr>
     <tr>
         <td><a href="{{ site.baseurl }}/results/default/NXP_JCOP_CJ2A081/">NXP JCOP CJ2A081</a></td>
-        <td class="yes">1,2<br/>75ms</td>
-        <td class="yes">a<br/>151ms</td>
-        <td class="yes">1,2<br/>123ms</td>
-        <td class="yes">a<br/>241ms</td>
+        <td class="yes">1,2<br/><span class="small">75ms</span></td>
+        <td class="yes">a<br/><span class="small">151ms</span></td>
+        <td class="yes">1,2<br/><span class="small">123ms</span></td>
+        <td class="yes">a<br/><span class="small">241ms</span></td>
         <td class="no">✘</td>
         <td class="no">✘</td>
         <td class="no">✘</td>
@@ -127,10 +154,10 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
     </tr>
     <tr>
         <td><a href="{{ site.baseurl }}/results/default/NXP_JCOP_v2.4.2_R3/">NXP JCOP v2.4.2 R3</a></td>
-        <td class="yes">1,2<br/>99ms</td>
-        <td class="yes">a,b,c<br/>180ms</td>
-        <td class="yes">1,2<br/>150ms</td>
-        <td class="yes">a,b,c<br/>275ms</td>
+        <td class="yes">1,2<br/><span class="small">99ms</span></td>
+        <td class="yes">a,b,c<br/><span class="small">180ms</span></td>
+        <td class="yes">1,2<br/><span class="small">150ms</span></td>
+        <td class="yes">a,b,c<br/><span class="small">275ms</span></td>
         <td class="no">✘</td>
         <td class="no">✘</td>
         <td class="no">✘</td>
