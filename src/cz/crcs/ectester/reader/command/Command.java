@@ -811,7 +811,7 @@ public abstract class Command {
             ByteUtil.setShort(data, 2 + raw.length, (short) signature.length);
             System.arraycopy(signature, 0, data, 2 + raw.length + 2, signature.length);
 
-            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ECDSA_SIGN, keyPair, sigType, data);
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ECDSA_VERIFY, keyPair, sigType, data);
         }
 
         @Override
