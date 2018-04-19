@@ -3,7 +3,11 @@
 {% if include.test.result.ok == true %}
 <td align="center" class="tooltip cause-tooltip" data-cause="{{ include.test.result.cause }}"><i class="fa fa-check"></i></td>
 {% else %}
+{% if include.test.result.value == "ERROR" %}
 <td align="center" class="tooltip cause-tooltip" data-cause="{{ include.test.result.cause }}"><i class="fa fa-exclamation-triangle"></i></td>
+{% else %}
+<td align="center" class="tooltip cause-tooltip" data-cause="{{ include.test.result.cause }}"><i class="fa fa-times"></i></td>
+{% endif %}
 {% endif %}
 {% endcapture %}
 
