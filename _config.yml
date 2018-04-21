@@ -50,6 +50,24 @@ defaults:
      layout: composite_suite
      category: Composite
  - scope:
+     path: "_results/twist"
+     type: "results"
+   values:
+     layout: twist_suite
+     category: Twist
+ - scope:
+     path: "_results/wrong"
+     type: "results"
+   values:
+     layout: wrong_suite
+     category: Wrong
+ - scope:
+     path: "_results/cofactor"
+     type: "results"
+   values:
+     layout: cofactor_suite
+     category: Cofactor
+ - scope:
      path: "_results/test-vectors"
      type: "results"
    values:

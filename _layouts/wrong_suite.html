@@ -9,6 +9,24 @@ Tests using the default tests on a category of wrong curves. These curves are no
     <li>non-prime field in the prime-field case</li>
     <li>reducible polynomial as the field polynomial in the binary case</li>
 </ul>
+This test suite also does some additional tests with corrupting the field parameter:
+<ul>
+	<li>Fp
+		<ul>
+		<li>p = 0</li>
+		<li>p = 1</li>
+		<li>p = q^2; q prime</li>
+		<li>p = q * s; q and s prime</li>
+		</ul>
+	</li>
+	<li>F2m
+		<ul>
+		<li>e1 = e2 = e3 = 0</li>
+		<li>m &lt; e1 &lt; e2 &lt; e3</li>
+		</ul>
+	</li>
+</ul>
+<br/>
 
 {% include result_table.html testRun=page.testRun %}
 
