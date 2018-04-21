@@ -2,7 +2,7 @@
 layout: default
 ---
 
-{% include result_header.html testRun=page.testRun suite="Wrong" %}
+{% include suite_header.html suite="Wrong" %}
 
 Tests using the default tests on a category of wrong curves. These curves are not really curves as they have: <br/>
 <ul>
@@ -27,6 +27,8 @@ This test suite also does some additional tests with corrupting the field parame
 	</li>
 </ul>
 <br/>
+
+{% include result_header.html testRun=page.testRun %}
 
 {% include result_table.html testRun=page.testRun %}
 

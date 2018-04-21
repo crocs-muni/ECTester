@@ -2,11 +2,14 @@
 layout: default
 ---
 
-{% include result_header.html testRun=page.testRun suite="Composite" %}
+{% include suite_header.html suite="Composite" %}
 
 Tests using curves that don't have a prime order/nearly prime order.
 These tests should generally fail, a success here implies the card <b>WILL</b> use a non-secure curve if such curve is set
 by the applet. Operations over such curves are susceptible to small-subgroup attacks.
+<br/>
+
+{% include result_header.html testRun=page.testRun %}
 
 {% include result_table.html testRun=page.testRun %}
 
