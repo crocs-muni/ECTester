@@ -6,7 +6,7 @@
 </style>
 
 {% if include.testRun.device.type == "card" %}
-    <span class="large">Card name: {{ page.title | replace:"_", " " }}</span><br/>
+    <span class="large">Card name: {{ page.id | split:"/" | shift | shift | shift | sample | replace:"_", " " }}</span><br/>
 	<span class="large">ATR: <a href="http://smartcard-atr.appspot.com/parse?ATR={{ include.testRun.device.ATR }}">{{ include.testRun.device.ATR }}</a></span>
 {% else %}
     <span class="large">Device name: {{ page.title | replace:"_", " " }}</span><br/>
