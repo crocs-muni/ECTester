@@ -31,26 +31,26 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
 
 
 <h2>Legend</h2>
-<div style="float:left">
-    *ECDH types
-    <ul>
-        <li>1 - ALG_EC_SVDP_DH</li>
-        <li>2 - ALG_EC_SVDP_DHC</li>
-        <li>3 - ALG_EC_SVDP_DH_PLAIN</li>
-        <li>4 - ALG_EC_SVDP_DHC_PLAIN</li>
-        <li>5 - ALG_EC_PACE_GM</li>
-        <li>6 - ALG_EC_SVDP_DH_PLAIN_XY</li>
-    </ul>
+<div style="float:left" id="ecdh_types">
+    *<strong>ECDH types</strong>
+    <ol>
+        <li>ALG_EC_SVDP_DH</li>
+        <li>ALG_EC_SVDP_DHC</li>
+        <li>ALG_EC_SVDP_DH_PLAIN</li>
+        <li>ALG_EC_SVDP_DHC_PLAIN</li>
+        <li>ALG_EC_PACE_GM</li>
+        <li>ALG_EC_SVDP_DH_PLAIN_XY</li>
+    </ol>
 </div>
-<div style="float:left">
-    *ECDSA types
-    <ul>
-        <li>a - ALG_ECDSA_SHA</li>
-        <li>b - ALG_ECDSA_SHA_224</li>
-        <li>c - ALG_ECDSA_SHA_256</li>
-        <li>d - ALG_ECDSA_SHA_384</li>
-        <li>e - ALG_ECDSA_SHA_512</li>
-    </ul>
+<div style="float:left" id="ecdsa_types">
+    *<strong>ECDSA types</strong>
+    <ol type="a">
+        <li>ALG_ECDSA_SHA</li>
+        <li>ALG_ECDSA_SHA_224</li>
+        <li>ALG_ECDSA_SHA_256</li>
+        <li>ALG_ECDSA_SHA_384</li>
+        <li>ALG_ECDSA_SHA_512</li>
+    </ol>
 </div>
 <div style="clear:both"></div>
 
@@ -76,7 +76,7 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
         <th colspan="2">521b</th>
     </tr>
     <tr>
-        <th></th>
+        <th><a href="#ecdh_types">*</a><a href="#ecdsa_types">*</a></th>
         <th>ECDH</th>
         <th>ECDSA</th>
         <th>ECDH</th>
