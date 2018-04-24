@@ -51,6 +51,44 @@
     </pubkey>
 
     <pubkey>
+        <id>cofactor2p160/0</id>
+        <inline>0x5fa441bf614740860b6eb17c525fadf7fda8a8dd,0x0000000000000000000000000000000000000000</inline>
+        <curve>cofactor/cofactor2p160</curve>
+        <desc>order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor4p160/0</id>
+        <inline>0x023deee1d84150a62b98aa5bfc199af554653515,0x0000000000000000000000000000000000000000</inline>
+        <curve>cofactor/cofactor4p160</curve>
+        <desc>order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor8p160/0</id>
+        <inline>0x05e55a12fb3fc534266721e50921b87175ba6058,0x0000000000000000000000000000000000000000</inline>
+        <curve>cofactor/cofactor8p160</curve>
+        <desc>order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor16p160/0</id>
+        <inline>0x1e20529f2293f0a08cc722d7fa8e56ddd4eb3b8a,0x0000000000000000000000000000000000000000</inline>
+        <curve>cofactor/cofactor16p160</curve>
+        <desc>order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor32p160/0</id>
+        <inline>0x8cff23fa9830f93cb2d46aa5f91e6f53080fa5b7,0x0000000000000000000000000000000000000000</inline>
+        <curve>cofactor/cofactor32p160</curve>
+        <desc>order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor64p160/0</id>
+        <inline>0x46b72d87edddeea2fa3ef32725fcf8c1e19bf40d,0x0000000000000000000000000000000000000000</inline>
+        <curve>cofactor/cofactor64p160</curve>
+        <desc>order = 2</desc>
+    </pubkey>
+
+
+    <pubkey>
         <id>cofactor2t163/0</id>
         <inline>0x000000000000000000000000000000000000000000,0x0132720c6aa3f2ca65d18f2de81e5e6b8ad4a3ef9d</inline>
         <curve>cofactor/cofactor2t163</curve>
@@ -90,6 +128,49 @@
         <id>cofactor128t163/0</id>
         <inline>0x000000000000000000000000000000000000000000,0x06be374502a948489de2e7d8d82cb6b62a493b77a0</inline>
         <curve>cofactor/cofactor128t163</curve>
+        <desc>order = 2</desc>
+    </pubkey>
+
+    <pubkey>
+        <id>cofactor2t233/0</id>
+        <inline>0x000000000000000000000000000000000000000000000000000000000000,0x00a5237785bb2d49881f043553257d8600988d9603b43b4c2d74539a7ab3</inline>
+        <curve>cofactor/cofactor2t233</curve>
+        <desc>order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor4t233/0</id>
+        <inline>0x000000000000000000000000000000000000000000000000000000000000,0x01e70983b7039468a1b58b757d8343c7612f847f51f357ccca6a4c38e774</inline>
+        <curve>cofactor/cofactor4t233</curve>
+        <desc>order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor8t233/0</id>
+        <inline>0x000000000000000000000000000000000000000000000000000000000000,0x0087c295986f53382f7f1d4c8f268bdde12c5e2b641e53f84b5c2feb209a</inline>
+        <curve>cofactor/cofactor8t233</curve>
+        <desc>order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor16t233/0</id>
+        <inline>0x000000000000000000000000000000000000000000000000000000000000,0x00c6ff713492ad9d63db4627a4f8d0d67388d85ea20ba5ef234a43ec98d4</inline>
+        <curve>cofactor/cofactor16t233</curve>
+        <desc>order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor32t233/0</id>
+        <inline>0x000000000000000000000000000000000000000000000000000000000000,0x00e85ccaafcd345663cb65ccf38555c68183f25b6ec0e436f8f236fe8636</inline>
+        <curve>cofactor/cofactor32t233</curve>
+        <desc>order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor64t233/0</id>
+        <inline>0x000000000000000000000000000000000000000000000000000000000000,0x01a08b13e17f2467daaf4c4f62a397f2393b19c0bfff1dd767f6c8d94860</inline>
+        <curve>cofactor/cofactor64t233</curve>
+        <desc>order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128t233/0</id>
+        <inline>0x000000000000000000000000000000000000000000000000000000000000,0x0018948e6063085fbc0a661dc0d06bc45c2bbab443e9d983753886b918ea</inline>
+        <curve>cofactor/cofactor128t233</curve>
         <desc>order = 2</desc>
     </pubkey>
 

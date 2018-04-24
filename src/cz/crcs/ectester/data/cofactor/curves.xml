@@ -44,6 +44,44 @@
         <field>prime</field>
         <file>cofactor128p128.csv</file>
     </curve>
+
+    <curve>
+        <id>cofactor2p160</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>cofactor2p160.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor4p160</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>cofactor4p160.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor8p160</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>cofactor8p160.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor16p160</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>cofactor16p160.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor32p160</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>cofactor32p160.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor64p160</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>cofactor64p160.csv</file>
+    </curve>
+    
     
     <curve>
         <id>cofactor2t163</id>
@@ -86,5 +124,48 @@
         <bits>163</bits>
         <field>binary</field>
         <file>cofactor128t163.csv</file>
+    </curve>
+
+    <curve>
+        <id>cofactor2t233</id>
+        <bits>233</bits>
+        <field>binary</field>
+        <file>cofactor2t233.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor4t233</id>
+        <bits>233</bits>
+        <field>binary</field>
+        <file>cofactor4t233.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor8t233</id>
+        <bits>233</bits>
+        <field>binary</field>
+        <file>cofactor8t233.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor16t233</id>
+        <bits>233</bits>
+        <field>binary</field>
+        <file>cofactor16t233.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor32t233</id>
+        <bits>233</bits>
+        <field>binary</field>
+        <file>cofactor32t233.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor64t233</id>
+        <bits>233</bits>
+        <field>binary</field>
+        <file>cofactor64t233.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor128t233</id>
+        <bits>233</bits>
+        <field>binary</field>
+        <file>cofactor128t233.csv</file>
     </curve>
 </curves>
