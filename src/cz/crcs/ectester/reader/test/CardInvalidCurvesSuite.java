@@ -32,14 +32,8 @@ public class CardInvalidCurvesSuite extends CardTestSuite {
          * Try ECDH with invalid public keys of increasing order.
          */
         Map<String, EC_Key.Public> pubkeys = EC_Store.getInstance().getObjects(EC_Key.Public.class, "invalid");
-        Map<EC_Curve, List<EC_Key.Public>> curves = new TreeMap<>();
-        for (EC_Key.Public key : pubkeys.values()) {
-            EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, key.getCurve());
-            List<EC_Key.Public> keys = curves.getOrDefault(curve, new LinkedList<>());
-            keys.add(key);
-            curves.putIfAbsent(curve, keys);
-        }
-        for (Map.Entry<EC_Curve, List<EC_Key.Public>> e : curves.entrySet()) {
+        List<Map.Entry<EC_Curve, List<EC_Key.Public>>> curveList = EC_Store.mapToCurve(pubkeys.values());
+        for (Map.Entry<EC_Curve, List<EC_Key.Public>> e : curveList) {
             EC_Curve curve = e.getKey();
             List<EC_Key.Public> keys = e.getValue();
 

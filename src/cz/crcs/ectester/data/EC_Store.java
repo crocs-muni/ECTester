@@ -21,9 +21,7 @@ import javax.xml.validation.SchemaFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -317,6 +315,21 @@ public class EC_Store {
             return null;
         }
         return getObject(objClass, query.substring(0, split), query.substring(split + 1));
+    }
+
+    public static <T extends EC_Key> List<Map.Entry<EC_Curve, List<T>>> mapToCurve(Collection<T> keys) {
+        Map<EC_Curve, List<T>> curves = new TreeMap<>();
+        for (T key : keys) {
+            EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, key.getCurve());
+            List<T> curveKeys = curves.getOrDefault(curve, new LinkedList<>());
+            curveKeys.add(key);
+            curves.putIfAbsent(curve, curveKeys);
+        }
+        List<Map.Entry<EC_Curve, List<T>>> curveList = new LinkedList<>();
+        curveList.addAll(curves.entrySet());
+        Comparator<Map.Entry<EC_Curve, List<T>>> c = Comparator.comparing(o -> o.getKey().getBits());
+        curveList.sort(c.thenComparing(b -> b.getKey().getId()));
+        return curveList;
     }
 
     public static EC_Store getInstance() {
