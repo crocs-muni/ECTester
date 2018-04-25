@@ -65,7 +65,7 @@ public abstract class BaseTextTestWriter implements TestWriter {
 
         if (compound) {
             CompoundTest test = (CompoundTest) t;
-            out.append(result.getCause().toString());
+            out.append(String.valueOf(result.getCause()));
             out.append(System.lineSeparator());
             Test[] tests = test.getStartedTests();
             for (int i = 0; i < tests.length; ++i) {

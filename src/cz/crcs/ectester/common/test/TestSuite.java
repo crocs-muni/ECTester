@@ -8,7 +8,7 @@ import cz.crcs.ectester.common.output.TestWriter;
 public abstract class TestSuite {
     protected String name;
     protected String description;
-    protected TestWriter writer;
+    private TestWriter writer;
     private Test running;
 
     public TestSuite(TestWriter writer, String name, String description) {

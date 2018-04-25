@@ -37,8 +37,16 @@ public class CompoundTest extends Test {
         return new CompoundTest(callback, RUN_ALL, tests);
     }
 
+    public static CompoundTest function(Function<Test[], Result> callback, Consumer<Test[]> runCallback, Test... tests) {
+        return new CompoundTest(callback, runCallback, tests);
+    }
+
     public static CompoundTest function(Function<Test[], Result> callback, String description, Test... tests) {
         return new CompoundTest(callback, RUN_ALL, description, tests);
+    }
+
+    public static CompoundTest function(Function<Test[], Result> callback, Consumer<Test[]> runCallback, String description, Test... tests) {
+        return new CompoundTest(callback, runCallback, description, tests);
     }
 
     public static CompoundTest all(Result.ExpectedValue what, Test... all) {

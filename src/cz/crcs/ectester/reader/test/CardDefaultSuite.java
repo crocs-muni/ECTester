@@ -41,12 +41,11 @@ public class CardDefaultSuite extends CardTestSuite {
         short[] keySizes = field == KeyPair.ALG_EC_FP ? EC_Consts.FP_SIZES : EC_Consts.F2M_SIZES;
         short domain = field == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
         for (short keyLength : keySizes) {
-            String description = "Tests of " + keyLength + "b " + CardUtil.getKeyTypeString(field) + " support:";
 
             List<Test> supportTests = new LinkedList<>();
             Test allocateFirst = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, keyLength, field), ExpectedValue.SUCCESS));
             if (!allocateFirst.ok()) {
-                doTest(CompoundTest.all(ExpectedValue.SUCCESS, description + " None.", allocateFirst));
+                doTest(CompoundTest.all(ExpectedValue.SUCCESS, "No support for " + keyLength + "b " + CardUtil.getKeyTypeString(field) + ".", allocateFirst));
                 continue;
             }
             supportTests.add(allocateFirst);
@@ -118,7 +117,8 @@ public class CardDefaultSuite extends CardTestSuite {
             Test signTest = runTest(CompoundTest.any(ExpectedValue.SUCCESS, "Signature tests.", signTests.toArray(new Test[0])));
             supportTests.add(signTest);
 
-            doTest(CompoundTest.all(ExpectedValue.SUCCESS, description + " Some.", supportTests.toArray(new Test[0])));
+            ExpectedValue[] testExpects = {ExpectedValue.SUCCESS, ExpectedValue.ANY, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS};
+            doTest(CompoundTest.mask(testExpects, "Tests of " + keyLength + "b " + CardUtil.getKeyTypeString(field) + " support.", supportTests.toArray(new Test[0])));
             new Command.Cleanup(this.card).send();
         }
     }
