@@ -34,37 +34,33 @@
         var parent_depth = parent.data("depth");
 		var toggled = $(this).data("toggled");
 
-		var cont = true;
+		var objs = $();
 		if (toggled) {
 			parent.nextAll().each(function () {
-				if (cont) {
-					if ($(this).data("depth") <= parent_depth) {
-						cont = false;
-						return;
-					}
-					var clickable = $(this).children(":first");
-
-					var this_toggled = clickable.data("toggled");
-					if (this_toggled) {
-						clickable.data("toggled", false);
-						clickable.children().toggleClass("fa-plus-square").toggleClass("fa-minus-square");	
-					}
-					$(this).hide(200);
+				if ($(this).data("depth") <= parent_depth) {
+					return false;
 				}
+				var clickable = $(this).children(":first");
+
+				if (clickable.data("toggled")) {
+					clickable.data("toggled", false);
+					clickable.children().toggleClass("fa-plus-square").toggleClass("fa-minus-square");
+				}
+				objs = objs.add($(this));
+				return true;
 			});
+			$(objs).hide(200);
 		} else {
 			parent.nextAll().each(function () {
-				if (cont) {
-					if ($(this).data("depth") == parent_depth + 1) {
-						$(this).show(200);
-					} else if ($(this).data("depth") == parent_depth) {
-						cont = false;
-						return;
-					}
-				}				
+				if ($(this).data("depth") == parent_depth + 1) {
+					objs = objs.add($(this));
+				} else if ($(this).data("depth") == parent_depth) {
+					return false;
+				}
+				return true;
 			});
+			$(objs).show(200);
 		}
-        
         $(this).children().toggleClass("fa-plus-square").toggleClass("fa-minus-square");
         $(this).data("toggled", !toggled);
     });
