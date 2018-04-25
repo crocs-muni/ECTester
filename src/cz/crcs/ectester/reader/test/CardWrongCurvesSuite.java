@@ -77,7 +77,7 @@ public class CardWrongCurvesSuite extends CardTestSuite {
             byte curve = EC_Consts.getCurve(keyLength, KeyPair.ALG_EC_FP);
             Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_FP), ExpectedValue.SUCCESS));
             if (!key.ok()) {
-                doTest(key);
+                doTest(CompoundTest.all(ExpectedValue.SUCCESS, "No support for " + keyLength + "b ALG_EC_FP.", key));
                 continue;
             }
             Test set = runTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, curve, EC_Consts.PARAMETERS_DOMAIN_FP, null), ExpectedValue.SUCCESS));
@@ -113,7 +113,7 @@ public class CardWrongCurvesSuite extends CardTestSuite {
             byte curve = EC_Consts.getCurve(keyLength, KeyPair.ALG_EC_F2M);
             Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_F2M), ExpectedValue.SUCCESS));
             if (!key.ok()) {
-                doTest(key);
+                doTest(CompoundTest.all(ExpectedValue.SUCCESS, "No support for " + keyLength + "b ALG_EC_F2M.", key));
                 continue;
             }
             Test set = runTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, curve, EC_Consts.PARAMETERS_DOMAIN_F2M, null), ExpectedValue.SUCCESS));
