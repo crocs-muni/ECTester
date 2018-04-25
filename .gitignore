@@ -8,6 +8,15 @@
 /dist/ECTesterStandalone-dist.jar
 /applet/ectester.cap
 
+# Test runs in /dist
+/dist/*.default
+/dist/*.test-vectors
+/dist/*.cofactor
+/dist/*.composite
+/dist/*.wrong
+/dist/*.invalid
+/dist/*.twist
+
 # Built binaries in /src.
 /src/**/*.a
 /src/**/*.o
