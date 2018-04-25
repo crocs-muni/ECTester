@@ -102,6 +102,10 @@ public abstract class BaseTextTestWriter implements TestWriter {
             sb.append("═══ ").append(t.toString()).append(" ═══");
             sb.append(System.lineSeparator());
         }
+        for (StackTraceElement s : error.getStackTrace()) {
+            sb.append("═══ ").append(s.toString()).append(" ═══");
+            sb.append(System.lineSeparator());
+        }
         return sb.toString();
     }
 
