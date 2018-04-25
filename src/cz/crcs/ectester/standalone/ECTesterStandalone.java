@@ -70,9 +70,9 @@ public class ECTesterStandalone {
     private Options opts = new Options();
     private TreeParser optParser;
     private TreeCommandLine cli;
-    private static final String VERSION = "v0.2.0";
+    public static final String VERSION = "v0.2.0";
     private static final String DESCRIPTION = "ECTesterStandalone " + VERSION + ", an Elliptic Curve Cryptography support tester/utility.";
-    private static final String LICENSE = "MIT Licensed\nCopyright (c) 2016-2017 Petr Svenda <petr@svenda.com>";
+    private static final String LICENSE = "MIT Licensed\nCopyright (c) 2016-2018 Petr Svenda <petr@svenda.com>";
     private static final String CLI_HEADER = "\n" + DESCRIPTION + "\n\n";
     private static final String CLI_FOOTER = "\n" + LICENSE;
 

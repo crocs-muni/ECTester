@@ -4,6 +4,7 @@ import cz.crcs.ectester.common.output.BaseYAMLTestWriter;
 import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.test.Testable;
 import cz.crcs.ectester.common.util.ByteUtil;
+import cz.crcs.ectester.standalone.ECTesterStandalone;
 import cz.crcs.ectester.standalone.test.KeyAgreementTestable;
 import cz.crcs.ectester.standalone.test.KeyGeneratorTestable;
 import cz.crcs.ectester.standalone.test.SignatureTestable;
@@ -97,6 +98,7 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
             StandaloneTestSuite standaloneSuite = (StandaloneTestSuite) suite;
             Map<String, Object> result = new HashMap<>();
             result.put("type", "library");
+            result.put("ectester", ECTesterStandalone.VERSION);
             result.put("name", standaloneSuite.getLibrary().name());
             return result;
         }

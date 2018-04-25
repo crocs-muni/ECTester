@@ -5,6 +5,7 @@ import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.test.Testable;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.reader.CardMngr;
+import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.test.CardTestSuite;
 import cz.crcs.ectester.reader.test.CommandTestable;
@@ -41,6 +42,7 @@ public class TextTestWriter extends BaseTextTestWriter {
         if (suite instanceof CardTestSuite) {
             CardTestSuite cardSuite = (CardTestSuite) suite;
             StringBuilder sb = new StringBuilder();
+            sb.append("═══ ECTester version: " + ECTesterReader.VERSION).append(System.lineSeparator());
             sb.append("═══ Card ATR: ").append(ByteUtil.bytesToHex(cardSuite.getCard().getATR().getBytes(), false)).append(System.lineSeparator());
             try {
                 CardMngr.CPLC cplc = cardSuite.getCard().getCPLC();

@@ -4,6 +4,7 @@ import cz.crcs.ectester.common.output.BaseXMLTestWriter;
 import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.test.Testable;
 import cz.crcs.ectester.common.util.ByteUtil;
+import cz.crcs.ectester.standalone.ECTesterStandalone;
 import cz.crcs.ectester.standalone.test.KeyAgreementTestable;
 import cz.crcs.ectester.standalone.test.KeyGeneratorTestable;
 import cz.crcs.ectester.standalone.test.SignatureTestable;
@@ -118,6 +119,7 @@ public class XMLTestWriter extends BaseXMLTestWriter {
             StandaloneTestSuite standaloneSuite = (StandaloneTestSuite) suite;
             Element result = doc.createElement("device");
             result.setAttribute("type", "library");
+            result.setAttribute("ectester", ECTesterStandalone.VERSION);
 
             Element name = doc.createElement("name");
             name.setTextContent(standaloneSuite.getLibrary().name());

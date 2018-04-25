@@ -5,6 +5,7 @@ import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.test.Testable;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.reader.CardMngr;
+import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.test.CardTestSuite;
@@ -88,6 +89,7 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
             CardTestSuite cardSuite = (CardTestSuite) suite;
             Map<String, Object> result = new HashMap<>();
             result.put("type", "card");
+            result.put("ectester", ECTesterReader.VERSION);
             result.put("cplc", cplcObject(cardSuite.getCard()));
             result.put("ATR", ByteUtil.bytesToHex(cardSuite.getCard().getATR().getBytes(), false));
             return result;

@@ -5,6 +5,7 @@ import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.test.Testable;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.reader.CardMngr;
+import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.test.CardTestSuite;
@@ -113,6 +114,7 @@ public class XMLTestWriter extends BaseXMLTestWriter {
             CardTestSuite cardSuite = (CardTestSuite) suite;
             Element result = doc.createElement("device");
             result.setAttribute("type", "card");
+            result.setAttribute("ectester", ECTesterReader.VERSION);
             result.appendChild(cplcElement(cardSuite.getCard()));
 
             Element atr = doc.createElement("ATR");
