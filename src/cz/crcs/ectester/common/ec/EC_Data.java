@@ -219,6 +219,19 @@ public abstract class EC_Data implements Comparable<EC_Data> {
     public int compareTo(EC_Data o) {
         if (o == this) return 0;
         if (this.id != null && o.id != null) {
+            int minLength = Math.min(this.id.length(), o.id.length());
+            for (int i = 0; i < minLength; i++) {
+                if (this.id.charAt(i) != o.id.charAt(i)) {
+                    String thisEnd = this.id.substring(i);
+                    String oEnd = o.id.substring(i);
+                    try {
+                        int thisIndex = Integer.parseInt(thisEnd);
+                        int oIndex = Integer.parseInt(oEnd);
+                        return Integer.compare(thisIndex, oIndex);
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            }
             return this.id.compareTo(o.id);
         } else if (this.id == null && o.id == null) {
             if (Arrays.equals(this.data, o.data)) {

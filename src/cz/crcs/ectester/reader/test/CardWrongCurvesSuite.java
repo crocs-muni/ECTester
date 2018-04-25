@@ -87,8 +87,8 @@ public class CardWrongCurvesSuite extends CardTestSuite {
                 doTest(CompoundTest.all(ExpectedValue.FAILURE, "No support for " + keyLength + "b ALG_EC_FP.", key));
                 continue;
             }
-            Test set = runTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, curve, EC_Consts.PARAMETERS_DOMAIN_FP, null), ExpectedValue.SUCCESS));
-            Test setup = runTest(CompoundTest.all(ExpectedValue.SUCCESS, "KeyPair setup.", key, set));
+            Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, curve, EC_Consts.PARAMETERS_DOMAIN_FP, null), ExpectedValue.SUCCESS);
+            Test setup = CompoundTest.all(ExpectedValue.SUCCESS, "KeyPair setup.", key, set);
 
             Test prime0 = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_FP, EC_Consts.TRANSFORMATION_ZERO), "Set p = 0.", "ECDH with p = 0.");
             Test prime1 = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_FP, EC_Consts.TRANSFORMATION_ONE), "Set p = 1.", "ECDH with p = 1.");
@@ -107,7 +107,7 @@ public class CardWrongCurvesSuite extends CardTestSuite {
             EC_Params compositeData = new EC_Params(EC_Consts.PARAMETER_FP, new byte[][]{compositeBytes});
             Test composite = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, compositeData.getParams(), compositeData.flatten()), "Set p = product of two primes.", "ECDH with p = q * s.");
 
-            Test wrong = runTest(CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted prime parameter.", prime0, prime1, primePower, composite));
+            Test wrong = CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted prime parameter.", prime0, prime1, primePower, composite);
             doTest(CompoundTest.all(ExpectedValue.SUCCESS, "Tests of " + keyLength + "b " + CardUtil.getKeyTypeString(KeyPair.ALG_EC_FP), setup, wrong));
         }
 
@@ -123,8 +123,8 @@ public class CardWrongCurvesSuite extends CardTestSuite {
                 doTest(CompoundTest.all(ExpectedValue.FAILURE, "No support for " + keyLength + "b ALG_EC_F2M.", key));
                 continue;
             }
-            Test set = runTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, curve, EC_Consts.PARAMETERS_DOMAIN_F2M, null), ExpectedValue.SUCCESS));
-            Test setup = runTest(CompoundTest.all(ExpectedValue.SUCCESS, "KeyPair setup.", key, set));
+            Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, curve, EC_Consts.PARAMETERS_DOMAIN_F2M, null), ExpectedValue.SUCCESS);
+            Test setup = CompoundTest.all(ExpectedValue.SUCCESS, "KeyPair setup.", key, set);
 
             Test coeff0 = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_F2M, EC_Consts.TRANSFORMATION_ZERO), "Set e1 = e2 = e3 = 0.", "ECDH with wrong field polynomial: x^" + keyLength);
 
@@ -139,7 +139,7 @@ public class CardWrongCurvesSuite extends CardTestSuite {
             EC_Params coeffParams = new EC_Params(EC_Consts.PARAMETER_F2M, coeffBytes);
             Test coeffLarger = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, coeffParams.getParams(), coeffParams.flatten()), "Set e1=" + e1 + ", e2=" + e2 + ", e3=" + e3, "ECDH with wrong field poly, powers larger than " + keyLength);
 
-            Test wrong = runTest(CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted field polynomial parameter.", coeff0, coeffLarger));
+            Test wrong = CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted field polynomial parameter.", coeff0, coeffLarger);
             doTest(CompoundTest.all(ExpectedValue.SUCCESS, "Tests of " + keyLength + "b " + CardUtil.getKeyTypeString(KeyPair.ALG_EC_F2M), setup, wrong));
         }
 
@@ -160,7 +160,7 @@ public class CardWrongCurvesSuite extends CardTestSuite {
         Test ecdh = CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH), ExpectedValue.FAILURE);
 
 
-        return runTest(CompoundTest.function((tests) -> {
+        return CompoundTest.function((tests) -> {
             if (preparePhase.ok() | !allocateECDH.ok() | ecdh.ok()) {
                 return new Result(Result.Value.SUCCESS, "All tests had the expected result.");
             } else {
@@ -176,6 +176,6 @@ public class CardWrongCurvesSuite extends CardTestSuite {
                 return;
             }
             ecdh.run();
-        },fullDesc, preparePhase, allocateECDH, ecdh));
+        },fullDesc, preparePhase, allocateECDH, ecdh);
     }
 }
