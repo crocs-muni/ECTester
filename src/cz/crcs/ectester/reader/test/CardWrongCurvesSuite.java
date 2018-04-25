@@ -30,7 +30,7 @@ import static cz.crcs.ectester.common.test.Result.ExpectedValue;
 public class CardWrongCurvesSuite extends CardTestSuite {
 
     public CardWrongCurvesSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "wrong", "The wrong curve suite run whether the card rejects domain parameters which are not curves.");
+        super(writer, cfg, cardManager, "wrong", "The wrong curve suite tests whether the card rejects domain parameters which are not curves.");
     }
 
     @Override
@@ -44,13 +44,13 @@ public class CardWrongCurvesSuite extends CardTestSuite {
             List<Test> tests = new LinkedList<>();
             Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS));
             if (!key.ok()) {
-                doTest(CompoundTest.all(ExpectedValue.SUCCESS, "No support for " + curve.getBits() + "b " + CardUtil.getKeyTypeString(curve.getField()), key));
+                doTest(CompoundTest.all(ExpectedValue.FAILURE, "No support for " + curve.getBits() + "b " + CardUtil.getKeyTypeString(curve.getField()), key));
                 continue;
             }
             tests.add(key);
-            Test set = runTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.SUCCESS));
-            Test generate = runTest(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_BOTH), ExpectedValue.SUCCESS));
-            Test setup = runTest(CompoundTest.any(ExpectedValue.FAILURE, "Set wrong curve and generate keypairs, should fail.", set, generate));
+            Test set = runTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.FAILURE));
+            Test generate = runTest(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_BOTH), ExpectedValue.FAILURE));
+            Test setup = runTest(CompoundTest.any(ExpectedValue.SUCCESS, "Set wrong curve and generate keypairs.", set, generate));
             tests.add(setup);
 
             for (byte kaType : EC_Consts.KA_TYPES) {
@@ -61,7 +61,14 @@ public class CardWrongCurvesSuite extends CardTestSuite {
                     tests.add(kaTest);
                 }
             }
-            doTest(CompoundTest.all(ExpectedValue.SUCCESS, "Wrong curve test of " + curve.getBits() + "b " + CardUtil.getKeyTypeString(curve.getField()), tests.toArray(new Test[0])));
+            doTest(CompoundTest.function((tsts) -> {
+                for (int i = 0; i < tsts.length; ++i) {
+                    if (i != 1 && !tsts[i].ok()) {
+                        return new Result(Result.Value.FAILURE, "Some tests did not have the expected result.");
+                    }
+                }
+                return new Result(Result.Value.SUCCESS, "All tests had the expected result.");
+            }, "Wrong curve test of " + curve.getBits() + "b " + CardUtil.getKeyTypeString(curve.getField()), tests.toArray(new Test[0])));
         }
         /*
          * Do some interesting tests with corrupting the custom curves.
@@ -77,7 +84,7 @@ public class CardWrongCurvesSuite extends CardTestSuite {
             byte curve = EC_Consts.getCurve(keyLength, KeyPair.ALG_EC_FP);
             Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_FP), ExpectedValue.SUCCESS));
             if (!key.ok()) {
-                doTest(CompoundTest.all(ExpectedValue.SUCCESS, "No support for " + keyLength + "b ALG_EC_FP.", key));
+                doTest(CompoundTest.all(ExpectedValue.FAILURE, "No support for " + keyLength + "b ALG_EC_FP.", key));
                 continue;
             }
             Test set = runTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, curve, EC_Consts.PARAMETERS_DOMAIN_FP, null), ExpectedValue.SUCCESS));
@@ -87,7 +94,7 @@ public class CardWrongCurvesSuite extends CardTestSuite {
             Test prime1 = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_FP, EC_Consts.TRANSFORMATION_ONE), "Set p = 1.", "ECDH with p = 1.");
 
             short keyHalf = (short) (keyLength / 2);
-            BigInteger prime = new BigInteger(keyHalf, r);
+            BigInteger prime = new BigInteger(keyHalf, 50, r);
             BigInteger primePow = prime.pow(2);
             byte[] primePowBytes = ECUtil.toByteArray(primePow, keyLength);
             EC_Params primePowData = new EC_Params(EC_Consts.PARAMETER_FP, new byte[][]{primePowBytes});
@@ -113,7 +120,7 @@ public class CardWrongCurvesSuite extends CardTestSuite {
             byte curve = EC_Consts.getCurve(keyLength, KeyPair.ALG_EC_F2M);
             Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_F2M), ExpectedValue.SUCCESS));
             if (!key.ok()) {
-                doTest(CompoundTest.all(ExpectedValue.SUCCESS, "No support for " + keyLength + "b ALG_EC_F2M.", key));
+                doTest(CompoundTest.all(ExpectedValue.FAILURE, "No support for " + keyLength + "b ALG_EC_F2M.", key));
                 continue;
             }
             Test set = runTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, curve, EC_Consts.PARAMETERS_DOMAIN_F2M, null), ExpectedValue.SUCCESS));
@@ -155,9 +162,9 @@ public class CardWrongCurvesSuite extends CardTestSuite {
 
         return runTest(CompoundTest.function((tests) -> {
             if (preparePhase.ok() | !allocateECDH.ok() | ecdh.ok()) {
-                return new Result(Result.Value.SUCCESS, "");
+                return new Result(Result.Value.SUCCESS, "All tests had the expected result.");
             } else {
-                return new Result(Result.Value.FAILURE, "");
+                return new Result(Result.Value.FAILURE, "Some tests did not have the expected result.");
             }
         }, (tests) -> {
             preparePhase.run();
