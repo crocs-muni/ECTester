@@ -15,6 +15,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -37,6 +40,9 @@ public abstract class BaseXMLTestWriter implements TestWriter {
         Element rootElem = doc.createElement("testSuite");
         rootElem.setAttribute("name", suite.getName());
         rootElem.setAttribute("desc", suite.getDescription());
+        DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+        Date date = new Date();
+        rootElem.setAttribute("date", dateFormat.format(date));
 
         root = rootElem;
         doc.appendChild(root);

@@ -5,10 +5,9 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -32,6 +31,9 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
         testSuite.put("name", suite.getName());
         testSuite.put("desc", suite.getDescription());
 
+        DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+        Date date = new Date();
+        testRun.put("date", dateFormat.format(date));
         testRun.put("suite", testSuite);
         testRun.put("device", deviceObject(suite));
         testRun.put("tests", tests);

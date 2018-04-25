@@ -3,6 +3,9 @@ package cz.crcs.ectester.common.output;
 import cz.crcs.ectester.common.test.*;
 
 import java.io.PrintStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * An absctract basis of a TextTestWriter, which outputs in a human readable format, into console.
@@ -25,6 +28,9 @@ public abstract class BaseTextTestWriter implements TestWriter {
     public void begin(TestSuite suite) {
         output.println("═══ Running test suite: " + suite.getName() + " ═══");
         output.println("═══ " + suite.getDescription());
+        DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+        Date date = new Date();
+        output.println("═══ Date: " + dateFormat.format(date));
         output.print(deviceString(suite));
     }
 
