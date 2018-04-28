@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE keys [
+        <!ENTITY secg SYSTEM "degenerate/secg.xml">
+        <!ENTITY brainpool SYSTEM "degenerate/brainpool.xml">
+        ]>
+<keys xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../schema.xsd"
+      category="degenerate"
+      desc="">
+    <!--
+    This is messy and what not, but Java XML api doesn't support
+    the XInclude selector necessary to make this work nicely, so XInclude is out...
+    -->
+    &secg;
+    &brainpool;
+</keys>

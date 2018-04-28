@@ -40,6 +40,7 @@ public class EC_Store {
             dbf.setSchema(sch);
             dbf.setNamespaceAware(true);
             dbf.setIgnoringComments(true);
+            dbf.setXIncludeAware(true);
             dbf.setIgnoringElementContentWhitespace(true);
             db = dbf.newDocumentBuilder();
             db.setErrorHandler(new ErrorHandler() {

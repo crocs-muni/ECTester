@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <categories xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="schema.xsd">
+    <!-- Standard curves -->
     <category>
         <name>anomalous</name>
         <directory>anomalous</directory>
@@ -32,9 +33,36 @@
         <desc>GOST R 34.10-2001: RFC5832</desc>
     </category>
     <category>
+        <name>x962</name>
+        <directory>x962</directory>
+        <desc>ANSI X9.62 example curves.</desc>
+    </category>
+
+    <!-- Custom curves -->
+    <category>
+        <name>invalid</name>
+        <directory>invalid</directory>
+        <desc>Invalid curves and points on them for common standard named curves.</desc>
+    </category>
+    <category>
+        <name>twist</name>
+        <directory>twist</directory>
+        <desc>Points on quadratic twists of common standard named curves.</desc>
+    </category>
+    <category>
+        <name>degenerate</name>
+        <directory>degenerate</directory>
+        <desc>Points on degenerate curves for common standard named curves.</desc>
+    </category>
+    <category>
+        <name>cofactor</name>
+        <directory>cofactor</directory>
+        <desc>Curves of order n * p, with p prime and n in {2,4,8,16,32,64,128}. Generator of order p, with points on the subgroup of order n.</desc>
+    </category>
+    <category>
         <name>composite</name>
         <directory>composite</directory>
-        <desc>Composite order curves, with points of very small order pregenerated.</desc>
+        <desc>Composite order curves, with points of very small order pre-generated.</desc>
     </category>
     <category>
         <name>wrong</name>
@@ -42,28 +70,8 @@
         <desc>Wrong field curves. These should definitely give an error when used. Since the "prime" used for the field are not prime, and the field polynomials are also not irreducible. Simply put these parameters don't specify a valid elliptic curve.</desc>
     </category>
     <category>
-        <name>invalid</name>
-        <directory>invalid</directory>
-        <desc></desc>
-    </category>
-    <category>
-        <name>twist</name>
-        <directory>twist</directory>
-        <desc></desc>
-    </category>
-    <category>
-        <name>cofactor</name>
-        <directory>cofactor</directory>
-        <desc></desc>
-    </category>
-    <category>
         <name>test</name>
         <directory>test</directory>
         <desc>Test vectors</desc>
-    </category>
-    <category>
-        <name>x962</name>
-        <directory>x962</directory>
-        <desc>ANSI X9.62 example curves.</desc>
     </category>
 </categories>
