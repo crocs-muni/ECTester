@@ -1,11 +1,12 @@
 ---
 testRun:
+  date: 2018.04.26 00:38:58
   suite:
     name: default
-    desc: The default test suite run basic support of ECDH and ECDSA.
+    desc: The default test suite tests basic support of ECDH and ECDSA.
   tests:
   - result:
-      cause: Some sub-tests did not have the expected result.
+      cause: Some sub-tests did not match the result mask.
       ok: false
       value: FAILURE
     tests:
@@ -14,7 +15,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 511862329
+        duration: 512772241
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -32,7 +33,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 382605410
+        duration: 381317160
         natural_sw: 36864
         apdu: 90 00 00 02 90 00
         sws:
@@ -50,7 +51,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 522728704
+        duration: 523708055
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -68,7 +69,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 172883576
+        duration: 173192624
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -86,7 +87,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 723502258
+        duration: 724587901
         natural_sw: 36864
         apdu: 90 00 00 02 90 00
         sws:
@@ -114,7 +115,7 @@ testRun:
             ok: true
             value: SUCCESS
           response:
-            duration: 80035605
+            duration: 80110858
             natural_sw: 36864
             apdu: 90 00 90 00
             sws:
@@ -131,7 +132,7 @@ testRun:
             ok: false
             value: FAILURE
           response:
-            duration: 17178882
+            duration: 17279320
             natural_sw: 36864
             apdu: 00 02 90 00
             sws:
@@ -148,7 +149,7 @@ testRun:
             ok: false
             value: FAILURE
           response:
-            duration: 14344631
+            duration: 14273456
             natural_sw: 36864
             apdu: 00 02 90 00
             sws:
@@ -167,7 +168,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 10998565
+          duration: 10961083
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -184,7 +185,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 7898660
+          duration: 8224461
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -201,7 +202,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 7885683
+          duration: 8057429
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -218,7 +219,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8040397
+          duration: 8026914
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -235,7 +236,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8118495
+          duration: 8201005
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -264,7 +265,7 @@ testRun:
             ok: true
             value: SUCCESS
           response:
-            duration: 93840400
+            duration: 94379538
             natural_sw: 36864
             apdu: 90 00 90 00
             sws:
@@ -281,7 +282,7 @@ testRun:
             ok: true
             value: SUCCESS
           response:
-            duration: 521152780
+            duration: 518104441
             natural_sw: 36864
             apdu: 90 00 90 00
             sws:
@@ -298,7 +299,7 @@ testRun:
             ok: true
             value: SUCCESS
           response:
-            duration: 516180265
+            duration: 515071241
             natural_sw: 36864
             apdu: 90 00 90 00
             sws:
@@ -309,7 +310,7 @@ testRun:
           command:
             apdu: b0 72 01 00 03 11 00 00
             desc: ALG_ECDSA_SHA with local keypair(random data)
-          desc: Mean = 515979237 ns, Median = 515930956 ns, Mode = 513453452 ns
+          desc: Mean = 514831355 ns, Median = 514735149 ns, Mode = 513171263 ns
         type: compound
         desc: Test of the ALG_ECDSA_SHA signature.
       - result:
@@ -317,7 +318,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 60811928
+          duration: 60717256
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -334,7 +335,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64206999
+          duration: 64286313
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -351,7 +352,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64687837
+          duration: 64578912
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -368,7 +369,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63512798
+          duration: 66148259
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -383,9 +384,9 @@ testRun:
       type: compound
       desc: Signature tests.
     type: compound
-    desc: 'Tests of 112b ALG_EC_FP support: Some.'
+    desc: Tests of 112b ALG_EC_FP support.
   - result:
-      cause: Some sub-tests did not have the expected result.
+      cause: Some sub-tests did not match the result mask.
       ok: false
       value: FAILURE
     tests:
@@ -394,7 +395,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 523980932
+        duration: 524962451
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -412,7 +413,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 22196254
+        duration: 22135019
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -430,7 +431,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 524799573
+        duration: 526012989
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -448,7 +449,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 156214403
+        duration: 156610194
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -466,7 +467,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21846287
+        duration: 22076259
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -489,7 +490,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 31956425
+          duration: 32127757
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -506,7 +507,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 10822585
+          duration: 11048044
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -523,7 +524,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 7933630
+          duration: 8032238
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -540,7 +541,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8238515
+          duration: 7989009
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -557,7 +558,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8083498
+          duration: 7942684
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -574,7 +575,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8190497
+          duration: 7904050
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -598,7 +599,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64558734
+          duration: 64203184
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -615,7 +616,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63396220
+          duration: 63398013
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -632,7 +633,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63792162
+          duration: 63674805
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -649,7 +650,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64208119
+          duration: 64003573
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -666,7 +667,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64117549
+          duration: 64222303
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -681,9 +682,9 @@ testRun:
       type: compound
       desc: Signature tests.
     type: compound
-    desc: 'Tests of 128b ALG_EC_FP support: Some.'
+    desc: Tests of 128b ALG_EC_FP support.
   - result:
-      cause: Some sub-tests did not have the expected result.
+      cause: Some sub-tests did not match the result mask.
       ok: false
       value: FAILURE
     tests:
@@ -692,7 +693,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 525835146
+        duration: 523614478
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -710,7 +711,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 22221377
+        duration: 21813486
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -728,7 +729,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 524661357
+        duration: 522525586
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -746,7 +747,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 197016421
+        duration: 194475082
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -764,7 +765,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21984418
+        duration: 21835311
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -787,7 +788,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 32082058
+          duration: 31848932
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -804,7 +805,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 11177406
+          duration: 11069125
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -821,7 +822,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8117826
+          duration: 8002202
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -838,7 +839,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8226424
+          duration: 8030629
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -855,7 +856,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8225290
+          duration: 8067063
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -872,7 +873,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8261925
+          duration: 8118326
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -896,7 +897,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64126566
+          duration: 64205502
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -913,7 +914,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 67401474
+          duration: 67434570
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -930,7 +931,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63699532
+          duration: 63510599
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -947,7 +948,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 67031282
+          duration: 64062197
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -964,7 +965,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64061028
+          duration: 64108992
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -979,9 +980,9 @@ testRun:
       type: compound
       desc: Signature tests.
     type: compound
-    desc: 'Tests of 160b ALG_EC_FP support: Some.'
+    desc: Tests of 160b ALG_EC_FP support.
   - result:
-      cause: Some sub-tests did not have the expected result.
+      cause: Some sub-tests did not match the result mask.
       ok: false
       value: FAILURE
     tests:
@@ -990,7 +991,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 528139299
+        duration: 529005719
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1008,7 +1009,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 22225097
+        duration: 21941960
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1026,7 +1027,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 525163355
+        duration: 526104861
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1044,7 +1045,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 198591529
+        duration: 198794119
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1062,7 +1063,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21934668
+        duration: 21805263
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1085,7 +1086,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 32255547
+          duration: 32150929
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1102,7 +1103,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 11014277
+          duration: 10825811
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1119,7 +1120,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 7930281
+          duration: 8057403
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1136,7 +1137,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 7991801
+          duration: 7978204
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1153,7 +1154,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8079401
+          duration: 7911587
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1170,7 +1171,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8065095
+          duration: 7948568
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1194,7 +1195,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63341370
+          duration: 63122009
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1211,7 +1212,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63717185
+          duration: 63556133
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1228,7 +1229,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63864569
+          duration: 63927152
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1245,7 +1246,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64013262
+          duration: 64140340
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1262,7 +1263,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 66997168
+          duration: 67087276
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1277,9 +1278,9 @@ testRun:
       type: compound
       desc: Signature tests.
     type: compound
-    desc: 'Tests of 192b ALG_EC_FP support: Some.'
+    desc: Tests of 192b ALG_EC_FP support.
   - result:
-      cause: Some sub-tests did not have the expected result.
+      cause: Some sub-tests did not match the result mask.
       ok: false
       value: FAILURE
     tests:
@@ -1288,7 +1289,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 524450189
+        duration: 525544248
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1306,7 +1307,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21847845
+        duration: 21747072
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1324,7 +1325,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 535692032
+        duration: 536650712
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1342,7 +1343,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 192270796
+        duration: 192508911
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1360,7 +1361,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21883380
+        duration: 21824887
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1383,7 +1384,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 31886066
+          duration: 31758999
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1400,7 +1401,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 11096084
+          duration: 10887549
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1417,7 +1418,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8162233
+          duration: 8008909
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1434,7 +1435,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8204701
+          duration: 7859846
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1451,7 +1452,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8169923
+          duration: 7942096
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1468,7 +1469,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8159535
+          duration: 7975645
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1492,7 +1493,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63691889
+          duration: 63717379
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1509,7 +1510,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64088767
+          duration: 64189455
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1526,7 +1527,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64523215
+          duration: 64671899
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1543,7 +1544,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63287026
+          duration: 63571100
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1560,7 +1561,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63688637
+          duration: 63671884
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1575,9 +1576,9 @@ testRun:
       type: compound
       desc: Signature tests.
     type: compound
-    desc: 'Tests of 224b ALG_EC_FP support: Some.'
+    desc: Tests of 224b ALG_EC_FP support.
   - result:
-      cause: Some sub-tests did not have the expected result.
+      cause: Some sub-tests did not match the result mask.
       ok: false
       value: FAILURE
     tests:
@@ -1586,7 +1587,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 525943159
+        duration: 529549669
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1604,7 +1605,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 22004704
+        duration: 22238237
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1622,7 +1623,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 527406741
+        duration: 528775142
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1640,7 +1641,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 186765204
+        duration: 187108531
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1658,7 +1659,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21868698
+        duration: 21902131
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1681,7 +1682,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 32021618
+          duration: 32280708
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1698,7 +1699,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 11237049
+          duration: 11232879
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1715,7 +1716,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8271235
+          duration: 8062280
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1732,7 +1733,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8235871
+          duration: 8045726
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1749,7 +1750,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8234933
+          duration: 8336425
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1766,7 +1767,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8243435
+          duration: 8068685
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1790,7 +1791,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64480639
+          duration: 64597175
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1807,7 +1808,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 67172713
+          duration: 67064857
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1824,7 +1825,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63564709
+          duration: 63943963
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1841,7 +1842,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64182135
+          duration: 64168958
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1858,7 +1859,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64248454
+          duration: 64343149
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1873,9 +1874,9 @@ testRun:
       type: compound
       desc: Signature tests.
     type: compound
-    desc: 'Tests of 256b ALG_EC_FP support: Some.'
+    desc: Tests of 256b ALG_EC_FP support.
   - result:
-      cause: Some sub-tests did not have the expected result.
+      cause: Some sub-tests did not match the result mask.
       ok: false
       value: FAILURE
     tests:
@@ -1884,7 +1885,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 535722372
+        duration: 536722880
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1902,7 +1903,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 22267098
+        duration: 22037343
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1920,7 +1921,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 542199962
+        duration: 543526511
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1938,7 +1939,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 215444069
+        duration: 215697207
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1956,7 +1957,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21794800
+        duration: 21985411
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1979,7 +1980,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 32142038
+          duration: 32314246
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1996,7 +1997,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 11218130
+          duration: 11187645
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2013,7 +2014,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8315149
+          duration: 8064748
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2030,7 +2031,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8200195
+          duration: 8171633
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2047,7 +2048,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 7974171
+          duration: 8273821
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2064,7 +2065,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8004231
+          duration: 8234709
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2088,7 +2089,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 70079921
+          duration: 67069742
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2105,7 +2106,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63369441
+          duration: 63641531
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2122,7 +2123,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63854689
+          duration: 64123627
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2139,7 +2140,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64384713
+          duration: 64534547
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2156,7 +2157,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 67617435
+          duration: 67678154
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2171,9 +2172,9 @@ testRun:
       type: compound
       desc: Signature tests.
     type: compound
-    desc: 'Tests of 384b ALG_EC_FP support: Some.'
+    desc: Tests of 384b ALG_EC_FP support.
   - result:
-      cause: Some sub-tests did not have the expected result.
+      cause: Some sub-tests did not match the result mask.
       ok: false
       value: FAILURE
     tests:
@@ -2182,7 +2183,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 538557506
+        duration: 539907458
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2200,7 +2201,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21953548
+        duration: 22097322
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -2218,7 +2219,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 547125189
+        duration: 535004684
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2236,7 +2237,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 240084495
+        duration: 240623320
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2254,7 +2255,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21739968
+        duration: 22004757
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -2277,7 +2278,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 31859354
+          duration: 31965567
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2294,7 +2295,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 10933436
+          duration: 11056633
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2311,7 +2312,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8012007
+          duration: 8306019
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2328,7 +2329,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8069585
+          duration: 8257798
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2345,7 +2346,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8023228
+          duration: 8088340
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2362,7 +2363,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8051918
+          duration: 8152350
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2386,7 +2387,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63610737
+          duration: 60641641
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2403,7 +2404,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64041699
+          duration: 60799734
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2420,7 +2421,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64485198
+          duration: 61403307
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2437,7 +2438,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63479795
+          duration: 60389544
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2454,7 +2455,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63747581
+          duration: 60730864
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2469,9 +2470,9 @@ testRun:
       type: compound
       desc: Signature tests.
     type: compound
-    desc: 'Tests of 521b ALG_EC_FP support: Some.'
+    desc: Tests of 521b ALG_EC_FP support.
   - result:
-      cause: Some sub-tests did not have the expected result.
+      cause: Some sub-tests did not match the result mask.
       ok: false
       value: FAILURE
     tests:
@@ -2480,7 +2481,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 520748391
+        duration: 521975864
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2498,7 +2499,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 22204549
+        duration: 22186375
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -2516,7 +2517,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 523997906
+        duration: 525479589
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2534,7 +2535,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 24573412
+        duration: 24813930
         natural_sw: 36864
         apdu: 6f 00 6f 00 90 00
         sws:
@@ -2552,7 +2553,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 24823359
+        duration: 25292170
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -2575,7 +2576,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 31590687
+          duration: 31780991
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2592,7 +2593,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 10877087
+          duration: 11084657
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2609,7 +2610,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8021193
+          duration: 8225598
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2626,7 +2627,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8029426
+          duration: 8133503
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2643,7 +2644,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 7950090
+          duration: 8253366
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2660,7 +2661,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 7937869
+          duration: 8162216
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2684,7 +2685,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63293377
+          duration: 66475047
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2701,7 +2702,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63779681
+          duration: 63886451
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2718,7 +2719,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64295740
+          duration: 64350144
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2735,7 +2736,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64625656
+          duration: 64721899
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2752,7 +2753,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 70043438
+          duration: 70191413
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2767,9 +2768,9 @@ testRun:
       type: compound
       desc: Signature tests.
     type: compound
-    desc: 'Tests of 163b ALG_EC_F2M support: Some.'
+    desc: Tests of 163b ALG_EC_F2M support.
   - result:
-      cause: Some sub-tests did not have the expected result.
+      cause: Some sub-tests did not match the result mask.
       ok: false
       value: FAILURE
     tests:
@@ -2778,7 +2779,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 542699043
+        duration: 546877750
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2796,7 +2797,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21894921
+        duration: 21985883
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -2814,7 +2815,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 524423544
+        duration: 525695544
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2832,7 +2833,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 24843799
+        duration: 24965064
         natural_sw: 36864
         apdu: 6f 00 6f 00 90 00
         sws:
@@ -2850,7 +2851,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 24963353
+        duration: 24962006
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -2873,7 +2874,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 32034515
+          duration: 32138756
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2890,7 +2891,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 11030845
+          duration: 11216406
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2907,7 +2908,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8184033
+          duration: 8059132
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2924,7 +2925,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8140455
+          duration: 8296604
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2941,7 +2942,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8133770
+          duration: 8173802
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2958,7 +2959,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8175794
+          duration: 8214595
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2982,7 +2983,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63936405
+          duration: 64224652
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2999,7 +3000,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63515686
+          duration: 63451267
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3016,7 +3017,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63803857
+          duration: 63992119
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3033,7 +3034,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64198235
+          duration: 64238589
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3050,7 +3051,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64354494
+          duration: 64501824
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3065,9 +3066,9 @@ testRun:
       type: compound
       desc: Signature tests.
     type: compound
-    desc: 'Tests of 233b ALG_EC_F2M support: Some.'
+    desc: Tests of 233b ALG_EC_F2M support.
   - result:
-      cause: Some sub-tests did not have the expected result.
+      cause: Some sub-tests did not match the result mask.
       ok: false
       value: FAILURE
     tests:
@@ -3076,7 +3077,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 534968254
+        duration: 536071920
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -3094,7 +3095,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 22146882
+        duration: 22134855
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -3112,7 +3113,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 537862040
+        duration: 536076480
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -3130,7 +3131,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 24697846
+        duration: 24635264
         natural_sw: 36864
         apdu: 6f 00 6f 00 90 00
         sws:
@@ -3148,7 +3149,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 24945324
+        duration: 25060734
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -3171,7 +3172,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 31879571
+          duration: 31838155
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3188,7 +3189,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 11309293
+          duration: 10891826
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3205,7 +3206,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8201465
+          duration: 8076923
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3222,7 +3223,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8146347
+          duration: 8251529
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3239,7 +3240,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8078041
+          duration: 8148112
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3256,7 +3257,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8233046
+          duration: 7999483
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3280,7 +3281,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63487462
+          duration: 63280278
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3297,7 +3298,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63539512
+          duration: 63755726
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3314,7 +3315,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64058414
+          duration: 64246864
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3331,7 +3332,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64632408
+          duration: 64354024
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3348,7 +3349,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 67039718
+          duration: 69693463
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3363,9 +3364,9 @@ testRun:
       type: compound
       desc: Signature tests.
     type: compound
-    desc: 'Tests of 283b ALG_EC_F2M support: Some.'
+    desc: Tests of 283b ALG_EC_F2M support.
   - result:
-      cause: Some sub-tests did not have the expected result.
+      cause: Some sub-tests did not match the result mask.
       ok: false
       value: FAILURE
     tests:
@@ -3374,7 +3375,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 535550142
+        duration: 539550347
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -3392,7 +3393,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 22183116
+        duration: 21942058
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -3410,7 +3411,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 534347474
+        duration: 535729766
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -3428,7 +3429,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 24937372
+        duration: 24708136
         natural_sw: 36864
         apdu: 6f 00 6f 00 90 00
         sws:
@@ -3446,7 +3447,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 25086628
+        duration: 24953939
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -3469,7 +3470,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 31991813
+          duration: 31768218
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3486,7 +3487,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 11266647
+          duration: 11062789
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3503,7 +3504,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8231852
+          duration: 8214701
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3520,7 +3521,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8273612
+          duration: 8026206
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3537,7 +3538,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8219142
+          duration: 8162065
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3554,7 +3555,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8236326
+          duration: 8015873
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3578,7 +3579,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63819444
+          duration: 63863622
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3595,7 +3596,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64271249
+          duration: 67100374
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3612,7 +3613,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64622964
+          duration: 64454400
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3629,7 +3630,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63626106
+          duration: 63596622
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3646,7 +3647,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63655317
+          duration: 66446436
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3661,7 +3662,7 @@ testRun:
       type: compound
       desc: Signature tests.
     type: compound
-    desc: 'Tests of 409b ALG_EC_F2M support: Some.'
+    desc: Tests of 409b ALG_EC_F2M support.
   - result:
       cause: Some sub-tests did not have the expected result.
       ok: false
@@ -3672,7 +3673,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 62347154
+        duration: 62126734
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
@@ -3686,8 +3687,9 @@ testRun:
         desc: Allocate both keypairs 571b ALG_EC_F2M
       desc: Allocate both keypairs 571b ALG_EC_F2M
     type: compound
-    desc: 'Tests of 571b ALG_EC_F2M support: None.'
+    desc: No support for 571b ALG_EC_F2M.
   device:
+    ectester: v0.2.0
     cplc: {
       }
     type: card
