@@ -8,6 +8,7 @@ markdown: kramdown
 exclude:
  - Gemfile
  - Gemfile.lock
+ - README.md
 
 collections:
   results:
