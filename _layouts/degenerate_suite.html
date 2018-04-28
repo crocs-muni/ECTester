@@ -1,0 +1,18 @@
+---
+layout: default
+---
+
+{% include suite_header.html suite="Degenerate" %}
+
+Tests using known named curves froms several categories(SECG/NIST) against pre-generated 
+points on the degenerate line Y: x = 0. ECDH should fail, a success here might mean the 
+card does not check that the point lies on the correct curve and uses a curve model vulnerable to such degenerate points.
+<br/>
+See <a href="https://eprint.iacr.org/2015/1233.pdf">Degenerate Curve Attacks - Extending Invalid Curve Attacks to Edwards Curves and Other Models</a> for more information.
+<br/>
+
+{% include result_header.html testRun=page.testRun %}
+
+{% include result_table.html testRun=page.testRun %}
+
+{% include result_footer.html %}

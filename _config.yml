@@ -57,6 +57,12 @@ defaults:
      layout: twist_suite
      category: Twist
  - scope:
+     path: "_results/degenerate"
+     type: "results"
+   values:
+     layout: degenerate_suite
+     category: "Degenerate"
+ - scope:
      path: "_results/wrong"
      type: "results"
    values:

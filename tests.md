@@ -109,7 +109,7 @@ Tests using known named curves froms several categories(SECG/NIST) against pre-g
 `Y: x = 0`. ECDH should fail, a success here might mean the card does not check that the point lies on the correct curve
 and uses a curve model vulnerable to such degenerate points.
 
-See [Degenerate Curve Attachs - Extending Invalid Curve Attacks to Edwards Curves and Other Models](https://eprint.iacr.org/2015/1233.pdf) for more information.
+See [Degenerate Curve Attacks - Extending Invalid Curve Attacks to Edwards Curves and Other Models](https://eprint.iacr.org/2015/1233.pdf) for more information.
 
 For example:
 ```bash
