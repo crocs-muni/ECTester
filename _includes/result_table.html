@@ -1,15 +1,41 @@
 <style>
-    .clickable:hover {
+    .clickable:hover,#expand-all:hover,#collapse-all:hover {
         cursor: pointer;
     }
 
     #result-table {
-        margin-top: 2em;
+	    margin-top: -120px;
         margin-bottom: 2em;
+    }
+
+    #expand-all {
+    	position: sticky;
+    	top: 100px;
+    	transform: translateX(-150px);
+    }
+    #collapse-all {
+    	position: sticky;
+    	top: 150px;
+    	transform: translateX(-150px);
+    }
+    @media screen and (max-width: 64em) {
+		#expand-all, #collapse-all {
+			position: relative;
+			top: 0;
+			transform: none;
+		}
+		#result-table {
+			margin-top: 1em;
+		}
     }
 </style>
 
-<table id="result-table" style="width: 100%">
+
+<span id="expand-all" class="btn body-btn">Expand all</span><br/>
+<span id="collapse-all" class="btn body-btn">Collapse all</span>
+
+
+<table id="result-table" style="width: 100%;">
     <colgroup>
         <col span="1" style="width: 6%">
         <col span="1" style="width: 6%">
@@ -28,42 +54,76 @@
 </table>
 
 <script>
-    // Let compound tests expand their children.
-    $(".clickable").click(function () {
-        var parent = $(this).parent();
-        var parent_depth = parent.data("depth");
-		var toggled = $(this).data("toggled");
-
+	function expand(elem, all, timeout) {
+		var parent = elem.parent();
+		var parent_depth = parent.data("depth");
 		var objs = $();
-		if (toggled) {
-			parent.nextAll().each(function () {
-				if ($(this).data("depth") <= parent_depth) {
-					return false;
-				}
-				var clickable = $(this).children(":first");
-
-				if (clickable.data("toggled")) {
-					clickable.data("toggled", false);
-					clickable.children().toggleClass("fa-plus-square").toggleClass("fa-minus-square");
-				}
-				objs = objs.add($(this));
-				return true;
-			});
-			$(objs).hide(200);
-		} else {
-			parent.nextAll().each(function () {
-				if ($(this).data("depth") == parent_depth + 1) {
+		parent.nextAll().each(function () {
+				var depth = $(this).data("depth");
+				if ((all && depth > parent_depth + 1) || depth == parent_depth + 1) {
 					objs = objs.add($(this));
-				} else if ($(this).data("depth") == parent_depth) {
+					var clickable = $(this).children(":first");
+					if (all && clickable.hasClass("clickable") && !clickable.data("toggled")) {
+						clickable.data("toggled", true);
+						clickable.children().toggleClass("fa-plus-square").toggleClass("fa-minus-square");
+					}
+				} else if (depth == parent_depth) {
 					return false;
 				}
 				return true;
-			});
-			$(objs).show(200);
+		});
+        elem.children(":first").removeClass("fa-plus-square").addClass("fa-minus-square");
+        elem.data("toggled", true);
+		objs.show(timeout);
+	}
+
+	function collapse(elem, timeout) {
+		var parent = elem.parent();
+		var parent_depth = parent.data("depth");
+		var objs = $();
+		parent.nextAll().each(function () {
+				var depth = $(this).data("depth");
+				if (depth >= parent_depth + 1) {
+					objs = objs.add($(this));
+					var clickable = $(this).children(":first");
+					if (clickable.data("toggled")) {
+						clickable.data("toggled", false);
+						clickable.children().toggleClass("fa-plus-square").toggleClass("fa-minus-square");
+					}
+				} else if (depth <= parent_depth) {
+					return false;
+				}
+				return true;
+		});
+        elem.children(":first").removeClass("fa-minus-square").addClass("fa-plus-square");
+        elem.data("toggled", false);
+		objs.hide(timeout);
+	}
+
+	$(".clickable").click(function (e) {
+		if ($(this).data("toggled")) {
+			collapse($(this), 200);
+		} else {
+			expand($(this), e.ctrlKey, 200);
 		}
-        $(this).children().toggleClass("fa-plus-square").toggleClass("fa-minus-square");
-        $(this).data("toggled", !toggled);
-    });
+	});
+
+	$("#expand-all").click(function () {
+		$(".clickable").filter(function (i, e) {
+			return $(e).parent().data("depth") == 1;
+		}).each(function (i, e) {
+			expand($(e), true, 200);
+		});
+	});
+
+	$("#collapse-all").click(function () {
+		$(".clickable").filter(function (i, e) {
+			return $(e).parent().data("depth") == 1 && $(e).data("toggled") == true;
+		}).each(function (i, e) {
+			collapse($(e), 200);
+		});
+	});
+
     // Common settings of all tooltips.
     var common_tooltip = {
         position: {
