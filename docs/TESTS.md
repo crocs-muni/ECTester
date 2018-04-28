@@ -6,9 +6,10 @@
  - `composite`
  - `invalid`
  - `twist`
+ - `degenerate`
  - `cofactor`
  
-**NOTE: The `wrong`, `composite`, `invalid`,`twist` and `cofactor` test suites caused temporary/permanent DoS of some cards. These test suites prompt you for
+**NOTE: The `wrong`, `composite`, `invalid`,`twist`, `cofactor` and `degenerate` test suites caused temporary/permanent DoS of some cards. These test suites prompt you for
 confirmation before running, be cautious.**
 
 ## Default
@@ -101,6 +102,18 @@ See [SafeCurves on twist security](https://safecurves.cr.yp.to/twist.html) for m
 For example:
 ```bash
 java -jar ECTester.jar -t twist
+```
+
+## Degenerate
+Tests using known named curves froms several categories(SECG/NIST) against pre-generated points on the degenerate line
+`Y: x = 0`. ECDH should fail, a success here might mean the card does not check that the point lies on the correct curve
+and uses a curve model vulnerable to such degenerate points.
+
+See [Degenerate Curve Attachs - Extending Invalid Curve Attacks to Edwards Curves and Other Models](https://eprint.iacr.org/2015/1233.pdf) for more information.
+
+For example:
+```bash
+java -jar ECTester.jar -t degenerate
 ```
 
 ## Cofactor

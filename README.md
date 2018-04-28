@@ -28,7 +28,6 @@ Following operations are tested:
 - Setting of custom curve and KeyPair generation
 - Generation of shared secret via ECDH
 - Signature via ECDSA
-- Behavior of card when invalid curves/points are provided (should fail)
 
 See `java -jar ECTesterReader.jar -h` for more.
 
@@ -39,6 +38,9 @@ See `java -jar ECTesterReader.jar -h` for more.
  -t,--test <test_suite>            Test ECC support. [test_suite]:
                                    - default:
                                    - invalid:
+                                   - twist:
+                                   - degenerate:
+                                   - cofactor:
                                    - wrong:
                                    - composite:
                                    - test-vectors:
