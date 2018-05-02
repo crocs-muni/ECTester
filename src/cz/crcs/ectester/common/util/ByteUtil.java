@@ -172,4 +172,8 @@ public class ByteUtil {
         }
         return out;
     }
+
+    public static byte[] prependLength(byte[] data) {
+        return concatenate(ByteUtil.shortToBytes((short) data.length), data);
+    }
 }

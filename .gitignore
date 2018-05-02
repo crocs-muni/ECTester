@@ -11,11 +11,14 @@
 # Test runs in /dist
 /dist/*.default
 /dist/*.test-vectors
+/dist/*.compression
 /dist/*.cofactor
 /dist/*.composite
 /dist/*.wrong
 /dist/*.invalid
 /dist/*.twist
+/dist/*.degenerate
+/dist/*.xml
 
 # Built binaries in /src.
 /src/**/*.a

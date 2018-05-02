@@ -54,7 +54,7 @@ public class EC_Curve extends EC_Params {
         return "<" + getId() + "> " + (field == KeyPair.ALG_EC_FP ? "Prime" : "Binary") + " field Elliptic curve (" + String.valueOf(bits) + "b)" + (desc == null ? "" : ": " + desc);
     }
 
-    public ECParameterSpec toSpec() {
+    public EllipticCurve toCurve() {
         ECField field;
         if (this.field == KeyPair.ALG_EC_FP) {
             field = new ECFieldFp(new BigInteger(1, getData(0)));
@@ -71,7 +71,11 @@ public class EC_Curve extends EC_Params {
         BigInteger a = new BigInteger(1, getParam(EC_Consts.PARAMETER_A)[0]);
         BigInteger b = new BigInteger(1, getParam(EC_Consts.PARAMETER_B)[0]);
 
-        EllipticCurve curve = new EllipticCurve(field, a, b);
+        return new EllipticCurve(field, a, b);
+    }
+
+    public ECParameterSpec toSpec() {
+        EllipticCurve curve = toCurve();
 
         byte[][] G = getParam(EC_Consts.PARAMETER_G);
         BigInteger gx = new BigInteger(1, G[0]);

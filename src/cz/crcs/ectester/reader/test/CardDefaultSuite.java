@@ -14,9 +14,11 @@ import javacard.security.KeyPair;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Function;
 
 import static cz.crcs.ectester.common.test.Result.ExpectedValue;
+import static cz.crcs.ectester.common.test.Result.Value;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -70,9 +72,9 @@ public class CardDefaultSuite extends CardTestSuite {
                     String kaDesc = "Test of the " + CardUtil.getKATypeString(kaType) + " KeyAgreement.";
                     Function<Test[], Result> kaCallback = (tests) -> {
                         if (tests[1].ok() || tests[2].ok()) {
-                            return new Result(Result.Value.SUCCESS, "Some ECDH is supported.");
+                            return new Result(Value.SUCCESS, "Some ECDH is supported.");
                         } else {
-                            return new Result(Result.Value.FAILURE, "ECDH failed.");
+                            return new Result(Value.FAILURE, "ECDH failed.");
                         }
                     };
 
@@ -102,10 +104,18 @@ public class CardDefaultSuite extends CardTestSuite {
 
                     String signDesc = "Test of the " + CardUtil.getSigTypeString(sigType) + " signature.";
 
+                    Random rand = new Random();
+                    byte[] sigData = new byte[64];
+                    rand.nextBytes(sigData);
+
                     Test compound;
                     if (expect.ok()) {
-                        Test perfTest = runTest(PerformanceTest.repeat(ecdsa, 10));
-                        compound = runTest(CompoundTest.all(ExpectedValue.SUCCESS, signDesc, allocate, expect, perfTest));
+                        Command ecdsaSign = new Command.ECDSA_sign(this.card, ECTesterApplet.KEYPAIR_LOCAL, sigType, ECTesterApplet.EXPORT_TRUE, sigData);
+                        PerformanceTest signTest = runTest(PerformanceTest.repeat("Sign", ecdsaSign, 10));
+                        byte[] signature = signTest.getResponses()[0].getParam(0);
+                        Command ecdsaVerify = new Command.ECDSA_verify(this.card, ECTesterApplet.KEYPAIR_LOCAL, sigType, sigData, signature);
+                        PerformanceTest verifyTest = runTest(PerformanceTest.repeat("Verify", ecdsaVerify, 10));
+                        compound = runTest(CompoundTest.all(ExpectedValue.SUCCESS, signDesc, allocate, expect, signTest, verifyTest));
                     } else {
                         compound = runTest(CompoundTest.all(ExpectedValue.SUCCESS, signDesc, allocate, expect));
                     }

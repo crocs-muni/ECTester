@@ -994,6 +994,7 @@ public class EC_Consts {
     public static final short TRANSFORMATION_INCREMENT = (short) 0x40;
     public static final short TRANSFORMATION_INFINITY = (short) 0x80;
     public static final short TRANSFORMATION_COMPRESS = (short) 0x0100;
+    public static final short TRANSFORMATION_COMPRESS_HYBRID = (short) 0x0200;
 
     // toX962 FORM types
     public static final byte X962_UNCOMPRESSED = (byte) 0x00;
@@ -1386,6 +1387,7 @@ public class EC_Consts {
                     Util.arrayFillNonAtomic(buffer, offset, length, (byte) 0);
                     length = 1;
                     break;
+                case TRANSFORMATION_COMPRESS_HYBRID:
                 case TRANSFORMATION_COMPRESS:
                     if ((short) (length % 2) != 1) {
                         // an uncompressed point should have odd length (since 1 byte type, + 2 * coords)
@@ -1400,9 +1402,12 @@ public class EC_Consts {
                         buffer[offset] = 2;
                     }
 
-                    length = (short) (half + 1);
+                    if (transformationPart == TRANSFORMATION_COMPRESS) {
+                        length = (short) (half + 1);
+                    } else {
+                        buffer[offset] += 4;
+                    }
                     break;
-                //TODO: test hybrid form with not corresponding yBit (in first byte value) and y_value in the second half of the param
                 default:
                     ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
             }
@@ -1427,7 +1432,7 @@ public class EC_Consts {
                 break;
             case X962_HYBRID:
                 outputBuffer[offset] = 4;
-            case X962_COMPRESSED:
+            case X962_COMPRESSED: /* fallthrough */
                 byte yLSB = yBuffer[(short) (yOffset + yLength)];
                 byte yBit = (byte) (yLSB & 0x01);
 

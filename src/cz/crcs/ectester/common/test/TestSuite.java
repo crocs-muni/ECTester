@@ -40,7 +40,7 @@ public abstract class TestSuite {
      * @return The test that was run.
      * @throws TestException
      */
-    protected Test runTest(Test t) {
+    protected <T extends Test> T runTest(T t) {
         running = t;
         t.run();
         running = null;
@@ -54,7 +54,7 @@ public abstract class TestSuite {
      * @return The test that was run.
      * @throws TestException
      */
-    protected Test doTest(Test t) {
+    protected <T extends Test> T doTest(T t) {
         runTest(t);
         writer.outputTest(t);
         return t;

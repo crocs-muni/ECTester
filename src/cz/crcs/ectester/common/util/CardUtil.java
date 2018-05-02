@@ -197,6 +197,8 @@ public class CardUtil {
                 return "INFINITY";
             case EC_Consts.TRANSFORMATION_COMPRESS:
                 return "COMPRESSED";
+            case EC_Consts.TRANSFORMATION_COMPRESS_HYBRID:
+                return "HYBRID";
             case EC_Consts.TRANSFORMATION_MAX:
                 return "MAX";
             default:

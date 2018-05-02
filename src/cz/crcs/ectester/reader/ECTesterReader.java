@@ -406,6 +406,9 @@ public class ECTesterReader {
             case "test-vectors":
                 suite = new CardTestVectorSuite(writer, cfg, cardManager);
                 break;
+            case "compression":
+                suite = new CardCompressionSuite(writer, cfg, cardManager);
+                break;
             default:
                 // These run are dangerous, prompt before them.
                 System.out.println("The test you selected (" + cfg.testSuite + ") is potentially dangerous.");
@@ -436,7 +439,7 @@ public class ECTesterReader {
                         suite = new CardTwistTestSuite(writer, cfg, cardManager);
                         break;
                     case "cofactor":
-                        suite = new CardCofactorTestSuite(writer, cfg, cardManager);
+                        suite = new CardCofactorSuite(writer, cfg, cardManager);
                         break;
                     default:
                         System.err.println("Unknown test suite.");
@@ -767,7 +770,7 @@ public class ECTesterReader {
                 }
 
                 testSuite = cli.getOptionValue("test", "default").toLowerCase();
-                String[] tests = new String[]{"default", "composite", "invalid", "degenerate", "test-vectors", "wrong", "twist", "cofactor"};
+                String[] tests = new String[]{"default", "composite", "compression", "invalid", "degenerate", "test-vectors", "wrong", "twist", "cofactor"};
                 if (!Arrays.asList(tests).contains(testSuite)) {
                     System.err.println("Unknown test suite " + testSuite + ". Should be one of: " + Arrays.toString(tests));
                     return false;
