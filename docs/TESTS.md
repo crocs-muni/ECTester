@@ -2,14 +2,15 @@
 
  - `default`
  - `test-vectors`
- - `wrong`
- - `composite`
- - `invalid`
- - `twist`
- - `degenerate`
- - `cofactor`
+ - `compression`
+ - `wrong`*
+ - `composite`*
+ - `invalid`*
+ - `twist`*
+ - `degenerate`*
+ - `cofactor`*
  
-**NOTE: The `wrong`, `composite`, `invalid`,`twist`, `cofactor` and `degenerate` test suites caused temporary/permanent DoS of some cards. These test suites prompt you for
+**\*NOTE: The `wrong`, `composite`, `invalid`,`twist`, `cofactor` and `degenerate` test suites caused temporary/permanent DoS of some cards. These test suites prompt you for
 confirmation before running, be cautious.**
 
 ## Default
@@ -43,6 +44,14 @@ java -jar ECTester.jar -t test-vectors
 ```
 tests all curves for which test-vectors are provided.
 
+## Compression
+Tests support for compression of public points in ECDH as specified in ANSI X9.62. Tests ECDH with points in compressed
+and hybrid form. Also tests card response to a hybrid point with wrong `y` coordinate and to the point at infinity(as public key in ECDH).
+
+For example:
+```bash
+java -jar ECTester.jar -t compression
+```
 
 ## Wrong
 Tests on a category of wrong curves. These curves are not really curves as they have:

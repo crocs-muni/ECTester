@@ -38,6 +38,7 @@ See `java -jar ECTesterReader.jar -h` for more.
  -t,--test <test_suite>            Test ECC support. [test_suite]:
                                    - default:
                                    - invalid:
+                                   - compression:
                                    - twist:
                                    - degenerate:
                                    - cofactor:
@@ -158,32 +159,41 @@ This shows that JCardsim simulates 112b Fp support with default curve present an
 
     > java -jar ECTesterReader.jar -t -s
     ═══ Running test suite: default ═══
-    ═══ The default test suite run basic support of ECDH and ECDSA.
+    ═══ The default test suite tests basic support of ECDH and ECDSA.
+    ═══ Date: 2018.05.02 20:29:38
+    ═══ ECTester version: v0.2.0
     ═══ Card ATR: 3bfa1800008131fe454a434f5033315632333298
-    NOK ┳ Tests of 112b ALG_EC_FP support. Some.                                               ┃ FAILURE   ┃ Some sub-tests did not have the expected result.
-        ┣  OK ━ Allocated both keypairs 112b ALG_EC_FP                                         ┃ SUCCESS   ┃   50 ms ┃  OK   (0x9000) OK   (0x9000)
-        ┣  OK ━ Generated both keypairs                                                        ┃ SUCCESS   ┃   37 ms ┃  OK   (0x9000) OK   (0x9000)
-        ┣  OK ━ Set custom curve parameters on both keypairs                                   ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000) OK   (0x9000)
-        ┣  OK ━ Generated both keypairs                                                        ┃ SUCCESS   ┃   16 ms ┃  OK   (0x9000) OK   (0x9000)
-        ┣  OK ┳ Test of the ALG_EC_SVDP_DH KeyAgreement.                                       ┃ SUCCESS   ┃ All sub-tests had the expected result.
-        ┃     ┣  OK ━ Allocated KeyAgreement(ALG_EC_SVDP_DH) object                            ┃ SUCCESS   ┃    2 ms ┃  OK   (0x9000)
-        ┃     ┣  OK ━ ALG_EC_SVDP_DH of local pubkey and remote privkey(unchanged point)       ┃ SUCCESS   ┃    7 ms ┃  OK   (0x9000)
-        ┃     ┗  OK ━ ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)      ┃ SUCCESS   ┃   14 ms ┃  OK   (0x9000)
-        ┣  OK ┳ Test of the ALG_EC_SVDP_DHC KeyAgreement.                                      ┃ SUCCESS   ┃ All sub-tests had the expected result.
-        ┃     ┣  OK ━ Allocated KeyAgreement(ALG_EC_SVDP_DHC) object                           ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000)
-        ┃     ┣  OK ━ ALG_EC_SVDP_DHC of local pubkey and remote privkey(unchanged point)      ┃ SUCCESS   ┃    3 ms ┃  OK   (0x9000)
-        ┃     ┗  OK ━ ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)     ┃ SUCCESS   ┃    5 ms ┃  OK   (0x9000)
-        ┣ NOK ━ Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object                            ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-        ┣ NOK ━ Allocated KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object                           ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-        ┣ NOK ━ Allocated KeyAgreement(ALG_EC_PACE_GM) object                                  ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-        ┣ NOK ━ Allocated KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object                         ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-        ┣  OK ┳ Test of the ALG_ECDSA_SHA signature.                                           ┃ SUCCESS   ┃ All sub-tests had the expected result.
-        ┃     ┣  OK ━ Allocated Signature(ALG_ECDSA_SHA) object                                ┃ SUCCESS   ┃    7 ms ┃  OK   (0x9000)
-        ┃     ┗  OK ━ ALG_ECDSA_SHA with local keypair(random data)                            ┃ SUCCESS   ┃   43 ms ┃  OK   (0x9000)
-        ┣ NOK ━ Allocated Signature(ALG_ECDSA_SHA_224) object                                  ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-        ┣ NOK ━ Allocated Signature(ALG_ECDSA_SHA_256) object                                  ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-        ┣ NOK ━ Allocated Signature(ALG_ECDSA_SHA_384) object                                  ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-        ┗ NOK ━ Allocated Signature(ALG_ECDSA_SHA_512) object                                  ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+     OK ┳ Tests of 112b ALG_EC_FP support.                                                       ┃ SUCCESS   ┃ All sub-tests matched the expected mask.
+        ┣  OK ━ Allocate both keypairs 112b ALG_EC_FP                                            ┃ SUCCESS   ┃   22 ms ┃  OK   (0x9000) OK   (0x9000)
+        ┣  OK ━ Generate both keypairs                                                           ┃ SUCCESS   ┃   23 ms ┃  OK   (0x9000) OK   (0x9000)
+        ┣  OK ━ Allocate both keypairs 112b ALG_EC_FP                                            ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000) OK   (0x9000)
+        ┣  OK ━ Set custom curve parameters on both keypairs                                     ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000) OK   (0x9000)
+        ┣  OK ━ Generate both keypairs                                                           ┃ SUCCESS   ┃    8 ms ┃  OK   (0x9000) OK   (0x9000)
+        ┣  OK ┳ KeyAgreement tests.                                                              ┃ SUCCESS   ┃ Some sub-tests did have the expected result.
+        ┃     ┣  OK ┳ Test of the ALG_EC_SVDP_DH KeyAgreement.                                   ┃ SUCCESS   ┃ Some ECDH is supported.
+        ┃     ┃     ┣  OK ━ Allocate KeyAgreement(ALG_EC_SVDP_DH) object                         ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+        ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DH of local pubkey and remote privkey(unchanged point)   ┃ SUCCESS   ┃    2 ms ┃  OK   (0x9000)
+        ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)  ┃ SUCCESS   ┃    2 ms ┃  OK   (0x9000)
+        ┃     ┃     ┗  OK ━ Mean = 1722885 ns, Median = 1718807 ns, Mode = 1614047 ns            ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+        ┃     ┣  OK ┳ Test of the ALG_EC_SVDP_DHC KeyAgreement.                                  ┃ SUCCESS   ┃ Some ECDH is supported.
+        ┃     ┃     ┣  OK ━ Allocate KeyAgreement(ALG_EC_SVDP_DHC) object                        ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000)
+        ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DHC of local pubkey and remote privkey(unchanged point)  ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+        ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point) ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+        ┃     ┃     ┗  OK ━ Mean = 1563980 ns, Median = 1549170 ns, Mode = 1514747 ns            ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+        ┃     ┣ NOK ━ Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object                         ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+        ┃     ┣ NOK ━ Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object                        ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+        ┃     ┣ NOK ━ Allocate KeyAgreement(ALG_EC_PACE_GM) object                               ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+        ┃     ┗ NOK ━ Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object                      ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+        ┗  OK ┳ Signature tests.                                                                 ┃ SUCCESS   ┃ Some sub-tests did have the expected result.
+              ┣  OK ┳ Test of the ALG_ECDSA_SHA signature.                                       ┃ SUCCESS   ┃ All sub-tests had the expected result.
+              ┃     ┣  OK ━ Allocate Signature(ALG_ECDSA_SHA) object                             ┃ SUCCESS   ┃    3 ms ┃  OK   (0x9000)
+              ┃     ┣  OK ━ ALG_ECDSA_SHA with local keypair(random data)                        ┃ SUCCESS   ┃   14 ms ┃  OK   (0x9000)
+              ┃     ┣  OK ━ Sign (Mean = 1890914 ns, Median = 1500125 ns, Mode = 1422588 ns)     ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+              ┃     ┗  OK ━ Verify (Mean = 1873952 ns, Median = 1870348 ns, Mode = 1843902 ns)   ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+              ┣ NOK ━ Allocate Signature(ALG_ECDSA_SHA_224) object                               ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+              ┣ NOK ━ Allocate Signature(ALG_ECDSA_SHA_256) object                               ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+              ┣ NOK ━ Allocate Signature(ALG_ECDSA_SHA_384) object                               ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+              ┗ NOK ━ Allocate Signature(ALG_ECDSA_SHA_512) object                               ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
 
 #### Legend
  - Some general information about the test suite and card is output first, test data follows after.
