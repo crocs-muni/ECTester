@@ -1,0 +1,15 @@
+---
+layout: default
+---
+
+{% include suite_header.html suite="Compression" %}
+
+Tests support for compression of public points in ECDH as specified in ANSI X9.62. Tests ECDH with points in compressed
+and hybrid form. Also tests card response to a hybrid point with wrong <i>y</i> coordinate and to the point at infinity(as public key in ECDH).
+<br/>
+
+{% include result_header.html testRun=page.testRun %}
+
+{% include result_table.html testRun=page.testRun %}
+
+{% include result_footer.html %}

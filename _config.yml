@@ -51,6 +51,12 @@ defaults:
      layout: composite_suite
      category: Composite
  - scope:
+     path: "_results/compression"
+     type: "results"
+   values:
+     layout: compression_suite
+     category: Compression
+ - scope:
      path: "_results/twist"
      type: "results"
    values:
