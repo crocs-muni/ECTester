@@ -1,6 +1,6 @@
 ---
 testRun:
-  date: 2018.04.26 00:38:58
+  date: 2018.05.02 22:43:25
   suite:
     name: default
     desc: The default test suite tests basic support of ECDH and ECDSA.
@@ -15,7 +15,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 512772241
+        duration: 517284058
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -33,7 +33,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 381317160
+        duration: 381976949
         natural_sw: 36864
         apdu: 90 00 00 02 90 00
         sws:
@@ -51,7 +51,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 523708055
+        duration: 531054451
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -69,7 +69,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 173192624
+        duration: 173625616
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -87,7 +87,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 724587901
+        duration: 738563524
         natural_sw: 36864
         apdu: 90 00 00 02 90 00
         sws:
@@ -115,7 +115,7 @@ testRun:
             ok: true
             value: SUCCESS
           response:
-            duration: 80110858
+            duration: 79979526
             natural_sw: 36864
             apdu: 90 00 90 00
             sws:
@@ -132,7 +132,7 @@ testRun:
             ok: false
             value: FAILURE
           response:
-            duration: 17279320
+            duration: 17413413
             natural_sw: 36864
             apdu: 00 02 90 00
             sws:
@@ -149,7 +149,7 @@ testRun:
             ok: false
             value: FAILURE
           response:
-            duration: 14273456
+            duration: 14326269
             natural_sw: 36864
             apdu: 00 02 90 00
             sws:
@@ -168,7 +168,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 10961083
+          duration: 10741397
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -185,7 +185,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8224461
+          duration: 7772226
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -202,7 +202,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8057429
+          duration: 7875419
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -219,7 +219,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8026914
+          duration: 7975769
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -236,7 +236,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8201005
+          duration: 7972891
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -265,7 +265,7 @@ testRun:
             ok: true
             value: SUCCESS
           response:
-            duration: 94379538
+            duration: 94458688
             natural_sw: 36864
             apdu: 90 00 90 00
             sws:
@@ -282,7 +282,7 @@ testRun:
             ok: true
             value: SUCCESS
           response:
-            duration: 518104441
+            duration: 517047217
             natural_sw: 36864
             apdu: 90 00 90 00
             sws:
@@ -299,18 +299,45 @@ testRun:
             ok: true
             value: SUCCESS
           response:
-            duration: 515071241
+            duration: 207759228
+            natural_sw: 36864
+            apdu: 90 00 00 23 30 21 02 0f 00 d1 cd 27 b8 79 da e2 e7 43 8f 5a 5b 90
+              48 02 0e 3e ee cb 62 a4 6f 42 5e 49 3f ff d6 63 5c 90 00
+            sws:
+            - 36864
+            successful: true
+            desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+          type: command
+          command:
+            apdu: b0 73 01 ff 43 11 00 40 93 d7 db dc ec 87 2e 20 04 2d 46 ab 15 83
+              9c 73 25 87 0a 22 cf 33 31 c6 ca 48 a1 b7 9f 41 e0 39 7a 77 0b b6 dc
+              17 cd 3c 11 4f 43 aa 04 04 26 93 13 1a 19 26 2b 33 af 0b 42 4a 07 93
+              5d d7 86 af
+            desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+          desc: Sign (Mean = 207411443 ns, Median = 207313177 ns, Mode = 206389563
+            ns)
+        - result:
+            cause: null
+            ok: true
+            value: SUCCESS
+          response:
+            duration: 345132479
             natural_sw: 36864
             apdu: 90 00 90 00
             sws:
             - 36864
             successful: true
-            desc: ALG_ECDSA_SHA with local keypair(random data)
+            desc: ALG_ECDSA_SHA verification with local keypair(provided data)
           type: command
           command:
-            apdu: b0 72 01 00 03 11 00 00
-            desc: ALG_ECDSA_SHA with local keypair(random data)
-          desc: Mean = 514831355 ns, Median = 514735149 ns, Mode = 513171263 ns
+            apdu: b0 74 01 11 66 00 40 93 d7 db dc ec 87 2e 20 04 2d 46 ab 15 83 9c
+              73 25 87 0a 22 cf 33 31 c6 ca 48 a1 b7 9f 41 e0 39 7a 77 0b b6 dc 17
+              cd 3c 11 4f 43 aa 04 04 26 93 13 1a 19 26 2b 33 af 0b 42 4a 07 93 5d
+              d7 86 af 00 22 30 20 02 0e 5a 8d d0 0c 96 3b b7 84 c2 d7 9d d6 88 d2
+              02 0e 03 97 10 1a 93 d4 47 3d 3a c1 92 9e ed ef
+            desc: ALG_ECDSA_SHA verification with local keypair(provided data)
+          desc: Verify (Mean = 346901377 ns, Median = 346817181 ns, Mode = 345132479
+            ns)
         type: compound
         desc: Test of the ALG_ECDSA_SHA signature.
       - result:
@@ -318,7 +345,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 60717256
+          duration: 60840454
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -335,7 +362,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64286313
+          duration: 64365331
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -352,7 +379,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64578912
+          duration: 64754030
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -369,7 +396,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 66148259
+          duration: 63626402
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -395,7 +422,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 524962451
+        duration: 531593738
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -413,7 +440,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 22135019
+        duration: 22311874
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -431,7 +458,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 526012989
+        duration: 529919661
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -449,7 +476,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 156610194
+        duration: 156313921
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -467,7 +494,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 22076259
+        duration: 21620537
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -490,7 +517,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 32127757
+          duration: 31939677
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -507,7 +534,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 11048044
+          duration: 10864489
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -524,7 +551,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8032238
+          duration: 7792622
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -541,7 +568,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 7989009
+          duration: 7728971
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -558,7 +585,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 7942684
+          duration: 7786298
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -575,7 +602,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 7904050
+          duration: 8258965
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -599,7 +626,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64203184
+          duration: 64305355
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -616,7 +643,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63398013
+          duration: 63101790
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -633,7 +660,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63674805
+          duration: 63718223
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -650,7 +677,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64003573
+          duration: 64009747
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -667,7 +694,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64222303
+          duration: 64140355
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -693,7 +720,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 523614478
+        duration: 524650304
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -711,7 +738,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21813486
+        duration: 22062166
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -729,7 +756,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 522525586
+        duration: 526646135
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -747,7 +774,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 194475082
+        duration: 195179590
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -765,7 +792,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21835311
+        duration: 22386448
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -788,7 +815,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 31848932
+          duration: 32330344
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -805,7 +832,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 11069125
+          duration: 11065186
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -822,7 +849,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8002202
+          duration: 7822590
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -839,7 +866,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8030629
+          duration: 7879034
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -856,7 +883,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8067063
+          duration: 7880946
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -873,7 +900,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8118326
+          duration: 7836034
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -897,7 +924,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64205502
+          duration: 64163683
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -914,7 +941,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 67434570
+          duration: 67294323
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -931,7 +958,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63510599
+          duration: 63686897
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -948,7 +975,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64062197
+          duration: 63948508
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -965,7 +992,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64108992
+          duration: 64329147
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -991,7 +1018,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 529005719
+        duration: 532612812
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1009,7 +1036,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21941960
+        duration: 22067139
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1027,7 +1054,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 526104861
+        duration: 529665742
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1045,7 +1072,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 198794119
+        duration: 199320603
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1063,7 +1090,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21805263
+        duration: 21912411
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1086,7 +1113,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 32150929
+          duration: 32042367
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1103,7 +1130,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 10825811
+          duration: 10828524
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1120,7 +1147,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8057403
+          duration: 7879503
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1137,7 +1164,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 7978204
+          duration: 7854103
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1154,7 +1181,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 7911587
+          duration: 7959750
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1171,7 +1198,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 7948568
+          duration: 7881943
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1195,7 +1222,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63122009
+          duration: 63256867
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1212,7 +1239,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63556133
+          duration: 63538344
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1229,7 +1256,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63927152
+          duration: 64113993
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1246,7 +1273,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64140340
+          duration: 64456413
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1263,7 +1290,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 67087276
+          duration: 67584404
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1289,7 +1316,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 525544248
+        duration: 526350589
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1307,7 +1334,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21747072
+        duration: 22013551
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1325,7 +1352,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 536650712
+        duration: 540211755
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1343,7 +1370,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 192508911
+        duration: 192963802
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1361,7 +1388,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21824887
+        duration: 22173593
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1384,7 +1411,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 31758999
+          duration: 32284274
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1401,7 +1428,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 10887549
+          duration: 11291474
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1418,7 +1445,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8008909
+          duration: 8051609
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1435,7 +1462,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 7859846
+          duration: 8192924
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1452,7 +1479,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 7942096
+          duration: 8250241
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1469,7 +1496,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 7975645
+          duration: 8231777
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1493,7 +1520,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63717379
+          duration: 64009076
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1510,7 +1537,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64189455
+          duration: 64134056
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1527,7 +1554,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64671899
+          duration: 64682112
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1544,7 +1571,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63571100
+          duration: 63634623
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1561,7 +1588,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63671884
+          duration: 64268320
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1587,7 +1614,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 529549669
+        duration: 527723313
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1605,7 +1632,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 22238237
+        duration: 22135550
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1623,7 +1650,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 528775142
+        duration: 532185806
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1641,7 +1668,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 187108531
+        duration: 186759846
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1659,7 +1686,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21902131
+        duration: 21544047
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1682,7 +1709,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 32280708
+          duration: 31869460
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1699,7 +1726,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 11232879
+          duration: 10858912
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1716,7 +1743,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8062280
+          duration: 7901666
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1733,7 +1760,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8045726
+          duration: 7771800
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1750,7 +1777,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8336425
+          duration: 7744387
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1767,7 +1794,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8068685
+          duration: 8037514
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -1791,7 +1818,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64597175
+          duration: 64533434
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1808,7 +1835,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 67064857
+          duration: 70424598
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1825,7 +1852,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63943963
+          duration: 63999733
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1842,7 +1869,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64168958
+          duration: 63995857
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1859,7 +1886,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64343149
+          duration: 64112106
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1885,7 +1912,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 536722880
+        duration: 539995380
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1903,7 +1930,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 22037343
+        duration: 21757893
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1921,7 +1948,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 543526511
+        duration: 549590071
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1939,7 +1966,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 215697207
+        duration: 215463943
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -1957,7 +1984,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21985411
+        duration: 21732843
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -1980,7 +2007,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 32314246
+          duration: 31964741
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -1997,7 +2024,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 11187645
+          duration: 10779552
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2014,7 +2041,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8064748
+          duration: 7770754
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2031,7 +2058,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8171633
+          duration: 7930544
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2048,7 +2075,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8273821
+          duration: 7643072
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2065,7 +2092,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8234709
+          duration: 8004054
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2089,7 +2116,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 67069742
+          duration: 70294554
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2106,7 +2133,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63641531
+          duration: 63543562
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2123,7 +2150,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64123627
+          duration: 64343152
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2140,7 +2167,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64534547
+          duration: 64771463
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2157,7 +2184,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 67678154
+          duration: 67938176
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2183,7 +2210,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 539907458
+        duration: 540413740
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2201,7 +2228,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 22097322
+        duration: 22033370
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -2219,7 +2246,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 535004684
+        duration: 552489367
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2237,7 +2264,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 240623320
+        duration: 240680558
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2255,7 +2282,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 22004757
+        duration: 22290466
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -2278,7 +2305,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 31965567
+          duration: 32136008
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2295,7 +2322,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 11056633
+          duration: 11076170
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2312,7 +2339,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8306019
+          duration: 8514776
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2329,7 +2356,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8257798
+          duration: 8661694
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2346,7 +2373,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8088340
+          duration: 8091891
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2363,7 +2390,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8152350
+          duration: 8002252
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2387,7 +2414,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 60641641
+          duration: 64479790
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2404,7 +2431,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 60799734
+          duration: 65026387
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2421,7 +2448,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 61403307
+          duration: 65818468
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2438,7 +2465,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 60389544
+          duration: 64246569
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2455,7 +2482,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 60730864
+          duration: 64181282
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2481,7 +2508,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 521975864
+        duration: 522475299
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2499,7 +2526,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 22186375
+        duration: 22184850
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -2517,7 +2544,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 525479589
+        duration: 526013912
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2535,7 +2562,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 24813930
+        duration: 24746468
         natural_sw: 36864
         apdu: 6f 00 6f 00 90 00
         sws:
@@ -2553,7 +2580,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 25292170
+        duration: 24958436
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -2576,7 +2603,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 31780991
+          duration: 31711527
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2593,7 +2620,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 11084657
+          duration: 11058269
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2610,7 +2637,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8225598
+          duration: 8100274
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2627,7 +2654,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8133503
+          duration: 8070242
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2644,7 +2671,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8253366
+          duration: 7998143
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2661,7 +2688,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8162216
+          duration: 8247308
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2685,7 +2712,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 66475047
+          duration: 63657132
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2702,7 +2729,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63886451
+          duration: 63950260
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2719,7 +2746,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64350144
+          duration: 64378809
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2736,7 +2763,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64721899
+          duration: 64716041
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2753,7 +2780,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 70191413
+          duration: 70487470
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2779,7 +2806,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 546877750
+        duration: 544739946
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2797,7 +2824,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21985883
+        duration: 22349139
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -2815,7 +2842,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 525695544
+        duration: 526224386
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -2833,7 +2860,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 24965064
+        duration: 24728291
         natural_sw: 36864
         apdu: 6f 00 6f 00 90 00
         sws:
@@ -2851,7 +2878,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 24962006
+        duration: 24924020
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -2874,7 +2901,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 32138756
+          duration: 32304694
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -2891,7 +2918,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 11216406
+          duration: 11023135
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2908,7 +2935,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8059132
+          duration: 8033579
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2925,7 +2952,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8296604
+          duration: 8017552
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2942,7 +2969,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8173802
+          duration: 8041824
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2959,7 +2986,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8214595
+          duration: 8087249
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -2983,7 +3010,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64224652
+          duration: 64357870
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3000,7 +3027,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63451267
+          duration: 64320997
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3017,7 +3044,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63992119
+          duration: 64649988
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3034,7 +3061,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64238589
+          duration: 64871453
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3051,7 +3078,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64501824
+          duration: 64623965
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3077,7 +3104,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 536071920
+        duration: 536901262
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -3095,7 +3122,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 22134855
+        duration: 22208175
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -3113,7 +3140,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 536076480
+        duration: 539771713
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -3131,7 +3158,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 24635264
+        duration: 24634463
         natural_sw: 36864
         apdu: 6f 00 6f 00 90 00
         sws:
@@ -3149,7 +3176,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 25060734
+        duration: 24965001
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -3172,7 +3199,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 31838155
+          duration: 32403894
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3189,7 +3216,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 10891826
+          duration: 11468730
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3206,7 +3233,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8076923
+          duration: 8074345
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3223,7 +3250,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8251529
+          duration: 8078353
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3240,7 +3267,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8148112
+          duration: 8174844
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3257,7 +3284,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 7999483
+          duration: 8174649
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3281,7 +3308,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63280278
+          duration: 63686323
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3298,7 +3325,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63755726
+          duration: 64443278
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3315,7 +3342,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64246864
+          duration: 64275529
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3332,7 +3359,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64354024
+          duration: 64637055
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3349,7 +3376,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 69693463
+          duration: 67164266
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3375,7 +3402,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 539550347
+        duration: 537436168
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -3393,7 +3420,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 21942058
+        duration: 22122510
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -3411,7 +3438,7 @@ testRun:
         ok: true
         value: SUCCESS
       response:
-        duration: 535729766
+        duration: 536196209
         natural_sw: 36864
         apdu: 90 00 90 00 90 00
         sws:
@@ -3429,7 +3456,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 24708136
+        duration: 24971945
         natural_sw: 36864
         apdu: 6f 00 6f 00 90 00
         sws:
@@ -3447,7 +3474,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 24953939
+        duration: 25043586
         natural_sw: 36864
         apdu: 00 02 00 02 90 00
         sws:
@@ -3470,7 +3497,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 31768218
+          duration: 32150959
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3487,7 +3514,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 11062789
+          duration: 11364471
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3504,7 +3531,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8214701
+          duration: 7983226
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3521,7 +3548,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8026206
+          duration: 7981680
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3538,7 +3565,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8162065
+          duration: 8016548
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3555,7 +3582,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 8015873
+          duration: 8070562
           natural_sw: 36864
           apdu: 00 03 90 00
           sws:
@@ -3579,7 +3606,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63863622
+          duration: 64494521
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3596,7 +3623,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 67100374
+          duration: 64891544
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3613,7 +3640,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 64454400
+          duration: 65294026
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3630,7 +3657,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 63596622
+          duration: 63768103
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3647,7 +3674,7 @@ testRun:
           ok: false
           value: FAILURE
         response:
-          duration: 66446436
+          duration: 67048177
           natural_sw: 36864
           apdu: 00 02 90 00
           sws:
@@ -3673,7 +3700,7 @@ testRun:
         ok: false
         value: FAILURE
       response:
-        duration: 62126734
+        duration: 62467975
         natural_sw: 36864
         apdu: 00 03 00 03 90 00
         sws:
