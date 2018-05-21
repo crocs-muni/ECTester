@@ -23,6 +23,22 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
         background-color: rgba(255, 0, 0, 0.2);
     }
 
+    .none {
+    	background-color: rgba(0,0,0,0.1);
+    }
+
+	td.split, tr.split td {
+		border-top: 2px solid !important;
+	}
+
+	#perf_table tr td:nth-of-type(2n) {
+		border-right: 2px solid !important;
+	}
+
+	#perf_table tr td:first-child {
+		border-left: 2px solid !important;
+	}
+
     .small {
     	font-size: 0.8rem;
     	font-style: italic;
@@ -52,11 +68,20 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
         <li>ALG_ECDSA_SHA_512</li>
     </ol>
 </div>
+<div style="float:left" id="color_types">
+    *<strong>Colors</strong>
+    <ul>
+        <li class="yes">Full support</li>
+        <li class="some">Some support</li>
+        <li class="no">No support</li>
+        <li class="none">Not defined</li>
+    </ul>
+</div>
 <div style="clear:both"></div>
 
-<h2>$ \mathbb{F}_p $</h2>
+<h2>$ \mathbb{F}_p $ support</h2>
 
-<table style="text-align: center">
+<table style="text-align: center" id="support_table">
     <colgroup>
         <col span="1" style="width: 20%">
         <col span="1" style="width: 10%">
@@ -164,6 +189,485 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
         <td class="no">✘</td>
     </tr>
 </table>
+
+<h2>$ \mathbb{F}_p $ performance</h2>
+<table style="text-align: center" id="perf_table">
+    <colgroup>
+        <col span="1" style="width: 20%">
+        <col span="1" style="width: 2%">
+        <col span="1" style="width: 2%">
+        <col span="1" style="width: 10%">
+        <col span="1" style="width: 10%">
+        <col span="1" style="width: 10%">
+        <col span="1" style="width: 10%">
+        <col span="1" style="width: 10%">
+        <col span="1" style="width: 10%">
+        <col span="1" style="width: 10%">
+        <col span="1" style="width: 10%">
+    </colgroup>
+    <tr>
+        <th rowspan="2">Card</th>
+        <th colspan="2">Type</th>
+        <th colspan="2">192b</th>
+        <th colspan="2">256b</th>
+        <th colspan="2">384b</th>
+        <th colspan="2">521b</th>
+    </tr>
+    <tr>
+        <th><a href="#ecdh_types">*</a></th>
+        <th><a href="#ecdsa_types">*</a></th>
+        <th>ECDH</th>
+        <th>ECDSA</th>
+        <th>ECDH</th>
+        <th>ECDSA</th>
+        <th>ECDH</th>
+        <th>ECDSA</th>
+        <th>ECDH</th>
+        <th>ECDSA</th>
+    </tr>
+    <tr>
+    	<td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/Athena_IDProtect/">Athena IDProtect</a></td>   	
+    </tr>
+    <tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">147</td>
+       	<td class="yes">110+163</td>
+       	<td class="yes">209</td>
+       	<td class="yes">148+228</td>
+       	<td class="yes">448</td>
+       	<td class="yes">279+473</td>
+       	<td class="yes">937</td>
+       	<td class="yes">537+970</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">147</td>
+    	<td class="yes">113+167</td>
+    	<td class="yes">209</td>
+    	<td class="yes">150+230</td>
+    	<td class="yes">448</td>
+    	<td class="yes">281+477</td>
+    	<td class="yes">938</td>
+    	<td class="yes">540+973</td>
+    </tr>
+	<tr><td>3</td><td>c</td>
+		<td class="yes">148</td>
+		<td class="yes">114+165</td>
+		<td class="yes">209</td>
+		<td class="yes">150+231</td>
+		<td class="yes">448</td>
+		<td class="yes">281+475</td>
+		<td class="yes">937</td>
+		<td class="yes">540+972</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="yes">146</td>
+		<td class="no">✘</td>
+		<td class="yes">209</td>
+		<td class="no">✘</td>
+		<td class="yes">448</td>
+		<td class="no">✘</td>
+		<td class="yes">938</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
+    <tr>
+        <td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/Feitian_A22CR/">Feitian A22CR</a></td>
+    </tr>
+	<tr class="split"><td>1</td><td>a</td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+    </tr>
+   	<tr><td>3</td><td>c</td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+   	</tr>
+   	<tr><td>4</td><td>d</td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+   	</tr>
+   	<tr><td>5</td><td>e</td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+	</tr>
+   	<tr><td>6</td><td class="none"></td>
+      	<td class="some"></td>
+      	<td class="none"></td>
+      	<td class="some"></td>
+      	<td class="none"></td>
+      	<td class="some"></td>
+      	<td class="none"></td>
+      	<td class="some"></td>
+      	<td class="none"></td>
+	</tr>
+    <tr>
+        <td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/GD_Smartcafe_6.0/">GD SmartCafe 6.0</a></td>
+    </tr>
+	<tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">128</td>
+       	<td class="yes">110+135</td>
+       	<td class="yes">192</td>
+       	<td class="yes">145+197</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">128</td>
+    	<td class="yes">122+147</td>
+    	<td class="yes">193</td>
+    	<td class="yes">158+210</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>3</td><td>c</td>
+		<td class="yes">126</td>
+		<td class="yes">123+147</td>
+		<td class="yes">190</td>
+		<td class="yes">158+209</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="yes">126</td>
+		<td class="yes">127+152</td>
+		<td class="yes">191</td>
+		<td class="yes">162+214</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="yes">127+152</td>
+		<td class="no">✘</td>
+		<td class="yes">162+214</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
+    <tr>
+       	<td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/Infineon_CJTOP/">Infineon CJTOP</a></td>
+    </tr>
+	<tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">138</td>
+       	<td class="yes">144+113</td>
+       	<td class="yes">167</td>
+       	<td class="yes">175+138</td>
+		<td class="yes">240</td>
+		<td class="yes">254+202</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">208</td>
+    	<td class="yes">151+120</td>
+    	<td class="yes">267</td>
+    	<td class="yes">183+144</td>
+		<td class="yes">414</td>
+		<td class="yes">262+207</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>3</td><td>c</td>
+		<td class="yes">207</td>
+		<td class="yes">151+121</td>
+		<td class="yes">263</td>
+		<td class="yes">182+145</td>
+		<td class="yes">408</td>
+		<td class="yes">261+207</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="yes">205</td>
+		<td class="yes">176+145</td>
+		<td class="yes">264</td>
+		<td class="yes">207+169</td>
+		<td class="yes">408</td>
+		<td class="yes">286+232</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="yes">175+145</td>
+		<td class="no">✘</td>
+		<td class="yes">208+171</td>
+		<td class="no">✘</td>
+		<td class="yes">287+233</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
+    <tr>
+        <td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/NXP_JCOP31_v2.4.1/">NXP JCOP31 v2.4.1</a></td>
+    </tr>
+	<tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">122</td>
+       	<td class="yes">140+167</td>
+       	<td class="yes">190</td>
+       	<td class="yes">192+260</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">123</td>
+    	<td class="no">✘</td>
+    	<td class="yes">191</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>3</td><td>c</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
+    <tr>
+        <td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/NXP_JCOP_CJ2A081/">NXP JCOP CJ2A081</a></td>
+    </tr>
+	<tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">76</td>
+       	<td class="yes">93+107</td>
+       	<td class="yes">124</td>
+       	<td class="yes">129+168</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">76</td>
+    	<td class="no">✘</td>
+		<td class="yes">124</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>3</td><td>c</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
+    <tr>
+        <td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/NXP_JCOP_v2.4.2_R3/">NXP JCOP v2.4.2 R3</a></td>
+    </tr>
+	<tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">101</td>
+       	<td class="yes">111+111</td>
+       	<td class="yes">154</td>
+       	<td class="yes">151+172</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">96</td>
+    	<td class="yes">114+113</td>
+		<td class="no">✘</td>
+		<td class="yes">154+178</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>3</td><td>c</td>
+		<td class="no">✘</td>
+		<td class="yes">114+114</td>
+		<td class="no">✘</td>
+		<td class="yes">154+176</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
+</table>
+
 
 <h2>$ \mathbb{F}_{2^m} $</h2>
 Support for binary field curves on cards is very weak, very little cards have any. For more information see <a href="https://www.fi.muni.cz/~xsvenda/jcalgtest/table.html">JCAlgTest</a> support table.
