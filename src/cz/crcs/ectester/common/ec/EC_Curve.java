@@ -51,7 +51,7 @@ public class EC_Curve extends EC_Params {
 
     @Override
     public String toString() {
-        return "<" + getId() + "> " + (field == KeyPair.ALG_EC_FP ? "Prime" : "Binary") + " field Elliptic curve (" + String.valueOf(bits) + "b)" + (desc == null ? "" : ": " + desc);
+        return "<" + getId() + "> " + (field == KeyPair.ALG_EC_FP ? "Prime" : "Binary") + " field Elliptic curve (" + String.valueOf(bits) + "b)" + (desc == null ? "" : ": " + desc) + System.lineSeparator() + super.toString();
     }
 
     public EllipticCurve toCurve() {

@@ -54,7 +54,7 @@ public class EC_Key extends EC_Params {
 
         @Override
         public String toString() {
-            return "<" + getId() + "> EC Public key, over " + getCurve() + (getDesc() == null ? "" : ": " + getDesc());
+            return "<" + getId() + "> EC Public key, over " + getCurve() + (getDesc() == null ? "" : ": " + getDesc()) + System.lineSeparator() + super.toString();
         }
     }
 
@@ -77,7 +77,7 @@ public class EC_Key extends EC_Params {
 
         @Override
         public String toString() {
-            return "<" + getId() + "> EC Private key, over " + getCurve() + (getDesc() == null ? "" : ": " + getDesc());
+            return "<" + getId() + "> EC Private key, over " + getCurve() + (getDesc() == null ? "" : ": " + getDesc()) + System.lineSeparator() + super.toString();
         }
     }
 }

@@ -74,4 +74,9 @@
         <directory>test</directory>
         <desc>Test vectors</desc>
     </category>
+    <category>
+        <name>wycheproof</name>
+        <directory>wycheproof</directory>
+        <desc>Test cases from google Wycheproof project: https://github.com/google/wycheproof</desc>
+    </category>
 </categories>
