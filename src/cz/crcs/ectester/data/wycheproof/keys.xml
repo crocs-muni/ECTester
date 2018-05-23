@@ -848,4 +848,47 @@
         <curve>brainpool/brainpoolP512t1</curve>
         <desc>tcId = 1189</desc>
     </pubkey>
+
+    <!-- CVE-2017-8932 tests -->
+    <privkey>
+        <id>wycheproof/cve_2017_8932/secp256r1/1s</id>
+        <inline>0x2a265f8bcbdcaf94d58519141e578124cb40d64a501fba9c11847b28965bc737</inline>
+        <curve>secg/secp256r1</curve>
+        <desc>tcId = 112</desc>
+    </privkey>
+    <pubkey>
+        <id>wycheproof/cve_2017_8932/secp256r1/1w</id>
+        <inline>0x023819813ac969847059028ea88a1f30dfbcde03fc791d3a252c6b41211882ea,0xf93e4ae433cc12cf2a43fc0ef26400c0e125508224cdb649380f25479148a4ad</inline>
+        <!-- 3059301306072a8648ce3d020106082a8648ce3d03010703420004023819813ac969847059028ea88a1f30dfbcde03fc791d3a252c6b41211882eaf93e4ae433cc12cf2a43fc0ef26400c0e125508224cdb649380f25479148a4ad -->
+        <curve>secg/secp256r1</curve>
+        <desc>tcId = 112</desc>
+    </pubkey>
+    <privkey>
+        <id>wycheproof/cve_2017_8932/secp256r1/2s</id>
+        <inline>0x313f72ff9fe811bf573176231b286a3bdb6f1b14e05c40146590727a71c3bccd</inline>
+        <curve>secg/secp256r1</curve>
+        <desc>tcId = 113</desc>
+    </privkey>
+    <pubkey>
+        <id>wycheproof/cve_2017_8932/secp256r1/2w</id>
+        <inline>0xcc11887b2d66cbae8f4d306627192522932146b42f01d3c6f92bd5c8ba739b06,0xa2f08a029cd06b46183085bae9248b0ed15b70280c7ef13a457f5af382426031</inline>
+        <!-- 3059301306072a8648ce3d020106082a8648ce3d03010703420004cc11887b2d66cbae8f4d306627192522932146b42f01d3c6f92bd5c8ba739b06a2f08a029cd06b46183085bae9248b0ed15b70280c7ef13a457f5af382426031 -->
+        <curve>secg/secp256r1</curve>
+        <desc>tcId = 113</desc>
+    </pubkey>
+
+    <!-- CVE-2017-10176 tests -->
+    <privkey>
+        <id>wycheproof/cve_2017_10176/secp521r1/1s</id>
+        <inline>0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa51868783bf2f966b7fcc0148f709a5d03bb5c9b8899c47aebb6fb71e913863f7</inline>
+        <curve>secg/secp521r1</curve>
+        <desc>tcId = 280</desc>
+    </privkey>
+    <pubkey>
+        <id>wycheproof/cve_2017_10176/secp521r1/1w</id>
+        <inline>0x00c6858e06b70404e9cd9e3ecb662395b4429c648139053fb521f828af606b4d3dbaa14b5e77efe75928fe1dc127a2ffa8de3348b3c1856a429bf97e7e31c2e5bd66,0x011839296a789a3bc0045c8a5fb42c7d1bd998f54449579b446817afbd17273e662c97ee72995ef42640c550b9013fad0761353c7086a272c24088be94769fd16650</inline>
+        <!-- 30819b301006072a8648ce3d020106052b81040023038186000400c6858e06b70404e9cd9e3ecb662395b4429c648139053fb521f828af606b4d3dbaa14b5e77efe75928fe1dc127a2ffa8de3348b3c1856a429bf97e7e31c2e5bd66011839296a789a3bc0045c8a5fb42c7d1bd998f54449579b446817afbd17273e662c97ee72995ef42640c550b9013fad0761353c7086a272c24088be94769fd16650 -->
+        <curve>secg/secp521r1</curve>
+        <desc>tcId = 280</desc>
+    </pubkey>
 </keys>
