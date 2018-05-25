@@ -11,8 +11,9 @@
  - `twist`*
  - `degenerate`*
  - `cofactor`*
+ - `edge-cases`*
  
-**\*NOTE: The `wrong`, `composite`, `invalid`,`twist`, `cofactor` and `degenerate` test suites caused temporary/permanent DoS of some cards. These test suites prompt you for
+**\*NOTE: The `wrong`, `composite`, `invalid`,`twist`, `cofactor`, `edge-cases` and `degenerate` test suites caused temporary/permanent DoS of some cards. These test suites prompt you for
 confirmation before running, be cautious.**
 
 ## Default
@@ -134,4 +135,18 @@ during ECDH.
 For example:
 ```bash
 java -jar ECTester.jar -t cofactor
+```
+
+## Edge-Cases
+Tests various inputs to ECDH which may cause an implementation to achieve a certain edge-case state during ECDH. 
+Some of the data is from the google/Wycheproof project. Tests include [CVE-2017-10176](https://nvd.nist.gov/vuln/detail/CVE-2017-10176) and [CVE-2017-8932](https://nvd.nist.gov/vuln/detail/CVE-2017-8932).
+
+CVE-2017-10176 was in implementation issue in the SunEC Java library that caused the implementation to reach the point at infinity during ECDH computation.
+
+CVE-2017-8932 was an implementation issue in the Go standard library, in particular its scalar multiplication algorithm on the
+P-256 curve which leaked information about the private key.
+
+For example:
+```bash
+java -jar ECTester.jar -t edge-cases
 ```
