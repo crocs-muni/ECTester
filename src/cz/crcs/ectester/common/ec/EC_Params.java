@@ -189,6 +189,6 @@ public class EC_Params extends EC_Data {
             }
             paramMask = (short) (paramMask << 1);
         }
-        return out.toArray(new String[out.size()]);
+        return out.toArray(new String[0]);
     }
 }

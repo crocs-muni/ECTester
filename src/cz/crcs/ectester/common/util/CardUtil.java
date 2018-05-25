@@ -14,11 +14,17 @@ public class CardUtil {
     public static byte getKA(String name) {
         switch (name) {
             case "DH":
-            case "ECDH":
                 return EC_Consts.KeyAgreement_ALG_EC_SVDP_DH;
             case "DHC":
-            case "ECDHC":
                 return EC_Consts.KeyAgreement_ALG_EC_SVDP_DHC;
+            case "DH_PLAIN":
+                return EC_Consts.KeyAgreement_ALG_EC_SVDP_DH_PLAIN;
+            case "DHC_PLAIN":
+                return EC_Consts.KeyAgreement_ALG_EC_SVDP_DHC_PLAIN;
+            case "PACE_GM":
+                return EC_Consts.KeyAgreement_ALG_EC_PACE_GM;
+            case "DH_PLAIN_XY":
+                return EC_Consts.KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY;
             default:
                 return EC_Consts.KeyAgreement_ALG_EC_SVDP_DH;
         }

@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -318,12 +319,12 @@ public class EC_Store {
         return getObject(objClass, query.substring(0, split), query.substring(split + 1));
     }
 
-    public static <T extends EC_Key> List<Map.Entry<EC_Curve, List<T>>> mapToCurve(Collection<T> keys) {
+    private static <T extends EC_Data> List<Map.Entry<EC_Curve, List<T>>> mapKeyToCurve(Collection<T> data, Function<T, String> getter) {
         Map<EC_Curve, List<T>> curves = new TreeMap<>();
-        for (T key : keys) {
-            EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, key.getCurve());
+        for (T item : data) {
+            EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, getter.apply(item));
             List<T> curveKeys = curves.getOrDefault(curve, new LinkedList<>());
-            curveKeys.add(key);
+            curveKeys.add(item);
             curves.putIfAbsent(curve, curveKeys);
         }
         List<Map.Entry<EC_Curve, List<T>>> curveList = new LinkedList<>();
@@ -331,6 +332,28 @@ public class EC_Store {
         Comparator<Map.Entry<EC_Curve, List<T>>> c = Comparator.comparing(o -> o.getKey().getBits());
         curveList.sort(c.thenComparing(b -> b.getKey().getId()));
         return curveList;
+    }
+
+    public static <T extends EC_Key> List<Map.Entry<EC_Curve, List<T>>> mapKeyToCurve(Collection<T> keys) {
+        return mapKeyToCurve(keys, EC_Key::getCurve);
+    }
+
+    public static List<Map.Entry<EC_Curve, List<EC_KAResult>>> mapResultToCurve(Collection<EC_KAResult> results) {
+        return mapKeyToCurve(results, EC_KAResult::getCurve);
+    }
+
+    public static <T extends EC_Data> List<Map.Entry<String, List<T>>> mapToPrefix(Collection<T> data) {
+        Map<String, List<T>> groups = new TreeMap<>();
+        for (T item : data) {
+            String prefix = item.getId().split("/")[0];
+            List<T> group = groups.getOrDefault(prefix, new LinkedList<>());
+            group.add(item);
+            groups.putIfAbsent(prefix, group);
+        }
+        List<Map.Entry<String, List<T>>> result = new LinkedList<>();
+        result.addAll(groups.entrySet());
+        result.sort(Comparator.comparing(Map.Entry::getKey));
+        return result;
     }
 
     public static EC_Store getInstance() {

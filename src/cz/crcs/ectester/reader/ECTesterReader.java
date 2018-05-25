@@ -247,7 +247,7 @@ public class ECTesterReader {
         actions.addOption(Option.builder("ln").longOpt("list-named").desc("Print the list of supported named curves and keys.").hasArg().argName("what").optionalArg(true).build());
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate [amount] of EC keys.").hasArg().argName("amount").optionalArg(true).build());
-        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. [test_suite]:\n- default:\n- compression:\n- invalid:\n- twist:\n- degenerate:\n- cofactor:\n- wrong:\n- composite:\n- test-vectors:").hasArg().argName("test_suite").optionalArg(true).build());
+        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. [test_suite]:\n- default:\n- compression:\n- invalid:\n- twist:\n- degenerate:\n- cofactor:\n- wrong:\n- composite:\n- test-vectors:\n- edge-cases:").hasArg().argName("test_suite").optionalArg(true).build());
         actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do EC KeyAgreement (ECDH...), [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
 
@@ -440,6 +440,9 @@ public class ECTesterReader {
                         break;
                     case "cofactor":
                         suite = new CardCofactorSuite(writer, cfg, cardManager);
+                        break;
+                    case "edge-cases":
+                        suite = new CardEdgeCasesSuite(writer, cfg, cardManager);
                         break;
                     default:
                         System.err.println("Unknown test suite.");
@@ -770,7 +773,7 @@ public class ECTesterReader {
                 }
 
                 testSuite = cli.getOptionValue("test", "default").toLowerCase();
-                String[] tests = new String[]{"default", "composite", "compression", "invalid", "degenerate", "test-vectors", "wrong", "twist", "cofactor"};
+                String[] tests = new String[]{"default", "composite", "compression", "invalid", "degenerate", "test-vectors", "wrong", "twist", "cofactor", "edge-cases"};
                 if (!Arrays.asList(tests).contains(testSuite)) {
                     System.err.println("Unknown test suite " + testSuite + ". Should be one of: " + Arrays.toString(tests));
                     return false;

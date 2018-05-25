@@ -4,845 +4,845 @@
       category="wycheproof"
       desc="">
     <privkey>
-        <id>wycheproof/addsub/secp224r1/1s</id>
+        <id>addsub/secp224r1/1s</id>
         <inline>0x0ffffffffffffffffffffffffffff16a2e0b8f03e13dd29455c5c29b7</inline>
         <curve>secg/secp224r1</curve>
         <desc>tcId = 34</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp224r1/1w</id>
+        <id>addsub/secp224r1/1w</id>
         <inline>0x478e73465bb1183583f4064e67e8b4343af4a05d29dfc04eb60ac230,0x2e5b9a3a1b32e4208d4c284ff26822e09c3a9a4683443e4a35175504</inline>
         <!-- 304e301006072a8648ce3d020106052b81040021033a0004478e73465bb1183583f4064e67e8b4343af4a05d29dfc04eb60ac2302e5b9a3a1b32e4208d4c284ff26822e09c3a9a4683443e4a35175504 -->
         <curve>secg/secp224r1</curve>
         <desc>tcId = 34</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp224r1/2s</id>
+        <id>addsub/secp224r1/2s</id>
         <inline>0x0ffffffffffffffffffffffffffff16a2e0b8f03e13dd29455c5c2a37</inline>
         <curve>secg/secp224r1</curve>
         <desc>tcId = 35</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp224r1/2w</id>
+        <id>addsub/secp224r1/2w</id>
         <inline>0x478e73465bb1183583f4064e67e8b4343af4a05d29dfc04eb60ac230,0x2e5b9a3a1b32e4208d4c284ff26822e09c3a9a4683443e4a35175504</inline>
         <!-- 304e301006072a8648ce3d020106052b81040021033a0004478e73465bb1183583f4064e67e8b4343af4a05d29dfc04eb60ac2302e5b9a3a1b32e4208d4c284ff26822e09c3a9a4683443e4a35175504 -->
         <curve>secg/secp224r1</curve>
         <desc>tcId = 35</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp224r1/3s</id>
+        <id>addsub/secp224r1/3s</id>
         <inline>0x0ffffffffffffffffffffffffffff16a2e0b8f03e13dd29455c5c2a3b</inline>
         <curve>secg/secp224r1</curve>
         <desc>tcId = 37</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp224r1/3w</id>
+        <id>addsub/secp224r1/3w</id>
         <inline>0x478e73465bb1183583f4064e67e8b4343af4a05d29dfc04eb60ac230,0x2e5b9a3a1b32e4208d4c284ff26822e09c3a9a4683443e4a35175504</inline>
         <!-- 304e301006072a8648ce3d020106052b81040021033a0004478e73465bb1183583f4064e67e8b4343af4a05d29dfc04eb60ac2302e5b9a3a1b32e4208d4c284ff26822e09c3a9a4683443e4a35175504 -->
         <curve>secg/secp224r1</curve>
         <desc>tcId = 37</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp256r1/1s</id>
+        <id>addsub/secp256r1/1s</id>
         <inline>0x0ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc6324f3</inline>
         <curve>secg/secp256r1</curve>
         <desc>tcId = 106</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp256r1/1w</id>
+        <id>addsub/secp256r1/1w</id>
         <inline>0x31028f3377fc8f2b1967edaab90213acad0da9f50897f08f57537f78f1167447,0x43a1930189363bbde2ac4cbd1649cdc6f451add71dd2f16a8a867f2b17caa16b</inline>
         <!-- 3059301306072a8648ce3d020106082a8648ce3d0301070342000431028f3377fc8f2b1967edaab90213acad0da9f50897f08f57537f78f116744743a1930189363bbde2ac4cbd1649cdc6f451add71dd2f16a8a867f2b17caa16b -->
         <curve>secg/secp256r1</curve>
         <desc>tcId = 106</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp256r1/2s</id>
+        <id>addsub/secp256r1/2s</id>
         <inline>0x0ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632533</inline>
         <curve>secg/secp256r1</curve>
         <desc>tcId = 107</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp256r1/2w</id>
+        <id>addsub/secp256r1/2w</id>
         <inline>0x31028f3377fc8f2b1967edaab90213acad0da9f50897f08f57537f78f1167447,0x43a1930189363bbde2ac4cbd1649cdc6f451add71dd2f16a8a867f2b17caa16b</inline>
         <!-- 3059301306072a8648ce3d020106082a8648ce3d0301070342000431028f3377fc8f2b1967edaab90213acad0da9f50897f08f57537f78f116744743a1930189363bbde2ac4cbd1649cdc6f451add71dd2f16a8a867f2b17caa16b -->
         <curve>secg/secp256r1</curve>
         <desc>tcId = 107</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp256r1/3s</id>
+        <id>addsub/secp256r1/3s</id>
         <inline>0x0ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632543</inline>
         <curve>secg/secp256r1</curve>
         <desc>tcId = 108</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp256r1/3w</id>
+        <id>addsub/secp256r1/3w</id>
         <inline>0x31028f3377fc8f2b1967edaab90213acad0da9f50897f08f57537f78f1167447,0x43a1930189363bbde2ac4cbd1649cdc6f451add71dd2f16a8a867f2b17caa16b</inline>
         <!-- 3059301306072a8648ce3d020106082a8648ce3d0301070342000431028f3377fc8f2b1967edaab90213acad0da9f50897f08f57537f78f116744743a1930189363bbde2ac4cbd1649cdc6f451add71dd2f16a8a867f2b17caa16b -->
         <curve>secg/secp256r1</curve>
         <desc>tcId = 108</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp256r1/4s</id>
+        <id>addsub/secp256r1/4s</id>
         <inline>0x0ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc63254b</inline>
         <curve>secg/secp256r1</curve>
         <desc>tcId = 109</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp256r1/4w</id>
+        <id>addsub/secp256r1/4w</id>
         <inline>0x31028f3377fc8f2b1967edaab90213acad0da9f50897f08f57537f78f1167447,0x43a1930189363bbde2ac4cbd1649cdc6f451add71dd2f16a8a867f2b17caa16b</inline>
         <!-- 3059301306072a8648ce3d020106082a8648ce3d0301070342000431028f3377fc8f2b1967edaab90213acad0da9f50897f08f57537f78f116744743a1930189363bbde2ac4cbd1649cdc6f451add71dd2f16a8a867f2b17caa16b -->
         <curve>secg/secp256r1</curve>
         <desc>tcId = 109</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp256r1/5s</id>
+        <id>addsub/secp256r1/5s</id>
         <inline>0x0ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc63254f</inline>
         <curve>secg/secp256r1</curve>
         <desc>tcId = 111</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp256r1/5w</id>
+        <id>addsub/secp256r1/5w</id>
         <inline>0x31028f3377fc8f2b1967edaab90213acad0da9f50897f08f57537f78f1167447,0x43a1930189363bbde2ac4cbd1649cdc6f451add71dd2f16a8a867f2b17caa16b</inline>
         <!-- 3059301306072a8648ce3d020106082a8648ce3d0301070342000431028f3377fc8f2b1967edaab90213acad0da9f50897f08f57537f78f116744743a1930189363bbde2ac4cbd1649cdc6f451add71dd2f16a8a867f2b17caa16b -->
         <curve>secg/secp256r1</curve>
         <desc>tcId = 111</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp384r1/1s</id>
+        <id>addsub/secp384r1/1s</id>
         <inline>0x0ffffffffffffffffffffffffffffffffffffffffffffffffc7634d81f4372ddf581a0db248b0a77aecec196accc52959</inline>
         <curve>secg/secp384r1</curve>
         <desc>tcId = 192</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp384r1/1w</id>
+        <id>addsub/secp384r1/1w</id>
         <inline>0xe9dfaaab808b3aac1ccca7cc6242a7ee583249afe8ee8f66b904cc8eec34ad334456e00f33a94de8b5169cf0199550c0,0x20156e9651734ff999c5f3ea62b83d0083a6093f234457251ecf72c41e4df7cea2420b5454a7f690034380bac981e92e</inline>
         <!-- 3076301006072a8648ce3d020106052b8104002203620004e9dfaaab808b3aac1ccca7cc6242a7ee583249afe8ee8f66b904cc8eec34ad334456e00f33a94de8b5169cf0199550c020156e9651734ff999c5f3ea62b83d0083a6093f234457251ecf72c41e4df7cea2420b5454a7f690034380bac981e92e -->
         <curve>secg/secp384r1</curve>
         <desc>tcId = 192</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp384r1/2s</id>
+        <id>addsub/secp384r1/2s</id>
         <inline>0x0ffffffffffffffffffffffffffffffffffffffffffffffffc7634d81f4372ddf581a0db248b0a77aecec196accc52969</inline>
         <curve>secg/secp384r1</curve>
         <desc>tcId = 193</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp384r1/2w</id>
+        <id>addsub/secp384r1/2w</id>
         <inline>0xe9dfaaab808b3aac1ccca7cc6242a7ee583249afe8ee8f66b904cc8eec34ad334456e00f33a94de8b5169cf0199550c0,0x20156e9651734ff999c5f3ea62b83d0083a6093f234457251ecf72c41e4df7cea2420b5454a7f690034380bac981e92e</inline>
         <!-- 3076301006072a8648ce3d020106052b8104002203620004e9dfaaab808b3aac1ccca7cc6242a7ee583249afe8ee8f66b904cc8eec34ad334456e00f33a94de8b5169cf0199550c020156e9651734ff999c5f3ea62b83d0083a6093f234457251ecf72c41e4df7cea2420b5454a7f690034380bac981e92e -->
         <curve>secg/secp384r1</curve>
         <desc>tcId = 193</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp384r1/3s</id>
+        <id>addsub/secp384r1/3s</id>
         <inline>0x0ffffffffffffffffffffffffffffffffffffffffffffffffc7634d81f4372ddf581a0db248b0a77aecec196accc52971</inline>
         <curve>secg/secp384r1</curve>
         <desc>tcId = 195</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp384r1/3w</id>
+        <id>addsub/secp384r1/3w</id>
         <inline>0xe9dfaaab808b3aac1ccca7cc6242a7ee583249afe8ee8f66b904cc8eec34ad334456e00f33a94de8b5169cf0199550c0,0x20156e9651734ff999c5f3ea62b83d0083a6093f234457251ecf72c41e4df7cea2420b5454a7f690034380bac981e92e</inline>
         <!-- 3076301006072a8648ce3d020106052b8104002203620004e9dfaaab808b3aac1ccca7cc6242a7ee583249afe8ee8f66b904cc8eec34ad334456e00f33a94de8b5169cf0199550c020156e9651734ff999c5f3ea62b83d0083a6093f234457251ecf72c41e4df7cea2420b5454a7f690034380bac981e92e -->
         <curve>secg/secp384r1</curve>
         <desc>tcId = 195</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp521r1/1s</id>
+        <id>addsub/secp521r1/1s</id>
         <inline>0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa51868783bf2f966b7fcc0148f709a5d03bb5c9b8899c47aebb6fb71e9138631b</inline>
         <curve>secg/secp521r1</curve>
         <desc>tcId = 273</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp521r1/1w</id>
+        <id>addsub/secp521r1/1w</id>
         <inline>0x01ad5043591dbe81657fe3d1c3d7a516606ad9d320a35fce8aaec8a950fb53f95388f3fc48be998e99334ad9e9234cded14471fe86caccaa07d058ee8771733ac3b9,0x00854de36366590b9ee4d0370ea6b00f7ebd8156ccf14e99f1a5344a9b4964fbb8348b081a8840c6b64be77997ad8bebfea5e7d9f7a6a7fa6d7655c50b2b7835f314</inline>
         <!-- 30819b301006072a8648ce3d020106052b81040023038186000401ad5043591dbe81657fe3d1c3d7a516606ad9d320a35fce8aaec8a950fb53f95388f3fc48be998e99334ad9e9234cded14471fe86caccaa07d058ee8771733ac3b900854de36366590b9ee4d0370ea6b00f7ebd8156ccf14e99f1a5344a9b4964fbb8348b081a8840c6b64be77997ad8bebfea5e7d9f7a6a7fa6d7655c50b2b7835f314 -->
         <curve>secg/secp521r1</curve>
         <desc>tcId = 273</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp521r1/2s</id>
+        <id>addsub/secp521r1/2s</id>
         <inline>0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa51868783bf2f966b7fcc0148f709a5d03bb5c9b8899c47aebb6fb71e9138639b</inline>
         <curve>secg/secp521r1</curve>
         <desc>tcId = 274</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp521r1/2w</id>
+        <id>addsub/secp521r1/2w</id>
         <inline>0x01ad5043591dbe81657fe3d1c3d7a516606ad9d320a35fce8aaec8a950fb53f95388f3fc48be998e99334ad9e9234cded14471fe86caccaa07d058ee8771733ac3b9,0x00854de36366590b9ee4d0370ea6b00f7ebd8156ccf14e99f1a5344a9b4964fbb8348b081a8840c6b64be77997ad8bebfea5e7d9f7a6a7fa6d7655c50b2b7835f314</inline>
         <!-- 30819b301006072a8648ce3d020106052b81040023038186000401ad5043591dbe81657fe3d1c3d7a516606ad9d320a35fce8aaec8a950fb53f95388f3fc48be998e99334ad9e9234cded14471fe86caccaa07d058ee8771733ac3b900854de36366590b9ee4d0370ea6b00f7ebd8156ccf14e99f1a5344a9b4964fbb8348b081a8840c6b64be77997ad8bebfea5e7d9f7a6a7fa6d7655c50b2b7835f314 -->
         <curve>secg/secp521r1</curve>
         <desc>tcId = 274</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp521r1/3s</id>
+        <id>addsub/secp521r1/3s</id>
         <inline>0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa51868783bf2f966b7fcc0148f709a5d03bb5c9b8899c47aebb6fb71e913863db</inline>
         <curve>secg/secp521r1</curve>
         <desc>tcId = 275</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp521r1/3w</id>
+        <id>addsub/secp521r1/3w</id>
         <inline>0x01ad5043591dbe81657fe3d1c3d7a516606ad9d320a35fce8aaec8a950fb53f95388f3fc48be998e99334ad9e9234cded14471fe86caccaa07d058ee8771733ac3b9,0x00854de36366590b9ee4d0370ea6b00f7ebd8156ccf14e99f1a5344a9b4964fbb8348b081a8840c6b64be77997ad8bebfea5e7d9f7a6a7fa6d7655c50b2b7835f314</inline>
         <!-- 30819b301006072a8648ce3d020106052b81040023038186000401ad5043591dbe81657fe3d1c3d7a516606ad9d320a35fce8aaec8a950fb53f95388f3fc48be998e99334ad9e9234cded14471fe86caccaa07d058ee8771733ac3b900854de36366590b9ee4d0370ea6b00f7ebd8156ccf14e99f1a5344a9b4964fbb8348b081a8840c6b64be77997ad8bebfea5e7d9f7a6a7fa6d7655c50b2b7835f314 -->
         <curve>secg/secp521r1</curve>
         <desc>tcId = 275</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp521r1/4s</id>
+        <id>addsub/secp521r1/4s</id>
         <inline>0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa51868783bf2f966b7fcc0148f709a5d03bb5c9b8899c47aebb6fb71e913863fb</inline>
         <curve>secg/secp521r1</curve>
         <desc>tcId = 276</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp521r1/4w</id>
+        <id>addsub/secp521r1/4w</id>
         <inline>0x01ad5043591dbe81657fe3d1c3d7a516606ad9d320a35fce8aaec8a950fb53f95388f3fc48be998e99334ad9e9234cded14471fe86caccaa07d058ee8771733ac3b9,0x00854de36366590b9ee4d0370ea6b00f7ebd8156ccf14e99f1a5344a9b4964fbb8348b081a8840c6b64be77997ad8bebfea5e7d9f7a6a7fa6d7655c50b2b7835f314</inline>
         <!-- 30819b301006072a8648ce3d020106052b81040023038186000401ad5043591dbe81657fe3d1c3d7a516606ad9d320a35fce8aaec8a950fb53f95388f3fc48be998e99334ad9e9234cded14471fe86caccaa07d058ee8771733ac3b900854de36366590b9ee4d0370ea6b00f7ebd8156ccf14e99f1a5344a9b4964fbb8348b081a8840c6b64be77997ad8bebfea5e7d9f7a6a7fa6d7655c50b2b7835f314 -->
         <curve>secg/secp521r1</curve>
         <desc>tcId = 276</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp521r1/5s</id>
+        <id>addsub/secp521r1/5s</id>
         <inline>0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa51868783bf2f966b7fcc0148f709a5d03bb5c9b8899c47aebb6fb71e91386403</inline>
         <curve>secg/secp521r1</curve>
         <desc>tcId = 277</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp521r1/5w</id>
+        <id>addsub/secp521r1/5w</id>
         <inline>0x01ad5043591dbe81657fe3d1c3d7a516606ad9d320a35fce8aaec8a950fb53f95388f3fc48be998e99334ad9e9234cded14471fe86caccaa07d058ee8771733ac3b9,0x00854de36366590b9ee4d0370ea6b00f7ebd8156ccf14e99f1a5344a9b4964fbb8348b081a8840c6b64be77997ad8bebfea5e7d9f7a6a7fa6d7655c50b2b7835f314</inline>
         <!-- 30819b301006072a8648ce3d020106052b81040023038186000401ad5043591dbe81657fe3d1c3d7a516606ad9d320a35fce8aaec8a950fb53f95388f3fc48be998e99334ad9e9234cded14471fe86caccaa07d058ee8771733ac3b900854de36366590b9ee4d0370ea6b00f7ebd8156ccf14e99f1a5344a9b4964fbb8348b081a8840c6b64be77997ad8bebfea5e7d9f7a6a7fa6d7655c50b2b7835f314 -->
         <curve>secg/secp521r1</curve>
         <desc>tcId = 277</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp521r1/6s</id>
+        <id>addsub/secp521r1/6s</id>
         <inline>0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa51868783bf2f966b7fcc0148f709a5d03bb5c9b8899c47aebb6fb71e91386407</inline>
         <curve>secg/secp521r1</curve>
         <desc>tcId = 279</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp521r1/6w</id>
+        <id>addsub/secp521r1/6w</id>
         <inline>0x01ad5043591dbe81657fe3d1c3d7a516606ad9d320a35fce8aaec8a950fb53f95388f3fc48be998e99334ad9e9234cded14471fe86caccaa07d058ee8771733ac3b9,0x00854de36366590b9ee4d0370ea6b00f7ebd8156ccf14e99f1a5344a9b4964fbb8348b081a8840c6b64be77997ad8bebfea5e7d9f7a6a7fa6d7655c50b2b7835f314</inline>
         <!-- 30819b301006072a8648ce3d020106052b81040023038186000401ad5043591dbe81657fe3d1c3d7a516606ad9d320a35fce8aaec8a950fb53f95388f3fc48be998e99334ad9e9234cded14471fe86caccaa07d058ee8771733ac3b900854de36366590b9ee4d0370ea6b00f7ebd8156ccf14e99f1a5344a9b4964fbb8348b081a8840c6b64be77997ad8bebfea5e7d9f7a6a7fa6d7655c50b2b7835f314 -->
         <curve>secg/secp521r1</curve>
         <desc>tcId = 279</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp256k1/1s</id>
+        <id>addsub/secp256k1/1s</id>
         <inline>0x0fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd03640c3</inline>
         <curve>secg/secp256k1</curve>
         <desc>tcId = 362</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp256k1/1w</id>
+        <id>addsub/secp256k1/1w</id>
         <inline>0x32bdd978eb62b1f369a56d0949ab8551a7ad527d9602e891ce457586c2a8569e,0x981e67fae053b03fc33e1a291f0a3beb58fceb2e85bb1205dacee1232dfd316b</inline>
         <!-- 3056301006072a8648ce3d020106052b8104000a0342000432bdd978eb62b1f369a56d0949ab8551a7ad527d9602e891ce457586c2a8569e981e67fae053b03fc33e1a291f0a3beb58fceb2e85bb1205dacee1232dfd316b -->
         <curve>secg/secp256k1</curve>
         <desc>tcId = 362</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp256k1/2s</id>
+        <id>addsub/secp256k1/2s</id>
         <inline>0x0fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364103</inline>
         <curve>secg/secp256k1</curve>
         <desc>tcId = 363</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp256k1/2w</id>
+        <id>addsub/secp256k1/2w</id>
         <inline>0x32bdd978eb62b1f369a56d0949ab8551a7ad527d9602e891ce457586c2a8569e,0x981e67fae053b03fc33e1a291f0a3beb58fceb2e85bb1205dacee1232dfd316b</inline>
         <!-- 3056301006072a8648ce3d020106052b8104000a0342000432bdd978eb62b1f369a56d0949ab8551a7ad527d9602e891ce457586c2a8569e981e67fae053b03fc33e1a291f0a3beb58fceb2e85bb1205dacee1232dfd316b -->
         <curve>secg/secp256k1</curve>
         <desc>tcId = 363</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp256k1/3s</id>
+        <id>addsub/secp256k1/3s</id>
         <inline>0x0fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364123</inline>
         <curve>secg/secp256k1</curve>
         <desc>tcId = 364</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp256k1/3w</id>
+        <id>addsub/secp256k1/3w</id>
         <inline>0x32bdd978eb62b1f369a56d0949ab8551a7ad527d9602e891ce457586c2a8569e,0x981e67fae053b03fc33e1a291f0a3beb58fceb2e85bb1205dacee1232dfd316b</inline>
         <!-- 3056301006072a8648ce3d020106052b8104000a0342000432bdd978eb62b1f369a56d0949ab8551a7ad527d9602e891ce457586c2a8569e981e67fae053b03fc33e1a291f0a3beb58fceb2e85bb1205dacee1232dfd316b -->
         <curve>secg/secp256k1</curve>
         <desc>tcId = 364</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp256k1/4s</id>
+        <id>addsub/secp256k1/4s</id>
         <inline>0x0fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364133</inline>
         <curve>secg/secp256k1</curve>
         <desc>tcId = 365</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp256k1/4w</id>
+        <id>addsub/secp256k1/4w</id>
         <inline>0x32bdd978eb62b1f369a56d0949ab8551a7ad527d9602e891ce457586c2a8569e,0x981e67fae053b03fc33e1a291f0a3beb58fceb2e85bb1205dacee1232dfd316b</inline>
         <!-- 3056301006072a8648ce3d020106052b8104000a0342000432bdd978eb62b1f369a56d0949ab8551a7ad527d9602e891ce457586c2a8569e981e67fae053b03fc33e1a291f0a3beb58fceb2e85bb1205dacee1232dfd316b -->
         <curve>secg/secp256k1</curve>
         <desc>tcId = 365</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp256k1/5s</id>
+        <id>addsub/secp256k1/5s</id>
         <inline>0x0fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413b</inline>
         <curve>secg/secp256k1</curve>
         <desc>tcId = 366</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp256k1/5w</id>
+        <id>addsub/secp256k1/5w</id>
         <inline>0x32bdd978eb62b1f369a56d0949ab8551a7ad527d9602e891ce457586c2a8569e,0x981e67fae053b03fc33e1a291f0a3beb58fceb2e85bb1205dacee1232dfd316b</inline>
         <!-- 3056301006072a8648ce3d020106052b8104000a0342000432bdd978eb62b1f369a56d0949ab8551a7ad527d9602e891ce457586c2a8569e981e67fae053b03fc33e1a291f0a3beb58fceb2e85bb1205dacee1232dfd316b -->
         <curve>secg/secp256k1</curve>
         <desc>tcId = 366</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/secp256k1/6s</id>
+        <id>addsub/secp256k1/6s</id>
         <inline>0x0fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f</inline>
         <curve>secg/secp256k1</curve>
         <desc>tcId = 368</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/secp256k1/6w</id>
+        <id>addsub/secp256k1/6w</id>
         <inline>0x32bdd978eb62b1f369a56d0949ab8551a7ad527d9602e891ce457586c2a8569e,0x981e67fae053b03fc33e1a291f0a3beb58fceb2e85bb1205dacee1232dfd316b</inline>
         <!-- 3056301006072a8648ce3d020106052b8104000a0342000432bdd978eb62b1f369a56d0949ab8551a7ad527d9602e891ce457586c2a8569e981e67fae053b03fc33e1a291f0a3beb58fceb2e85bb1205dacee1232dfd316b -->
         <curve>secg/secp256k1</curve>
         <desc>tcId = 368</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP224r1/1s</id>
+        <id>addsub/brainpoolP224r1/1s</id>
         <inline>0x0d7c134aa264366862a18302575d0fb98d116bc4b6ddebca3a5a792dd</inline>
         <curve>brainpool/brainpoolP224r1</curve>
         <desc>tcId = 441</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP224r1/1w</id>
+        <id>addsub/brainpoolP224r1/1w</id>
         <inline>0xaaf040d6cad2c18b953de46420b387fa83474d74c6767ed708b9d126,0x8c82a09310bc35b5caf2d9b46318b895e4c097ed501d2dcb14d30a66</inline>
         <!-- 3052301406072a8648ce3d020106092b2403030208010105033a0004aaf040d6cad2c18b953de46420b387fa83474d74c6767ed708b9d1268c82a09310bc35b5caf2d9b46318b895e4c097ed501d2dcb14d30a66 -->
         <curve>brainpool/brainpoolP224r1</curve>
         <desc>tcId = 441</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP224r1/2s</id>
+        <id>addsub/brainpoolP224r1/2s</id>
         <inline>0x0d7c134aa264366862a18302575d0fb98d116bc4b6ddebca3a5a7935d</inline>
         <curve>brainpool/brainpoolP224r1</curve>
         <desc>tcId = 442</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP224r1/2w</id>
+        <id>addsub/brainpoolP224r1/2w</id>
         <inline>0xaaf040d6cad2c18b953de46420b387fa83474d74c6767ed708b9d126,0x8c82a09310bc35b5caf2d9b46318b895e4c097ed501d2dcb14d30a66</inline>
         <!-- 3052301406072a8648ce3d020106092b2403030208010105033a0004aaf040d6cad2c18b953de46420b387fa83474d74c6767ed708b9d1268c82a09310bc35b5caf2d9b46318b895e4c097ed501d2dcb14d30a66 -->
         <curve>brainpool/brainpoolP224r1</curve>
         <desc>tcId = 442</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP224r1/3s</id>
+        <id>addsub/brainpoolP224r1/3s</id>
         <inline>0x0d7c134aa264366862a18302575d0fb98d116bc4b6ddebca3a5a7939d</inline>
         <curve>brainpool/brainpoolP224r1</curve>
         <desc>tcId = 444</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP224r1/3w</id>
+        <id>addsub/brainpoolP224r1/3w</id>
         <inline>0xaaf040d6cad2c18b953de46420b387fa83474d74c6767ed708b9d126,0x8c82a09310bc35b5caf2d9b46318b895e4c097ed501d2dcb14d30a66</inline>
         <!-- 3052301406072a8648ce3d020106092b2403030208010105033a0004aaf040d6cad2c18b953de46420b387fa83474d74c6767ed708b9d1268c82a09310bc35b5caf2d9b46318b895e4c097ed501d2dcb14d30a66 -->
         <curve>brainpool/brainpoolP224r1</curve>
         <desc>tcId = 444</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP256r1/1s</id>
+        <id>addsub/brainpoolP256r1/1s</id>
         <inline>0x0a9fb57dba1eea9bc3e660a909d838d718c397aa3b561a6f7901e0e82974855f5</inline>
         <curve>brainpool/brainpoolP256r1</curve>
         <desc>tcId = 524</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP256r1/1w</id>
+        <id>addsub/brainpoolP256r1/1w</id>
         <inline>0xa4597cfee2797aaace662caa92a444592c9f626f04beca98a06b6dfcaf53f4b3,0x77d67b1c109154309bcf3d2f3928e58747806f08a8cf88436ac1b2110b83493b</inline>
         <!-- 305a301406072a8648ce3d020106092b240303020801010703420004a4597cfee2797aaace662caa92a444592c9f626f04beca98a06b6dfcaf53f4b377d67b1c109154309bcf3d2f3928e58747806f08a8cf88436ac1b2110b83493b -->
         <curve>brainpool/brainpoolP256r1</curve>
         <desc>tcId = 524</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP256r1/2s</id>
+        <id>addsub/brainpoolP256r1/2s</id>
         <inline>0x0a9fb57dba1eea9bc3e660a909d838d718c397aa3b561a6f7901e0e8297485675</inline>
         <curve>brainpool/brainpoolP256r1</curve>
         <desc>tcId = 525</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP256r1/2w</id>
+        <id>addsub/brainpoolP256r1/2w</id>
         <inline>0xa4597cfee2797aaace662caa92a444592c9f626f04beca98a06b6dfcaf53f4b3,0x77d67b1c109154309bcf3d2f3928e58747806f08a8cf88436ac1b2110b83493b</inline>
         <!-- 305a301406072a8648ce3d020106092b240303020801010703420004a4597cfee2797aaace662caa92a444592c9f626f04beca98a06b6dfcaf53f4b377d67b1c109154309bcf3d2f3928e58747806f08a8cf88436ac1b2110b83493b -->
         <curve>brainpool/brainpoolP256r1</curve>
         <desc>tcId = 525</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP256r1/3s</id>
+        <id>addsub/brainpoolP256r1/3s</id>
         <inline>0x0a9fb57dba1eea9bc3e660a909d838d718c397aa3b561a6f7901e0e8297485695</inline>
         <curve>brainpool/brainpoolP256r1</curve>
         <desc>tcId = 526</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP256r1/3w</id>
+        <id>addsub/brainpoolP256r1/3w</id>
         <inline>0xa4597cfee2797aaace662caa92a444592c9f626f04beca98a06b6dfcaf53f4b3,0x77d67b1c109154309bcf3d2f3928e58747806f08a8cf88436ac1b2110b83493b</inline>
         <!-- 305a301406072a8648ce3d020106092b240303020801010703420004a4597cfee2797aaace662caa92a444592c9f626f04beca98a06b6dfcaf53f4b377d67b1c109154309bcf3d2f3928e58747806f08a8cf88436ac1b2110b83493b -->
         <curve>brainpool/brainpoolP256r1</curve>
         <desc>tcId = 526</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP256r1/4s</id>
+        <id>addsub/brainpoolP256r1/4s</id>
         <inline>0x0a9fb57dba1eea9bc3e660a909d838d718c397aa3b561a6f7901e0e82974856a5</inline>
         <curve>brainpool/brainpoolP256r1</curve>
         <desc>tcId = 528</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP256r1/4w</id>
+        <id>addsub/brainpoolP256r1/4w</id>
         <inline>0xa4597cfee2797aaace662caa92a444592c9f626f04beca98a06b6dfcaf53f4b3,0x77d67b1c109154309bcf3d2f3928e58747806f08a8cf88436ac1b2110b83493b</inline>
         <!-- 305a301406072a8648ce3d020106092b240303020801010703420004a4597cfee2797aaace662caa92a444592c9f626f04beca98a06b6dfcaf53f4b377d67b1c109154309bcf3d2f3928e58747806f08a8cf88436ac1b2110b83493b -->
         <curve>brainpool/brainpoolP256r1</curve>
         <desc>tcId = 528</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP320r1/1s</id>
+        <id>addsub/brainpoolP320r1/1s</id>
         <inline>0x0d35e472036bc4fb7e13c785ed201e065f98fcfa5b68f12a32d482ec7ee8658e98691555b44c59233</inline>
         <curve>brainpool/brainpoolP320r1</curve>
         <desc>tcId = 604</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP320r1/1w</id>
+        <id>addsub/brainpoolP320r1/1w</id>
         <inline>0x4e73d59ec474e679414d0922de22e06d0dad990ba4746c3d026bdea52e7bbeaac928d0ddaab29dfe,0xd230dde60fd57d4ef8e935b23cb7d4216b278b17a3f02d70454fa0e45da2054b91b0c4b663ab243d</inline>
         <!-- 306a301406072a8648ce3d020106092b2403030208010109035200044e73d59ec474e679414d0922de22e06d0dad990ba4746c3d026bdea52e7bbeaac928d0ddaab29dfed230dde60fd57d4ef8e935b23cb7d4216b278b17a3f02d70454fa0e45da2054b91b0c4b663ab243d -->
         <curve>brainpool/brainpoolP320r1</curve>
         <desc>tcId = 604</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP320r1/2s</id>
+        <id>addsub/brainpoolP320r1/2s</id>
         <inline>0x0d35e472036bc4fb7e13c785ed201e065f98fcfa5b68f12a32d482ec7ee8658e98691555b44c592b3</inline>
         <curve>brainpool/brainpoolP320r1</curve>
         <desc>tcId = 605</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP320r1/2w</id>
+        <id>addsub/brainpoolP320r1/2w</id>
         <inline>0x4e73d59ec474e679414d0922de22e06d0dad990ba4746c3d026bdea52e7bbeaac928d0ddaab29dfe,0xd230dde60fd57d4ef8e935b23cb7d4216b278b17a3f02d70454fa0e45da2054b91b0c4b663ab243d</inline>
         <!-- 306a301406072a8648ce3d020106092b2403030208010109035200044e73d59ec474e679414d0922de22e06d0dad990ba4746c3d026bdea52e7bbeaac928d0ddaab29dfed230dde60fd57d4ef8e935b23cb7d4216b278b17a3f02d70454fa0e45da2054b91b0c4b663ab243d -->
         <curve>brainpool/brainpoolP320r1</curve>
         <desc>tcId = 605</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP320r1/3s</id>
+        <id>addsub/brainpoolP320r1/3s</id>
         <inline>0x0d35e472036bc4fb7e13c785ed201e065f98fcfa5b68f12a32d482ec7ee8658e98691555b44c592f3</inline>
         <curve>brainpool/brainpoolP320r1</curve>
         <desc>tcId = 606</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP320r1/3w</id>
+        <id>addsub/brainpoolP320r1/3w</id>
         <inline>0x4e73d59ec474e679414d0922de22e06d0dad990ba4746c3d026bdea52e7bbeaac928d0ddaab29dfe,0xd230dde60fd57d4ef8e935b23cb7d4216b278b17a3f02d70454fa0e45da2054b91b0c4b663ab243d</inline>
         <!-- 306a301406072a8648ce3d020106092b2403030208010109035200044e73d59ec474e679414d0922de22e06d0dad990ba4746c3d026bdea52e7bbeaac928d0ddaab29dfed230dde60fd57d4ef8e935b23cb7d4216b278b17a3f02d70454fa0e45da2054b91b0c4b663ab243d -->
         <curve>brainpool/brainpoolP320r1</curve>
         <desc>tcId = 606</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP320r1/4s</id>
+        <id>addsub/brainpoolP320r1/4s</id>
         <inline>0x0d35e472036bc4fb7e13c785ed201e065f98fcfa5b68f12a32d482ec7ee8658e98691555b44c59303</inline>
         <curve>brainpool/brainpoolP320r1</curve>
         <desc>tcId = 607</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP320r1/4w</id>
+        <id>addsub/brainpoolP320r1/4w</id>
         <inline>0x4e73d59ec474e679414d0922de22e06d0dad990ba4746c3d026bdea52e7bbeaac928d0ddaab29dfe,0xd230dde60fd57d4ef8e935b23cb7d4216b278b17a3f02d70454fa0e45da2054b91b0c4b663ab243d</inline>
         <!-- 306a301406072a8648ce3d020106092b2403030208010109035200044e73d59ec474e679414d0922de22e06d0dad990ba4746c3d026bdea52e7bbeaac928d0ddaab29dfed230dde60fd57d4ef8e935b23cb7d4216b278b17a3f02d70454fa0e45da2054b91b0c4b663ab243d -->
         <curve>brainpool/brainpoolP320r1</curve>
         <desc>tcId = 607</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP320r1/5s</id>
+        <id>addsub/brainpoolP320r1/5s</id>
         <inline>0x0d35e472036bc4fb7e13c785ed201e065f98fcfa5b68f12a32d482ec7ee8658e98691555b44c5930b</inline>
         <curve>brainpool/brainpoolP320r1</curve>
         <desc>tcId = 608</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP320r1/5w</id>
+        <id>addsub/brainpoolP320r1/5w</id>
         <inline>0x4e73d59ec474e679414d0922de22e06d0dad990ba4746c3d026bdea52e7bbeaac928d0ddaab29dfe,0xd230dde60fd57d4ef8e935b23cb7d4216b278b17a3f02d70454fa0e45da2054b91b0c4b663ab243d</inline>
         <!-- 306a301406072a8648ce3d020106092b2403030208010109035200044e73d59ec474e679414d0922de22e06d0dad990ba4746c3d026bdea52e7bbeaac928d0ddaab29dfed230dde60fd57d4ef8e935b23cb7d4216b278b17a3f02d70454fa0e45da2054b91b0c4b663ab243d -->
         <curve>brainpool/brainpoolP320r1</curve>
         <desc>tcId = 608</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP320r1/6s</id>
+        <id>addsub/brainpoolP320r1/6s</id>
         <inline>0x0d35e472036bc4fb7e13c785ed201e065f98fcfa5b68f12a32d482ec7ee8658e98691555b44c5930f</inline>
         <curve>brainpool/brainpoolP320r1</curve>
         <desc>tcId = 610</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP320r1/6w</id>
+        <id>addsub/brainpoolP320r1/6w</id>
         <inline>0x4e73d59ec474e679414d0922de22e06d0dad990ba4746c3d026bdea52e7bbeaac928d0ddaab29dfe,0xd230dde60fd57d4ef8e935b23cb7d4216b278b17a3f02d70454fa0e45da2054b91b0c4b663ab243d</inline>
         <!-- 306a301406072a8648ce3d020106092b2403030208010109035200044e73d59ec474e679414d0922de22e06d0dad990ba4746c3d026bdea52e7bbeaac928d0ddaab29dfed230dde60fd57d4ef8e935b23cb7d4216b278b17a3f02d70454fa0e45da2054b91b0c4b663ab243d -->
         <curve>brainpool/brainpoolP320r1</curve>
         <desc>tcId = 610</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP384r1/1s</id>
+        <id>addsub/brainpoolP384r1/1s</id>
         <inline>0x08cb91e82a3386d280f5d6f7e50e641df152f7109ed5456b31f166e6cac0425a7cf3ab6af6b7fc3103b883202e904652f</inline>
         <curve>brainpool/brainpoolP384r1</curve>
         <desc>tcId = 684</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP384r1/1w</id>
+        <id>addsub/brainpoolP384r1/1w</id>
         <inline>0x09d897b6d1452a2f91c4c37fbb06d82f9ebf722298cafb135e582cded3e3210033e4cd07703c34acf36ba72b401c30bf,0x03b161af6e11309a1122145c431996047a7e7808cf8314b6ec37c61a817d08c7d00c8c7b5d258f2674378c832f682edf</inline>
         <!-- 307a301406072a8648ce3d020106092b240303020801010b0362000409d897b6d1452a2f91c4c37fbb06d82f9ebf722298cafb135e582cded3e3210033e4cd07703c34acf36ba72b401c30bf03b161af6e11309a1122145c431996047a7e7808cf8314b6ec37c61a817d08c7d00c8c7b5d258f2674378c832f682edf -->
         <curve>brainpool/brainpoolP384r1</curve>
         <desc>tcId = 684</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP384r1/2s</id>
+        <id>addsub/brainpoolP384r1/2s</id>
         <inline>0x08cb91e82a3386d280f5d6f7e50e641df152f7109ed5456b31f166e6cac0425a7cf3ab6af6b7fc3103b883202e904654f</inline>
         <curve>brainpool/brainpoolP384r1</curve>
         <desc>tcId = 685</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP384r1/2w</id>
+        <id>addsub/brainpoolP384r1/2w</id>
         <inline>0x09d897b6d1452a2f91c4c37fbb06d82f9ebf722298cafb135e582cded3e3210033e4cd07703c34acf36ba72b401c30bf,0x03b161af6e11309a1122145c431996047a7e7808cf8314b6ec37c61a817d08c7d00c8c7b5d258f2674378c832f682edf</inline>
         <!-- 307a301406072a8648ce3d020106092b240303020801010b0362000409d897b6d1452a2f91c4c37fbb06d82f9ebf722298cafb135e582cded3e3210033e4cd07703c34acf36ba72b401c30bf03b161af6e11309a1122145c431996047a7e7808cf8314b6ec37c61a817d08c7d00c8c7b5d258f2674378c832f682edf -->
         <curve>brainpool/brainpoolP384r1</curve>
         <desc>tcId = 685</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP384r1/3s</id>
+        <id>addsub/brainpoolP384r1/3s</id>
         <inline>0x08cb91e82a3386d280f5d6f7e50e641df152f7109ed5456b31f166e6cac0425a7cf3ab6af6b7fc3103b883202e904655f</inline>
         <curve>brainpool/brainpoolP384r1</curve>
         <desc>tcId = 686</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP384r1/3w</id>
+        <id>addsub/brainpoolP384r1/3w</id>
         <inline>0x09d897b6d1452a2f91c4c37fbb06d82f9ebf722298cafb135e582cded3e3210033e4cd07703c34acf36ba72b401c30bf,0x03b161af6e11309a1122145c431996047a7e7808cf8314b6ec37c61a817d08c7d00c8c7b5d258f2674378c832f682edf</inline>
         <!-- 307a301406072a8648ce3d020106092b240303020801010b0362000409d897b6d1452a2f91c4c37fbb06d82f9ebf722298cafb135e582cded3e3210033e4cd07703c34acf36ba72b401c30bf03b161af6e11309a1122145c431996047a7e7808cf8314b6ec37c61a817d08c7d00c8c7b5d258f2674378c832f682edf -->
         <curve>brainpool/brainpoolP384r1</curve>
         <desc>tcId = 686</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP384r1/4s</id>
+        <id>addsub/brainpoolP384r1/4s</id>
         <inline>0x08cb91e82a3386d280f5d6f7e50e641df152f7109ed5456b31f166e6cac0425a7cf3ab6af6b7fc3103b883202e9046563</inline>
         <curve>brainpool/brainpoolP384r1</curve>
         <desc>tcId = 688</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP384r1/4w</id>
+        <id>addsub/brainpoolP384r1/4w</id>
         <inline>0x09d897b6d1452a2f91c4c37fbb06d82f9ebf722298cafb135e582cded3e3210033e4cd07703c34acf36ba72b401c30bf,0x03b161af6e11309a1122145c431996047a7e7808cf8314b6ec37c61a817d08c7d00c8c7b5d258f2674378c832f682edf</inline>
         <!-- 307a301406072a8648ce3d020106092b240303020801010b0362000409d897b6d1452a2f91c4c37fbb06d82f9ebf722298cafb135e582cded3e3210033e4cd07703c34acf36ba72b401c30bf03b161af6e11309a1122145c431996047a7e7808cf8314b6ec37c61a817d08c7d00c8c7b5d258f2674378c832f682edf -->
         <curve>brainpool/brainpoolP384r1</curve>
         <desc>tcId = 688</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP512r1/1s</id>
+        <id>addsub/brainpoolP512r1/1s</id>
         <inline>0x0aadd9db8dbe9c48b3fd4e6ae33c9fc07cb308db3b3c9d20ed6639cca70330870553e5c414ca92619418661197fac10471db1d381085ddaddb58796829ca9003b</inline>
         <curve>brainpool/brainpoolP512r1</curve>
         <desc>tcId = 774</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP512r1/1w</id>
+        <id>addsub/brainpoolP512r1/1w</id>
         <inline>0x2ee402777200a1c9e7eceb61feb070af49429f9240d7c0bab9b2f01c5ee145683df47cbe852ff6f99198f6fdfaef1925eb96bd25e03d6d70f709eb1922308acc,0x99a3fbc1e982db7a7b3bbf7827ea70912ee677bb0ba70bfabec38d4b993af165c40727680fe79ad0fbb55d1e9568d978b11f77cc4e72aa7ca5c391034078b8bd</inline>
         <!-- 30819b301406072a8648ce3d020106092b240303020801010d03818200042ee402777200a1c9e7eceb61feb070af49429f9240d7c0bab9b2f01c5ee145683df47cbe852ff6f99198f6fdfaef1925eb96bd25e03d6d70f709eb1922308acc99a3fbc1e982db7a7b3bbf7827ea70912ee677bb0ba70bfabec38d4b993af165c40727680fe79ad0fbb55d1e9568d978b11f77cc4e72aa7ca5c391034078b8bd -->
         <curve>brainpool/brainpoolP512r1</curve>
         <desc>tcId = 774</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP512r1/2s</id>
+        <id>addsub/brainpoolP512r1/2s</id>
         <inline>0x0aadd9db8dbe9c48b3fd4e6ae33c9fc07cb308db3b3c9d20ed6639cca70330870553e5c414ca92619418661197fac10471db1d381085ddaddb58796829ca9005b</inline>
         <curve>brainpool/brainpoolP512r1</curve>
         <desc>tcId = 775</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP512r1/2w</id>
+        <id>addsub/brainpoolP512r1/2w</id>
         <inline>0x2ee402777200a1c9e7eceb61feb070af49429f9240d7c0bab9b2f01c5ee145683df47cbe852ff6f99198f6fdfaef1925eb96bd25e03d6d70f709eb1922308acc,0x99a3fbc1e982db7a7b3bbf7827ea70912ee677bb0ba70bfabec38d4b993af165c40727680fe79ad0fbb55d1e9568d978b11f77cc4e72aa7ca5c391034078b8bd</inline>
         <!-- 30819b301406072a8648ce3d020106092b240303020801010d03818200042ee402777200a1c9e7eceb61feb070af49429f9240d7c0bab9b2f01c5ee145683df47cbe852ff6f99198f6fdfaef1925eb96bd25e03d6d70f709eb1922308acc99a3fbc1e982db7a7b3bbf7827ea70912ee677bb0ba70bfabec38d4b993af165c40727680fe79ad0fbb55d1e9568d978b11f77cc4e72aa7ca5c391034078b8bd -->
         <curve>brainpool/brainpoolP512r1</curve>
         <desc>tcId = 775</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP512r1/3s</id>
+        <id>addsub/brainpoolP512r1/3s</id>
         <inline>0x0aadd9db8dbe9c48b3fd4e6ae33c9fc07cb308db3b3c9d20ed6639cca70330870553e5c414ca92619418661197fac10471db1d381085ddaddb58796829ca90063</inline>
         <curve>brainpool/brainpoolP512r1</curve>
         <desc>tcId = 776</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP512r1/3w</id>
+        <id>addsub/brainpoolP512r1/3w</id>
         <inline>0x2ee402777200a1c9e7eceb61feb070af49429f9240d7c0bab9b2f01c5ee145683df47cbe852ff6f99198f6fdfaef1925eb96bd25e03d6d70f709eb1922308acc,0x99a3fbc1e982db7a7b3bbf7827ea70912ee677bb0ba70bfabec38d4b993af165c40727680fe79ad0fbb55d1e9568d978b11f77cc4e72aa7ca5c391034078b8bd</inline>
         <!-- 30819b301406072a8648ce3d020106092b240303020801010d03818200042ee402777200a1c9e7eceb61feb070af49429f9240d7c0bab9b2f01c5ee145683df47cbe852ff6f99198f6fdfaef1925eb96bd25e03d6d70f709eb1922308acc99a3fbc1e982db7a7b3bbf7827ea70912ee677bb0ba70bfabec38d4b993af165c40727680fe79ad0fbb55d1e9568d978b11f77cc4e72aa7ca5c391034078b8bd -->
         <curve>brainpool/brainpoolP512r1</curve>
         <desc>tcId = 776</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP512r1/4s</id>
+        <id>addsub/brainpoolP512r1/4s</id>
         <inline>0x0aadd9db8dbe9c48b3fd4e6ae33c9fc07cb308db3b3c9d20ed6639cca70330870553e5c414ca92619418661197fac10471db1d381085ddaddb58796829ca90067</inline>
         <curve>brainpool/brainpoolP512r1</curve>
         <desc>tcId = 778</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP512r1/4w</id>
+        <id>addsub/brainpoolP512r1/4w</id>
         <inline>0x2ee402777200a1c9e7eceb61feb070af49429f9240d7c0bab9b2f01c5ee145683df47cbe852ff6f99198f6fdfaef1925eb96bd25e03d6d70f709eb1922308acc,0x99a3fbc1e982db7a7b3bbf7827ea70912ee677bb0ba70bfabec38d4b993af165c40727680fe79ad0fbb55d1e9568d978b11f77cc4e72aa7ca5c391034078b8bd</inline>
         <!-- 30819b301406072a8648ce3d020106092b240303020801010d03818200042ee402777200a1c9e7eceb61feb070af49429f9240d7c0bab9b2f01c5ee145683df47cbe852ff6f99198f6fdfaef1925eb96bd25e03d6d70f709eb1922308acc99a3fbc1e982db7a7b3bbf7827ea70912ee677bb0ba70bfabec38d4b993af165c40727680fe79ad0fbb55d1e9568d978b11f77cc4e72aa7ca5c391034078b8bd -->
         <curve>brainpool/brainpoolP512r1</curve>
         <desc>tcId = 778</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP224t1/1s</id>
+        <id>addsub/brainpoolP224t1/1s</id>
         <inline>0x0d7c134aa264366862a18302575d0fb98d116bc4b6ddebca3a5a792dd</inline>
         <curve>brainpool/brainpoolP224t1</curve>
         <desc>tcId = 854</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP224t1/1w</id>
+        <id>addsub/brainpoolP224t1/1w</id>
         <inline>0x1b801b9b969daaddbc40876ef79201c5dd8e480f003a043e818862c2,0x6709e1b2f6d8826ae4257a5db46b78848091c56a54577248185936b1</inline>
         <!-- 3052301406072a8648ce3d020106092b2403030208010106033a00041b801b9b969daaddbc40876ef79201c5dd8e480f003a043e818862c26709e1b2f6d8826ae4257a5db46b78848091c56a54577248185936b1 -->
         <curve>brainpool/brainpoolP224t1</curve>
         <desc>tcId = 854</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP224t1/2s</id>
+        <id>addsub/brainpoolP224t1/2s</id>
         <inline>0x0d7c134aa264366862a18302575d0fb98d116bc4b6ddebca3a5a7935d</inline>
         <curve>brainpool/brainpoolP224t1</curve>
         <desc>tcId = 855</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP224t1/2w</id>
+        <id>addsub/brainpoolP224t1/2w</id>
         <inline>0x1b801b9b969daaddbc40876ef79201c5dd8e480f003a043e818862c2,0x6709e1b2f6d8826ae4257a5db46b78848091c56a54577248185936b1</inline>
         <!-- 3052301406072a8648ce3d020106092b2403030208010106033a00041b801b9b969daaddbc40876ef79201c5dd8e480f003a043e818862c26709e1b2f6d8826ae4257a5db46b78848091c56a54577248185936b1 -->
         <curve>brainpool/brainpoolP224t1</curve>
         <desc>tcId = 855</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP224t1/3s</id>
+        <id>addsub/brainpoolP224t1/3s</id>
         <inline>0x0d7c134aa264366862a18302575d0fb98d116bc4b6ddebca3a5a7939d</inline>
         <curve>brainpool/brainpoolP224t1</curve>
         <desc>tcId = 857</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP224t1/3w</id>
+        <id>addsub/brainpoolP224t1/3w</id>
         <inline>0x1b801b9b969daaddbc40876ef79201c5dd8e480f003a043e818862c2,0x6709e1b2f6d8826ae4257a5db46b78848091c56a54577248185936b1</inline>
         <!-- 3052301406072a8648ce3d020106092b2403030208010106033a00041b801b9b969daaddbc40876ef79201c5dd8e480f003a043e818862c26709e1b2f6d8826ae4257a5db46b78848091c56a54577248185936b1 -->
         <curve>brainpool/brainpoolP224t1</curve>
         <desc>tcId = 857</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP256t1/1s</id>
+        <id>addsub/brainpoolP256t1/1s</id>
         <inline>0x0a9fb57dba1eea9bc3e660a909d838d718c397aa3b561a6f7901e0e82974855f5</inline>
         <curve>brainpool/brainpoolP256t1</curve>
         <desc>tcId = 935</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP256t1/1w</id>
+        <id>addsub/brainpoolP256t1/1w</id>
         <inline>0x2053bf936c82599d38aef8ec650f502ad9dce3be818d32de66009a3137604f5b,0x02317c894b1138b873b612714c95527021b4240edd45ad26ee96d507954c3245</inline>
         <!-- 305a301406072a8648ce3d020106092b2403030208010108034200042053bf936c82599d38aef8ec650f502ad9dce3be818d32de66009a3137604f5b02317c894b1138b873b612714c95527021b4240edd45ad26ee96d507954c3245 -->
         <curve>brainpool/brainpoolP256t1</curve>
         <desc>tcId = 935</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP256t1/2s</id>
+        <id>addsub/brainpoolP256t1/2s</id>
         <inline>0x0a9fb57dba1eea9bc3e660a909d838d718c397aa3b561a6f7901e0e8297485675</inline>
         <curve>brainpool/brainpoolP256t1</curve>
         <desc>tcId = 936</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP256t1/2w</id>
+        <id>addsub/brainpoolP256t1/2w</id>
         <inline>0x2053bf936c82599d38aef8ec650f502ad9dce3be818d32de66009a3137604f5b,0x02317c894b1138b873b612714c95527021b4240edd45ad26ee96d507954c3245</inline>
         <!-- 305a301406072a8648ce3d020106092b2403030208010108034200042053bf936c82599d38aef8ec650f502ad9dce3be818d32de66009a3137604f5b02317c894b1138b873b612714c95527021b4240edd45ad26ee96d507954c3245 -->
         <curve>brainpool/brainpoolP256t1</curve>
         <desc>tcId = 936</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP256t1/3s</id>
+        <id>addsub/brainpoolP256t1/3s</id>
         <inline>0x0a9fb57dba1eea9bc3e660a909d838d718c397aa3b561a6f7901e0e8297485695</inline>
         <curve>brainpool/brainpoolP256t1</curve>
         <desc>tcId = 937</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP256t1/3w</id>
+        <id>addsub/brainpoolP256t1/3w</id>
         <inline>0x2053bf936c82599d38aef8ec650f502ad9dce3be818d32de66009a3137604f5b,0x02317c894b1138b873b612714c95527021b4240edd45ad26ee96d507954c3245</inline>
         <!-- 305a301406072a8648ce3d020106092b2403030208010108034200042053bf936c82599d38aef8ec650f502ad9dce3be818d32de66009a3137604f5b02317c894b1138b873b612714c95527021b4240edd45ad26ee96d507954c3245 -->
         <curve>brainpool/brainpoolP256t1</curve>
         <desc>tcId = 937</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP256t1/4s</id>
+        <id>addsub/brainpoolP256t1/4s</id>
         <inline>0x0a9fb57dba1eea9bc3e660a909d838d718c397aa3b561a6f7901e0e82974856a5</inline>
         <curve>brainpool/brainpoolP256t1</curve>
         <desc>tcId = 939</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP256t1/4w</id>
+        <id>addsub/brainpoolP256t1/4w</id>
         <inline>0x2053bf936c82599d38aef8ec650f502ad9dce3be818d32de66009a3137604f5b,0x02317c894b1138b873b612714c95527021b4240edd45ad26ee96d507954c3245</inline>
         <!-- 305a301406072a8648ce3d020106092b2403030208010108034200042053bf936c82599d38aef8ec650f502ad9dce3be818d32de66009a3137604f5b02317c894b1138b873b612714c95527021b4240edd45ad26ee96d507954c3245 -->
         <curve>brainpool/brainpoolP256t1</curve>
         <desc>tcId = 939</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP320t1/1s</id>
+        <id>addsub/brainpoolP320t1/1s</id>
         <inline>0x0d35e472036bc4fb7e13c785ed201e065f98fcfa5b68f12a32d482ec7ee8658e98691555b44c59233</inline>
         <curve>brainpool/brainpoolP320t1</curve>
         <desc>tcId = 1015</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP320t1/1w</id>
+        <id>addsub/brainpoolP320t1/1w</id>
         <inline>0xaac3566c8e494d7d52976b107a9b9058e65e541c01dab5d4bba90658a655890fd2c48d29f0b97225,0x3955fdbd31c6328df2e893fe5b401ddc529c4ed70a9c46badb80843277b8f9874538312460d54dfd</inline>
         <!-- 306a301406072a8648ce3d020106092b240303020801010a03520004aac3566c8e494d7d52976b107a9b9058e65e541c01dab5d4bba90658a655890fd2c48d29f0b972253955fdbd31c6328df2e893fe5b401ddc529c4ed70a9c46badb80843277b8f9874538312460d54dfd -->
         <curve>brainpool/brainpoolP320t1</curve>
         <desc>tcId = 1015</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP320t1/2s</id>
+        <id>addsub/brainpoolP320t1/2s</id>
         <inline>0x0d35e472036bc4fb7e13c785ed201e065f98fcfa5b68f12a32d482ec7ee8658e98691555b44c592b3</inline>
         <curve>brainpool/brainpoolP320t1</curve>
         <desc>tcId = 1016</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP320t1/2w</id>
+        <id>addsub/brainpoolP320t1/2w</id>
         <inline>0xaac3566c8e494d7d52976b107a9b9058e65e541c01dab5d4bba90658a655890fd2c48d29f0b97225,0x3955fdbd31c6328df2e893fe5b401ddc529c4ed70a9c46badb80843277b8f9874538312460d54dfd</inline>
         <!-- 306a301406072a8648ce3d020106092b240303020801010a03520004aac3566c8e494d7d52976b107a9b9058e65e541c01dab5d4bba90658a655890fd2c48d29f0b972253955fdbd31c6328df2e893fe5b401ddc529c4ed70a9c46badb80843277b8f9874538312460d54dfd -->
         <curve>brainpool/brainpoolP320t1</curve>
         <desc>tcId = 1016</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP320t1/3s</id>
+        <id>addsub/brainpoolP320t1/3s</id>
         <inline>0x0d35e472036bc4fb7e13c785ed201e065f98fcfa5b68f12a32d482ec7ee8658e98691555b44c592f3</inline>
         <curve>brainpool/brainpoolP320t1</curve>
         <desc>tcId = 1017</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP320t1/3w</id>
+        <id>addsub/brainpoolP320t1/3w</id>
         <inline>0xaac3566c8e494d7d52976b107a9b9058e65e541c01dab5d4bba90658a655890fd2c48d29f0b97225,0x3955fdbd31c6328df2e893fe5b401ddc529c4ed70a9c46badb80843277b8f9874538312460d54dfd</inline>
         <!-- 306a301406072a8648ce3d020106092b240303020801010a03520004aac3566c8e494d7d52976b107a9b9058e65e541c01dab5d4bba90658a655890fd2c48d29f0b972253955fdbd31c6328df2e893fe5b401ddc529c4ed70a9c46badb80843277b8f9874538312460d54dfd -->
         <curve>brainpool/brainpoolP320t1</curve>
         <desc>tcId = 1017</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP320t1/4s</id>
+        <id>addsub/brainpoolP320t1/4s</id>
         <inline>0x0d35e472036bc4fb7e13c785ed201e065f98fcfa5b68f12a32d482ec7ee8658e98691555b44c59303</inline>
         <curve>brainpool/brainpoolP320t1</curve>
         <desc>tcId = 1018</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP320t1/4w</id>
+        <id>addsub/brainpoolP320t1/4w</id>
         <inline>0xaac3566c8e494d7d52976b107a9b9058e65e541c01dab5d4bba90658a655890fd2c48d29f0b97225,0x3955fdbd31c6328df2e893fe5b401ddc529c4ed70a9c46badb80843277b8f9874538312460d54dfd</inline>
         <!-- 306a301406072a8648ce3d020106092b240303020801010a03520004aac3566c8e494d7d52976b107a9b9058e65e541c01dab5d4bba90658a655890fd2c48d29f0b972253955fdbd31c6328df2e893fe5b401ddc529c4ed70a9c46badb80843277b8f9874538312460d54dfd -->
         <curve>brainpool/brainpoolP320t1</curve>
         <desc>tcId = 1018</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP320t1/5s</id>
+        <id>addsub/brainpoolP320t1/5s</id>
         <inline>0x0d35e472036bc4fb7e13c785ed201e065f98fcfa5b68f12a32d482ec7ee8658e98691555b44c5930b</inline>
         <curve>brainpool/brainpoolP320t1</curve>
         <desc>tcId = 1019</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP320t1/5w</id>
+        <id>addsub/brainpoolP320t1/5w</id>
         <inline>0xaac3566c8e494d7d52976b107a9b9058e65e541c01dab5d4bba90658a655890fd2c48d29f0b97225,0x3955fdbd31c6328df2e893fe5b401ddc529c4ed70a9c46badb80843277b8f9874538312460d54dfd</inline>
         <!-- 306a301406072a8648ce3d020106092b240303020801010a03520004aac3566c8e494d7d52976b107a9b9058e65e541c01dab5d4bba90658a655890fd2c48d29f0b972253955fdbd31c6328df2e893fe5b401ddc529c4ed70a9c46badb80843277b8f9874538312460d54dfd -->
         <curve>brainpool/brainpoolP320t1</curve>
         <desc>tcId = 1019</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP320t1/6s</id>
+        <id>addsub/brainpoolP320t1/6s</id>
         <inline>0x0d35e472036bc4fb7e13c785ed201e065f98fcfa5b68f12a32d482ec7ee8658e98691555b44c5930f</inline>
         <curve>brainpool/brainpoolP320t1</curve>
         <desc>tcId = 1021</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP320t1/6w</id>
+        <id>addsub/brainpoolP320t1/6w</id>
         <inline>0xaac3566c8e494d7d52976b107a9b9058e65e541c01dab5d4bba90658a655890fd2c48d29f0b97225,0x3955fdbd31c6328df2e893fe5b401ddc529c4ed70a9c46badb80843277b8f9874538312460d54dfd</inline>
         <!-- 306a301406072a8648ce3d020106092b240303020801010a03520004aac3566c8e494d7d52976b107a9b9058e65e541c01dab5d4bba90658a655890fd2c48d29f0b972253955fdbd31c6328df2e893fe5b401ddc529c4ed70a9c46badb80843277b8f9874538312460d54dfd -->
         <curve>brainpool/brainpoolP320t1</curve>
         <desc>tcId = 1021</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP384t1/1s</id>
+        <id>addsub/brainpoolP384t1/1s</id>
         <inline>0x08cb91e82a3386d280f5d6f7e50e641df152f7109ed5456b31f166e6cac0425a7cf3ab6af6b7fc3103b883202e904652f</inline>
         <curve>brainpool/brainpoolP384t1</curve>
         <desc>tcId = 1093</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP384t1/1w</id>
+        <id>addsub/brainpoolP384t1/1w</id>
         <inline>0x1e6c405358fab0f63c09eddacc372dd29c17d0eebcffe37975ee3c6bf05c7b8db09f104fcf6cc1a0576c44c12637b4bf,0x88938d33d2d9390c1075f3af467937074db4022a44e2ea2e9cbff6bfcb4af4909fbb8bd3ab627e1dd1649d5faec28a71</inline>
         <!-- 307a301406072a8648ce3d020106092b240303020801010c036200041e6c405358fab0f63c09eddacc372dd29c17d0eebcffe37975ee3c6bf05c7b8db09f104fcf6cc1a0576c44c12637b4bf88938d33d2d9390c1075f3af467937074db4022a44e2ea2e9cbff6bfcb4af4909fbb8bd3ab627e1dd1649d5faec28a71 -->
         <curve>brainpool/brainpoolP384t1</curve>
         <desc>tcId = 1093</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP384t1/2s</id>
+        <id>addsub/brainpoolP384t1/2s</id>
         <inline>0x08cb91e82a3386d280f5d6f7e50e641df152f7109ed5456b31f166e6cac0425a7cf3ab6af6b7fc3103b883202e904654f</inline>
         <curve>brainpool/brainpoolP384t1</curve>
         <desc>tcId = 1094</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP384t1/2w</id>
+        <id>addsub/brainpoolP384t1/2w</id>
         <inline>0x1e6c405358fab0f63c09eddacc372dd29c17d0eebcffe37975ee3c6bf05c7b8db09f104fcf6cc1a0576c44c12637b4bf,0x88938d33d2d9390c1075f3af467937074db4022a44e2ea2e9cbff6bfcb4af4909fbb8bd3ab627e1dd1649d5faec28a71</inline>
         <!-- 307a301406072a8648ce3d020106092b240303020801010c036200041e6c405358fab0f63c09eddacc372dd29c17d0eebcffe37975ee3c6bf05c7b8db09f104fcf6cc1a0576c44c12637b4bf88938d33d2d9390c1075f3af467937074db4022a44e2ea2e9cbff6bfcb4af4909fbb8bd3ab627e1dd1649d5faec28a71 -->
         <curve>brainpool/brainpoolP384t1</curve>
         <desc>tcId = 1094</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP384t1/3s</id>
+        <id>addsub/brainpoolP384t1/3s</id>
         <inline>0x08cb91e82a3386d280f5d6f7e50e641df152f7109ed5456b31f166e6cac0425a7cf3ab6af6b7fc3103b883202e904655f</inline>
         <curve>brainpool/brainpoolP384t1</curve>
         <desc>tcId = 1095</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP384t1/3w</id>
+        <id>addsub/brainpoolP384t1/3w</id>
         <inline>0x1e6c405358fab0f63c09eddacc372dd29c17d0eebcffe37975ee3c6bf05c7b8db09f104fcf6cc1a0576c44c12637b4bf,0x88938d33d2d9390c1075f3af467937074db4022a44e2ea2e9cbff6bfcb4af4909fbb8bd3ab627e1dd1649d5faec28a71</inline>
         <!-- 307a301406072a8648ce3d020106092b240303020801010c036200041e6c405358fab0f63c09eddacc372dd29c17d0eebcffe37975ee3c6bf05c7b8db09f104fcf6cc1a0576c44c12637b4bf88938d33d2d9390c1075f3af467937074db4022a44e2ea2e9cbff6bfcb4af4909fbb8bd3ab627e1dd1649d5faec28a71 -->
         <curve>brainpool/brainpoolP384t1</curve>
         <desc>tcId = 1095</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP384t1/4s</id>
+        <id>addsub/brainpoolP384t1/4s</id>
         <inline>0x08cb91e82a3386d280f5d6f7e50e641df152f7109ed5456b31f166e6cac0425a7cf3ab6af6b7fc3103b883202e9046563</inline>
         <curve>brainpool/brainpoolP384t1</curve>
         <desc>tcId = 1097</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP384t1/4w</id>
+        <id>addsub/brainpoolP384t1/4w</id>
         <inline>0x1e6c405358fab0f63c09eddacc372dd29c17d0eebcffe37975ee3c6bf05c7b8db09f104fcf6cc1a0576c44c12637b4bf,0x88938d33d2d9390c1075f3af467937074db4022a44e2ea2e9cbff6bfcb4af4909fbb8bd3ab627e1dd1649d5faec28a71</inline>
         <!-- 307a301406072a8648ce3d020106092b240303020801010c036200041e6c405358fab0f63c09eddacc372dd29c17d0eebcffe37975ee3c6bf05c7b8db09f104fcf6cc1a0576c44c12637b4bf88938d33d2d9390c1075f3af467937074db4022a44e2ea2e9cbff6bfcb4af4909fbb8bd3ab627e1dd1649d5faec28a71 -->
         <curve>brainpool/brainpoolP384t1</curve>
         <desc>tcId = 1097</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP512t1/1s</id>
+        <id>addsub/brainpoolP512t1/1s</id>
         <inline>0x0aadd9db8dbe9c48b3fd4e6ae33c9fc07cb308db3b3c9d20ed6639cca70330870553e5c414ca92619418661197fac10471db1d381085ddaddb58796829ca9003b</inline>
         <curve>brainpool/brainpoolP512t1</curve>
         <desc>tcId = 1185</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP512t1/1w</id>
+        <id>addsub/brainpoolP512t1/1w</id>
         <inline>0x242748b1fa44edac413a79ee1cdcc3d4bab5fa125d4d692208ac52764377b84fe3472dbe8f292572f1f3dbf3e927624d983d5c0f4bfca5224dc0739889ddd079,0x3d1f2089639992a74a3c1783d2f1bd50f85ad77540adfa78b1a6581bcd74b3ef0dd996be2809ed16434c42b3a29cb81b1a39720cede1b640f018788afa61cbed</inline>
         <!-- 30819b301406072a8648ce3d020106092b240303020801010e0381820004242748b1fa44edac413a79ee1cdcc3d4bab5fa125d4d692208ac52764377b84fe3472dbe8f292572f1f3dbf3e927624d983d5c0f4bfca5224dc0739889ddd0793d1f2089639992a74a3c1783d2f1bd50f85ad77540adfa78b1a6581bcd74b3ef0dd996be2809ed16434c42b3a29cb81b1a39720cede1b640f018788afa61cbed -->
         <curve>brainpool/brainpoolP512t1</curve>
         <desc>tcId = 1185</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP512t1/2s</id>
+        <id>addsub/brainpoolP512t1/2s</id>
         <inline>0x0aadd9db8dbe9c48b3fd4e6ae33c9fc07cb308db3b3c9d20ed6639cca70330870553e5c414ca92619418661197fac10471db1d381085ddaddb58796829ca9005b</inline>
         <curve>brainpool/brainpoolP512t1</curve>
         <desc>tcId = 1186</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP512t1/2w</id>
+        <id>addsub/brainpoolP512t1/2w</id>
         <inline>0x242748b1fa44edac413a79ee1cdcc3d4bab5fa125d4d692208ac52764377b84fe3472dbe8f292572f1f3dbf3e927624d983d5c0f4bfca5224dc0739889ddd079,0x3d1f2089639992a74a3c1783d2f1bd50f85ad77540adfa78b1a6581bcd74b3ef0dd996be2809ed16434c42b3a29cb81b1a39720cede1b640f018788afa61cbed</inline>
         <!-- 30819b301406072a8648ce3d020106092b240303020801010e0381820004242748b1fa44edac413a79ee1cdcc3d4bab5fa125d4d692208ac52764377b84fe3472dbe8f292572f1f3dbf3e927624d983d5c0f4bfca5224dc0739889ddd0793d1f2089639992a74a3c1783d2f1bd50f85ad77540adfa78b1a6581bcd74b3ef0dd996be2809ed16434c42b3a29cb81b1a39720cede1b640f018788afa61cbed -->
         <curve>brainpool/brainpoolP512t1</curve>
         <desc>tcId = 1186</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP512t1/3s</id>
+        <id>addsub/brainpoolP512t1/3s</id>
         <inline>0x0aadd9db8dbe9c48b3fd4e6ae33c9fc07cb308db3b3c9d20ed6639cca70330870553e5c414ca92619418661197fac10471db1d381085ddaddb58796829ca90063</inline>
         <curve>brainpool/brainpoolP512t1</curve>
         <desc>tcId = 1187</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP512t1/3w</id>
+        <id>addsub/brainpoolP512t1/3w</id>
         <inline>0x242748b1fa44edac413a79ee1cdcc3d4bab5fa125d4d692208ac52764377b84fe3472dbe8f292572f1f3dbf3e927624d983d5c0f4bfca5224dc0739889ddd079,0x3d1f2089639992a74a3c1783d2f1bd50f85ad77540adfa78b1a6581bcd74b3ef0dd996be2809ed16434c42b3a29cb81b1a39720cede1b640f018788afa61cbed</inline>
         <!-- 30819b301406072a8648ce3d020106092b240303020801010e0381820004242748b1fa44edac413a79ee1cdcc3d4bab5fa125d4d692208ac52764377b84fe3472dbe8f292572f1f3dbf3e927624d983d5c0f4bfca5224dc0739889ddd0793d1f2089639992a74a3c1783d2f1bd50f85ad77540adfa78b1a6581bcd74b3ef0dd996be2809ed16434c42b3a29cb81b1a39720cede1b640f018788afa61cbed -->
         <curve>brainpool/brainpoolP512t1</curve>
         <desc>tcId = 1187</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/addsub/brainpoolP512t1/4s</id>
+        <id>addsub/brainpoolP512t1/4s</id>
         <inline>0x0aadd9db8dbe9c48b3fd4e6ae33c9fc07cb308db3b3c9d20ed6639cca70330870553e5c414ca92619418661197fac10471db1d381085ddaddb58796829ca90067</inline>
         <curve>brainpool/brainpoolP512t1</curve>
         <desc>tcId = 1189</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/addsub/brainpoolP512t1/4w</id>
+        <id>addsub/brainpoolP512t1/4w</id>
         <inline>0x242748b1fa44edac413a79ee1cdcc3d4bab5fa125d4d692208ac52764377b84fe3472dbe8f292572f1f3dbf3e927624d983d5c0f4bfca5224dc0739889ddd079,0x3d1f2089639992a74a3c1783d2f1bd50f85ad77540adfa78b1a6581bcd74b3ef0dd996be2809ed16434c42b3a29cb81b1a39720cede1b640f018788afa61cbed</inline>
         <!-- 30819b301406072a8648ce3d020106092b240303020801010e0381820004242748b1fa44edac413a79ee1cdcc3d4bab5fa125d4d692208ac52764377b84fe3472dbe8f292572f1f3dbf3e927624d983d5c0f4bfca5224dc0739889ddd0793d1f2089639992a74a3c1783d2f1bd50f85ad77540adfa78b1a6581bcd74b3ef0dd996be2809ed16434c42b3a29cb81b1a39720cede1b640f018788afa61cbed -->
         <curve>brainpool/brainpoolP512t1</curve>
@@ -851,26 +851,26 @@
 
     <!-- CVE-2017-8932 tests -->
     <privkey>
-        <id>wycheproof/cve_2017_8932/secp256r1/1s</id>
+        <id>cve_2017_8932/secp256r1/1s</id>
         <inline>0x2a265f8bcbdcaf94d58519141e578124cb40d64a501fba9c11847b28965bc737</inline>
         <curve>secg/secp256r1</curve>
         <desc>tcId = 112</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/cve_2017_8932/secp256r1/1w</id>
+        <id>cve_2017_8932/secp256r1/1w</id>
         <inline>0x023819813ac969847059028ea88a1f30dfbcde03fc791d3a252c6b41211882ea,0xf93e4ae433cc12cf2a43fc0ef26400c0e125508224cdb649380f25479148a4ad</inline>
         <!-- 3059301306072a8648ce3d020106082a8648ce3d03010703420004023819813ac969847059028ea88a1f30dfbcde03fc791d3a252c6b41211882eaf93e4ae433cc12cf2a43fc0ef26400c0e125508224cdb649380f25479148a4ad -->
         <curve>secg/secp256r1</curve>
         <desc>tcId = 112</desc>
     </pubkey>
     <privkey>
-        <id>wycheproof/cve_2017_8932/secp256r1/2s</id>
+        <id>cve_2017_8932/secp256r1/2s</id>
         <inline>0x313f72ff9fe811bf573176231b286a3bdb6f1b14e05c40146590727a71c3bccd</inline>
         <curve>secg/secp256r1</curve>
         <desc>tcId = 113</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/cve_2017_8932/secp256r1/2w</id>
+        <id>cve_2017_8932/secp256r1/2w</id>
         <inline>0xcc11887b2d66cbae8f4d306627192522932146b42f01d3c6f92bd5c8ba739b06,0xa2f08a029cd06b46183085bae9248b0ed15b70280c7ef13a457f5af382426031</inline>
         <!-- 3059301306072a8648ce3d020106082a8648ce3d03010703420004cc11887b2d66cbae8f4d306627192522932146b42f01d3c6f92bd5c8ba739b06a2f08a029cd06b46183085bae9248b0ed15b70280c7ef13a457f5af382426031 -->
         <curve>secg/secp256r1</curve>
@@ -879,13 +879,13 @@
 
     <!-- CVE-2017-10176 tests -->
     <privkey>
-        <id>wycheproof/cve_2017_10176/secp521r1/1s</id>
+        <id>cve_2017_10176/secp521r1/1s</id>
         <inline>0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa51868783bf2f966b7fcc0148f709a5d03bb5c9b8899c47aebb6fb71e913863f7</inline>
         <curve>secg/secp521r1</curve>
         <desc>tcId = 280</desc>
     </privkey>
     <pubkey>
-        <id>wycheproof/cve_2017_10176/secp521r1/1w</id>
+        <id>cve_2017_10176/secp521r1/1w</id>
         <inline>0x00c6858e06b70404e9cd9e3ecb662395b4429c648139053fb521f828af606b4d3dbaa14b5e77efe75928fe1dc127a2ffa8de3348b3c1856a429bf97e7e31c2e5bd66,0x011839296a789a3bc0045c8a5fb42c7d1bd998f54449579b446817afbd17273e662c97ee72995ef42640c550b9013fad0761353c7086a272c24088be94769fd16650</inline>
         <!-- 30819b301006072a8648ce3d020106052b81040023038186000400c6858e06b70404e9cd9e3ecb662395b4429c648139053fb521f828af606b4d3dbaa14b5e77efe75928fe1dc127a2ffa8de3348b3c1856a429bf97e7e31c2e5bd66011839296a789a3bc0045c8a5fb42c7d1bd998f54449579b446817afbd17273e662c97ee72995ef42640c550b9013fad0761353c7086a272c24088be94769fd16650 -->
         <curve>secg/secp521r1</curve>
