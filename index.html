@@ -5,9 +5,9 @@
 
 <p>Tests support and behavior of elliptic curve cryptography implementations on JavaCards (<code>TYPE_EC_FP</code> and <code>TYPE_EC_F2M</code>) and on selected software libraries. See our <a href="https://github.com/crocs-muni/ECTester">github</a> for more info. </p>
 
-<a href="#support_table" class="btn body-btn">Support table</a> <a href="#implementation_guide" class="btn body-btn">Implementation guide</a> <a href="#test_runs" class="btn body-btn">Test runs</a> <a href="#docs" class="btn body-btn">Docs</a>
+<a href="#algo_support" class="btn body-btn">Support table</a> <a href="#implementation_guide" class="btn body-btn">Implementation guide</a> <a href="#test_runs" class="btn body-btn">Test runs</a> <a href="#docs" class="btn body-btn">Docs</a>
 
-<h2 id="support_table">JavaCard Elliptic curve algorithm support<a href="#support_table">#</a></h2>
+<h2 id="algo_support">JavaCard Elliptic curve algorithm support<a href="#algo_support">#</a></h2>
 The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API</a> has support for basic Elliptic Curve Cryptography, such as ECDH and ECDSA. However not many cards actually support these algorithms. The table below displays support and performance obtained by ECTester for common curve sizes. For detailed support and implementation tests see <a href="#test_runs">test runs</a>.
 
 <style>
@@ -27,6 +27,15 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
     	background-color: rgba(0,0,0,0.1);
     }
 
+	.legend {
+		float: left;
+		margin: 10pt;
+	}
+
+	#support_table, #perf_table {
+		text-align: center;
+	}
+
 	td.split, tr.split td {
 		border-top: 2px solid !important;
 	}
@@ -39,16 +48,42 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
 		border-left: 2px solid !important;
 	}
 
-	.legend {
-		float: left;
-		margin: 10pt;
+	#tests_table {
+		margin-top: 1em;
+	}
+
+	#tests_table th:not(:first-child) {
+	  /* Something you can count on */
+	  height: 100px;
+	  white-space: nowrap;
+	  border: none;
+	}
+
+	#tests_table th:not(:first-child) > div {
+	  transform:
+	    translate(0, 35px)
+	    rotate(315deg);
+	  width: 30px;
+	}
+
+	#tests_table th:not(:first-child) > div > span {
+	  padding: 5px 10px;
+	}
+
+	#tests_table th:first-child {
+		border: none;
+		transform: translate(0, 35px);
+	}
+
+	#tests_table td:not(:first-child) {
+		text-align: center;
 	}
 </style>
 
 
 <h2>Legend</h2>
 <div class="legend" id="ecdh_types">
-    ∗<strong>ECDH types</strong>
+    ∗ <strong>ECDH types</strong>
     <ol>
         <li>ALG_EC_SVDP_DH</li>
         <li>ALG_EC_SVDP_DHC</li>
@@ -59,7 +94,7 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
     </ol>
 </div>
 <div class="legend" id="ecdsa_types">
-    †<strong>ECDSA types</strong>
+    † <strong>ECDSA types</strong>
     <ol type="a">
         <li>ALG_ECDSA_SHA</li>
         <li>ALG_ECDSA_SHA_224</li>
@@ -69,7 +104,7 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
     </ol>
 </div>
 <div class="legend" id="color_types">
-    ‡<strong>Colors</strong>
+    ‡ <strong>Colors</strong>
     <ul>
         <li class="yes">Full support</li>
         <li class="some">Some support</li>
@@ -81,7 +116,7 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
 
 <h2>$ \mathbb{F}_p $ support</h2>
 
-<table style="text-align: center" id="support_table">
+<table id="support_table">
     <colgroup>
         <col span="1" style="width: 20%">
         <col span="1" style="width: 10%">
@@ -190,7 +225,7 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
 </table>
 
 <h2>$ \mathbb{F}_p $ performance</h2>
-<table style="text-align: center" id="perf_table">
+<table id="perf_table">
     <colgroup>
         <col span="1" style="width: 20%">
         <col span="1" style="width: 2%">
@@ -861,15 +896,15 @@ The <code>keypair.clearKey()</code> method might clear out the set domain parame
 The <code>ECKey.getK()</code> method might throw an exception if the card does not support working with the cofactor value.
 
 <h2 id="test_runs">Test suite runs<a href="#test_runs">#</a></h2>
-The results of various <a href="tests">test suites</a>, run on a set of cards are available below:
+The results of various <a href="tests.html">test suites</a>, run on a set of cards are available below:
 
 {% assign result_categories = site.results | group_by:"category" %}
 {% assign cards = site.results | group_by_exp:"item", "item.path | split: '/' | shift | shift | sample | split: '.' | pop | join: '.' " %}
-<table style="margin-top: 1em">
+<table id="tests_table">
     <tr>
-        <th>Card name</th>
+        <th><div><span>Card name</span></div></th>
         {% for cat in result_categories %}
-        <th>{{ cat.name }}</th>
+        <th><div><span>{{ cat.name }}</span></div></th>
         {% endfor %}
     </tr>
     {% for card in cards %}
@@ -879,7 +914,7 @@ The results of various <a href="tests">test suites</a>, run on a set of cards ar
         <td>
             {% for document in card.items %}
 		        {% if document.category == cat.name %}
-	            <a href="{{ site.baseurl }}{{ document.url }}">results</a>
+	            <a href="{{ site.baseurl }}{{ document.url }}"><i class="fa fa-file-text"></i></a>
 	            {% endif %}
             {% endfor %}
         </td>
