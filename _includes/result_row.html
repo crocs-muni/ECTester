@@ -1,12 +1,12 @@
 
 {% capture ok %}
 {% if include.test.result.ok == true %}
-<td align="center" class="tooltip cause-tooltip" data-cause="{{ include.test.result.cause }}"><i class="fa fa-check"></i></td>
+<td align="center" class="tooltip cause-tooltip" data-cause="{{ include.test.result.cause }}"><i class="fas fa-check"></i></td>
 {% else %}
 {% if include.test.result.value == "ERROR" %}
-<td align="center" class="tooltip cause-tooltip" data-cause="{{ include.test.result.cause }}"><i class="fa fa-exclamation-triangle"></i></td>
+<td align="center" class="tooltip cause-tooltip" data-cause="{{ include.test.result.cause }}"><i class="fas fa-exclamation-triangle"></i></td>
 {% else %}
-<td align="center" class="tooltip cause-tooltip" data-cause="{{ include.test.result.cause }}"><i class="fa fa-times"></i></td>
+<td align="center" class="tooltip cause-tooltip" data-cause="{{ include.test.result.cause }}"><i class="fas fa-times"></i></td>
 {% endif %}
 {% endif %}
 {% endcapture %}
@@ -43,14 +43,14 @@
 	<tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
 	    <td align="center" ><small>{{ include.depth }}</small></td>
 	    {{ ok }}
-	    <td style="padding-left: {{ include.depth | times: 12 }}px;"><i class="fa fa-credit-card" title="Command test"></i> {{ include.test.desc }}</td>
+	    <td style="padding-left: {{ include.depth | times: 12 }}px;"><i class="far fa-credit-card" title="Command test"></i> {{ include.test.desc }}</td>
 	    <td class="tooltip sw-tooltip" data-natural-sw="'{{ include.test.response.natural_sw }}'" data-sws="'{{ include.test.response.sws | join: ',' }}'">{{ include.test.result.value }}</td>
 	</tr>
 {% elsif include.test.type == "compound" %}
 	<tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
-	    <td align="center" class="clickable" data-rows="{{ include.test.tests | size }}" data-toggled="false"><i class="fa fa-plus-square"></i></td>
+	    <td align="center" class="clickable" data-rows="{{ include.test.tests | size }}" data-toggled="false"><i class="fas fa-plus-square"></i></td>
 	    {{ ok }}
-	    <td style="padding-left: {{ include.depth | times: 12 }}px;"><i class="fa fa-clone" title="Compound test"></i> {{ include.test.desc }}</td>
+	    <td style="padding-left: {{ include.depth | times: 12 }}px;"><i class="far fa-clone" title="Compound test"></i> {{ include.test.desc }}</td>
 	    <td>{{ include.test.result.value }}</td>
 	</tr>
 	{% for test in include.test.tests %}

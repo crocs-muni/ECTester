@@ -1,11 +1,13 @@
 ---
 ---
 
-<h1><i class="fa fa-credit-card" style="color: black;"></i> ECTester</h1> <a href="https://travis-ci.org/crocs-muni/ECTester"><img src="https://api.travis-ci.org/crocs-muni/ECTester.svg?branch=master" alt="Build status"></a>  <a href="https://github.com/crocs-muni/ECTester/releases"><img src="https://img.shields.io/github/release/crocs-muni/ECTEster.svg" alt="GitHub release"></a>  <a href="https://github.com/crocs-muni/ECTester/blob/master/LICENSE"><img src="https://img.shields.io/github/license/crocs-muni/ECTester.svg" alt="license"></a>
+<h1><i class="far fa-credit-card" style="color: black;"></i> ECTester</h1> <a href="https://travis-ci.org/crocs-muni/ECTester"><img src="https://api.travis-ci.org/crocs-muni/ECTester.svg?branch=master" alt="Build status"></a>  <a href="https://github.com/crocs-muni/ECTester/releases"><img src="https://img.shields.io/github/release/crocs-muni/ECTEster.svg" alt="GitHub release"></a>  <a href="https://github.com/crocs-muni/ECTester/blob/master/LICENSE"><img src="https://img.shields.io/github/license/crocs-muni/ECTester.svg" alt="license"></a>
 
 <p>Tests support and behavior of elliptic curve cryptography implementations on JavaCards (<code>TYPE_EC_FP</code> and <code>TYPE_EC_F2M</code>) and on selected software libraries. See our <a href="https://github.com/crocs-muni/ECTester">github</a> for more info. </p>
 
 <a href="#algo_support" class="btn body-btn">Support table</a> <a href="#implementation_guide" class="btn body-btn">Implementation guide</a> <a href="#test_runs" class="btn body-btn">Test runs</a> <a href="#docs" class="btn body-btn">Docs</a>
+
+<hr/>
 
 <h2 id="algo_support">JavaCard Elliptic curve algorithm support<a href="#algo_support">#</a></h2>
 The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API</a> has support for basic Elliptic Curve Cryptography, such as ECDH and ECDSA. However not many cards actually support these algorithms. The table below displays support and performance obtained by ECTester for common curve sizes. For detailed support and implementation tests see <a href="#test_runs">test runs</a>.
@@ -81,7 +83,7 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
 </style>
 
 
-<h2>Legend</h2>
+<h3>Legend</h3>
 <div class="legend" id="ecdh_types">
     ∗ <strong>ECDH types</strong>
     <ol>
@@ -114,7 +116,7 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
 </div>
 <div style="clear:both"></div>
 
-<h2>$ \mathbb{F}_p $ support</h2>
+<h3>$ \mathbb{F}_p $ support</h3>
 
 <table id="support_table">
     <colgroup>
@@ -224,7 +226,7 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
     </tr>
 </table>
 
-<h2>$ \mathbb{F}_p $ performance</h2>
+<h3>$ \mathbb{F}_p $ performance</h3>
 <table id="perf_table">
     <colgroup>
         <col span="1" style="width: 20%">
@@ -703,10 +705,10 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
 </table>
 
 
-<h2>$ \mathbb{F}_{2^m} $</h2>
+<h3>$ \mathbb{F}_{2^m} $</h3>
 Support for binary field curves on cards is very weak, very little cards have any. For more information see <a href="https://www.fi.muni.cz/~xsvenda/jcalgtest/table.html">JCAlgTest</a> support table.
 <!--
-<h2>$ \mathbb{F}_{2^m} $</h2>
+<h3>$ \mathbb{F}_{2^m} $</h3>
 
 <table>
     <colgroup>
@@ -914,7 +916,7 @@ The results of various <a href="tests.html">test suites</a>, run on a set of car
         <td>
             {% for document in card.items %}
 		        {% if document.category == cat.name %}
-	            <a href="{{ site.baseurl }}{{ document.url }}"><i class="fa fa-file-text"></i></a>
+	            <a href="{{ site.baseurl }}{{ document.url }}"><i class="far fa-file-alt"></i></a>
 	            {% endif %}
             {% endfor %}
         </td>

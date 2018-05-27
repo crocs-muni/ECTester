@@ -116,7 +116,7 @@
 }
 
 *:target {
-    padding-top: 8%;
-    margin-top: -8%;
+    padding-top: 8% !important;
+    margin-top: -8% !important;
 }
 
