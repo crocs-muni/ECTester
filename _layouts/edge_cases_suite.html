@@ -1,0 +1,19 @@
+---
+layout: default
+---
+
+{% include suite_header.html suite="Edge-cases" %}
+
+Tests various inputs to ECDH which may cause an implementation to achieve a certain edge-case state during ECDH. 
+Some of the data is from the google/Wycheproof project. Tests include <a href="https://nvd.nist.gov/vuln/detail/CVE-2017-10176">CVE-2017-10176</a> and <a href="https://nvd.nist.gov/vuln/detail/CVE-2017-8932">CVE-2017-8932</a>.<br/>
+
+CVE-2017-10176 was in implementation issue in the SunEC Java library that caused the implementation to reach the point at infinity during ECDH computation.<br/>
+
+CVE-2017-8932 was an implementation issue in the Go standard library, in particular its scalar multiplication algorithm on the
+P-256 curve which leaked information about the private key. <br/>
+
+{% include result_header.html testRun=page.testRun %}
+
+{% include result_table.html testRun=page.testRun %}
+
+{% include result_footer.html %}

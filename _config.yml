@@ -87,6 +87,12 @@ defaults:
      layout: test_vectors_suite
      category: "Test vectors"
  - scope:
+     path: "_results/edge-cases"
+     type: "results"
+   values:
+     layout: edge_cases_suite
+     category: "Edge cases"
+ - scope:
      path: ""
      type: "performance"
    values:
