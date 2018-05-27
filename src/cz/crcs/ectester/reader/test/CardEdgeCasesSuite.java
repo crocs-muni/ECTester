@@ -39,6 +39,8 @@ public class CardEdgeCasesSuite extends CardTestSuite {
             String description = null;
             switch (e.getKey()) {
                 case "addsub":
+                    description = "Tests for addition-subtraction chains.";
+                    break;
                 case "cve_2017_10176":
                     description = "Tests for CVE-2017-10176.";
                     break;
@@ -55,8 +57,7 @@ public class CardEdgeCasesSuite extends CardTestSuite {
                 List<Test> curveTests = new LinkedList<>();
                 Test allocate = CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), Result.ExpectedValue.SUCCESS);
                 Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.ExpectedValue.SUCCESS);
-                curveTests.add(allocate);
-                curveTests.add(set);
+                Test prepareCurve = CompoundTest.greedyAll(Result.ExpectedValue.SUCCESS, "Prepare curve", allocate, set);
 
                 List<EC_KAResult> values = c.getValue();
                 for (EC_KAResult value : values) {
@@ -91,10 +92,15 @@ public class CardEdgeCasesSuite extends CardTestSuite {
                         }
                     });
 
-                    Test one = CompoundTest.greedyAll(Result.ExpectedValue.SUCCESS, "Test " + id + ".", setPrivkey, setPubkey, ecdhPreTest, ecdh);
+                    Test prepare = CompoundTest.greedyAll(Result.ExpectedValue.SUCCESS, "Prepare", setPrivkey, setPubkey);
+                    Test ka = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Do", ecdhPreTest, ecdh);
+
+                    Test one = CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Test " + id + ".", prepare, ka);
                     curveTests.add(one);
                 }
-                groupTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests on " + curve.getId() + ".", curveTests.toArray(new Test[0])));
+
+                Test curveTest = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests", curveTests.toArray(new Test[0]));
+                groupTests.add(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Tests on " + curve.getId() + ".", prepareCurve, curveTest));
             }
             doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, description, groupTests.toArray(new Test[0])));
         }

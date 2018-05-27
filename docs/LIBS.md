@@ -1,6 +1,6 @@
 # Libraries with ECC support
 
-Libraries with at least some ECC support:
+Popular libraries with at least some ECC support:
 
  - [Crypto++](https://cryptopp.com/)
  - [libgcrypt](https://www.gnupg.org/related_software/libgcrypt/)
@@ -20,9 +20,9 @@ Libraries with at least some ECC support:
  - [Botan](https://botan.randombit.net/)
     - C++
     - Uses blinded(randomized) Montgomery ladder.
-    - https://hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-3.html#addition-add-1998-cmo-2
-    - https://hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-3.html#doubling-dbl-1986-cc
-    - https://eprint.iacr.org/2015/657
+    - <https://hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-3.html#addition-add-1998-cmo-2>
+    - <https://hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-3.html#doubling-dbl-1986-cc>
+    - <https://eprint.iacr.org/2015/657>
     - ECTester supports v2.4.0 and up.
  - [libtomcrypt](http://www.libtom.net/LibTomCrypt/)
     - C
