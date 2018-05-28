@@ -18,6 +18,7 @@
 /dist/*.invalid
 /dist/*.twist
 /dist/*.degenerate
+/dist/*.edge-cases
 /dist/*.xml
 
 # Built binaries in /src.

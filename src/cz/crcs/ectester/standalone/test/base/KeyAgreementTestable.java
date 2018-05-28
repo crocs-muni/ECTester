@@ -1,6 +1,4 @@
-package cz.crcs.ectester.standalone.test;
-
-import cz.crcs.ectester.common.test.BaseTestable;
+package cz.crcs.ectester.standalone.test.base;
 
 import javax.crypto.KeyAgreement;
 import java.security.InvalidAlgorithmParameterException;
@@ -13,7 +11,7 @@ import java.security.spec.ECParameterSpec;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class KeyAgreementTestable extends BaseTestable {
+public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestable.KeyAgreementStage> {
     private KeyAgreement ka;
     private ECPrivateKey privateKey;
     private ECPublicKey publicKey;
@@ -71,14 +69,17 @@ public class KeyAgreementTestable extends BaseTestable {
     @Override
     public void run() {
         try {
+            stage = KeyAgreementStage.GetPrivate;
             if (kgtPrivate != null) {
                 privateKey = (ECPrivateKey) kgtPrivate.getKeyPair().getPrivate();
             }
 
+            stage = KeyAgreementStage.GetPublic;
             if (kgtPublic != null) {
                 publicKey = (ECPublicKey) kgtPublic.getKeyPair().getPublic();
             }
 
+            stage = KeyAgreementStage.Init;
             try {
                 if (spec != null) {
                     ka.init(privateKey, spec);
@@ -87,25 +88,24 @@ public class KeyAgreementTestable extends BaseTestable {
                 }
             } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
                 ok = false;
-                error = false;
                 hasRun = true;
                 return;
             }
 
+            stage = KeyAgreementStage.DoPhase;
             try {
                 ka.doPhase(publicKey, true);
             } catch (IllegalStateException | InvalidKeyException e) {
                 ok = false;
-                error = false;
                 hasRun = true;
                 return;
             }
 
+            stage = KeyAgreementStage.GenerateSecret;
             try {
                 secret = ka.generateSecret();
             } catch (IllegalStateException | UnsupportedOperationException isex) {
                 ok = false;
-                error = false;
                 hasRun = true;
                 return;
             }
@@ -117,5 +117,13 @@ public class KeyAgreementTestable extends BaseTestable {
             errorCause = ex;
         }
         hasRun = true;
+    }
+
+    public enum KeyAgreementStage {
+        GetPrivate,
+        GetPublic,
+        Init,
+        DoPhase,
+        GenerateSecret
     }
 }

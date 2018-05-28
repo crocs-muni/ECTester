@@ -1,4 +1,4 @@
-package cz.crcs.ectester.standalone.test;
+package cz.crcs.ectester.standalone.test.base;
 
 import cz.crcs.ectester.common.test.Result;
 import cz.crcs.ectester.common.test.SimpleTest;

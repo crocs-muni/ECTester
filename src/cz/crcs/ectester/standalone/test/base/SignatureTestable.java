@@ -1,7 +1,4 @@
-package cz.crcs.ectester.standalone.test;
-
-import cz.crcs.ectester.common.test.BaseTestable;
-import cz.crcs.ectester.common.test.TestException;
+package cz.crcs.ectester.standalone.test.base;
 
 import java.security.InvalidKeyException;
 import java.security.SecureRandom;
@@ -13,7 +10,7 @@ import java.security.interfaces.ECPublicKey;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class SignatureTestable extends BaseTestable {
+public class SignatureTestable extends StandaloneTestable<SignatureTestable.SignatureStage> {
     private Signature sig;
     private ECPrivateKey signKey;
     private ECPublicKey verifyKey;
@@ -29,7 +26,7 @@ public class SignatureTestable extends BaseTestable {
         this.data = data;
         if (data == null) {
             SecureRandom random = new SecureRandom();
-            this.data = new byte[32];
+            this.data = new byte[64];
             random.nextBytes(this.data);
         }
     }
@@ -58,11 +55,13 @@ public class SignatureTestable extends BaseTestable {
     @Override
     public void run() {
         try {
+            stage = SignatureStage.GetKeys;
             if (kgt != null) {
                 signKey = (ECPrivateKey) kgt.getKeyPair().getPrivate();
                 verifyKey = (ECPublicKey) kgt.getKeyPair().getPublic();
             }
 
+            stage = SignatureStage.InitSign;
             try {
                 sig.initSign(signKey);
             } catch (InvalidKeyException e) {
@@ -71,6 +70,7 @@ public class SignatureTestable extends BaseTestable {
                 return;
             }
 
+            stage = SignatureStage.UpdateSign;
             try {
                 sig.update(data);
             } catch (SignatureException e) {
@@ -79,6 +79,7 @@ public class SignatureTestable extends BaseTestable {
                 return;
             }
 
+            stage = SignatureStage.Sign;
             try {
                 signature = sig.sign();
             } catch (SignatureException e) {
@@ -87,6 +88,7 @@ public class SignatureTestable extends BaseTestable {
                 return;
             }
 
+            stage = SignatureStage.InitVerify;
             try {
                 sig.initVerify(verifyKey);
             } catch (InvalidKeyException e) {
@@ -95,6 +97,7 @@ public class SignatureTestable extends BaseTestable {
                 return;
             }
 
+            stage = SignatureStage.UpdateVerify;
             try {
                 sig.update(data);
             } catch (SignatureException e) {
@@ -103,6 +106,7 @@ public class SignatureTestable extends BaseTestable {
                 return;
             }
 
+            stage = SignatureStage.Verify;
             try {
                 verified = sig.verify(signature);
             } catch (SignatureException e) {
@@ -117,5 +121,15 @@ public class SignatureTestable extends BaseTestable {
             errorCause = ex;
         }
         hasRun = true;
+    }
+
+    public enum SignatureStage {
+        GetKeys,
+        InitSign,
+        UpdateSign,
+        Sign,
+        InitVerify,
+        UpdateVerify,
+        Verify
     }
 }

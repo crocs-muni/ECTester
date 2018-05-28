@@ -4,8 +4,10 @@ import cz.crcs.ectester.common.output.BaseTextTestWriter;
 import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.test.Testable;
 import cz.crcs.ectester.standalone.ECTesterStandalone;
-import cz.crcs.ectester.standalone.test.StandaloneTestSuite;
+import cz.crcs.ectester.standalone.test.base.*;
+import cz.crcs.ectester.standalone.test.suites.StandaloneTestSuite;
 
+import javax.crypto.KeyAgreement;
 import java.io.PrintStream;
 
 /**
@@ -18,7 +20,9 @@ public class TextTestWriter extends BaseTextTestWriter {
 
     @Override
     protected String testableString(Testable t) {
-        //TODO
+        if (t instanceof StandaloneTestable) {
+            return ((StandaloneTestable)t).getStage().name();
+        }
         return "";
     }
 
@@ -28,7 +32,7 @@ public class TextTestWriter extends BaseTextTestWriter {
             StandaloneTestSuite standaloneSuite = (StandaloneTestSuite) suite;
             StringBuilder sb = new StringBuilder();
             sb.append("═══ ECTester version: " + ECTesterStandalone.VERSION).append(System.lineSeparator());
-            sb.append("═══ " + standaloneSuite.getLibrary().name()).append(System.lineSeparator());
+            sb.append("═══ ").append(standaloneSuite.getLibrary().name()).append(System.lineSeparator());
             return sb.toString();
         }
         return "";

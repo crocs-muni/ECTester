@@ -1,4 +1,4 @@
-package cz.crcs.ectester.standalone.test;
+package cz.crcs.ectester.standalone.test.suites;
 
 import cz.crcs.ectester.common.cli.TreeCommandLine;
 import cz.crcs.ectester.common.output.TestWriter;

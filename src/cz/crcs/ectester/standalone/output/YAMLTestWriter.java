@@ -5,10 +5,11 @@ import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.test.Testable;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.standalone.ECTesterStandalone;
-import cz.crcs.ectester.standalone.test.KeyAgreementTestable;
-import cz.crcs.ectester.standalone.test.KeyGeneratorTestable;
-import cz.crcs.ectester.standalone.test.SignatureTestable;
-import cz.crcs.ectester.standalone.test.StandaloneTestSuite;
+import cz.crcs.ectester.standalone.test.base.KeyAgreementTestable;
+import cz.crcs.ectester.standalone.test.base.KeyGeneratorTestable;
+import cz.crcs.ectester.standalone.test.base.SignatureTestable;
+import cz.crcs.ectester.standalone.test.base.StandaloneTestable;
+import cz.crcs.ectester.standalone.test.suites.StandaloneTestSuite;
 
 import java.io.PrintStream;
 import java.security.Key;
@@ -79,15 +80,18 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
     @Override
     protected Map<String, Object> testableObject(Testable t) {
         Map<String, Object> result = new HashMap<>();
-        if (t instanceof KeyGeneratorTestable) {
-            result.put("type", "key-pair-generator");
-            result.put("key-pair-generator", kgtObject((KeyGeneratorTestable) t));
-        } else if (t instanceof KeyAgreementTestable) {
-            result.put("type", "key-agreement");
-            result.put("key-agreement", kaObject((KeyAgreementTestable) t));
-        } else if (t instanceof SignatureTestable) {
-            result.put("type", "signature");
-            result.put("signature", sigObject((SignatureTestable) t));
+        if (t instanceof StandaloneTestable) {
+            if (t instanceof KeyGeneratorTestable) {
+                result.put("type", "key-pair-generator");
+                result.put("key-pair-generator", kgtObject((KeyGeneratorTestable) t));
+            } else if (t instanceof KeyAgreementTestable) {
+                result.put("type", "key-agreement");
+                result.put("key-agreement", kaObject((KeyAgreementTestable) t));
+            } else if (t instanceof SignatureTestable) {
+                result.put("type", "signature");
+                result.put("signature", sigObject((SignatureTestable) t));
+            }
+            result.put("stage", ((StandaloneTestable)t).getStage().name());
         }
         return result;
     }

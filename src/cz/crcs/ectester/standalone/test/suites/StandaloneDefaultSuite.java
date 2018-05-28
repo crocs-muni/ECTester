@@ -1,4 +1,4 @@
-package cz.crcs.ectester.standalone.test;
+package cz.crcs.ectester.standalone.test.suites;
 
 import cz.crcs.ectester.common.cli.TreeCommandLine;
 import cz.crcs.ectester.common.ec.EC_Curve;
@@ -9,12 +9,13 @@ import cz.crcs.ectester.standalone.ECTesterStandalone;
 import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
 import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
 import cz.crcs.ectester.standalone.consts.SignatureIdent;
-import cz.crcs.ectester.standalone.libs.ECLibrary;
+import cz.crcs.ectester.standalone.test.base.*;
 
 import javax.crypto.KeyAgreement;
 import java.security.KeyPairGenerator;
 import java.security.Signature;
 import java.security.spec.ECParameterSpec;
+import java.util.Optional;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -27,13 +28,36 @@ public class StandaloneDefaultSuite extends StandaloneTestSuite {
 
     @Override
     protected void runTests() throws Exception {
-        String kpgAlgo = cli.getOptionValue("test.kpg-type", "EC");
+        String kpgAlgo = cli.getOptionValue("test.kpg-type");
         String kaAlgo = cli.getOptionValue("test.ka-type");
         String sigAlgo = cli.getOptionValue("test.sig-type");
 
-        KeyPairGeneratorIdent kpgIdent = cfg.selected.getKPGs().stream()
-                .filter((ident) -> ident.contains(kpgAlgo))
-                .findFirst().get();
+
+        KeyPairGeneratorIdent kpgIdent;
+        if (kpgAlgo == null) {
+            // try EC, if not, fail with: need to specify kpg algo.
+            Optional<KeyPairGeneratorIdent> kpgIdentOpt = cfg.selected.getKPGs().stream()
+                    .filter((ident) -> ident.contains("EC"))
+                    .findFirst();
+            if (kpgIdentOpt.isPresent()) {
+                kpgIdent = kpgIdentOpt.get();
+            } else {
+                System.err.println("The default KeyPairGenerator algorithm type of \"EC\" was not found. Need to specify a type.");
+                return;
+            }
+        } else {
+            // try the specified, if not, fail with: wrong kpg algo/not found.
+            Optional<KeyPairGeneratorIdent> kpgIdentOpt = cfg.selected.getKPGs().stream()
+                    .filter((ident) -> ident.contains(kpgAlgo))
+                    .findFirst();
+            if (kpgIdentOpt.isPresent()) {
+                kpgIdent = kpgIdentOpt.get();
+            } else {
+                System.err.println("The KeyPairGenerator algorithm type of \"" + kpgAlgo + "\" was not found.");
+                return;
+            }
+        }
+
         KeyPairGenerator kpg = kpgIdent.getInstance(cfg.selected.getProvider());
 
         KeyGeneratorTestable kgtOne;

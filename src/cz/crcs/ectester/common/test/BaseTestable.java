@@ -34,5 +34,6 @@ public abstract class BaseTestable implements Testable {
         hasRun = false;
         ok = false;
         error = false;
+        errorCause = null;
     }
 }
