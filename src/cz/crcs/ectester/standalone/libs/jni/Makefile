@@ -13,8 +13,7 @@ JNI_INCLUDEDIR ?= $(JAVA_HOME)/include
 endif
 
 ifeq ($(JNI_INCLUDEDIR),)
-$(error could not determine JNI include dir, try specifying either \
-    JAVA_HOME or JNI_INCLUDEDIR)
+$(error could not determine JNI include dir, try specifying either JAVA_HOME or JNI_INCLUDEDIR)
 endif
 
 TARGETTRIPLET := $(shell $(CC) -dumpmachine)
@@ -51,17 +50,17 @@ cpp_utils.o: cpp_utils.cpp
 
 
 tomcrypt_provider.so: tomcrypt.o c_utils.o
-	$(CC) -fPIC -g -shared -o $@ $^ -L. -ltommath -ltomcrypt
+	$(CC) -fPIC -g -shared -o $@ $^ -L. -ltommath $(shell pkg-config --libs libtomcrypt)
 
 tomcrypt.o: tomcrypt.c
-	$(CC) -DLTM_DESC $(CFLAGS) -c $<
+	$(CC) -DLTM_DESC $(shell pkg-config --cflags libtomcrypt) $(CFLAGS) -c $<
 
 
 botan_provider.so: botan.o cpp_utils.o
-	$(CXX) -fPIC -g -shared -o $@ $^ -L. -L"$(LOCAL_LIBS)" -lbotan-2 -fstack-protector -m64 -pthread
+	$(CXX) -fPIC -g -shared -o $@ $^ -L. $(shell pkg-config --libs botan-2)
 
 botan.o: botan.cpp
-	$(CXX) -I"$(LOCAL_INCLUDES)/botan-2" $(CFLAGS) -c $<
+	$(CXX) $(shell pkg-config --cflags botan-2) $(CFLAGS) -c $<
 
 clean:
 	rm -rf *.o
