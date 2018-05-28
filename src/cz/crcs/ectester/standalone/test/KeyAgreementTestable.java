@@ -1,7 +1,6 @@
 package cz.crcs.ectester.standalone.test;
 
 import cz.crcs.ectester.common.test.BaseTestable;
-import cz.crcs.ectester.common.test.TestException;
 
 import javax.crypto.KeyAgreement;
 import java.security.InvalidAlgorithmParameterException;
@@ -71,54 +70,52 @@ public class KeyAgreementTestable extends BaseTestable {
 
     @Override
     public void run() {
-        if (kgtPrivate != null) {
-            privateKey = (ECPrivateKey) kgtPrivate.getKeyPair().getPrivate();
-        }
-
-        if (kgtPublic != null) {
-            publicKey = (ECPublicKey) kgtPublic.getKeyPair().getPublic();
-        }
-
         try {
-            if (spec != null) {
-                ka.init(privateKey, spec);
-            } else {
-                ka.init(privateKey);
+            if (kgtPrivate != null) {
+                privateKey = (ECPrivateKey) kgtPrivate.getKeyPair().getPrivate();
             }
-        } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
+
+            if (kgtPublic != null) {
+                publicKey = (ECPublicKey) kgtPublic.getKeyPair().getPublic();
+            }
+
+            try {
+                if (spec != null) {
+                    ka.init(privateKey, spec);
+                } else {
+                    ka.init(privateKey);
+                }
+            } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
+                ok = false;
+                error = false;
+                hasRun = true;
+                return;
+            }
+
+            try {
+                ka.doPhase(publicKey, true);
+            } catch (IllegalStateException | InvalidKeyException e) {
+                ok = false;
+                error = false;
+                hasRun = true;
+                return;
+            }
+
+            try {
+                secret = ka.generateSecret();
+            } catch (IllegalStateException | UnsupportedOperationException isex) {
+                ok = false;
+                error = false;
+                hasRun = true;
+                return;
+            }
+
+            ok = true;
+        } catch (Exception ex) {
             ok = false;
             error = true;
-            hasRun = true;
-            return;
+            errorCause = ex;
         }
-
-        try {
-            ka.doPhase(publicKey, true);
-        } catch (IllegalStateException e) {
-            ok = false;
-            hasRun = true;
-            return;
-        } catch (InvalidKeyException e) {
-            ok = false;
-            error = true;
-            hasRun = true;
-            return;
-        }
-
-        try {
-            secret = ka.generateSecret();
-        } catch (IllegalStateException isex) {
-            ok = false;
-            hasRun = true;
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            ok = false;
-            error = true;
-            hasRun = false;
-            return;
-        }
-
-        ok = true;
         hasRun = true;
     }
 }

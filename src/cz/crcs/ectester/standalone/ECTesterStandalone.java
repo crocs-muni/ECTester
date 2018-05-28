@@ -53,6 +53,7 @@ import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -128,12 +129,14 @@ public class ECTesterStandalone {
     private TreeCommandLine parseArgs(String[] args) throws ParseException {
         Map<String, ParserOptions> actions = new TreeMap<>();
 
-        Option namedCurve = Option.builder("nc").longOpt("named-curve").desc("Use a named curve, from CurveDB: <cat/id>").hasArg().argName("cat/id").build();
+        Option namedCurve = Option.builder("nc").longOpt("named-curve").desc("Use a named curve, from CurveDB: <cat/id>").hasArg().argName("cat/id").optionalArg(false).build();
+        Option curveName = Option.builder("cn").longOpt("curve-name").desc("Use a named curve, search from curves supported by the library: <name>").hasArg().argName("name").optionalArg(false).build();
         Option bits = Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").build();
 
         Options testOpts = new Options();
         testOpts.addOption(bits);
         testOpts.addOption(namedCurve);
+        testOpts.addOption(curveName);
         testOpts.addOption(Option.builder("gt").longOpt("kpg-type").desc("Set the KeyPairGenerator object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("kt").longOpt("ka-type").desc("Set the KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("st").longOpt("sig-type").desc("Set the Signature object [type].").hasArg().argName("type").optionalArg(false).build());
@@ -146,6 +149,7 @@ public class ECTesterStandalone {
         Options ecdhOpts = new Options();
         ecdhOpts.addOption(bits);
         ecdhOpts.addOption(namedCurve);
+        ecdhOpts.addOption(curveName);
         ecdhOpts.addOption(Option.builder("t").longOpt("type").desc("Set KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdhOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDH [amount] times.").build());
         ParserOptions ecdh = new ParserOptions(new DefaultParser(), ecdhOpts);
@@ -154,6 +158,7 @@ public class ECTesterStandalone {
         Options ecdsaOpts = new Options();
         ecdsaOpts.addOption(bits);
         ecdsaOpts.addOption(namedCurve);
+        ecdsaOpts.addOption(curveName);
         ecdsaOpts.addOption(Option.builder("t").longOpt("type").desc("Set Signature object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdsaOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDSA [amount] times.").build());
         ecdsaOpts.addOption(Option.builder("f").longOpt("file").hasArg().argName("file").optionalArg(false).desc("Input [file] to sign.").build());
@@ -163,6 +168,7 @@ public class ECTesterStandalone {
         Options generateOpts = new Options();
         generateOpts.addOption(bits);
         generateOpts.addOption(namedCurve);
+        generateOpts.addOption(curveName);
         generateOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Generate [amount] of EC keys.").build());
         generateOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPairGenerator object [type].").build());
         ParserOptions generate = new ParserOptions(new DefaultParser(), generateOpts);
@@ -264,7 +270,11 @@ public class ECTesterStandalone {
                 }
                 spec = curve.toSpec();
                 kpg.initialize(spec);
-            }//TODO: allow ECGenNamedSpec
+            } else if (cli.hasOption("ecdh.curve-name")) {
+                String curveName = cli.getOptionValue("ecdh.curve-name");
+                spec = new ECGenParameterSpec(curveName);
+                kpg.initialize(spec);
+            }
 
             System.out.println("index;nanotime;pubW;privS;secret");
 
@@ -349,6 +359,9 @@ public class ECTesterStandalone {
                     return;
                 }
                 kpg.initialize(curve.toSpec());
+            } else if (cli.hasOption("ecdsa.curve-name")) {
+                String curveName = cli.getOptionValue("ecdsa.curve-name");
+                kpg.initialize(new ECGenParameterSpec(curveName));
             }
 
             System.out.println("index;data;signtime;verifytime;pubW;privS;signature;verified");
@@ -411,6 +424,9 @@ public class ECTesterStandalone {
                     return;
                 }
                 kpg.initialize(curve.toSpec());
+            } else if (cli.hasOption("generate.curve-name")) {
+                String curveName = cli.getOptionValue("generate.curve-name");
+                kpg.initialize(new ECGenParameterSpec(curveName));
             }
             System.out.println("index;nanotime;pubW;privS");
 
@@ -507,8 +523,11 @@ public class ECTesterStandalone {
                 }
 
                 String next = cli.getNextName();
-                if (cli.hasOption(next + ".bits") && cli.hasOption(next + ".named-curve")) {
-                    System.err.println("You can only specify bitsize or a named curve, nor both.");
+                boolean hasBits = cli.hasOption(next + ".bits");
+                boolean hasNamedCurve = cli.hasOption(next + ".named-curve");
+                boolean hasCurveName = cli.hasOption(next + ".curve-name");
+                if (hasBits ^ hasNamedCurve ? hasCurveName : hasBits) {
+                    System.err.println("You can only specify bitsize or a named curve/curve name, nor both.");
                     return false;
                 }
             }

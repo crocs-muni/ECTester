@@ -15,6 +15,11 @@ public interface Testable {
     boolean error();
 
     /**
+     * @return The cause of an error, if it happened, otherwise null.
+     */
+    Object errorCause();
+
+    /**
      * @return Whether this runnable was run.
      */
     boolean hasRun();

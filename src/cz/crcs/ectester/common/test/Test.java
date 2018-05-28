@@ -32,6 +32,14 @@ public abstract class Test implements Testable {
     }
 
     @Override
+    public Object errorCause() {
+        if (result == null || !result.compareTo(Value.ERROR)) {
+            return null;
+        }
+        return result.getCause();
+    }
+
+    @Override
     public boolean hasRun() {
         return hasRun;
     }
