@@ -49,16 +49,22 @@ public class Result {
      * A result value of a Test.
      */
     public enum Value {
-        SUCCESS(true),
-        FAILURE(false),
-        UXSUCCESS(false),
-        XFAILURE(true),
-        ERROR(false);
+        SUCCESS(true, "Expected success."),
+        FAILURE(false, "Unexpected failure."),
+        UXSUCCESS(false, "Unexpected success."),
+        XFAILURE(true, "Expected failure."),
+        ERROR(false, "Error.");
 
         private boolean ok;
+        private String desc;
 
         Value(boolean ok) {
             this.ok = ok;
+        }
+
+        Value(boolean ok, String desc) {
+            this(ok);
+            this.desc = desc;
         }
 
         public static Value fromExpected(ExpectedValue expected, boolean successful) {
@@ -82,6 +88,10 @@ public class Result {
 
         public boolean ok() {
             return ok;
+        }
+
+        public String description() {
+            return desc;
         }
     }
 

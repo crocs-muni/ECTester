@@ -16,7 +16,8 @@ public class SignatureTest extends SimpleTest<SignatureTestable> {
         return new SignatureTest(kg, new TestCallback<SignatureTestable>() {
             @Override
             public Result apply(SignatureTestable signatureTestable) {
-                return new Result(Result.Value.fromExpected(expected, signatureTestable.ok(), signatureTestable.error()));
+                Result.Value value = Result.Value.fromExpected(expected, signatureTestable.ok(), signatureTestable.error());
+                return new Result(value, value.description());
             }
         });
     }

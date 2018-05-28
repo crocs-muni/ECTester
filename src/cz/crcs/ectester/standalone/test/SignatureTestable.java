@@ -57,54 +57,65 @@ public class SignatureTestable extends BaseTestable {
 
     @Override
     public void run() {
-        if (kgt != null) {
-            signKey = (ECPrivateKey) kgt.getKeyPair().getPrivate();
-            verifyKey = (ECPublicKey) kgt.getKeyPair().getPublic();
-        }
-
         try {
-            sig.initSign(signKey);
-        } catch (InvalidKeyException e) {
-            throw new TestException(e);
-        }
+            if (kgt != null) {
+                signKey = (ECPrivateKey) kgt.getKeyPair().getPrivate();
+                verifyKey = (ECPublicKey) kgt.getKeyPair().getPublic();
+            }
 
-        try {
-            sig.update(data);
-        } catch (SignatureException e) {
+            try {
+                sig.initSign(signKey);
+            } catch (InvalidKeyException e) {
+                ok = false;
+                hasRun = true;
+                return;
+            }
+
+            try {
+                sig.update(data);
+            } catch (SignatureException e) {
+                ok = false;
+                hasRun = true;
+                return;
+            }
+
+            try {
+                signature = sig.sign();
+            } catch (SignatureException e) {
+                ok = false;
+                hasRun = true;
+                return;
+            }
+
+            try {
+                sig.initVerify(verifyKey);
+            } catch (InvalidKeyException e) {
+                ok = false;
+                hasRun = true;
+                return;
+            }
+
+            try {
+                sig.update(data);
+            } catch (SignatureException e) {
+                ok = false;
+                hasRun = true;
+                return;
+            }
+
+            try {
+                verified = sig.verify(signature);
+            } catch (SignatureException e) {
+                ok = false;
+                hasRun = true;
+            }
+
+            ok = true;
+        } catch (Exception ex) {
             ok = false;
-            hasRun = true;
-            return;
+            error = true;
+            errorCause = ex;
         }
-
-        try {
-            signature = sig.sign();
-        } catch (SignatureException e) {
-            ok = false;
-            hasRun = true;
-            return;
-        }
-
-        try {
-            sig.initVerify(verifyKey);
-        } catch (InvalidKeyException e) {
-            throw new TestException(e);
-        }
-
-        try {
-            sig.update(data);
-        } catch (SignatureException e) {
-            ok = false;
-            hasRun = true;
-            return;
-        }
-
-        try {
-            verified = sig.verify(signature);
-        } catch (SignatureException e) {
-            ok = false;
-            hasRun = true;
-        }
-        ok = true;
         hasRun = true;
     }
 }

@@ -3,7 +3,6 @@ package cz.crcs.ectester.standalone.test;
 import cz.crcs.ectester.common.test.Result;
 import cz.crcs.ectester.common.test.SimpleTest;
 import cz.crcs.ectester.common.test.TestCallback;
-import cz.crcs.ectester.common.test.TestException;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -17,7 +16,8 @@ public class KeyGeneratorTest extends SimpleTest<KeyGeneratorTestable> {
         return new KeyGeneratorTest(kg, new TestCallback<KeyGeneratorTestable>() {
             @Override
             public Result apply(KeyGeneratorTestable keyGenerationTestable) {
-                return new Result(Result.Value.fromExpected(expected, keyGenerationTestable.ok(), keyGenerationTestable.error()));
+                Result.Value value = Result.Value.fromExpected(expected, keyGenerationTestable.ok(), keyGenerationTestable.error());
+                return new Result(value, value.description());
             }
         });
     }

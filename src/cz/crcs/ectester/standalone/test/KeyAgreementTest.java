@@ -31,7 +31,8 @@ public class KeyAgreementTest extends SimpleTest<KeyAgreementTestable> {
         return new KeyAgreementTest(ka, new TestCallback<KeyAgreementTestable>() {
             @Override
             public Result apply(KeyAgreementTestable keyAgreementTestable) {
-                return new Result(Result.Value.fromExpected(expected, keyAgreementTestable.ok(), keyAgreementTestable.error()));
+                Result.Value value = Result.Value.fromExpected(expected, keyAgreementTestable.ok(), keyAgreementTestable.error());
+                return new Result(value, value.description());
             }
         });
     }

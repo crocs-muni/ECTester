@@ -28,7 +28,6 @@ public class CommandTestable extends BaseTestable {
 
     @Override
     public void run() {
-
         try {
             response = command.send();
         } catch (CardException e) {

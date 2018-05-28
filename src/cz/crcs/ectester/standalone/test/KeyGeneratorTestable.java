@@ -1,7 +1,6 @@
 package cz.crcs.ectester.standalone.test;
 
 import cz.crcs.ectester.common.test.BaseTestable;
-import cz.crcs.ectester.common.test.TestException;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
@@ -42,18 +41,25 @@ public class KeyGeneratorTestable extends BaseTestable {
     @Override
     public void run() {
         try {
-            if (spec != null) {
-                kpg.initialize(spec);
-            } else if (keysize != 0) {
-                kpg.initialize(keysize);
+            try {
+                if (spec != null) {
+                    kpg.initialize(spec);
+                } else if (keysize != 0) {
+                    kpg.initialize(keysize);
+                }
+            } catch (InvalidAlgorithmParameterException e) {
+                hasRun = true;
+                ok = false;
+                return;
             }
-        } catch (InvalidAlgorithmParameterException e) {
-            hasRun = true;
+            kp = kpg.genKeyPair();
+            ok = true;
+
+        } catch (Exception ex) {
             ok = false;
-            return;
+            error = true;
+            errorCause = ex;
         }
-        kp = kpg.genKeyPair();
         hasRun = true;
-        ok = true;
     }
 }
