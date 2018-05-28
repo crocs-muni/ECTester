@@ -65,8 +65,7 @@ public class SignatureTestable extends StandaloneTestable<SignatureTestable.Sign
             try {
                 sig.initSign(signKey);
             } catch (InvalidKeyException e) {
-                ok = false;
-                hasRun = true;
+                failOnException(e);
                 return;
             }
 
@@ -74,8 +73,7 @@ public class SignatureTestable extends StandaloneTestable<SignatureTestable.Sign
             try {
                 sig.update(data);
             } catch (SignatureException e) {
-                ok = false;
-                hasRun = true;
+                failOnException(e);
                 return;
             }
 
@@ -83,8 +81,7 @@ public class SignatureTestable extends StandaloneTestable<SignatureTestable.Sign
             try {
                 signature = sig.sign();
             } catch (SignatureException e) {
-                ok = false;
-                hasRun = true;
+                failOnException(e);
                 return;
             }
 
@@ -92,8 +89,7 @@ public class SignatureTestable extends StandaloneTestable<SignatureTestable.Sign
             try {
                 sig.initVerify(verifyKey);
             } catch (InvalidKeyException e) {
-                ok = false;
-                hasRun = true;
+                failOnException(e);
                 return;
             }
 
@@ -101,8 +97,7 @@ public class SignatureTestable extends StandaloneTestable<SignatureTestable.Sign
             try {
                 sig.update(data);
             } catch (SignatureException e) {
-                ok = false;
-                hasRun = true;
+                failOnException(e);
                 return;
             }
 
@@ -110,11 +105,11 @@ public class SignatureTestable extends StandaloneTestable<SignatureTestable.Sign
             try {
                 verified = sig.verify(signature);
             } catch (SignatureException e) {
-                ok = false;
-                hasRun = true;
+                failOnException(e);
+                return;
             }
 
-            ok = true;
+            ok = verified;
         } catch (Exception ex) {
             ok = false;
             error = true;

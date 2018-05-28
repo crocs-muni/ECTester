@@ -13,10 +13,7 @@ import cz.crcs.ectester.reader.test.CommandTestable;
 
 import javax.smartcardio.CardException;
 import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -27,7 +24,7 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
     }
 
     private Map<String, Object> commandObject(Command c) {
-        Map<String, Object> commandObj = new HashMap<>();
+        Map<String, Object> commandObj = new LinkedHashMap<>();
         if (c == null) {
             return commandObj;
         }
@@ -37,7 +34,7 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
     }
 
     private Map<String, Object> responseObject(Response r) {
-        Map<String, Object> responseObj = new HashMap<>();
+        Map<String, Object> responseObj = new LinkedHashMap<>();
         if (r == null) {
             return responseObj;
         }
@@ -58,7 +55,7 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
     protected Map<String, Object> testableObject(Testable t) {
         if (t instanceof CommandTestable) {
             CommandTestable cmd = (CommandTestable) t;
-            Map<String, Object> result = new HashMap<>();
+            Map<String, Object> result = new LinkedHashMap<>();
             result.put("type", "command");
             result.put("command", commandObject(cmd.getCommand()));
             result.put("response", responseObject(cmd.getResponse()));
@@ -68,7 +65,7 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
     }
 
     private Map<String, Object> cplcObject(CardMngr card) {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new LinkedHashMap<>();
         try {
             CardMngr.CPLC cplc = card.getCPLC();
             if (!cplc.values().isEmpty()) {
@@ -87,7 +84,7 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
     protected Map<String, Object> deviceObject(TestSuite suite) {
         if (suite instanceof CardTestSuite) {
             CardTestSuite cardSuite = (CardTestSuite) suite;
-            Map<String, Object> result = new HashMap<>();
+            Map<String, Object> result = new LinkedHashMap<>();
             result.put("type", "card");
             result.put("ectester", ECTesterReader.VERSION);
             result.put("cplc", cplcObject(cardSuite.getCard()));

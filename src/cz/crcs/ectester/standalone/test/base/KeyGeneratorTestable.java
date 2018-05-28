@@ -47,8 +47,7 @@ public class KeyGeneratorTestable extends StandaloneTestable<KeyGeneratorTestabl
                     kpg.initialize(keysize);
                 }
             } catch (InvalidAlgorithmParameterException e) {
-                ok = false;
-                hasRun = true;
+                failOnException(e);
                 return;
             }
 

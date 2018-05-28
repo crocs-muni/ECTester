@@ -87,8 +87,7 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
                     ka.init(privateKey);
                 }
             } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
-                ok = false;
-                hasRun = true;
+                failOnException(e);
                 return;
             }
 
@@ -96,17 +95,15 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
             try {
                 ka.doPhase(publicKey, true);
             } catch (IllegalStateException | InvalidKeyException e) {
-                ok = false;
-                hasRun = true;
+                failOnException(e);
                 return;
             }
 
             stage = KeyAgreementStage.GenerateSecret;
             try {
                 secret = ka.generateSecret();
-            } catch (IllegalStateException | UnsupportedOperationException isex) {
-                ok = false;
-                hasRun = true;
+            } catch (IllegalStateException | UnsupportedOperationException e) {
+                failOnException(e);
                 return;
             }
 

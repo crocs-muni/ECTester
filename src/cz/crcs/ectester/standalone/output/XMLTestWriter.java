@@ -104,10 +104,22 @@ public class XMLTestWriter extends BaseXMLTestWriter {
         return result;
     }
 
+    private String causeObject(Object cause) {
+        if (cause == null) {
+            return "";
+        } else if (cause instanceof Exception) {
+            Exception ex = ((Exception) cause);
+            return ex.getClass().getCanonicalName() + " : " + ex.getMessage();
+        } else {
+            return cause.toString();
+        }
+    }
+
     @Override
     protected Element testableElement(Testable t) {
         Element result = doc.createElement("test");
         if (t instanceof StandaloneTestable) {
+            StandaloneTestable<?> testable = (StandaloneTestable) t;
             if (t instanceof KeyGeneratorTestable) {
                 result.setAttribute("type", "key-pair-generator");
                 result.appendChild(kgtElement((KeyGeneratorTestable) t));
@@ -118,7 +130,10 @@ public class XMLTestWriter extends BaseXMLTestWriter {
                 result.setAttribute("type", "signature");
                 result.appendChild(sigElement((SignatureTestable) t));
             }
-            result.appendChild(stageElement((StandaloneTestable) t));
+            result.appendChild(stageElement(testable));
+            Element exception = doc.createElement("exception");
+            exception.setTextContent(causeObject(testable.getException()) + causeObject(testable.errorCause()));
+            result.appendChild(exception);
         }
         return result;
     }

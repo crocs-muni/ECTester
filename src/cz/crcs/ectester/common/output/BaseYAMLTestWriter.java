@@ -25,8 +25,8 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
     @Override
     public void begin(TestSuite suite) {
         output.println("---");
-        testRun = new HashMap<>();
-        testSuite = new HashMap<>();
+        testRun = new LinkedHashMap<>();
+        testSuite = new LinkedHashMap<>();
         tests = new LinkedList<>();
         testSuite.put("name", suite.getName());
         testSuite.put("desc", suite.getDescription());
@@ -59,7 +59,7 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
     }
 
     private Map<String, Object> resultObject(Result result) {
-        Map<String, Object> resultObject = new HashMap<>();
+        Map<String, Object> resultObject = new LinkedHashMap<>();
         resultObject.put("ok", result.ok());
         resultObject.put("value", result.getValue().name());
         resultObject.put("cause", causeObject(result.getCause()));
@@ -107,7 +107,7 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
         options.setPrettyFlow(true);
         Yaml yaml = new Yaml(options);
 
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new LinkedHashMap<>();
         result.put("testRun", testRun);
         String out = yaml.dump(result);
 

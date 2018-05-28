@@ -4,10 +4,9 @@ import cz.crcs.ectester.common.output.BaseTextTestWriter;
 import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.test.Testable;
 import cz.crcs.ectester.standalone.ECTesterStandalone;
-import cz.crcs.ectester.standalone.test.base.*;
+import cz.crcs.ectester.standalone.test.base.StandaloneTestable;
 import cz.crcs.ectester.standalone.test.suites.StandaloneTestSuite;
 
-import javax.crypto.KeyAgreement;
 import java.io.PrintStream;
 
 /**
@@ -18,10 +17,25 @@ public class TextTestWriter extends BaseTextTestWriter {
         super(output);
     }
 
+    private String causeString(Object cause) {
+        if (cause == null) {
+            return "";
+        } else if (cause instanceof Exception) {
+            Exception ex = ((Exception) cause);
+            return " -> " + ex.getClass().getCanonicalName() + " : " + ex.getMessage();
+        } else {
+            return cause.toString();
+        }
+    }
+
     @Override
     protected String testableString(Testable t) {
         if (t instanceof StandaloneTestable) {
-            return ((StandaloneTestable)t).getStage().name();
+            StandaloneTestable<?> testable = (StandaloneTestable) t;
+            String stage = testable.getStage().name();
+            String exception = causeString(testable.getException());
+            String errorCause = causeString(testable.errorCause());
+            return stage + exception + errorCause;
         }
         return "";
     }
