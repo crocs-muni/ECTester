@@ -3,6 +3,7 @@ package cz.crcs.ectester.standalone.libs.jni;
 import cz.crcs.ectester.common.util.ECUtil;
 import org.bouncycastle.util.Arrays;
 
+import javax.swing.event.AncestorEvent;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPoint;
@@ -63,6 +64,12 @@ public abstract class NativeECPublicKey implements ECPublicKey {
 
     public static class Botan extends ANSIX962 {
         public Botan(byte[] keyData, ECParameterSpec params) {
+            super(keyData, params);
+        }
+    }
+
+    public static class Cryptopp extends ANSIX962 {
+        public Cryptopp(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }

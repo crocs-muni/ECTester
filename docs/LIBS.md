@@ -2,7 +2,6 @@
 
 Popular libraries with at least some ECC support:
 
- - [Crypto++](https://cryptopp.com/)
  - [libgcrypt](https://www.gnupg.org/related_software/libgcrypt/)
  - [mbedTLS](https://tls.mbed.org/)
  - [Nettle](http://www.lysator.liu.se/~nisse/nettle/)
@@ -28,3 +27,5 @@ Popular libraries with at least some ECC support:
     - C
     - Uses Jacobian coordinates.
     - Sliding window scalar multiplication algorithm.
+ - [Crypto++](https://cryptopp.com/)
+    - C++

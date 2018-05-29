@@ -120,4 +120,32 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
             super("ECGDSA");
         }
     }
+
+    public static abstract class Cryptopp extends NativeKeyPairGeneratorSpi {
+        private String type;
+
+        public Cryptopp(String type) {
+            this.type = type;
+            initialize(256, new SecureRandom());
+        }
+
+        @Override
+        native boolean keysizeSupported(int keysize);
+
+        @Override
+        native boolean paramsSupported(AlgorithmParameterSpec params);
+
+        @Override
+        native KeyPair generate(int keysize, SecureRandom random);
+
+        @Override
+        native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
+    }
+
+    public static class CryptoppECDH extends Botan {
+
+        public CryptoppECDH() {
+            super("ECDH");
+        }
+    }
 }

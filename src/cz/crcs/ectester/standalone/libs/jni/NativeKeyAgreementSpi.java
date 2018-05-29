@@ -78,7 +78,7 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
 
     @Override
     protected SecretKey engineGenerateSecret(String algorithm) throws IllegalStateException, NoSuchAlgorithmException, InvalidKeyException {
-        // TODO: This is dangerous!
+        // TODO: This is dangerous/not correct ! Need to actually implement KDF1 and KDF2 here probably.
         return new SecretKeySpec(engineGenerateSecret(), algorithm);
     }
 
@@ -93,6 +93,7 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
 
     public abstract static class Botan extends NativeKeyAgreementSpi {
         private String type;
+
         public Botan(String type) {
             this.type = type;
         }
@@ -134,6 +135,23 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
     public static class BotanECDHwithSHA512KDF extends Botan {
         public BotanECDHwithSHA512KDF() {
             super("ECDHwithSHA512KDF");
+        }
+    }
+
+    public abstract static class Cryptopp extends NativeKeyAgreementSpi {
+        private String type;
+
+        public Cryptopp(String type) {
+            this.type = type;
+        }
+
+        @Override
+        native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
+    }
+
+    public static class CryptoppECDH extends Cryptopp {
+        public CryptoppECDH() {
+            super("ECDH");
         }
     }
 }

@@ -39,4 +39,14 @@ public abstract class NativeProvider extends Provider {
         @Override
         native void setup();
     }
+
+    public static class Cryptopp extends NativeProvider {
+
+        public Cryptopp(String name, double version, String info) {
+            super(name, version, info);
+        }
+
+        @Override
+        native void setup();
+    }
 }

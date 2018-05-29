@@ -52,117 +52,38 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_createP
 JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_00024Botan_setup(JNIEnv *env, jobject self){
     jmethodID provider_put = env->GetMethodID(provider_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
 
-    jstring ecdh = env->NewStringUTF("KeyPairGenerator.ECDH");
-    jstring ecdh_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$BotanECDH");
-    env->CallObjectMethod(self, provider_put, ecdh, ecdh_value);
+    add_kpg(env, "ECDH", "BotanECDH", self, provider_put);
+    add_kpg(env, "ECDSA", "BotanECDSA", self, provider_put);
+    add_kpg(env, "ECKCDSA", "BotanECKCDSA", self, provider_put);
+    add_kpg(env, "ECGDSA", "BotanECGDSA", self, provider_put);
 
-    jstring ecdsa = env->NewStringUTF("KeyPairGenerator.ECDSA");
-    jstring ecdsa_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$BotanECDSA");
-    env->CallObjectMethod(self, provider_put, ecdsa, ecdsa_value);
+    add_ka(env, "ECDH", "BotanECDH", self, provider_put);
+    add_ka(env, "ECDHwithSHA1KDF", "BotanECDHwithSHA1KDF", self, provider_put);
+    add_ka(env, "ECDHwithSHA224KDF", "BotanECDHwithSHA224KDF", self, provider_put);
+    add_ka(env, "ECDHwithSHA256KDF", "BotanECDHwithSHA256KDF", self, provider_put);
+    add_ka(env, "ECDHwithSHA384KDF", "BotanECDHwithSHA384KDF", self, provider_put);
+    add_ka(env, "ECDHwithSHA512KDF", "BotanECDHwithSHA512KDF", self, provider_put);
 
-    jstring eckcdsa = env->NewStringUTF("KeyPairGenerator.ECKCDSA");
-    jstring eckcdsa_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$BotanECKCDSA");
-    env->CallObjectMethod(self, provider_put, eckcdsa, eckcdsa_value);
+    add_sig(env, "NONEwithECDSA", "BotanECDSAwithNONE", self, provider_put);
+    add_sig(env, "SHA1withECDSA", "BotanECDSAwithSHA1", self, provider_put);
+    add_sig(env, "SHA224withECDSA", "BotanECDSAwithSHA224", self, provider_put);
+    add_sig(env, "SHA256withECDSA", "BotanECDSAwithSHA256", self, provider_put);
+    add_sig(env, "SHA384withECDSA", "BotanECDSAwithSHA384", self, provider_put);
+    add_sig(env, "SHA512withECDSA", "BotanECDSAwithSHA512", self, provider_put);
+
+    add_sig(env, "NONEwithECKCDSA", "BotanECKCDSAwithNONE", self, provider_put);
+    add_sig(env, "SHA1withECKCDSA", "BotanECKCDSAwithSHA1", self, provider_put);
+    add_sig(env, "SHA224withECKCDSA", "BotanECKCDSAwithSHA224", self, provider_put);
+    add_sig(env, "SHA256withECKCDSA", "BotanECKCDSAwithSHA256", self, provider_put);
+    add_sig(env, "SHA384withECKCDSA", "BotanECKCDSAwithSHA384", self, provider_put);
+    add_sig(env, "SHA512withECKCDSA", "BotanECKCDSAwithSHA512", self, provider_put);
     
-    jstring ecgdsa = env->NewStringUTF("KeyPairGenerator.ECGDSA");
-    jstring ecgdsa_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$BotanECGDSA");
-    env->CallObjectMethod(self, provider_put, ecgdsa, ecgdsa_value);
-
-    jstring ecdh_ka = env->NewStringUTF("KeyAgreement.ECDH");
-    jstring ecdh_ka_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$BotanECDH");
-    env->CallObjectMethod(self, provider_put, ecdh_ka, ecdh_ka_value);
-
-    jstring ecdh_sha1_ka = env->NewStringUTF("KeyAgreement.ECDHwithSHA1KDF");
-    jstring ecdh_sha1_ka_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$BotanECDHwithSHA1KDF");
-    env->CallObjectMethod(self, provider_put, ecdh_sha1_ka, ecdh_sha1_ka_value);
-
-    jstring ecdh_sha224_ka = env->NewStringUTF("KeyAgreement.ECDHwithSHA224KDF");
-    jstring ecdh_sha224_ka_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$BotanECDHwithSHA224KDF");
-    env->CallObjectMethod(self, provider_put, ecdh_sha224_ka, ecdh_sha224_ka_value);
-
-    jstring ecdh_sha256_ka = env->NewStringUTF("KeyAgreement.ECDHwithSHA256KDF");
-    jstring ecdh_sha256_ka_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$BotanECDHwithSHA256KDF");
-    env->CallObjectMethod(self, provider_put, ecdh_sha256_ka, ecdh_sha256_ka_value);
-
-    jstring ecdh_sha384_ka = env->NewStringUTF("KeyAgreement.ECDHwithSHA384KDF");
-    jstring ecdh_sha384_ka_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$BotanECDHwithSHA384KDF");
-    env->CallObjectMethod(self, provider_put, ecdh_sha384_ka, ecdh_sha384_ka_value);
-
-    jstring ecdh_sha512_ka = env->NewStringUTF("KeyAgreement.ECDHwithSHA512KDF");
-    jstring ecdh_sha512_ka_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$BotanECDHwithSHA512KDF");
-    env->CallObjectMethod(self, provider_put, ecdh_sha512_ka, ecdh_sha512_ka_value);
-
-    jstring ecdsa_sig = env->NewStringUTF("Signature.NONEwithECDSA");
-    jstring ecdsa_sig_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$BotanECDSAwithNONE");
-    env->CallObjectMethod(self, provider_put, ecdsa_sig, ecdsa_sig_value);
-
-    jstring ecdsa_sha1_sig = env->NewStringUTF("Signature.SHA1withECDSA");
-    jstring ecdsa_sha1_sig_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$BotanECDSAwithSHA1");
-    env->CallObjectMethod(self, provider_put, ecdsa_sha1_sig, ecdsa_sha1_sig_value);
-
-    jstring ecdsa_sha224_sig = env->NewStringUTF("Signature.SHA224withECDSA");
-    jstring ecdsa_sha224_sig_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$BotanECDSAwithSHA224");
-    env->CallObjectMethod(self, provider_put, ecdsa_sha224_sig, ecdsa_sha224_sig_value);
-
-    jstring ecdsa_sha256_sig = env->NewStringUTF("Signature.SHA256withECDSA");
-    jstring ecdsa_sha256_sig_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$BotanECDSAwithSHA256");
-    env->CallObjectMethod(self, provider_put, ecdsa_sha256_sig, ecdsa_sha256_sig_value);
-
-    jstring ecdsa_sha384_sig = env->NewStringUTF("Signature.SHA384withECDSA");
-    jstring ecdsa_sha384_sig_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$BotanECDSAwithSHA384");
-    env->CallObjectMethod(self, provider_put, ecdsa_sha384_sig, ecdsa_sha384_sig_value);
-
-    jstring ecdsa_sha512_sig = env->NewStringUTF("Signature.SHA512withECDSA");
-    jstring ecdsa_sha512_sig_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$BotanECDSAwithSHA512");
-    env->CallObjectMethod(self, provider_put, ecdsa_sha512_sig, ecdsa_sha512_sig_value);
-    
-    jstring eckcdsa_sig = env->NewStringUTF("Signature.NONEwithECKCDSA");
-    jstring eckcdsa_sig_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$BotanECKCDSAwithNONE");
-    env->CallObjectMethod(self, provider_put, eckcdsa_sig, eckcdsa_sig_value);
-
-    jstring eckcdsa_sha1_sig = env->NewStringUTF("Signature.SHA1withECKCDSA");
-    jstring eckcdsa_sha1_sig_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$BotanECKCDSAwithSHA1");
-    env->CallObjectMethod(self, provider_put, eckcdsa_sha1_sig, eckcdsa_sha1_sig_value);
-
-    jstring eckcdsa_sha224_sig = env->NewStringUTF("Signature.SHA224withECKCDSA");
-    jstring eckcdsa_sha224_sig_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$BotanECKCDSAwithSHA224");
-    env->CallObjectMethod(self, provider_put, eckcdsa_sha224_sig, eckcdsa_sha224_sig_value);
-
-    jstring eckcdsa_sha256_sig = env->NewStringUTF("Signature.SHA256withECKCDSA");
-    jstring eckcdsa_sha256_sig_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$BotanECKCDSAwithSHA256");
-    env->CallObjectMethod(self, provider_put, eckcdsa_sha256_sig, eckcdsa_sha256_sig_value);
-
-    jstring eckcdsa_sha384_sig = env->NewStringUTF("Signature.SHA384withECKCDSA");
-    jstring eckcdsa_sha384_sig_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$BotanECKCDSAwithSHA384");
-    env->CallObjectMethod(self, provider_put, eckcdsa_sha384_sig, eckcdsa_sha384_sig_value);
-
-    jstring eckcdsa_sha512_sig = env->NewStringUTF("Signature.SHA512withECKCDSA");
-    jstring eckcdsa_sha512_sig_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$BotanECKCDSAwithSHA512");
-    env->CallObjectMethod(self, provider_put, eckcdsa_sha512_sig, eckcdsa_sha512_sig_value);
-
-    jstring ecgdsa_sig = env->NewStringUTF("Signature.NONEwithECGDSA");
-    jstring ecgdsa_sig_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$BotanECGDSAwithNONE");
-    env->CallObjectMethod(self, provider_put, ecgdsa_sig, ecgdsa_sig_value);
-
-    jstring ecgdsa_sha1_sig = env->NewStringUTF("Signature.SHA1withECGDSA");
-    jstring ecgdsa_sha1_sig_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$BotanECGDSAwithSHA1");
-    env->CallObjectMethod(self, provider_put, ecgdsa_sha1_sig, ecgdsa_sha1_sig_value);
-
-    jstring ecgdsa_sha224_sig = env->NewStringUTF("Signature.SHA224withECGDSA");
-    jstring ecgdsa_sha224_sig_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$BotanECGDSAwithSHA224");
-    env->CallObjectMethod(self, provider_put, ecgdsa_sha224_sig, ecgdsa_sha224_sig_value);
-
-    jstring ecgdsa_sha256_sig = env->NewStringUTF("Signature.SHA256withECGDSA");
-    jstring ecgdsa_sha256_sig_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$BotanECGDSAwithSHA256");
-    env->CallObjectMethod(self, provider_put, ecgdsa_sha256_sig, ecgdsa_sha256_sig_value);
-
-    jstring ecgdsa_sha384_sig = env->NewStringUTF("Signature.SHA384withECGDSA");
-    jstring ecgdsa_sha384_sig_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$BotanECGDSAwithSHA384");
-    env->CallObjectMethod(self, provider_put, ecgdsa_sha384_sig, ecgdsa_sha384_sig_value);
-
-    jstring ecgdsa_sha512_sig = env->NewStringUTF("Signature.SHA512withECGDSA");
-    jstring ecgdsa_sha512_sig_value = env->NewStringUTF("cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$BotanECGDSAwithSHA512");
-    env->CallObjectMethod(self, provider_put, ecgdsa_sha512_sig, ecgdsa_sha512_sig_value);
+    add_sig(env, "NONEwithECGDSA", "BotanECGDSAwithNONE", self, provider_put);
+    add_sig(env, "SHA1withECGDSA", "BotanECGDSAwithSHA1", self, provider_put);
+    add_sig(env, "SHA224withECGDSA", "BotanECGDSAwithSHA224", self, provider_put);
+    add_sig(env, "SHA256withECGDSA", "BotanECGDSAwithSHA256", self, provider_put);
+    add_sig(env, "SHA384withECGDSA", "BotanECGDSAwithSHA384", self, provider_put);
+    add_sig(env, "SHA512withECGDSA", "BotanECGDSAwithSHA512", self, provider_put);
 
     init_classes(env, "Botan");
 }
@@ -173,18 +94,18 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
  * Signature: ()Ljava/util/Set;
  */
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_getCurves(JNIEnv *env, jobject self){
-    jclass hash_set_class = env->FindClass("java/util/TreeSet");
+    jclass set_class = env->FindClass("java/util/TreeSet");
 
-    jmethodID hash_set_ctr = env->GetMethodID(hash_set_class, "<init>", "()V");
-    jmethodID hash_set_add = env->GetMethodID(hash_set_class, "add", "(Ljava/lang/Object;)Z");
+    jmethodID set_ctr = env->GetMethodID(set_class, "<init>", "()V");
+    jmethodID set_add = env->GetMethodID(set_class, "add", "(Ljava/lang/Object;)Z");
 
-    jobject result = env->NewObject(hash_set_class, hash_set_ctr);
+    jobject result = env->NewObject(set_class, set_ctr);
 
     const std::set<std::string>& curves = Botan::EC_Group::known_named_groups();
     for (auto it = curves.begin(); it != curves.end(); ++it) {
         std::string curve_name = *it;
         jstring name_str = env->NewStringUTF(curve_name.c_str());
-        env->CallBooleanMethod(result, hash_set_add, name_str);
+        env->CallBooleanMethod(result, set_add, name_str);
     }
 
     return result;

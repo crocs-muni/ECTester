@@ -27,3 +27,9 @@ void init_classes(JNIEnv *env, std::string lib_name);
  * Throw a new exception of class with message.
  */
 void throw_new(JNIEnv *env, const std::string& klass, const std::string& message);
+
+void add_kpg(JNIEnv *env, const std::string &type, const std::string &klass, jobject provider, jmethodID put_method);
+
+void add_ka(JNIEnv *env, const std::string &type, const std::string &klass, jobject provider, jmethodID put_method);
+
+void add_sig(JNIEnv *env, const std::string &type, const std::string &klass, jobject provider, jmethodID put_method);

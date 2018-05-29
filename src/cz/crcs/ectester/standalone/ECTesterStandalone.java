@@ -66,7 +66,7 @@ import java.util.stream.Collectors;
  * @version v0.2.0
  */
 public class ECTesterStandalone {
-    private ProviderECLibrary[] libs = new ProviderECLibrary[]{new SunECLib(), new BouncyCastleLib(), new TomcryptLib(), new BotanLib()};
+    private ProviderECLibrary[] libs = new ProviderECLibrary[]{new SunECLib(), new BouncyCastleLib(), new TomcryptLib(), new BotanLib(), new CryptoppLib()};
     private Config cfg;
 
     private Options opts = new Options();
@@ -218,19 +218,19 @@ public class ECTesterStandalone {
                 System.out.println("\t- " + lib.name());
                 Set<KeyPairGeneratorIdent> kpgs = lib.getKPGs();
                 if (!kpgs.isEmpty()) {
-                    System.out.println("\t\t- KeyPairGenerators: " + String.join(",", kpgs.stream().map(KeyPairGeneratorIdent::getName).collect(Collectors.toList())));
+                    System.out.println("\t\t- KeyPairGenerators: " + String.join(", ", kpgs.stream().map(KeyPairGeneratorIdent::getName).collect(Collectors.toList())));
                 }
                 Set<KeyAgreementIdent> eckas = lib.getKAs();
                 if (!eckas.isEmpty()) {
-                    System.out.println("\t\t- KeyAgreements: " + String.join(",", eckas.stream().map(KeyAgreementIdent::getName).collect(Collectors.toList())));
+                    System.out.println("\t\t- KeyAgreements: " + String.join(", ", eckas.stream().map(KeyAgreementIdent::getName).collect(Collectors.toList())));
                 }
                 Set<SignatureIdent> sigs = lib.getSigs();
                 if (!sigs.isEmpty()) {
-                    System.out.println("\t\t- Signatures: " + String.join(",", sigs.stream().map(SignatureIdent::getName).collect(Collectors.toList())));
+                    System.out.println("\t\t- Signatures: " + String.join(", ", sigs.stream().map(SignatureIdent::getName).collect(Collectors.toList())));
                 }
                 Set<String> curves = lib.getCurves();
                 if (!curves.isEmpty()) {
-                    System.out.println("\t\t- Curves: " + String.join(",", curves));
+                    System.out.println("\t\t- Curves: " + String.join(", ", curves));
                 }
                 System.out.println();
             }

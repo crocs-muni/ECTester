@@ -115,6 +115,13 @@
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Botan"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Botan"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Botan"/>
+            <class name="cz.crcs.ectester.standalone.libs.CryptoppLib"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeProvider$Cryptopp"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Cryptopp"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$Cryptopp"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Cryptopp"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Cryptopp"/>
+            <!-- <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Cryptopp"/> -->
         </javah>
     </target>
 </project>
