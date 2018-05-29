@@ -98,7 +98,7 @@ public class XMLTestWriter extends BaseXMLTestWriter {
         return sigElem;
     }
 
-    private Element stageElement(StandaloneTestable t) {
+    private Element stageElement(StandaloneTestable<?> t) {
         Element result = doc.createElement("stage");
         result.setTextContent(t.getStage().name());
         return result;
