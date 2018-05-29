@@ -43,6 +43,7 @@ public class KeyAgreementTest extends SimpleTest<KeyAgreementTestable> {
 
     @Override
     public String getDescription() {
-        return "KeyAgreement " + testable.getKa().getAlgorithm();
+        String keyAlgo = testable.getKeyAlgorithm() == null ? "" : " (" + testable.getKeyAlgorithm() + ")";
+        return "KeyAgreement " + testable.getKa().getAlgorithm() + keyAlgo;
     }
 }

@@ -23,7 +23,7 @@ import java.util.Optional;
 public class StandaloneDefaultSuite extends StandaloneTestSuite {
 
     public StandaloneDefaultSuite(TestWriter writer, ECTesterStandalone.Config cfg, TreeCommandLine cli) {
-        super(writer, cfg, cli, "default", "The default test suite run basic support of ECDH and ECDSA.");
+        super(writer, cfg, cli, "default", "The default test suite run basic support of ECDH and ECDSA.", "Supports options:", "\t - gt/kpg-type", "\t - kt/ka-type", "\t - st/sig-type", "\t - key-type");
     }
 
     @Override
@@ -31,6 +31,7 @@ public class StandaloneDefaultSuite extends StandaloneTestSuite {
         String kpgAlgo = cli.getOptionValue("test.kpg-type");
         String kaAlgo = cli.getOptionValue("test.ka-type");
         String sigAlgo = cli.getOptionValue("test.sig-type");
+        String keyAlgo = cli.getOptionValue("test.key-type", "AES");
 
 
         KeyPairGeneratorIdent kpgIdent;
@@ -88,7 +89,13 @@ public class StandaloneDefaultSuite extends StandaloneTestSuite {
         for (KeyAgreementIdent kaIdent : cfg.selected.getKAs()) {
             if (kaAlgo == null || kaIdent.contains(kaAlgo)) {
                 KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                doTest(KeyAgreementTest.expect(new KeyAgreementTestable(ka, kgtOne, kgtOther, spec), Result.ExpectedValue.SUCCESS));
+                KeyAgreementTestable testable;
+                if (kaIdent.requiresKeyAlgo()) {
+                    testable = new KeyAgreementTestable(ka, kgtOne, kgtOther, spec, keyAlgo);
+                } else {
+                    testable = new KeyAgreementTestable(ka, kgtOne, kgtOther, spec);
+                }
+                doTest(KeyAgreementTest.expect(testable, Result.ExpectedValue.SUCCESS));
             }
         }
         for (SignatureIdent sigIdent : cfg.selected.getSigs()) {

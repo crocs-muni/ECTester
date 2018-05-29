@@ -7,11 +7,11 @@ import cz.crcs.ectester.common.output.TestWriter;
  */
 public abstract class TestSuite {
     protected String name;
-    protected String description;
+    protected String[] description;
     private TestWriter writer;
     private Test running;
 
-    public TestSuite(TestWriter writer, String name, String description) {
+    public TestSuite(TestWriter writer, String name, String... description) {
         this.writer = writer;
         this.name = name;
         this.description = description;
@@ -70,7 +70,7 @@ public abstract class TestSuite {
     }
 
     public String getDescription() {
-        return description;
+        return String.join(System.lineSeparator(), description);
     }
 
 }

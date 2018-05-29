@@ -27,7 +27,7 @@ import java.util.Map;
  */
 public class CardEdgeCasesSuite extends CardTestSuite {
     public CardEdgeCasesSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "edge-cases", "The edge-cases test suite tests various inputs to ECDH which may cause an implementation to achieve a certain edge-case state during ECDH.\n" +
+        super(writer, cfg, cardManager, "edge-cases", "The edge-cases test suite tests various inputs to ECDH which may cause an implementation to achieve a certain edge-case state during ECDH.",
                 "Some of the data is from the google/Wycheproof project. Tests include CVE-2017-10176 and CVE-2017-8932.");
     }
 

@@ -13,7 +13,7 @@ public abstract class StandaloneTestSuite extends TestSuite {
     TreeCommandLine cli;
     ECTesterStandalone.Config cfg;
 
-    public StandaloneTestSuite(TestWriter writer, ECTesterStandalone.Config cfg, TreeCommandLine cli, String name, String description) {
+    public StandaloneTestSuite(TestWriter writer, ECTesterStandalone.Config cfg, TreeCommandLine cli, String name, String... description) {
         super(writer, name, description);
         this.cfg = cfg;
         this.cli = cli;

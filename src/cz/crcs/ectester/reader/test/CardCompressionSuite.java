@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class CardCompressionSuite extends CardTestSuite {
     public CardCompressionSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "compression", "The compression test suite tests cards support for compressed points in ECDH (as per ANSI X9.62).\n" +
+        super(writer, cfg, cardManager, "compression", "The compression test suite tests cards support for compressed points in ECDH (as per ANSI X9.62).",
                 "It also tests for handling of bogus input by using the point at infinity and a hybrid point with the y coordinate corrupted.");
     }
 

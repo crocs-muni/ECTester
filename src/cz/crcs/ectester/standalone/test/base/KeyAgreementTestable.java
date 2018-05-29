@@ -1,6 +1,7 @@
 package cz.crcs.ectester.standalone.test.base;
 
 import javax.crypto.KeyAgreement;
+import javax.crypto.SecretKey;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.interfaces.ECPrivateKey;
@@ -18,7 +19,9 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
     private KeyGeneratorTestable kgtPrivate;
     private KeyGeneratorTestable kgtPublic;
     private AlgorithmParameterSpec spec;
+    private String keyAlgo;
     private byte[] secret;
+    private SecretKey derived;
 
     public KeyAgreementTestable(KeyAgreement ka, ECPrivateKey privateKey, ECPublicKey publicKey) {
         this.ka = ka;
@@ -26,9 +29,19 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
         this.publicKey = publicKey;
     }
 
+    public KeyAgreementTestable(KeyAgreement ka, ECPrivateKey privateKey, ECPublicKey publicKey, String keyAlgo) {
+        this(ka, privateKey, publicKey);
+        this.keyAlgo = keyAlgo;
+    }
+
     public KeyAgreementTestable(KeyAgreement ka, ECPrivateKey privateKey, ECPublicKey publicKey, ECParameterSpec spec) {
         this(ka, privateKey, publicKey);
         this.spec = spec;
+    }
+
+    public KeyAgreementTestable(KeyAgreement ka, ECPrivateKey privateKey, ECPublicKey publicKey, ECParameterSpec spec, String keyAlgo) {
+        this(ka, privateKey, publicKey, spec);
+        this.keyAlgo = keyAlgo;
     }
 
     public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable kgt, ECPrivateKey privateKey, ECParameterSpec spec) {
@@ -36,15 +49,34 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
         this.kgtPublic = kgt;
     }
 
+    public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable kgt, ECPrivateKey privateKey, ECParameterSpec spec, String keyAlgo) {
+        this(ka, kgt, privateKey, spec);
+        this.keyAlgo = keyAlgo;
+    }
+
     public KeyAgreementTestable(KeyAgreement ka, ECPublicKey publicKey, KeyGeneratorTestable kgt, ECParameterSpec spec) {
         this(ka, null, publicKey, spec);
         this.kgtPrivate = kgt;
+    }
+
+    public KeyAgreementTestable(KeyAgreement ka, ECPublicKey publicKey, KeyGeneratorTestable kgt, ECParameterSpec spec, String keyAlgo) {
+        this(ka, publicKey, kgt, spec);
+        this.keyAlgo = keyAlgo;
     }
 
     public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable privKgt, KeyGeneratorTestable pubKgt, ECParameterSpec spec) {
         this(ka, (ECPrivateKey) null, null, spec);
         this.kgtPrivate = privKgt;
         this.kgtPublic = pubKgt;
+    }
+
+    public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable privKgt, KeyGeneratorTestable pubKgt, ECParameterSpec spec, String keyAlgo) {
+        this(ka, privKgt, pubKgt, spec);
+        this.keyAlgo = keyAlgo;
+    }
+
+    public String getKeyAlgorithm() {
+        return keyAlgo;
     }
 
     public KeyAgreement getKa() {
@@ -64,6 +96,13 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
             return null;
         }
         return secret;
+    }
+
+    public SecretKey getDerivedKey() {
+        if (!hasRun) {
+            return null;
+        }
+        return derived;
     }
 
     @Override
@@ -101,7 +140,12 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
 
             stage = KeyAgreementStage.GenerateSecret;
             try {
-                secret = ka.generateSecret();
+                if (keyAlgo != null) {
+                    derived = ka.generateSecret(keyAlgo);
+                    secret = derived.getEncoded();
+                } else {
+                    secret = ka.generateSecret();
+                }
             } catch (IllegalStateException | UnsupportedOperationException e) {
                 failOnException(e);
                 return;

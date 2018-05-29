@@ -5,6 +5,7 @@ import cz.crcs.ectester.common.util.ECUtil;
 import javax.crypto.KeyAgreementSpi;
 import javax.crypto.SecretKey;
 import javax.crypto.ShortBufferException;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
@@ -77,7 +78,8 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
 
     @Override
     protected SecretKey engineGenerateSecret(String algorithm) throws IllegalStateException, NoSuchAlgorithmException, InvalidKeyException {
-        throw new NoSuchAlgorithmException(algorithm);
+        // TODO: This is dangerous!
+        return new SecretKeySpec(engineGenerateSecret(), algorithm);
     }
 
     abstract byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
