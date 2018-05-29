@@ -1,6 +1,14 @@
 #include "native.h"
 #include <string>
-#include <botan/botan.h>
+
+#include <botan/lookup.h>
+#include <botan/version.h>
+#include <botan/parsing.h>
+#include <botan/init.h>
+#include <botan/rng.h>
+#include <botan/secmem.h>
+#include <botan/auto_rng.h>
+
 #include <botan/ec_group.h>
 #include <botan/ecc_key.h>
 #include <botan/ecdsa.h>
@@ -285,16 +293,14 @@ static Botan::EC_Group group_from_params(JNIEnv *env, jobject params) {
         Botan::BigInt pi = bigint_from_biginteger(env, p);
         Botan::BigInt ai = bigint_from_biginteger(env, a);
         Botan::BigInt bi = bigint_from_biginteger(env, b);
-        Botan::CurveGFp curve(pi, ai, bi);
 
         Botan::BigInt gxi = bigint_from_biginteger(env, gx);
         Botan::BigInt gyi = bigint_from_biginteger(env, gy);
-        Botan::PointGFp generator(curve, gxi, gyi);
 
         Botan::BigInt ni = bigint_from_biginteger(env, n);
         Botan::BigInt hi(h);
 
-        return Botan::EC_Group(curve, generator, ni, hi);
+        return Botan::EC_Group(pi, ai, bi, gxi, gyi, ni, hi);
     } else if (env->IsInstanceOf(params, ecgen_parameter_spec_class)) {
         jmethodID get_name = env->GetMethodID(ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
         jstring name = (jstring) env->CallObjectMethod(params, get_name);
@@ -307,14 +313,13 @@ static Botan::EC_Group group_from_params(JNIEnv *env, jobject params) {
 }
 
 static jobject params_from_group(JNIEnv *env, Botan::EC_Group group) {
-    const Botan::CurveGFp& curve = group.get_curve();
-    jobject p = biginteger_from_bigint(env, curve.get_p());
+    jobject p = biginteger_from_bigint(env, group.get_p());
 
     jmethodID fp_field_init = env->GetMethodID(fp_field_class, "<init>", "(Ljava/math/BigInteger;)V");
     jobject fp_field = env->NewObject(fp_field_class, fp_field_init, p);
 
-    jobject a = biginteger_from_bigint(env, curve.get_a());
-    jobject b = biginteger_from_bigint(env, curve.get_b());
+    jobject a = biginteger_from_bigint(env, group.get_a());
+    jobject b = biginteger_from_bigint(env, group.get_b());
 
     jmethodID elliptic_curve_init = env->GetMethodID(elliptic_curve_class, "<init>", "(Ljava/security/spec/ECField;Ljava/math/BigInteger;Ljava/math/BigInteger;)V");
     jobject elliptic_curve = env->NewObject(elliptic_curve_class, elliptic_curve_init, fp_field, a, b);
@@ -365,7 +370,7 @@ static jobject generate_from_group(JNIEnv* env, jobject self, Botan::EC_Group gr
     jobject ec_param_spec = params_from_group(env, group);
 
     const Botan::PointGFp& pub_point = skey->public_point();
-    std::vector<uint8_t> pub_data = Botan::unlock(Botan::EC2OSP(pub_point, Botan::PointGFp::UNCOMPRESSED));
+    std::vector<uint8_t> pub_data = pub_point.encode(Botan::PointGFp::UNCOMPRESSED);
 
     jbyteArray pub_bytearray = env->NewByteArray(pub_data.size());
     jbyte *pub_bytes = env->GetByteArrayElements(pub_bytearray, NULL);
@@ -402,7 +407,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
     const std::set<std::string>& curves = Botan::EC_Group::known_named_groups();
     for (auto it = curves.begin(); it != curves.end(); ++it) {
         Botan::EC_Group curve_group = Botan::EC_Group(*it);
-        size_t curve_size = curve_group.get_curve().get_p().bits();
+        size_t curve_size = curve_group.get_p_bits();
         if (curve_size == keysize) {
             //generate on this group. Even thou no default groups are present...
             return generate_from_group(env, self, curve_group);
@@ -442,7 +447,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 
     jsize pubkey_length = env->GetArrayLength(pubkey);
     jbyte *pubkey_data = env->GetByteArrayElements(pubkey, NULL);
-    Botan::PointGFp public_point = Botan::OS2ECP((uint8_t*) pubkey_data, pubkey_length, curve_group.get_curve());
+    Botan::PointGFp public_point = curve_group.OS2ECP((uint8_t*) pubkey_data, pubkey_length);
     env->ReleaseByteArrayElements(pubkey, pubkey_data, JNI_ABORT);
 
     Botan::ECDH_PublicKey pkey(curve_group, public_point);
@@ -461,19 +466,19 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
         kdf = "Raw";
         //key len unused
     } else if (type_str == "ECDHwithSHA1KDF") {
-        kdf = "KDF1(SHA-1)";
+        kdf = "KDF2(SHA-1)";
         key_len = 20;
     } else if (type_str == "ECDHwithSHA224KDF") {
-        kdf = "KDF1(SHA-224)";
+        kdf = "KDF2(SHA-224)";
         key_len = 28;
     } else if (type_str == "ECDHwithSHA256KDF") {
-        kdf = "KDF1(SHA-256)";
+        kdf = "KDF2(SHA-256)";
         key_len = 32;
     } else if (type_str == "ECDHwithSHA384KDF") {
-        kdf = "KDF1(SHA-384)";
+        kdf = "KDF2(SHA-384)";
         key_len = 48;
     } else if (type_str == "ECDHwithSHA512KDF") {
-        kdf = "KDF1(SHA-512)";
+        kdf = "KDF2(SHA-512)";
         key_len = 64;
     }
 
@@ -579,7 +584,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 
     jsize pubkey_length = env->GetArrayLength(pubkey);
     jbyte *pubkey_data = env->GetByteArrayElements(pubkey, NULL);
-    Botan::PointGFp public_point = Botan::OS2ECP((uint8_t*) pubkey_data, pubkey_length, curve_group.get_curve());
+    Botan::PointGFp public_point = curve_group.OS2ECP((uint8_t*) pubkey_data, pubkey_length);
     env->ReleaseByteArrayElements(pubkey, pubkey_data, JNI_ABORT);
 
     std::unique_ptr<Botan::EC_PublicKey> pkey;
