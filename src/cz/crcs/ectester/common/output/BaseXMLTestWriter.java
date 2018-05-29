@@ -39,7 +39,7 @@ public abstract class BaseXMLTestWriter implements TestWriter {
         doc = db.newDocument();
         Element rootElem = doc.createElement("testSuite");
         rootElem.setAttribute("name", suite.getName());
-        rootElem.setAttribute("desc", suite.getDescription());
+        rootElem.setAttribute("desc", suite.getTextDescription());
         DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
         Date date = new Date();
         rootElem.setAttribute("date", dateFormat.format(date));

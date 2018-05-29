@@ -44,6 +44,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import javax.crypto.KeyAgreement;
+import javax.crypto.SecretKey;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -102,6 +103,8 @@ public class ECTesterStandalone {
                 listLibraries();
             } else if (cli.isNext("list-data")) {
                 CLITools.listNamed(EC_Store.getInstance(), cli.getNext().getArg(0));
+            } else if (cli.isNext("list-suites")) {
+                listSuites();
             } else if (cli.isNext("ecdh")) {
                 ecdh();
             } else if (cli.isNext("ecdsa")) {
@@ -141,10 +144,10 @@ public class ECTesterStandalone {
         testOpts.addOption(Option.builder("kt").longOpt("ka-type").desc("Set the KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("st").longOpt("sig-type").desc("Set the Signature object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("f").longOpt("format").desc("Set the output format, one of text,yaml,xml.").hasArg().argName("format").optionalArg(false).build());
-        testOpts.addOption(Option.builder().longOpt("key-type").desc("Set the key [algorithm] for which the key should be derived in KeyAgreements with KDF.").hasArg().argName("algorithm").optionalArg(false).build());
+        testOpts.addOption(Option.builder().longOpt("key-type").desc("Set the key [algorithm] for which the key should be derived in KeyAgreements with KDF. Default is \"AES\".").hasArg().argName("algorithm").optionalArg(false).build());
         List<Argument> testArgs = new LinkedList<>();
-        testArgs.add(new Argument("test_suite", "The test suite to run.", true));
-        ParserOptions test = new ParserOptions(new DefaultParser(), testOpts, testArgs);
+        testArgs.add(new Argument("test-suite", "The test suite to run.", true));
+        ParserOptions test = new ParserOptions(new TreeParser(Collections.emptyMap(), true, testArgs), testOpts, "Test a library.");
         actions.put("test", test);
 
         Options ecdhOpts = new Options();
@@ -152,8 +155,9 @@ public class ECTesterStandalone {
         ecdhOpts.addOption(namedCurve);
         ecdhOpts.addOption(curveName);
         ecdhOpts.addOption(Option.builder("t").longOpt("type").desc("Set KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
+        ecdhOpts.addOption(Option.builder().longOpt("key-type").desc("Set the key [algorithm] for which the key should be derived in KeyAgreements with KDF. Default is \"AES\".").hasArg().argName("algorithm").optionalArg(false).build());
         ecdhOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDH [amount] times.").build());
-        ParserOptions ecdh = new ParserOptions(new DefaultParser(), ecdhOpts);
+        ParserOptions ecdh = new ParserOptions(new DefaultParser(), ecdhOpts, "Perform EC based KeyAgreement.");
         actions.put("ecdh", ecdh);
 
         Options ecdsaOpts = new Options();
@@ -163,7 +167,7 @@ public class ECTesterStandalone {
         ecdsaOpts.addOption(Option.builder("t").longOpt("type").desc("Set Signature object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdsaOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDSA [amount] times.").build());
         ecdsaOpts.addOption(Option.builder("f").longOpt("file").hasArg().argName("file").optionalArg(false).desc("Input [file] to sign.").build());
-        ParserOptions ecdsa = new ParserOptions(new DefaultParser(), ecdsaOpts);
+        ParserOptions ecdsa = new ParserOptions(new DefaultParser(), ecdsaOpts, "Perform EC based Signature.");
         actions.put("ecdsa", ecdsa);
 
         Options generateOpts = new Options();
@@ -172,24 +176,28 @@ public class ECTesterStandalone {
         generateOpts.addOption(curveName);
         generateOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Generate [amount] of EC keys.").build());
         generateOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPairGenerator object [type].").build());
-        ParserOptions generate = new ParserOptions(new DefaultParser(), generateOpts);
+        ParserOptions generate = new ParserOptions(new DefaultParser(), generateOpts, "Generate EC keypairs.");
         actions.put("generate", generate);
 
         Options exportOpts = new Options();
         exportOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPair object [type].").build());
         exportOpts.addOption(bits);
-        ParserOptions export = new ParserOptions(new DefaultParser(), exportOpts);
+        ParserOptions export = new ParserOptions(new DefaultParser(), exportOpts, "Export default curve parameters.");
         actions.put("export", export);
 
         Options listDataOpts = new Options();
         List<Argument> listDataArgs = new LinkedList<>();
         listDataArgs.add(new Argument("what", "what to list.", false));
-        ParserOptions listData = new ParserOptions(new TreeParser(Collections.emptyMap(), false, listDataArgs), listDataOpts);
+        ParserOptions listData = new ParserOptions(new TreeParser(Collections.emptyMap(), false, listDataArgs), listDataOpts, "List/show contained EC domain parameters/keys.");
         actions.put("list-data", listData);
 
         Options listLibsOpts = new Options();
-        ParserOptions listLibs = new ParserOptions(new DefaultParser(), listLibsOpts);
+        ParserOptions listLibs = new ParserOptions(new DefaultParser(), listLibsOpts, "List supported libraries.");
         actions.put("list-libs", listLibs);
+
+        Options listSuitesOpts = new Options();
+        ParserOptions listSuites = new ParserOptions(new DefaultParser(), listSuitesOpts, "List supported test suites.");
+        actions.put("list-suites", listSuites);
 
         List<Argument> baseArgs = new LinkedList<>();
         baseArgs.add(new Argument("lib", "What library to use.", false));
@@ -232,10 +240,24 @@ public class ECTesterStandalone {
     /**
      *
      */
+    private void listSuites() {
+        StandaloneTestSuite[] suites = new StandaloneTestSuite[]{new StandaloneDefaultSuite(null, null, null)};
+        for (StandaloneTestSuite suite : suites) {
+            System.out.println(" - " + suite.getName());
+            for (String line : suite.getDescription()) {
+                System.out.println("\t" + line);
+            }
+        }
+    }
+
+    /**
+     *
+     */
     private void ecdh() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
         ProviderECLibrary lib = cfg.selected;
 
         String algo = cli.getOptionValue("ecdh.type", "ECDH");
+        String keyAlgo = cli.getOptionValue("ecdh.key-type", "AES");
         KeyAgreementIdent kaIdent = lib.getKAs().stream()
                 .filter((ident) -> ident.contains(algo))
                 .findFirst()
@@ -295,7 +317,14 @@ public class ECTesterStandalone {
                 }
                 ka.doPhase(pubkey, true);
                 elapsed += System.nanoTime();
-                byte[] result = ka.generateSecret();
+                SecretKey derived;
+                byte[] result;
+                if (kaIdent.requiresKeyAlgo()) {
+                    derived = ka.generateSecret(keyAlgo);
+                    result = derived.getEncoded();
+                } else {
+                    result = ka.generateSecret();
+                }
                 ka = kaIdent.getInstance(lib.getProvider());
 
                 String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW(), pubkey.getParams()), false);

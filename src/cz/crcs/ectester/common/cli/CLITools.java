@@ -37,7 +37,8 @@ public class CLITools {
             }
             tp.getParsers().forEach((key, value) -> {
                 pw.println();
-                help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, String.format("%" + depth + "s" + key + ":", " "));
+                String description = value.getDescription() == null ? "" : "    | " + value.getDescription() + " |";
+                help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, String.format("%" + depth + "s" + key + ":" + description, " "));
                 CLITools.help(help, pw, value.getParser(), value.getOptions(), depth + 1);
             });
         }

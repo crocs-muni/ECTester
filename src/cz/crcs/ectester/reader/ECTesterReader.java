@@ -102,6 +102,11 @@ public class ECTesterReader {
                 return;
             }
 
+            if (cli.hasOption("list-suites")) {
+                listSuites();
+                return;
+            }
+
             //init CardManager
             cardManager = new CardMngr(cfg.verbose, cfg.simulate);
 
@@ -250,6 +255,7 @@ public class ECTesterReader {
         actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. [test_suite]:\n- default:\n- compression:\n- invalid:\n- twist:\n- degenerate:\n- cofactor:\n- wrong:\n- composite:\n- test-vectors:\n- edge-cases:").hasArg().argName("test_suite").optionalArg(true).build());
         actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do EC KeyAgreement (ECDH...), [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
+        actions.addOption(Option.builder("ls").longOpt("list-suites").desc("List supported test suites.").build());
 
         opts.addOptionGroup(actions);
 
@@ -297,6 +303,26 @@ public class ECTesterReader {
 
         CommandLineParser parser = new DefaultParser();
         return parser.parse(opts, args);
+    }
+
+    private void listSuites() {
+        CardTestSuite[] suites = new CardTestSuite[]{
+                new CardDefaultSuite(null, null, null),
+                new CardTestVectorSuite(null, null, null),
+                new CardCompressionSuite(null, null, null),
+                new CardWrongCurvesSuite(null, null, null),
+                new CardDegenerateCurvesSuite(null, null, null),
+                new CardCofactorSuite(null, null, null),
+                new CardCompositeCurvesSuite(null, null, null),
+                new CardInvalidCurvesSuite(null, null, null),
+                new CardEdgeCasesSuite(null, null, null),
+                new CardTwistTestSuite(null, null, null)};
+        for (CardTestSuite suite : suites) {
+            System.out.println(" - " + suite.getName());
+            for (String line : suite.getDescription()) {
+                System.out.println("\t" + line);
+            }
+        }
     }
 
     /**

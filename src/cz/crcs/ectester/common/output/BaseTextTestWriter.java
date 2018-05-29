@@ -27,7 +27,7 @@ public abstract class BaseTextTestWriter implements TestWriter {
     @Override
     public void begin(TestSuite suite) {
         output.println("═══ Running test suite: " + suite.getName() + " ═══");
-        for (String d : suite.getDescription().split("\n")) {
+        for (String d : suite.getDescription()) {
             output.println("═══ " + d);
         }
         DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");

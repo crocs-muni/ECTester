@@ -29,7 +29,7 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
         testSuite = new LinkedHashMap<>();
         tests = new LinkedList<>();
         testSuite.put("name", suite.getName());
-        testSuite.put("desc", suite.getDescription());
+        testSuite.put("desc", suite.getTextDescription());
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
         Date date = new Date();

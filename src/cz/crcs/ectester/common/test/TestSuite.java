@@ -69,8 +69,16 @@ public abstract class TestSuite {
         return name;
     }
 
-    public String getDescription() {
+    public String[] getDescription() {
+        return description;
+    }
+
+    public String getTextDescription() {
         return String.join(System.lineSeparator(), description);
+    }
+
+    public String toString() {
+        return null;
     }
 
 }
