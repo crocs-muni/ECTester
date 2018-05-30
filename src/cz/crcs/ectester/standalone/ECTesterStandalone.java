@@ -213,7 +213,7 @@ public class ECTesterStandalone {
      *
      */
     private void listLibraries() {
-        for (ECLibrary lib : libs) {
+        for (ProviderECLibrary lib : libs) {
             if (lib.isInitialized() && (cfg.selected == null || lib == cfg.selected)) {
                 System.out.println("\t- " + lib.name());
                 Set<KeyPairGeneratorIdent> kpgs = lib.getKPGs();
@@ -233,6 +233,7 @@ public class ECTesterStandalone {
                     System.out.println("\t\t- Curves: " + String.join(", ", curves));
                 }
                 System.out.println();
+                System.out.println(lib.getProvider().entrySet());
             }
         }
     }
@@ -562,22 +563,24 @@ public class ECTesterStandalone {
                 }
             }
 
-            String libraryName = cli.getArg(-1);
-            if (libraryName != null) {
-                List<ProviderECLibrary> matchedLibs = new LinkedList<>();
-                for (ProviderECLibrary lib : libs) {
-                    if (lib.isInitialized() && lib.name().toLowerCase().contains(libraryName.toLowerCase())) {
-                        matchedLibs.add(lib);
+            if (!cli.isNext("list-data") && !cli.isNext("list-suites")) {
+                String libraryName = cli.getArg(-1);
+                if (libraryName != null) {
+                    List<ProviderECLibrary> matchedLibs = new LinkedList<>();
+                    for (ProviderECLibrary lib : libs) {
+                        if (lib.isInitialized() && lib.name().toLowerCase().contains(libraryName.toLowerCase())) {
+                            matchedLibs.add(lib);
+                        }
                     }
-                }
-                if (matchedLibs.size() == 0) {
-                    System.err.println("No library " + libraryName + " found.");
-                    return false;
-                } else if (matchedLibs.size() > 1) {
-                    System.err.println("Multiple matching libraries found: " + String.join(",", matchedLibs.stream().map(ECLibrary::name).collect(Collectors.toList())));
-                    return false;
-                } else {
-                    selected = matchedLibs.get(0);
+                    if (matchedLibs.size() == 0) {
+                        System.err.println("No library " + libraryName + " found.");
+                        return false;
+                    } else if (matchedLibs.size() > 1) {
+                        System.err.println("Multiple matching libraries found: " + String.join(",", matchedLibs.stream().map(ECLibrary::name).collect(Collectors.toList())));
+                        return false;
+                    } else {
+                        selected = matchedLibs.get(0);
+                    }
                 }
             }
 

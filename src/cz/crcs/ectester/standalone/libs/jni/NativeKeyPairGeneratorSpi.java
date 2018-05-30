@@ -56,7 +56,7 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
     public static class TomCrypt extends NativeKeyPairGeneratorSpi {
 
         public TomCrypt() {
-            initialize(256, new SecureRandom());
+            initialize(256, new SecureRandom());//TODO: maybe remove this default init?
         }
 
         @Override
@@ -77,7 +77,7 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
 
         public Botan(String type) {
             this.type = type;
-            initialize(256, new SecureRandom());
+            initialize(256, new SecureRandom());//TODO: maybe remove this default init?
         }
 
         @Override
@@ -126,7 +126,7 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
 
         public Cryptopp(String type) {
             this.type = type;
-            initialize(256, new SecureRandom());
+            initialize(256, new SecureRandom());//TODO: maybe remove this default init?
         }
 
         @Override
@@ -142,7 +142,7 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
         native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
     }
 
-    public static class CryptoppECDH extends Botan {
+    public static class CryptoppECDH extends Cryptopp {
 
         public CryptoppECDH() {
             super("ECDH");

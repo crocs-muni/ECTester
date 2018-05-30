@@ -25,7 +25,7 @@
 
         <zip destfile="${store.jar}" compress="true" level="8">
             <zipfileset src="${temp.file}"
-                        excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA"/>
+                        excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA, ${dist.archive.excludes}"/>
         </zip>
 
         <delete file="${temp.file}"/>
