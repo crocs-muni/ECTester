@@ -995,6 +995,7 @@ public class EC_Consts {
     public static final short TRANSFORMATION_INFINITY = (short) 0x80;
     public static final short TRANSFORMATION_COMPRESS = (short) 0x0100;
     public static final short TRANSFORMATION_COMPRESS_HYBRID = (short) 0x0200;
+    public static final short TRANSFORMATION_04_MASK = (short) 0x0400;
 
     // toX962 FORM types
     public static final byte X962_UNCOMPRESSED = (byte) 0x00;
@@ -1333,7 +1334,7 @@ public class EC_Consts {
         }
 
         short transformationMask = TRANSFORMATION_FIXED;
-        while (transformationMask <= TRANSFORMATION_COMPRESS) {
+        while (transformationMask <= TRANSFORMATION_04_MASK) {
             short transformationPart = (short) (transformationMask & transformation);
             switch (transformationPart) {
                 case (short) 0:
@@ -1407,6 +1408,9 @@ public class EC_Consts {
                     } else {
                         buffer[offset] += 4;
                     }
+                    break;
+                case TRANSFORMATION_04_MASK:
+                    buffer[offset] = 4;
                     break;
                 default:
                     ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);

@@ -7,7 +7,7 @@ import static cz.crcs.ectester.common.test.Result.Value;
  *
  * @author Jan Jancar johny@neuromancer.sk
  */
-public abstract class Test implements Testable {
+public abstract class Test implements Testable, Cloneable {
     protected boolean hasRun;
     protected boolean hasStarted;
     protected Result result;
@@ -56,6 +56,11 @@ public abstract class Test implements Testable {
     }
 
     public abstract String getDescription();
+
+    @Override
+    public Test clone() throws CloneNotSupportedException {
+        return (Test) super.clone();
+    }
 
     @Override
     public void run() {

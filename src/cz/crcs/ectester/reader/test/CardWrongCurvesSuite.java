@@ -107,8 +107,31 @@ public class CardWrongCurvesSuite extends CardTestSuite {
             EC_Params compositeData = new EC_Params(EC_Consts.PARAMETER_FP, new byte[][]{compositeBytes});
             Test composite = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, compositeData.getParams(), compositeData.flatten()), "Set p = product of two primes.", "ECDH with p = q * s.");
 
-            Test wrong = CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted prime parameter.", prime0, prime1, primePower, composite);
-            doTest(CompoundTest.all(ExpectedValue.SUCCESS, "Tests of " + keyLength + "b " + CardUtil.getKeyTypeString(KeyPair.ALG_EC_FP), setup, wrong));
+            Test wrongPrime = CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted prime parameter.", prime0, prime1, primePower, composite);
+
+            Test resetSetup = CompoundTest.all(ExpectedValue.SUCCESS, "Reset keypair.", set.clone());
+
+            Test zeroG = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_G, EC_Consts.TRANSFORMATION_INFINITY), "Set G = inifnity.", "ECDH with G = infinity.");
+            Test randomG = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_G, (short) (EC_Consts.TRANSFORMATION_FULLRANDOM | EC_Consts.TRANSFORMATION_04_MASK)), "Set G = random non-point/point-like.", "ECDH with non-point G.");
+            Test wrongG = CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted G parameter.", zeroG, randomG);
+
+            byte[] originalR = new byte[keyLength];
+            EC_Consts.getCurveParameter(curve, EC_Consts.PARAMETER_R, originalR, (short) 0);
+            BigInteger originalBigR = new BigInteger(1, originalR);
+            BigInteger nextPrimeR = originalBigR.nextProbablePrime();
+            byte[] nextRBytes = ECUtil.toByteArray(nextPrimeR, keyLength);
+            EC_Params nextRData = new EC_Params(EC_Consts.PARAMETER_R, new byte[][]{nextRBytes});
+            Test primeWrongR = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, nextRData.getParams(), nextRData.flatten()), "Set R = some prime (but [r]G != infinity).", "ECDH with wrong R, prime.");
+            byte[] nonprimeRBytes = nextRBytes.clone();
+            nonprimeRBytes[0] ^= 1;
+            EC_Params nonprimeWrongRData = new EC_Params(EC_Consts.PARAMETER_R, new byte[][]{nonprimeRBytes});
+            Test nonprimeWrongR = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, nonprimeWrongRData.getParams(), nonprimeWrongRData.flatten()), "Set R = some composite (but [r]G != infinity).", "ECDH with wrong R, composite.");
+
+            Test wrongR = CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted R parameter.", primeWrongR, nonprimeWrongR);
+
+
+
+            doTest(CompoundTest.all(ExpectedValue.SUCCESS, "Tests of " + keyLength + "b " + CardUtil.getKeyTypeString(KeyPair.ALG_EC_FP), setup, wrongPrime, resetSetup, wrongG, resetSetup.clone(), wrongR, resetSetup.clone()));
         }
 
         /*

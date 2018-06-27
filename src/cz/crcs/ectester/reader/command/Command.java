@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public abstract class Command {
+public abstract class Command implements Cloneable {
     CommandAPDU cmd;
     CardMngr cardManager;
 
@@ -48,6 +48,11 @@ public abstract class Command {
     }
 
     public abstract String getDescription();
+
+    @Override
+    protected Command clone() throws CloneNotSupportedException {
+        return (Command) super.clone();
+    }
 
 
     /**
@@ -442,6 +447,7 @@ public abstract class Command {
 
         @Override
         public String getDescription() {
+            String stringParams = CardUtil.getParams(params);
             String transform = CardUtil.getTransformation(transformation);
 
             String pair;
@@ -450,7 +456,7 @@ public abstract class Command {
             } else {
                 pair = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
             }
-            return String.format("Transform params of %s, %s", pair, transform);
+            return String.format("Transform params %s of %s, %s", stringParams, pair, transform);
         }
     }
 

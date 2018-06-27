@@ -10,7 +10,7 @@ import java.util.function.Function;
  *
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class CompoundTest extends Test {
+public class CompoundTest extends Test implements Cloneable {
     private Function<Test[], Result> resultCallback;
     private Consumer<Test[]> runCallback;
     private Test[] tests;
@@ -205,5 +205,10 @@ public class CompoundTest extends Test {
     @Override
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public CompoundTest clone() throws CloneNotSupportedException {
+        return (CompoundTest) super.clone();
     }
 }

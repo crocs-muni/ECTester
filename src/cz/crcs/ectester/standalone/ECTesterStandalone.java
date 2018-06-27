@@ -233,7 +233,6 @@ public class ECTesterStandalone {
                     System.out.println("\t\t- Curves: " + String.join(", ", curves));
                 }
                 System.out.println();
-                System.out.println(lib.getProvider().entrySet());
             }
         }
     }

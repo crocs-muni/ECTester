@@ -6,6 +6,9 @@ import javacard.framework.ISO7816;
 import javacard.security.CryptoException;
 import javacard.security.KeyPair;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * @author Petr Svenda petr@svenda.com
  * @author Jan Jancar johny@neuromancer.sk
@@ -183,32 +186,106 @@ public class CardUtil {
         }
     }
 
+    public static String getParams(short params) {
+        if (params == 0) {
+            return "";
+        }
+        List<String> ps = new LinkedList<>();
+        short paramMask = EC_Consts.PARAMETER_FP;
+        while (paramMask <= EC_Consts.PARAMETER_S) {
+            short paramValue = (short) (paramMask & params);
+            if (paramValue != 0) {
+                switch (paramValue) {
+                    case EC_Consts.PARAMETER_FP:
+                        ps.add("P");
+                        break;
+                    case EC_Consts.PARAMETER_F2M:
+                        ps.add("2^M");
+                        break;
+                    case EC_Consts.PARAMETER_A:
+                        ps.add("A");
+                        break;
+                    case EC_Consts.PARAMETER_B:
+                        ps.add("B");
+                        break;
+                    case EC_Consts.PARAMETER_G:
+                        ps.add("G");
+                        break;
+                    case EC_Consts.PARAMETER_R:
+                        ps.add("R");
+                        break;
+                    case EC_Consts.PARAMETER_K:
+                        ps.add("K");
+                        break;
+                    case EC_Consts.PARAMETER_W:
+                        ps.add("W");
+                        break;
+                    case EC_Consts.PARAMETER_S:
+                        ps.add("S");
+                        break;
+                }
+            }
+            paramMask = (short) (paramMask << 1);
+        }
+
+        if (ps.size() != 0) {
+            return "[" + String.join(",", ps) + "]";
+        } else {
+            return "unknown";
+        }
+    }
+
     public static String getTransformation(short transformationType) {
-        switch (transformationType) {
-            case EC_Consts.TRANSFORMATION_NONE:
-                return "NONE";
-            case EC_Consts.TRANSFORMATION_FIXED:
-                return "FIXED";
-            case EC_Consts.TRANSFORMATION_ONE:
-                return "ONE";
-            case EC_Consts.TRANSFORMATION_ZERO:
-                return "ZERO";
-            case EC_Consts.TRANSFORMATION_ONEBYTERANDOM:
-                return "ONE_BYTE_RANDOM";
-            case EC_Consts.TRANSFORMATION_FULLRANDOM:
-                return "FULL_RANDOM";
-            case EC_Consts.TRANSFORMATION_INCREMENT:
-                return "INCREMENT";
-            case EC_Consts.TRANSFORMATION_INFINITY:
-                return "INFINITY";
-            case EC_Consts.TRANSFORMATION_COMPRESS:
-                return "COMPRESSED";
-            case EC_Consts.TRANSFORMATION_COMPRESS_HYBRID:
-                return "HYBRID";
-            case EC_Consts.TRANSFORMATION_MAX:
-                return "MAX";
-            default:
-                return "unknown";
+        if (transformationType == 0) {
+            return "NONE";
+        }
+        List<String> names = new LinkedList<>();
+        short transformationMask = 1;
+        while (transformationMask <= EC_Consts.TRANSFORMATION_04_MASK) {
+            short transformationValue = (short) (transformationMask & transformationType);
+            if (transformationValue != 0) {
+                switch (transformationValue) {
+                    case EC_Consts.TRANSFORMATION_FIXED:
+                        names.add("FIXED");
+                        break;
+                    case EC_Consts.TRANSFORMATION_ONE:
+                        names.add("ONE");
+                        break;
+                    case EC_Consts.TRANSFORMATION_ZERO:
+                        names.add("ZERO");
+                        break;
+                    case EC_Consts.TRANSFORMATION_ONEBYTERANDOM:
+                        names.add("ONE_BYTE_RANDOM");
+                        break;
+                    case EC_Consts.TRANSFORMATION_FULLRANDOM:
+                        names.add("FULL_RANDOM");
+                        break;
+                    case EC_Consts.TRANSFORMATION_INCREMENT:
+                        names.add("INCREMENT");
+                        break;
+                    case EC_Consts.TRANSFORMATION_INFINITY:
+                        names.add("INFINITY");
+                        break;
+                    case EC_Consts.TRANSFORMATION_COMPRESS:
+                        names.add("COMPRESSED");
+                        break;
+                    case EC_Consts.TRANSFORMATION_COMPRESS_HYBRID:
+                        names.add("HYBRID");
+                        break;
+                    case EC_Consts.TRANSFORMATION_04_MASK:
+                        names.add("MASK(O4)");
+                        break;
+                    case EC_Consts.TRANSFORMATION_MAX:
+                        names.add("MAX");
+                        break;
+                }
+            }
+            transformationMask = (short) ((transformationMask) << 1);
+        }
+        if (names.size() != 0) {
+            return String.join(" + ", names);
+        } else {
+            return "unknown";
         }
     }
 
@@ -325,6 +402,8 @@ public class CardUtil {
             what = "privkey";
         } else if (params == EC_Consts.PARAMETERS_KEYPAIR) {
             what = "keypair";
+        } else {
+            what = getParams(params);
         }
         return what;
     }

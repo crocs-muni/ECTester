@@ -3,7 +3,7 @@ package cz.crcs.ectester.common.test;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public abstract class BaseTestable implements Testable {
+public abstract class BaseTestable implements Testable, Cloneable {
     protected boolean hasRun;
     protected boolean ok;
     protected boolean error;
@@ -35,5 +35,10 @@ public abstract class BaseTestable implements Testable {
         ok = false;
         error = false;
         errorCause = null;
+    }
+
+    @Override
+    protected BaseTestable clone() throws CloneNotSupportedException {
+        return (BaseTestable) super.clone();
     }
 }
