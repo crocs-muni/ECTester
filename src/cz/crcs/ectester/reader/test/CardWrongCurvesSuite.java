@@ -130,7 +130,6 @@ public class CardWrongCurvesSuite extends CardTestSuite {
             Test wrongR = CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted R parameter.", primeWrongR, nonprimeWrongR);
 
 
-
             doTest(CompoundTest.all(ExpectedValue.SUCCESS, "Tests of " + keyLength + "b " + CardUtil.getKeyTypeString(KeyPair.ALG_EC_FP), setup, wrongPrime, resetSetup, wrongG, resetSetup.clone(), wrongR, resetSetup.clone()));
         }
 

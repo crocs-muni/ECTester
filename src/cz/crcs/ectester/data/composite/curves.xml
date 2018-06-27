@@ -2,45 +2,87 @@
 <curves xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="../schema.xsd">
     <curve>
-        <id>composite128</id>
+        <id>whole/composite128</id>
         <bits>128</bits>
         <field>prime</field>
         <file>composite128.csv</file>
     </curve>
     <curve>
-        <id>composite160</id>
+        <id>small/composite128</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>composite128_small.csv</file>
+    </curve>
+    <curve>
+        <id>whole/composite160</id>
         <bits>160</bits>
         <field>prime</field>
         <file>composite160.csv</file>
     </curve>
     <curve>
-        <id>composite192</id>
+        <id>small/composite160</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>composite160_small.csv</file>
+    </curve>
+    <curve>
+        <id>whole/composite192</id>
         <bits>192</bits>
         <field>prime</field>
         <file>composite192.csv</file>
     </curve>
     <curve>
-        <id>composite224</id>
+        <id>small/composite192</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>composite192_small.csv</file>
+    </curve>
+    <curve>
+        <id>whole/composite224</id>
         <bits>224</bits>
         <field>prime</field>
         <file>composite224.csv</file>
     </curve>
     <curve>
-        <id>composite256</id>
+        <id>small/composite224</id>
+        <bits>224</bits>
+        <field>prime</field>
+        <file>composite224_small.csv</file>
+    </curve>
+    <curve>
+        <id>whole/composite256</id>
         <bits>256</bits>
         <field>prime</field>
         <file>composite256.csv</file>
     </curve>
     <curve>
-        <id>composite384</id>
+        <id>small/composite256</id>
+        <bits>256</bits>
+        <field>prime</field>
+        <file>composite256_small.csv</file>
+    </curve>
+    <curve>
+        <id>whole/composite384</id>
         <bits>384</bits>
         <field>prime</field>
         <file>composite384.csv</file>
     </curve>
     <curve>
-        <id>composite521</id>
+        <id>small/composite384</id>
+        <bits>384</bits>
+        <field>prime</field>
+        <file>composite384_small.csv</file>
+    </curve>
+    <curve>
+        <id>whole/composite521</id>
         <bits>521</bits>
         <field>prime</field>
         <file>composite521.csv</file>
+    </curve>
+    <curve>
+        <id>small/composite521</id>
+        <bits>521</bits>
+        <field>prime</field>
+        <file>composite521_small.csv</file>
     </curve>
 </curves>
