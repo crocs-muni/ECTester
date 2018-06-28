@@ -111,8 +111,8 @@ public class CardWrongCurvesSuite extends CardTestSuite {
 
             Test resetSetup = CompoundTest.all(ExpectedValue.SUCCESS, "Reset keypair.", set.clone());
 
-            Test zeroG = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_G, EC_Consts.TRANSFORMATION_INFINITY), "Set G = inifnity.", "ECDH with G = infinity.");
             Test randomG = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_G, (short) (EC_Consts.TRANSFORMATION_FULLRANDOM | EC_Consts.TRANSFORMATION_04_MASK)), "Set G = random non-point/point-like.", "ECDH with non-point G.");
+            Test zeroG = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_G, EC_Consts.TRANSFORMATION_INFINITY), "Set G = inifnity.", "ECDH with G = infinity.");
             Test wrongG = CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted G parameter.", zeroG, randomG);
 
             byte[] originalR = new byte[keyLength];

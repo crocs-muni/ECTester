@@ -6,83 +6,98 @@
         <bits>128</bits>
         <field>prime</field>
         <file>composite128.csv</file>
-    </curve>
-    <curve>
-        <id>small/composite128</id>
-        <bits>128</bits>
-        <field>prime</field>
-        <file>composite128_small.csv</file>
+        <desc>r = order = 0x03 * 0x05 * 0x3b * 0x3a107e02cd073c8e24bf55730f1733</desc>
     </curve>
     <curve>
         <id>whole/composite160</id>
         <bits>160</bits>
         <field>prime</field>
         <file>composite160.csv</file>
-    </curve>
-    <curve>
-        <id>small/composite160</id>
-        <bits>160</bits>
-        <field>prime</field>
-        <file>composite160_small.csv</file>
+        <desc>r = order = 0x02 * 0x03 * 0x6b * 0x1ee99b75143833bbc11d409601c25f9566a001</desc>
     </curve>
     <curve>
         <id>whole/composite192</id>
         <bits>192</bits>
         <field>prime</field>
         <file>composite192.csv</file>
-    </curve>
-    <curve>
-        <id>small/composite192</id>
-        <bits>192</bits>
-        <field>prime</field>
-        <file>composite192_small.csv</file>
+        <desc>r = order = 0x02 * 0x03 * 0x05 * 0x13 * 0x19bc3c00e2a7ad9e40d12e5d9e29a2b5ce80b3a3e84295</desc>
     </curve>
     <curve>
         <id>whole/composite224</id>
         <bits>224</bits>
         <field>prime</field>
         <file>composite224.csv</file>
-    </curve>
-    <curve>
-        <id>small/composite224</id>
-        <bits>224</bits>
-        <field>prime</field>
-        <file>composite224_small.csv</file>
+        <desc>r = order = 0x02 * 0x03 * 0x1d * 0x1538e6a6dc906d724a7bf51c77bce9d46865bd92d8bca01f887405</desc>
     </curve>
     <curve>
         <id>whole/composite256</id>
         <bits>256</bits>
         <field>prime</field>
         <file>composite256.csv</file>
-    </curve>
-    <curve>
-        <id>small/composite256</id>
-        <bits>256</bits>
-        <field>prime</field>
-        <file>composite256_small.csv</file>
+        <desc>r = order = 0x02 * 0x05 * 0x11 * 0x1382cadcdd2b90b90b81eda82433bf574b5d8f5654dcc62341c7e967f2e811</desc>
     </curve>
     <curve>
         <id>whole/composite384</id>
         <bits>384</bits>
         <field>prime</field>
         <file>composite384.csv</file>
-    </curve>
-    <curve>
-        <id>small/composite384</id>
-        <bits>384</bits>
-        <field>prime</field>
-        <file>composite384_small.csv</file>
+        <desc>r = order = 0x05 * 0x0b * 0x3d * 0xb16aa7dc50145337cf1b2f38018ccb5cf44c22a2f7d7c22bbe5c572d2cb9a04cb1081357c6a1c97cc39ab62596867</desc>
     </curve>
     <curve>
         <id>whole/composite521</id>
         <bits>521</bits>
         <field>prime</field>
         <file>composite521.csv</file>
+        <desc>r = order = 0x02 * 0x05 * 0x1f * 0x4a5aac4fac3ea253b66c3e650f5173b30467f28b8e841d37ce69bb0831a5939ad3dd082b750577ec4592d4d58916c87a9b732d8ddae435c26f8f779d2467f50f</desc>
+    </curve>
+
+    <curve>
+        <id>small/composite128</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>composite128_small.csv</file>
+        <desc>r = 0x03</desc>
+    </curve>
+    <curve>
+        <id>small/composite160</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>composite160_small.csv</file>
+        <desc>r = 0x03</desc>
+    </curve>
+    <curve>
+        <id>small/composite192</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>composite192_small.csv</file>
+        <desc>r = 0x03</desc>
+    </curve>
+    <curve>
+        <id>small/composite224</id>
+        <bits>224</bits>
+        <field>prime</field>
+        <file>composite224_small.csv</file>
+        <desc>r = 0x03</desc>
+    </curve>
+    <curve>
+        <id>small/composite256</id>
+        <bits>256</bits>
+        <field>prime</field>
+        <file>composite256_small.csv</file>
+        <desc>r = 0x05</desc>
+    </curve>
+    <curve>
+        <id>small/composite384</id>
+        <bits>384</bits>
+        <field>prime</field>
+        <file>composite384_small.csv</file>
+        <desc>r = 0x05</desc>
     </curve>
     <curve>
         <id>small/composite521</id>
         <bits>521</bits>
         <field>prime</field>
         <file>composite521_small.csv</file>
+        <desc>r = 0x05</desc>
     </curve>
 </curves>

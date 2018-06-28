@@ -65,6 +65,10 @@ This test suite also does some additional tests with corrupting the field parame
    - p = 1
    - p = q^2; q prime
    - p = q * s; q and s prime
+   - G = infinity
+   - G = random point not on curve
+   - r = some prime (and \[r\]G != infinity)
+   - r = some composite number (and \[r\]G != infinity)
  - F2m:
    - e1 = e2 = e3 = 0
    - m < e1 < e2 < e3
