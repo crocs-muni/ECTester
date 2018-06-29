@@ -327,6 +327,9 @@ public class EC_Store {
             curveKeys.add(item);
             curves.putIfAbsent(curve, curveKeys);
         }
+        for (List<T> keyList : curves.values()) {
+            Collections.sort(keyList);
+        }
         List<Map.Entry<EC_Curve, List<T>>> curveList = new LinkedList<>();
         curveList.addAll(curves.entrySet());
         Comparator<Map.Entry<EC_Curve, List<T>>> c = Comparator.comparing(o -> o.getKey().getBits());
@@ -349,6 +352,9 @@ public class EC_Store {
             List<T> group = groups.getOrDefault(prefix, new LinkedList<>());
             group.add(item);
             groups.putIfAbsent(prefix, group);
+        }
+        for (List<T> itemList : groups.values()) {
+            Collections.sort(itemList);
         }
         List<Map.Entry<String, List<T>>> result = new LinkedList<>();
         result.addAll(groups.entrySet());
