@@ -37,6 +37,11 @@
         <directory>x962</directory>
         <desc>ANSI X9.62 example curves.</desc>
     </category>
+    <category>
+        <name>Barreto-Naehrig</name>
+        <directory>bn</directory>
+        <desc>Barreto-Naehrig curves from: https://eprint.iacr.org/2010/429.pdf</desc>
+    </category>
 
     <!-- Custom curves -->
     <category>
