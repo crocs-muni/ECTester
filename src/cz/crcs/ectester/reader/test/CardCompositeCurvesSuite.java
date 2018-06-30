@@ -3,7 +3,6 @@ package cz.crcs.ectester.reader.test;
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.ec.EC_Curve;
-import cz.crcs.ectester.common.ec.EC_KAResult;
 import cz.crcs.ectester.common.ec.EC_Key;
 import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.CompoundTest;
@@ -71,6 +70,11 @@ public class CardCompositeCurvesSuite extends CardTestSuite {
          */
         List<EC_Curve> pqCurves = groupList.stream().filter((e) -> e.getKey().equals("pq")).findFirst().get().getValue();
         testGroup(pqCurves, null, ExpectedValue.ANY, "", "");
+
+        /* Also test rg0 curves.
+         */
+        List<EC_Curve> rg0Curves = groupList.stream().filter((e) -> e.getKey().equals("rg0")).findFirst().get().getValue();
+        testGroup(rg0Curves, null, ExpectedValue.ANY, "", "");
     }
 
     private void testGroup(List<EC_Curve> curves, String testName, ExpectedValue dhValue, String ok, String nok) throws Exception {

@@ -124,6 +124,14 @@
     </curve>
 
     <curve>
+        <id>rg0/composite128</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>composite128_rg0.csv</file>
+        <desc>|G| divides r(so [r]G = infinity), but r != |G| = 0x03f76917eb</desc>
+    </curve>
+
+    <curve>
         <id>pq/composite160</id>
         <bits>160</bits>
         <field>prime</field>
@@ -146,6 +154,14 @@
     </curve>
 
     <curve>
+        <id>rg0/composite160</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>composite160_rg0.csv</file>
+        <desc>|G| divides r(so [r]G = infinity), but r != |G| = 0x0af2407f270b81f45f</desc>
+    </curve>
+
+    <curve>
         <id>pq/composite192</id>
         <bits>192</bits>
         <field>prime</field>
@@ -165,6 +181,14 @@
         <field>prime</field>
         <file>composite192_pq2.csv</file>
         <desc>r = 0x35efd8bad55038e6bd22db8b805</desc>
+    </curve>
+
+    <curve>
+        <id>rg0/composite192</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>composite192_rg0.csv</file>
+        <desc>|G| divides r(so [r]G = infinity), but r != |G| = 0x302b72431ff070e7e06799</desc>
     </curve>
     
     <curve>
@@ -190,6 +214,14 @@
     </curve>
 
     <curve>
+        <id>rg0/composite224</id>
+        <bits>224</bits>
+        <field>prime</field>
+        <file>composite224_rg0.csv</file>
+        <desc>|G| divides r(so [r]G = infinity), but r != |G| = 0x1824ec370e405bfb5024db</desc>
+    </curve>
+
+    <curve>
         <id>pq/composite256</id>
         <bits>256</bits>
         <field>prime</field>
@@ -209,5 +241,13 @@
         <field>prime</field>
         <file>composite256_pq2.csv</file>
         <desc>r = 0x220d23234534b240aac0efa70a3bc44e046c2431ad5a32d27</desc>
+    </curve>
+
+    <curve>
+        <id>rg0/composite256</id>
+        <bits>256</bits>
+        <field>prime</field>
+        <file>composite256_rg0.csv</file>
+        <desc>|G| divides r(so [r]G = infinity), but r != |G| = 0x743bc7ea193d40db</desc>
     </curve>
 </curves>
