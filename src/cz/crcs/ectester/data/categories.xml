@@ -72,12 +72,12 @@
     <category>
         <name>composite</name>
         <directory>composite</directory>
-        <desc>Composite order curves, with points of very small order pre-generated.</desc>
+        <desc>Composite order curves, with points of very small order pre-generated. Also curves with order of a product of two large primes.</desc>
     </category>
     <category>
         <name>wrong</name>
         <directory>wrong</directory>
-        <desc>Wrong field curves. These should definitely give an error when used. Since the "prime" used for the field are not prime, and the field polynomials are also not irreducible. Simply put these parameters don't specify a valid elliptic curve.</desc>
+        <desc>Wrong field curves. These should definitely give an error when used. Since the "prime" used for the field is not prime, and the field polynomials are also not irreducible. Simply put these parameters don't specify a valid elliptic curve.</desc>
     </category>
     <category>
         <name>test</name>

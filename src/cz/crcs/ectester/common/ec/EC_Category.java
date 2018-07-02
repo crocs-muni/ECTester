@@ -1,5 +1,7 @@
 package cz.crcs.ectester.common.ec;
 
+import cz.crcs.ectester.common.cli.Colors;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -72,13 +74,13 @@ public class EC_Category {
     @Override
     public String toString() {
         StringBuilder out = new StringBuilder();
-        out.append("\t- ").append(name).append((desc == null || desc.equals("")) ? "" : ": " + desc);
+        out.append("\t- ").append(Colors.bold(name)).append((desc == null || desc.equals("")) ? "" : ": " + desc);
         out.append(System.lineSeparator());
 
         Map<String, EC_Curve> curves = getObjects(EC_Curve.class);
         int size = curves.size();
         if (size > 0) {
-            out.append("\t\tCurves: ");
+            out.append(Colors.bold("\t\tCurves: "));
             for (Map.Entry<String, EC_Curve> curve : curves.entrySet()) {
                 out.append(curve.getKey());
                 size--;
@@ -91,7 +93,7 @@ public class EC_Category {
         Map<String, EC_Key> keys = getObjects(EC_Key.class);
         size = keys.size();
         if (size > 0) {
-            out.append("\t\tKeys: ");
+            out.append(Colors.bold("\t\tKeys: "));
             for (Map.Entry<String, EC_Key> key : keys.entrySet()) {
                 out.append(key.getKey());
                 size--;
@@ -104,7 +106,7 @@ public class EC_Category {
         Map<String, EC_Keypair> keypairs = getObjects(EC_Keypair.class);
         size = keypairs.size();
         if (size > 0) {
-            out.append("\t\tKeypairs: ");
+            out.append(Colors.bold("\t\tKeypairs: "));
             for (Map.Entry<String, EC_Keypair> key : keypairs.entrySet()) {
                 out.append(key.getKey());
                 size--;
@@ -117,7 +119,7 @@ public class EC_Category {
         Map<String, EC_KAResult> results = getObjects(EC_KAResult.class);
         size = results.size();
         if (size > 0) {
-            out.append("\t\tResults: ");
+            out.append(Colors.bold("\t\tResults: "));
             for (Map.Entry<String, EC_KAResult> result : results.entrySet()) {
                 out.append(result.getKey());
                 size--;
