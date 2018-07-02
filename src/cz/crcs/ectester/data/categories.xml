@@ -40,7 +40,12 @@
     <category>
         <name>Barreto-Naehrig</name>
         <directory>bn</directory>
-        <desc>Barreto-Naehrig curves from: https://eprint.iacr.org/2010/429.pdf</desc>
+        <desc>Barreto-Naehrig curves from: A Family of Implementation-Friendly BN Elliptic Curves - https://eprint.iacr.org/2010/429.pdf.</desc>
+    </category>
+    <category>
+        <name>other</name>
+        <directory>other</directory>
+        <desc>An assortment of some other curves.</desc>
     </category>
 
     <!-- Custom curves -->
