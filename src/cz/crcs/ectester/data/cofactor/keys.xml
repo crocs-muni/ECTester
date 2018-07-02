@@ -175,4 +175,35 @@
     </pubkey>
 
     &secg;
+
+    <pubkey>
+        <id>pq/cofactor128/1</id>
+        <inline>0x73ca0050dff0de43cff4a026d8aa4baa,0xebd7490611fe3886fe5a8083d344edd0</inline>
+        <curve>composite/pq/composite128/1</curve>
+        <desc>cofactor order = 0x000000003c1be1d1dd7edf84b8013495</desc>
+    </pubkey>
+    <pubkey>
+        <id>pq/cofactor160/1</id>
+        <inline>0x0818df9ccebf5b3fd422d00393d346b314e48f98,0x75bde540b81b5bf0ab45c86fbff7bb2e7ec833cb</inline>
+        <curve>composite/pq/composite160/1</curve>
+        <desc>cofactor order = 0x00000000000000000d4d7041e1dbf10b42f48c4f</desc>
+    </pubkey>
+    <pubkey>
+        <id>pq/cofactor192/1</id>
+        <inline>0x6366613b66339fa580f390d630ccf9b535437229aa8b61cd,0x2abab8c0e803a3612c7a7fbcb47e06fd8ef42a7a7d8c380f</inline>
+        <curve>composite/pq/composite192/1</curve>
+        <desc>cofactor order = 0x00000000000000000000000000302b72431ff070e7e06799</desc>
+    </pubkey>
+    <pubkey>
+        <id>pq/cofactor224/1</id>
+        <inline>0x97e540c8fc6f9603f25b1689895e5fe738565013675b1bd6c0e16a4b,0x66d0bbe7ee9b0e9e7e1d43b6a47e1d5550c696433c58ee06b94e8615</inline>
+        <curve>composite/pq/composite224/1</curve>
+        <desc>cofactor order = 0x0000000000000000000006a99de2a928e8f227e7a2ed33a555f24ef5</desc>
+    </pubkey>
+    <pubkey>
+        <id>pq/cofactor256/1</id>
+        <inline>0x93d1f4d02d6f0d2ea7b80f7095e70e731bcf66fb8118e7698a16eab45aadcaa4,0x3db7c6ee2d24d142ee0ec56f3ba0a606d099debb66a765e3926a5aa19539a2c3</inline>
+        <curve>composite/pq/composite256/1</curve>
+        <desc>cofactor order = 0x000000000000000220d23234534b240aac0efa70a3bc44e046c2431ad5a32d27</desc>
+    </pubkey>
 </keys>
