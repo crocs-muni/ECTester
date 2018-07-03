@@ -3,40 +3,40 @@
         xsi:noNamespaceSchemaLocation="../schema.xsd">
 
     <curve>
-        <id>cofactor2p128</id>
+        <id>cofactor128p2</id>
         <bits>128</bits>
         <field>prime</field>
-        <file>cofactor2p128.csv</file>
+        <file>cofactor128p2.csv</file>
     </curve>
     <curve>
-        <id>cofactor4p128</id>
+        <id>cofactor128p4</id>
         <bits>128</bits>
         <field>prime</field>
-        <file>cofactor4p128.csv</file>
+        <file>cofactor128p4.csv</file>
     </curve>
     <curve>
-        <id>cofactor8p128</id>
+        <id>cofactor128p8</id>
         <bits>128</bits>
         <field>prime</field>
-        <file>cofactor8p128.csv</file>
+        <file>cofactor128p8.csv</file>
     </curve>
     <curve>
-        <id>cofactor16p128</id>
+        <id>cofactor128p16</id>
         <bits>128</bits>
         <field>prime</field>
-        <file>cofactor16p128.csv</file>
+        <file>cofactor128p16.csv</file>
     </curve>
     <curve>
-        <id>cofactor32p128</id>
+        <id>cofactor128p32</id>
         <bits>128</bits>
         <field>prime</field>
-        <file>cofactor32p128.csv</file>
+        <file>cofactor128p32.csv</file>
     </curve>
     <curve>
-        <id>cofactor64p128</id>
+        <id>cofactor128p64</id>
         <bits>128</bits>
         <field>prime</field>
-        <file>cofactor64p128.csv</file>
+        <file>cofactor128p64.csv</file>
     </curve>
     <curve>
         <id>cofactor128p128</id>
@@ -46,126 +46,126 @@
     </curve>
 
     <curve>
-        <id>cofactor2p160</id>
+        <id>cofactor160p2</id>
         <bits>160</bits>
         <field>prime</field>
-        <file>cofactor2p160.csv</file>
+        <file>cofactor160p2.csv</file>
     </curve>
     <curve>
-        <id>cofactor4p160</id>
+        <id>cofactor160p4</id>
         <bits>160</bits>
         <field>prime</field>
-        <file>cofactor4p160.csv</file>
+        <file>cofactor160p4.csv</file>
     </curve>
     <curve>
-        <id>cofactor8p160</id>
+        <id>cofactor160p8</id>
         <bits>160</bits>
         <field>prime</field>
-        <file>cofactor8p160.csv</file>
+        <file>cofactor160p8.csv</file>
     </curve>
     <curve>
-        <id>cofactor16p160</id>
+        <id>cofactor160p16</id>
         <bits>160</bits>
         <field>prime</field>
-        <file>cofactor16p160.csv</file>
+        <file>cofactor160p16.csv</file>
     </curve>
     <curve>
-        <id>cofactor32p160</id>
+        <id>cofactor160p32</id>
         <bits>160</bits>
         <field>prime</field>
-        <file>cofactor32p160.csv</file>
+        <file>cofactor160p32.csv</file>
     </curve>
     <curve>
-        <id>cofactor64p160</id>
+        <id>cofactor160p64</id>
         <bits>160</bits>
         <field>prime</field>
-        <file>cofactor64p160.csv</file>
+        <file>cofactor160p64.csv</file>
     </curve>
     
     
     <curve>
-        <id>cofactor2t163</id>
+        <id>cofactor163t2</id>
         <bits>163</bits>
         <field>binary</field>
-        <file>cofactor2t163.csv</file>
+        <file>cofactor163t2.csv</file>
     </curve>
     <curve>
-        <id>cofactor4t163</id>
+        <id>cofactor163t4</id>
         <bits>163</bits>
         <field>binary</field>
-        <file>cofactor4t163.csv</file>
+        <file>cofactor163t4.csv</file>
     </curve>
     <curve>
-        <id>cofactor8t163</id>
+        <id>cofactor163t8</id>
         <bits>163</bits>
         <field>binary</field>
-        <file>cofactor8t163.csv</file>
+        <file>cofactor163t8.csv</file>
     </curve>
     <curve>
-        <id>cofactor16t163</id>
+        <id>cofactor163t16</id>
         <bits>163</bits>
         <field>binary</field>
-        <file>cofactor16t163.csv</file>
+        <file>cofactor163t16.csv</file>
     </curve>
     <curve>
-        <id>cofactor32t163</id>
+        <id>cofactor163t32</id>
         <bits>163</bits>
         <field>binary</field>
-        <file>cofactor32t163.csv</file>
+        <file>cofactor163t32.csv</file>
     </curve>
     <curve>
-        <id>cofactor64t163</id>
+        <id>cofactor163t64</id>
         <bits>163</bits>
         <field>binary</field>
-        <file>cofactor64t163.csv</file>
+        <file>cofactor163t64.csv</file>
     </curve>
     <curve>
-        <id>cofactor128t163</id>
+        <id>cofactor163t128</id>
         <bits>163</bits>
         <field>binary</field>
-        <file>cofactor128t163.csv</file>
+        <file>cofactor163t128.csv</file>
     </curve>
 
     <curve>
-        <id>cofactor2t233</id>
+        <id>cofactor233t2</id>
         <bits>233</bits>
         <field>binary</field>
-        <file>cofactor2t233.csv</file>
+        <file>cofactor233t2.csv</file>
     </curve>
     <curve>
-        <id>cofactor4t233</id>
+        <id>cofactor233t4</id>
         <bits>233</bits>
         <field>binary</field>
-        <file>cofactor4t233.csv</file>
+        <file>cofactor233t4.csv</file>
     </curve>
     <curve>
-        <id>cofactor8t233</id>
+        <id>cofactor233t8</id>
         <bits>233</bits>
         <field>binary</field>
-        <file>cofactor8t233.csv</file>
+        <file>cofactor233t8.csv</file>
     </curve>
     <curve>
-        <id>cofactor16t233</id>
+        <id>cofactor233t16</id>
         <bits>233</bits>
         <field>binary</field>
-        <file>cofactor16t233.csv</file>
+        <file>cofactor233t16.csv</file>
     </curve>
     <curve>
-        <id>cofactor32t233</id>
+        <id>cofactor233t32</id>
         <bits>233</bits>
         <field>binary</field>
-        <file>cofactor32t233.csv</file>
+        <file>cofactor233t32.csv</file>
     </curve>
     <curve>
-        <id>cofactor64t233</id>
+        <id>cofactor233t64</id>
         <bits>233</bits>
         <field>binary</field>
-        <file>cofactor64t233.csv</file>
+        <file>cofactor233t64.csv</file>
     </curve>
     <curve>
-        <id>cofactor128t233</id>
+        <id>cofactor233t128</id>
         <bits>233</bits>
         <field>binary</field>
-        <file>cofactor128t233.csv</file>
+        <file>cofactor233t128.csv</file>
     </curve>
 </curves>

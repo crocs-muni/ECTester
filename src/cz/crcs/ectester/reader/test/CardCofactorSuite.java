@@ -39,14 +39,14 @@ public class CardCofactorSuite extends CardTestSuite {
             Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.SUCCESS);
             Test generate = CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_LOCAL), ExpectedValue.SUCCESS);
 
-            Test prepare = CompoundTest.all(ExpectedValue.SUCCESS, "Prepare and generate keypair on " + curve.getId(), allocate, set, generate);
+            Test prepare = CompoundTest.all(ExpectedValue.SUCCESS, "Prepare and generate keypair on " + curve.getId() + ".", allocate, set, generate);
 
             List<Test> ecdhTests = new LinkedList<>();
             for (EC_Key.Public pub : keys) {
                 Command ecdhCommand = new Command.ECDH_direct(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH, pub.flatten());
                 ecdhTests.add(CommandTest.expect(ecdhCommand, ExpectedValue.FAILURE, "Card correctly rejected point on non-generator subgroup.", "Card incorrectly accepted point on non-generator subgroup."));
             }
-            Test ecdh = CompoundTest.all(ExpectedValue.SUCCESS, "Perform ECDH with public points on non-generator subgroup", ecdhTests.toArray(new Test[0]));
+            Test ecdh = CompoundTest.all(ExpectedValue.SUCCESS, "Perform ECDH with public points on non-generator subgroup.", ecdhTests.toArray(new Test[0]));
 
             Random r = new Random();
             byte[] raw = new byte[128];
@@ -60,13 +60,13 @@ public class CardCofactorSuite extends CardTestSuite {
                 Test setTest = CommandTest.expect(setCommand, ExpectedValue.ANY);
                 Command ecdsaCommand = new Command.ECDSA_verify(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.Signature_ALG_ECDSA_SHA, raw, sig);
                 Test ecdsaTest = CommandTest.expect(ecdsaCommand, ExpectedValue.FAILURE);
-                ecdsaTests.add(CompoundTest.all(ExpectedValue.SUCCESS, "Verify random ECDSA signature by " + pub.getId(), setTest, ecdsaTest));
+                ecdsaTests.add(CompoundTest.all(ExpectedValue.SUCCESS, "Verify random ECDSA signature by " + pub.getId() + ".", setTest, ecdsaTest));
             }
             Test ecdsa = CompoundTest.all(ExpectedValue.SUCCESS, "Verify random ECDSA signature by public points on non-generator subgroup.", ecdsaTests.toArray(new Test[0]));
 
             Test tests = CompoundTest.all(ExpectedValue.SUCCESS, "Perform ECDH and ECDSA tests.", ecdh, ecdsa);
 
-            doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Cofactor test of " + curve.getId(), prepare, tests));
+            doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Cofactor test of " + curve.getId() + ".", prepare, tests));
             new Command.Cleanup(this.card).send();
         }
     }

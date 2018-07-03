@@ -27,7 +27,7 @@ public abstract class BaseTextTestWriter implements TestWriter {
 
     @Override
     public void begin(TestSuite suite) {
-        output.println("═══ Running test suite: " + suite.getName() + " ═══");
+        output.println("═══ Running test suite: " + Colors.bold(suite.getName()) + " ═══");
         for (String d : suite.getDescription()) {
             output.println("═══ " + d);
         }
@@ -113,6 +113,7 @@ public abstract class BaseTextTestWriter implements TestWriter {
             sb.append("═══ ").append(t.toString()).append(" ═══");
             sb.append(System.lineSeparator());
         }
+        sb.append("═══ ═══").append(System.lineSeparator());
         for (StackTraceElement s : error.getStackTrace()) {
             sb.append("═══ ").append(s.toString()).append(" ═══");
             sb.append(System.lineSeparator());

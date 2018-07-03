@@ -8,170 +8,638 @@
       desc="">
 
     <pubkey>
-        <id>cofactor2p128/0</id>
+        <id>cofactor128p2/0</id>
         <inline>0x1274cf343b12c9de044a312c7e0d88b1,0x00000000000000000000000000000000</inline>
-        <curve>cofactor/cofactor2p128</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor128p2</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor4p128/0</id>
+        <id>cofactor128p4/0</id>
         <inline>0x4e5a1eb60f6d2cb5c24f6ea54a675cd6,0x00000000000000000000000000000000</inline>
-        <curve>cofactor/cofactor4p128</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor128p4</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor8p128/0</id>
+        <id>cofactor128p4/1</id>
+        <inline>0x71223b82022305c5eb81f5c3ae3f785a,0x79fc820c0eecef0bca540a3e723583ff</inline>
+        <curve>cofactor/cofactor128p4</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p8/0</id>
         <inline>0x31eb5f732057b0ea57eed55f4259d85d,0x00000000000000000000000000000000</inline>
-        <curve>cofactor/cofactor8p128</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor128p8</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor16p128/0</id>
+        <id>cofactor128p8/1</id>
+        <inline>0x2e7bb6ad57bbcbef6dc2bf4245a38c12,0x61d860ec5fe722872c35dfa1ef84a307</inline>
+        <curve>cofactor/cofactor128p8</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p8/2</id>
+        <inline>0x901934de82c48d1058c67c605a9a390b,0x335c2e8e79a171506a99490d3332a110</inline>
+        <curve>cofactor/cofactor128p8</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p16/0</id>
         <inline>0x89578c4527e2d5e8a95905e30f0889e3,0x00000000000000000000000000000000</inline>
-        <curve>cofactor/cofactor16p128</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor128p16</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor32p128/0</id>
+        <id>cofactor128p16/1</id>
+        <inline>0x99efc5bd2e9adc1c00919ddf5bf7ace0,0x082767ef35dad2259725c77e68bf8a69</inline>
+        <curve>cofactor/cofactor128p16</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p16/2</id>
+        <inline>0x5e2f995dad72a38bd8c9f9a7f465ce6f,0xc6dc35c4d28a668f8240ef6ac2536b14</inline>
+        <curve>cofactor/cofactor128p16</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p16/3</id>
+        <inline>0xe719245896fb0737d55085e208aafec2,0xf672a92221d12ed6ec4657ca767a7f06</inline>
+        <curve>cofactor/cofactor128p16</curve>
+        <desc>cofactor order = 16</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p32/0</id>
         <inline>0x097191ee5ded1c36f2ec6bba78e7e6ea,0x00000000000000000000000000000000</inline>
-        <curve>cofactor/cofactor32p128</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor128p32</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor64p128/0</id>
+        <id>cofactor128p32/1</id>
+        <inline>0x527a9d644ebae128748327d1961c3985,0x4edca8a611b16dee95eeea363724062d</inline>
+        <curve>cofactor/cofactor128p32</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p32/2</id>
+        <inline>0x5faf8263ac8c51084b0aff1bd428f092,0x2680273ff79343d47280c69168973cf5</inline>
+        <curve>cofactor/cofactor128p32</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p32/3</id>
+        <inline>0x0351f0e0b0de971c953918934f59c8c0,0x424957e4a6756cc1e55d36489cff3d8b</inline>
+        <curve>cofactor/cofactor128p32</curve>
+        <desc>cofactor order = 16</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p32/4</id>
+        <inline>0x5c5e4942cf366e1b04bed7b1ca3bd4a9,0x3549e46c6696ed157ccc74adc65683ae</inline>
+        <curve>cofactor/cofactor128p32</curve>
+        <desc>cofactor order = 32</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p64/0</id>
         <inline>0x1d360b7f2f805be59aedeaae2813ee1f,0x00000000000000000000000000000000</inline>
-        <curve>cofactor/cofactor64p128</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor128p64</curve>
+        <desc>cofactor order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p64/1</id>
+        <inline>0x87c97b7182f883ded6560cd78264ad5b,0x468dbd5fe82135ea24a71059341f16cb</inline>
+        <curve>cofactor/cofactor128p64</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p64/2</id>
+        <inline>0x9498a4ec5caf6d7d8638dc6d79ae30d7,0x4a8412b51a48b34c6f33047052979ebf</inline>
+        <curve>cofactor/cofactor128p64</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p64/3</id>
+        <inline>0x7bd10415384645d1dfe4c84e8f05c301,0x37878a8d0088d16cf88f49c07c13147b</inline>
+        <curve>cofactor/cofactor128p64</curve>
+        <desc>cofactor order = 16</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p64/4</id>
+        <inline>0x9781df3d77ae756e8cb031303f7332a1,0xb0014e02d54b017e4069401fc41a9a23</inline>
+        <curve>cofactor/cofactor128p64</curve>
+        <desc>cofactor order = 32</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p64/5</id>
+        <inline>0xb8fde1c676a1ceab9ad6597f9763c79f,0x5490d7c81d8ddece1a4081a743910b46</inline>
+        <curve>cofactor/cofactor128p64</curve>
+        <desc>cofactor order = 64</desc>
     </pubkey>
     <pubkey>
         <id>cofactor128p128/0</id>
         <inline>0x485b34188824c54f115f31891c18795c,0x00000000000000000000000000000000</inline>
         <curve>cofactor/cofactor128p128</curve>
-        <desc>order = 2</desc>
+        <desc>cofactor order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p128/1</id>
+        <inline>0x1e75df97d9c90de9338ea741cc6fa72e,0x80308fe46db0ed0486bb204c97cb0891</inline>
+        <curve>cofactor/cofactor128p128</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p128/2</id>
+        <inline>0x789c0de0acc72fa82609c27b1ff26031,0x38eaf5e148dd91fe151cc072ce4945be</inline>
+        <curve>cofactor/cofactor128p128</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p128/3</id>
+        <inline>0xace50433b400257c911cbcc175bf03a1,0x6f0cd218b21a252a289d49981a554232</inline>
+        <curve>cofactor/cofactor128p128</curve>
+        <desc>cofactor order = 16</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p128/4</id>
+        <inline>0x0144308e82b8c4edd3b02a535fcd9b11,0x241c16e9c41948dd249741b623ae6f46</inline>
+        <curve>cofactor/cofactor128p128</curve>
+        <desc>cofactor order = 32</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p128/5</id>
+        <inline>0x17c76910a9acbde84033e2fcc629350a,0x462e9fa1f47d82b3e82c813368ffe005</inline>
+        <curve>cofactor/cofactor128p128</curve>
+        <desc>cofactor order = 64</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor128p128/6</id>
+        <inline>0x2f633a2a7176d5e89e53db656761884d,0x04806528aae79ad5953f985f703fe3ed</inline>
+        <curve>cofactor/cofactor128p128</curve>
+        <desc>cofactor order = 128</desc>
     </pubkey>
 
     <pubkey>
-        <id>cofactor2p160/0</id>
+        <id>cofactor160p2/0</id>
         <inline>0x5fa441bf614740860b6eb17c525fadf7fda8a8dd,0x0000000000000000000000000000000000000000</inline>
-        <curve>cofactor/cofactor2p160</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor160p2</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor4p160/0</id>
+        <id>cofactor160p4/0</id>
         <inline>0x023deee1d84150a62b98aa5bfc199af554653515,0x0000000000000000000000000000000000000000</inline>
-        <curve>cofactor/cofactor4p160</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor160p4</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor8p160/0</id>
+        <id>cofactor160p4/1</id>
+        <inline>0x029177e40c5fa71b99189487dd216c20878ddc2b,0x8208f20780b73baa1c19aec658707b070b675de2</inline>
+        <curve>cofactor/cofactor160p4</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor160p8/0</id>
         <inline>0x05e55a12fb3fc534266721e50921b87175ba6058,0x0000000000000000000000000000000000000000</inline>
-        <curve>cofactor/cofactor8p160</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor160p8</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor16p160/0</id>
+        <id>cofactor160p8/1</id>
+        <inline>0xcabc8915d9a3ec3918425a100c46455dac4a69b9,0x899e34cfb8138627bddf44123ec5875bbe77607a</inline>
+        <curve>cofactor/cofactor160p8</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor160p8/2</id>
+        <inline>0xabe45c362bd99dc1d473ece28afe13c21fa4d759,0x7fcb17eb63260522d911eca08a4f6174163e2869</inline>
+        <curve>cofactor/cofactor160p8</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor160p16/0</id>
         <inline>0x1e20529f2293f0a08cc722d7fa8e56ddd4eb3b8a,0x0000000000000000000000000000000000000000</inline>
-        <curve>cofactor/cofactor16p160</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor160p16</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor32p160/0</id>
+        <id>cofactor160p16/1</id>
+        <inline>0x8076835b64ee29e80caacb94a09fbf465bb283d2,0x0a772fb6cdfc5ca2a6ce58ce77c36c3e572319f2</inline>
+        <curve>cofactor/cofactor160p16</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor160p16/2</id>
+        <inline>0x438873cc4cfe75ea5e4cd253a999bd383679643e,0x5aeea5de1639443278f0ef03d196cb87b9818886</inline>
+        <curve>cofactor/cofactor160p16</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor160p16/3</id>
+        <inline>0x76f900fcc2c879c8c78e3a2c25ff0322d3dc1234,0x0a1980eaf1f4d35f736087a4b7df844c61665c03</inline>
+        <curve>cofactor/cofactor160p16</curve>
+        <desc>cofactor order = 16</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor160p32/0</id>
         <inline>0x8cff23fa9830f93cb2d46aa5f91e6f53080fa5b7,0x0000000000000000000000000000000000000000</inline>
-        <curve>cofactor/cofactor32p160</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor160p32</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor64p160/0</id>
+        <id>cofactor160p32/1</id>
+        <inline>0x776031adf083c2373e49d38f6e4fff890a723b20,0x7fb4468b1937d569889b9aa06e0e4ec66032a07f</inline>
+        <curve>cofactor/cofactor160p32</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor160p32/2</id>
+        <inline>0x80808ea2da912ddd3ef23c2b4a7a5f7a0c49d97f,0x0c4664470b36a7873650c0ce856eccf5c715202e</inline>
+        <curve>cofactor/cofactor160p32</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor160p32/3</id>
+        <inline>0x6489b721683b235b1e195df3fc588b8469a53f92,0x745764261684c3056725df16a14ae71a9ce669f8</inline>
+        <curve>cofactor/cofactor160p32</curve>
+        <desc>cofactor order = 16</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor160p32/4</id>
+        <inline>0x755a0b8b58e0d8f18998e2c2b7b9ab09792323d6,0x90e7c831aba6c27762bef58bf07b782334da565d</inline>
+        <curve>cofactor/cofactor160p32</curve>
+        <desc>cofactor order = 32</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor160p64/0</id>
         <inline>0x46b72d87edddeea2fa3ef32725fcf8c1e19bf40d,0x0000000000000000000000000000000000000000</inline>
-        <curve>cofactor/cofactor64p160</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor160p64</curve>
+        <desc>cofactor order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor160p64/1</id>
+        <inline>0x3e92edd49a08c7dc03badf986f0902292f15856d,0x7658a601d3aceb0b3273011d1211b8df18027f78</inline>
+        <curve>cofactor/cofactor160p64</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor160p64/2</id>
+        <inline>0xa863b1077481ae1da7e782b56ef378aa79d94da0,0xf7b8ccdfee7605bf1b858f427480a15cb2b82728</inline>
+        <curve>cofactor/cofactor160p64</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor160p64/3</id>
+        <inline>0x45a971943d80ce3f1f29ac86536c0e189ae98dc7,0x6e4488a53ee6cbea7ecec826a8f89f9334e90c7a</inline>
+        <curve>cofactor/cofactor160p64</curve>
+        <desc>cofactor order = 16</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor160p64/4</id>
+        <inline>0x53499915b1a061db0216f7c871780abfb86c576e,0x44c57b310461b57c2d20c12dbeb64475e122e1a4</inline>
+        <curve>cofactor/cofactor160p64</curve>
+        <desc>cofactor order = 32</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor160p64/5</id>
+        <inline>0x3fabbf2a3612a89fb5940661b4acc7589cc7fce3,0xb5489c892a82a2f4e5bced433a3c4685b9ae0d07</inline>
+        <curve>cofactor/cofactor160p64</curve>
+        <desc>cofactor order = 64</desc>
     </pubkey>
 
 
     <pubkey>
-        <id>cofactor2t163/0</id>
+        <id>cofactor163t2/0</id>
         <inline>0x000000000000000000000000000000000000000000,0x0132720c6aa3f2ca65d18f2de81e5e6b8ad4a3ef9d</inline>
-        <curve>cofactor/cofactor2t163</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor163t2</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor4t163/0</id>
+        <id>cofactor163t4/0</id>
         <inline>0x000000000000000000000000000000000000000000,0x00b93d46bc80b487e7738644e85bb6d29c2dca2600</inline>
-        <curve>cofactor/cofactor4t163</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor163t4</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor8t163/0</id>
+        <id>cofactor163t4/1</id>
+        <inline>0x003de55d59f7c71d1560c04954a897294b584c8840,0x069a5e172cea516563b7289330fcadd1b3a9a08ea5</inline>
+        <curve>cofactor/cofactor163t4</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t8/0</id>
         <inline>0x000000000000000000000000000000000000000000,0x0569879d9674b06578f62ec2f341ddd3b648dfdf51</inline>
-        <curve>cofactor/cofactor8t163</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor163t8</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor16t163/0</id>
+        <id>cofactor163t8/1</id>
+        <inline>0x04558236ae8cbb8b7f551db9b7ffeba4d05a6925f8,0x07af55a9913a11785b3cd3f8b92d5968273bdbc6a7</inline>
+        <curve>cofactor/cofactor163t8</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t8/2</id>
+        <inline>0x0180ead5cc93652110c10254291c060a6039102f2f,0x01c27f76b0e8f6c445ec14041ad6bf528133b0f5ba</inline>
+        <curve>cofactor/cofactor163t8</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t16/0</id>
         <inline>0x000000000000000000000000000000000000000000,0x04274cf55c49c32ca4c0e30b891e03b3b1c6597df0</inline>
-        <curve>cofactor/cofactor16t163</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor163t16</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor32t163/0</id>
+        <id>cofactor163t16/1</id>
+        <inline>0x045a5eb7dd5d3a66c37ccc17d1c2cc278c52341311,0x00d335cb03f5cffe4aae83eca0142719ba056b3b91</inline>
+        <curve>cofactor/cofactor163t16</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t16/2</id>
+        <inline>0x02491353f117e84d3bccfdec06dc80881bf4962916,0x07a0e8a86cb7b13b4e7dff9c5a6c2cec2dfe43bd3c</inline>
+        <curve>cofactor/cofactor163t16</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t16/3</id>
+        <inline>0x06ef9e3bc176cc3e4f22734c6b1403a52fcb4f5ded,0x05b854eba0ed2c1b1ba58db768391935bc45008aed</inline>
+        <curve>cofactor/cofactor163t16</curve>
+        <desc>cofactor order = 16</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t32/0</id>
         <inline>0x000000000000000000000000000000000000000000,0x0409969efb468e8f07954a3b4bf7610a0d8b5d4753</inline>
-        <curve>cofactor/cofactor32t163</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor163t32</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor64t163/0</id>
+        <id>cofactor163t32/1</id>
+        <inline>0x0718ffc297e2a28c40b1a99a1243788908bf234788,0x072c98ada87c3d2bd169ebb13484046487389c0aac</inline>
+        <curve>cofactor/cofactor163t32</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t32/2</id>
+        <inline>0x05398dacbc3685efa32fb8073f653a13454bdd84d1,0x04a3c63e84d6c2612d29cc73f8025c678c40fc238b</inline>
+        <curve>cofactor/cofactor163t32</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t32/3</id>
+        <inline>0x04ef69ff0767053e16dc764753dce52e4abd2008af,0x06179a3827cc46bc431e38960d33b9d55d6c589059</inline>
+        <curve>cofactor/cofactor163t32</curve>
+        <desc>cofactor order = 16</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t32/4</id>
+        <inline>0x02ee97f9a7d793ce62c74af97a9f096a7572ba69b9,0x000f6d594c47c324daa0e08324367fe6570dea1bf3</inline>
+        <curve>cofactor/cofactor163t32</curve>
+        <desc>cofactor order = 32</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t64/0</id>
         <inline>0x000000000000000000000000000000000000000000,0x068c5445c03a59d697573b09ae0804e2891bb98208</inline>
-        <curve>cofactor/cofactor64t163</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor163t64</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor128t163/0</id>
+        <id>cofactor163t64/1</id>
+        <inline>0x07ebc6a2d17da53c7eb2d1db5b1c8f4bc09cbe0c9a,0x00d8dad45ee9b10d1b9c65e33779a9915dab1bcdca</inline>
+        <curve>cofactor/cofactor163t64</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t64/2</id>
+        <inline>0x06c2e736395e30d258e1d55e99754b13cb95df5a77,0x02c927a236717ee2a0023c2932b581b30e1198ba52</inline>
+        <curve>cofactor/cofactor163t64</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t64/3</id>
+        <inline>0x02d043a910ce708b391974f4bf2d948b2ff9404ac1,0x0173d5211bd148c51a5356125b4e1037287ca76dbf</inline>
+        <curve>cofactor/cofactor163t64</curve>
+        <desc>cofactor order = 16</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t64/4</id>
+        <inline>0x00b16f32c64daa847ecbb91ec3df09320b898753e8,0x0386287097ae6bc4fe440c21855dd51cbb063cfa01</inline>
+        <curve>cofactor/cofactor163t64</curve>
+        <desc>cofactor order = 32</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t64/5</id>
+        <inline>0x02d3b0a084b4c191d61cccb9906b072946e8167c7c,0x041c5c739372f85d9801de81ceae8610d1d46baa0b</inline>
+        <curve>cofactor/cofactor163t64</curve>
+        <desc>cofactor order = 64</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t128/0</id>
         <inline>0x000000000000000000000000000000000000000000,0x06be374502a948489de2e7d8d82cb6b62a493b77a0</inline>
-        <curve>cofactor/cofactor128t163</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor163t128</curve>
+        <desc>cofactor order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t128/1</id>
+        <inline>0x06c8d7f80b6c2dfbb970c103dbe4823ddadbbc2d44,0x051d1ae93f3798b7d07dc5a42ae10b9ddbe6a27f9e</inline>
+        <curve>cofactor/cofactor163t128</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t128/2</id>
+        <inline>0x070bb18c1a173b81a08312cea7ae8be4e5085bd4e4,0x0196906f241cadfdad35b1e38754b01c1baf7f20da</inline>
+        <curve>cofactor/cofactor163t128</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t128/3</id>
+        <inline>0x02e6190b983edeed23a75c7905e625e9d4d5aab337,0x009be2cfb9d400f20f1ad38963fa756d3beea8b5f1</inline>
+        <curve>cofactor/cofactor163t128</curve>
+        <desc>cofactor order = 16</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t128/4</id>
+        <inline>0x01ddf5cb0517f268ac0446ec605c6c9e2f47cad1ad,0x06ff8b935fb64abcaadf9528c164278c4861190399</inline>
+        <curve>cofactor/cofactor163t128</curve>
+        <desc>cofactor order = 32</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t128/5</id>
+        <inline>0x03ead0b91adc1e11c6f1aea37993d4aa233f722f16,0x03566f6678f3f63004c084469330c55a54e47152ed</inline>
+        <curve>cofactor/cofactor163t128</curve>
+        <desc>cofactor order = 64</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor163t128/6</id>
+        <inline>0x0597fab16d4fd300694e45e02ce97126d6abfdf527,0x013f75f2b43c53296f06fc584b02ab9b7e5eda28aa</inline>
+        <curve>cofactor/cofactor163t128</curve>
+        <desc>cofactor order = 128</desc>
     </pubkey>
 
     <pubkey>
-        <id>cofactor2t233/0</id>
+        <id>cofactor233t2/0</id>
         <inline>0x000000000000000000000000000000000000000000000000000000000000,0x00a5237785bb2d49881f043553257d8600988d9603b43b4c2d74539a7ab3</inline>
-        <curve>cofactor/cofactor2t233</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor233t2</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor4t233/0</id>
+        <id>cofactor233t4/0</id>
         <inline>0x000000000000000000000000000000000000000000000000000000000000,0x01e70983b7039468a1b58b757d8343c7612f847f51f357ccca6a4c38e774</inline>
-        <curve>cofactor/cofactor4t233</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor233t4</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor8t233/0</id>
+        <id>cofactor233t4/1</id>
+        <inline>0x01b2130e54e0b949f46bb1a356e4da9b117168171c95bd8f8606dbb841f0,0x00df888613dd7319af9881c87b3b96586a6ea0bc8763e460d1cfad59beeb</inline>
+        <curve>cofactor/cofactor233t4</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t8/0</id>
         <inline>0x000000000000000000000000000000000000000000000000000000000000,0x0087c295986f53382f7f1d4c8f268bdde12c5e2b641e53f84b5c2feb209a</inline>
-        <curve>cofactor/cofactor8t233</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor233t8</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor16t233/0</id>
+        <id>cofactor233t8/1</id>
+        <inline>0x00a84d10e99cdacf913bc463c64fe963874bd43f7b6285b3328c584f379d,0x0116083d4b7d721cab9f8e28687946775cbe53013974f0d64da6a3753871</inline>
+        <curve>cofactor/cofactor233t8</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t8/2</id>
+        <inline>0x0030b705cd14925afbc424bba3ca2d306e1919228fbdeb69722d778d2fd1,0x01b57b56dfd941a990349cfbe4738049158da63038002b8b66b1958a3f28</inline>
+        <curve>cofactor/cofactor233t8</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t16/0</id>
         <inline>0x000000000000000000000000000000000000000000000000000000000000,0x00c6ff713492ad9d63db4627a4f8d0d67388d85ea20ba5ef234a43ec98d4</inline>
-        <curve>cofactor/cofactor16t233</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor233t16</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor32t233/0</id>
+        <id>cofactor233t16/1</id>
+        <inline>0x000054b1aeb9f6ec672eda79ea63d50afd64379da32c67b393613e5380a5,0x0007a5bcc9d28b17b3ee8b6c01146b418134d653dac30b9f141cadb8bdf3</inline>
+        <curve>cofactor/cofactor233t16</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t16/2</id>
+        <inline>0x0076e03623260120f8abb528fa31087853a445dd4f4761aa4927d0c435e5,0x011d084efa87e9d129153bcdbc50177015ecfa822ae7b9bcc229b9f57987</inline>
+        <curve>cofactor/cofactor233t16</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t16/3</id>
+        <inline>0x01e334dd359ca817a6b667a95c1c408387869583a7aad103d90dab7f07ab,0x0136e465f537139aad625893172512a06d242474c623003e5f90dd244997</inline>
+        <curve>cofactor/cofactor233t16</curve>
+        <desc>cofactor order = 16</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t32/0</id>
         <inline>0x000000000000000000000000000000000000000000000000000000000000,0x00e85ccaafcd345663cb65ccf38555c68183f25b6ec0e436f8f236fe8636</inline>
-        <curve>cofactor/cofactor32t233</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor233t32</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor64t233/0</id>
+        <id>cofactor233t32/1</id>
+        <inline>0x00027d98a3ee381684443b18bdabf2a8e83b6e99bad701208a688115e418,0x01f167acce102a713f0256da2c6ef68d9162cb45b99bd0d3a579c6996545</inline>
+        <curve>cofactor/cofactor233t32</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t32/2</id>
+        <inline>0x00644243499f513d3541244f49419eaeb3714b641da3fe566d2c1fd04f4e,0x00c6f0694379c25b852bb8e71785912fc3b73275061da6f0e91f50d6aa48</inline>
+        <curve>cofactor/cofactor233t32</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t32/3</id>
+        <inline>0x01eea9c0d7203865aba9d5ef5c8688c8f028222bd8c553ea2a37549ec1af,0x0049a7cf8f926869ebc36e2ff636e5eb7cb1d0406a6e43902bb921859883</inline>
+        <curve>cofactor/cofactor233t32</curve>
+        <desc>cofactor order = 16</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t32/4</id>
+        <inline>0x01880fb8975f5024c34bd78dd2d5fbedb724ee288940c6a4ae50c3fe88c2,0x00118b407d962d2c4359f639258526d6c8ed8a1db93034ff34d877b31dd1</inline>
+        <curve>cofactor/cofactor233t32</curve>
+        <desc>cofactor order = 32</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t64/0</id>
         <inline>0x000000000000000000000000000000000000000000000000000000000000,0x01a08b13e17f2467daaf4c4f62a397f2393b19c0bfff1dd767f6c8d94860</inline>
-        <curve>cofactor/cofactor64t233</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor233t64</curve>
+        <desc>cofactor order = 2</desc>
     </pubkey>
     <pubkey>
-        <id>cofactor128t233/0</id>
+        <id>cofactor233t64/1</id>
+        <inline>0x0124da33fe559716da4d8fe52bb54490159f2bc3a9c8c832a4cd321db26d,0x01744c31a30ab6b516f3a96f173aef281fbd80d3f35976b50619ffc878c8</inline>
+        <curve>cofactor/cofactor233t64</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t64/2</id>
+        <inline>0x01f956c2aef1da18bc8c21a45e6161dac74aeb8ffc63528c5ddad8d73000,0x00b82ff8a8c62906f80294833d65c8d1e6d6fd1942cd05d88db9c7a7afed</inline>
+        <curve>cofactor/cofactor233t64</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t64/3</id>
+        <inline>0x00f3c42ae0ad4315728635a4fe24ba2a51102a3c4e94bcfbad165a534820,0x005abed4d9649b656824d041650b2bc027db10fe4a7314ea73ae8add6c34</inline>
+        <curve>cofactor/cofactor233t64</curve>
+        <desc>cofactor order = 16</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t64/4</id>
+        <inline>0x01d94d241b3b5a14e420f845a5835555efd8b4ac7a859a6b811309a6c525,0x00c2f035151644c52617a436b6aeabb8e50ef6e12fa5b1bd1102c913c72d</inline>
+        <curve>cofactor/cofactor233t64</curve>
+        <desc>cofactor order = 32</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t64/5</id>
+        <inline>0x00ebc7a88e760c7932108e6c925b8e8a40cf0f809f2144e772f059cef16c,0x015fe6fec0e1558cf4cc5c73d7d0a8973eb5f7be65cc537c8055e2142c45</inline>
+        <curve>cofactor/cofactor233t64</curve>
+        <desc>cofactor order = 64</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t128/0</id>
         <inline>0x000000000000000000000000000000000000000000000000000000000000,0x0018948e6063085fbc0a661dc0d06bc45c2bbab443e9d983753886b918ea</inline>
-        <curve>cofactor/cofactor128t233</curve>
-        <desc>order = 2</desc>
+        <curve>cofactor/cofactor233t128</curve>
+        <desc>cofactor order = 2</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t128/1</id>
+        <inline>0x01e41de7ac8dabaa1e873fd528d3c5e462890f60a444a12e1f87902a5f80,0x01148ae9d64a4223ba0bd24d642a6b2cdbbc1358fccd78eea473019a3aa8</inline>
+        <curve>cofactor/cofactor233t128</curve>
+        <desc>cofactor order = 4</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t128/2</id>
+        <inline>0x00e62c29001164bd807f1984bc2d9df15f979f42acf6d10ca6df31ebd8f8,0x00b5e5a686e3a8f87db3c03223322e3d6d0b67ac1d959e3b43a5d66cc734</inline>
+        <curve>cofactor/cofactor233t128</curve>
+        <desc>cofactor order = 8</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t128/3</id>
+        <inline>0x019cf3cd40ee9c3feff8d301ce3b949691d4a1415b89f6e4d2f9799c2071,0x012c90d7c0d2b2a6677cd1015e7611334098c557181080d1e3c4832b7e46</inline>
+        <curve>cofactor/cofactor233t128</curve>
+        <desc>cofactor order = 16</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t128/4</id>
+        <inline>0x00c9fe0dc85e72812aa285b889786c323d2c55de71cf8aa3706c4d5819e1,0x018770dd46a7914c7e8ba6f9babe7a43d489237331fa5d5be1f4a8478d93</inline>
+        <curve>cofactor/cofactor233t128</curve>
+        <desc>cofactor order = 32</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t128/5</id>
+        <inline>0x01a9d88c20ae689f118efc37e85699a87826c224470f2ed075d377505765,0x01d3d88eca62c36c83300658c35cf4c50fb62e4d38b890462db90a7b0892</inline>
+        <curve>cofactor/cofactor233t128</curve>
+        <desc>cofactor order = 64</desc>
+    </pubkey>
+    <pubkey>
+        <id>cofactor233t128/6</id>
+        <inline>0x014ab29589292a78426bd618c99c520a950119e2642302c02e29e4507ccc,0x01ce0273b2fe1e3bdc53116d670ce682d73d0988dc124169dfadd1d1f727</inline>
+        <curve>cofactor/cofactor233t128</curve>
+        <desc>cofactor order = 128</desc>
     </pubkey>
 
     &secg;
@@ -183,10 +651,22 @@
         <desc>cofactor order = 0x000000003c1be1d1dd7edf84b8013495</desc>
     </pubkey>
     <pubkey>
+        <id>pq/cofactor128/2</id>
+        <inline>0x6ef5b1d42abdbd6f44bcf4d64504927c,0x73e82c27b93032b7a7a15111d1569bb3</inline>
+        <curve>composite/pq/composite128/2</curve>
+        <desc>cofactor order = 0x000000000000000000000003f76917eb</desc>
+    </pubkey>
+    <pubkey>
         <id>pq/cofactor160/1</id>
         <inline>0x0818df9ccebf5b3fd422d00393d346b314e48f98,0x75bde540b81b5bf0ab45c86fbff7bb2e7ec833cb</inline>
         <curve>composite/pq/composite160/1</curve>
         <desc>cofactor order = 0x00000000000000000d4d7041e1dbf10b42f48c4f</desc>
+    </pubkey>
+    <pubkey>
+        <id>pq/cofactor160/2</id>
+        <inline>0x706deef87d4593bbeaa70bc2609e1d8c0e2e0c10,0x64df2537d395da2e0cb8c7e340426b64699cf325</inline>
+        <curve>composite/pq/composite160/2</curve>
+        <desc>cofactor order = 0x00000000000000000000000af2407f270b81f45f</desc>
     </pubkey>
     <pubkey>
         <id>pq/cofactor192/1</id>
@@ -195,15 +675,33 @@
         <desc>cofactor order = 0x00000000000000000000035efd8bad55038e6bd22db8b805</desc>
     </pubkey>
     <pubkey>
+        <id>pq/cofactor192/2</id>
+        <inline>0x6366613b66339fa580f390d630ccf9b535437229aa8b61cd,0x2abab8c0e803a3612c7a7fbcb47e06fd8ef42a7a7d8c380f</inline>
+        <curve>composite/pq/composite192/2</curve>
+        <desc>cofactor order = 0x00000000000000000000000000302b72431ff070e7e06799</desc>
+    </pubkey>
+    <pubkey>
         <id>pq/cofactor224/1</id>
         <inline>0x97e540c8fc6f9603f25b1689895e5fe738565013675b1bd6c0e16a4b,0x66d0bbe7ee9b0e9e7e1d43b6a47e1d5550c696433c58ee06b94e8615</inline>
         <curve>composite/pq/composite224/1</curve>
         <desc>cofactor order = 0x0000000000000000000006a99de2a928e8f227e7a2ed33a555f24ef5</desc>
     </pubkey>
     <pubkey>
+        <id>pq/cofactor224/2</id>
+        <inline>0x1b189f3372946c9cbb421a60bc3a0a06d16cf3ce043781ada561834c,0x57e00f270dbc56c6c86946dcb6c6ab12133d168609c588b6960c357f</inline>
+        <curve>composite/pq/composite224/2</curve>
+        <desc>cofactor order = 0x00000000000000000000000000000000001824ec370e405bfb5024db</desc>
+    </pubkey>
+    <pubkey>
         <id>pq/cofactor256/1</id>
-        <inline>0x93d1f4d02d6f0d2ea7b80f7095e70e731bcf66fb8118e7698a16eab45aadcaa4,0x3db7c6ee2d24d142ee0ec56f3ba0a606d099debb66a765e3926a5aa19539a2c3</inline>
+        <inline>0xda63037417b6151b844b2367428f52692f31f14a6654edc58edb5864d0e85ff7,0x8191a142a1c4f913e146af089b1cbe12a803473d207e93697afd1a83818e08be</inline>
         <curve>composite/pq/composite256/1</curve>
         <desc>cofactor order = 0x000000000000000220d23234534b240aac0efa70a3bc44e046c2431ad5a32d27</desc>
+    </pubkey>
+    <pubkey>
+        <id>pq/cofactor256/2</id>
+        <inline>0x7b258197e20de13053c3384efd34c3f17172d8ee22c4e23491ca2f867383d8de,0x4aa05d30077ed1bfa45301348e6ab9b1d436f1755c6747c958d4dc24fcb6996c</inline>
+        <curve>composite/pq/composite256/2</curve>
+        <desc>cofactor order = 0x000000000000000000000000000000000000000000000000743bc7ea193d40db</desc>
     </pubkey>
 </keys>

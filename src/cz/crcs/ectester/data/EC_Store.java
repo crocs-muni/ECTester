@@ -153,7 +153,7 @@ public class EC_Store {
 
                     InputStream csv = parseDataElement(dir, curveElem);
                     if (!curve.readCSV(csv)) {
-                        throw new IOException("Invalid csv data.");
+                        throw new IOException("Invalid csv data." + id.getTextContent());
                     }
                     csv.close();
 
@@ -219,7 +219,7 @@ public class EC_Store {
 
                     InputStream csv = parseDataElement(dir, elem);
                     if (!kaResult.readCSV(csv)) {
-                        throw new IOException("Invalid csv data.");
+                        throw new IOException("Invalid csv data. " + id.getTextContent());
                     }
                     csv.close();
 
@@ -257,7 +257,7 @@ public class EC_Store {
 
         InputStream csv = parseDataElement(dir, elem);
         if (!result.readCSV(csv)) {
-            throw new IOException("Invalid CSV data.");
+            throw new IOException("Invalid CSV data. " + id.getTextContent());
         }
         csv.close();
 
@@ -332,8 +332,7 @@ public class EC_Store {
         }
         List<Map.Entry<EC_Curve, List<T>>> curveList = new LinkedList<>();
         curveList.addAll(curves.entrySet());
-        Comparator<Map.Entry<EC_Curve, List<T>>> c = Comparator.comparing(o -> o.getKey().getId());
-        curveList.sort(c.thenComparing(b -> b.getKey().getBits()));
+        Comparator<Map.Entry<EC_Curve, List<T>>> c = Comparator.comparing(Map.Entry::getKey);
         return curveList;
     }
 
