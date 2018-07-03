@@ -26,7 +26,6 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.cli.CLITools;
 import cz.crcs.ectester.common.cli.Colors;
-import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.common.ec.EC_Params;
 import cz.crcs.ectester.common.output.OutputLogger;
 import cz.crcs.ectester.common.output.TestWriter;
@@ -45,11 +44,14 @@ import org.apache.commons.cli.*;
 import javax.smartcardio.CardException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.jar.Manifest;
 
 import static cz.crcs.ectester.applet.EC_Consts.KeyAgreement_ALG_EC_SVDP_DH;
 import static cz.crcs.ectester.applet.EC_Consts.Signature_ALG_ECDSA_SHA;
@@ -69,15 +71,29 @@ public class ECTesterReader {
 
     private Options opts = new Options();
     public static final String VERSION = "v0.2.0";
-    private static final String DESCRIPTION = "ECTesterReader " + VERSION + ", a javacard Elliptic Curve Cryptography support tester/utility.";
-    private static final String LICENSE = "MIT Licensed\nCopyright (c) 2016-2018 Petr Svenda <petr@svenda.com>";
-    private static final String CLI_HEADER = "\n" + DESCRIPTION + "\n\n";
-    private static final String CLI_FOOTER = "\n" + LICENSE;
+    public static String GIT_COMMIT = "";
+    private static String DESCRIPTION;
+    private static String LICENSE = "MIT Licensed\nCopyright (c) 2016-2018 Petr Svenda <petr@svenda.com>";
+    private static String CLI_HEADER;
+    private static String CLI_FOOTER = "\n" + LICENSE;
 
     private static final byte[] SELECT_ECTESTERAPPLET = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x0a,
             (byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x65, (byte) 0x72, (byte) 0x30, (byte) 0x31};
     private static final byte[] AID = {(byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x65, (byte) 0x72, (byte) 0x30, (byte) 0x31};
     private static final byte[] INSTALL_DATA = new byte[10];
+
+    static {
+        URLClassLoader cl = (URLClassLoader) ECTesterReader.class.getClassLoader();
+        try {
+            URL url = cl.findResource("META-INF/MANIFEST.MF");
+            Manifest manifest = new Manifest(url.openStream());
+            String commit = manifest.getMainAttributes().getValue("Git-Commit");
+            GIT_COMMIT = (commit == null) ? "" : "(git " + commit + ")";
+        } catch (Exception ignored) { }
+
+        DESCRIPTION = "ECTesterReader " + VERSION + GIT_COMMIT + ", a javacard Elliptic Curve Cryptography support tester/utility.";
+        CLI_HEADER = "\n" + DESCRIPTION + "\n\n";;
+    }
 
     private void run(String[] args) {
         try {

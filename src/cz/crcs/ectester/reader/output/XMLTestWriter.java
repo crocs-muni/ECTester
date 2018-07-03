@@ -114,7 +114,7 @@ public class XMLTestWriter extends BaseXMLTestWriter {
             CardTestSuite cardSuite = (CardTestSuite) suite;
             Element result = doc.createElement("device");
             result.setAttribute("type", "card");
-            result.setAttribute("ectester", ECTesterReader.VERSION);
+            result.setAttribute("ectester", ECTesterReader.VERSION + ECTesterReader.GIT_COMMIT);
             result.appendChild(cplcElement(cardSuite.getCard()));
 
             Element atr = doc.createElement("ATR");

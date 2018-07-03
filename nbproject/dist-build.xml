@@ -10,6 +10,10 @@
         <tempfile property="temp.file" destDir="${java.io.tmpdir}" suffix=".jar"/>
         <tempfile property="temp.previous_jar" destdir="${java.io.tmpdir}" suffix=".jar"/>
 
+        <exec executable="git" outputproperty="git.commit" failifexecutionfails="false">
+            <arg line="rev-parse --short HEAD"/>
+        </exec>
+
         <copy file="${store.jar}" tofile="${temp.previous_jar}" failonerror="false"/>
         <echo message="Backed up ${store.jar} into ${temp.previous_jar}"/>
 
@@ -20,6 +24,7 @@
 
             <manifest>
                 <attribute name="Main-Class" value="${main.class}"/>
+                <attribute name="Git-Commit" value="${git.commit}"/>
             </manifest>
         </jar>
 

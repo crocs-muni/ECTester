@@ -42,7 +42,7 @@ public class TextTestWriter extends BaseTextTestWriter {
         if (suite instanceof CardTestSuite) {
             CardTestSuite cardSuite = (CardTestSuite) suite;
             StringBuilder sb = new StringBuilder();
-            sb.append("═══ ECTester version: " + ECTesterReader.VERSION).append(System.lineSeparator());
+            sb.append("═══ ECTester version: " + ECTesterReader.VERSION + ECTesterReader.GIT_COMMIT).append(System.lineSeparator());
             sb.append("═══ Card ATR: ").append(ByteUtil.bytesToHex(cardSuite.getCard().getATR().getBytes(), false)).append(System.lineSeparator());
             try {
                 CardMngr.CPLC cplc = cardSuite.getCard().getCPLC();

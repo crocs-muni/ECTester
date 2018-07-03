@@ -86,7 +86,7 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
             CardTestSuite cardSuite = (CardTestSuite) suite;
             Map<String, Object> result = new LinkedHashMap<>();
             result.put("type", "card");
-            result.put("ectester", ECTesterReader.VERSION);
+            result.put("ectester", ECTesterReader.VERSION + ECTesterReader.GIT_COMMIT);
             result.put("cplc", cplcObject(cardSuite.getCard()));
             result.put("ATR", ByteUtil.bytesToHex(cardSuite.getCard().getATR().getBytes(), false));
             return result;
