@@ -61,12 +61,16 @@ Tests on a category of wrong curves. These curves are not really curves as they 
  - non-prime field in the prime-field case
  - reducible polynomial as the field polynomial in the binary case
 
-This test suite also does some additional tests with corrupting the field parameter:
+This test suite also does some additional tests with corrupting the parameters:
  - Fp:
    - p = 0
    - p = 1
    - p = q^2; q prime
    - p = q * s; q and s prime
+   - G = infinity
+   - G = random point not on curve
+   - r = some prime (and \[r\]G != infinity)
+   - r = some composite number (and \[r\]G != infinity)
  - F2m:
    - e1 = e2 = e3 = 0
    - m < e1 < e2 < e3
@@ -85,6 +89,9 @@ Tests using curves that don't have a prime order/nearly prime order.
 These tests should generally fail, a success here implies the card will use a non-secure curve if such curve is set
 by the applet. Operations over such curves are susceptible to small-subgroup attacks.
 
+   - r = p * q
+   - \[r\]G = infinity but r != |G|, so |G| divides r
+   
 For example:
 ```bash
 java -jar ECTester.jar -t composite
