@@ -332,8 +332,8 @@ public class EC_Store {
         }
         List<Map.Entry<EC_Curve, List<T>>> curveList = new LinkedList<>();
         curveList.addAll(curves.entrySet());
-        Comparator<Map.Entry<EC_Curve, List<T>>> c = Comparator.comparing(o -> o.getKey().getBits());
-        curveList.sort(c.thenComparing(b -> b.getKey().getId()));
+        Comparator<Map.Entry<EC_Curve, List<T>>> c = Comparator.comparing(o -> o.getKey().getId());
+        curveList.sort(c.thenComparing(b -> b.getKey().getBits()));
         return curveList;
     }
 

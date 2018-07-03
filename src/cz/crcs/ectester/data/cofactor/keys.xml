@@ -190,9 +190,9 @@
     </pubkey>
     <pubkey>
         <id>pq/cofactor192/1</id>
-        <inline>0x6366613b66339fa580f390d630ccf9b535437229aa8b61cd,0x2abab8c0e803a3612c7a7fbcb47e06fd8ef42a7a7d8c380f</inline>
+        <inline>0x6366613b66339fa580f390d630ccf9b535437229aa8b61cd,0x1b975fa3848bd68f34f6a08b7cf190bcaeaf9782270e2413</inline>
         <curve>composite/pq/composite192/1</curve>
-        <desc>cofactor order = 0x00000000000000000000000000302b72431ff070e7e06799</desc>
+        <desc>cofactor order = 0x00000000000000000000035efd8bad55038e6bd22db8b805</desc>
     </pubkey>
     <pubkey>
         <id>pq/cofactor224/1</id>
