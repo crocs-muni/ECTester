@@ -66,7 +66,7 @@ public class CardInvalidCurvesSuite extends CardTestSuite {
             }
             Test ecdsa = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Verify random ECDSA signature by invalid public points", ecdsaTests.toArray(new Test[0]));
 
-            Test tests = CompoundTest.all(Result.ExpectedValue.SUCCESS, ecdh, ecdsa);
+            Test tests = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Test ECDH and ECDSA with points on invalid curves.", ecdh, ecdsa);
 
             doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Invalid curve test of " + curve.getId(), prepare, tests));
             new Command.Cleanup(this.card).send();

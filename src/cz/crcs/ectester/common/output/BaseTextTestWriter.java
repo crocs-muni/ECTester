@@ -1,5 +1,6 @@
 package cz.crcs.ectester.common.output;
 
+import cz.crcs.ectester.common.cli.Colors;
 import cz.crcs.ectester.common.test.*;
 
 import java.io.PrintStream;
@@ -18,7 +19,7 @@ import java.util.Date;
 public abstract class BaseTextTestWriter implements TestWriter {
     private PrintStream output;
 
-    public static int BASE_WIDTH = 90;
+    public static int BASE_WIDTH = 105;
 
     public BaseTextTestWriter(PrintStream output) {
         this.output = output;
@@ -56,13 +57,21 @@ public abstract class BaseTextTestWriter implements TestWriter {
         Result result = t.getResult();
 
         StringBuilder out = new StringBuilder();
-        out.append(t.ok() ? " OK " : "NOK ");
+        out.append(t.ok() ? Colors.ok(" OK ") : Colors.error("NOK "));
         out.append(compound ? "┳ " : "━ ");
         int width = BASE_WIDTH - (prefix.length() + out.length());
         String widthSpec = "%-" + String.valueOf(width) + "s";
         out.append(String.format(widthSpec, t.getDescription()));
         out.append(" ┃ ");
-        out.append(String.format("%-9s", result.getValue().name()));
+        Colors.Foreground valueColor;
+        if (result.getValue().ok()) {
+            valueColor = Colors.Foreground.GREEN;
+        } else if (result.getValue().equals(Result.Value.ERROR)) {
+            valueColor = Colors.Foreground.RED;
+        } else {
+            valueColor = Colors.Foreground.YELLOW;
+        }
+        out.append(Colors.colored(String.format("%-9s", result.getValue().name()), Colors.Attribute.BOLD, valueColor));
         out.append(" ┃ ");
 
         if (compound) {

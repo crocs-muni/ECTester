@@ -606,11 +606,11 @@ public abstract class Command implements Cloneable {
 
             String validity;
             if (transformation == EC_Consts.TRANSFORMATION_NONE) {
-                validity = "unchanged";
+                validity = "";
             } else {
-                validity = CardUtil.getTransformation(transformation);
+                validity = String.format("(%s point)", CardUtil.getTransformation(transformation));
             }
-            return String.format("%s of %s pubkey and %s privkey(%s point)", algo, pub, priv, validity);
+            return String.format("%s of %s pubkey and %s privkey%s", algo, pub, priv, validity);
         }
     }
 
@@ -666,11 +666,11 @@ public abstract class Command implements Cloneable {
 
             String validity;
             if (transformation == EC_Consts.TRANSFORMATION_NONE) {
-                validity = "unchanged";
+                validity = "";
             } else {
-                validity = CardUtil.getTransformation(transformation);
+                validity = String.format("(%s point)", CardUtil.getTransformation(transformation));
             }
-            return String.format("%s of external pubkey and %s privkey(%s point)", algo, priv, validity);
+            return String.format("%s of external pubkey and %s privkey%s", algo, priv, validity);
         }
     }
 
