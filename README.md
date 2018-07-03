@@ -94,6 +94,8 @@ See `java -jar ECTesterReader.jar -h` for more.
                                    constants.
  -sig,--sig-type <type>            Set Signature object [type],
                                    corresponds to JC.Signature constants.
+ -C,--color                        Print stuff with color, requires ANSI
+                                   terminal.
 ```
 
 ### Actions
