@@ -35,6 +35,16 @@ GOST R 34.10-2001: RFC5832 curves.
 
 [Source](https://tools.ietf.org/html/rfc5832)
 
+### Barreto-Naehrig
+Barreto-Naehrig curves from: A Family of Implementation-Friendly BN Elliptic Curves
+
+[Source](https://eprint.iacr.org/2010/429.pdf)
+
+### Other
+An assortment of some other curves. 
+Montgomery curves transformed into short Weierstrass form from <https://eprint.iacr.org/2013/647.pdf>
+Curve25519 transformed into short Weierstrass form.
+
 
 ## Generated
 
