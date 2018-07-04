@@ -24,6 +24,6 @@
 	{% assign result_name = file_name | shift | sample %}
 	{% assign category_name = file_name | reverse | shift | sample %}
 	{% if device_name == result_name and category_name != cat_name %}
-		<a href="{{ result.url }}" class="btn body-btn">{{ category_name }}</a>
+		<a href="{{ site.baseurl }}{{ result.url }}" class="btn body-btn">{{ category_name }}</a>
 	{% endif %}
 {% endfor %}
