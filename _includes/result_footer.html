@@ -14,3 +14,16 @@
         </ul>
     </li>
 </ul>
+
+{% assign cat_name = page.categories | sample | downcase | replace:" ", "-" %}
+<span style="font-size: 1.2em; font-weight: bold;">Other test runs</span>
+<br/>
+{% assign device_name = page.id | split:"/" | shift | shift | shift | sample %}
+{% for result in site.results %}
+	{% assign file_name = result.id | split:"/" | shift | shift %}
+	{% assign result_name = file_name | shift | sample %}
+	{% assign category_name = file_name | reverse | shift | sample %}
+	{% if device_name == result_name and category_name != cat_name %}
+		<a href="{{ result.url }}" class="btn body-btn">{{ category_name }}</a>
+	{% endif %}
+{% endfor %}

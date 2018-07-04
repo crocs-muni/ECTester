@@ -11,20 +11,20 @@
 {% endif %}
 {% endcapture %}
 
-{% assign color_val=include.depth | minus: 1 | times: 20 %}
+{% assign color_val=include.depth | minus: 1 | times: 15 %}
 {% assign color_channel=255 | minus: color_val %}
 {% assign color_red=color_channel %}
 {% assign color_green=color_channel %}
 {% assign color_blue=color_channel %}
 
 {% if include.test.result.value == "ERROR" %}
-	{% assign color_blue=color_blue | minus: 25 %}
-	{% assign color_green=color_green | minus: 25 %}
+	{% assign color_blue=color_blue | minus: 30 %}
+	{% assign color_green=color_green | minus: 30 %}
 {% elsif include.test.result.value == "FAILURE" or include.test.result.value == "UXSUCCESS" %}
-	{% assign color_blue=color_blue | minus: 25 %}
+	{% assign color_blue=color_blue | minus: 30 %}
 {% else %}
-	{% assign color_red=color_red | minus: 25 %}
-	{% assign color_blue=color_blue | minus: 25 %}
+	{% assign color_red=color_red | minus: 30 %}
+	{% assign color_blue=color_blue | minus: 30 %}
 {% endif %}
 {% if color_red < 0 %}
 	{% assign color_red=0 %}
