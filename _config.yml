@@ -93,6 +93,12 @@ defaults:
      layout: edge_cases_suite
      category: "Edge cases"
  - scope:
+     path: "_results/miscellaneous"
+     type: "results"
+   values:
+     layout: miscellaneous_suite
+     category: "Miscellaneous"
+ - scope:
      path: ""
      type: "performance"
    values:
