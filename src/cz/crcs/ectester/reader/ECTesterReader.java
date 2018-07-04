@@ -273,7 +273,7 @@ public class ECTesterReader {
         actions.addOption(Option.builder("ln").longOpt("list-named").desc("Print the list of supported named curves and keys.").hasArg().argName("what").optionalArg(true).build());
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate [amount] of EC keys.").hasArg().argName("amount").optionalArg(true).build());
-        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. [test_suite]:\n- default:\n- compression:\n- invalid:\n- twist:\n- degenerate:\n- cofactor:\n- wrong:\n- composite:\n- test-vectors:\n- edge-cases:").hasArg().argName("test_suite").optionalArg(true).build());
+        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. [test_suite]:\n- default:\n- compression:\n- invalid:\n- twist:\n- degenerate:\n- cofactor:\n- wrong:\n- composite:\n- test-vectors:\n- edge-cases:\n- miscellaneous:").hasArg().argName("test_suite").optionalArg(true).build());
         actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do EC KeyAgreement (ECDH...), [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("ls").longOpt("list-suites").desc("List supported test suites.").build());
@@ -332,13 +332,14 @@ public class ECTesterReader {
                 new CardDefaultSuite(null, null, null),
                 new CardTestVectorSuite(null, null, null),
                 new CardCompressionSuite(null, null, null),
-                new CardWrongCurvesSuite(null, null, null),
-                new CardDegenerateCurvesSuite(null, null, null),
+                new CardWrongSuite(null, null, null),
+                new CardDegenerateSuite(null, null, null),
                 new CardCofactorSuite(null, null, null),
-                new CardCompositeCurvesSuite(null, null, null),
-                new CardInvalidCurvesSuite(null, null, null),
+                new CardCompositeSuite(null, null, null),
+                new CardInvalidSuite(null, null, null),
                 new CardEdgeCasesSuite(null, null, null),
-                new CardTwistTestSuite(null, null, null)};
+                new CardTwistSuite(null, null, null),
+                new CardMiscSuite(null, null, null)};
         for (CardTestSuite suite : suites) {
             System.out.println(" - " + Colors.bold(suite.getName()));
             for (String line : suite.getDescription()) {
@@ -457,6 +458,9 @@ public class ECTesterReader {
             case "compression":
                 suite = new CardCompressionSuite(writer, cfg, cardManager);
                 break;
+            case "miscellaneous":
+                suite = new CardMiscSuite(writer, cfg, cardManager);
+                break;
             default:
                 // These run are dangerous, prompt before them.
                 System.out.println("The test you selected (" + cfg.testSuite + ") is potentially dangerous.");
@@ -472,19 +476,19 @@ public class ECTesterReader {
                 }
                 switch (cfg.testSuite) {
                     case "wrong":
-                        suite = new CardWrongCurvesSuite(writer, cfg, cardManager);
+                        suite = new CardWrongSuite(writer, cfg, cardManager);
                         break;
                     case "composite":
-                        suite = new CardCompositeCurvesSuite(writer, cfg, cardManager);
+                        suite = new CardCompositeSuite(writer, cfg, cardManager);
                         break;
                     case "invalid":
-                        suite = new CardInvalidCurvesSuite(writer, cfg, cardManager);
+                        suite = new CardInvalidSuite(writer, cfg, cardManager);
                         break;
                     case "degenerate":
-                        suite = new CardDegenerateCurvesSuite(writer, cfg, cardManager);
+                        suite = new CardDegenerateSuite(writer, cfg, cardManager);
                         break;
                     case "twist":
-                        suite = new CardTwistTestSuite(writer, cfg, cardManager);
+                        suite = new CardTwistSuite(writer, cfg, cardManager);
                         break;
                     case "cofactor":
                         suite = new CardCofactorSuite(writer, cfg, cardManager);
@@ -824,7 +828,7 @@ public class ECTesterReader {
                 }
 
                 testSuite = cli.getOptionValue("test", "default").toLowerCase();
-                String[] tests = new String[]{"default", "composite", "compression", "invalid", "degenerate", "test-vectors", "wrong", "twist", "cofactor", "edge-cases"};
+                String[] tests = new String[]{"default", "composite", "compression", "invalid", "degenerate", "test-vectors", "wrong", "twist", "cofactor", "edge-cases", "miscellaneous"};
                 if (!Arrays.asList(tests).contains(testSuite)) {
                     System.err.println(Colors.error("Unknown test suite " + testSuite + ". Should be one of: " + Arrays.toString(tests)));
                     return false;

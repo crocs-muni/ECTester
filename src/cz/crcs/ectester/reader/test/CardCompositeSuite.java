@@ -22,9 +22,9 @@ import static cz.crcs.ectester.common.test.Result.ExpectedValue;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class CardCompositeCurvesSuite extends CardTestSuite {
+public class CardCompositeSuite extends CardTestSuite {
 
-    public CardCompositeCurvesSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
+    public CardCompositeSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
         super(writer, cfg, cardManager, "composite", "The composite suite runs ECDH over curves with composite order. This should generally fail, as using such a curve is unsafe.");
     }
 

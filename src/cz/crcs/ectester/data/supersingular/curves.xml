@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<curves xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../schema.xsd">
+    <curve>
+        <id>ss128</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>ss128.csv</file>
+        <desc>Supersingular curve</desc>
+    </curve>
+    <curve>
+        <id>ss192</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>ss192.csv</file>
+        <desc>Supersingular curve</desc>
+    </curve>
+    <curve>
+        <id>ss224</id>
+        <bits>224</bits>
+        <field>prime</field>
+        <file>ss224.csv</file>
+        <desc>Supersingular curve</desc>
+    </curve>
+    <curve>
+        <id>ss256</id>
+        <bits>256</bits>
+        <field>prime</field>
+        <file>ss256.csv</file>
+        <desc>Supersingular curve</desc>
+    </curve>
+</curves>

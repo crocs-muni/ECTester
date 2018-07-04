@@ -89,4 +89,9 @@
         <directory>wycheproof</directory>
         <desc>Test cases from google Wycheproof project: https://github.com/google/wycheproof</desc>
     </category>
+	<category>
+        <name>supersingular</name>
+        <directory>supersingular</directory>
+        <desc>Some supersingular curves, over F_p with order equal to p + 1.</desc>
+    </category>
 </categories>

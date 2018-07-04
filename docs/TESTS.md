@@ -3,6 +3,7 @@
  - `default`
  - `test-vectors`
  - `compression`
+ - `miscellaneous`
  - `wrong`*
  - `composite`*
  - `invalid`*
@@ -155,4 +156,12 @@ P-256 curve which leaked information about the private key.
 For example:
 ```bash
 java -jar ECTester.jar -t edge-cases
+```
+
+## Miscellaneous
+Some miscellaneous tests, tries ECDH and ECDSA over supersingular curves and Barreto-Naehrig curves with small embedding degree and CM discriminant.
+
+For example:
+```bash
+java -jar ECTester.jar -t miscellaneous
 ```

@@ -18,8 +18,8 @@ import java.util.*;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class CardTwistTestSuite extends CardTestSuite {
-    public CardTwistTestSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
+public class CardTwistSuite extends CardTestSuite {
+    public CardTwistSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
         super(writer, cfg, cardManager, "twist", "The twist test suite tests whether the card correctly rejects points on the quadratic twist of the curve during ECDH.");
     }
 

@@ -20,9 +20,9 @@ import java.util.Map;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class CardDegenerateCurvesSuite extends CardTestSuite {
+public class CardDegenerateSuite extends CardTestSuite {
 
-    public CardDegenerateCurvesSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
+    public CardDegenerateSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
         super(writer, cfg, cardManager, "degenerate", "The degenerate suite tests whether the card rejects points outside of the curve during ECDH.",
                 "The tested points lie on a part of the plane for which some Edwards, Hessian and Huff form addition formulas work.");
     }
