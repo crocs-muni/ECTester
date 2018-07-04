@@ -59,10 +59,16 @@ public class CardCompositeSuite extends CardTestSuite {
             new Command.Cleanup(this.card).send();
         }
 
-        /* Also test having a G of small order, so small R.
-         */
+
         Map<String, EC_Curve> results = EC_Store.getInstance().getObjects(EC_Curve.class, "composite");
         List<Map.Entry<String, List<EC_Curve>>> groupList = EC_Store.mapToPrefix(results.values());
+        /* Test the whole curves with both keypairs generated on card(no small-order public points provided).
+         */
+        List<EC_Curve> wholeCurves = groupList.stream().filter((e) -> e.getKey().equals("whole")).findFirst().get().getValue();
+        testGroup(wholeCurves, "Composite generator order", ExpectedValue.FAILURE, "Card rejected to do ECDH with composite order generator.", "Card did not reject to do ECDH with composite order generator.");
+
+        /* Also test having a G of small order, so small R.
+         */
         List<EC_Curve> smallRCurves = groupList.stream().filter((e) -> e.getKey().equals("small")).findFirst().get().getValue();
         testGroup(smallRCurves, "Small generator order", ExpectedValue.FAILURE, "Card correctly rejected to do ECDH over a small order generator.", "Card incorrectly does ECDH over a small order generator.");
 
