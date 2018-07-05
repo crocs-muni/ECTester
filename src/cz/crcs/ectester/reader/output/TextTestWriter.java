@@ -1,5 +1,6 @@
 package cz.crcs.ectester.reader.output;
 
+import cz.crcs.ectester.common.cli.Colors;
 import cz.crcs.ectester.common.output.BaseTextTestWriter;
 import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.test.Testable;
@@ -42,12 +43,12 @@ public class TextTestWriter extends BaseTextTestWriter {
         if (suite instanceof CardTestSuite) {
             CardTestSuite cardSuite = (CardTestSuite) suite;
             StringBuilder sb = new StringBuilder();
-            sb.append("═══ ECTester version: " + ECTesterReader.VERSION + ECTesterReader.GIT_COMMIT).append(System.lineSeparator());
-            sb.append("═══ Card ATR: ").append(ByteUtil.bytesToHex(cardSuite.getCard().getATR().getBytes(), false)).append(System.lineSeparator());
+            sb.append("═══ " + Colors.underline("ECTester version:") + " " + ECTesterReader.VERSION + ECTesterReader.GIT_COMMIT).append(System.lineSeparator());
+            sb.append("═══ " + Colors.underline("Card ATR:") + " ").append(ByteUtil.bytesToHex(cardSuite.getCard().getATR().getBytes(), false)).append(System.lineSeparator());
             try {
                 CardMngr.CPLC cplc = cardSuite.getCard().getCPLC();
                 if (!cplc.values().isEmpty()) {
-                    sb.append("═══ Card CPLC data:").append(System.lineSeparator());
+                    sb.append("═══ " + Colors.underline("Card CPLC data:")).append(System.lineSeparator());
                     for (Map.Entry<CardMngr.CPLC.Field, byte[]> entry : cplc.values().entrySet()) {
                         CardMngr.CPLC.Field field = entry.getKey();
                         byte[] value = entry.getValue();

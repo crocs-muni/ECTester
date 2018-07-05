@@ -27,13 +27,13 @@ public abstract class BaseTextTestWriter implements TestWriter {
 
     @Override
     public void begin(TestSuite suite) {
-        output.println("═══ Running test suite: " + Colors.bold(suite.getName()) + " ═══");
+        output.println("═══ " + Colors.underline("Running test suite:") + " " + Colors.bold(suite.getName()) + " ═══");
         for (String d : suite.getDescription()) {
             output.println("═══ " + d);
         }
         DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
         Date date = new Date();
-        output.println("═══ Date: " + dateFormat.format(date));
+        output.println("═══ " + Colors.underline("Date:") + " " + dateFormat.format(date));
         output.print(deviceString(suite));
     }
 

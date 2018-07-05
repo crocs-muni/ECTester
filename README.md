@@ -110,7 +110,7 @@ For format of this file see [FORMAT](docs/FORMAT.md).
 #### Test
 `-t / --test [test_suite]`
 
-Perform support and performance tests of ECC.
+Perform support,performance and vulnerability tests of ECC.
 
 Use with `-o / --output [out_type:]<out_file>` to output the test results to a file.
 For possible formats of this file see [FORMAT](docs/FORMAT.md).
@@ -165,7 +165,7 @@ This shows that JCardsim simulates 112b Fp support with default curve present an
     ═══ Date: 2018.05.02 20:29:38
     ═══ ECTester version: v0.2.0
     ═══ Card ATR: 3bfa1800008131fe454a434f5033315632333298
-     OK ┳ Tests of 112b ALG_EC_FP support.                                                       ┃ SUCCESS   ┃ All sub-tests matched the expected mask.
+     OK ┳ (0) Tests of 112b ALG_EC_FP support.                                                   ┃ SUCCESS   ┃ All sub-tests matched the expected mask.
         ┣  OK ━ Allocate both keypairs 112b ALG_EC_FP                                            ┃ SUCCESS   ┃   22 ms ┃  OK   (0x9000) OK   (0x9000)
         ┣  OK ━ Generate both keypairs                                                           ┃ SUCCESS   ┃   23 ms ┃  OK   (0x9000) OK   (0x9000)
         ┣  OK ━ Allocate both keypairs 112b ALG_EC_FP                                            ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000) OK   (0x9000)

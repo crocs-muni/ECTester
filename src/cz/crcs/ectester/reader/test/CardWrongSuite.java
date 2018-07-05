@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Random;
 
 import static cz.crcs.ectester.common.test.Result.ExpectedValue;
+
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
@@ -112,22 +113,33 @@ public class CardWrongSuite extends CardTestSuite {
             Test resetSetup = CompoundTest.all(ExpectedValue.SUCCESS, "Reset keypair.", set.clone());
 
             Test randomG = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_G, (short) (EC_Consts.TRANSFORMATION_FULLRANDOM | EC_Consts.TRANSFORMATION_04_MASK)), "Set G = random non-point/point-like.", "ECDH with non-point G.");
+            Test fullRandomG = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_G, EC_Consts.TRANSFORMATION_FULLRANDOM), "Set G = random data.", "ECDH with G = random data.");
             Test zeroG = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_G, EC_Consts.TRANSFORMATION_INFINITY), "Set G = inifnity.", "ECDH with G = infinity.");
-            Test wrongG = CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted G parameter.", zeroG, randomG);
+            Test wrongG = CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted G parameter.", randomG, fullRandomG, zeroG);
 
             byte[] originalR = new byte[keyLength];
             EC_Consts.getCurveParameter(curve, EC_Consts.PARAMETER_R, originalR, (short) 0);
             BigInteger originalBigR = new BigInteger(1, originalR);
+
+            BigInteger prevPrimeR;
+            do {
+                prevPrimeR = BigInteger.probablePrime(keyLength, r);
+            } while (prevPrimeR.compareTo(originalBigR) >= 0);
+            byte[] prevRBytes = ECUtil.toByteArray(prevPrimeR, keyLength);
+            EC_Params prevRData = new EC_Params(EC_Consts.PARAMETER_R, new byte[][]{prevRBytes});
+            Test prevprimeWrongR = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, prevRData.getParams(), prevRData.flatten()), "Set R = some prime (but [r]G != infinity) smaller than original R.", "ECDH with wrong R, prevprime.");
+
             BigInteger nextPrimeR = originalBigR.nextProbablePrime();
             byte[] nextRBytes = ECUtil.toByteArray(nextPrimeR, keyLength);
             EC_Params nextRData = new EC_Params(EC_Consts.PARAMETER_R, new byte[][]{nextRBytes});
-            Test primeWrongR = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, nextRData.getParams(), nextRData.flatten()), "Set R = some prime (but [r]G != infinity).", "ECDH with wrong R, prime.");
+            Test nextprimeWrongR = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, nextRData.getParams(), nextRData.flatten()), "Set R = some prime (but [r]G != infinity) larger than original R.", "ECDH with wrong R, nextprime.");
+
             byte[] nonprimeRBytes = nextRBytes.clone();
             nonprimeRBytes[0] ^= 1;
             EC_Params nonprimeWrongRData = new EC_Params(EC_Consts.PARAMETER_R, new byte[][]{nonprimeRBytes});
             Test nonprimeWrongR = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, nonprimeWrongRData.getParams(), nonprimeWrongRData.flatten()), "Set R = some composite (but [r]G != infinity).", "ECDH with wrong R, composite.");
 
-            Test wrongR = CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted R parameter.", primeWrongR, nonprimeWrongR);
+            Test wrongR = CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted R parameter.", prevprimeWrongR, nextprimeWrongR, nonprimeWrongR);
 
             doTest(CompoundTest.all(ExpectedValue.SUCCESS, "Tests of " + keyLength + "b " + CardUtil.getKeyTypeString(KeyPair.ALG_EC_FP), setup, wrongPrime, resetSetup, wrongG, resetSetup.clone(), wrongR, resetSetup.clone()));
         }
@@ -197,6 +209,6 @@ public class CardWrongSuite extends CardTestSuite {
                 return;
             }
             ecdh.run();
-        },fullDesc, preparePhase, allocateECDH, ecdh);
+        }, fullDesc, preparePhase, allocateECDH, ecdh);
     }
 }

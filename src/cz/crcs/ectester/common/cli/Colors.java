@@ -90,4 +90,8 @@ public class Colors {
     public static String bold(String text) {
         return colored(text, Attribute.BOLD);
     }
+
+    public static String underline(String text) {
+        return colored(text, Attribute.UNDERLINE);
+    }
 }
