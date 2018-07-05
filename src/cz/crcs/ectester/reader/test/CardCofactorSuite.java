@@ -65,9 +65,9 @@ public class CardCofactorSuite extends CardTestSuite {
             Test ecdsa = CompoundTest.all(ExpectedValue.SUCCESS, "Verify random ECDSA signature by public points on non-generator subgroup.", ecdsaTests.toArray(new Test[0]));
 
             Test tests = CompoundTest.all(ExpectedValue.SUCCESS, "Perform ECDH and ECDSA tests.", ecdh, ecdsa);
+            Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.SUCCESS);
 
-            doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Cofactor test of " + curve.getId() + ".", prepare, tests));
-            new Command.Cleanup(this.card).send();
+            doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Cofactor test of " + curve.getId() + ".", prepare, tests, cleanup));
         }
     }
 }

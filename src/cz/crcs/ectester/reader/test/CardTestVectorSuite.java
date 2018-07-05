@@ -69,8 +69,8 @@ public class CardTestVectorSuite extends CardTestSuite {
                     return new Result(Value.SUCCESS);
                 }
             }));
+            testVector.add(CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.SUCCESS));
             doTest(CompoundTest.greedyAll(ExpectedValue.SUCCESS, "Test vector " + result.getId(), testVector.toArray(new Test[0])));
-            new Command.Cleanup(this.card).send();
         }
     }
 }

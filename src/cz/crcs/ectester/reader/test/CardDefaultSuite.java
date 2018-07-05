@@ -126,10 +126,10 @@ public class CardDefaultSuite extends CardTestSuite {
             }
             Test signTest = runTest(CompoundTest.any(ExpectedValue.SUCCESS, "Signature tests.", signTests.toArray(new Test[0])));
             supportTests.add(signTest);
+            supportTests.add(CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.SUCCESS));
 
-            ExpectedValue[] testExpects = {ExpectedValue.SUCCESS, ExpectedValue.ANY, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS};
+            ExpectedValue[] testExpects = {ExpectedValue.SUCCESS, ExpectedValue.ANY, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.ANY};
             doTest(CompoundTest.mask(testExpects, "Tests of " + keyLength + "b " + CardUtil.getKeyTypeString(field) + " support.", supportTests.toArray(new Test[0])));
-            new Command.Cleanup(this.card).send();
         }
     }
 }

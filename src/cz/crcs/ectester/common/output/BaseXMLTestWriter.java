@@ -112,14 +112,14 @@ public abstract class BaseXMLTestWriter implements TestWriter {
     }
 
     @Override
-    public void outputTest(Test t) {
+    public void outputTest(Test t, int index) {
         if (!t.hasRun())
             return;
         tests.appendChild(testElement(t));
     }
 
     @Override
-    public void outputError(Test t, Throwable cause) {
+    public void outputError(Test t, Throwable cause, int index) {
         tests.appendChild(testElement(t));
     }
 

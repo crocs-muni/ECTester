@@ -38,20 +38,18 @@ public abstract class BaseTextTestWriter implements TestWriter {
     }
 
     /**
-     *
      * @param t
      * @return
      */
     protected abstract String testableString(Testable t);
 
     /**
-     *
      * @param suite
      * @return
      */
     protected abstract String deviceString(TestSuite suite);
 
-    private String testString(Test t, String prefix) {
+    private String testString(Test t, String prefix, int index) {
         boolean compound = t instanceof CompoundTest;
 
         Result result = t.getResult();
@@ -61,7 +59,8 @@ public abstract class BaseTextTestWriter implements TestWriter {
         out.append(compound ? "┳ " : "━ ");
         int width = BASE_WIDTH - (prefix.length() + out.length());
         String widthSpec = "%-" + String.valueOf(width) + "s";
-        out.append(String.format(widthSpec, t.getDescription()));
+        String desc = ((prefix.equals("")) ? "(" + index + ") " : "") + t.getDescription();
+        out.append(String.format(widthSpec, desc));
         out.append(" ┃ ");
         Colors.Foreground valueColor;
         if (result.getValue().ok()) {
@@ -82,10 +81,10 @@ public abstract class BaseTextTestWriter implements TestWriter {
             for (int i = 0; i < tests.length; ++i) {
                 if (i == tests.length - 1) {
                     out.append(prefix).append("    ┗ ");
-                    out.append(testString(tests[i], prefix + "      "));
+                    out.append(testString(tests[i], prefix + "      ", index));
                 } else {
                     out.append(prefix).append("    ┣ ");
-                    out.append(testString(tests[i], prefix + "    ┃ "));
+                    out.append(testString(tests[i], prefix + "    ┃ ", index));
                 }
 
                 if (i != tests.length - 1) {
@@ -100,10 +99,10 @@ public abstract class BaseTextTestWriter implements TestWriter {
     }
 
     @Override
-    public void outputTest(Test t) {
+    public void outputTest(Test t, int index) {
         if (!t.hasRun())
             return;
-        output.println(testString(t, ""));
+        output.println(testString(t, "", index));
         output.flush();
     }
 
@@ -122,8 +121,8 @@ public abstract class BaseTextTestWriter implements TestWriter {
     }
 
     @Override
-    public void outputError(Test t, Throwable cause) {
-        output.println(testString(t, ""));
+    public void outputError(Test t, Throwable cause, int index) {
+        output.println(testString(t, "", index));
         output.print(errorString(cause));
         output.flush();
     }

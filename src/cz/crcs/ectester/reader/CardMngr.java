@@ -1,6 +1,5 @@
 package cz.crcs.ectester.reader;
 
-import com.licel.jcardsim.io.CAD;
 import com.licel.jcardsim.io.JavaxSmartCardInterface;
 import cz.crcs.ectester.common.util.ByteUtil;
 import javacard.framework.AID;

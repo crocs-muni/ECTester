@@ -21,15 +21,16 @@ public interface TestWriter {
     /**
      *
      * @param t
+     * @param index
      */
-    void outputTest(Test t);
+    void outputTest(Test t, int index);
 
     /**
-     *
-     * @param t
+     *  @param t
      * @param cause
+     * @param index
      */
-    void outputError(Test t, Throwable cause);
+    void outputError(Test t, Throwable cause, int index);
 
     /**
      *

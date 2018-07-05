@@ -96,8 +96,9 @@ public class CardCompositeSuite extends CardTestSuite {
             } else {
                 description = testName + " test of " + curve.getId() + ".";
             }
-            doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, description, allocate, set, generate, ecdh));
-            new Command.Cleanup(this.card).send();
+            Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.SUCCESS);
+
+            doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, description, allocate, set, generate, ecdh, cleanup));
         }
 
     }

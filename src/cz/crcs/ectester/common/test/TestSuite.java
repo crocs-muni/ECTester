@@ -10,6 +10,9 @@ public abstract class TestSuite {
     protected String[] description;
     private TestWriter writer;
     private Test running;
+    private int ran = 0;
+    private int runFrom = 0;
+    private int runTo = -1;
 
     public TestSuite(TestWriter writer, String name, String... description) {
         this.writer = writer;
@@ -21,11 +24,21 @@ public abstract class TestSuite {
      * Run the <code>TestSuite</code>.
      */
     public void run() {
+        run(0);
+    }
+
+    public void run(int from) {
+        run(from, -1);
+    }
+
+    public void run(int from, int to) {
+        this.runFrom = from;
+        this.runTo = to;
         writer.begin(this);
         try {
             runTests();
         } catch (TestException e) {
-            writer.outputError(running, e);
+            writer.outputError(running, e, ran);
         } catch (Exception e) {
             writer.end();
             throw new TestSuiteException(e);
@@ -55,8 +68,11 @@ public abstract class TestSuite {
      * @throws TestException
      */
     protected <T extends Test> T doTest(T t) {
-        runTest(t);
-        writer.outputTest(t);
+        if (ran >= runFrom && (runTo < 0 || ran <= runTo)) {
+            runTest(t);
+            writer.outputTest(t, ran);
+        }
+        ran++;
         return t;
     }
 

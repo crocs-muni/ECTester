@@ -272,8 +272,8 @@ public class ECTesterReader {
         actions.addOption(Option.builder("h").longOpt("help").desc("Print help.").build());
         actions.addOption(Option.builder("ln").longOpt("list-named").desc("Print the list of supported named curves and keys.").hasArg().argName("what").optionalArg(true).build());
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
-        actions.addOption(Option.builder("g").longOpt("generate").desc("Generate [amount] of EC keys.").hasArg().argName("amount").optionalArg(true).build());
-        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. [test_suite]:\n- default:\n- compression:\n- invalid:\n- twist:\n- degenerate:\n- cofactor:\n- wrong:\n- composite:\n- test-vectors:\n- edge-cases:\n- miscellaneous:").hasArg().argName("test_suite").optionalArg(true).build());
+        actions.addOption(Option.builder("g").longOpt("generate").desc("Generate <amount> of EC keys.").hasArg().argName("amount").optionalArg(true).build());
+        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. Optionally specify a test number to run only a part of a test suite. <test_suite>:\n- default:\n- compression:\n- invalid:\n- twist:\n- degenerate:\n- cofactor:\n- wrong:\n- composite:\n- test-vectors:\n- edge-cases:\n- miscellaneous:").hasArg().argName("test_suite[:from[:to]]").optionalArg(true).build());
         actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do EC KeyAgreement (ECDH...), [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("ls").longOpt("list-suites").desc("List supported test suites.").build());
@@ -503,7 +503,7 @@ public class ECTesterReader {
                 break;
         }
 
-        suite.run();
+        suite.run(cfg.testFrom, cfg.testTo);
     }
 
     /**
@@ -702,6 +702,8 @@ public class ECTesterReader {
         //Action-related options
         public String listNamed;
         public String testSuite;
+        public int testFrom;
+        public int testTo;
         public int generateAmount;
         public int ECKACount;
         public byte ECKAType = KeyAgreement_ALG_EC_SVDP_DH;
@@ -827,7 +829,34 @@ public class ECTesterReader {
                     primeField = true;
                 }
 
-                testSuite = cli.getOptionValue("test", "default").toLowerCase();
+                String suiteOpt = cli.getOptionValue("test", "default").toLowerCase();
+                if (suiteOpt.contains(":")) {
+                    String[] parts = suiteOpt.split(":");
+                    testSuite = parts[0];
+                    try {
+                        testFrom = Integer.parseInt(parts[1]);
+                    } catch (NumberFormatException nfe) {
+                        System.err.println("Invalid test from number: " + parts[1] + ".");
+                        return false;
+                    }
+                    if (parts.length == 3) {
+                        try {
+                            testTo = Integer.parseInt(parts[2]);
+                        } catch (NumberFormatException nfe) {
+                            System.err.println("Invalid test to number: " + parts[2] + ".");
+                            return false;
+                        }
+                    } else if (parts.length != 2) {
+                        System.err.println("Invalid test suite selection.");
+                        return false;
+                    } else {
+                        testTo = -1;
+                    }
+                } else {
+                    testSuite = suiteOpt;
+                    testFrom = 0;
+                    testTo = -1;
+                }
                 String[] tests = new String[]{"default", "composite", "compression", "invalid", "degenerate", "test-vectors", "wrong", "twist", "cofactor", "edge-cases", "miscellaneous"};
                 if (!Arrays.asList(tests).contains(testSuite)) {
                     System.err.println(Colors.error("Unknown test suite " + testSuite + ". Should be one of: " + Arrays.toString(tests)));
