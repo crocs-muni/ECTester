@@ -87,14 +87,14 @@ public abstract class BaseXMLTestWriter implements TestWriter {
         return resultElem;
     }
 
-    private Element testElement(Test t) {
+    private Element testElement(Test t, int index) {
         Element testElem;
         if (t instanceof CompoundTest) {
             CompoundTest test = (CompoundTest) t;
             testElem = doc.createElement("test");
             testElem.setAttribute("type", "compound");
             for (Test innerTest : test.getStartedTests()) {
-                testElem.appendChild(testElement(innerTest));
+                testElem.appendChild(testElement(innerTest, -1));
             }
         } else {
             SimpleTest<? extends BaseTestable> test = (SimpleTest<? extends BaseTestable>) t;
@@ -108,6 +108,10 @@ public abstract class BaseXMLTestWriter implements TestWriter {
         Element result = resultElement(t.getResult());
         testElem.appendChild(result);
 
+        if (index != -1) {
+            testElem.setAttribute("index", String.valueOf(index));
+        }
+
         return testElem;
     }
 
@@ -115,12 +119,12 @@ public abstract class BaseXMLTestWriter implements TestWriter {
     public void outputTest(Test t, int index) {
         if (!t.hasRun())
             return;
-        tests.appendChild(testElement(t));
+        tests.appendChild(testElement(t, index));
     }
 
     @Override
     public void outputError(Test t, Throwable cause, int index) {
-        tests.appendChild(testElement(t));
+        tests.appendChild(testElement(t, index));
     }
 
     @Override

@@ -66,7 +66,7 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
         return resultObject;
     }
 
-    private Map<String, Object> testObject(Test t) {
+    private Map<String, Object> testObject(Test t, int index) {
         Map<String, Object> testObj;
         if (t instanceof CompoundTest) {
             CompoundTest test = (CompoundTest) t;
@@ -74,7 +74,7 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
             testObj.put("type", "compound");
             List<Map<String, Object>> innerTests = new LinkedList<>();
             for (Test innerTest : test.getStartedTests()) {
-                innerTests.add(testObject(innerTest));
+                innerTests.add(testObject(innerTest, -1));
             }
             testObj.put("tests", innerTests);
         } else {
@@ -84,6 +84,9 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
 
         testObj.put("desc", t.getDescription());
         testObj.put("result", resultObject(t.getResult()));
+        if (index != -1) {
+            testObj.put("index", index);
+        }
 
         return testObj;
     }
@@ -92,12 +95,12 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
     public void outputTest(Test t, int index) {
         if (!t.hasRun())
             return;
-        tests.add(testObject(t));
+        tests.add(testObject(t, index));
     }
 
     @Override
     public void outputError(Test t, Throwable cause, int index) {
-        tests.add(testObject(t));
+        tests.add(testObject(t, index));
     }
 
     @Override
