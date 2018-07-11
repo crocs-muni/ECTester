@@ -17,6 +17,7 @@
 /dist/*.wrong
 /dist/*.invalid
 /dist/*.twist
+/dist/*.miscellaneous
 /dist/*.degenerate
 /dist/*.edge-cases
 /dist/*.xml
