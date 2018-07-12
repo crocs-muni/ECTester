@@ -11,20 +11,20 @@
 {% endif %}
 {% endcapture %}
 
-{% assign color_val=include.depth | minus: 1 | times: 15 %}
+{% assign color_val=include.depth | minus: 1 | times: 12 %}
 {% assign color_channel=255 | minus: color_val %}
 {% assign color_red=color_channel %}
 {% assign color_green=color_channel %}
 {% assign color_blue=color_channel %}
 
 {% if include.test.result.value == "ERROR" %}
-	{% assign color_blue=color_blue | minus: 30 %}
-	{% assign color_green=color_green | minus: 30 %}
+	{% assign color_blue=color_blue | minus: 35 %}
+	{% assign color_green=color_green | minus: 35 %}
 {% elsif include.test.result.value == "FAILURE" or include.test.result.value == "UXSUCCESS" %}
-	{% assign color_blue=color_blue | minus: 30 %}
+	{% assign color_blue=color_blue | minus: 35 %}
 {% else %}
-	{% assign color_red=color_red | minus: 30 %}
-	{% assign color_blue=color_blue | minus: 30 %}
+	{% assign color_red=color_red | minus: 35 %}
+	{% assign color_blue=color_blue | minus: 35 %}
 {% endif %}
 {% if color_red < 0 %}
 	{% assign color_red=0 %}
@@ -39,18 +39,20 @@
 
 {% capture hidden %}{% if include.depth > 1 %}display: none;{% endif %}{% endcapture %}
 
+{% capture index %}{% if include.test.index %}<span style="float: right;" title="Test index">({{ include.test.index }})</span>{% endif %}{% endcapture %}
+
 {% if include.test.type == "command" %}
 	<tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
 	    <td align="center" ><small>{{ include.depth }}</small></td>
 	    {{ ok }}
-	    <td style="padding-left: {{ include.depth | times: 12 }}px;"><i class="far fa-credit-card" title="Command test"></i> {{ include.test.desc }}</td>
+	    <td style="padding-left: {{ include.depth | times: 12 }}px;"><i class="far fa-credit-card" title="Command test"></i> {{ include.test.desc }}{{ index }}</td>
 	    <td class="tooltip sw-tooltip" data-natural-sw="'{{ include.test.response.natural_sw }}'" data-sws="'{{ include.test.response.sws | join: ',' }}'">{{ include.test.result.value }}</td>
 	</tr>
 {% elsif include.test.type == "compound" %}
 	<tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
 	    <td align="center" class="clickable" data-rows="{{ include.test.tests | size }}" data-toggled="false"><i class="fas fa-plus-square"></i></td>
 	    {{ ok }}
-	    <td style="padding-left: {{ include.depth | times: 12 }}px;"><i class="far fa-clone" title="Compound test"></i> {{ include.test.desc }}</td>
+	    <td style="padding-left: {{ include.depth | times: 12 }}px;"><i class="far fa-clone" title="Compound test"></i> {{ include.test.desc }}{{ index }}</td>
 	    <td>{{ include.test.result.value }}</td>
 	</tr>
 	{% for test in include.test.tests %}
@@ -61,21 +63,21 @@
 	<tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
 		<td></td>
 		{{ ok }}
-		<td style="padding-left: {{ include.depth | times: 12 }}px;">{{ include.test.desc }}</td>
+		<td style="padding-left: {{ include.depth | times: 12 }}px;">{{ include.test.desc }}{{ index }}</td>
 		<td class="tooltip kpg-tooltip" data-pubkey="{{ include.test.key-pair-generator.keypair.pubkey.raw }}" data-privkey="{{ include.test.key-pair-generator.keypair.privkey.raw }}">{{ include.test.result.value }}</td>
 	</tr>
 {% elsif include.test.type == "key-agreement" %}
 	<tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
 		<td></td>
 		{{ ok }}
-		<td style="padding-left: {{ include.depth | times: 12 }}px;">{{ include.test.desc }}</td>
+		<td style="padding-left: {{ include.depth | times: 12 }}px;">{{ include.test.desc }}{{ index }}</td>
 		<td class="tooltip ka-tooltip" data-pubkey="{{ include.test.key-agreement.pubkey.raw }}" data-privkey="{{ include.test.key-agreement.privkey.raw }}" data-secret="{{ include.test.key-agreement.secret }}">{{ include.test.result.value }}</td>
 	</tr>
 {% elsif include.test.type == "signature" %}
 	<tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
 		<td></td>
 		{{ ok }}
-		<td style="padding-left: {{ include.depth | times: 12 }}px;">{{ include.test.desc }}</td>
+		<td style="padding-left: {{ include.depth | times: 12 }}px;">{{ include.test.desc }}{{ index }}</td>
 		<td class="tooltip sig-tooltip" data-signature="{{ include.test.signature.raw }}">{{ include.test.result.value }}</td>
 	</tr>
 {% endif %}
