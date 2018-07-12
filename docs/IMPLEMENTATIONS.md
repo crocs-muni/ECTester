@@ -14,18 +14,10 @@ $$ y^2 + a_1xy + a_3y = x^3 + a_2x^2 + a_4x + a_6 $$
 #### Projective
 $$ Y^2Z + a_1XYZ + a_3YZ^2 = X^3 + a_2X^2Z + a_4XZ^2 + a_6Z^3 $$
 
+
 ### Weierstrass (short)
 
 [EFD entry](https://www.hyperelliptic.org/EFD/g1p/auto-shortw.html)
-
-#### Affine
-$$ y^2 = x^3 + a x + b $$
-
-#### Projective
-$$ Y^2Z = X^3 + aXZ^2 + bZ^3 $$
-
-#### Jacobian
-$$ Y^2 = X^3 + aXZ^4 + bZ^6 $$
 
     toweierstrass weierx = x
     toweierstrass weiery = y
@@ -38,11 +30,19 @@ $$ Y^2 = X^3 + aXZ^4 + bZ^6 $$
     fromweierstrass x = weierx
     fromweierstrass y = weiery
 
+#### Affine
+$$ y^2 = x^3 + a x + b $$
+
+#### Projective
+$$ Y^2Z = X^3 + aXZ^2 + bZ^3 $$
+
+#### Jacobian
+$$ Y^2 = X^3 + aXZ^4 + bZ^6 $$
+
+
 ### Montgomery
 
 [EFD entry](https://www.hyperelliptic.org/EFD/g1p/auto-montgom.html)
-#### Affine
-$$ By^2 = x^3 + Ax^2 + x $$
 
     toweierstrass weierx = x
     toweierstrass weiery = y
@@ -55,11 +55,13 @@ $$ By^2 = x^3 + Ax^2 + x $$
     fromweierstrass x = weierx
     fromweierstrass y = weiery
 
+#### Affine
+$$ By^2 = x^3 + Ax^2 + x $$
+
+
 ### Edwards
 
 [EFD entry](https://www.hyperelliptic.org/EFD/g1p/auto-edwards.html)
-#### Affine
-$$ x^2 + y^2 = c^2 (1 + dx^2y^2) $$
 
     toweierstrass u = (c+y)/(c-y)
     toweierstrass v = 2 c (c+y)/(x(c-y))
@@ -72,11 +74,13 @@ $$ x^2 + y^2 = c^2 (1 + dx^2y^2) $$
     fromweierstrass x = 2 c u/v
     fromweierstrass y = c(u-1)/(u+1)
 
+#### Affine
+$$ x^2 + y^2 = c^2 (1 + dx^2y^2) $$
+
+
 ### Twisted Edwards
 
 [EFD entry](https://www.hyperelliptic.org/EFD/g1p/auto-twisted.html)
-#### Affine
-$$ ax^2 + y^2=1 + dx^2y^2 $$
 
     toweierstrass u = (1+y)/(1-y)
     toweierstrass v = 2 (1+y)/(x(1-y))
@@ -89,10 +93,13 @@ $$ ax^2 + y^2=1 + dx^2y^2 $$
     fromweierstrass x = 2 u/v
     fromweierstrass y = (u-1)/(u+1)
 
+#### Affine
+$$ ax^2 + y^2=1 + dx^2y^2 $$
+
+
 ### Hessian
 
-#### Affine
-$$ x^3+y^3+1=3dxy $$
+[EFD entry](https://www.hyperelliptic.org/EFD/g1p/auto-hessian.html)
 
     toweierstrass u = 12(d^3-1)/(d+x+y)-9 d^2
     toweierstrass v = 36(y-x)(d^3-1)/(d+x+y)
@@ -105,6 +112,13 @@ $$ x^3+y^3+1=3dxy $$
     fromweierstrass x = (36(d^3-1)-v)/(6(u+9 d^2))-d/2
     fromweierstrass y = (v+36(d^3-1))/(6(u+9 d^2))-d/2
 
+#### Affine
+$$ x^3+y^3+1=3dxy $$
+
+#### Projective
+$$ X^3 + Y^3 + Z^3 = 3dXYZ $$
+
+
 ---
 
 ## Coordinates
@@ -113,9 +127,9 @@ $$ x^3+y^3+1=3dxy $$
 
 $$ [x, y] \in \mathbb{K}^2 $$
 
-infinity is special cased, sometimes represented as \( [0] \).
+*(Weierstrass)* infinity is special cased, sometimes represented as \( [0] \).
 
-negation: \(-[x, y] = [x, -y] \)
+*(Weierstrass)* negation: \(-[x, y] = [x, -y] \)
 
  - To Projective: \( [x, y] \rightarrow (x : y : 1) \)
  - To Jacobian: \( [x, y] \rightarrow (x : y : 1) \)
@@ -132,9 +146,9 @@ negation: \(-[x, y] = [x, -y] \)
 (X : Y : Z) &= \{(λ X, λ Y, λ Z) | λ \in \mathbb{K}^* \}
 \end{align*}
 
-infinity is \((0 : 1 : 0)\).
+*(Weierstrass)* infinity is \((0 : 1 : 0)\).
 
-negation: \( -(X : Y : Z) = (X : -Y : Z) \)
+*(Weierstrass)* negation: \( -(X : Y : Z) = (X : -Y : Z) \)
 
  - To Affine: \( (X : Y : Z) \rightarrow [X/Z, Y/Z] \)
  - To Jacobian: \( (X : Y : Z) \rightarrow (X/Z : Y/Z : 1) \) ?
@@ -151,9 +165,9 @@ negation: \( -(X : Y : Z) = (X : -Y : Z) \)
 (X : Y : Z) &= \{(λ^2 X, λ^3 Y, λ Z) | λ \in \mathbb{K}^* \}
 \end{align*}
 
-infinity is \( (1 : 1 : 0) \).
+*(Weierstrass)* infinity is \( (1 : 1 : 0) \).
 
-negation: \( -(X : Y : Z) = (X : -Y : Z) \)
+*(Weierstrass)* negation: \( -(X : Y : Z) = (X : -Y : Z) \)
 
  - To Affine: \( (X : Y : Z) \rightarrow [X/Z^2, Y/Z^3] \)
  - To Projective: \( (X : Y : Z) \rightarrow (X/Z^2 : Y/Z^3 : 1) \) ?
@@ -165,9 +179,9 @@ negation: \( -(X : Y : Z) = (X : -Y : Z) \)
 (X : Y : Z : Z^2 : Z^3 ) &= \{(λ^2 X, λ^3 Y, λ Z, λ^2 Z^2, λ^3 Z^3) | λ \in \mathbb{K}^* \}
 \end{align*}
 
-infinity is \( (1 : 1 : 0 : 0 : 0) \). ?
+*(Weierstrass)* infinity is \( (1 : 1 : 0 : 0 : 0) \). ?
 
-negation: \( -(X : Y : Z : Z^2 : Z^3) = (X : -Y : Z : Z^2 : Z^3) \)
+*(Weierstrass)* negation: \( -(X : Y : Z : Z^2 : Z^3) = (X : -Y : Z : Z^2 : Z^3) \)
 
  - To Affine: \( (X : Y : Z : Z^2 : Z^3) \rightarrow [X/Z^2, Y/Z^3] \)
  - To Projective: \( (X : Y : Z : Z^2 : Z^3) \rightarrow (X/Z^2 : Y/Z^3 : 1) \) ?
@@ -176,7 +190,14 @@ negation: \( -(X : Y : Z : Z^2 : Z^3) = (X : -Y : Z : Z^2 : Z^3) \)
 
 ---
 
-## Addition formulas
+## Formulas
+
+ - Addition
+ - Doubling
+ - Tripling
+ - Differential addition
+ - Differential addition and doubling
+ - Scaling
 
 See EFD[^3].
 
