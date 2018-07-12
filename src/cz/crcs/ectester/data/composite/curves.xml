@@ -250,4 +250,54 @@
         <file>composite256_rg0.csv</file>
         <desc>|G| divides r(so [r]G = infinity), but r != |G| = 0x743bc7ea193d40db</desc>
     </curve>
+
+    <curve>
+    	<id>pp/carmichael128</id>
+    	<bits>128</bits>
+    	<field>prime</field>
+    	<file>carmichael_128.csv</file>
+    	<desc>r = Carmichael pseudoprime = 0x2ddbfe0f1f7 * 0x5bb7fc1e3ed * 0x8993fa2d5e3</desc>
+    </curve>
+    <curve>
+        <id>pp/carmichael192</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>carmichael_192.csv</file>
+        <desc>r = Carmichael pseudoprime = 0x730ea70deea47eeb * 0xe61d4e1bdd48fdd5 * 0x1592bf529cbed7cbf</desc>
+    </curve>
+    <curve>
+        <id>pp/carmichael224</id>
+        <bits>224</bits>
+        <field>prime</field>
+        <file>carmichael_224.csv</file>
+        <desc>r = Carmichael pseudoprime = 0x2e6e4205e9ea74ebefd * 0x5cdc840bd3d4e9d7df9 * 0x8b4ac611bdbf5ec3cf5</desc>
+    </curve>
+    <curve>
+        <id>pp/carmichael256</id>
+        <bits>256</bits>
+        <field>prime</field>
+        <file>carmichael_256.csv</file>
+        <desc>r = Carmichael pseudoprime = 0x129e94800bf86bd2d04ce1 * 0x253d290017f0d7a5a099c1 * 0x37dbbd8023e9437870e6a1</desc>
+    </curve>
+    <curve>
+        <id>pp/carmichael384</id>
+        <bits>384</bits>
+        <field>prime</field>
+        <file>carmichael_384.csv</file>
+        <desc>r = Carmichael pseudoprime = 0x78b4fa97e97300a5c46b32fb522cf76f * 0xf169f52fd2e6014b88d665f6a459eedd * 0x16a1eefc7bc5901f14d4198f1f686e64b</desc>
+    </curve>
+    <curve>
+        <id>pp/carmichael512</id>
+        <bits>512</bits>
+        <field>prime</field>
+        <file>carmichael_512.csv</file>
+        <desc>r = Carmichael pseudoprime = 0x2f6e41969c169b4e97b0a1c46ca4fb3a8f294afaefb * 0x5edc832d382d369d2f614388d949f6751e5295f5df5 * 0x8e4ac4c3d443d1ebc711e54d45eef1afad7be0f0cef</desc>
+    </curve>
+    <curve>
+        <id>pp/carmichael521</id>
+        <bits>521</bits>
+        <field>prime</field>
+        <file>carmichael_521.csv</file>
+        <desc>r = Carmichael pseudoprime = 0x170ac4fd154250e674f9ac6e0c29a214c6d6553e4f11 * 0x2e1589fa2a84a1cce9f358dc185344298dacaa7c9e21 * 0x45204ef73fc6f2b35eed054a247ce63e5482ffbaed31</desc>
+    </curve>
 </curves>

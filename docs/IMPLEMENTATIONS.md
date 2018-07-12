@@ -119,7 +119,7 @@ negation: \(-[x, y] = [x, -y] \)
 
  - To Projective: \( [x, y] \rightarrow (x : y : 1) \)
  - To Jacobian: \( [x, y] \rightarrow (x : y : 1) \)
- - To Chudnovsky: ?
+ - To Chudnovsky: \( [x, y] \rightarrow (x : y : 1 : 1 : 1) \)
 
 ### Projective
 \begin{align*}
@@ -134,9 +134,11 @@ negation: \(-[x, y] = [x, -y] \)
 
 infinity is \((0 : 1 : 0)\).
 
+negation: \( -(X : Y : Z) = (X : -Y : Z) \)
+
  - To Affine: \( (X : Y : Z) \rightarrow [X/Z, Y/Z] \)
- - To Jacobian: ?
- - To Chudnovsky: ?
+ - To Jacobian: \( (X : Y : Z) \rightarrow (X/Z : Y/Z : 1) \) ?
+ - To Chudnovsky: \( (X : Y : Z) \rightarrow (X/Z : Y/Z : 1 : 1 : 1) \) ?
 
 ### Jacobian
 \begin{align*}
@@ -151,8 +153,10 @@ infinity is \((0 : 1 : 0)\).
 
 infinity is \( (1 : 1 : 0) \).
 
+negation: \( -(X : Y : Z) = (X : -Y : Z) \)
+
  - To Affine: \( (X : Y : Z) \rightarrow [X/Z^2, Y/Z^3] \)
- - To Projective: ?
+ - To Projective: \( (X : Y : Z) \rightarrow (X/Z^2 : Y/Z^3 : 1) \) ?
  - To Chudnovsky: \( (X : Y : Z) \rightarrow (X : Y : Z : Z^2 : Z^3) \)
 
 ### Chudnovsky
@@ -163,8 +167,10 @@ infinity is \( (1 : 1 : 0) \).
 
 infinity is \( (1 : 1 : 0 : 0 : 0) \). ?
 
+negation: \( -(X : Y : Z : Z^2 : Z^3) = (X : -Y : Z : Z^2 : Z^3) \)
+
  - To Affine: \( (X : Y : Z : Z^2 : Z^3) \rightarrow [X/Z^2, Y/Z^3] \)
- - To Projective: ?
+ - To Projective: \( (X : Y : Z : Z^2 : Z^3) \rightarrow (X/Z^2 : Y/Z^3 : 1) \) ?
  - To Jacobian: \( (X : Y : Z : Z^2 : Z^3) \rightarrow (X : Y : Z) \)
 
 
@@ -241,6 +247,26 @@ Cost: \( C_{binexp}(k) = \lambda(k)C_2 + (\nu(k) - k_0)C_+\)[^7]
 
 Uses binary addition chain, but does all the additions/multiplications.
 
+(right-to-left)
+
+    INPUT: k = (k_{t-1}, ..., k_1, k_0)_2, P ∈ E(F_q).
+    OUTPUT: [k]P.
+    1. Q ← ∞.
+    2. For i from t - 1 downto 0 do
+    2.1 If k_i = 1 then Q ← Q + P else Dummy ← Q + P.
+    2.2 P ← 2P.
+    3. Return(Q).
+
+(left-to-right)
+
+    INPUT: k = (k_{t-1}, ..., k_1, k_0)_2, P ∈ E(F_q).
+    OUTPUT: [k]P.
+    1. Q ← ∞.
+    2. For i from t - 1 downto 0 do
+    2.1 Q ← 2Q.
+    2.2 If k_i = 1 then Q ← Q + P else Dummy ← Q + P.
+    3. Return(Q).
+
 Cost: \( C_{const\_binexp}(k) = \lambda(k) (C_2 + C_+) \) ?
 
 ### Binary NAF multiplication (signed binary exponentiation)
@@ -285,7 +311,7 @@ Cost: \( C_{bin\_NAF} = l(k)C_2 + \sigma(k)C_+ + \text{NAF computation cost}\) ?
     INPUT: Window width w, positive integer k, P ∈ E(F_q).
     OUTPUT: [k]P.
     1. Use Algorithm 3.30 to compute NAF(k).
-    2. Compute P_i = [i]P for i ∈ {1, 3, . . ., 2(2^w - (-1)^w)/3 - 1}. //precomputation
+    2. Compute P_i = [i]P for i ∈ {1, 3, . . ., 2(2^w - (-1)^w)/3 - 1}. //precomputation for fixed P
     3. Q ← ∞, i ← l - 1.
     4. While i ≥ 0 do
     4.1 If k_i = 0 then:
@@ -323,7 +349,7 @@ Cost: \( C_{bin\_NAF} = l(k)C_2 + \sigma(k)C_+ + \text{NAF computation cost}\) ?
     INPUT: Window width w, positive integer k, P ∈ E(F_q).
     OUTPUT: [k]P.
     1. Use Algorithm 3.35 to compute NAF-w(k).
-    2. Compute P_i = [i]P for i ∈ {1, 3, 5, . . ., 2^{w-1} - 1}. //precomputation
+    2. Compute P_i = [i]P for i ∈ {1, 3, 5, . . ., 2^{w-1} - 1}. //precomputation for fixed P
     3. Q ← ∞.
     4. For i from l - 1 downto 0 do
     4.1 Q ← 2Q.
@@ -409,7 +435,7 @@ x_n &= X_n / Z_n; \qquad x_{n+1} = X_{n+1} / Z_{n+1} \\
 y_n &= \frac{2a_6 +(x_1x_n + a_4) (x_1 + x_n) - (x_1 - x_n)^2x_{n+1}}{2y_1}
 \end{align*}
 
-Lopez-Dahab addition formulas (Projective coordinates/XZ coordinates):[^2]
+Lopez-Dahab addition formulas on \( E(\mathbb{F}_{2^m}) \)(Projective coordinates/XZ coordinates):[^2]
 
  - Addition (\( n \ne m \)):
 \begin{align*}

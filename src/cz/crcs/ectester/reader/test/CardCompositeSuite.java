@@ -77,6 +77,11 @@ public class CardCompositeSuite extends CardTestSuite {
         List<EC_Curve> pqCurves = groupList.stream().filter((e) -> e.getKey().equals("pq")).findFirst().get().getValue();
         testGroup(pqCurves, null, ExpectedValue.ANY, "", "");
 
+        /* Also test having G or large order being a Carmichael pseudoprime, R = p * q * r,
+         */
+        List<EC_Curve> ppCurves = groupList.stream().filter((e) -> e.getKey().equals("pp")).findFirst().get().getValue();
+        testGroup(ppCurves, "Generator order = Carmichael pseudoprime", ExpectedValue.ANY, "", "");
+
         /* Also test rg0 curves.
          */
         List<EC_Curve> rg0Curves = groupList.stream().filter((e) -> e.getKey().equals("rg0")).findFirst().get().getValue();
