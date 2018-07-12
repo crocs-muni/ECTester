@@ -74,7 +74,7 @@ public class Result {
                 case FAILURE:
                     return successful ? UXSUCCESS : XFAILURE;
                 case ANY:
-                    return SUCCESS;
+                    return successful ? SUCCESS : XFAILURE;
             }
             return SUCCESS;
         }
