@@ -237,6 +237,8 @@ where \(a_i = a_j + a_k\) for some \( k \le j < i, \forall i \in \{ 1, 2, \ldots
  - *Addition-subtraction chain* of *n*, is a sequence of integers:
 \( 1 = a_0, a_1, \ldots, a_r = n\),
 where \(a_i = \pm a_j \pm a_k\) for some \( k \le j < i, \forall i \in \{ 1, 2, \ldots, r \} \)
+ - *Addition sequence* for \( r_1, r_2, \ldots, r_t \) is an addition chain: \( 1 = a_1, a_2, \ldots, a_l \) which contains \( r_1, r_2, \ldots, r_t \). Useful when operating with one element and many powers \( g^{r_1}, g^{r_2}, \ldots \)
+ - *Vector addition chain* for \(r \in \mathbb{N}^t \) is a sequence of elements \( v_i \) of \( \mathbb{N}^t \) such that \( v_i = e_i \) for \( 1 \le i \le t \) and  \( v_i = v_j + v_k \) for \(j \le k < i \). Useful when powering many elements to many powers \( g_1^{r_1}, g_2^{r_2}, \ldots \)
 
 ### Double and Add (binary exponentiation)
 
@@ -290,6 +292,7 @@ Uses binary addition chain, but does all the additions/multiplications.
 
 Cost: \( C_{const\_binexp}(k) = \lambda(k) (C_2 + C_+) \) ?
 
+
 ### Binary NAF multiplication (signed binary exponentiation)
 
 **Definition 3.28**[^1] A *non-adjacent form (NAF)* of a positive integer *k* is an expression \( k = \Sigma_{i=0}^{l - 1} k_i 2^i \) where \(k_i \in \{0, ±1\}, k_{l−1} \ne 0\), and no two consecutive digits \( k_i \) are nonzero. The length of the NAF is *l*.
@@ -305,9 +308,9 @@ Cost: \( C_{const\_binexp}(k) = \lambda(k) (C_2 + C_+) \) ?
     2.2 Else:
             k_i ← 0.
     2.3 k ← k/2, i ← i + 1.
-    3. Return(k_{i−1}, k_{i−2}, . . ., k_1, k_0).
+    3. Return(k_{i−1}, k_{i−2}, ..., k_1, k_0).
 
-<u>Algorithm 3.31</u> Binary NAF multiplication[^1]
+<u>Algorithm 3.31</u> Binary NAF multiplication (left-to-right)[^1]
 
     INPUT: Positive integer k, P ∈ E(F_q).
     OUTPUT: [k]P.
@@ -323,28 +326,63 @@ Can be made constant time.
 
 Cost: \( C_{bin\_NAF} = l(k)C_2 + \sigma(k)C_+ + \text{NAF computation cost}\) ?
 
+### \(m\)-ary method
+
+Like binary double-and-add but uses a different base *m*.[^6]
+
+    INPUT: k = (k_{t-1}, ..., k_1, k_0)_m, P ∈ E(F_q).
+    OUTPUT: [k]P
+    1. Compute P_i = [i]P for i ∈ {1, 2, ..., m - 1}.
+    2. Q ← ∞.
+    3. For i from l downto 0 do
+    3.1 Q ← [m]Q.
+    3.2 Q ← Q + P_{k_i}.
+    4. Return(Q).
+
+### \( 2^r \) method
+
+Like \(m\)-ary method, with \( m = 2^r \), means that `[m]Q` is doable with only doubling.[^6]
+
 ### Sliding window
 
-<u>Algorithm 13.6</u> in HEHCC[^2]
+<u>Algorithm 13.6</u> Sliding window in HEHCC[^2]
 
-<u>Algorithm 3.38</u> in GECC[^1]
+    INPUT: Window width w, k = (k_{t-1}, ..., k_1, k_0)_2, P ∈ E(F_q).
+    OUTPUT: [k]P
+    1. Compute P_i = [i]P for i ∈ {3, 5, ..., 2^w - 1}. //precomputation for fixed P
+    2. Q ← ∞, i ← t - 1.
+    3. While i ≥ 0 do
+    3.1 If k_i = 0 then:
+            Q ← [2]Q, i ← i - 1.
+    3.2 Else:
+    3.2.1   s ← max(i - k + 1, 0).
+    3.2.2   While k_s = 0 do
+                s ← s + 1.
+    3.2.3   For h from 1 to i - s + 1 do
+                Q ← [2]Q.
+    3.2.4   u ← (k_i, ..., k_s)_2.
+    3.2.5   Q ← P_u.                // u is odd.
+    3.2.6   i ← s - 1.
+    4. Return(Q).
+
+<u>Algorithm 3.38</u> Sliding window with NAF(signed sliding window) in GECC[^1]
 
     INPUT: Window width w, positive integer k, P ∈ E(F_q).
     OUTPUT: [k]P.
     1. Use Algorithm 3.30 to compute NAF(k).
-    2. Compute P_i = [i]P for i ∈ {1, 3, . . ., 2(2^w - (-1)^w)/3 - 1}. //precomputation for fixed P
+    2. Compute P_i = [i]P for i ∈ {1, 3, ..., 2(2^w - (-1)^w)/3 - 1}. //precomputation for fixed P
     3. Q ← ∞, i ← l - 1.
     4. While i ≥ 0 do
     4.1 If k_i = 0 then:
             t ← 1, u ← 0.
-        Else:
-            find the largest t ≤ w such that u ← (k_i , . . ., k_{i-t+1}) is odd.
+    4.2 Else:
+            find the largest t ≤ w such that u ← (k_i , ..., k_{i-t+1}) is odd.
     4.3 Q ← [2^t]Q.
     4.4 If u > 0 then:
             Q ← Q + P_u.
-        Else:
+    4.5 Else:
             if u < 0 then Q ← Q - P_{-u}.
-    4.5 i ← i - t.
+    4.6 i ← i - t.
     5. Return(Q).
 
 ### Window NAF multiplication
@@ -363,20 +401,22 @@ Cost: \( C_{bin\_NAF} = l(k)C_2 + \sigma(k)C_+ + \text{NAF computation cost}\) ?
     2.2 Else:
             k_i ← 0.
     2.3 k ← k/2, i ← i + 1.
-    3. Return(k_{i−1}, k_{i−2}, . . ., k_1, k_0).
+    3. Return(k_{i−1}, k_{i−2}, ..., k_1, k_0).
 
 <u>Algorithm 3.36</u> in GECC[^1]
 
     INPUT: Window width w, positive integer k, P ∈ E(F_q).
     OUTPUT: [k]P.
     1. Use Algorithm 3.35 to compute NAF-w(k).
-    2. Compute P_i = [i]P for i ∈ {1, 3, 5, . . ., 2^{w-1} - 1}. //precomputation for fixed P
+    2. Compute P_i = [i]P for i ∈ {1, 3, 5, ..., 2^{w-1} - 1}. //precomputation for fixed P
     3. Q ← ∞.
     4. For i from l - 1 downto 0 do
     4.1 Q ← 2Q.
-    4.2 If k i = 0 then:
-            If k_i > 0 then Q ← Q + P_{ki} ;
-        Else Q ← Q - P_{-k_i} .
+    4.2 If k_i != 0 then:
+            If k_i > 0 then:
+                Q ← Q + P_{k_i} ;
+            Else:
+                Q ← Q - P_{-k_i} .
     5. Return(Q).
 
 ### Fractional window
@@ -401,7 +441,7 @@ The same name, Montgomery ladder, is used both for the general ladder idea of ex
 
 <u>Algorithm 3.</u> in [^8] (general Montgomery ladder)
 
-    INPUT: G ∈ E(F_q), k = (1, k_{t−2}, . . . , k_0)2
+    INPUT: G ∈ E(F_q), k = (1, k_{t−2}, ..., k_0)2
     OUTPUT: Y = kG
     R0 ← G; R1 ← [2]G
     for j = t − 2 downto 0 do
@@ -503,4 +543,5 @@ elliptic Curve Cryptography. CRC Press, 2005-07-19. Discrete Mathematics and It�
 [^8]: JOYE, Marc; YEN, Sung-Ming: The Montgomery Powering Ladder.
 [^9]: MOLLER, Bodo: Securing Elliptic Curve Point Multiplication against Side-Channel Attacks.
 [^10]: MOLLER, Bodo: Improved Techniques for Fast Exponentiation.
-[^11]: MOLLER, Bodo: Fractional Windows Revisited: Improved Signed-Digit Representations for Efficient Exponentiation
+[^11]: MOLLER, Bodo: Fractional Windows Revisited: Improved Signed-Digit Representations for Efficient Exponentiation.
+[^12]: KOYAMA, Kenji; TSURUOKA, Yukio: Speeding up Elliptic Cryptosystems by Using a Signed Binary Window Method.
