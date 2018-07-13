@@ -54,10 +54,21 @@ public abstract class BaseTextTestWriter implements TestWriter {
 
         Result result = t.getResult();
 
+		String line = "";
+		if (prefix.equals("")) {
+			char charLine[] = new char[BASE_WIDTH + 24];
+			new String(new char[BASE_WIDTH + 24]).replace("\0", "━").getChars(0, charLine.length - 1, charLine, 0);
+			charLine[4] = '┳';
+			charLine[BASE_WIDTH + 1] = '┳';
+			charLine[BASE_WIDTH + 13] = '┳';
+			charLine[BASE_WIDTH + 23] = '┓';
+			line = new String(charLine) + System.lineSeparator();
+		}
+
         StringBuilder out = new StringBuilder();
         out.append(t.ok() ? Colors.ok(" OK ") : Colors.error("NOK "));
-        out.append(compound ? "┳ " : "━ ");
-        int width = BASE_WIDTH - (prefix.length() + out.length());
+        out.append(compound ? (prefix.equals("") ? "╋ " : "┳ ") : "━ ");
+        int width = BASE_WIDTH - (prefix.length() + 6);
         String widthSpec = "%-" + String.valueOf(width) + "s";
         String desc = ((prefix.equals("")) ? "(" + index + ") " : "") + t.getDescription();
         out.append(String.format(widthSpec, desc));
@@ -95,7 +106,7 @@ public abstract class BaseTextTestWriter implements TestWriter {
             SimpleTest<? extends BaseTestable> test = (SimpleTest<? extends BaseTestable>) t;
             out.append(testableString(test.getTestable()));
         }
-        return out.toString();
+        return line + out.toString();
     }
 
     @Override
