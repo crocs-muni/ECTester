@@ -516,6 +516,10 @@ x_n &= X_n / Z_n; \qquad x_{n+1} = X_{n+1} / Z_{n+1} \\
 y_n &= \frac{(x_n + x_1)((x_n + x_1)(x_{n+1} + x_1) + x_1^2 + y_1)}{x_1} + y_1
 \end{align*}
 
+### GLV scalar multiplication
+
+[^13]
+
 ### Fixed-base windowing (BGMW)
 
 <u>Algorithm 3.41</u> and <u>Algorithm 3.42</u> in GECC[^1]
@@ -545,3 +549,4 @@ elliptic Curve Cryptography. CRC Press, 2005-07-19. Discrete Mathematics and Itâ
 [^10]: MOLLER, Bodo: Improved Techniques for Fast Exponentiation.
 [^11]: MOLLER, Bodo: Fractional Windows Revisited: Improved Signed-Digit Representations for Efficient Exponentiation.
 [^12]: KOYAMA, Kenji; TSURUOKA, Yukio: Speeding up Elliptic Cryptosystems by Using a Signed Binary Window Method.
+[^13]: GALLANT, Robert P.; LAMBERT, Robert J.; VANSTONE, Scott A.: Faster point multiplication on elliptic curves with efficient endomorphisms.
