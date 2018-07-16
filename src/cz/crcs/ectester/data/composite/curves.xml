@@ -302,11 +302,18 @@
     </curve>
 
     <curve>
+        <id>varying/160/1</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/2a.csv</file>
+        <desc>r = 2 bit prime = 2</desc>
+    </curve>
+    <curve>
         <id>varying/160/2</id>
         <bits>160</bits>
         <field>prime</field>
-        <file>varying/160/2.csv</file>
-        <desc>r = 2 bit prime</desc>
+        <file>varying/160/2b.csv</file>
+        <desc>r = 2 bit prime = 3</desc>
     </curve>
     <curve>
         <id>varying/160/3</id>
