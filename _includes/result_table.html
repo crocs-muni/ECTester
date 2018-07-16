@@ -55,144 +55,304 @@
 
 <script>
 	function expand(elem, all, timeout) {
-		var parent = elem.parent();
-		var parent_depth = parent.data("depth");
-		var objs = $();
-		parent.nextAll().each(function () {
-				var depth = $(this).data("depth");
-				if ((all && depth > parent_depth + 1) || depth == parent_depth + 1) {
-					objs = objs.add($(this));
-					var clickable = $(this).children(":first");
-					if (all && clickable.hasClass("clickable") && !clickable.data("toggled")) {
-						clickable.data("toggled", true);
-						clickable.children().toggleClass("fa-plus-square").toggleClass("fa-minus-square");
-					}
-				} else if (depth == parent_depth) {
-					return false;
-				}
-				return true;
-		});
-        elem.children(":first").removeClass("fa-plus-square").addClass("fa-minus-square");
-        elem.data("toggled", true);
-		objs.show(timeout);
+	    var parent = elem.parent();
+	    var parent_depth = parent.data("depth");
+	    var objs = $();
+	    parent.nextAll().each(function() {
+	        var depth = $(this).data("depth");
+	        if ((all && depth > parent_depth + 1) || depth == parent_depth + 1) {
+	            objs = objs.add($(this));
+	            var clickable = $(this).children(":first");
+	            if (all && clickable.hasClass("clickable") && !clickable.data("toggled")) {
+	                clickable.data("toggled", true);
+	                clickable.children().toggleClass("fa-plus-square").toggleClass("fa-minus-square");
+	            }
+	        } else if (depth == parent_depth) {
+	            return false;
+	        }
+	        return true;
+	    });
+	    elem.children(":first").removeClass("fa-plus-square").addClass("fa-minus-square");
+	    elem.data("toggled", true);
+	    objs.show(timeout);
 	}
 
 	function collapse(elem, timeout) {
-		var parent = elem.parent();
-		var parent_depth = parent.data("depth");
-		var objs = $();
-		parent.nextAll().each(function () {
-				var depth = $(this).data("depth");
-				if (depth >= parent_depth + 1) {
-					objs = objs.add($(this));
-					var clickable = $(this).children(":first");
-					if (clickable.data("toggled")) {
-						clickable.data("toggled", false);
-						clickable.children().toggleClass("fa-plus-square").toggleClass("fa-minus-square");
-					}
-				} else if (depth <= parent_depth) {
-					return false;
-				}
-				return true;
-		});
-        elem.children(":first").removeClass("fa-minus-square").addClass("fa-plus-square");
-        elem.data("toggled", false);
-		objs.hide(timeout);
+	    var parent = elem.parent();
+	    var parent_depth = parent.data("depth");
+	    var objs = $();
+	    parent.nextAll().each(function() {
+	        var depth = $(this).data("depth");
+	        if (depth >= parent_depth + 1) {
+	            objs = objs.add($(this));
+	            var clickable = $(this).children(":first");
+	            if (clickable.data("toggled")) {
+	                clickable.data("toggled", false);
+	                clickable.children().toggleClass("fa-plus-square").toggleClass("fa-minus-square");
+	            }
+	        } else if (depth <= parent_depth) {
+	            return false;
+	        }
+	        return true;
+	    });
+	    elem.children(":first").removeClass("fa-minus-square").addClass("fa-plus-square");
+	    elem.data("toggled", false);
+	    objs.hide(timeout);
 	}
 
-	$(".clickable").click(function (e) {
-		if ($(this).data("toggled")) {
-			collapse($(this), 200);
-		} else {
-			expand($(this), e.ctrlKey, 200);
-		}
+	$(".clickable").click(function(e) {
+	    if ($(this).data("toggled")) {
+	        collapse($(this), 200);
+	    } else {
+	        expand($(this), e.ctrlKey, 200);
+	    }
 	});
 
-	$("#expand-all").click(function () {
-		$(".clickable").filter(function (i, e) {
-			return $(e).parent().data("depth") == 1;
-		}).each(function (i, e) {
-			expand($(e), true, 200);
-		});
+	$("#expand-all").click(function() {
+	    $(".clickable").filter(function(i, e) {
+	        return $(e).parent().data("depth") == 1;
+	    }).each(function(i, e) {
+	        expand($(e), true, 200);
+	    });
 	});
 
-	$("#collapse-all").click(function () {
-		$(".clickable").filter(function (i, e) {
-			return $(e).parent().data("depth") == 1 && $(e).data("toggled") == true;
-		}).each(function (i, e) {
-			collapse($(e), 200);
-		});
+	$("#collapse-all").click(function() {
+	    $(".clickable").filter(function(i, e) {
+	        return $(e).parent().data("depth") == 1 && $(e).data("toggled") == true;
+	    }).each(function(i, e) {
+	        collapse($(e), 200);
+	    });
 	});
 
-    // Common settings of all tooltips.
-    var common_tooltip = {
-        position: {
-            my: "left center",
-            at: "right center"
-        },
-        // Let the tooltip stay up if the mouse is over it.
-        show: null,
-        hide: {
-            effect: ""
-        },
-        close: function( event, ui ) {
-            ui.tooltip.hover(
-                function () {
-                    $(this).stop(true).fadeTo(400, 1);
-                },
-                function () {
-                    $(this).fadeOut("400", function(){ $(this).remove(); })
-                }
-            );
-        }
-    };
-    $(".sw-tooltip").tooltip($.extend({}, common_tooltip, {
-        items: ".sw-tooltip",
-        content: function () {
-            var natural_sw = $(this).data("natural-sw").replace(/'/g, "");
-            var sws = $(this).data("sws").replace(/'/g, "").split(",");
-            sws = sws.map(function (t) { return "0x" + parseInt(t).toString(16); }).join(" ");
-            var nat_sws = $("<span></span>").text("0x" + parseInt(natural_sw).toString(16));
-            var ectester_sws = $("<span></span>").text(sws);
-            var natural_label = $("<b>Natural SW:</b>");
-            var sws_label = $("<b>SWs:</b>");
-            return natural_label.add(nat_sws).add($("<br/>")).add(sws_label).add(ectester_sws);
-        }
-    }));
-    $(".cause-tooltip").tooltip($.extend({}, common_tooltip, {
-        items: ".cause-tooltip",
-        content: function () {
-            return $(this).data("cause");
-        }
-    }));
-    $(".kpg-tooltip").tooltip($.extend({}, common_tooltip, {
-    	items: ".kpg-tooltip",
-    	content: function () {
-    		var pubkey = $(this).data("pubkey");
-    		var privkey = $(this).data("privkey");
-    		var pubkey_label = $("<b>Public key:</b>");
-    		var privkey_label = $("<b>Private key:</b>");
-    		return pubkey_label.add($("<span></span>").text(pubkey)).add($("<br/>")).add(privkey_label).add($("<span></span>").text(privkey));
-    	}
-    }));
-    $(".ka-tooltip").tooltip($.extend({}, common_tooltip, {
-    	items: ".ka-tooltip",
-    	content: function () {
-    		var pubkey = $(this).data("pubkey");
-    		var privkey = $(this).data("privkey");
-    		var secret = $(this).data("secret");
-    		var pubkey_label = $("<b>Public key:</b>");
-    		var privkey_label = $("<b>Private key:</b>");
-    		var secret_label = $("<b>Derived secret:</b>");
-    		return pubkey_label.add($("<span></span>").text(pubkey)).add($("<br/>")).add(privkey_label).add($("<span></span>").text(privkey)).add($("<br/>")).add(secret_label).add($("<span></span>").text(secret));
-    	}
-    }));
-    $(".sig-tooltip").tooltip($.extend({}, common_tooltip, {
-    	items: ".sig-tooltip",
-    	content: function () {
-    		var sig = $(this).data("signature");
-    		var sig_label = $("<b>Signature:</b>");
-    		return sig_label.add($("<span></span>").text(sig));
-    	}
-    }));
+	var ISO7816 = {
+	    "SW_FILE_FULL": 0x6A84,
+	    "SW_UNKNOWN": 0x6F00,
+	    "SW_CLA_NOT_SUPPORTED": 0x6E00,
+	    "SW_INS_NOT_SUPPORTED": 0x6D00,
+	    "SW_CORRECT_LENGTH_00": 0x6C00,
+	    "SW_WRONG_P1P2": 0x6B00,
+	    "SW_INCORRECT_P1P2": 0x6A86,
+	    "SW_RECORD_NOT_FOUND": 0x6A83,
+	    "SW_FILE_NOT_FOUND": 0x6A82,
+	    "SW_FUNC_NOT_SUPPORTED": 0x6A81,
+	    "SW_WRONG_DATA": 0x6A80,
+	    "SW_APPLET_SELECT_FAILED": 0x6999,
+	    "SW_COMMAND_NOT_ALLOWED": 0x6986,
+	    "SW_CONDITIONS_NOT_SATISFIED": 0x6985,
+	    "SW_DATA_INVALID": 0x6984,
+	    "SW_FILE_INVALID": 0x6983,
+	    "SW_SECURITY_STATUS_NOT_SATISFIED": 0x6982,
+	    "SW_WRONG_LENGTH": 0x6700,
+	    "SW_BYTES_REMAINING_00": 0x6100,
+	    "SW_NO_ERROR": 0x9000
+	};
+	var CryptoException = {
+	    "ILLEGAL_VALUE": 1,
+	    "UNINITIALIZED_KEY": 2,
+	    "NO_SUCH_ALGORITHM": 3,
+	    "INVALID_INIT": 4,
+	    "ILLEGAL_USE": 5
+	};
+	var ECTesterApplet = {
+	    "SW_SIG_VERIFY_FAIL": 0x0ee1,
+	    "SW_DH_DHC_MISMATCH": 0x0ee2,
+	    "SW_KEYPAIR_NULL": 0x0ee3,
+	    "SW_KA_NULL": 0x0ee4,
+	    "SW_SIGNATURE_NULL": 0x0ee5,
+	    "SW_OBJECT_NULL": 0x0ee6,
+	    "SW_Exception": 0xff01,
+	    "SW_ArrayIndexOutOfBoundsException": 0xff02,
+	    "SW_ArithmeticException": 0xff03,
+	    "SW_ArrayStoreException": 0xff04,
+	    "SW_NullPointerException": 0xff05,
+	    "SW_NegativeArraySizeException": 0xff06,
+	    "SW_CryptoException_prefix": 0xf100,
+	    "SW_SystemException_prefix": 0xf200,
+	    "SW_PINException_prefix": 0xf300,
+	    "SW_TransactionException_prefix": 0xf400,
+	    "SW_CardRuntimeException_prefix": 0xf500
+	};
+
+	function format_sw(sw) {
+	    var upper = (sw & 0xff00) >> 8;
+	    var lower = (sw & 0xff);
+	    switch (upper) {
+	        case 0xf1:
+	            return "CryptoException(" + lower + ")";
+	        case 0xf2:
+	            return "SystemException(" + lower + ")";
+	        case 0xf3:
+	            return "PINException(" + lower + ")";
+	        case 0xf4:
+	            return "TransactionException(" + lower + ")";
+	        case 0xf5:
+	            return "CardRuntimeException(" + lower + ")";
+	        default:
+	            switch (sw) {
+	                case ISO7816.SW_APPLET_SELECT_FAILED:
+	                    return "APPLET_SELECT_FAILED";
+	                case ISO7816.SW_BYTES_REMAINING_00:
+	                    return "BYTES_REMAINING";
+	                case ISO7816.SW_CLA_NOT_SUPPORTED:
+	                    return "CLA_NOT_SUPPORTED";
+	                case ISO7816.SW_COMMAND_NOT_ALLOWED:
+	                    return "COMMAND_NOT_ALLOWED";
+	                case ISO7816.SW_CONDITIONS_NOT_SATISFIED:
+	                    return "CONDITIONS_NOT_SATISFIED";
+	                case ISO7816.SW_CORRECT_LENGTH_00:
+	                    return "CORRECT_LENGTH";
+	                case ISO7816.SW_DATA_INVALID:
+	                    return "DATA_INVALID";
+	                case ISO7816.SW_FILE_FULL:
+	                    return "FILE_FULL";
+	                case ISO7816.SW_FILE_INVALID:
+	                    return "FILE_INVALID";
+	                case ISO7816.SW_FILE_NOT_FOUND:
+	                    return "FILE_NOT_FOUND";
+	                case ISO7816.SW_FUNC_NOT_SUPPORTED:
+	                    return "FUNC_NOT_SUPPORTED";
+	                case ISO7816.SW_INCORRECT_P1P2:
+	                    return "INCORRECT_P1P2";
+	                case ISO7816.SW_INS_NOT_SUPPORTED:
+	                    return "INS_NOT_SUPPORTED";
+	                case ISO7816.SW_LOGICAL_CHANNEL_NOT_SUPPORTED:
+	                    return "LOGICAL_CHANNEL_NOT_SUPPORTED";
+	                case ISO7816.SW_RECORD_NOT_FOUND:
+	                    return "RECORD_NOT_FOUND";
+	                case ISO7816.SW_SECURE_MESSAGING_NOT_SUPPORTED:
+	                    return "SECURE_MESSAGING_NOT_SUPPORTED";
+	                case ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED:
+	                    return "SECURITY_STATUS_NOT_SATISFIED";
+	                case ISO7816.SW_UNKNOWN:
+	                    return "UNKNOWN";
+	                case ISO7816.SW_WARNING_STATE_UNCHANGED:
+	                    return "WARNING_STATE_UNCHANGED";
+	                case ISO7816.SW_WRONG_DATA:
+	                    return "WRONG_DATA";
+	                case ISO7816.SW_WRONG_LENGTH:
+	                    return "WRONG_LENGTH";
+	                case ISO7816.SW_WRONG_P1P2:
+	                    return "WRONG_P1P2";
+	                case ISO7816.SW_NO_ERROR:
+	                    return "OK";
+	                case CryptoException.ILLEGAL_VALUE:
+	                    return "ILLEGAL_VALUE";
+	                case CryptoException.UNINITIALIZED_KEY:
+	                    return "UNINITIALIZED_KEY";
+	                case CryptoException.NO_SUCH_ALGORITHM:
+	                    return "NO_SUCH_ALG";
+	                case CryptoException.INVALID_INIT:
+	                    return "INVALID_INIT";
+	                case CryptoException.ILLEGAL_USE:
+	                    return "ILLEGAL_USE";
+	                case ECTesterApplet.SW_SIG_VERIFY_FAIL:
+	                    return "SIG_VERIFY_FAIL";
+	                case ECTesterApplet.SW_DH_DHC_MISMATCH:
+	                    return "DH_DHC_MISMATCH";
+	                case ECTesterApplet.SW_KEYPAIR_NULL:
+	                    return "KEYPAIR_NULL";
+	                case ECTesterApplet.SW_KA_NULL:
+	                    return "KA_NULL";
+	                case ECTesterApplet.SW_SIGNATURE_NULL:
+	                    return "SIGNATURE_NULL";
+	                case ECTesterApplet.SW_OBJECT_NULL:
+	                    return "OBJECT_NULL";
+	                case ECTesterApplet.SW_Exception:
+	                    return "Exception";
+	                case ECTesterApplet.SW_ArrayIndexOutOfBoundsException:
+	                    return "ArrayIndexOutOfBoundsException";
+	                case ECTesterApplet.SW_ArithmeticException:
+	                    return "ArithmeticException";
+	                case ECTesterApplet.SW_ArrayStoreException:
+	                    return "ArrayStoreException";
+	                case ECTesterApplet.SW_NullPointerException:
+	                    return "NullPointerException";
+	                case ECTesterApplet.SW_NegativeArraySizeException:
+	                    return "NegativeArraySizeException";
+	                default:
+	                    return "unknown";
+	            }
+	    }
+	}
+
+	// Common settings of all tooltips.
+	var common_tooltip = {
+	    position: {
+	        my: "left center",
+	        at: "right center"
+	    },
+	    // Let the tooltip stay up if the mouse is over it.
+	    show: null,
+	    hide: {
+	        effect: ""
+	    },
+	    close: function(event, ui) {
+	        ui.tooltip.hover(
+	            function() {
+	                $(this).stop(true).fadeTo(400, 1);
+	            },
+	            function() {
+	                $(this).fadeOut("400", function() {
+	                    $(this).remove();
+	                })
+	            }
+	        );
+	    }
+	};
+	$(".sw-tooltip").tooltip($.extend({}, common_tooltip, {
+	    items: ".sw-tooltip",
+	    content: function() {
+	        var natural_sw = $(this).data("natural-sw").replace(/'/g, "");
+	        var sws = $(this).data("sws").replace(/'/g, "").split(",");
+	        sws = sws.map(function(t) {
+	            var num = parseInt(t);
+	            if (isNaN(num))  {
+	                return "";
+	            } else {
+	                return "0x" + num.toString(16) + " (" + format_sw(num) + ")";
+	            }
+	        }).join(",<br/>");
+	        var nat_sws = $("<span></span>").text("0x" + parseInt(natural_sw).toString(16));
+	        var ectester_sws = $("<span></span>").html(sws);
+	        var natural_label = $("<b>Natural SW:</b>");
+	        var sws_label = $("<b>SWs:</b>");
+	        return natural_label.add(nat_sws).add($("<br/>")).add(sws_label).add(ectester_sws);
+	    }
+	}));
+	$(".cause-tooltip").tooltip($.extend({}, common_tooltip, {
+	    items: ".cause-tooltip",
+	    content: function() {
+	        return $(this).data("cause");
+	    }
+	}));
+	$(".kpg-tooltip").tooltip($.extend({}, common_tooltip, {
+	    items: ".kpg-tooltip",
+	    content: function() {
+	        var pubkey = $(this).data("pubkey");
+	        var privkey = $(this).data("privkey");
+	        var pubkey_label = $("<b>Public key:</b>");
+	        var privkey_label = $("<b>Private key:</b>");
+	        return pubkey_label.add($("<span></span>").text(pubkey)).add($("<br/>")).add(privkey_label).add($("<span></span>").text(privkey));
+	    }
+	}));
+	$(".ka-tooltip").tooltip($.extend({}, common_tooltip, {
+	    items: ".ka-tooltip",
+	    content: function() {
+	        var pubkey = $(this).data("pubkey");
+	        var privkey = $(this).data("privkey");
+	        var secret = $(this).data("secret");
+	        var pubkey_label = $("<b>Public key:</b>");
+	        var privkey_label = $("<b>Private key:</b>");
+	        var secret_label = $("<b>Derived secret:</b>");
+	        return pubkey_label.add($("<span></span>").text(pubkey)).add($("<br/>")).add(privkey_label).add($("<span></span>").text(privkey)).add($("<br/>")).add(secret_label).add($("<span></span>").text(secret));
+	    }
+	}));
+	$(".sig-tooltip").tooltip($.extend({}, common_tooltip, {
+	    items: ".sig-tooltip",
+	    content: function() {
+	        var sig = $(this).data("signature");
+	        var sig_label = $("<b>Signature:</b>");
+	        return sig_label.add($("<span></span>").text(sig));
+	    }
+	}));
 </script>
