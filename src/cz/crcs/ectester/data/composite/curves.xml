@@ -300,4 +300,215 @@
         <file>carmichael_521.csv</file>
         <desc>r = Carmichael pseudoprime = 0x170ac4fd154250e674f9ac6e0c29a214c6d6553e4f11 * 0x2e1589fa2a84a1cce9f358dc185344298dacaa7c9e21 * 0x45204ef73fc6f2b35eed054a247ce63e5482ffbaed31</desc>
     </curve>
+
+    <curve>
+        <id>varying/160/2</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/2.csv</file>
+        <desc>r = 2 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/3</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/3.csv</file>
+        <desc>r = 3 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/4</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/4.csv</file>
+        <desc>r = 4 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/5</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/5.csv</file>
+        <desc>r = 5 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/6</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/6.csv</file>
+        <desc>r = 6 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/7</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/7.csv</file>
+        <desc>r = 7 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/8</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/8.csv</file>
+        <desc>r = 8 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/10</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/10.csv</file>
+        <desc>r = 10 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/12</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/12.csv</file>
+        <desc>r = 12 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/14</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/14.csv</file>
+        <desc>r = 14 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/16</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/16.csv</file>
+        <desc>r = 16 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/20</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/20.csv</file>
+        <desc>r = 20 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/25</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/25.csv</file>
+        <desc>r = 25 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/32</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/32.csv</file>
+        <desc>r = 32 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/48</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/48.csv</file>
+        <desc>r = 48 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/64</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/64.csv</file>
+        <desc>r = 64 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/70</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/70.csv</file>
+        <desc>r = 70 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/80</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/80.csv</file>
+        <desc>r = 80 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/90</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/90.csv</file>
+        <desc>r = 90 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/96</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/96.csv</file>
+        <desc>r = 96 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/112</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/112.csv</file>
+        <desc>r = 112 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/128</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/128.csv</file>
+        <desc>r = 128 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/135</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/135.csv</file>
+        <desc>r = 135 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/140</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/140.csv</file>
+        <desc>r = 140 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/144</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/144.csv</file>
+        <desc>r = 144 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/146</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/146.csv</file>
+        <desc>r = 146 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/148</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/148.csv</file>
+        <desc>r = 148 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/150</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/150.csv</file>
+        <desc>r = 150 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/152</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/152.csv</file>
+        <desc>r = 152 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/152cofactor</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/152_cofactor.csv</file>
+        <desc>r = 152 bit prime, with correct cofactor</desc>
+    </curve>
 </curves>

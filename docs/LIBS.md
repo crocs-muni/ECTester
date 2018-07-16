@@ -67,3 +67,7 @@ Popular libraries with at least some ECC support:
     - Sliding window scalar multiplication algorithm.
  - [Crypto++](https://cryptopp.com/)
     - C++
+    - For prime field curves:
+      - Uses projective coordinates and sliding window scalar multiplication algorithm.
+    - For binary field curves:
+      - Uses affine coordinates and sliding window scalar multiplication algorithm.

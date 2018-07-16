@@ -58,6 +58,7 @@ public abstract class BaseTextTestWriter implements TestWriter {
 		if (prefix.equals("")) {
 			char charLine[] = new char[BASE_WIDTH + 24];
 			new String(new char[BASE_WIDTH + 24]).replace("\0", "━").getChars(0, charLine.length - 1, charLine, 0);
+			charLine[0] = '■';
 			charLine[4] = '┳';
 			charLine[BASE_WIDTH + 1] = '┳';
 			charLine[BASE_WIDTH + 13] = '┳';

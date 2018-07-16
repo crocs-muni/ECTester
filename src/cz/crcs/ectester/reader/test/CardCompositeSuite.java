@@ -47,13 +47,12 @@ public class CardCompositeSuite extends CardTestSuite {
                 continue;
             }
             tests.add(allocate);
+            tests.add(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.ANY));
+            tests.add(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_LOCAL), ExpectedValue.ANY));
             for (EC_Key key : curveKeys.getValue()) {
-                Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.ANY);
-                Test generate = CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_LOCAL), ExpectedValue.ANY);
                 Command ecdhCommand = new Command.ECDH_direct(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH, key.flatten());
                 Test ecdh = CommandTest.expect(ecdhCommand, ExpectedValue.FAILURE, "Card correctly rejected to do ECDH over a composite order curve.", "Card incorrectly does ECDH over a composite order curve, leaks bits of private key.");
-
-                tests.add(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Composite test of " + curve.getId() + ", " + key.getDesc(), set, generate, ecdh));
+                tests.add(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Composite test of " + curve.getId() + ", " + key.getDesc(), ecdh));
             }
             doTest(CompoundTest.all(ExpectedValue.SUCCESS, "Composite test of " + curve.getId() + ".", tests.toArray(new Test[0])));
             new Command.Cleanup(this.card).send();
@@ -71,6 +70,11 @@ public class CardCompositeSuite extends CardTestSuite {
          */
         List<EC_Curve> smallRCurves = groupList.stream().filter((e) -> e.getKey().equals("small")).findFirst().get().getValue();
         testGroup(smallRCurves, "Small generator order", ExpectedValue.FAILURE, "Card correctly rejected to do ECDH over a small order generator.", "Card incorrectly does ECDH over a small order generator.");
+
+        /* Test increasingly larger prime R, to determine where/if card behavior changes.
+         */
+        List<EC_Curve> varyingCurves = groupList.stream().filter((e) -> e.getKey().equals("varying")).findFirst().get().getValue();
+        testGroup(varyingCurves, null, ExpectedValue.ANY, "", "");
 
         /* Also test having a G of large but composite order, R = p * q,
          */
