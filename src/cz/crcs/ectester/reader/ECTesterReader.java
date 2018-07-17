@@ -411,6 +411,7 @@ public class ECTesterReader {
             Command.Generate generate = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL);
             Response.Generate response = generate.send();
             long elapsed = response.getDuration();
+            respWriter.outputResponse(response);
 
             Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR).send();
 
@@ -419,11 +420,10 @@ public class ECTesterReader {
                     retry++;
                     continue;
                 } else {
-                    System.err.println(Colors.error("Keys could not be generated."));
+                    System.err.println(Colors.error("Keys could not be generated/exported."));
                     break;
                 }
             }
-            respWriter.outputResponse(response);
 
             String pub = ByteUtil.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_W), false);
             String priv = ByteUtil.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S), false);
@@ -458,6 +458,7 @@ public class ECTesterReader {
             case "compression":
                 suite = new CardCompressionSuite(writer, cfg, cardManager);
                 break;
+            case "misc":
             case "miscellaneous":
                 suite = new CardMiscSuite(writer, cfg, cardManager);
                 break;
@@ -544,17 +545,17 @@ public class ECTesterReader {
         int done = 0;
         while (done < cfg.ECKACount) {
             List<Response> ecdh = Command.sendAll(generate);
+            for (Response r : ecdh) {
+                respWriter.outputResponse(r);
+            }
 
             Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR).send();
-            ecdh.add(export);
+            respWriter.outputResponse(export);
             byte pubkey_bytes[] = export.getParameter(pubkey, EC_Consts.PARAMETER_W);
             byte privkey_bytes[] = export.getParameter(privkey, EC_Consts.PARAMETER_S);
 
             Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, cfg.ECKAType).send();
-            ecdh.add(perform);
-            for (Response r : ecdh) {
-                respWriter.outputResponse(r);
-            }
+            respWriter.outputResponse(perform);
 
             if (!perform.successful() || !perform.hasSecret()) {
                 if (retry < 10) {
@@ -624,14 +625,10 @@ public class ECTesterReader {
         int retry = 0;
         int done = 0;
         while (done < cfg.ECDSACount) {
-            List<Response> ecdsa = new LinkedList<>();
-            ecdsa.add(generate.send());
+            respWriter.outputResponse(generate.send());
 
             Response.ECDSA perform = new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.ECDSAType, ECTesterApplet.EXPORT_TRUE, data).send();
-            ecdsa.add(perform);
-            for (Response r : ecdsa) {
-                respWriter.outputResponse(r);
-            }
+            respWriter.outputResponse(perform);
 
             if (!perform.successful() || !perform.hasSignature()) {
                 if (retry < 10) {
