@@ -15,12 +15,22 @@ using std::runtime_error;
 #include <cstdlib>
 using std::exit;
 
+#include "cryptopp/cryptlib.h"
+using CryptoPP::Exception;
+
 #include "cryptopp/config.h"
 using CryptoPP::byte;
 
 #include "cryptopp/osrng.h"
 using CryptoPP::AutoSeededRandomPool;
 using CryptoPP::AutoSeededX917RNG;
+
+#include "cryptopp/sha.h"
+using CryptoPP::SHA1;
+using CryptoPP::SHA224;
+using CryptoPP::SHA256;
+using CryptoPP::SHA384;
+using CryptoPP::SHA512;
 
 #include "cryptopp/aes.h"
 using CryptoPP::AES;
@@ -39,6 +49,7 @@ using CryptoPP::ECP;
 using CryptoPP::EC2N;
 using CryptoPP::ECDH;
 using CryptoPP::DL_GroupParameters_EC;
+using CryptoPP::ECDSA;
 
 #include "cryptopp/secblock.h"
 using CryptoPP::SecByteBlock;
@@ -98,7 +109,15 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
     jmethodID provider_put = env->GetMethodID(provider_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
 
     add_kpg(env, "ECDH", "CryptoppECDH", self, provider_put);
-    //add_kpg(env, "ECDH", "CryptoppECDH", self, provider_put);
+    add_kpg(env, "ECDSA", "CryptoppECDSA", self, provider_put);
+    
+    add_ka(env, "ECDH", "CryptoppECDH", self, provider_put);
+    
+    add_sig(env, "SHA1withECDSA", "CryptoppECDSAwithSHA1", self, provider_put);
+    add_sig(env, "SHA224withECDSA", "CryptoppECDSAwithSHA224", self, provider_put);
+    add_sig(env, "SHA256withECDSA", "CryptoppECDSAwithSHA256", self, provider_put);
+    add_sig(env, "SHA384withECDSA", "CryptoppECDSAwithSHA384", self, provider_put);
+    add_sig(env, "SHA512withECDSA", "CryptoppECDSAwithSHA512", self, provider_put);
 
     init_classes(env, "Cryptopp");
 }
@@ -497,7 +516,12 @@ template <class EC> jobject generate_from_group(JNIEnv *env, DL_GroupParameters_
     typename ECDH<EC>::Domain ec_domain(group);
     SecByteBlock priv(ec_domain.PrivateKeyLength()), pub(ec_domain.PublicKeyLength());
 
-    ec_domain.GenerateKeyPair(rng, priv, pub);
+    try {
+        ec_domain.GenerateKeyPair(rng, priv, pub);
+    } catch (Exception & ex) {
+        throw_new(env, "java/security/GeneralSecurityException", ex.what());
+        return NULL;
+    }
 
     jbyteArray pub_bytearray = env->NewByteArray(pub.SizeInBytes());
     jbyte *pub_bytes = env->GetByteArrayElements(pub_bytearray, NULL);
@@ -570,6 +594,192 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
  * Method:    generateSecret
  * Signature: ([B[BLjava/security/spec/ECParameterSpec;)[B
  */
-JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Cryptopp_generateSecret(JNIEnv *, jobject, jbyteArray, jbyteArray, jobject) {
-    return NULL;
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Cryptopp_generateSecret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params) {
+    jsize privkey_length = env->GetArrayLength(privkey);
+    jbyte *privkey_data = env->GetByteArrayElements(privkey, NULL);
+    SecByteBlock private_key((byte *) privkey_data, privkey_length);
+    env->ReleaseByteArrayElements(privkey, privkey_data, JNI_ABORT);
+
+    jsize pubkey_length = env->GetArrayLength(pubkey);
+    jbyte *pubkey_data = env->GetByteArrayElements(pubkey, NULL);
+    SecByteBlock public_key((byte *) pubkey_data, pubkey_length);
+    env->ReleaseByteArrayElements(pubkey, pubkey_data, JNI_ABORT);
+
+    bool success;
+    std::unique_ptr<SecByteBlock> secret;
+    std::unique_ptr<DL_GroupParameters_EC<ECP>> ecp_group = fp_group_from_params(env, params);
+    if (ecp_group == nullptr) {
+        std::unique_ptr<DL_GroupParameters_EC<EC2N>> ec2n_group = f2m_group_from_params(env, params);
+        ECDH<EC2N>::Domain dh_agreement(*ec2n_group);
+
+        try {
+            secret = std::make_unique<SecByteBlock>(dh_agreement.AgreedValueLength());
+            success = dh_agreement.Agree(*secret, private_key, public_key);
+        } catch (Exception & ex) {
+            throw_new(env, "java/security/GeneralSecurityException", ex.what());
+            return NULL;
+        }
+    } else {
+        ECDH<ECP>::Domain dh_agreement(*ecp_group);
+
+        try {
+            secret = std::make_unique<SecByteBlock>(dh_agreement.AgreedValueLength());
+            success = dh_agreement.Agree(*secret, private_key, public_key);
+        } catch (Exception & ex) {
+            throw_new(env, "java/security/GeneralSecurityException", ex.what());
+            return NULL;
+        }
+    }
+
+    jbyteArray result = env->NewByteArray(secret->size());
+    jbyte *result_data = env->GetByteArrayElements(result, NULL);
+    std::copy(secret->begin(), secret->end(), result_data);
+    env->ReleaseByteArrayElements(result, result_data, JNI_COMMIT);
+
+    return result;
+}
+
+template <class EC, class H>
+jbyteArray sign_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray data, const Integer & private_key_x) {
+    AutoSeededRandomPool prng;
+
+    typename ECDSA<EC, H>::PrivateKey pkey;
+    pkey.Initialize(group, private_key_x);
+    typename ECDSA<EC, H>::Signer signer(pkey);
+
+    std::string signature(signer.MaxSignatureLength(), 0);
+
+    jsize data_length = env->GetArrayLength(data);
+    jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
+    size_t len = signer.SignMessage(prng, (byte *)data_bytes, data_length, (byte *)signature.c_str());
+    env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
+    signature.resize(len);
+
+    jbyteArray result = env->NewByteArray(len);
+    jbyte *result_bytes = env->GetByteArrayElements(result, NULL);
+    std::copy(signature.begin(), signature.end(), result_bytes);
+    env->ReleaseByteArrayElements(result, result_bytes, JNI_COMMIT);
+
+    return result;
+}
+
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Cryptopp
+ * Method:    sign
+ * Signature: ([B[BLjava/security/spec/ECParameterSpec;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Cryptopp_sign(JNIEnv *env, jobject self, jbyteArray data, jbyteArray privkey, jobject params) {
+    jclass cryptopp_sig_class = env->FindClass("cz/crcs/ectester/standalone/libs/jni/NativeSignatureSpi$Cryptopp");
+    jfieldID type_id = env->GetFieldID(cryptopp_sig_class, "type", "Ljava/lang/String;");
+    jstring type = (jstring) env->GetObjectField(self, type_id);
+    const char *type_data = env->GetStringUTFChars(type, NULL);
+    std::string type_str(type_data);
+    env->ReleaseStringUTFChars(type, type_data);
+
+    jsize privkey_length = env->GetArrayLength(privkey);
+    jbyte *privkey_data = env->GetByteArrayElements(privkey, NULL);
+    Integer private_key_x((byte *) privkey_data, (size_t) privkey_length);
+    env->ReleaseByteArrayElements(privkey, privkey_data, JNI_ABORT);
+
+    jbyteArray result;
+
+    std::unique_ptr<DL_GroupParameters_EC<ECP>> ecp_group = fp_group_from_params(env, params);
+    if (ecp_group == nullptr) {
+        std::unique_ptr<DL_GroupParameters_EC<EC2N>> ec2n_group = f2m_group_from_params(env, params);
+        if (type_str.find("SHA1") != std::string::npos) {
+            result = sign_message<EC2N, SHA1>(env, *ec2n_group, data, private_key_x);
+        } else if (type_str.find("SHA224") != std::string::npos) {
+            result = sign_message<EC2N, SHA224>(env, *ec2n_group, data, private_key_x);
+        } else if (type_str.find("SHA256") != std::string::npos) {
+            result = sign_message<EC2N, SHA256>(env, *ec2n_group, data, private_key_x);
+        } else if (type_str.find("SHA384") != std::string::npos) {
+            result = sign_message<EC2N, SHA384>(env, *ec2n_group, data, private_key_x);
+        } else if (type_str.find("SHA512") != std::string::npos) {
+            result = sign_message<EC2N, SHA512>(env, *ec2n_group, data, private_key_x);
+        }
+    } else {
+        if (type_str.find("SHA1") != std::string::npos) {
+            result = sign_message<ECP, SHA1>(env, *ecp_group, data, private_key_x);
+        } else if (type_str.find("SHA224") != std::string::npos) {
+            result = sign_message<ECP, SHA224>(env, *ecp_group, data, private_key_x);
+        } else if (type_str.find("SHA256") != std::string::npos) {
+            result = sign_message<ECP, SHA256>(env, *ecp_group, data, private_key_x);
+        } else if (type_str.find("SHA384") != std::string::npos) {
+            result = sign_message<ECP, SHA384>(env, *ecp_group, data, private_key_x);
+        } else if (type_str.find("SHA512") != std::string::npos) {
+            result = sign_message<ECP, SHA512>(env, *ecp_group, data, private_key_x);
+        }
+    }
+
+    return result;
+}
+
+
+template <class EC, class H>
+jboolean verify_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray data, jbyteArray signature, jbyteArray pubkey) {
+    typename EC::Point pkey_point;
+    jsize pubkey_length = env->GetArrayLength(pubkey);
+    jbyte *pubkey_data = env->GetByteArrayElements(pubkey, NULL);
+    group.GetCurve().DecodePoint(pkey_point, (byte *)pubkey_data, pubkey_length);
+    env->ReleaseByteArrayElements(pubkey, pubkey_data, JNI_ABORT);
+
+    typename ECDSA<EC, H>::PublicKey pkey;
+    pkey.Initialize(group, pkey_point);
+    typename ECDSA<EC, H>::Verifier verifier(pkey);
+
+    jsize data_length = env->GetArrayLength(data);
+    jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
+    jsize sig_length = env->GetArrayLength(signature);
+    jbyte *sig_bytes = env->GetByteArrayElements(signature, NULL);
+    bool result = verifier.VerifyMessage((byte *)data_bytes, data_length, (byte *)sig_bytes, sig_length);
+    env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
+    env->ReleaseByteArrayElements(signature, sig_bytes, JNI_ABORT);
+
+    return result;
+}
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Cryptopp
+ * Method:    verify
+ * Signature: ([B[B[BLjava/security/spec/ECParameterSpec;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Cryptopp_verify(JNIEnv *env, jobject self, jbyteArray signature, jbyteArray data, jbyteArray pubkey, jobject params) {
+    jclass cryptopp_sig_class = env->FindClass("cz/crcs/ectester/standalone/libs/jni/NativeSignatureSpi$Cryptopp");
+    jfieldID type_id = env->GetFieldID(cryptopp_sig_class, "type", "Ljava/lang/String;");
+    jstring type = (jstring) env->GetObjectField(self, type_id);
+    const char *type_data = env->GetStringUTFChars(type, NULL);
+    std::string type_str(type_data);
+    env->ReleaseStringUTFChars(type, type_data);
+
+    std::unique_ptr<DL_GroupParameters_EC<ECP>> ecp_group = fp_group_from_params(env, params);
+    if (ecp_group == nullptr) {
+        std::unique_ptr<DL_GroupParameters_EC<EC2N>> ec2n_group = f2m_group_from_params(env, params);
+
+        if (type_str.find("SHA1") != std::string::npos) {
+            return verify_message<EC2N, SHA1>(env, *ec2n_group, data, signature, pubkey);
+        } else if (type_str.find("SHA224") != std::string::npos) {
+            return verify_message<EC2N, SHA224>(env, *ec2n_group, data, signature, pubkey);
+        } else if (type_str.find("SHA256") != std::string::npos) {
+            return verify_message<EC2N, SHA256>(env, *ec2n_group, data, signature, pubkey);
+        } else if (type_str.find("SHA384") != std::string::npos) {
+            return verify_message<EC2N, SHA384>(env, *ec2n_group, data, signature, pubkey);
+        } else if (type_str.find("SHA512") != std::string::npos) {
+            return verify_message<EC2N, SHA512>(env, *ec2n_group, data, signature, pubkey);
+        }
+    } else {
+        if (type_str.find("SHA1") != std::string::npos) {
+            return verify_message<ECP, SHA1>(env, *ecp_group, data, signature, pubkey);
+        } else if (type_str.find("SHA224") != std::string::npos) {
+            return verify_message<ECP, SHA224>(env, *ecp_group, data, signature, pubkey);
+        } else if (type_str.find("SHA256") != std::string::npos) {
+            return verify_message<ECP, SHA256>(env, *ecp_group, data, signature, pubkey);
+        } else if (type_str.find("SHA384") != std::string::npos) {
+            return verify_message<ECP, SHA384>(env, *ecp_group, data, signature, pubkey);
+        } else if (type_str.find("SHA512") != std::string::npos) {
+            return verify_message<ECP, SHA512>(env, *ecp_group, data, signature, pubkey);
+        }
+    }
+    // unreachable
+    return JNI_FALSE;
 }

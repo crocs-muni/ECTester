@@ -148,4 +148,11 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
             super("ECDH");
         }
     }
+
+    public static class CryptoppECDSA extends Cryptopp {
+
+        public CryptoppECDSA() {
+            super("ECDSA");
+        }
+    }
 }
