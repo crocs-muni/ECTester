@@ -122,6 +122,11 @@
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Cryptopp"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Cryptopp"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Cryptopp"/>
+            <class name="cz.crcs.ectester.standalone.libs.OpensslLib"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeProvider$Openssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Openssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$Openssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Openssl"/>
         </javah>
     </target>
 </project>

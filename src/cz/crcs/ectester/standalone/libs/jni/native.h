@@ -513,3 +513,128 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 }
 #endif
 #endif
+/* Header for class cz_crcs_ectester_standalone_libs_OpensslLib */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_OpensslLib
+#define _Included_cz_crcs_ectester_standalone_libs_OpensslLib
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_OpensslLib
+ * Method:    createProvider
+ * Signature: ()Ljava/security/Provider;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_createProvider
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_OpensslLib
+ * Method:    getCurves
+ * Signature: ()Ljava/util/Set;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_getCurves
+  (JNIEnv *, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl
+#ifdef __cplusplus
+extern "C" {
+#endif
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_serialVersionUID
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_serialVersionUID 1421746759512286392LL
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_MAX_ARRAY_SIZE
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_MAX_ARRAY_SIZE 2147483639L
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_KEYS
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_KEYS 0L
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_VALUES
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_VALUES 1L
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_ENTRIES
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_ENTRIES 2L
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_serialVersionUID
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_serialVersionUID 4112578634029874840LL
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_serialVersionUID
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_serialVersionUID -4298000515446427739LL
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl
+ * Method:    setup
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_00024Openssl_setup
+  (JNIEnv *, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Openssl */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Openssl
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Openssl
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Openssl
+ * Method:    keysizeSupported
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Openssl_keysizeSupported
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Openssl
+ * Method:    paramsSupported
+ * Signature: (Ljava/security/spec/AlgorithmParameterSpec;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Openssl_paramsSupported
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Openssl
+ * Method:    generate
+ * Signature: (ILjava/security/SecureRandom;)Ljava/security/KeyPair;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Openssl_generate__ILjava_security_SecureRandom_2
+  (JNIEnv *, jobject, jint, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Openssl
+ * Method:    generate
+ * Signature: (Ljava/security/spec/AlgorithmParameterSpec;Ljava/security/SecureRandom;)Ljava/security/KeyPair;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Openssl_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2
+  (JNIEnv *, jobject, jobject, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeECPublicKey_Openssl */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPublicKey_Openssl
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPublicKey_Openssl
+#ifdef __cplusplus
+extern "C" {
+#endif
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeECPrivateKey_Openssl */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPrivateKey_Openssl
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPrivateKey_Openssl
+#ifdef __cplusplus
+extern "C" {
+#endif
+#ifdef __cplusplus
+}
+#endif
+#endif

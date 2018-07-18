@@ -5,8 +5,8 @@ Popular libraries with at least some ECC support:
  - [libgcrypt](https://www.gnupg.org/related_software/libgcrypt/)
  - [mbedTLS](https://tls.mbed.org/)
  - [Nettle](http://www.lysator.liu.se/~nisse/nettle/)
- - [OpenSSL](https://www.openssl.org/)
  - [OpenSSL (FIPS mode)](https://www.openssl.org/docs/fipsnotes.html)
+ - BoringSSL
  - [Microsoft CNG](https://msdn.microsoft.com/en-us/library/windows/desktop/aa376210(v=vs.85).aspx)
  - [Microsoft .NET crypto](https://docs.microsoft.com/en-us/dotnet/standard/security/cryptography-model)
 
@@ -54,6 +54,13 @@ Popular libraries with at least some ECC support:
         - Uses Lopez-Dahab (Montgomery) ladder, XZ coordinates (ec2_mont.c): Fast multiplication on elliptic curves over GF(2^m) without precomputation (Algorithm 2P)
         - Contains an implementation of IEEE P1363 algorithm A.10.3 using affine coordinates (ec2_aff.c)
     - Has some custom arithmetic for some of the NIST primes.
+ - [OpenSSL](https://www.openssl.org/)
+    - C
+    - For prime field curves:
+        - Uses Jacobian coordinates, and Montgomery ladder, also uses wNAF-based interleaving multi-exponentiation method(ec_mult.c): http://www.bmoeller.de/pdf/TI-01-08.multiexp.pdf
+        - Also uses multiplication with precomputation by wNAF splitting(ec_mult.c)
+    - For binary field curves:
+        - Uses Jacobian coordinates, and Lopez-Dahab ladder, also uses wNAF-based interleaving multi-exponentiation method(ec2_smpl.c)
  - [Botan](https://botan.randombit.net/)
     - C++
     - Uses blinded(randomized) Montgomery ladder.

@@ -71,4 +71,10 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
             super(keyData, params);
         }
     }
+
+    public static class Openssl extends Raw {
+        public Openssl(byte[] keyData, ECParameterSpec params) {
+            super(keyData, params);
+        }
+    }
 }

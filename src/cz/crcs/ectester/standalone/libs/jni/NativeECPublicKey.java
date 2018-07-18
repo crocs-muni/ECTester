@@ -73,4 +73,10 @@ public abstract class NativeECPublicKey implements ECPublicKey {
             super(keyData, params);
         }
     }
+
+    public static class Openssl extends ANSIX962 {
+        public Openssl(byte[] keyData, ECParameterSpec params) {
+            super(keyData, params);
+        }
+    }
 }

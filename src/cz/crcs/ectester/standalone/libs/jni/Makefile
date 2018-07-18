@@ -42,7 +42,7 @@ CFLAGS+=-fPIC -g -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
 CXXFLAGS+=-fPIC -g -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
 
 
-all: tomcrypt_provider.so botan_provider.so cryptopp_provider.so
+all: tomcrypt_provider.so botan_provider.so cryptopp_provider.so openssl_provider.so
 
 # Common utils
 c_utils.o: c_utils.c
@@ -50,6 +50,14 @@ c_utils.o: c_utils.c
 
 cpp_utils.o: cpp_utils.cpp
 	$(CXX) $(CXXFLAGS) -c $<
+
+
+# OpenSSL shim
+openssl_provider.so: openssl.o c_utils.o
+	$(CC) -fPIC -g -shared -o $@ $^ -L. $(shell pkg-config --libs openssl)
+
+openssl.o: openssl.c
+	$(CC) $(shel pkg-config --cflags openssl) $(CFLAGS) -c $<
 
 
 # Libtomcrypt shim

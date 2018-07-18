@@ -70,11 +70,6 @@ using CryptoPP::Integer;
 static jclass provider_class;
 
 
-/*
- * Class:     cz_crcs_ectester_standalone_libs_CryptoppLib
- * Method:    createProvider
- * Signature: ()Ljava/security/Provider;
- */
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_createProvider(JNIEnv *env, jobject self) {
     /* Create the custom provider. */
     jclass local_provider_class = env->FindClass("cz/crcs/ectester/standalone/libs/jni/NativeProvider$Cryptopp");
@@ -100,11 +95,6 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_crea
     return env->NewObject(provider_class, init, name, version, info);
 }
 
-/*
- * Class:     cz_crcs_ectester_standalone_libs_jni_NativeProvider_Cryptopp
- * Method:    setup
- * Signature: ()V
- */
 JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_00024Cryptopp_setup(JNIEnv *env, jobject self){
     jmethodID provider_put = env->GetMethodID(provider_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
 
@@ -157,11 +147,6 @@ static std::string oid_to_str(const OID &oid) {
     return ss.str();
 }
 
-/*
- * Class:     cz_crcs_ectester_standalone_libs_CryptoppLib
- * Method:    getCurves
- * Signature: ()Ljava/util/Set;
- */
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_getCurves(JNIEnv *env, jobject self){
     jclass set_class = env->FindClass("java/util/TreeSet");
 
@@ -180,11 +165,6 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_getC
     return result;
 }
 
-/*
- * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Cryptopp
- * Method:    keysizeSupported
- * Signature: (I)Z
- */
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Cryptopp_keysizeSupported(JNIEnv *env, jobject self, jint keysize){
     std::vector<OID> ecp_oids = get_curve_oids<ECP>();
     for (auto oid = ecp_oids.begin(); oid != ecp_oids.end(); ++oid) {
@@ -204,11 +184,6 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
     return JNI_FALSE;
 }
 
-/*
- * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Cryptopp
- * Method:    paramsSupported
- * Signature: (Ljava/security/spec/AlgorithmParameterSpec;)Z
- */
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Cryptopp_paramsSupported(JNIEnv *env, jobject self, jobject params){
     if (params == NULL) {
         return JNI_FALSE;
@@ -546,11 +521,6 @@ template <class EC> jobject generate_from_group(JNIEnv *env, DL_GroupParameters_
     return env->NewObject(keypair_class, keypair_init, pubkey, privkey);
 }
 
-/*
- * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Cryptopp
- * Method:    generate
- * Signature: (ILjava/security/SecureRandom;)Ljava/security/KeyPair;
- */
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Cryptopp_generate__ILjava_security_SecureRandom_2(JNIEnv *env, jobject self, jint keysize, jobject random){
     std::vector<OID> ecp_oids = get_curve_oids<ECP>();
     for (auto oid = ecp_oids.begin(); oid != ecp_oids.end(); ++oid) {
@@ -572,11 +542,6 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
     return NULL;
 }
 
-/*
- * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Cryptopp
- * Method:    generate
- * Signature: (Ljava/security/spec/AlgorithmParameterSpec;Ljava/security/SecureRandom;)Ljava/security/KeyPair;
- */
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Cryptopp_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2(JNIEnv *env, jobject self, jobject params, jobject random) {
     std::unique_ptr<DL_GroupParameters_EC<ECP>> ecp_group = fp_group_from_params(env, params);
     if (ecp_group == nullptr) {
@@ -588,12 +553,6 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
     return NULL;
 }
 
-
-/*
- * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Cryptopp
- * Method:    generateSecret
- * Signature: ([B[BLjava/security/spec/ECParameterSpec;)[B
- */
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Cryptopp_generateSecret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params) {
     jsize privkey_length = env->GetArrayLength(privkey);
     jbyte *privkey_data = env->GetByteArrayElements(privkey, NULL);
@@ -663,12 +622,6 @@ jbyteArray sign_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray
     return result;
 }
 
-
-/*
- * Class:     cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Cryptopp
- * Method:    sign
- * Signature: ([B[BLjava/security/spec/ECParameterSpec;)[B
- */
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Cryptopp_sign(JNIEnv *env, jobject self, jbyteArray data, jbyteArray privkey, jobject params) {
     jclass cryptopp_sig_class = env->FindClass("cz/crcs/ectester/standalone/libs/jni/NativeSignatureSpi$Cryptopp");
     jfieldID type_id = env->GetFieldID(cryptopp_sig_class, "type", "Ljava/lang/String;");
@@ -715,7 +668,6 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     return result;
 }
 
-
 template <class EC, class H>
 jboolean verify_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray data, jbyteArray signature, jbyteArray pubkey) {
     typename EC::Point pkey_point;
@@ -739,11 +691,6 @@ jboolean verify_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray
     return result;
 }
 
-/*
- * Class:     cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Cryptopp
- * Method:    verify
- * Signature: ([B[B[BLjava/security/spec/ECParameterSpec;)Z
- */
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Cryptopp_verify(JNIEnv *env, jobject self, jbyteArray signature, jbyteArray data, jbyteArray pubkey, jobject params) {
     jclass cryptopp_sig_class = env->FindClass("cz/crcs/ectester/standalone/libs/jni/NativeSignatureSpi$Cryptopp");
     jfieldID type_id = env->GetFieldID(cryptopp_sig_class, "type", "Ljava/lang/String;");

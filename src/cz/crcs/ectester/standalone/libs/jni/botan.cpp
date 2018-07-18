@@ -20,11 +20,6 @@
 
 static jclass provider_class;
 
-/*
- * Class:     cz_crcs_ectester_standalone_libs_BotanLib
- * Method:    createProvider
- * Signature: ()Ljava/security/Provider;
- */
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_createProvider(JNIEnv *env, jobject self) {
     /* Create the custom provider. */
     jclass local_provider_class = env->FindClass("cz/crcs/ectester/standalone/libs/jni/NativeProvider$Botan");
@@ -44,11 +39,6 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_createP
     return env->NewObject(provider_class, init, name, version, info);
 }
 
-/*
- * Class:     cz_crcs_ectester_standalone_libs_jni_NativeProvider_Botan
- * Method:    setup
- * Signature: ()V
- */
 JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_00024Botan_setup(JNIEnv *env, jobject self){
     jmethodID provider_put = env->GetMethodID(provider_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
 
@@ -88,11 +78,6 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
     init_classes(env, "Botan");
 }
 
-/*
- * Class:     cz_crcs_ectester_standalone_libs_BotanLib
- * Method:    getCurves
- * Signature: ()Ljava/util/Set;
- */
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_getCurves(JNIEnv *env, jobject self){
     jclass set_class = env->FindClass("java/util/TreeSet");
 
@@ -111,20 +96,10 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_getCurv
     return result;
 }
 
-/*
- * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Botan
- * Method:    keysizeSupported
- * Signature: (I)Z
- */
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Botan_keysizeSupported(JNIEnv *env, jobject self, jint keysize){
     return JNI_TRUE;
 }
 
-/*
- * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Botan
- * Method:    paramsSupported
- * Signature: (Ljava/security/spec/AlgorithmParameterSpec;)Z
- */
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Botan_paramsSupported(JNIEnv *env, jobject self, jobject params){
     if (params == NULL) {
         return JNI_FALSE;
@@ -319,11 +294,6 @@ static jobject generate_from_group(JNIEnv* env, jobject self, Botan::EC_Group gr
     return env->NewObject(keypair_class, keypair_init, pubkey, privkey);
 }
 
-/*
- * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Botan
- * Method:    generate
- * Signature: (ILjava/security/SecureRandom;)Ljava/security/KeyPair;
- */
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Botan_generate__ILjava_security_SecureRandom_2(JNIEnv *env, jobject self, jint keysize, jobject random){
     const std::set<std::string>& curves = Botan::EC_Group::known_named_groups();
     for (auto it = curves.begin(); it != curves.end(); ++it) {
@@ -339,21 +309,11 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
     return NULL;
 }
 
-/*
- * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Botan
- * Method:    generate
- * Signature: (Ljava/security/spec/AlgorithmParameterSpec;Ljava/security/SecureRandom;)Ljava/security/KeyPair;
- */
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Botan_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2(JNIEnv *env, jobject self, jobject params, jobject random){
     Botan::EC_Group curve_group = group_from_params(env, params);
     return generate_from_group(env, self, curve_group);
 }
 
-/*
- * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Botan
- * Method:    generateSecret
- * Signature: ([B[BLjava/security/spec/ECParameterSpec;)[B
- */
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Botan_generateSecret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params){
     Botan::EC_Group curve_group = group_from_params(env, params);
 
@@ -420,11 +380,6 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     return result;
 }
 
-/*
- * Class:     cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Botan
- * Method:    sign
- * Signature: ([B[BLjava/security/spec/ECParameterSpec;)[B
- */
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Botan_sign(JNIEnv *env, jobject self, jbyteArray data, jbyteArray privkey, jobject params){
     Botan::EC_Group curve_group = group_from_params(env, params);
 
@@ -488,11 +443,6 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     return result;
 }
 
-/*
- * Class:     cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Botan
- * Method:    verify
- * Signature: ([B[B[BLjava/security/spec/ECParameterSpec;)Z
- */
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Botan_verify(JNIEnv *env, jobject self, jbyteArray signature, jbyteArray data, jbyteArray pubkey, jobject params){
     Botan::EC_Group curve_group = group_from_params(env, params);
 

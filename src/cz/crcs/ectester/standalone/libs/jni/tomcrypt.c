@@ -128,6 +128,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
             }
             curve++;
         }
+        (*env)->ReleaseStringUTFChars(env, name, utf_name);
         return JNI_FALSE;
     } else {
         return JNI_FALSE;
