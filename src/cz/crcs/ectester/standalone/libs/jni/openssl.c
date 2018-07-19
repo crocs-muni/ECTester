@@ -1,14 +1,16 @@
 #include "native.h"
 #include <string.h>
+#include <stdio.h>
 
 #include <openssl/conf.h>
 #include <openssl/opensslv.h>
 #include <openssl/objects.h>
+#include <openssl/obj_mac.h>
+#include <openssl/bn.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
 #include <openssl/ec.h>
-#include <openssl/obj_mac.h>
-#include <openssl/bn.h>
+#include <openssl/ecdsa.h>
 
 #include "c_utils.h"
 
@@ -23,7 +25,10 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_creat
     jmethodID init = (*env)->GetMethodID(env, local_provider_class, "<init>", "(Ljava/lang/String;DLjava/lang/String;)V");
 
     jstring name =  (*env)->NewStringUTF(env, OPENSSL_VERSION_TEXT);
-    double version = ((double)((OPENSSL_VERSION_NUMBER & 0xff000000L) >> 30)) + ((double)((OPENSSL_VERSION_NUMBER & 0xff0000L) >> 20));
+    long ver_hi = (OPENSSL_VERSION_NUMBER & 0xff000000L) >> 28;
+    long ver_mid = (OPENSSL_VERSION_NUMBER & 0xff0000L) >> 20;
+    long ver_low = (OPENSSL_VERSION_NUMBER & 0xff00L) >> 12;
+    double version = (double)ver_hi + ((double)ver_mid/10) + ((double)ver_low/100);
 
     return (*env)->NewObject(env, provider_class, init, name, version, name);
 }
@@ -33,15 +38,11 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
     ERR_load_crypto_strings();
     OpenSSL_add_all_algorithms();
 
-    jmethodID provider_put = (*env)->GetMethodID(env, provider_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+    INIT_PROVIDER(env, provider_class);
 
-    jstring ec = (*env)->NewStringUTF(env, "KeyPairGenerator.EC");
-    jstring ec_value = (*env)->NewStringUTF(env, "cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Openssl");
-    (*env)->CallObjectMethod(env, self, provider_put, ec, ec_value);
-
-    jstring ecdh = (*env)->NewStringUTF(env, "KeyAgreement.ECDH");
-    jstring ecdh_value = (*env)->NewStringUTF(env, "cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$OpensslECDH");
-    (*env)->CallObjectMethod(env, self, provider_put, ecdh, ecdh_value);
+    ADD_KPG(env, self, "EC", "Openssl");
+    ADD_KA(env, self, "ECDH", "OpensslECDH");
+    ADD_SIG(env, self, "NONEwithECDSA", "OpensslECDSAwithNONE");
 
     init_classes(env, "Openssl");
 }
@@ -144,20 +145,37 @@ static EC_GROUP *create_curve(JNIEnv *env, jobject params) {
         BIGNUM *p_bn = biginteger_to_bignum(env, p);
         result = EC_GROUP_new_curve_GFp(p_bn, a_bn, b_bn, NULL);
         BN_free(p_bn);
+        if (!result) {
+            throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating EC_GROUP, EC_GROUP_new_curve_GFp.");
+            BN_free(a_bn); BN_free(b_bn); BN_free(gx_bn); BN_free(gy_bn);
+            return NULL;
+        }
 
         g_point = EC_POINT_new(result);
-        EC_POINT_set_affine_coordinates_GFp(result, g_point, gx_bn, gy_bn, NULL);
+        if(!EC_POINT_set_affine_coordinates_GFp(result, g_point, gx_bn, gy_bn, NULL)) {
+            throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating EC_GROUP, EC_POINT_set_affine_coordinates_GFp.");
+            BN_free(a_bn); BN_free(b_bn); BN_free(gx_bn); BN_free(gy_bn); EC_POINT_free(g_point); EC_GROUP_free(result);
+            return NULL;
+        }
     } else if ((*env)->IsInstanceOf(env, field, f2m_field_class)) {
-
         jmethodID get_reduction_poly = (*env)->GetMethodID(env, f2m_field_class, "getReductionPolynomial", "()Ljava/math/BigInteger;");
         jobject red_poly = (*env)->CallObjectMethod(env, field, get_reduction_poly);
 
         BIGNUM *p_bn = biginteger_to_bignum(env, red_poly);
         result = EC_GROUP_new_curve_GF2m(p_bn, a_bn, b_bn, NULL);
         BN_free(p_bn);
+        if (!result) {
+            throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating EC_GROUP, EC_GROUP_new_curve_GF2m.");
+            BN_free(a_bn); BN_free(b_bn); BN_free(gx_bn); BN_free(gy_bn);
+            return NULL;
+        }
 
         g_point = EC_POINT_new(result);
-        EC_POINT_set_affine_coordinates_GF2m(result, g_point, gx_bn, gy_bn, NULL);
+        if(!EC_POINT_set_affine_coordinates_GF2m(result, g_point, gx_bn, gy_bn, NULL)) {
+            throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating EC_GROUP, EC_POINT_set_affine_coordinates_GF2m.");
+            BN_free(a_bn); BN_free(b_bn); BN_free(gx_bn); BN_free(gy_bn); EC_POINT_free(g_point); EC_GROUP_free(result);
+            return NULL;
+        }
     } else {
         return NULL;
     }
@@ -174,7 +192,11 @@ static EC_GROUP *create_curve(JNIEnv *env, jobject params) {
     BIGNUM *h_bn = BN_new();
     BN_set_word(h_bn, h);
 
-    EC_GROUP_set_generator(result, g_point, n_bn, h_bn);
+    if (!EC_GROUP_set_generator(result, g_point, n_bn, h_bn)) {
+        throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating EC_GROUP, EC_GROUP_set_generator.");
+        BN_free(n_bn); BN_free(h_bn); BN_free(gx_bn); BN_free(gy_bn); EC_POINT_free(g_point); EC_GROUP_free(result);
+        return NULL;
+    }
 
     EC_POINT_free(g_point);
     BN_free(gx_bn);
@@ -228,7 +250,11 @@ static jobject create_ec_param_spec(JNIEnv *env, const EC_GROUP *curve) {
         BIGNUM *p = BN_new();
         a = BN_new();
         b = BN_new();
-        EC_GROUP_get_curve_GFp(curve, p, a, b, NULL);
+        if (!EC_GROUP_get_curve_GFp(curve, p, a, b, NULL)) {
+            throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating ECParameterSpec, EC_GROUP_get_curve_GFp.");
+            BN_free(p); BN_free(a); BN_free(b);
+            return NULL;
+        }
 
         jobject p_int = bignum_to_biginteger(env, p);
 
@@ -239,12 +265,20 @@ static jobject create_ec_param_spec(JNIEnv *env, const EC_GROUP *curve) {
 
         gx = BN_new();
         gy = BN_new();
-        EC_POINT_get_affine_coordinates_GFp(curve, EC_GROUP_get0_generator(curve), gx, gy, NULL);
+        if (!EC_POINT_get_affine_coordinates_GFp(curve, EC_GROUP_get0_generator(curve), gx, gy, NULL)) {
+            throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating ECParameterSpec, EC_POINT_get_affine_coordinates_GFp.");
+            BN_free(a); BN_free(b); BN_free(gx); BN_free(gy);
+            return NULL;
+        }
 
     } else if (field_type == NID_X9_62_characteristic_two_field) {
         a = BN_new();
         b = BN_new();
-        EC_GROUP_get_curve_GF2m(curve, NULL, a, b, NULL);
+        if (!EC_GROUP_get_curve_GF2m(curve, NULL, a, b, NULL)) {
+            throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating ECParameterSpec, EC_GROUP_get_curve_GF2m.");
+            BN_free(a); BN_free(b);
+            return NULL;
+        }
 
         int basis_type = EC_GROUP_get_basis_type(curve);
         jintArray ks;
@@ -252,11 +286,21 @@ static jobject create_ec_param_spec(JNIEnv *env, const EC_GROUP *curve) {
         if (basis_type == NID_X9_62_tpBasis) {
             ks = (*env)->NewIntArray(env, 1);
             ks_data = (*env)->GetIntArrayElements(env, ks, NULL);
-            EC_GROUP_get_trinomial_basis(curve, &ks_data[0]);
+            if (!EC_GROUP_get_trinomial_basis(curve, &ks_data[0])) {
+                throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating ECParameterSpec, EC_GROUP_get_trinomial_basis.");
+                BN_free(a); BN_free(b);
+                (*env)->ReleaseIntArrayElements(env, ks, ks_data, JNI_ABORT);
+                return NULL;
+            }
         } else if (basis_type == NID_X9_62_ppBasis) {
             ks = (*env)->NewIntArray(env, 3);
             ks_data = (*env)->GetIntArrayElements(env, ks, NULL);
-            EC_GROUP_get_pentanomial_basis(curve, &ks_data[0], &ks_data[1], &ks_data[2]);
+            if (!EC_GROUP_get_pentanomial_basis(curve, &ks_data[0], &ks_data[1], &ks_data[2])) {
+                throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating ECParameterSpec, EC_GROUP_get_pentanomial_basis.");
+                BN_free(a); BN_free(b);
+                (*env)->ReleaseIntArrayElements(env, ks, ks_data, JNI_ABORT);
+                return NULL;
+            }
         } else {
             return NULL;
         }
@@ -269,7 +313,11 @@ static jobject create_ec_param_spec(JNIEnv *env, const EC_GROUP *curve) {
 
         gx = BN_new();
         gy = BN_new();
-        EC_POINT_get_affine_coordinates_GF2m(curve, EC_GROUP_get0_generator(curve), gx, gy, NULL);
+        if (!EC_POINT_get_affine_coordinates_GF2m(curve, EC_GROUP_get0_generator(curve), gx, gy, NULL)) {
+            throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating ECParameterSpec, EC_POINT_get_affine_coordinates_GF2m.");
+            BN_free(a); BN_free(b); BN_free(gx); BN_free(gy);
+            return NULL;
+        }
     } else {
         return NULL;
     }
@@ -306,7 +354,11 @@ static jobject generate_from_curve(JNIEnv *env, const EC_GROUP *curve) {
 
     EC_KEY *key = EC_KEY_new();
     EC_KEY_set_group(key, curve);
-    EC_KEY_generate_key(key);
+    if (!EC_KEY_generate_key(key)) {
+        throw_new(env, "java/security/GeneralSecurityException", "Error generating key, EC_KEY_generate_key.");
+        EC_KEY_free(key);
+        return NULL;
+    }
 
     jbyteArray priv_bytes = (*env)->NewByteArray(env, key_bytes);
     jbyte *key_priv = (*env)->GetByteArrayElements(env, priv_bytes, NULL);
@@ -431,13 +483,85 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     int field_size = EC_GROUP_get_degree(curve);
     size_t secret_len = (field_size + 7)/8;
 
+    //TODO: Do more KeyAgreements here, but will have to do the hash-fun manually,
+    //      probably using the ECDH_KDF_X9_62 by wrapping it and dynamically choosing the EVP_MD. from the type string.
     jbyteArray result = (*env)->NewByteArray(env, secret_len);
     jbyte *result_data = (*env)->GetByteArrayElements(env, result, NULL);
-    ECDH_compute_key(result_data, secret_len, EC_KEY_get0_public_key(pub), priv, NULL);
+    if (ECDH_compute_key(result_data, secret_len, EC_KEY_get0_public_key(pub), priv, NULL) <= 0) {
+        throw_new(env, "java/security/GeneralSecurityException", "Error computing ECDH, ECDH_compute_key.");
+        EC_KEY_free(pub); EC_KEY_free(priv); EC_GROUP_free(curve);
+        (*env)->ReleaseByteArrayElements(env, result, result_data, JNI_ABORT);
+        return NULL;
+    }
     (*env)->ReleaseByteArrayElements(env, result, result_data, JNI_COMMIT);
 
     EC_KEY_free(pub);
     EC_KEY_free(priv);
     EC_GROUP_free(curve);
     return result;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Openssl_sign(JNIEnv *env, jobject self, jbyteArray data, jbyteArray privkey, jobject params) {
+    EC_GROUP *curve = create_curve(env, params);
+    if (!curve) {
+        throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
+        return NULL;
+    }
+
+    EC_KEY *priv = barray_to_privkey(env, curve, privkey);
+
+    jsize data_size = (*env)->GetArrayLength(env, data);
+    jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
+    // TODO: Do more Signatures here, maybe use the EVP interface to get to the hashes easier and not hash manually?
+    ECDSA_SIG *signature = ECDSA_do_sign(data_data, data_size, priv);
+    (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
+    if (!signature) {
+        throw_new(env, "java/security/GeneralSecurityException", "Error signing, ECDSA_do_sign.");
+        EC_KEY_free(priv); EC_GROUP_free(curve);
+        return NULL;
+    }
+
+    jsize sig_len = i2d_ECDSA_SIG(signature, NULL);
+    jbyteArray result = (*env)->NewByteArray(env, sig_len);
+    jbyte *result_data = (*env)->GetByteArrayElements(env, result, NULL);
+    jbyte *result_data_ptr = result_data;
+    i2d_ECDSA_SIG(signature, (unsigned char **)&result_data_ptr);
+    (*env)->ReleaseByteArrayElements(env, result, result_data, JNI_COMMIT);
+
+    ECDSA_SIG_free(signature);
+    EC_KEY_free(priv);
+    EC_GROUP_free(curve);
+    return result;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Openssl_verify(JNIEnv *env, jobject self, jbyteArray signature, jbyteArray data, jbyteArray pubkey, jobject params) {
+    EC_GROUP *curve = create_curve(env, params);
+    if (!curve) {
+        throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
+        return JNI_FALSE;
+    }
+
+    EC_KEY *pub = barray_to_pubkey(env, curve, pubkey);
+
+    jsize sig_len = (*env)->GetArrayLength(env, signature);
+    jbyte *sig_data = (*env)->GetByteArrayElements(env, signature, NULL);
+    jbyte *sig_data_ptr = sig_data;
+    ECDSA_SIG *sig_obj = d2i_ECDSA_SIG(NULL, (const unsigned char **)&sig_data_ptr, sig_len);
+    (*env)->ReleaseByteArrayElements(env, signature, sig_data, JNI_ABORT);
+
+    jsize data_size = (*env)->GetArrayLength(env, data);
+    jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
+    int result = ECDSA_do_verify(data_data, data_size, sig_obj, pub);
+    if (result < 0) {
+        throw_new(env, "java/security/GeneralSecurityException", "Error verifying, ECDSA_do_verify.");
+        EC_KEY_free(pub); EC_GROUP_free(curve); ECDSA_SIG_free(sig_obj);
+        (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
+        return JNI_FALSE;
+    }
+    (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
+
+    ECDSA_SIG_free(sig_obj);
+    EC_KEY_free(pub);
+    EC_GROUP_free(curve);
+    return (result == 1) ? JNI_TRUE : JNI_FALSE;
 }

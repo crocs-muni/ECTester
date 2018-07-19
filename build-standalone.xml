@@ -128,6 +128,7 @@
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$Openssl"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Openssl"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Openssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Openssl"/>
         </javah>
     </target>
 </project>

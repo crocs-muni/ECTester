@@ -273,4 +273,25 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
             super("SHA512withECDSA");
         }
     }
+
+    public abstract static class Openssl extends NativeSignatureSpi {
+        private String type;
+
+        public Openssl(String type) {
+            this.type = type;
+        }
+
+        @Override
+        native byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
+    }
+
+    public static class OpensslECDSAwithNONE extends Openssl {
+
+        public OpensslECDSAwithNONE() {
+            super("NONEwithECDSA");
+        }
+    }
 }
