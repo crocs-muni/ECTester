@@ -1,6 +1,5 @@
 #include "native.h"
 #include <string.h>
-#include <stdio.h>
 
 #include <openssl/conf.h>
 #include <openssl/opensslv.h>
@@ -86,7 +85,7 @@ static jobject bignum_to_biginteger(JNIEnv *env, const BIGNUM *bn) {
     jbyte *data = (*env)->GetByteArrayElements(env, bytes, NULL);
     BN_bn2bin(bn, data);
     (*env)->ReleaseByteArrayElements(env, bytes, data, JNI_COMMIT);
-    jobject result = (*env)->NewObject(env, biginteger_class, biginteger_init, 0, bytes);
+    jobject result = (*env)->NewObject(env, biginteger_class, biginteger_init, 1, bytes);
     return result;
 }
 
@@ -173,6 +172,7 @@ static EC_GROUP *create_curve(JNIEnv *env, jobject params) {
 
     EC_GROUP_set_generator(result, g_point, n_bn, h_bn);
 
+    EC_POINT_free(g_point);
     BN_free(gx_bn);
     BN_free(gy_bn);
     BN_free(n_bn);
@@ -275,7 +275,6 @@ static jobject create_ec_param_spec(JNIEnv *env, const EC_GROUP *curve) {
 
     jmethodID elliptic_curve_init = (*env)->GetMethodID(env, elliptic_curve_class, "<init>", "(Ljava/security/spec/ECField;Ljava/math/BigInteger;Ljava/math/BigInteger;)V");
     jobject elliptic_curve = (*env)->NewObject(env, elliptic_curve_class, elliptic_curve_init, field, a_int, b_int);
-    fprintf(stderr, "field: %p, a_int: %p, b_int: %p\n", field, a_int, b_int);
     fflush(stderr);
 
     BN_free(a);
@@ -310,7 +309,7 @@ static jobject generate_from_curve(JNIEnv *env, const EC_GROUP *curve) {
     BN_bn2binpad(EC_KEY_get0_private_key(key), key_priv, key_bytes);
     (*env)->ReleaseByteArrayElements(env, priv_bytes, key_priv, JNI_COMMIT);
 
-    unsigned long key_len = 2*keysize + 1;
+    unsigned long key_len = 2*key_bytes + 1;
     jbyteArray pub_bytes = (*env)->NewByteArray(env, key_len);
     jbyte *key_pub = (*env)->GetByteArrayElements(env, pub_bytes, NULL);
     EC_POINT_point2oct(curve, EC_KEY_get0_public_key(key), POINT_CONVERSION_UNCOMPRESSED, key_pub, key_len, NULL);
@@ -355,8 +354,6 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
     EC_GROUP_free(curve);
     return result;
 }
-
-
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Openssl_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2(JNIEnv *env, jobject self, jobject params, jobject random) {
     if ((*env)->IsInstanceOf(env, params, ec_parameter_spec_class)) {
