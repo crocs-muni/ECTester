@@ -39,6 +39,10 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
     jstring ec_value = (*env)->NewStringUTF(env, "cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Openssl");
     (*env)->CallObjectMethod(env, self, provider_put, ec, ec_value);
 
+    jstring ecdh = (*env)->NewStringUTF(env, "KeyAgreement.ECDH");
+    jstring ecdh_value = (*env)->NewStringUTF(env, "cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$OpensslECDH");
+    (*env)->CallObjectMethod(env, self, provider_put, ecdh, ecdh_value);
+
     init_classes(env, "Openssl");
 }
 
@@ -387,4 +391,53 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
         throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
         return NULL;
     }
+}
+
+EC_KEY *barray_to_pubkey(JNIEnv *env, const EC_GROUP *curve, jbyteArray pub) {
+    EC_KEY *result = EC_KEY_new();
+    EC_KEY_set_group(result, curve);
+    jsize pub_len = (*env)->GetArrayLength(env, pub);
+    jbyte *pub_data = (*env)->GetByteArrayElements(env, pub, NULL);
+    EC_POINT *pub_point = EC_POINT_new(curve);
+    EC_POINT_oct2point(curve, pub_point, pub_data, pub_len, NULL);
+    (*env)->ReleaseByteArrayElements(env, pub, pub_data, JNI_ABORT);
+    EC_KEY_set_public_key(result, pub_point);
+    EC_POINT_free(pub_point);
+    return result;
+}
+
+EC_KEY *barray_to_privkey(JNIEnv *env,  const EC_GROUP *curve, jbyteArray priv) {
+    EC_KEY *result = EC_KEY_new();
+    EC_KEY_set_group(result, curve);
+    jsize priv_len = (*env)->GetArrayLength(env, priv);
+    jbyte *priv_data = (*env)->GetByteArrayElements(env, priv, NULL);
+    BIGNUM *s = BN_bin2bn(priv_data, priv_len, NULL);
+    (*env)->ReleaseByteArrayElements(env, priv, priv_data, JNI_ABORT);
+    EC_KEY_set_private_key(result, s);
+    BN_free(s);
+    return result;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Openssl_generateSecret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params) {
+    EC_GROUP *curve = create_curve(env, params);
+    if (!curve) {
+        throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
+        return NULL;
+    }
+
+    EC_KEY *pub = barray_to_pubkey(env, curve, pubkey);
+    EC_KEY *priv = barray_to_privkey(env, curve, privkey);
+
+    int field_size = EC_GROUP_get_degree(curve);
+    size_t secret_len = (field_size + 7)/8;
+
+    jbyteArray result = (*env)->NewByteArray(env, secret_len);
+    jbyte *result_data = (*env)->GetByteArrayElements(env, result, NULL);
+    ECDH_compute_key(result_data, secret_len, EC_KEY_get0_public_key(pub), priv, NULL);
+    (*env)->ReleaseByteArrayElements(env, result, result_data, JNI_COMMIT);
+
+    EC_KEY_free(pub);
+    EC_KEY_free(priv);
+    EC_GROUP_free(curve);
+    return result;
 }

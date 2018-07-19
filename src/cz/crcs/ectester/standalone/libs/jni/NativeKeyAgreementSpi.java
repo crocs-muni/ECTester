@@ -154,4 +154,21 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
             super("ECDH");
         }
     }
+
+    public abstract static class Openssl extends NativeKeyAgreementSpi {
+        private String type;
+
+        public Openssl(String type) {
+            this.type = type;
+        }
+
+        @Override
+        native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
+    }
+
+    public static class OpensslECDH extends Openssl {
+        public OpensslECDH() {
+            super("ECDH");
+        }
+    }
 }
