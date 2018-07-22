@@ -369,10 +369,10 @@ public class ECTesterReader {
         // Cofactor generally isn't set on the default curve parameters on cards,
         // since its not necessary for ECDH, only ECDHC which not many cards implement
         // TODO: check if its assumend to be == 1?
-        short domainAll = cfg.primeField ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
-        short domain = (short) (domainAll ^ EC_Consts.PARAMETER_K);
-        Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_PUBLIC, domainAll).send();
+        short domain = cfg.primeField ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
+        Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_PUBLIC, domain).send();
         if (!export.successful()) {
+            domain = (short) (domain ^ EC_Consts.PARAMETER_K);
             export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_PUBLIC, domain).send();
         }
         sent.add(export);
@@ -385,10 +385,14 @@ public class ECTesterReader {
             respWriter.outputResponse(cleanup);
         }
 
-        EC_Params exported = new EC_Params(domain, export.getParams());
-
-        OutputStream out = FileUtil.openStream(cfg.outputs);
-        exported.writeCSV(out);
+        PrintStream out = new PrintStream(FileUtil.openStream(cfg.outputs));
+        byte[][] params = export.getParams();
+        for (int i = 0; i < params.length; ++i) {
+            out.print(ByteUtil.bytesToHex(params[i], false));
+            if (i != params.length - 1) {
+                out.print(",");
+            }
+        }
         out.close();
     }
 
