@@ -13,72 +13,62 @@
 The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API</a> has support for basic Elliptic Curve Cryptography, such as ECDH and ECDSA. However not many cards actually support these algorithms. The table below displays support and performance obtained by ECTester for common curve sizes. For detailed support and implementation tests see <a href="#test_runs">test runs</a>.
 
 <style>
-    .yes {
-        background-color: rgba(0, 255, 0, 0.2);
-    }
-
-    .some {
-        background-color: rgba(194, 194, 0, 0.2);
-    }
-
-    .no {
-        background-color: rgba(255, 0, 0, 0.2);
-    }
-
-    .none {
-    	background-color: rgba(0,0,0,0.1);
-    }
-
-	.legend {
-		float: left;
-		margin: 10pt;
+	 .yes {
+		 background-color: rgba(0, 255, 0, 0.2);
 	}
-
-	#support_table, #perf_table {
-		text-align: center;
+	 .some {
+		 background-color: rgba(194, 194, 0, 0.2);
 	}
-
-	td.split, tr.split td {
-		border-top: 2px solid !important;
+	 .no {
+		 background-color: rgba(255, 0, 0, 0.2);
 	}
-
-	#perf_table tr td:nth-of-type(2n) {
-		border-right: 2px solid !important;
+	 .none {
+		 background-color: rgba(0,0,0,0.1);
 	}
-
-	#perf_table tr td:first-child {
-		border-left: 2px solid !important;
+	 .legend {
+		 float: left;
+		 margin: 10pt;
 	}
-
-	#tests_table {
-		margin-top: 1em;
+	 #support_table, #perf_table, #curve_table {
+		 text-align: center;
 	}
-
-	#tests_table th:not(:first-child) {
-	  /* Something you can count on */
-	  height: 100px;
-	  white-space: nowrap;
-	  border: none;
+	 td.split, tr.split td {
+		 border-top: 2px solid !important;
 	}
-
-	#tests_table th:not(:first-child) > div {
-	  transform:
-	    translate(0, 35px)
-	    rotate(315deg);
-	  width: 30px;
+	 #perf_table tr td:nth-of-type(2n) {
+		 border-right: 2px solid !important;
 	}
-
-	#tests_table th:not(:first-child) > div > span {
-	  padding: 5px 10px;
+	 #perf_table tr td:first-child {
+		 border-left: 2px solid !important;
 	}
-
-	#tests_table th:first-child {
-		border: none;
-		transform: translate(0, 35px);
+	 #curve_table td ~ td {
+		 font-size: 0.7em;
+		 padding: 0.2rem 0.5rem;
 	}
-
-	#tests_table td:not(:first-child) {
-		text-align: center;
+	 #curve_table td ~ td:not(.yes) {
+		 background-color: rgba(0,0,0,0.05);
+	}
+	 #tests_table, #curve_table {
+		 margin-top: 1em;
+	}
+	 #tests_table th:not(:first-child) {
+		 height: 100px;
+		 white-space: nowrap;
+		 border: none;
+	}
+	 #tests_table th:not(:first-child) > div {
+		 transform: translate(0, 35px) rotate(315deg);
+		 width: 30px;
+	}
+	 #tests_table th:not(:first-child) > div > span {
+		 padding: 5px 10px;
+	}
+	 #tests_table th:first-child {
+		 border: none;
+		 transform: translate(0, 35px);
+	}
+	 #tests_table td:not(:first-child) {
+		 text-align: center;
 	}
 </style>
 
@@ -778,11 +768,56 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
 	</tr>
 </table>
 
+<h3>$ \mathbb{F}_p $ default curves</h3>
+The JavaCard API allows cards to specify default curves to be used when generating EC keys using the <code class="java">KeyPair</code> class.
+
+<table id="curve_table">
+    <colgroup>
+        <col span="1" style="width: 30%">
+        <col span="1" style="width: 7%">
+        <col span="1" style="width: 7%">
+        <col span="1" style="width: 7%">
+        <col span="1" style="width: 7%">
+        <col span="1" style="width: 7%">
+        <col span="1" style="width: 7%">
+        <col span="1" style="width: 7%">
+        <col span="1" style="width: 7%">
+    </colgroup>
+	<tr>
+	<th>Card</th><th>112b</th><th>128b</th><th>160b</th><th>192b</th><th>224b</th><th>256b</th><th>384b</th><th>521b</th>
+	</tr>
+	<tr>
+	<td>Athena IDProtect</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>Feitian A22 CR</td><td class="yes">secp112r1</td><td class="yes">secp128r1</td><td class="yes">secp160r1</td><td class="yes">P-192</br>secp192r1</td><td class="yes">P-224</br>secp224r1</td><td class="yes">SMP256V1</td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>GD Smartcafe 6.0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>Infineon CJTOP</td><td></td><td></td><td class="yes">brainpoolP160r1</td><td class="yes">brainpoolP192r</td><td class="yes">brainpoolP224r1</td><td class="yes">brainpoolP256r1</td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>Infineon SLE78</td><td></td><td></td><td></td><td></td><td></td><td class="yes">brainpoolP256r1</td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>NXP JCOP31 v2.4.1</td><td></td><td class="yes">secp128r1</td><td class="yes">secp160r1</td><td class="yes">P-192</br>secp192r1</td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>NXP JCOP CJ2A081</td><td></td><td class="yes">secp128r1</td><td class="yes">secp160r1</td><td class="yes">P-192</br>secp192r1</td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>NXP JCOP v2.4.2 R3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>NXP JCOP v2.4.2 R3 J2E145G</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+</table>
 
 <h3>$ \mathbb{F}_{2^m} $</h3>
 Support for binary field curves on cards is very weak, very little cards have any. For more information see <a href="https://www.fi.muni.cz/~xsvenda/jcalgtest/table.html">JCAlgTest</a> support table.
 <!--
-<h3>$ \mathbb{F}_{2^m} $</h3>
 
 <table>
     <colgroup>
