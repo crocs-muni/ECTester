@@ -112,7 +112,9 @@ public class CardCompressionSuite extends CardTestSuite {
                 }
             }
             compressionTests.addAll(kaTests);
-            compressionTests.add(CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.SUCCESS));
+            if (cfg.cleanup) {
+                compressionTests.add(CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.SUCCESS));
+            }
 
             doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Compression test of " + spec + ".", compressionTests.toArray(new Test[0])));
         }

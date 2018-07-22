@@ -13,7 +13,10 @@ import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -61,9 +64,12 @@ public class CardTwistSuite extends CardTestSuite {
             Test ecdsa = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Verify random ECDSA signature by public points on twist", ecdsaTests.toArray(new Test[0]));
 
             Test tests = CompoundTest.all(Result.ExpectedValue.SUCCESS, ecdh, ecdsa);
-            Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.SUCCESS);
-
-            doTest(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Twist test of " + curve.getId(), prepare, tests, cleanup));
+            if (cfg.cleanup) {
+                Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.SUCCESS);
+                doTest(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Twist test of " + curve.getId(), prepare, tests, cleanup));
+            } else {
+                doTest(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Twist test of " + curve.getId(), prepare, tests));
+            }
         }
     }
 }

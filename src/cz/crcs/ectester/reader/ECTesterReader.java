@@ -89,10 +89,12 @@ public class ECTesterReader {
             Manifest manifest = new Manifest(url.openStream());
             String commit = manifest.getMainAttributes().getValue("Git-Commit");
             GIT_COMMIT = (commit == null) ? "" : "(git " + commit + ")";
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
 
         DESCRIPTION = "ECTesterReader " + VERSION + GIT_COMMIT + ", a javacard Elliptic Curve Cryptography support tester/utility.";
-        CLI_HEADER = "\n" + DESCRIPTION + "\n\n";;
+        CLI_HEADER = "\n" + DESCRIPTION + "\n\n";
+        ;
     }
 
     private void run(String[] args) {
@@ -260,6 +262,7 @@ public class ECTesterReader {
          * -l / --log [log_file]
          *
          * -f / --fresh
+         * --cleanup
          * -s / --simulate
          * -y / --yes
          * -ka/ --ka-type <type>
@@ -316,6 +319,7 @@ public class ECTesterReader {
         opts.addOption(Option.builder().longOpt("format").desc("Output format to use. One of: text,yml,xml.").hasArg().argName("format").build());
 
         opts.addOption(Option.builder("f").longOpt("fresh").desc("Generate fresh keys (set domain parameters before every generation).").build());
+        opts.addOption(Option.builder().longOpt("cleanup").desc("Send the cleanup command trigerring JCSystem.requestObjectDeletion() after some operations.").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
         opts.addOption(Option.builder("y").longOpt("yes").desc("Accept all warnings and prompts.").build());
 
@@ -376,6 +380,10 @@ public class ECTesterReader {
         for (Response r : sent) {
             respWriter.outputResponse(r);
         }
+        if (cfg.cleanup) {
+            Response cleanup = new Command.Cleanup(cardManager).send();
+            respWriter.outputResponse(cleanup);
+        }
 
         EC_Params exported = new EC_Params(domain, export.getParams());
 
@@ -432,8 +440,10 @@ public class ECTesterReader {
             keysFile.flush();
             generated++;
         }
-        Response cleanup = new Command.Cleanup(cardManager).send();
-        respWriter.outputResponse(cleanup);
+        if (cfg.cleanup) {
+            Response cleanup = new Command.Cleanup(cardManager).send();
+            respWriter.outputResponse(cleanup);
+        }
 
         keysFile.close();
     }
@@ -573,8 +583,10 @@ public class ECTesterReader {
 
             ++done;
         }
-        Response cleanup = new Command.Cleanup(cardManager).send();
-        respWriter.outputResponse(cleanup);
+        if (cfg.cleanup) {
+            Response cleanup = new Command.Cleanup(cardManager).send();
+            respWriter.outputResponse(cleanup);
+        }
 
         if (out != null)
             out.close();
@@ -646,9 +658,10 @@ public class ECTesterReader {
 
             ++done;
         }
-        Response cleanup = new Command.Cleanup(cardManager).send();
-        respWriter.outputResponse(cleanup);
-
+        if (cfg.cleanup) {
+            Response cleanup = new Command.Cleanup(cardManager).send();
+            respWriter.outputResponse(cleanup);
+        }
         if (out != null)
             out.close();
     }
@@ -691,6 +704,7 @@ public class ECTesterReader {
         public String input;
         public String[] outputs;
         public boolean fresh = false;
+        public boolean cleanup = false;
         public boolean simulate = false;
         public boolean yes = false;
         public String format;
@@ -745,6 +759,7 @@ public class ECTesterReader {
             input = cli.getOptionValue("input");
             outputs = cli.getOptionValues("output");
             fresh = cli.hasOption("fresh");
+            cleanup = cli.hasOption("cleanup");
             simulate = cli.hasOption("simulate");
             yes = cli.hasOption("yes");
             color = cli.hasOption("color");

@@ -16,6 +16,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static cz.crcs.ectester.common.test.Result.ExpectedValue;
 import static cz.crcs.ectester.common.test.Result.Value;
@@ -126,10 +128,14 @@ public class CardDefaultSuite extends CardTestSuite {
             }
             Test signTest = runTest(CompoundTest.any(ExpectedValue.SUCCESS, "Signature tests.", signTests.toArray(new Test[0])));
             supportTests.add(signTest);
-            supportTests.add(CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.SUCCESS));
+            ExpectedValue[] testExpects = {ExpectedValue.SUCCESS, ExpectedValue.ANY, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS};
+            List<ExpectedValue> expects = Stream.of(testExpects).collect(Collectors.toList());
+            if (cfg.cleanup) {
+                supportTests.add(CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.SUCCESS));
+                expects.add(ExpectedValue.ANY);
+            }
 
-            ExpectedValue[] testExpects = {ExpectedValue.SUCCESS, ExpectedValue.ANY, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.ANY};
-            doTest(CompoundTest.mask(testExpects, "Tests of " + keyLength + "b " + CardUtil.getKeyTypeString(field) + " support.", supportTests.toArray(new Test[0])));
+            doTest(CompoundTest.mask(expects.toArray(new ExpectedValue[0]), "Tests of " + keyLength + "b " + CardUtil.getKeyTypeString(field) + " support.", supportTests.toArray(new Test[0])));
         }
     }
 }

@@ -13,7 +13,10 @@ import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import static cz.crcs.ectester.common.test.Result.ExpectedValue;
 
@@ -67,9 +70,12 @@ public class CardInvalidSuite extends CardTestSuite {
             Test ecdsa = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Verify random ECDSA signature by invalid public points", ecdsaTests.toArray(new Test[0]));
 
             Test tests = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Test ECDH and ECDSA with points on invalid curves.", ecdh, ecdsa);
-            Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.SUCCESS);
-
-            doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Invalid curve test of " + curve.getId(), prepare, tests, cleanup));
+            if (cfg.cleanup) {
+                Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.SUCCESS);
+                doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Invalid curve test of " + curve.getId(), prepare, tests, cleanup));
+            } else {
+                doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Invalid curve test of " + curve.getId(), prepare, tests));
+            }
         }
     }
 }

@@ -5,30 +5,37 @@ import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.common.ec.EC_KAResult;
 import cz.crcs.ectester.common.ec.EC_Key;
+import cz.crcs.ectester.common.ec.EC_Params;
 import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.CompoundTest;
 import cz.crcs.ectester.common.test.Result;
 import cz.crcs.ectester.common.test.Test;
 import cz.crcs.ectester.common.test.TestCallback;
 import cz.crcs.ectester.common.util.ByteUtil;
+import cz.crcs.ectester.common.util.ECUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
 import javacard.security.CryptoException;
+import javacard.security.KeyPair;
 
+import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class CardEdgeCasesSuite extends CardTestSuite {
     public CardEdgeCasesSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "edge-cases", "The edge-cases test suite tests various inputs to ECDH which may cause an implementation to achieve a certain edge-case state during ECDH.",
-                "Some of the data is from the google/Wycheproof project. Tests include CVE-2017-10176 and CVE-2017-8932.");
+        super(writer, cfg, cardManager, "edge-cases", "The edge-cases test suite tests various inputs to ECDH which may cause an implementation to achieve a certain edge-case state during it.",
+                "Some of the data is from the google/Wycheproof project. Tests include CVE-2017-10176 and CVE-2017-8932.",
+                "Various edge private key values are also tested.");
     }
 
     @Override
@@ -104,5 +111,67 @@ public class CardEdgeCasesSuite extends CardTestSuite {
             }
             doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, description, groupTests.toArray(new Test[0])));
         }
+
+        // test:
+        // - s = 0, s = 1
+        // - s < r, s = r, s > r
+        // - s = r - 1, s = r + 1
+        // - s = kr + 1, s = kr, s = kr - 1
+        Map<String, EC_Curve> curveMap = EC_Store.getInstance().getObjects(EC_Curve.class, "secg");
+        List<EC_Curve> curves = curveMap.entrySet().stream().filter((e) -> e.getKey().endsWith("r1")).map(Map.Entry::getValue).collect(Collectors.toList());
+        Random rand = new Random();
+        for (EC_Curve curve : curves) {
+            Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, KeyPair.ALG_EC_FP), Result.ExpectedValue.SUCCESS));
+            if (!key.ok()) {
+                doTest(CompoundTest.all(Result.ExpectedValue.FAILURE, "No support for " + curve.getBits() + "b ALG_EC_FP.", key));
+                continue;
+            }
+            Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.ExpectedValue.SUCCESS);
+            Test generate = CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_LOCAL), Result.ExpectedValue.SUCCESS);
+            Test setup = CompoundTest.all(Result.ExpectedValue.SUCCESS, "KeyPair setup.", key, set, generate);
+
+            Test zeroS = CommandTest.expect(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, EC_Consts.TRANSFORMATION_ZERO), Result.ExpectedValue.FAILURE);
+            Test oneS = CommandTest.expect(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, EC_Consts.TRANSFORMATION_ONE), Result.ExpectedValue.FAILURE);
+
+            byte[] r = curve.getParam(EC_Consts.PARAMETER_R)[0];
+            BigInteger R = new BigInteger(1, r);
+            BigInteger smaller = new BigInteger(curve.getBits(), rand).mod(R);
+            BigInteger larger;
+            do {
+                larger = new BigInteger(curve.getBits(), rand);
+            } while (larger.compareTo(R) <= 0);
+
+            EC_Params smallerParams = makeParams(smaller, curve.getBits());
+            Test smallerS = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, smallerParams.getParams(), smallerParams.flatten()), Result.ExpectedValue.FAILURE);
+
+            EC_Params exactParams = makeParams(R, curve.getBits());
+            Test exactS = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, exactParams.getParams(), exactParams.flatten()), Result.ExpectedValue.FAILURE);
+
+            EC_Params largerParams = makeParams(larger, curve.getBits());
+            Test largerS = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, largerParams.getParams(), largerParams.flatten()), Result.ExpectedValue.FAILURE);
+
+            BigInteger rm1 = R.subtract(BigInteger.ONE);
+            BigInteger rp1 = R.add(BigInteger.ONE);
+
+            EC_Params rm1Params = makeParams(rm1, curve.getBits());
+            Test rm1S = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, rm1Params.getParams(), rm1Params.flatten()), Result.ExpectedValue.FAILURE);
+
+            EC_Params rp1Params = makeParams(rp1, curve.getBits());
+            Test rp1S = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, rp1Params.getParams(), rp1Params.flatten()), Result.ExpectedValue.FAILURE);
+
+            byte[] k = curve.getParam(EC_Consts.PARAMETER_K)[0];
+            BigInteger K = new BigInteger(1, k);
+            BigInteger kr = K.multiply(R);
+            BigInteger krp1 = kr.add(BigInteger.ONE);
+            BigInteger krm1 = kr.subtract(BigInteger.ONE);
+        }
+    }
+
+    private EC_Params makeParams(BigInteger s, int keylen) {
+        return makeParams(ECUtil.toByteArray(s, keylen));
+    }
+
+    private EC_Params makeParams(byte[] s) {
+        return new EC_Params(EC_Consts.PARAMETER_S, new byte[][]{s});
     }
 }

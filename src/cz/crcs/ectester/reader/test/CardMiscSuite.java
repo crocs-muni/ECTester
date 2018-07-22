@@ -48,9 +48,13 @@ public class CardMiscSuite extends CardTestSuite {
             Test ka = CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH), expected);
             Test sig = CommandTest.expect(new Command.ECDSA(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.Signature_ALG_ECDSA_SHA, ECTesterApplet.EXPORT_FALSE, null), expected);
             Test perform = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform ECDH and ECDSA", ka, sig);
-            Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.SUCCESS);
 
-            doTest(CompoundTest.greedyAll(Result.ExpectedValue.SUCCESS, "Tests over " + curve.getBits() + " " + catName + " curve: " + curve.getId() + ".", allocateFirst, set, generate, perform, cleanup));
+            if (cfg.cleanup) {
+                Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.SUCCESS);
+                doTest(CompoundTest.greedyAll(Result.ExpectedValue.SUCCESS, "Tests over " + curve.getBits() + " " + catName + " curve: " + curve.getId() + ".", allocateFirst, set, generate, perform, cleanup));
+            } else {
+                doTest(CompoundTest.greedyAll(Result.ExpectedValue.SUCCESS, "Tests over " + curve.getBits() + " " + catName + " curve: " + curve.getId() + ".", allocateFirst, set, generate, perform));
+            }
         }
     }
 }

@@ -4,7 +4,10 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.ec.*;
 import cz.crcs.ectester.common.output.TestWriter;
-import cz.crcs.ectester.common.test.*;
+import cz.crcs.ectester.common.test.CompoundTest;
+import cz.crcs.ectester.common.test.Result;
+import cz.crcs.ectester.common.test.Test;
+import cz.crcs.ectester.common.test.TestCallback;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
@@ -69,7 +72,9 @@ public class CardTestVectorSuite extends CardTestSuite {
                     return new Result(Value.SUCCESS);
                 }
             }));
-            testVector.add(CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.SUCCESS));
+            if (cfg.cleanup) {
+                testVector.add(CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.SUCCESS));
+            }
             doTest(CompoundTest.greedyAll(ExpectedValue.SUCCESS, "Test vector " + result.getId(), testVector.toArray(new Test[0])));
         }
     }

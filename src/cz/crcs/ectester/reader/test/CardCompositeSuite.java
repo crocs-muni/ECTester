@@ -55,7 +55,6 @@ public class CardCompositeSuite extends CardTestSuite {
                 tests.add(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Composite test of " + curve.getId() + ", " + key.getDesc(), ecdh));
             }
             doTest(CompoundTest.all(ExpectedValue.SUCCESS, "Composite test of " + curve.getId() + ".", tests.toArray(new Test[0])));
-            new Command.Cleanup(this.card).send();
         }
 
 
@@ -105,9 +104,12 @@ public class CardCompositeSuite extends CardTestSuite {
             } else {
                 description = testName + " test of " + curve.getId() + ".";
             }
-            Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.SUCCESS);
-
-            doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, description, allocate, set, generate, ecdh, cleanup));
+            if (cfg.cleanup) {
+                Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.SUCCESS);
+                doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, description, allocate, set, generate, ecdh, cleanup));
+            } else {
+                doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, description, allocate, set, generate, ecdh));
+            }
         }
 
     }
