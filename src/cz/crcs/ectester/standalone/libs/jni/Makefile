@@ -38,6 +38,7 @@ CC?=gcc
 CXX?=g++
 STRIP?=strip
 
+LFLAGS+="-fPIC -g -shared"
 CFLAGS+=-fPIC -g -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
 CXXFLAGS+=-fPIC -g -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
 
@@ -54,15 +55,15 @@ cpp_utils.o: cpp_utils.cpp
 
 # OpenSSL shim
 openssl_provider.so: openssl.o c_utils.o
-	$(CC) -fPIC -g -shared -o $@ $^ -L. $(shell pkg-config --libs openssl)
+	$(CC) $(LFLAGS) -o $@ $^ -L. $(shell pkg-config --libs openssl)
 
 openssl.o: openssl.c
-	$(CC) $(shel pkg-config --cflags openssl) $(CFLAGS) -c $<
+	$(CC) $(shell pkg-config --cflags openssl) $(CFLAGS) -c $<
 
 
 # Libtomcrypt shim
 tomcrypt_provider.so: tomcrypt.o c_utils.o
-	$(CC) -fPIC -g -shared -o $@ $^ -L. -ltommath $(shell pkg-config --libs libtomcrypt)
+	$(CC) $(LFLAGS) -o $@ $^ -L. -ltommath $(shell pkg-config --libs libtomcrypt)
 
 tomcrypt.o: tomcrypt.c
 	$(CC) -DLTM_DESC $(shell pkg-config --cflags libtomcrypt) $(CFLAGS) -c $<
@@ -70,7 +71,7 @@ tomcrypt.o: tomcrypt.c
 
 # Botan-2 shim
 botan_provider.so: botan.o cpp_utils.o
-	$(CXX) -fPIC -g -shared -o $@ $^ -L. $(shell pkg-config --libs botan-2)
+	$(CXX) $(LFLAGS) -o $@ $^ -L. $(shell pkg-config --libs botan-2)
 
 botan.o: botan.cpp
 	$(CXX) $(shell pkg-config --cflags botan-2) $(CXXFLAGS) -c $<
@@ -78,7 +79,7 @@ botan.o: botan.cpp
 
 # Crypto++ shim
 cryptopp_provider.so: cryptopp.o cpp_utils.o
-	$(CXX) -fPIC -g -shared -o $@ $^ -L. $(shell pkg-config --libs libcrypto++)
+	$(CXX) $(LFLAGS) -o $@ $^ -L. $(shell pkg-config --libs libcrypto++)
 
 cryptopp.o: cryptopp.cpp
 	$(CXX) $(shell pkg-config --cflags libcrypto++) $(CXXFLAGS) -c $<
