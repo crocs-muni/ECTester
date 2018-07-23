@@ -66,10 +66,16 @@ This test suite also does some additional tests with corrupting the parameters:
    - p = 1
    - p = q^2; q prime
    - p = q * s; q and s prime
-   - G = infinity
    - G = random point not on curve
-   - r = some prime (and \[r\]G != infinity)
+   - G = random data
+   - G = infinity
+   - r = 0
+   - r = 1
+   - r = some prime larger than original r (and \[r\]G != infinity)
+   - r = some prime smaller than original r (and \[r\]G != infninity)
    - r = some composite number (and \[r\]G != infinity)
+   - k = 0xff
+   - k = 0
  - F2m:
    - e1 = e2 = e3 = 0
    - m < e1 < e2 < e3
@@ -88,7 +94,10 @@ Tests using curves that don't have a prime order/nearly prime order.
 These tests should generally fail, a success here implies the card will use a non-secure curve if such curve is set
 by the applet. Operations over such curves are susceptible to small-subgroup attacks.
 
-   - r = p * q
+   - r = quite a smooth number, many small factors, r = |G|
+   - r = small prime(of increasing bit lengths), r = |G|
+   - r = p * q = |G|
+   - r = G = Carmichael number = p * q * s
    - \[r\]G = infinity but r != |G|, so |G| divides r
    
 For example:
@@ -147,11 +156,18 @@ java -jar ECTester.jar -t cofactor
 ## Edge-Cases
 Tests various inputs to ECDH which may cause an implementation to achieve a certain edge-case state during ECDH. 
 Some of the data is from the google/Wycheproof project. Tests include [CVE-2017-10176](https://nvd.nist.gov/vuln/detail/CVE-2017-10176) and [CVE-2017-8932](https://nvd.nist.gov/vuln/detail/CVE-2017-8932).
+Various custom edge private key values are also tested.
 
 CVE-2017-10176 was in implementation issue in the SunEC Java library that caused the implementation to reach the point at infinity during ECDH computation.
 
 CVE-2017-8932 was an implementation issue in the Go standard library, in particular its scalar multiplication algorithm on the
 P-256 curve which leaked information about the private key.
+
+Custom private key values over SECG curves are tested:
+   - s = 0, s = 1
+   - s < r, s = r, s > r
+   - s = r - 1, s = r + 1
+   - s = k\*r - 1, s = k\*r, s = k\*r + 1 
 
 For example:
 ```bash

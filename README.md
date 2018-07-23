@@ -85,6 +85,9 @@ See `java -jar ECTesterReader.jar -h` for more.
                                    text,yml,xml.
  -f,--fresh                        Generate fresh keys (set domain
                                    parameters before every generation).
+ --cleanup                         Send the cleanup command trigerring
+                                   JCSystem.requestObjectDeletion()
+                                   after some operations.
  -s,--simulate                     Simulate a card with jcardsim instead
                                    of using a terminal.
  -y,--yes                          Accept all warnings and prompts.
@@ -218,6 +221,8 @@ If you are interested in testing support for other JavaCard algorithms, please v
 Currently supported libraries include:
  - BouncyCastle
  - SunEC
+ - OpenSSL
+ - Crypto++
  - libtomcrypt
  - botan
  
