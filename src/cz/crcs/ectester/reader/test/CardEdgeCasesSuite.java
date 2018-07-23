@@ -112,16 +112,11 @@ public class CardEdgeCasesSuite extends CardTestSuite {
             doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, description, groupTests.toArray(new Test[0])));
         }
 
-        // test:
-        // - s = 0, s = 1
-        // - s < r, s = r, s > r
-        // - s = r - 1, s = r + 1
-        // - s = kr + 1, s = kr, s = kr - 1
         Map<String, EC_Curve> curveMap = EC_Store.getInstance().getObjects(EC_Curve.class, "secg");
-        List<EC_Curve> curves = curveMap.entrySet().stream().filter((e) -> e.getKey().endsWith("r1")).map(Map.Entry::getValue).collect(Collectors.toList());
+        List<EC_Curve> curves = curveMap.entrySet().stream().filter((e) -> e.getKey().endsWith("r1") && e.getValue().getField() == KeyPair.ALG_EC_FP).map(Map.Entry::getValue).collect(Collectors.toList());
         Random rand = new Random();
         for (EC_Curve curve : curves) {
-            Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, KeyPair.ALG_EC_FP), Result.ExpectedValue.SUCCESS));
+            Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), KeyPair.ALG_EC_FP), Result.ExpectedValue.SUCCESS));
             if (!key.ok()) {
                 doTest(CompoundTest.all(Result.ExpectedValue.FAILURE, "No support for " + curve.getBits() + "b ALG_EC_FP.", key));
                 continue;
@@ -130,45 +125,62 @@ public class CardEdgeCasesSuite extends CardTestSuite {
             Test generate = CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_LOCAL), Result.ExpectedValue.SUCCESS);
             Test setup = CompoundTest.all(Result.ExpectedValue.SUCCESS, "KeyPair setup.", key, set, generate);
 
-            Test zeroS = CommandTest.expect(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, EC_Consts.TRANSFORMATION_ZERO), Result.ExpectedValue.FAILURE);
-            Test oneS = CommandTest.expect(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, EC_Consts.TRANSFORMATION_ONE), Result.ExpectedValue.FAILURE);
+            Test zeroS = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, EC_Consts.TRANSFORMATION_ZERO), "ECDH with S = 0.", Result.ExpectedValue.FAILURE, Result.ExpectedValue.FAILURE);
+            Test oneS = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, EC_Consts.TRANSFORMATION_ONE), "ECDH with S = 1.", Result.ExpectedValue.FAILURE, Result.ExpectedValue.FAILURE);
 
             byte[] r = curve.getParam(EC_Consts.PARAMETER_R)[0];
             BigInteger R = new BigInteger(1, r);
             BigInteger smaller = new BigInteger(curve.getBits(), rand).mod(R);
-            BigInteger larger;
-            do {
-                larger = new BigInteger(curve.getBits(), rand);
-            } while (larger.compareTo(R) <= 0);
+            BigInteger diff = R.divide(BigInteger.valueOf(10));
+            BigInteger randDiff = new BigInteger(diff.bitLength(), rand).mod(diff);
+            BigInteger larger = R.add(randDiff);
 
-            EC_Params smallerParams = makeParams(smaller, curve.getBits());
-            Test smallerS = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, smallerParams.getParams(), smallerParams.flatten()), Result.ExpectedValue.FAILURE);
+            EC_Params smallerParams = makeParams(smaller);
+            Test smallerS = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, smallerParams.getParams(), smallerParams.flatten()), "ECDH with S < r.", Result.ExpectedValue.SUCCESS, Result.ExpectedValue.SUCCESS);
 
-            EC_Params exactParams = makeParams(R, curve.getBits());
-            Test exactS = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, exactParams.getParams(), exactParams.flatten()), Result.ExpectedValue.FAILURE);
+            EC_Params exactParams = makeParams(R);
+            Test exactS = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, exactParams.getParams(), exactParams.flatten()), "ECDH with S = r.", Result.ExpectedValue.FAILURE, Result.ExpectedValue.FAILURE);
 
-            EC_Params largerParams = makeParams(larger, curve.getBits());
-            Test largerS = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, largerParams.getParams(), largerParams.flatten()), Result.ExpectedValue.FAILURE);
+            EC_Params largerParams = makeParams(larger);
+            Test largerS = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, largerParams.getParams(), largerParams.flatten()), "ECDH with S > r.", Result.ExpectedValue.ANY, Result.ExpectedValue.ANY);
 
             BigInteger rm1 = R.subtract(BigInteger.ONE);
             BigInteger rp1 = R.add(BigInteger.ONE);
 
-            EC_Params rm1Params = makeParams(rm1, curve.getBits());
-            Test rm1S = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, rm1Params.getParams(), rm1Params.flatten()), Result.ExpectedValue.FAILURE);
+            EC_Params rm1Params = makeParams(rm1);
+            Test rm1S = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, rm1Params.getParams(), rm1Params.flatten()), "ECDH with S = r - 1.", Result.ExpectedValue.SUCCESS, Result.ExpectedValue.SUCCESS);
 
-            EC_Params rp1Params = makeParams(rp1, curve.getBits());
-            Test rp1S = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, rp1Params.getParams(), rp1Params.flatten()), Result.ExpectedValue.FAILURE);
+            EC_Params rp1Params = makeParams(rp1);
+            Test rp1S = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, rp1Params.getParams(), rp1Params.flatten()), "ECDH with S = r + 1.", Result.ExpectedValue.ANY, Result.ExpectedValue.ANY);
 
             byte[] k = curve.getParam(EC_Consts.PARAMETER_K)[0];
             BigInteger K = new BigInteger(1, k);
             BigInteger kr = K.multiply(R);
-            BigInteger krp1 = kr.add(BigInteger.ONE);
             BigInteger krm1 = kr.subtract(BigInteger.ONE);
+            BigInteger krp1 = kr.add(BigInteger.ONE);
+
+            EC_Params krParams = makeParams(kr);
+            Test krS /*ONE!*/ = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, krParams.getParams(), krParams.flatten()), "ECDH with S = k * r.", Result.ExpectedValue.FAILURE, Result.ExpectedValue.FAILURE);
+
+            EC_Params krm1Params = makeParams(krm1);
+            Test krm1S = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, krm1Params.getParams(), krm1Params.flatten()), "ECDH with S = (k * r) - 1.", Result.ExpectedValue.FAILURE, Result.ExpectedValue.FAILURE);
+
+            EC_Params krp1Params = makeParams(krp1);
+            Test krp1S = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, krp1Params.getParams(), krp1Params.flatten()), "ECDH with S = (k * r) + 1.", Result.ExpectedValue.FAILURE, Result.ExpectedValue.FAILURE);
+
+            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with edge-case private key values over " + curve.getId() + ".", setup, zeroS, oneS, smallerS, exactS, largerS, rm1S, rp1S, krS, krm1S, krp1S));
         }
     }
 
-    private EC_Params makeParams(BigInteger s, int keylen) {
-        return makeParams(ECUtil.toByteArray(s, keylen));
+    private Test ecdhTest(Command setPriv, String desc, Result.ExpectedValue setExpect, Result.ExpectedValue ecdhExpect) {
+        Test set = CommandTest.expect(setPriv, setExpect);
+        Test ecdh = CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH), ecdhExpect);
+
+        return CompoundTest.any(Result.ExpectedValue.SUCCESS, desc, set, ecdh);
+    }
+
+    private EC_Params makeParams(BigInteger s) {
+        return makeParams(ECUtil.toByteArray(s, s.bitLength()));
     }
 
     private EC_Params makeParams(byte[] s) {
