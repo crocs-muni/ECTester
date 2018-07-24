@@ -38,7 +38,7 @@ CC?=gcc
 CXX?=g++
 STRIP?=strip
 
-LFLAGS+="-fPIC -g -shared"
+LFLAGS+=-fPIC -g -shared
 CFLAGS+=-fPIC -g -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
 CXXFLAGS+=-fPIC -g -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
 

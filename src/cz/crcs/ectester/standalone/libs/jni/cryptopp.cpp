@@ -227,7 +227,7 @@ static jobject biginteger_from_integer(JNIEnv *env, const Integer &integer) {
 
     jbyte *bigint_bytes = env->GetByteArrayElements(byte_array, NULL);
     integer.Encode((byte *) bigint_bytes, integer.MinEncodedSize());
-    env->ReleaseByteArrayElements(byte_array, bigint_bytes, JNI_COMMIT);
+    env->ReleaseByteArrayElements(byte_array, bigint_bytes, 0);
 
     jmethodID biginteger_init = env->GetMethodID(biginteger_class, "<init>", "(I[B)V");
     return env->NewObject(biginteger_class, biginteger_init, (jint) 1, byte_array);
@@ -239,7 +239,7 @@ static jobject biginteger_from_polmod2(JNIEnv *env, const PolynomialMod2 &polmod
     jbyteArray mod_array = env->NewByteArray(polmod.MinEncodedSize());
     jbyte *mod_data = env->GetByteArrayElements(mod_array, NULL);
     polmod.Encode((byte *) mod_data, polmod.MinEncodedSize());
-    env->ReleaseByteArrayElements(mod_array, mod_data, JNI_COMMIT);
+    env->ReleaseByteArrayElements(mod_array, mod_data, 0);
 
     return env->NewObject(biginteger_class, biginteger_init, (jint) 1, mod_array);
 }
@@ -472,7 +472,7 @@ template <> jobject params_from_group<EC2N>(JNIEnv *env, DL_GroupParameters_EC<E
             ks_data[found++] = i;
         }
     }
-    env->ReleaseIntArrayElements(ks, ks_data, JNI_COMMIT);
+    env->ReleaseIntArrayElements(ks, ks_data, 0);
 
     jmethodID f2m_field_init = env->GetMethodID(f2m_field_class, "<init>", "(I[I)V");
     jobject field = env->NewObject(f2m_field_class, f2m_field_init, (jint) m, ks);
@@ -501,7 +501,7 @@ template <class EC> jobject generate_from_group(JNIEnv *env, DL_GroupParameters_
     jbyteArray pub_bytearray = env->NewByteArray(pub.SizeInBytes());
     jbyte *pub_bytes = env->GetByteArrayElements(pub_bytearray, NULL);
     std::copy(pub.BytePtr(), pub.BytePtr()+pub.SizeInBytes(), pub_bytes);
-    env->ReleaseByteArrayElements(pub_bytearray, pub_bytes, JNI_COMMIT);
+    env->ReleaseByteArrayElements(pub_bytearray, pub_bytes, 0);
 
     jobject ec_pub_param_spec = env->NewLocalRef(params);
     jmethodID ec_pub_init = env->GetMethodID(pubkey_class, "<init>", "([BLjava/security/spec/ECParameterSpec;)V");
@@ -510,7 +510,7 @@ template <class EC> jobject generate_from_group(JNIEnv *env, DL_GroupParameters_
     jbyteArray priv_bytearray = env->NewByteArray(priv.SizeInBytes());
     jbyte *priv_bytes = env->GetByteArrayElements(priv_bytearray, NULL);
     std::copy(priv.BytePtr(), priv.BytePtr()+priv.SizeInBytes(), priv_bytes);
-    env->ReleaseByteArrayElements(priv_bytearray, priv_bytes, JNI_COMMIT);
+    env->ReleaseByteArrayElements(priv_bytearray, priv_bytes, 0);
 
     jobject ec_priv_param_spec = env->NewLocalRef(params);
     jmethodID ec_priv_init = env->GetMethodID(privkey_class, "<init>", "([BLjava/security/spec/ECParameterSpec;)V");
@@ -593,7 +593,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     jbyteArray result = env->NewByteArray(secret->size());
     jbyte *result_data = env->GetByteArrayElements(result, NULL);
     std::copy(secret->begin(), secret->end(), result_data);
-    env->ReleaseByteArrayElements(result, result_data, JNI_COMMIT);
+    env->ReleaseByteArrayElements(result, result_data, 0);
 
     return result;
 }
@@ -617,7 +617,7 @@ jbyteArray sign_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray
     jbyteArray result = env->NewByteArray(len);
     jbyte *result_bytes = env->GetByteArrayElements(result, NULL);
     std::copy(signature.begin(), signature.end(), result_bytes);
-    env->ReleaseByteArrayElements(result, result_bytes, JNI_COMMIT);
+    env->ReleaseByteArrayElements(result, result_bytes, 0);
 
     return result;
 }

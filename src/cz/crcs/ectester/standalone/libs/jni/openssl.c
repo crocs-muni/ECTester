@@ -89,7 +89,7 @@ static jobject bignum_to_biginteger(JNIEnv *env, const BIGNUM *bn) {
     jbyteArray bytes = (*env)->NewByteArray(env, size);
     jbyte *data = (*env)->GetByteArrayElements(env, bytes, NULL);
     BN_bn2bin(bn, data);
-    (*env)->ReleaseByteArrayElements(env, bytes, data, JNI_COMMIT);
+    (*env)->ReleaseByteArrayElements(env, bytes, data, 0);
     jobject result = (*env)->NewObject(env, biginteger_class, biginteger_init, 1, bytes);
     return result;
 }
@@ -304,7 +304,7 @@ static jobject create_ec_param_spec(JNIEnv *env, const EC_GROUP *curve) {
         } else {
             return NULL;
         }
-        (*env)->ReleaseIntArrayElements(env, ks, ks_data, JNI_COMMIT);
+        (*env)->ReleaseIntArrayElements(env, ks, ks_data, 0);
 
         jint m = EC_GROUP_get_degree(curve);
 
@@ -363,13 +363,13 @@ static jobject generate_from_curve(JNIEnv *env, const EC_GROUP *curve) {
     jbyteArray priv_bytes = (*env)->NewByteArray(env, key_bytes);
     jbyte *key_priv = (*env)->GetByteArrayElements(env, priv_bytes, NULL);
     BN_bn2binpad(EC_KEY_get0_private_key(key), key_priv, key_bytes);
-    (*env)->ReleaseByteArrayElements(env, priv_bytes, key_priv, JNI_COMMIT);
+    (*env)->ReleaseByteArrayElements(env, priv_bytes, key_priv, 0);
 
     unsigned long key_len = 2*key_bytes + 1;
     jbyteArray pub_bytes = (*env)->NewByteArray(env, key_len);
     jbyte *key_pub = (*env)->GetByteArrayElements(env, pub_bytes, NULL);
     EC_POINT_point2oct(curve, EC_KEY_get0_public_key(key), POINT_CONVERSION_UNCOMPRESSED, key_pub, key_len, NULL);
-    (*env)->ReleaseByteArrayElements(env, pub_bytes, key_pub, JNI_COMMIT);
+    (*env)->ReleaseByteArrayElements(env, pub_bytes, key_pub, 0);
 
     EC_KEY_free(key);
 
@@ -493,7 +493,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
         (*env)->ReleaseByteArrayElements(env, result, result_data, JNI_ABORT);
         return NULL;
     }
-    (*env)->ReleaseByteArrayElements(env, result, result_data, JNI_COMMIT);
+    (*env)->ReleaseByteArrayElements(env, result, result_data, 0);
 
     EC_KEY_free(pub);
     EC_KEY_free(priv);
@@ -526,7 +526,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     jbyte *result_data = (*env)->GetByteArrayElements(env, result, NULL);
     jbyte *result_data_ptr = result_data;
     i2d_ECDSA_SIG(signature, (unsigned char **)&result_data_ptr);
-    (*env)->ReleaseByteArrayElements(env, result, result_data, JNI_COMMIT);
+    (*env)->ReleaseByteArrayElements(env, result, result_data, 0);
 
     ECDSA_SIG_free(signature);
     EC_KEY_free(priv);

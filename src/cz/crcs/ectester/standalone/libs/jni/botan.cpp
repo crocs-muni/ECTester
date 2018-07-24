@@ -134,7 +134,7 @@ static jobject biginteger_from_bigint(JNIEnv *env, const Botan::BigInt& bigint) 
     jbyteArray bigint_array = env->NewByteArray(bigint_data.size());
     jbyte * bigint_bytes = env->GetByteArrayElements(bigint_array, NULL);
     std::copy(bigint_data.begin(), bigint_data.end(), bigint_bytes);
-    env->ReleaseByteArrayElements(bigint_array, bigint_bytes, JNI_COMMIT);
+    env->ReleaseByteArrayElements(bigint_array, bigint_bytes, 0);
 
     jmethodID biginteger_init = env->GetMethodID(biginteger_class, "<init>", "(I[B)V");
     return env->NewObject(biginteger_class, biginteger_init, (jint) 1, bigint_array);
@@ -271,7 +271,7 @@ static jobject generate_from_group(JNIEnv* env, jobject self, Botan::EC_Group gr
     jbyteArray pub_bytearray = env->NewByteArray(pub_data.size());
     jbyte *pub_bytes = env->GetByteArrayElements(pub_bytearray, NULL);
     std::copy(pub_data.begin(), pub_data.end(), pub_bytes);
-    env->ReleaseByteArrayElements(pub_bytearray, pub_bytes, JNI_COMMIT);
+    env->ReleaseByteArrayElements(pub_bytearray, pub_bytes, 0);
 
     jobject ec_pub_param_spec = env->NewLocalRef(ec_param_spec);
     jmethodID ec_pub_init = env->GetMethodID(pubkey_class, "<init>", "([BLjava/security/spec/ECParameterSpec;)V");
@@ -283,7 +283,7 @@ static jobject generate_from_group(JNIEnv* env, jobject self, Botan::EC_Group gr
     jbyteArray priv_bytearray = env->NewByteArray(priv_data.size());
     jbyte *priv_bytes = env->GetByteArrayElements(priv_bytearray, NULL);
     std::copy(priv_data.begin(), priv_data.end(), priv_bytes);
-    env->ReleaseByteArrayElements(priv_bytearray, priv_bytes, JNI_COMMIT);
+    env->ReleaseByteArrayElements(priv_bytearray, priv_bytes, 0);
 
     jobject ec_priv_param_spec = env->NewLocalRef(ec_param_spec);
     jmethodID ec_priv_init = env->GetMethodID(privkey_class, "<init>", "([BLjava/security/spec/ECParameterSpec;)V");
@@ -375,7 +375,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     jbyteArray result = env->NewByteArray(derived.size());
     jbyte *result_data = env->GetByteArrayElements(result, NULL);
     std::copy(derived.begin(), derived.end(), result_data);
-    env->ReleaseByteArrayElements(result, result_data, JNI_COMMIT);
+    env->ReleaseByteArrayElements(result, result_data, 0);
 
     return result;
 }
@@ -438,7 +438,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     jbyteArray result = env->NewByteArray(sig.size());
     jbyte *result_data = env->GetByteArrayElements(result, NULL);
     std::copy(sig.begin(), sig.end(), result_data);
-    env->ReleaseByteArrayElements(result, result_data, JNI_COMMIT);
+    env->ReleaseByteArrayElements(result, result_data, 0);
 
     return result;
 }
