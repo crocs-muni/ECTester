@@ -43,7 +43,7 @@ CFLAGS+=-fPIC -g -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
 CXXFLAGS+=-fPIC -g -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
 
 
-all: tomcrypt_provider.so botan_provider.so cryptopp_provider.so openssl_provider.so
+all: tomcrypt_provider.so botan_provider.so cryptopp_provider.so openssl_provider.so mscng_provider.dll
 
 # Common utils
 c_utils.o: c_utils.c
@@ -83,6 +83,9 @@ cryptopp_provider.so: cryptopp.o cpp_utils.o
 
 cryptopp.o: cryptopp.cpp
 	$(CXX) $(shell pkg-config --cflags libcrypto++) $(CXXFLAGS) -c $<
+
+
+mscng_provider.dll: mscng.c
 
 
 clean:

@@ -1,5 +1,6 @@
 package cz.crcs.ectester.standalone.libs.jni;
 
+import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.common.util.ECUtil;
 import org.bouncycastle.util.Arrays;
 
@@ -77,6 +78,12 @@ public abstract class NativeECPublicKey implements ECPublicKey {
     public static class Openssl extends ANSIX962 {
         public Openssl(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
+        }
+    }
+
+    public static class Mscng extends ANSIX962 {
+        public Mscng(byte[] x, byte[] y, ECParameterSpec params) {
+            super(ByteUtil.concatenate(new byte[]{0x04}, x, y), params);
         }
     }
 }

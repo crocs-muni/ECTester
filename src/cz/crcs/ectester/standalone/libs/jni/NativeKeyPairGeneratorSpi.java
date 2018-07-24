@@ -27,7 +27,7 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
     @Override
     public void initialize(AlgorithmParameterSpec params, SecureRandom random) throws InvalidAlgorithmParameterException {
         if (!paramsSupported(params)) {
-            throw new InvalidAlgorithmParameterException("not supported.");
+            throw new InvalidAlgorithmParameterException("Not supported.");
         }
         this.params = params;
         this.random = random;
@@ -41,8 +41,9 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
             return generate(keysize, random);
         } else if (useParams) {
             return generate(params, random);
+        } else {
+            throw new IllegalStateException("Uninitialized KeyPair.");
         }
-        return null;
     }
 
     abstract boolean keysizeSupported(int keysize);
@@ -172,5 +173,40 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
 
         @Override
         native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
+    }
+
+    public static abstract class Mscng extends NativeKeyPairGeneratorSpi {
+        private String type;
+
+        public Mscng(String type) {
+            this.type = type;
+            initialize(256, new SecureRandom());//TODO: maybe remove this default init?
+        }
+
+        @Override
+        native boolean keysizeSupported(int keysize);
+
+        @Override
+        native boolean paramsSupported(AlgorithmParameterSpec params);
+
+        @Override
+        native KeyPair generate(int keysize, SecureRandom random);
+
+        @Override
+        native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
+    }
+
+    public static class MscngECDH extends Cryptopp {
+
+        public MscngECDH() {
+            super("ECDH");
+        }
+    }
+
+    public static class MscngECDSA extends Cryptopp {
+
+        public MscngECDSA() {
+            super("ECDSA");
+        }
     }
 }

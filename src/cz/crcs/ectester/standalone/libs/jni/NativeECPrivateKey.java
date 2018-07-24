@@ -77,4 +77,10 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
             super(keyData, params);
         }
     }
+
+    public static class Mscng extends Raw {
+        public Mscng(byte[] keyData, ECParameterSpec params) {
+            super(keyData, params);
+        }
+    }
 }
