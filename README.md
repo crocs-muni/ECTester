@@ -225,6 +225,7 @@ Currently supported libraries include:
  - Crypto++
  - libtomcrypt
  - botan
+ - Microsoft CNG
  
 For more information on ECC libraries see [LIBS](docs/LIBS.md).
 

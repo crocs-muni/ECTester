@@ -7,7 +7,6 @@ Popular libraries with at least some ECC support:
  - [Nettle](http://www.lysator.liu.se/~nisse/nettle/)
  - [OpenSSL (FIPS mode)](https://www.openssl.org/docs/fipsnotes.html)
  - BoringSSL
- - [Microsoft CNG](https://msdn.microsoft.com/en-us/library/windows/desktop/aa376210(v=vs.85).aspx)
  - [Microsoft .NET crypto](https://docs.microsoft.com/en-us/dotnet/standard/security/cryptography-model)
 
 # Supported libraries
@@ -78,3 +77,6 @@ Popular libraries with at least some ECC support:
         - Uses projective coordinates and sliding window scalar multiplication algorithm.
     - For binary field curves:
         - Uses affine coordinates and sliding window scalar multiplication algorithm.
+ - [Microsoft CNG](https://msdn.microsoft.com/en-us/library/windows/desktop/aa376210(v=vs.85).aspx)
+    - C API.
+    - Closed source, uses whatever.
