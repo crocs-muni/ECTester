@@ -52,12 +52,24 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
 
     @Override
     protected byte[] engineSign() throws SignatureException {
-        return sign(buffer.toByteArray(), ECUtil.toByteArray(signKey.getS(), params.getCurve().getField().getFieldSize()), params);
+        byte[] privkey;
+        if (signKey instanceof NativeECPrivateKey) {
+            privkey = ((NativeECPrivateKey) signKey).getData();
+        } else {
+            privkey = ECUtil.toByteArray(signKey.getS(), params.getCurve().getField().getFieldSize());
+        }
+        return sign(buffer.toByteArray(), privkey, params);
     }
 
     @Override
     protected boolean engineVerify(byte[] sigBytes) throws SignatureException {
-        return verify(sigBytes, buffer.toByteArray(), ECUtil.toX962Uncompressed(verifyKey.getW(), params), params);
+        byte[] pubkey;
+        if (verifyKey instanceof NativeECPublicKey) {
+            pubkey = ((NativeECPublicKey) verifyKey).getData();
+        } else {
+            pubkey = ECUtil.toX962Uncompressed(verifyKey.getW(), params);
+        }
+        return verify(sigBytes, buffer.toByteArray(), pubkey, params);
     }
 
     @Override
@@ -292,6 +304,48 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
 
         public OpensslECDSAwithNONE() {
             super("NONEwithECDSA");
+        }
+    }
+
+    public abstract static class Mscng extends NativeSignatureSpi {
+        private String type;
+
+        public Mscng(String type) {
+            this.type = type;
+        }
+
+        @Override
+        native byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
+    }
+
+    public static class MscngECDSAwithSHA1 extends Mscng {
+
+        public MscngECDSAwithSHA1() {
+            super("SHA1withECDSA");
+        }
+    }
+
+    public static class MscngECDSAwithSHA256 extends Mscng {
+
+        public MscngECDSAwithSHA256() {
+            super("SHA256withECDSA");
+        }
+    }
+
+    public static class MscngECDSAwithSHA384 extends Mscng {
+
+        public MscngECDSAwithSHA384() {
+            super("SHA384withECDSA");
+        }
+    }
+
+    public static class MscngECDSAwithSHA512 extends Mscng {
+
+        public MscngECDSAwithSHA512() {
+            super("SHA512withECDSA");
         }
     }
 }

@@ -31,6 +31,11 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
     ADD_KA(env, self, "ECDHwithSHA384KDF", "MscngECDHwithSHA384KDF");
     ADD_KA(env, self, "ECDHwithSHA512KDF", "MscngECDHwithSHA512KDF");
 
+    ADD_SIG(env, self, "SHA1withECDSA", "MscngECDSAwithSHA1");
+    ADD_SIG(env, self, "SHA256withECDSA", "MscngECDSAwithSHA256");
+    ADD_SIG(env, self, "SHA384withECDSA", "MscngECDSAwithSHA384");
+    ADD_SIG(env, self, "SHA512withECDSA", "MscngECDSAwithSHA112");
+
     init_classes(env, "Mscng");
 }
 
@@ -523,6 +528,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     if (NT_FAILURE(BCryptImportKeyPair(kaHandle, NULL, BCRYPT_ECCPRIVATE_BLOB, &skey, priv_data, priv_length, 0))) {
         //err
     }
+    (*env)->ReleaseByteArrayElements(env, privkey, priv_data, JNI_ABORT);
 
     BCRYPT_SECRET_HANDLE ka = NULL;
 
@@ -560,4 +566,150 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     BCryptDestroySecret(ka);
     BCryptCloseAlgorithmProvider(kaHandle, 0);
     return result;
+}
+
+static LPCWSTR get_sighash_algo(JNIEnv *env, jobject self) {
+    jclass mscng_sig_class = (*env)->FindClass(env, "cz/crcs/ectester/standalone/libs/jni/NativeSignatureSpi$Mscng");
+    jfieldID type_id = (*env)->GetFieldID(env, mscng_sig_class, "type", "Ljava/lang/String;");
+    jstring type = (jstring) (*env)->GetObjectField(env, self, type_id);
+    const char* type_data = (*env)->GetStringUTFChars(env, type, NULL);
+    LPCWSTR hash_algo;
+    if (strcmp(type_data, "SHA1withECDSA") == 0) {
+        hash_algo = BCRYPT_SHA1_ALGORITHM;
+    } else if (strcmp(type_data, "SHA256withECDSA") == 0) {
+        hash_algo = BCRYPT_SHA256_ALGORITHM;
+    } else if (strcmp(type_data, "SHA384withECDSA") == 0) {
+        hash_algo = BCRYPT_SHA384_ALGORITHM;
+    } else if (strcmp(type_data, "SHA512withECDSA") == 0) {
+        hash_algo = BCRYPT_SHA512_ALGORITHM;
+    } else {
+        //err
+    }
+    (*env)->ReleaseStringUTFChars(env, type, type_data);
+    return hash_algo;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Mscng_sign(JNIEnv *env, jobject self, jbyteArray data, jbyteArray privkey, jobject params) {
+    LPCWSTR hash_algo = get_sighash_algo(env, self);
+
+    BCRYPT_ALG_HANDLE sigHandle = NULL;
+
+    if (!init_algo(env, &sigHandle, BCRYPT_ECDSA_ALGORITHM, params)) {
+        //err
+    }
+
+    BCRYPT_ALG_HANDLE hashHandle = NULL;
+
+    if (NT_FAILURE(BCryptOpenAlgorithmProvider(&hashHandle, hash_algo, NULL, 0))) {
+        //err
+    }
+
+    DWORD dummy = 0;
+    DWORD hash_len = 0;
+    if (NT_FAILURE(BCryptGetProperty(hashHandle, BCRYPT_HASH_LENGTH, (PBYTE)&hash_len, sizeof(DWORD), &dummy, 0))) {
+        //err
+    }
+
+    BYTE hash[hash_len];
+
+    jint data_len = (*env)->GetArrayLength(env, data);
+    jbyte *data_bytes = (*env)->GetByteArrayElements(env, data, NULL);
+    if (NT_FAILURE(BCryptHash(hashHandle, NULL, 0, data_bytes, data_len, hash, hash_len))) {
+        //err
+    }
+    (*env)->ReleaseByteArrayElements(env, data, data_bytes, JNI_ABORT);
+
+    BCRYPT_KEY_HANDLE skey = NULL;
+
+    jint priv_length = (*env)->GetArrayLength(env, privkey);
+    jbyte *priv_data = (*env)->GetByteArrayElements(env, privkey, NULL);
+    if (NT_FAILURE(BCryptImportKeyPair(kaHandle, NULL, BCRYPT_ECCPRIVATE_BLOB, &skey, priv_data, priv_length, 0))) {
+        //err
+    }
+    (*env)->ReleaseByteArrayElements(env, privkey, priv_data, JNI_ABORT);
+
+    DWORD sig_len = 0;
+    if (NT_FAILURE(BCryptSignHash(skey, NULL, hash, hash_len, NULL, 0, &sig_len, 0))) {
+        //err
+    }
+
+    jbyteArray sig = (*env)->NewByteArray(env, sig_len);
+    jbyte *sig_data = (*env)->GetByteArrayElements(env, sig, NULL);
+    if (NT_FAILURE(BCryptSignHash(skey, NULL, hash, hash_len, sig_data, sig_len, &sig_len, 0))) {
+        //err
+    }
+    (*env)->ReleaseByteArrayElements(env, sig, sig_data, 0);
+
+    BCryptDestroyKey(skey);
+    BCryptCloseAlgorithmProvider(hashHandle, 0);
+    BCryptCloseAlgorithmProvider(sigHandle, 0);
+
+    return sig;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Mscng_verify(JNIEnv *env, jobject self, jbyteArray sig, jbyteArray data, jbyteArray pubkey, jobject params) {
+    LPCWSTR hash_algo = get_sighash_algo(env, self);
+
+    BCRYPT_ALG_HANDLE sigHandle = NULL;
+
+    if (!init_algo(env, &sigHandle, BCRYPT_ECDSA_ALGORITHM, params)) {
+        //err
+    }
+
+    BCRYPT_ALG_HANDLE hashHandle = NULL;
+
+    if (NT_FAILURE(BCryptOpenAlgorithmProvider(&hashHandle, hash_algo, NULL, 0))) {
+        //err
+    }
+
+    DWORD dummy = 0;
+    DWORD hash_len = 0;
+    if (NT_FAILURE(BCryptGetProperty(hashHandle, BCRYPT_HASH_LENGTH, (PBYTE)&hash_len, sizeof(DWORD), &dummy, 0))) {
+        //err
+    }
+
+    BYTE hash[hash_len];
+
+    jint data_len = (*env)->GetArrayLength(env, data);
+    jbyte *data_bytes = (*env)->GetByteArrayElements(env, data, NULL);
+    if (NT_FAILURE(BCryptHash(hashHandle, NULL, 0, data_bytes, data_len, hash, hash_len))) {
+        //err
+    }
+    (*env)->ReleaseByteArrayElements(env, data, data_bytes, JNI_ABORT);
+
+    BYTE hash[hash_len];
+
+    jint data_len = (*env)->GetArrayLength(env, data);
+    jbyte *data_bytes = (*env)->GetByteArrayElements(env, data, NULL);
+    if (NT_FAILURE(BCryptHash(hashHandle, NULL, 0, data_bytes, data_len, hash, hash_len))) {
+        //err
+    }
+    (*env)->ReleaseByteArrayElements(env, data, data_bytes, JNI_ABORT);
+
+    BCRYPT_KEY_HANDLE pkey = NULL;
+
+    jint pub_length = (*env)->GetArrayLength(env, pubkey);
+    jbyte *pub_data = (*env)->GetByteArrayElements(env, pubkey, NULL);
+    if (NT_FAILURE(BCryptImportKeyPair(kaHandle, NULL, BCRYPT_ECCPRIVATE_BLOB, &skey, pub_data, pub_length, 0))) {
+        //err
+    }
+    (*env)->ReleaseByteArrayElements(env, pubkey, pub_data, JNI_ABORT);
+
+    jint sig_len = (*env)->GetArrayLength(env, sig);
+    jbyte *sig_data = (*env)->GetByteArrayElements(env, sig, NULL);
+    NTSTATUS result = BCryptVerifySignature(pkey, NULL, hash, hash_len, sig_data, sig_len, 0);
+    (*env)->ReleaseByteArrayElements(env, sig, sig_data, JNI_ABORT);
+
+    BCryptDestroyKey(pkey);
+    BCryptCloseAlgorithmProvider(hashHandle, 0);
+    BCryptCloseAlgorithmProvider(sigHandle, 0);
+
+    if (result == STATUS_SUCCESS) {
+        return JNI_TRUE;
+    } else if (result == STATUS_INVALID_SIGNATURE) {
+        return JNI_FALSE;
+    } else {
+        //err
+        return JNI_FALSE;
+    }
 }
