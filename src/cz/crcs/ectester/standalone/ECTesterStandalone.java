@@ -320,12 +320,14 @@ public class ECTesterStandalone {
                 elapsed += System.nanoTime();
                 SecretKey derived;
                 byte[] result;
+                elapsed -= System.nanoTime();
                 if (kaIdent.requiresKeyAlgo()) {
                     derived = ka.generateSecret(keyAlgo);
                     result = derived.getEncoded();
                 } else {
                     result = ka.generateSecret();
                 }
+                elapsed += System.nanoTime();
                 ka = kaIdent.getInstance(lib.getProvider());
 
                 String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW(), pubkey.getParams()), false);

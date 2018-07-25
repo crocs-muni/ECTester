@@ -230,6 +230,17 @@ static ltc_ecc_set_type* create_curve(JNIEnv *env, jobject params) {
     return curve;
 }
 
+static void free_curve(ltc_ecc_set_type *curve) {
+    if (curve) {
+        free((void*)curve->prime);
+        free((void*)curve->B);
+        free((void*)curve->order);
+        free((void*)curve->Gx);
+        free((void*)curve->Gy);
+        free(curve);
+    }
+}
+
 static jobject generate_from_curve(JNIEnv *env, const ltc_ecc_set_type *curve) {
     ecc_key key;
     int err;
@@ -287,7 +298,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
     if ((*env)->IsInstanceOf(env, params, ec_parameter_spec_class)) {
         ltc_ecc_set_type *curve = create_curve(env, params);
         jobject result = generate_from_curve(env, curve);
-        free(curve);
+        free_curve(curve);
         return result;
     } else if ((*env)->IsInstanceOf(env, params, ecgen_parameter_spec_class)) {
         jmethodID get_name = (*env)->GetMethodID(env, ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
@@ -357,13 +368,13 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 
     ecc_key pub;
     if (!pubkey_from_bytes(env, pubkey, curve, &pub)) {
-        free(curve);
+        free_curve(curve);
         return NULL;
     }
 
     ecc_key priv;
     if (!privkey_from_bytes(env, privkey, curve, &priv)) {
-        free(curve);
+        free_curve(curve);
         return NULL;
     }
 
@@ -372,7 +383,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     int err;
     if ((err = ecc_shared_secret(&priv, &pub, result, &output_len)) != CRYPT_OK) {
         throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
-        free(curve);
+        free_curve(curve);
         return NULL;
     }
 
@@ -382,7 +393,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     (*env)->ReleaseByteArrayElements(env, output, output_data, 0);
 
     ltc_cleanup_multi(&pub.pubkey.x, &pub.pubkey.y, &pub.pubkey.z, &priv.k, NULL);
-    free(curve);
+    free_curve(curve);
     return output;
 }
 
@@ -391,7 +402,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 
     ecc_key priv;
     if (!privkey_from_bytes(env, privkey, curve, &priv)) {
-        free(curve);
+        free_curve(curve);
         return NULL;
     }
 
@@ -403,7 +414,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     int err;
     if ((err = ecc_sign_hash(data_data, data_size, result, &output_len, &ltc_prng, find_prng("yarrow"), &priv)) != CRYPT_OK) {
         throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
-        free(curve);
+        free_curve(curve);
         (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
         return NULL;
     }
@@ -415,7 +426,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     memcpy(output_data, result, output_len);
     (*env)->ReleaseByteArrayElements(env, output, output_data, 0);
 
-    free(curve);
+    free_curve(curve);
     return output;
 }
 
@@ -424,7 +435,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 
     ecc_key pub;
     if (!pubkey_from_bytes(env, pubkey, curve, &pub)) {
-        free(curve);
+        free_curve(curve);
         return JNI_FALSE;
     }
 
@@ -438,7 +449,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     int result;
     if ((err = ecc_verify_hash(sig_data, sig_size, data_data, data_size, &result, &pub)) != CRYPT_OK) {
         throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
-        free(curve);
+        free_curve(curve);
         (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
         (*env)->ReleaseByteArrayElements(env, signature, sig_data, JNI_ABORT);
         return JNI_FALSE;
@@ -446,6 +457,6 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
     (*env)->ReleaseByteArrayElements(env, signature, sig_data, JNI_ABORT);
-    free(curve);
+    free_curve(curve);
     return result;
 }
