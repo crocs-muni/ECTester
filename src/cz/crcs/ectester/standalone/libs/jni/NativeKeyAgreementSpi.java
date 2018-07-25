@@ -61,8 +61,18 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
 
     @Override
     protected byte[] engineGenerateSecret() throws IllegalStateException {
-        byte[] pubkey = ECUtil.toX962Uncompressed(publicKey.getW(), params.getCurve());
-        byte[] privkey = ECUtil.toByteArray(privateKey.getS(), params.getCurve().getField().getFieldSize());
+        byte[] pubkey;
+        if (publicKey instanceof NativeECPublicKey) {
+            pubkey = ((NativeECPublicKey) publicKey).getData();
+        } else {
+            pubkey = ECUtil.toX962Uncompressed(publicKey.getW(), params.getCurve());
+        }
+        byte[] privkey;
+        if (privateKey instanceof NativeECPrivateKey) {
+            privkey = ((NativeECPrivateKey) privateKey).getData();
+        } else {
+            privkey = ECUtil.toByteArray(privateKey.getS(), params.getCurve().getField().getFieldSize());
+        }
         return generateSecret(pubkey, privkey, params);
     }
 
@@ -169,6 +179,41 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
     public static class OpensslECDH extends Openssl {
         public OpensslECDH() {
             super("ECDH");
+        }
+    }
+
+    public abstract static class Mscng extends NativeKeyAgreementSpi {
+        private String type;
+
+        public Mscng(String type) {
+            this.type = type;
+        }
+
+        @Override
+        native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
+    }
+
+    public static class MscngECDHwithSHA1KDF extends Mscng {
+        public MscngECDHwithSHA1KDF() {
+            super("ECDHwithSHA1KDF");
+        }
+    }
+
+    public static class MscngECDHwithSHA256KDF extends Mscng {
+        public MscngECDHwithSHA256KDF() {
+            super("ECDHwithSHA256KDF");
+        }
+    }
+
+    public static class MscngECDHwithSHA384KDF extends Mscng {
+        public MscngECDHwithSHA384KDF() {
+            super("ECDHwithSHA384KDF");
+        }
+    }
+
+    public static class MscngECDHwithSHA512KDF extends Mscng {
+        public MscngECDHwithSHA512KDF() {
+            super("ECDHwithSHA512KDF");
         }
     }
 }

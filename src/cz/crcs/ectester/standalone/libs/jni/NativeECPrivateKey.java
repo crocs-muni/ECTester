@@ -1,5 +1,6 @@
 package cz.crcs.ectester.standalone.libs.jni;
 
+import cz.crcs.ectester.common.util.ByteUtil;
 import org.bouncycastle.util.Arrays;
 
 import java.math.BigInteger;
@@ -12,10 +13,12 @@ import java.security.spec.ECParameterSpec;
 public abstract class NativeECPrivateKey implements ECPrivateKey {
     private String algorithm;
     private String format;
+    ECParameterSpec params;
 
-    public NativeECPrivateKey(String algorithm, String format) {
+    public NativeECPrivateKey(String algorithm, String format, ECParameterSpec params) {
         this.algorithm = algorithm;
         this.format = format;
+        this.params = params;
     }
 
     @Override
@@ -28,14 +31,19 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
         return format;
     }
 
+    @Override
+    public ECParameterSpec getParams() {
+        return params;
+    }
+
+    public abstract byte[] getData();
+
     private static class Raw extends NativeECPrivateKey {
-        private byte[] keyData;
-        private ECParameterSpec params;
+        byte[] keyData;
 
         public Raw(byte[] keyData, ECParameterSpec params) {
-            super("EC", "raw");
+            super("EC", "raw", params);
             this.keyData = keyData;
-            this.params = params;
         }
 
         @Override
@@ -48,9 +56,8 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
             return Arrays.clone(keyData);
         }
 
-        @Override
-        public ECParameterSpec getParams() {
-            return params;
+        public byte[] getData() {
+            return getEncoded();
         }
     }
 
@@ -79,8 +86,28 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
     }
 
     public static class Mscng extends Raw {
-        public Mscng(byte[] keyData, ECParameterSpec params) {
+        private byte[] header;
+        private byte[] x;
+        private byte[] y;
+
+        public Mscng(byte[] header, byte[] x, byte[] y, byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
+            this.header = header;
+            this.x = x;
+            this.y = y;
+        }
+
+        public byte[] getHeader() {
+            return Arrays.clone(header);
+        }
+
+        public byte[] getBlob() {
+            return ByteUtil.concatenate(header, x, y, keyData);
+        }
+
+        @Override
+        public byte[] getData() {
+            return getBlob();
         }
     }
 }

@@ -809,3 +809,22 @@ extern "C" {
 }
 #endif
 #endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Mscng */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Mscng
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Mscng
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Mscng
+ * Method:    generateSecret
+ * Signature: ([B[BLjava/security/spec/ECParameterSpec;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Mscng_generateSecret
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif

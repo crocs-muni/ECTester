@@ -134,6 +134,7 @@
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Mscng"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$Mscng"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Mscng"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Mscng"/>
         </javah>
     </target>
 </project>
