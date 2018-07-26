@@ -98,12 +98,8 @@ set JNI_LIBDIR=%JAVA_HOME%\lib
 if not defined CC (
   set CC=cl.exe
 )
-if not defined LINK (
-  set LINK=link.exe
-)
 
 echo ** CC !CC!
-echo ** LINK !LINK!
 
 
 :: Try to find uCRT.
@@ -120,17 +116,17 @@ if exist %ucrt_base% (
 )
 
 :: Setup INCLUDE paths.
-set INCLUDE_CLI=/I. /I"%JNI_INCLUDEDIR%" /I"%JNI_PLATFORMINCLUDEDIR%" /I"%mscng_include%"
+set INCLUDE_CLI=/I. /I"%JNI_INCLUDEDIR%" /I"%JNI_PLATFORMINCLUDEDIR%"
 
 echo ** INCLUDE %INCLUDE%
 echo ** INCLUDE_CLI %INCLUDE_CLI%
 
 :: Setup LIB paths.
-set LIBPATH=/LIBPATH:"%JNI_LIBDIR%" /I"%mscng_lib_arch%"
+set LIBPATH=/LIBPATH:"%JNI_LIBDIR%"
 
 echo ** LIB %LIB%
 echo ** LIBPATH %LIBPATH%
 echo.
 
 
-%CC%  /EHsc %INCLUDE_CLI% mscng.c /LD /Femscng_provider.dll
+%CC%  /EHsc %INCLUDE_CLI% mscng.c c_utils.c bcrypt.lib jvm.lib /Femscng_provider.dll /LD /link %LIBPATH% 

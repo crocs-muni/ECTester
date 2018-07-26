@@ -38,12 +38,23 @@ CC?=gcc
 CXX?=g++
 STRIP?=strip
 
-LFLAGS+=-fPIC -g -shared
-CFLAGS+=-fPIC -g -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
-CXXFLAGS+=-fPIC -g -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
+LFLAGS+=-fPIC -shared
+CFLAGS+=-fPIC -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
+CXXFLAGS+=-fPIC -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
 
+DEBUG ?= 0
 
-all: tomcrypt_provider.so botan_provider.so cryptopp_provider.so openssl_provider.so mscng_provider.dll
+ifeq ($(DEBUG), 1)
+  CFLAGS+=-g
+  LFLAGS+=-g
+  CXXFLAGS+=-g
+else
+  CFLAGS+=-O2
+  LFLAGS+=-O2
+  CXXFLAGS+=-O2
+endif
+
+all: tomcrypt_provider.so botan_provider.so cryptopp_provider.so openssl_provider.so
 
 # Common utils
 c_utils.o: c_utils.c
@@ -83,9 +94,6 @@ cryptopp_provider.so: cryptopp.o cpp_utils.o
 
 cryptopp.o: cryptopp.cpp
 	$(CXX) $(shell pkg-config --cflags libcrypto++) $(CXXFLAGS) -c $<
-
-
-mscng_provider.dll: mscng.c
 
 
 clean:

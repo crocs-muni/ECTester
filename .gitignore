@@ -25,4 +25,8 @@
 # Built binaries in /src.
 /src/**/*.a
 /src/**/*.o
+/src/**/*.obj
 /src/**/*.so
+/src/**/*.dll
+/src/**/*.exp
+/src/**/*.lib
