@@ -180,7 +180,7 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
 
         public Mscng(String type) {
             this.type = type;
-            initialize(256, new SecureRandom());//TODO: maybe remove this default init?
+            initialize(256, new SecureRandom());
         }
 
         @Override
@@ -196,14 +196,14 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
         native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
     }
 
-    public static class MscngECDH extends Cryptopp {
+    public static class MscngECDH extends Mscng {
 
         public MscngECDH() {
             super("ECDH");
         }
     }
 
-    public static class MscngECDSA extends Cryptopp {
+    public static class MscngECDSA extends Mscng {
 
         public MscngECDSA() {
             super("ECDSA");
