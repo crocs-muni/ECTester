@@ -43,7 +43,7 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
 
         public Raw(byte[] keyData, ECParameterSpec params) {
             super("EC", "raw", params);
-            this.keyData = keyData;
+            this.keyData = Arrays.clone(keyData);
         }
 
         @Override
@@ -92,9 +92,9 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
 
         public Mscng(byte[] header, byte[] x, byte[] y, byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
-            this.header = header;
-            this.x = x;
-            this.y = y;
+            this.header = Arrays.clone(header);
+            this.x = Arrays.clone(x);
+            this.y = Arrays.clone(y);
         }
 
         public byte[] getHeader() {
@@ -102,7 +102,7 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
         }
 
         public byte[] getBlob() {
-            return ByteUtil.concatenate(header, x, y, keyData);
+			return ByteUtil.concatenate(header, x, y, keyData);
         }
 
         @Override

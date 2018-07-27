@@ -1,6 +1,11 @@
 @if not defined _echo echo off
 setlocal EnableDelayedExpansion
 
+:: ENV variables respected:
+::  - JAVA_HOME
+::  - CC
+::  - USE_EXT_MSCNG
+
 :: See if we are cleaning.
 if "%1" == "clean" (
   echo ** cleaning
@@ -58,8 +63,8 @@ if exist %vc_base% (
 
 :: Get the paths to Microsoft CNG SDK.
 set root_rel=..\..\..\..\..\..\..\
-set mscng_rel_include=ext\mscng\Include
-set mscng_rel_lib=ext\mscng\Lib
+set mscng_rel_include=ext\mscng\10\Include
+set mscng_rel_lib=ext\mscng\10\Lib
 
 pushd %root_rel%
 pushd %mscng_rel_include%
@@ -115,14 +120,24 @@ if exist %ucrt_base% (
   set ucrt_lib_arch=!ucrt_lib!\ucrt\%ARCH_S%
 )
 
+
 :: Setup INCLUDE paths.
 set INCLUDE_CLI=/I. /I"%JNI_INCLUDEDIR%" /I"%JNI_PLATFORMINCLUDEDIR%"
+
+if defined USE_EXT_MSCNG (
+  set INCLUDE_CLI=!INCLUDE_CLI! /I"%mscng_include%"
+)
 
 echo ** INCLUDE %INCLUDE%
 echo ** INCLUDE_CLI %INCLUDE_CLI%
 
+
 :: Setup LIB paths.
 set LIBPATH=/LIBPATH:"%JNI_LIBDIR%"
+
+if defined USE_EXT_MSCNG (
+  set LIBPATH=!LIBPATH! /LIBPATH:"%mscng_lib_arch%"
+)
 
 echo ** LIB %LIB%
 echo ** LIBPATH %LIBPATH%

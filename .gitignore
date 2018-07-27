@@ -1,4 +1,5 @@
 # Built artifacts in /dist and /applet.
+/build/
 /dist/lib/
 /dist/ECTesterReader.jar
 /dist/ECTesterReader-dist.jar

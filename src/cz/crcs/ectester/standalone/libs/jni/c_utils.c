@@ -21,7 +21,7 @@ void init_classes(JNIEnv *env, const char* lib_name) {
     ecgen_parameter_spec_class = (*env)->NewGlobalRef(env, local_ecgen_parameter_spec_class);
 
     const char *pubkey_base = "cz/crcs/ectester/standalone/libs/jni/NativeECPublicKey$";
-    char pubkey_class_name[1024]; //strlen(pubkey_base) + strlen(lib_name) + 1
+	char pubkey_class_name[2048] = { 0 }; //strlen(pubkey_base) + strlen(lib_name) + 1
     pubkey_class_name[0] = 0;
     strcat(pubkey_class_name, pubkey_base);
     strcat(pubkey_class_name, lib_name);
@@ -30,7 +30,7 @@ void init_classes(JNIEnv *env, const char* lib_name) {
     pubkey_class = (*env)->NewGlobalRef(env, local_pubkey_class);
 
     const char *privkey_base = "cz/crcs/ectester/standalone/libs/jni/NativeECPrivateKey$";
-    char privkey_class_name[1024]; //strlen(privkey_base) + strlen(lib_name) + 1
+	char privkey_class_name[2048] = { 0 }; //strlen(privkey_base) + strlen(lib_name) + 1
     privkey_class_name[0] = 0;
     strcat(privkey_class_name, privkey_base);
     strcat(privkey_class_name, lib_name);

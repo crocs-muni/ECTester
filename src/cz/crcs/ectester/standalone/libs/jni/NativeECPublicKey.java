@@ -45,7 +45,7 @@ public abstract class NativeECPublicKey implements ECPublicKey {
 
         public ANSIX962(byte[] keyData, ECParameterSpec params) {
             super("EC", "ANSI X9.62", params);
-            this.keyData = keyData;
+            this.keyData = Arrays.clone(keyData);
         }
 
         @Override
@@ -94,9 +94,9 @@ public abstract class NativeECPublicKey implements ECPublicKey {
 
         public Mscng(byte[] header, byte[] x, byte[] y, ECParameterSpec params) {
             super(ByteUtil.concatenate(new byte[]{0x04}, x, y), params);
-            this.header = header;
-            this.x = x;
-            this.y = y;
+            this.header = Arrays.clone(header);
+            this.x = Arrays.clone(x);
+            this.y = Arrays.clone(y);
         }
 
         public byte[] getHeader() {
@@ -104,7 +104,7 @@ public abstract class NativeECPublicKey implements ECPublicKey {
         }
 
         public byte[] getBlob() {
-            return ByteUtil.concatenate(header, x, y);
+			return ByteUtil.concatenate(header, x, y);
         }
 
         @Override
