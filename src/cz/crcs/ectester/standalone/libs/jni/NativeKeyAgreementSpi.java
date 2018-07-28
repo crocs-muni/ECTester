@@ -16,9 +16,9 @@ import java.security.spec.ECParameterSpec;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
-    private ECPrivateKey privateKey;
-    private ECPublicKey publicKey;
-    private ECParameterSpec params;
+    ECPrivateKey privateKey;
+    ECPublicKey publicKey;
+    ECParameterSpec params;
 
     @Override
     protected void engineInit(Key key, SecureRandom random) throws InvalidKeyException {
@@ -60,23 +60,6 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
     }
 
     @Override
-    protected byte[] engineGenerateSecret() throws IllegalStateException {
-        byte[] pubkey;
-        if (publicKey instanceof NativeECPublicKey) {
-            pubkey = ((NativeECPublicKey) publicKey).getData();
-        } else {
-            pubkey = ECUtil.toX962Uncompressed(publicKey.getW(), params.getCurve());
-        }
-        byte[] privkey;
-        if (privateKey instanceof NativeECPrivateKey) {
-            privkey = ((NativeECPrivateKey) privateKey).getData();
-        } else {
-            privkey = ECUtil.toByteArray(privateKey.getS(), params.getCurve().getField().getFieldSize());
-        }
-        return generateSecret(pubkey, privkey, params);
-    }
-
-    @Override
     protected int engineGenerateSecret(byte[] sharedSecret, int offset) throws IllegalStateException, ShortBufferException {
         byte[] secret = engineGenerateSecret();
         if (sharedSecret.length < offset + secret.length) {
@@ -92,16 +75,46 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         return new SecretKeySpec(engineGenerateSecret(), algorithm);
     }
 
-    abstract byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
+    private abstract static class SimpleKeyAgreementSpi extends NativeKeyAgreementSpi {
+
+        @Override
+        protected byte[] engineGenerateSecret() throws IllegalStateException {
+            byte[] pubkey;
+            if (publicKey instanceof NativeECPublicKey) {
+                pubkey = ((NativeECPublicKey) publicKey).getData();
+            } else {
+                pubkey = ECUtil.toX962Uncompressed(publicKey.getW(), params.getCurve());
+            }
+            byte[] privkey;
+            if (privateKey instanceof NativeECPrivateKey) {
+                privkey = ((NativeECPrivateKey) privateKey).getData();
+            } else {
+                privkey = ECUtil.toByteArray(privateKey.getS(), params.getCurve().getField().getFieldSize());
+            }
+            return generateSecret(pubkey, privkey, params);
+        }
+
+        abstract byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
+    }
+
+    private abstract static class ExtendedKeyAgreementSpi extends NativeKeyAgreementSpi {
+
+        @Override
+        protected byte[] engineGenerateSecret() throws IllegalStateException {
+            return generateSecret(publicKey, privateKey, params);
+        }
+
+        abstract byte[] generateSecret(ECPublicKey pubkey, ECPrivateKey privkey, ECParameterSpec params);
+    }
 
 
-    public static class TomCrypt extends NativeKeyAgreementSpi {
+    public static class TomCrypt extends SimpleKeyAgreementSpi {
 
         @Override
         native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
     }
 
-    public abstract static class Botan extends NativeKeyAgreementSpi {
+    public abstract static class Botan extends SimpleKeyAgreementSpi {
         private String type;
 
         public Botan(String type) {
@@ -148,7 +161,7 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         }
     }
 
-    public abstract static class Cryptopp extends NativeKeyAgreementSpi {
+    public abstract static class Cryptopp extends SimpleKeyAgreementSpi {
         private String type;
 
         public Cryptopp(String type) {
@@ -165,7 +178,7 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         }
     }
 
-    public abstract static class Openssl extends NativeKeyAgreementSpi {
+    public abstract static class Openssl extends SimpleKeyAgreementSpi {
         private String type;
 
         public Openssl(String type) {
@@ -182,7 +195,7 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         }
     }
 
-    public abstract static class Mscng extends NativeKeyAgreementSpi {
+    public abstract static class Mscng extends SimpleKeyAgreementSpi {
         private String type;
 
         public Mscng(String type) {

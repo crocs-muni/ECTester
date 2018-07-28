@@ -12,11 +12,11 @@ import java.security.spec.ECParameterSpec;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public abstract class NativeSignatureSpi extends SignatureSpi {
-    private ECPublicKey verifyKey;
-    private ECPrivateKey signKey;
-    private ECParameterSpec params;
+    ECPublicKey verifyKey;
+    ECPrivateKey signKey;
+    ECParameterSpec params;
 
-    private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
     @Override
     protected void engineInitVerify(PublicKey publicKey) throws InvalidKeyException {
@@ -50,27 +50,6 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         buffer.write(b, off, len);
     }
 
-    @Override
-    protected byte[] engineSign() throws SignatureException {
-        byte[] privkey;
-        if (signKey instanceof NativeECPrivateKey) {
-            privkey = ((NativeECPrivateKey) signKey).getData();
-        } else {
-            privkey = ECUtil.toByteArray(signKey.getS(), params.getCurve().getField().getFieldSize());
-        }
-        return sign(buffer.toByteArray(), privkey, params);
-    }
-
-    @Override
-    protected boolean engineVerify(byte[] sigBytes) throws SignatureException {
-        byte[] pubkey;
-        if (verifyKey instanceof NativeECPublicKey) {
-            pubkey = ((NativeECPublicKey) verifyKey).getData();
-        } else {
-            pubkey = ECUtil.toX962Uncompressed(verifyKey.getW(), params);
-        }
-        return verify(sigBytes, buffer.toByteArray(), pubkey, params);
-    }
 
     @Override
     @Deprecated
@@ -84,11 +63,36 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         throw new UnsupportedOperationException("getParameter() not supported");
     }
 
-    abstract byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
+    private abstract static class SimpleSignatureSpi extends NativeSignatureSpi {
 
-    abstract boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
+        @Override
+        protected byte[] engineSign() throws SignatureException {
+            byte[] privkey;
+            if (signKey instanceof NativeECPrivateKey) {
+                privkey = ((NativeECPrivateKey) signKey).getData();
+            } else {
+                privkey = ECUtil.toByteArray(signKey.getS(), params.getCurve().getField().getFieldSize());
+            }
+            return sign(buffer.toByteArray(), privkey, params);
+        }
 
-    public static class TomCryptRaw extends NativeSignatureSpi {
+        @Override
+        protected boolean engineVerify(byte[] sigBytes) throws SignatureException {
+            byte[] pubkey;
+            if (verifyKey instanceof NativeECPublicKey) {
+                pubkey = ((NativeECPublicKey) verifyKey).getData();
+            } else {
+                pubkey = ECUtil.toX962Uncompressed(verifyKey.getW(), params);
+            }
+            return verify(sigBytes, buffer.toByteArray(), pubkey, params);
+        }
+
+        abstract byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
+
+        abstract boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
+    }
+
+    public static class TomCryptRaw extends SimpleSignatureSpi {
 
         @Override
         native byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
@@ -97,7 +101,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
     }
 
-    public abstract static class Botan extends NativeSignatureSpi {
+    public abstract static class Botan extends SimpleSignatureSpi {
         private String type;
 
         public Botan(String type) {
@@ -237,7 +241,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         }
     }
 
-    public abstract static class Cryptopp extends NativeSignatureSpi {
+    public abstract static class Cryptopp extends SimpleSignatureSpi {
         private String type;
 
         public Cryptopp(String type) {
@@ -286,7 +290,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         }
     }
 
-    public abstract static class Openssl extends NativeSignatureSpi {
+    public abstract static class Openssl extends SimpleSignatureSpi {
         private String type;
 
         public Openssl(String type) {
@@ -307,7 +311,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         }
     }
 
-    public abstract static class Mscng extends NativeSignatureSpi {
+    public abstract static class Mscng extends SimpleSignatureSpi {
         private String type;
 
         public Mscng(String type) {
