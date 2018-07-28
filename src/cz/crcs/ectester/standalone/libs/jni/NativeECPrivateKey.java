@@ -86,15 +86,30 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
     }
 
     public static class Mscng extends Raw {
+        // 0 -> implicit (meta = curveName UTF16, header = full);
+        // 1 -> explicit (meta = null, header = full);
+        // 2 -> nist (meta = null, header = full)
+        private int flag;
+        private byte[] meta = null;
         private byte[] header;
         private byte[] x;
         private byte[] y;
 
-        public Mscng(byte[] header, byte[] x, byte[] y, byte[] keyData, ECParameterSpec params) {
+        public Mscng(int flag, byte[] meta, byte[] header, byte[] x, byte[] y, byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
+            this.flag = flag;
+            this.meta = Arrays.clone(meta);
             this.header = Arrays.clone(header);
             this.x = Arrays.clone(x);
             this.y = Arrays.clone(y);
+        }
+
+        public int getFlag() {
+            return flag;
+        }
+
+        public byte[] getMeta() {
+            return Arrays.clone(meta);
         }
 
         public byte[] getHeader() {
@@ -102,7 +117,7 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
         }
 
         public byte[] getBlob() {
-			return ByteUtil.concatenate(header, x, y, keyData);
+            return ByteUtil.concatenate(header, x, y, keyData);
         }
 
         @Override

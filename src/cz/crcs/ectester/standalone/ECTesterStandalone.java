@@ -275,7 +275,6 @@ public class ECTesterStandalone {
                                 .findFirst()
                                 .orElse(null)));
 
-
         if (kaIdent == null || kpIdent == null) {
             throw new NoSuchAlgorithmException(algo);
         } else {

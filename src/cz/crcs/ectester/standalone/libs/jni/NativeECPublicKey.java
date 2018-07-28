@@ -88,15 +88,30 @@ public abstract class NativeECPublicKey implements ECPublicKey {
     }
 
     public static class Mscng extends ANSIX962 {
+        // 0 -> implicit (meta = curveName UTF16, header = full);
+        // 1 -> explicit (meta = null, header = full);
+        // 2 -> nist (meta = null, header = full)
+        private int flag;
+        private byte[] meta = null;
         private byte[] header;
         private byte[] x;
         private byte[] y;
 
-        public Mscng(byte[] header, byte[] x, byte[] y, ECParameterSpec params) {
+        public Mscng(int flag, byte[] meta, byte[] header, byte[] x, byte[] y, ECParameterSpec params) {
             super(ByteUtil.concatenate(new byte[]{0x04}, x, y), params);
+            this.flag = flag;
+            this.meta = Arrays.clone(meta);
             this.header = Arrays.clone(header);
             this.x = Arrays.clone(x);
             this.y = Arrays.clone(y);
+        }
+
+        public int getFlag() {
+            return flag;
+        }
+
+        public byte[] getMeta() {
+            return Arrays.clone(meta);
         }
 
         public byte[] getHeader() {
@@ -104,7 +119,7 @@ public abstract class NativeECPublicKey implements ECPublicKey {
         }
 
         public byte[] getBlob() {
-			return ByteUtil.concatenate(header, x, y);
+            return ByteUtil.concatenate(header, x, y);
         }
 
         @Override

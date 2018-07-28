@@ -92,6 +92,23 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         abstract boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
     }
 
+    private abstract static class ExtendedSignatureSpi extends NativeSignatureSpi {
+
+        @Override
+        protected byte[] engineSign() throws SignatureException {
+            return sign(buffer.toByteArray(), signKey, params);
+        }
+
+        @Override
+        protected boolean engineVerify(byte[] sigBytes) throws SignatureException {
+            return verify(sigBytes, buffer.toByteArray(), verifyKey, params);
+        }
+
+        abstract byte[] sign(byte[] data, ECPrivateKey privkey, ECParameterSpec params);
+
+        abstract boolean verify(byte[] signature, byte[] data, ECPublicKey pubkey, ECParameterSpec params);
+    }
+
     public static class TomCryptRaw extends SimpleSignatureSpi {
 
         @Override
@@ -311,7 +328,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         }
     }
 
-    public abstract static class Mscng extends SimpleSignatureSpi {
+    public abstract static class Mscng extends ExtendedSignatureSpi {
         private String type;
 
         public Mscng(String type) {
@@ -319,10 +336,10 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         }
 
         @Override
-        native byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
+        native byte[] sign(byte[] data, ECPrivateKey privkey, ECParameterSpec params);
 
         @Override
-        native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
+        native boolean verify(byte[] signature, byte[] data, ECPublicKey pubkey, ECParameterSpec params);
     }
 
     public static class MscngECDSAwithSHA1 extends Mscng {

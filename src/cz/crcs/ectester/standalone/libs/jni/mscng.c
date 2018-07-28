@@ -6,8 +6,9 @@
 
 #include <stdio.h>
 
-static jclass provider_class;
 
+
+// BCRYPT and NT things.
 #define NT_SUCCESS(status)          (((NTSTATUS)(status)) >= 0)
 #define NT_FAILURE(status)          !NT_SUCCESS(status)
 
@@ -23,6 +24,13 @@ typedef struct {
 	ULONG                   cbCofactor;             //Byte length of cofactor of G in E.
 	ULONG                   cbSeed;                 //Byte length of the seed used to generate the curve.
 } BCRYPT_ECC_PARAMETER_HEADER;
+
+//Provider things
+static jclass provider_class;
+
+#define KEYFLAG_IMPLICIT 0
+#define KEYFLAG_EXPLICIT 1
+#define KEYFLAG_NIST     2
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_MscngLib_createProvider(JNIEnv *env, jobject self) {
 	jclass local_provider_class = (*env)->FindClass(env, "cz/crcs/ectester/standalone/libs/jni/NativeProvider$Mscng");
@@ -138,8 +146,8 @@ static ULONG utf_8to16(NWPSTR *out_buf, LPCSTR in_str) {
 	return MultiByteToWideChar(CP_UTF8, 0, in_str, -1, *out_buf, result);
 }
 
-// Convert Java String to UTF-16 LPCWSTR null-terminated.
-// Returns: Length of LPCWSTR in bytes!
+// Convert Java String to UTF-16 NWPSTR null-terminated.
+// Returns: Length of NWPSTR in bytes!
 static ULONG utf_strto16(NWPSTR *out_buf, JNIEnv *env, jobject str) {
 	jsize len = (*env)->GetStringLength(env, str);
 	*out_buf = calloc(len * sizeof(jchar) + 1, 1);
@@ -378,7 +386,7 @@ static ULONG create_curve(JNIEnv *env, jobject params, PBYTE *curve) {
 	return bufSize;
 }
 
-static ULONG init_algo(JNIEnv *env, BCRYPT_ALG_HANDLE *handle, LPCWSTR algo, jobject params) {
+static ULONG init_algo(JNIEnv *env, BCRYPT_ALG_HANDLE *handle, jint *keyflag, NWPSTR *curve_name, LPCWSTR algo, jobject params) {
 	NTSTATUS status;
 	if (NT_FAILURE(status = BCryptOpenAlgorithmProvider(handle, algo, MS_PRIMITIVE_PROVIDER, 0))) {
 		wprintf(L"**** Error 0x%x returned by BCryptOpenAlgorithmProvider\n", status);
@@ -392,15 +400,14 @@ static ULONG init_algo(JNIEnv *env, BCRYPT_ALG_HANDLE *handle, LPCWSTR algo, job
 		PUCHAR chars = calloc(utf_length + 1, 1);
 		(*env)->GetStringUTFRegion(env, name, 0, utf_length, chars);
 		const named_curve_t *curve = lookup_curve(chars);
-		NWPSTR curve_utf16;
-		ULONG ret = utf_8to16(&curve_utf16, chars);
-		if (NT_FAILURE(status = BCryptSetProperty(*handle, BCRYPT_ECC_CURVE_NAME, (PUCHAR)curve_utf16, ret * sizeof(WCHAR), 0))) {
+		ULONG ret = utf_8to16(curve_name, chars);
+		if (NT_FAILURE(status = BCryptSetProperty(*handle, BCRYPT_ECC_CURVE_NAME, (PUCHAR)*curve_name, ret * sizeof(WCHAR), 0))) {
 			wprintf(L"**** Error 0x%x returned by BCryptSetProperty\n", status);
 			return 0;
 		}
 		free(chars);
-		free(curve_utf16);
 		result = curve->bits;
+		*keyflag = KEYFLAG_IMPLICIT;
 	} else if ((*env)->IsInstanceOf(env, params, ec_parameter_spec_class)) {
 		PBYTE curve;
 		ULONG curveLen = create_curve(env, params, &curve);
@@ -419,11 +426,13 @@ static ULONG init_algo(JNIEnv *env, BCRYPT_ALG_HANDLE *handle, LPCWSTR algo, job
 		jmethodID get_bits = (*env)->GetMethodID(env, fp_field_class, "getFieldSize", "()I");
 		jint bits = (*env)->CallIntMethod(env, field, get_bits);
 		result = bits;
+		*keyflag = KEYFLAG_EXPLICIT;
+		*curve_name = NULL;
 	}
 	return result;
 }
 
-static jobject key_to_privkey(JNIEnv *env, BCRYPT_KEY_HANDLE key) {
+static jobject key_to_privkey(JNIEnv *env, BCRYPT_KEY_HANDLE key, jint flag, LPCWSTR curve) {
 	NTSTATUS status;
 	ULONG bufSize = 0;
 	if (NT_FAILURE(status = BCryptExportKey(key, NULL, BCRYPT_ECCFULLPRIVATE_BLOB, NULL, 0, &bufSize, 0))) {
@@ -438,6 +447,7 @@ static jobject key_to_privkey(JNIEnv *env, BCRYPT_KEY_HANDLE key) {
 	PBYTE fullBuf = calloc(bufSize, 1);
 	if (NT_FAILURE(status = BCryptExportKey(key, NULL, BCRYPT_ECCFULLPRIVATE_BLOB, fullBuf, bufSize, &bufSize, 0))) {
 		wprintf(L"**** Error 0x%x returned by BCryptExportKey(full, whole)\n", status);
+		free(fullBuf);
 		return NULL;
 	}
 
@@ -462,10 +472,59 @@ static jobject key_to_privkey(JNIEnv *env, BCRYPT_KEY_HANDLE key) {
 	PBYTE priv_y = priv_x + privHeader->cbFieldLength;
 	PBYTE priv = priv_y + privHeader->cbFieldLength;
 
-	jbyteArray header_bytes = (*env)->NewByteArray(env, paramLength);
-	jbyte *header_data = (*env)->GetByteArrayElements(env, header_bytes, NULL);
-	memcpy(header_data, privHeader, paramLength);
-	(*env)->ReleaseByteArrayElements(env, header_bytes, header_data, 0);
+
+	jbyteArray meta_bytes = NULL;
+	jbyteArray header_bytes = NULL;
+	switch (flag) {
+		case 0: {
+			// meta = curve
+			jint meta_len = (wcslen(curve) + 1) * sizeof(WCHAR);
+			meta_bytes = (*env)->NewByteArray(env, meta_len);
+			jbyte *meta_data = (*env)->GetByteArrayElements(env, meta_bytes, NULL);
+			memcpy(meta_data, curve, meta_len);
+			(*env)->ReleaseByteArrayElements(env, meta_bytes, meta_data, 0);
+		}
+		case 1:
+		case 2: {
+			// meta = null
+			// header = full
+			header_bytes = (*env)->NewByteArray(env, paramLength);
+			jbyte *header_data = (*env)->GetByteArrayElements(env, header_bytes, NULL);
+			memcpy(header_data, fullBuf, paramLength);
+			(*env)->ReleaseByteArrayElements(env, header_bytes, header_data, 0);
+			break;
+		}
+		default:
+			// header = small
+			if (NT_FAILURE(status = BCryptExportKey(key, NULL, BCRYPT_ECCPRIVATE_BLOB, NULL, 0, &bufSize, 0))) {
+				wprintf(L"**** Error 0x%x returned by BCryptExportKey(small, length only)\n", status);
+				free(fullBuf);
+				return NULL;
+			}
+			if (bufSize == 0) {
+				printf("buf 0\n");
+				free(fullBuf);
+				return NULL;
+			}
+			PBYTE smallBuf = calloc(bufSize, 1);
+			if (NT_FAILURE(status = BCryptExportKey(key, NULL, BCRYPT_ECCPRIVATE_BLOB, smallBuf, bufSize, &bufSize, 0))) {
+				wprintf(L"**** Error 0x%x returned by BCryptExportKey(small, whole)\n", status);
+				free(fullBuf);
+				free(smallBuf);
+				return NULL;
+			}
+			// smallBuf looks like:
+			//	   BCRYPT_ECCKEY_BLOB header
+			//     Qx[cbFieldLength]             X-coordinate of the public point.
+			//     Qy[cbFieldLength]             Y-coordinate of the public point.
+			//     d[cbSubgroupOrder]            Private key.
+			header_bytes = (*env)->NewByteArray(env, sizeof(BCRYPT_ECCKEY_BLOB));
+			jbyte *header_data = (*env)->GetByteArrayElements(env, header_bytes, NULL);
+			memcpy(header_data, smallBuf, sizeof(BCRYPT_ECCKEY_BLOB));
+			(*env)->ReleaseByteArrayElements(env, header_bytes, header_data, 0);
+			free(smallBuf);
+			break;
+	}
 
 	jbyteArray x_bytes = (*env)->NewByteArray(env, privHeader->cbFieldLength);
 	jbyte *x_data = (*env)->GetByteArrayElements(env, x_bytes, NULL);
@@ -484,11 +543,11 @@ static jobject key_to_privkey(JNIEnv *env, BCRYPT_KEY_HANDLE key) {
 
 	free(fullBuf);
 
-	jmethodID ec_priv_init = (*env)->GetMethodID(env, privkey_class, "<init>", "([B[B[B[BLjava/security/spec/ECParameterSpec;)V");
-	return (*env)->NewObject(env, privkey_class, ec_priv_init, header_bytes, x_bytes, y_bytes, priv_bytes, ec_priv_param_spec);
+	jmethodID ec_priv_init = (*env)->GetMethodID(env, privkey_class, "<init>", "(I[B[B[B[B[BLjava/security/spec/ECParameterSpec;)V");
+	return (*env)->NewObject(env, privkey_class, ec_priv_init, flag, meta_bytes, header_bytes, x_bytes, y_bytes, priv_bytes, ec_priv_param_spec);
 }
 
-static jobject key_to_pubkey(JNIEnv *env, BCRYPT_KEY_HANDLE key) {
+static jobject key_to_pubkey(JNIEnv *env, BCRYPT_KEY_HANDLE key, jint flag, LPCWSTR curve) {
 	NTSTATUS status;
 	ULONG bufSize = 0;
 	if (NT_FAILURE(status = BCryptExportKey(key, NULL, BCRYPT_ECCFULLPUBLIC_BLOB, NULL, 0, &bufSize, 0))) {
@@ -525,10 +584,55 @@ static jobject key_to_pubkey(JNIEnv *env, BCRYPT_KEY_HANDLE key) {
 	PBYTE pub_x = &fullBuf[paramLength];
 	PBYTE pub_y = pub_x + pubHeader->cbFieldLength;
 
-	jbyteArray header_bytes = (*env)->NewByteArray(env, paramLength);
-	jbyte *header_data = (*env)->GetByteArrayElements(env, header_bytes, NULL);
-	memcpy(header_data, pubHeader, paramLength);
-	(*env)->ReleaseByteArrayElements(env, header_bytes, header_data, 0);
+	jbyteArray meta_bytes = NULL;
+	jbyteArray header_bytes = NULL;
+	switch (flag) {
+		case 0: {
+			// meta = curve
+			jint meta_len = (wcslen(curve) + 1) * sizeof(WCHAR);
+			meta_bytes = (*env)->NewByteArray(env, meta_len);
+			jbyte *meta_data = (*env)->GetByteArrayElements(env, meta_bytes, NULL);
+			memcpy(meta_data, curve, meta_len);
+			(*env)->ReleaseByteArrayElements(env, meta_bytes, meta_data, 0);
+		}
+		case 1:
+		case 2: {
+			header_bytes = (*env)->NewByteArray(env, paramLength);
+			jbyte *header_data = (*env)->GetByteArrayElements(env, header_bytes, NULL);
+			memcpy(header_data, pubHeader, paramLength);
+			(*env)->ReleaseByteArrayElements(env, header_bytes, header_data, 0);
+			break;
+		}
+		default:
+			// header = small
+			if (NT_FAILURE(status = BCryptExportKey(key, NULL, BCRYPT_ECCPUBLIC_BLOB, NULL, 0, &bufSize, 0))) {
+				wprintf(L"**** Error 0x%x returned by BCryptExportKey(small, length only)\n", status);
+				free(fullBuf);
+				return NULL;
+			}
+			if (bufSize == 0) {
+				printf("buf 0\n");
+				free(fullBuf);
+				return NULL;
+			}
+			PBYTE smallBuf = calloc(bufSize, 1);
+			if (NT_FAILURE(status = BCryptExportKey(key, NULL, BCRYPT_ECCPUBLIC_BLOB, smallBuf, bufSize, &bufSize, 0))) {
+				wprintf(L"**** Error 0x%x returned by BCryptExportKey(small, whole)\n", status);
+				free(fullBuf);
+				free(smallBuf);
+				return NULL;
+			}
+			// smallBuf looks like:
+			//	   BCRYPT_ECCKEY_BLOB header
+			//     Qx[cbFieldLength]             X-coordinate of the public point.
+			//     Qy[cbFieldLength]             Y-coordinate of the public point.
+			header_bytes = (*env)->NewByteArray(env, sizeof(BCRYPT_ECCKEY_BLOB));
+			jbyte *header_data = (*env)->GetByteArrayElements(env, header_bytes, NULL);
+			memcpy(header_data, smallBuf, sizeof(BCRYPT_ECCKEY_BLOB));
+			(*env)->ReleaseByteArrayElements(env, header_bytes, header_data, 0);
+			free(smallBuf);
+			break;
+	}
 
 	jbyteArray x_bytes = (*env)->NewByteArray(env, pubHeader->cbFieldLength);
 	jbyte *x_data = (*env)->GetByteArrayElements(env, x_bytes, NULL);
@@ -542,8 +646,8 @@ static jobject key_to_pubkey(JNIEnv *env, BCRYPT_KEY_HANDLE key) {
 
 	free(fullBuf);
 
-	jmethodID ec_pub_init = (*env)->GetMethodID(env, pubkey_class, "<init>", "([B[B[BLjava/security/spec/ECParameterSpec;)V");
-	return (*env)->NewObject(env, pubkey_class, ec_pub_init, header_bytes, x_bytes, y_bytes, ec_pub_param_spec);
+	jmethodID ec_pub_init = (*env)->GetMethodID(env, pubkey_class, "<init>", "(I[B[B[B[BLjava/security/spec/ECParameterSpec;)V");
+	return (*env)->NewObject(env, pubkey_class, ec_pub_init, flag, meta_bytes, header_bytes, x_bytes, y_bytes, ec_pub_param_spec);
 }
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Mscng_generate__ILjava_security_SecureRandom_2(JNIEnv *env, jobject self, jint keysize, jobject random) {
@@ -610,8 +714,8 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
 		return NULL;
 	}
 
-	jobject privkey = key_to_privkey(env, key);
-	jobject pubkey = key_to_pubkey(env, key);
+	jobject privkey = key_to_privkey(env, key, KEYFLAG_NIST, NULL);
+	jobject pubkey = key_to_pubkey(env, key, KEYFLAG_NIST, NULL);
 
 	jmethodID keypair_init = (*env)->GetMethodID(env, keypair_class, "<init>", "(Ljava/security/PublicKey;Ljava/security/PrivateKey;)V");
 
@@ -640,7 +744,9 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
 	}
 	(*env)->ReleaseStringUTFChars(env, type, type_data);
 
-	ULONG bits = init_algo(env, &handle, algo, params);
+	jint keyflag;
+	NWPSTR curveName;
+	ULONG bits = init_algo(env, &handle, &keyflag, &curveName, algo, params);
 	if (bits == 0) {
 		throw_new(env, "java/security/GeneralSecurityException", "Couldn't initialize algo.");
 		return NULL;
@@ -658,8 +764,12 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
 		return NULL;
 	}
 
-	jobject privkey = key_to_privkey(env, key);
-	jobject pubkey = key_to_pubkey(env, key);
+	jobject privkey = key_to_privkey(env, key, keyflag, curveName);
+	jobject pubkey = key_to_pubkey(env, key, keyflag, curveName);
+
+	if (curveName) {
+		free(curveName);
+	}
 
 	jmethodID keypair_init = (*env)->GetMethodID(env, keypair_class, "<init>", "(Ljava/security/PublicKey;Ljava/security/PrivateKey;)V");
 
@@ -668,9 +778,109 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
 	return (*env)->NewObject(env, keypair_class, keypair_init, pubkey, privkey);
 }
 
+static NTSTATUS init_use_algo(JNIEnv *env, BCRYPT_ALG_HANDLE *handle, LPCWSTR type, jint keyflag, jbyteArray meta, jobject params) {
+	LPCWSTR ecdh_algos[] = {
+		BCRYPT_ECDH_ALGORITHM,
+		BCRYPT_ECDH_P256_ALGORITHM,
+		BCRYPT_ECDH_P384_ALGORITHM,
+		BCRYPT_ECDH_P521_ALGORITHM
+	};
+	LPCWSTR ecdsa_algos[] = {
+		BCRYPT_ECDSA_ALGORITHM,
+		BCRYPT_ECDSA_P256_ALGORITHM,
+		BCRYPT_ECDSA_P384_ALGORITHM,
+		BCRYPT_ECDSA_P521_ALGORITHM
+	};
+
+	LPCWSTR *algos;
+	LPCWSTR algo;
+	if (lstrcmpW(type, BCRYPT_ECDH_ALGORITHM) == 0) {
+		algos = ecdh_algos;
+	} else if (lstrcmpW(type, BCRYPT_ECDSA_ALGORITHM) == 0) {
+		algos = ecdsa_algos;
+	} else {
+		//unreachable
+		return STATUS_INVALID_PARAMETER;
+	}
+
+	switch (keyflag) {
+		case 0:
+		case 1:
+			algo = algos[0];
+			break;
+		case 2: {
+			jmethodID get_curve = (*env)->GetMethodID(env, ec_parameter_spec_class, "getCurve", "()Ljava/security/spec/EllipticCurve;");
+			jobject elliptic_curve = (*env)->CallObjectMethod(env, params, get_curve);
+
+			jmethodID get_field = (*env)->GetMethodID(env, elliptic_curve_class, "getField", "()Ljava/security/spec/ECField;");
+			jobject field = (*env)->CallObjectMethod(env, elliptic_curve, get_field);
+
+			jmethodID get_bits = (*env)->GetMethodID(env, fp_field_class, "getFieldSize", "()I");
+			jint bits = (*env)->CallIntMethod(env, field, get_bits);
+			switch (bits) {
+				case 256:
+					algo = algos[1];
+					break;
+				case 384:
+					algo = algos[2];
+					break;
+				case 521:
+					algo = algos[3];
+					break;
+				default:
+					return STATUS_INVALID_PARAMETER;
+			}
+			break;
+		}
+	}
+	NTSTATUS status;
+	
+	if (NT_FAILURE(status = BCryptOpenAlgorithmProvider(handle, algo, MS_PRIMITIVE_PROVIDER, 0))) {
+		throw_new_var(env, "java/security/GeneralSecurityException", "Error 0x%x returned by BCryptOpenAlgorithmProvider\n", status);
+		return status;
+	}
+
+	switch (keyflag) {
+		case 0: {
+			jint meta_len = (*env)->GetArrayLength(env, meta);
+			jbyte *meta_data = (*env)->GetByteArrayElements(env, meta, NULL);
+			//if (NT_FAILURE(status = BCryptSetProperty(*handle, BCRYPT_ECC_CURVE_NAME, meta_data, meta_len, 0))) {
+			//	throw_new_var(env, "java/security/GeneralSecurityException", "Error 0x%x returned by BCryptSetProperty(curve name)\n", status);
+			//	(*env)->ReleaseByteArrayElements(env, meta, meta_data, JNI_ABORT);
+			//	return status;
+			//}
+			(*env)->ReleaseByteArrayElements(env, meta, meta_data, JNI_ABORT);
+			break;
+		}
+		case 1: {
+			PBYTE curve;
+			ULONG curve_len = create_curve(env, params, &curve);
+			if (NT_FAILURE(status = BCryptSetProperty(*handle, BCRYPT_ECC_PARAMETERS, curve, curve_len, 0))) {
+				throw_new_var(env, "java/security/GeneralSecurityException", "Error 0x%x returned by BCryptSetProperty(parameters)\n", status);
+				free(curve);
+				return status;
+			}
+			free(curve);
+			break;
+		}
+	}
+	return STATUS_SUCCESS;
+}
+
+static jint get_keyflag(JNIEnv *env, jobject key) {
+	jclass key_class = (*env)->GetObjectClass(env, key);
+	jmethodID get_flag = (*env)->GetMethodID(env, key_class, "getFlag", "()I");
+	return (*env)->CallIntMethod(env, key, get_flag);
+}
+
+static jbyteArray get_meta(JNIEnv *env, jobject key) {
+	jclass key_class = (*env)->GetObjectClass(env, key);
+	jmethodID get_meta = (*env)->GetMethodID(env, key_class, "getMeta", "()[B");
+	return (jbyteArray)(*env)->CallObjectMethod(env, key, get_meta);
+}
+
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Mscng_generateSecret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params) {
 	NTSTATUS status;
-	printf("generateSecret!\n");
 
 	jclass mscng_ka_class = (*env)->FindClass(env, "cz/crcs/ectester/standalone/libs/jni/NativeKeyAgreementSpi$Mscng");
 	jfieldID type_id = (*env)->GetFieldID(env, mscng_ka_class, "type", "Ljava/lang/String;");
@@ -693,9 +903,10 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 
 	BCRYPT_ALG_HANDLE kaHandle = NULL;
 
-	ULONG bits = init_algo(env, &kaHandle, BCRYPT_ECDH_ALGORITHM, params);
-	if (bits == 0) {
-		throw_new(env, "java/security/GeneralSecurityException", "Couldn't initialize algo.");
+	jint pub_flag = get_keyflag(env, pubkey);
+	jbyteArray meta = get_meta(env, pubkey);
+
+	if (NT_FAILURE(status = init_use_algo(env, &kaHandle, BCRYPT_ECDH_ALGORITHM, pub_flag, meta, params))) {
 		return NULL;
 	}
 
@@ -712,6 +923,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 	}
 	(*env)->ReleaseByteArrayElements(env, pubkey, pub_data, JNI_ABORT);
 
+	jint priv_flag = get_keyflag(env, privkey);
 	jint priv_length = (*env)->GetArrayLength(env, privkey);
 	jbyte *priv_data = (*env)->GetByteArrayElements(env, privkey, NULL);
 	if (NT_FAILURE(status = BCryptImportKeyPair(kaHandle, NULL, BCRYPT_ECCFULLPRIVATE_BLOB, &skey, priv_data, priv_length, 0))) {
@@ -791,11 +1003,18 @@ static LPCWSTR get_sighash_algo(JNIEnv *env, jobject self) {
 	return hash_algo;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Mscng_sign(JNIEnv *env, jobject self, jbyteArray data, jbyteArray privkey, jobject params) {
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Mscng_sign(JNIEnv *env, jobject self, jbyteArray data, jobject privkey, jobject params) {
 	NTSTATUS status;
 	LPCWSTR hash_algo = get_sighash_algo(env, self);
 
 	BCRYPT_ALG_HANDLE sigHandle = NULL;
+
+	jint keyflag = get_keyflag(env, privkey);
+	jbyteArray meta = get_meta(env, privkey);
+
+	if (NT_FAILURE(status = init_use_algo(env, &sigHandle, BCRYPT_ECDSA_ALGORITHM, keyflag, meta, params))) {
+		return NULL;
+	}
 
 	if (NT_FAILURE(status = BCryptOpenAlgorithmProvider(&sigHandle, BCRYPT_ECDSA_ALGORITHM, MS_PRIMITIVE_PROVIDER, 0))) {
 		throw_new_var(env, "java/security/GeneralSecurityException", "Error 0x%x returned by BCryptOpenAlgorithmProvider\n", status);
@@ -835,17 +1054,21 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 
 	BCRYPT_KEY_HANDLE skey = NULL;
 
-	jint priv_length = (*env)->GetArrayLength(env, privkey);
-	jbyte *priv_data = (*env)->GetByteArrayElements(env, privkey, NULL);
+	jmethodID get_data = (*env)->GetMethodID(env, privkey_class, "getData", "()[B");
+	jbyteArray privkey_barray = (jbyteArray)(*env)->CallObjectMethod(env, privkey, get_data);
+
+
+	jint priv_length = (*env)->GetArrayLength(env, privkey_barray);
+	jbyte *priv_data = (*env)->GetByteArrayElements(env, privkey_barray, NULL);
 	if (NT_FAILURE(status = BCryptImportKeyPair(sigHandle, NULL, BCRYPT_ECCFULLPRIVATE_BLOB, &skey, priv_data, priv_length, 0))) {
 		throw_new_var(env, "java/security/GeneralSecurityException", "Error 0x%x returned by BCryptImportKeyPair\n", status);
 		BCryptCloseAlgorithmProvider(sigHandle, 0);
 		BCryptCloseAlgorithmProvider(hashHandle, 0);
 		free(hash);
-		(*env)->ReleaseByteArrayElements(env, privkey, priv_data, JNI_ABORT);
+		(*env)->ReleaseByteArrayElements(env, privkey_barray, priv_data, JNI_ABORT);
 		return NULL;
 	}
-	(*env)->ReleaseByteArrayElements(env, privkey, priv_data, JNI_ABORT);
+	(*env)->ReleaseByteArrayElements(env, privkey_barray, priv_data, JNI_ABORT);
 
 	DWORD sig_len = 0;
 	if (NT_FAILURE(status = BCryptSignHash(skey, NULL, hash, hash_len, NULL, 0, &sig_len, 0))) {
@@ -877,14 +1100,16 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 	return sig;
 }
 
-JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Mscng_verify(JNIEnv *env, jobject self, jbyteArray sig, jbyteArray data, jbyteArray pubkey, jobject params) {
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Mscng_verify(JNIEnv *env, jobject self, jbyteArray sig, jbyteArray data, jobject pubkey, jobject params) {
 	NTSTATUS status;
 	LPCWSTR hash_algo = get_sighash_algo(env, self);
 
 	BCRYPT_ALG_HANDLE sigHandle = NULL;
 
-	if (NT_FAILURE(status = BCryptOpenAlgorithmProvider(&sigHandle, BCRYPT_ECDSA_ALGORITHM, MS_PRIMITIVE_PROVIDER, 0))) {
-		throw_new_var(env, "java/security/GeneralSecurityException", "Error 0x%x returned by BCryptOpenAlgorithmProvider\n", status);
+	jint keyflag = get_keyflag(env, pubkey);
+	jbyteArray meta = get_meta(env, pubkey);
+
+	if (NT_FAILURE(status = init_use_algo(env, &sigHandle, BCRYPT_ECDSA_ALGORITHM, keyflag, meta, params))) {
 		return JNI_FALSE;
 	}
 
@@ -921,17 +1146,21 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 
 	BCRYPT_KEY_HANDLE pkey = NULL;
 
-	jint pub_length = (*env)->GetArrayLength(env, pubkey);
-	jbyte *pub_data = (*env)->GetByteArrayElements(env, pubkey, NULL);
+	jmethodID get_data = (*env)->GetMethodID(env, pubkey_class, "getData", "()[B");
+	jbyteArray pubkey_barray = (jbyteArray)(*env)->CallObjectMethod(env, pubkey, get_data);
+
+
+	jint pub_length = (*env)->GetArrayLength(env, pubkey_barray);
+	jbyte *pub_data = (*env)->GetByteArrayElements(env, pubkey_barray, NULL);
 	if (NT_FAILURE(status = BCryptImportKeyPair(sigHandle, NULL, BCRYPT_ECCFULLPUBLIC_BLOB, &pkey, pub_data, pub_length, 0))) {
 		throw_new_var(env, "java/security/GeneralSecurityException", "Error 0x%x returned by BCryptImportKeyPair\n", status);
 		BCryptCloseAlgorithmProvider(sigHandle, 0);
 		BCryptCloseAlgorithmProvider(hashHandle, 0);
 		free(hash);
-		(*env)->ReleaseByteArrayElements(env, pubkey, pub_data, JNI_ABORT);
+		(*env)->ReleaseByteArrayElements(env, pubkey_barray, pub_data, JNI_ABORT);
 		return JNI_FALSE;
 	}
-	(*env)->ReleaseByteArrayElements(env, pubkey, pub_data, JNI_ABORT);
+	(*env)->ReleaseByteArrayElements(env, pubkey_barray, pub_data, JNI_ABORT);
 
 	jint sig_len = (*env)->GetArrayLength(env, sig);
 	jbyte *sig_data = (*env)->GetByteArrayElements(env, sig, NULL);
