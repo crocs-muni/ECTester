@@ -1,4 +1,5 @@
 #include "c_utils.h"
+#define _ISOC99_SOURCE
 #include <string.h>
 
 jclass ec_parameter_spec_class;
@@ -63,4 +64,13 @@ void init_classes(JNIEnv *env, const char* lib_name) {
 void throw_new(JNIEnv *env, const char *class, const char *message) {
     jclass clazz = (*env)->FindClass(env, class);
     (*env)->ThrowNew(env, clazz, message);
+}
+
+void throw_new_var(JNIEnv *env, const char *class, const char *format, ...) {
+	char buffer[2048];
+	va_list args;
+	va_start(args, format);
+	int res = vsnprintf(buffer, 2048, format, args);
+	va_end(args);
+	throw_new(env, class, buffer);
 }

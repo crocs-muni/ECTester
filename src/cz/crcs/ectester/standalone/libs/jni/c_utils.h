@@ -28,6 +28,11 @@ void init_classes(JNIEnv *env, const char* lib_name);
 void throw_new(JNIEnv *env, const char *class, const char *message);
 
 /**
+ * Throw a new exception of class, with formatted message.
+ */
+void throw_new_var(JNIEnv *env, const char *class, const char *format, ...);
+
+/**
  * Some useful defines to init the provider.
  */
 #define INIT_PROVIDER(env, provider_class) jmethodID provider_put = (*env)->GetMethodID(env, provider_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
