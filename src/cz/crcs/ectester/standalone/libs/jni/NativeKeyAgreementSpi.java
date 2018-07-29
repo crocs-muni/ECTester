@@ -20,10 +20,6 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
     ECPublicKey publicKey;
     ECParameterSpec params;
 
-    public NativeKeyAgreementSpi() {
-
-    }
-
     @Override
     protected void engineInit(Key key, SecureRandom random) throws InvalidKeyException {
         if (!(key instanceof ECPrivateKey)) {
@@ -81,10 +77,6 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
 
     private abstract static class SimpleKeyAgreementSpi extends NativeKeyAgreementSpi {
 
-        public SimpleKeyAgreementSpi() {
-
-        }
-
         @Override
         protected byte[] engineGenerateSecret() throws IllegalStateException {
             byte[] pubkey;
@@ -106,10 +98,6 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
     }
 
     private abstract static class ExtendedKeyAgreementSpi extends NativeKeyAgreementSpi {
-
-        public ExtendedKeyAgreementSpi() {
-
-        }
 
         @Override
         protected byte[] engineGenerateSecret() throws IllegalStateException {
@@ -207,7 +195,7 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         }
     }
 
-    public abstract static class Mscng extends SimpleKeyAgreementSpi {
+    public abstract static class Mscng extends ExtendedKeyAgreementSpi {
         private String type;
 
         public Mscng(String type) {
@@ -215,7 +203,7 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         }
 
         @Override
-        native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
+        native byte[] generateSecret(ECPublicKey pubkey, ECPrivateKey privkey, ECParameterSpec params);
     }
 
     public static class MscngECDHwithSHA1KDF extends Mscng {

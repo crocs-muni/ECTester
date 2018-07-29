@@ -819,10 +819,10 @@ extern "C" {
 /*
  * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Mscng
  * Method:    generateSecret
- * Signature: ([B[BLjava/security/spec/ECParameterSpec;)[B
+ * Signature: (Ljava/security/interfaces/ECPublicKey;Ljava/security/interfaces/ECPrivateKey;Ljava/security/spec/ECParameterSpec;)[B
  */
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Mscng_generateSecret
-  (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject);
+  (JNIEnv *, jobject, jobject, jobject, jobject);
 
 #ifdef __cplusplus
 }

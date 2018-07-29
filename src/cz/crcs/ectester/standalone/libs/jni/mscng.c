@@ -125,15 +125,6 @@ static const named_curve_t* lookup_curve(const char *name) {
 	return NULL;
 }
 
-static const named_curve_t* lookup_curve_bits(jint bitsize) {
-	for (size_t i = 0; i < sizeof(named_curves) / sizeof(named_curve_t); ++i) {
-		if (bitsize == named_curves[i].bits) {
-			return &named_curves[i];
-		}
-	}
-	return NULL;
-}
-
 static ULONG utf_16to8(NPSTR *out_buf, LPCWSTR in_str) {
 	INT result = WideCharToMultiByte(CP_UTF8, 0, in_str, -1, NULL, 0, NULL, NULL);
 	*out_buf = calloc(result, 1);
@@ -146,8 +137,10 @@ static ULONG utf_8to16(NWPSTR *out_buf, LPCSTR in_str) {
 	return MultiByteToWideChar(CP_UTF8, 0, in_str, -1, *out_buf, result);
 }
 
-// Convert Java String to UTF-16 NWPSTR null-terminated.
-// Returns: Length of NWPSTR in bytes!
+/**
+ * Convert Java String to UTF-16 NWPSTR null-terminated.
+ * Returns: Length of NWPSTR in bytes!
+ */ 
 static ULONG utf_strto16(NWPSTR *out_buf, JNIEnv *env, jobject str) {
 	jsize len = (*env)->GetStringLength(env, str);
 	*out_buf = calloc(len * sizeof(jchar) + 1, 1);
@@ -333,7 +326,7 @@ static ULONG create_curve(JNIEnv *env, jobject params, PBYTE *curve) {
 	jint bits = (*env)->CallIntMethod(env, field, get_bits);
 	jint bytes = (bits + 7) / 8;
 
-	jmethodID get_a = (*env)->GetMethodID(env, elliptic_curve_class, "getB", "()Ljava/math/BigInteger;");
+	jmethodID get_a = (*env)->GetMethodID(env, elliptic_curve_class, "getA", "()Ljava/math/BigInteger;");
 	jobject a = (*env)->CallObjectMethod(env, elliptic_curve, get_a);
 
 	jmethodID get_b = (*env)->GetMethodID(env, elliptic_curve_class, "getB", "()Ljava/math/BigInteger;");
@@ -879,7 +872,7 @@ static jbyteArray get_meta(JNIEnv *env, jobject key) {
 	return (jbyteArray)(*env)->CallObjectMethod(env, key, get_meta);
 }
 
-JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Mscng_generateSecret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params) {
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Mscng_generateSecret(JNIEnv *env, jobject self, jobject pubkey, jobject privkey, jobject params) {
 	NTSTATUS status;
 
 	jclass mscng_ka_class = (*env)->FindClass(env, "cz/crcs/ectester/standalone/libs/jni/NativeKeyAgreementSpi$Mscng");
@@ -973,7 +966,6 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 	(*env)->ReleaseByteArrayElements(env, result, result_data, 0);
 
 	free(derived);
-
 	BCryptDestroyKey(pkey);
 	BCryptDestroyKey(skey);
 	BCryptDestroySecret(ka);

@@ -80,6 +80,14 @@
         <antcall target="dist-build.package"/>
     </target>
 
+    <target name="sign" depends="package">
+        <signjar keystore="nbproject/keystore" alias="ectester" storepass="ectester">
+            <path>
+                <fileset dir="dist" includes="*.jar"/>
+            </path>
+        </signjar>
+    </target>
+
     <target name="libs-try">
         <exec dir="src/cz/crcs/ectester/standalone/libs/jni" executable="make" osfamily="unix">
             <arg value="-k"/>

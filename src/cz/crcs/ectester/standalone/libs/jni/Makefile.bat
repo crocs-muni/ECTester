@@ -9,7 +9,7 @@ setlocal EnableDelayedExpansion
 :: See if we are cleaning.
 if "%1" == "clean" (
   echo ** cleaning
-  del mscng_provider.dll
+  del *.dll *.exp *.lib *.obj
   exit
 )
 
