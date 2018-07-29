@@ -66,7 +66,7 @@ import java.util.stream.Collectors;
  * @version v0.2.0
  */
 public class ECTesterStandalone {
-    private ProviderECLibrary[] libs = new ProviderECLibrary[]{new SunECLib(), new BouncyCastleLib(), new TomcryptLib(), new BotanLib(), new CryptoppLib(), new OpensslLib()};
+    private ProviderECLibrary[] libs = new ProviderECLibrary[]{new SunECLib(), new BouncyCastleLib(), new TomcryptLib(), new BotanLib(), new CryptoppLib(), new OpensslLib(), new MscngLib()};
     private Config cfg;
 
     private Options opts = new Options();
@@ -180,8 +180,8 @@ public class ECTesterStandalone {
         actions.put("generate", generate);
 
         Options exportOpts = new Options();
-        exportOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPair object [type].").build());
         exportOpts.addOption(bits);
+        exportOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPair object [type].").build());
         ParserOptions export = new ParserOptions(new DefaultParser(), exportOpts, "Export default curve parameters.");
         actions.put("export", export);
 
@@ -274,7 +274,6 @@ public class ECTesterStandalone {
                                 .filter((ident) -> ident.contains("EC"))
                                 .findFirst()
                                 .orElse(null)));
-
 
         if (kaIdent == null || kpIdent == null) {
             throw new NoSuchAlgorithmException(algo);

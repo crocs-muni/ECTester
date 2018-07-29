@@ -12,10 +12,14 @@ public abstract class NativeProvider extends Provider {
     public NativeProvider(String name, double version, String info) {
         super(name, version, info);
 
-        AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+        if (System.getSecurityManager() == null) {
             setup();
-            return null;
-        });
+        } else {
+            AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+                setup();
+                return null;
+            });
+        }
     }
 
     abstract void setup();
@@ -53,6 +57,16 @@ public abstract class NativeProvider extends Provider {
     public static class Openssl extends NativeProvider {
 
         public Openssl(String name, double version, String info) {
+            super(name, version, info);
+        }
+
+        @Override
+        native void setup();
+    }
+
+    public static class Mscng extends NativeProvider {
+
+        public Mscng(String name, double version, String info) {
             super(name, version, info);
         }
 

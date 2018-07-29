@@ -80,14 +80,30 @@
         <antcall target="dist-build.package"/>
     </target>
 
+    <target name="sign" depends="package">
+        <signjar keystore="nbproject/keystore" alias="ectester" storepass="ectester">
+            <path>
+                <fileset dir="dist" includes="*.jar"/>
+            </path>
+        </signjar>
+    </target>
+
     <target name="libs-try">
         <exec dir="src/cz/crcs/ectester/standalone/libs/jni" executable="make" osfamily="unix">
             <arg value="-k"/>
+        </exec>
+        <exec dir="src/cz/crcs/ectester/standalone/libs/jni" executable="cmd" osfamily="windows">
+          <arg value="/c"/>
+          <arg value="Makefile.bat"/>
         </exec>
     </target>
     <target name="libs">
         <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="make" osfamily="unix">
             <arg value="-k"/>
+        </exec>
+        <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="cmd" osfamily="windows">
+          <arg value="/c"/>
+          <arg value="Makefile.bat"/>
         </exec>
     </target>
 
@@ -96,6 +112,11 @@
         <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="make"
               osfamily="unix">
             <arg value="clean"/>
+        </exec>
+        <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="cmd" osfamily="windows">
+          <arg value="/c"/>
+          <arg value="Makefile.bat"/>
+          <arg value="clean"/>
         </exec>
     </target>
 
@@ -129,6 +150,13 @@
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Openssl"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Openssl"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Openssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.MscngLib"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeProvider$Mscng"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Mscng"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$Mscng"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Mscng"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Mscng"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Mscng"/>
         </javah>
     </target>
 </project>

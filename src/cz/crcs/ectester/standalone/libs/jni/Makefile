@@ -38,10 +38,21 @@ CC?=gcc
 CXX?=g++
 STRIP?=strip
 
-LFLAGS+=-fPIC -g -shared
-CFLAGS+=-fPIC -g -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
-CXXFLAGS+=-fPIC -g -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
+LFLAGS+=-fPIC -shared
+CFLAGS+=-fPIC -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
+CXXFLAGS+=-fPIC -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
 
+DEBUG ?= 0
+
+ifeq ($(DEBUG), 1)
+  CFLAGS+=-g
+  LFLAGS+=-g
+  CXXFLAGS+=-g
+else
+  CFLAGS+=-O2
+  LFLAGS+=-O2
+  CXXFLAGS+=-O2
+endif
 
 all: tomcrypt_provider.so botan_provider.so cryptopp_provider.so openssl_provider.so
 

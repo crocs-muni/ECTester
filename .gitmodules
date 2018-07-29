@@ -4,3 +4,6 @@
 [submodule "ext/libs"]
 	path = ext/libs
 	url = https://github.com/J08nY/javacard-libs
+[submodule "ext/mscng"]
+	path = ext/mscng
+	url = https://github.com/J08nY/mscng-dev-kit
