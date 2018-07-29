@@ -5,10 +5,9 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -26,12 +25,15 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
     @Override
     public void begin(TestSuite suite) {
         output.println("---");
-        testRun = new HashMap<>();
-        testSuite = new HashMap<>();
+        testRun = new LinkedHashMap<>();
+        testSuite = new LinkedHashMap<>();
         tests = new LinkedList<>();
         testSuite.put("name", suite.getName());
-        testSuite.put("desc", suite.getDescription());
+        testSuite.put("desc", suite.getTextDescription());
 
+        DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+        Date date = new Date();
+        testRun.put("date", dateFormat.format(date));
         testRun.put("suite", testSuite);
         testRun.put("device", deviceObject(suite));
         testRun.put("tests", tests);
@@ -41,37 +43,64 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
 
     abstract protected Map<String, Object> deviceObject(TestSuite suite);
 
-    private Map<String, Object> testObject(Test t) {
+    private Object causeObject(Object cause) {
+        if (cause == null) {
+            return null;
+        } else if (cause instanceof Throwable) {
+            StringBuilder sb = new StringBuilder();
+            for (Throwable t = (Throwable) cause; t != null; t = t.getCause()) {
+                sb.append(t.toString());
+                sb.append(System.lineSeparator());
+            }
+            return sb.toString();
+        } else {
+            return cause.toString();
+        }
+    }
+
+    private Map<String, Object> resultObject(Result result) {
+        Map<String, Object> resultObject = new LinkedHashMap<>();
+        resultObject.put("ok", result.ok());
+        resultObject.put("value", result.getValue().name());
+        resultObject.put("cause", causeObject(result.getCause()));
+        return resultObject;
+    }
+
+    private Map<String, Object> testObject(Test t, int index) {
         Map<String, Object> testObj;
         if (t instanceof CompoundTest) {
             CompoundTest test = (CompoundTest) t;
             testObj = new HashMap<>();
             testObj.put("type", "compound");
             List<Map<String, Object>> innerTests = new LinkedList<>();
-            for (Test innerTest : test.getTests()) {
-                innerTests.add(testObject(innerTest));
+            for (Test innerTest : test.getStartedTests()) {
+                innerTests.add(testObject(innerTest, -1));
             }
             testObj.put("tests", innerTests);
         } else {
-            SimpleTest test = (SimpleTest) t;
+            SimpleTest<? extends BaseTestable> test = (SimpleTest<? extends BaseTestable>) t;
             testObj = testableObject(test.getTestable());
         }
 
         testObj.put("desc", t.getDescription());
-        Map<String, Object> result = new HashMap<>();
-        result.put("ok", t.ok());
-        result.put("value", t.getResultValue().name());
-        result.put("cause", t.getResultCause());
-        testObj.put("result", result);
+        testObj.put("result", resultObject(t.getResult()));
+        if (index != -1) {
+            testObj.put("index", index);
+        }
 
         return testObj;
     }
 
     @Override
-    public void outputTest(Test t) {
+    public void outputTest(Test t, int index) {
         if (!t.hasRun())
             return;
-        tests.add(testObject(t));
+        tests.add(testObject(t, index));
+    }
+
+    @Override
+    public void outputError(Test t, Throwable cause, int index) {
+        tests.add(testObject(t, index));
     }
 
     @Override
@@ -81,7 +110,7 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
         options.setPrettyFlow(true);
         Yaml yaml = new Yaml(options);
 
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new LinkedHashMap<>();
         result.put("testRun", testRun);
         String out = yaml.dump(result);
 

@@ -12,11 +12,11 @@ import java.security.spec.ECParameterSpec;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public abstract class NativeSignatureSpi extends SignatureSpi {
-    private ECPublicKey verifyKey;
-    private ECPrivateKey signKey;
-    private ECParameterSpec params;
+    ECPublicKey verifyKey;
+    ECPrivateKey signKey;
+    ECParameterSpec params;
 
-    private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
     @Override
     protected void engineInitVerify(PublicKey publicKey) throws InvalidKeyException {
@@ -50,15 +50,6 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         buffer.write(b, off, len);
     }
 
-    @Override
-    protected byte[] engineSign() throws SignatureException {
-        return sign(buffer.toByteArray(), ECUtil.toByteArray(signKey.getS(), params.getCurve().getField().getFieldSize()), params);
-    }
-
-    @Override
-    protected boolean engineVerify(byte[] sigBytes) throws SignatureException {
-        return verify(sigBytes, buffer.toByteArray(), ECUtil.toX962Uncompressed(verifyKey.getW(), params), params);
-    }
 
     @Override
     @Deprecated
@@ -72,11 +63,53 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         throw new UnsupportedOperationException("getParameter() not supported");
     }
 
-    abstract byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
+    private abstract static class SimpleSignatureSpi extends NativeSignatureSpi {
 
-    abstract boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
+        @Override
+        protected byte[] engineSign() throws SignatureException {
+            byte[] privkey;
+            if (signKey instanceof NativeECPrivateKey) {
+                privkey = ((NativeECPrivateKey) signKey).getData();
+            } else {
+                privkey = ECUtil.toByteArray(signKey.getS(), params.getCurve().getField().getFieldSize());
+            }
+            return sign(buffer.toByteArray(), privkey, params);
+        }
 
-    public static class TomCryptRaw extends NativeSignatureSpi {
+        @Override
+        protected boolean engineVerify(byte[] sigBytes) throws SignatureException {
+            byte[] pubkey;
+            if (verifyKey instanceof NativeECPublicKey) {
+                pubkey = ((NativeECPublicKey) verifyKey).getData();
+            } else {
+                pubkey = ECUtil.toX962Uncompressed(verifyKey.getW(), params);
+            }
+            return verify(sigBytes, buffer.toByteArray(), pubkey, params);
+        }
+
+        abstract byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
+
+        abstract boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
+    }
+
+    private abstract static class ExtendedSignatureSpi extends NativeSignatureSpi {
+
+        @Override
+        protected byte[] engineSign() throws SignatureException {
+            return sign(buffer.toByteArray(), signKey, params);
+        }
+
+        @Override
+        protected boolean engineVerify(byte[] sigBytes) throws SignatureException {
+            return verify(sigBytes, buffer.toByteArray(), verifyKey, params);
+        }
+
+        abstract byte[] sign(byte[] data, ECPrivateKey privkey, ECParameterSpec params);
+
+        abstract boolean verify(byte[] signature, byte[] data, ECPublicKey pubkey, ECParameterSpec params);
+    }
+
+    public static class TomCryptRaw extends SimpleSignatureSpi {
 
         @Override
         native byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
@@ -85,7 +118,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
     }
 
-    public abstract static class Botan extends NativeSignatureSpi {
+    public abstract static class Botan extends SimpleSignatureSpi {
         private String type;
 
         public Botan(String type) {
@@ -222,6 +255,118 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
 
         public BotanECGDSAwithSHA512() {
             super("SHA512withECGDSA");
+        }
+    }
+
+    public abstract static class Cryptopp extends SimpleSignatureSpi {
+        private String type;
+
+        public Cryptopp(String type) {
+            this.type = type;
+        }
+
+        @Override
+        native byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
+    }
+
+    public static class CryptoppECDSAwithSHA1 extends Cryptopp {
+
+        public CryptoppECDSAwithSHA1() {
+            super("SHA1withECDSA");
+        }
+    }
+
+    public static class CryptoppECDSAwithSHA224 extends Cryptopp {
+
+        public CryptoppECDSAwithSHA224() {
+            super("SHA224withECDSA");
+        }
+    }
+
+    public static class CryptoppECDSAwithSHA256 extends Cryptopp {
+
+        public CryptoppECDSAwithSHA256() {
+            super("SHA256withECDSA");
+        }
+    }
+
+    public static class CryptoppECDSAwithSHA384 extends Cryptopp {
+
+        public CryptoppECDSAwithSHA384() {
+            super("SHA384withECDSA");
+        }
+    }
+
+    public static class CryptoppECDSAwithSHA512 extends Cryptopp {
+
+        public CryptoppECDSAwithSHA512() {
+            super("SHA512withECDSA");
+        }
+    }
+
+    public abstract static class Openssl extends SimpleSignatureSpi {
+        private String type;
+
+        public Openssl(String type) {
+            this.type = type;
+        }
+
+        @Override
+        native byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
+    }
+
+    public static class OpensslECDSAwithNONE extends Openssl {
+
+        public OpensslECDSAwithNONE() {
+            super("NONEwithECDSA");
+        }
+    }
+
+    public abstract static class Mscng extends ExtendedSignatureSpi {
+        private String type;
+
+        public Mscng(String type) {
+            this.type = type;
+        }
+
+        @Override
+        native byte[] sign(byte[] data, ECPrivateKey privkey, ECParameterSpec params);
+
+        @Override
+        native boolean verify(byte[] signature, byte[] data, ECPublicKey pubkey, ECParameterSpec params);
+    }
+
+    public static class MscngECDSAwithSHA1 extends Mscng {
+
+        public MscngECDSAwithSHA1() {
+            super("SHA1withECDSA");
+        }
+    }
+
+    public static class MscngECDSAwithSHA256 extends Mscng {
+
+        public MscngECDSAwithSHA256() {
+            super("SHA256withECDSA");
+        }
+    }
+
+    public static class MscngECDSAwithSHA384 extends Mscng {
+
+        public MscngECDSAwithSHA384() {
+            super("SHA384withECDSA");
+        }
+    }
+
+    public static class MscngECDSAwithSHA512 extends Mscng {
+
+        public MscngECDSAwithSHA512() {
+            super("SHA512withECDSA");
         }
     }
 }

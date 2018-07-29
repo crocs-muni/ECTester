@@ -2,45 +2,520 @@
 <curves xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="../schema.xsd">
     <curve>
-        <id>composite128</id>
+        <id>whole/composite128</id>
         <bits>128</bits>
         <field>prime</field>
         <file>composite128.csv</file>
+        <desc>r = order = 0x03 * 0x05 * 0x3b * 0x3a107e02cd073c8e24bf55730f1733</desc>
     </curve>
     <curve>
-        <id>composite160</id>
+        <id>whole/composite160</id>
         <bits>160</bits>
         <field>prime</field>
         <file>composite160.csv</file>
+        <desc>r = order = 0x02 * 0x03 * 0x6b * 0x1ee99b75143833bbc11d409601c25f9566a001</desc>
     </curve>
     <curve>
-        <id>composite192</id>
+        <id>whole/composite192</id>
         <bits>192</bits>
         <field>prime</field>
         <file>composite192.csv</file>
+        <desc>r = order = 0x02 * 0x03 * 0x05 * 0x13 * 0x19bc3c00e2a7ad9e40d12e5d9e29a2b5ce80b3a3e84295</desc>
     </curve>
     <curve>
-        <id>composite224</id>
+        <id>whole/composite224</id>
         <bits>224</bits>
         <field>prime</field>
         <file>composite224.csv</file>
+        <desc>r = order = 0x02 * 0x03 * 0x1d * 0x1538e6a6dc906d724a7bf51c77bce9d46865bd92d8bca01f887405</desc>
     </curve>
     <curve>
-        <id>composite256</id>
+        <id>whole/composite256</id>
         <bits>256</bits>
         <field>prime</field>
         <file>composite256.csv</file>
+        <desc>r = order = 0x02 * 0x05 * 0x11 * 0x1382cadcdd2b90b90b81eda82433bf574b5d8f5654dcc62341c7e967f2e811</desc>
     </curve>
     <curve>
-        <id>composite384</id>
+        <id>whole/composite384</id>
         <bits>384</bits>
         <field>prime</field>
         <file>composite384.csv</file>
+        <desc>r = order = 0x05 * 0x0b * 0x3d * 0xb16aa7dc50145337cf1b2f38018ccb5cf44c22a2f7d7c22bbe5c572d2cb9a04cb1081357c6a1c97cc39ab62596867</desc>
     </curve>
     <curve>
-        <id>composite521</id>
+        <id>whole/composite521</id>
         <bits>521</bits>
         <field>prime</field>
         <file>composite521.csv</file>
+        <desc>r = order = 0x02 * 0x05 * 0x1f * 0x4a5aac4fac3ea253b66c3e650f5173b30467f28b8e841d37ce69bb0831a5939ad3dd082b750577ec4592d4d58916c87a9b732d8ddae435c26f8f779d2467f50f</desc>
+    </curve>
+
+    <curve>
+        <id>small/composite128</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>composite128_small.csv</file>
+        <desc>r = 0x03</desc>
+    </curve>
+    <curve>
+        <id>small/composite160</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>composite160_small.csv</file>
+        <desc>r = 0x03</desc>
+    </curve>
+    <curve>
+        <id>small/composite192</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>composite192_small.csv</file>
+        <desc>r = 0x03</desc>
+    </curve>
+    <curve>
+        <id>small/composite224</id>
+        <bits>224</bits>
+        <field>prime</field>
+        <file>composite224_small.csv</file>
+        <desc>r = 0x03</desc>
+    </curve>
+    <curve>
+        <id>small/composite256</id>
+        <bits>256</bits>
+        <field>prime</field>
+        <file>composite256_small.csv</file>
+        <desc>r = 0x05</desc>
+    </curve>
+    <curve>
+        <id>small/composite384</id>
+        <bits>384</bits>
+        <field>prime</field>
+        <file>composite384_small.csv</file>
+        <desc>r = 0x05</desc>
+    </curve>
+    <curve>
+        <id>small/composite521</id>
+        <bits>521</bits>
+        <field>prime</field>
+        <file>composite521_small.csv</file>
+        <desc>r = 0x05</desc>
+    </curve>
+
+    <curve>
+        <id>pq/composite128</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>composite128_pq.csv</file>
+        <desc>r = 0x03f76917eb * 0x3c1be1d1dd7edf84b8013495</desc>
+    </curve>
+    <curve>
+        <id>pq/composite128/1</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>composite128_pq1.csv</file>
+        <desc>r = 0x03f76917eb</desc>
+    </curve>
+    <curve>
+        <id>pq/composite128/2</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>composite128_pq2.csv</file>
+        <desc>r = 0x3c1be1d1dd7edf84b8013495</desc>
+    </curve>
+
+    <curve>
+        <id>rg0/composite128</id>
+        <bits>128</bits>
+        <field>prime</field>
+        <file>composite128_rg0.csv</file>
+        <desc>|G| divides r(so [r]G = infinity), but r != |G| = 0x03f76917eb</desc>
+    </curve>
+
+    <curve>
+        <id>pq/composite160</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>composite160_pq.csv</file>
+        <desc>r = 0x0af2407f270b81f45f * 0x4d7041e1dbf10b42f48c4f</desc>
+    </curve>
+    <curve>
+        <id>pq/composite160/1</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>composite160_pq1.csv</file>
+        <desc>r = 0x0af2407f270b81f45f</desc>
+    </curve>
+    <curve>
+        <id>pq/composite160/2</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>composite160_pq2.csv</file>
+        <desc>r = 0x4d7041e1dbf10b42f48c4f</desc>
+    </curve>
+
+    <curve>
+        <id>rg0/composite160</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>composite160_rg0.csv</file>
+        <desc>|G| divides r(so [r]G = infinity), but r != |G| = 0x0af2407f270b81f45f</desc>
+    </curve>
+
+    <curve>
+        <id>pq/composite192</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>composite192_pq.csv</file>
+        <desc>r = 0x302b72431ff070e7e06799 * 0x35efd8bad55038e6bd22db8b805</desc>
+    </curve>
+    <curve>
+        <id>pq/composite192/1</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>composite192_pq1.csv</file>
+        <desc>r = 0x302b72431ff070e7e06799</desc>
+    </curve>
+    <curve>
+        <id>pq/composite192/2</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>composite192_pq2.csv</file>
+        <desc>r = 0x35efd8bad55038e6bd22db8b805</desc>
+    </curve>
+
+    <curve>
+        <id>rg0/composite192</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>composite192_rg0.csv</file>
+        <desc>|G| divides r(so [r]G = infinity), but r != |G| = 0x302b72431ff070e7e06799</desc>
+    </curve>
+    
+    <curve>
+        <id>pq/composite224</id>
+        <bits>224</bits>
+        <field>prime</field>
+        <file>composite224_pq.csv</file>
+        <desc>r = 0x1824ec370e405bfb5024db * 0x6a99de2a928e8f227e7a2ed33a555f24ef5</desc>
+    </curve>
+    <curve>
+        <id>pq/composite224/1</id>
+        <bits>224</bits>
+        <field>prime</field>
+        <file>composite224_pq1.csv</file>
+        <desc>r = 0x1824ec370e405bfb5024db</desc>
+    </curve>
+    <curve>
+        <id>pq/composite224/2</id>
+        <bits>224</bits>
+        <field>prime</field>
+        <file>composite224_pq2.csv</file>
+        <desc>r = 0x6a99de2a928e8f227e7a2ed33a555f24ef5</desc>
+    </curve>
+
+    <curve>
+        <id>rg0/composite224</id>
+        <bits>224</bits>
+        <field>prime</field>
+        <file>composite224_rg0.csv</file>
+        <desc>|G| divides r(so [r]G = infinity), but r != |G| = 0x1824ec370e405bfb5024db</desc>
+    </curve>
+
+    <curve>
+        <id>pq/composite256</id>
+        <bits>256</bits>
+        <field>prime</field>
+        <file>composite256_pq.csv</file>
+        <desc>r = 0x743bc7ea193d40db * 0x220d23234534b240aac0efa70a3bc44e046c2431ad5a32d27</desc>
+    </curve>
+    <curve>
+        <id>pq/composite256/1</id>
+        <bits>256</bits>
+        <field>prime</field>
+        <file>composite256_pq1.csv</file>
+        <desc>r = 0x743bc7ea193d40db</desc>
+    </curve>
+    <curve>
+        <id>pq/composite256/2</id>
+        <bits>256</bits>
+        <field>prime</field>
+        <file>composite256_pq2.csv</file>
+        <desc>r = 0x220d23234534b240aac0efa70a3bc44e046c2431ad5a32d27</desc>
+    </curve>
+
+    <curve>
+        <id>rg0/composite256</id>
+        <bits>256</bits>
+        <field>prime</field>
+        <file>composite256_rg0.csv</file>
+        <desc>|G| divides r(so [r]G = infinity), but r != |G| = 0x743bc7ea193d40db</desc>
+    </curve>
+
+    <curve>
+    	<id>pp/carmichael128</id>
+    	<bits>128</bits>
+    	<field>prime</field>
+    	<file>carmichael_128.csv</file>
+    	<desc>r = Carmichael pseudoprime = 0x2ddbfe0f1f7 * 0x5bb7fc1e3ed * 0x8993fa2d5e3</desc>
+    </curve>
+    <curve>
+        <id>pp/carmichael192</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>carmichael_192.csv</file>
+        <desc>r = Carmichael pseudoprime = 0x730ea70deea47eeb * 0xe61d4e1bdd48fdd5 * 0x1592bf529cbed7cbf</desc>
+    </curve>
+    <curve>
+        <id>pp/carmichael224</id>
+        <bits>224</bits>
+        <field>prime</field>
+        <file>carmichael_224.csv</file>
+        <desc>r = Carmichael pseudoprime = 0x2e6e4205e9ea74ebefd * 0x5cdc840bd3d4e9d7df9 * 0x8b4ac611bdbf5ec3cf5</desc>
+    </curve>
+    <curve>
+        <id>pp/carmichael256</id>
+        <bits>256</bits>
+        <field>prime</field>
+        <file>carmichael_256.csv</file>
+        <desc>r = Carmichael pseudoprime = 0x129e94800bf86bd2d04ce1 * 0x253d290017f0d7a5a099c1 * 0x37dbbd8023e9437870e6a1</desc>
+    </curve>
+    <curve>
+        <id>pp/carmichael384</id>
+        <bits>384</bits>
+        <field>prime</field>
+        <file>carmichael_384.csv</file>
+        <desc>r = Carmichael pseudoprime = 0x78b4fa97e97300a5c46b32fb522cf76f * 0xf169f52fd2e6014b88d665f6a459eedd * 0x16a1eefc7bc5901f14d4198f1f686e64b</desc>
+    </curve>
+    <curve>
+        <id>pp/carmichael512</id>
+        <bits>512</bits>
+        <field>prime</field>
+        <file>carmichael_512.csv</file>
+        <desc>r = Carmichael pseudoprime = 0x2f6e41969c169b4e97b0a1c46ca4fb3a8f294afaefb * 0x5edc832d382d369d2f614388d949f6751e5295f5df5 * 0x8e4ac4c3d443d1ebc711e54d45eef1afad7be0f0cef</desc>
+    </curve>
+    <curve>
+        <id>pp/carmichael521</id>
+        <bits>521</bits>
+        <field>prime</field>
+        <file>carmichael_521.csv</file>
+        <desc>r = Carmichael pseudoprime = 0x170ac4fd154250e674f9ac6e0c29a214c6d6553e4f11 * 0x2e1589fa2a84a1cce9f358dc185344298dacaa7c9e21 * 0x45204ef73fc6f2b35eed054a247ce63e5482ffbaed31</desc>
+    </curve>
+
+    <curve>
+        <id>varying/160/1</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/2a.csv</file>
+        <desc>r = 2 bit prime = 2</desc>
+    </curve>
+    <curve>
+        <id>varying/160/2</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/2b.csv</file>
+        <desc>r = 2 bit prime = 3</desc>
+    </curve>
+    <curve>
+        <id>varying/160/3</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/3.csv</file>
+        <desc>r = 3 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/4</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/4.csv</file>
+        <desc>r = 4 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/5</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/5.csv</file>
+        <desc>r = 5 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/6</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/6.csv</file>
+        <desc>r = 6 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/7</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/7.csv</file>
+        <desc>r = 7 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/8</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/8.csv</file>
+        <desc>r = 8 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/10</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/10.csv</file>
+        <desc>r = 10 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/12</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/12.csv</file>
+        <desc>r = 12 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/14</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/14.csv</file>
+        <desc>r = 14 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/16</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/16.csv</file>
+        <desc>r = 16 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/20</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/20.csv</file>
+        <desc>r = 20 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/25</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/25.csv</file>
+        <desc>r = 25 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/32</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/32.csv</file>
+        <desc>r = 32 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/48</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/48.csv</file>
+        <desc>r = 48 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/64</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/64.csv</file>
+        <desc>r = 64 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/70</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/70.csv</file>
+        <desc>r = 70 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/80</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/80.csv</file>
+        <desc>r = 80 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/90</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/90.csv</file>
+        <desc>r = 90 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/96</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/96.csv</file>
+        <desc>r = 96 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/112</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/112.csv</file>
+        <desc>r = 112 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/128</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/128.csv</file>
+        <desc>r = 128 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/135</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/135.csv</file>
+        <desc>r = 135 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/140</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/140.csv</file>
+        <desc>r = 140 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/144</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/144.csv</file>
+        <desc>r = 144 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/146</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/146.csv</file>
+        <desc>r = 146 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/148</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/148.csv</file>
+        <desc>r = 148 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/150</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/150.csv</file>
+        <desc>r = 150 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/152</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/152.csv</file>
+        <desc>r = 152 bit prime</desc>
+    </curve>
+    <curve>
+        <id>varying/160/152cofactor</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>varying/160/152_cofactor.csv</file>
+        <desc>r = 152 bit prime, with correct cofactor</desc>
     </curve>
 </curves>

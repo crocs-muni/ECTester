@@ -7,33 +7,17 @@ import static cz.crcs.ectester.common.test.Result.Value;
  *
  * @author Jan Jancar johny@neuromancer.sk
  */
-public abstract class Test implements Testable {
+public abstract class Test implements Testable, Cloneable {
     protected boolean hasRun;
+    protected boolean hasStarted;
     protected Result result;
 
     public Result getResult() {
-        if (!hasRun) {
-            return null;
-        }
         return result;
     }
 
-    public Value getResultValue() {
-        if (!hasRun) {
-            return null;
-        }
-        return result.getValue();
-    }
-
-    public String getResultCause() {
-        if (!hasRun) {
-            return null;
-        }
-        return result.getCause();
-    }
-
     public boolean ok() {
-        if (!hasRun) {
+        if (result == null) {
             return true;
         }
         return result.ok();
@@ -41,10 +25,18 @@ public abstract class Test implements Testable {
 
     @Override
     public boolean error() {
-        if (!hasRun) {
+        if (result == null) {
             return false;
         }
         return result.compareTo(Value.ERROR);
+    }
+
+    @Override
+    public Object errorCause() {
+        if (result == null || !result.compareTo(Value.ERROR)) {
+            return null;
+        }
+        return result.getCause();
     }
 
     @Override
@@ -52,15 +44,40 @@ public abstract class Test implements Testable {
         return hasRun;
     }
 
+    public boolean hasStarted() {
+        return hasStarted;
+    }
+
     @Override
     public void reset() {
         hasRun = false;
+        hasStarted = false;
         result = null;
     }
 
     public abstract String getDescription();
 
     @Override
-    public abstract void run() throws TestException;
+    public Test clone() throws CloneNotSupportedException {
+        return (Test) super.clone();
+    }
 
+    @Override
+    public void run() {
+        if (hasRun)
+            return;
+        try {
+            hasStarted = true;
+            runSelf();
+            hasRun = true;
+        } catch (TestException e) {
+            result = new Result(Value.ERROR, e);
+            throw e;
+        } catch (Exception e) {
+            result = new Result(Value.ERROR, e);
+            throw new TestException(e);
+        }
+    }
+
+    protected abstract void runSelf();
 }

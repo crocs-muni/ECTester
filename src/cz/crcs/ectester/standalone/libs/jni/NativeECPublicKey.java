@@ -1,8 +1,10 @@
 package cz.crcs.ectester.standalone.libs.jni;
 
+import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.common.util.ECUtil;
 import org.bouncycastle.util.Arrays;
 
+import javax.swing.event.AncestorEvent;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPoint;
@@ -13,10 +15,12 @@ import java.security.spec.ECPoint;
 public abstract class NativeECPublicKey implements ECPublicKey {
     private String algorithm;
     private String format;
+    ECParameterSpec params;
 
-    public NativeECPublicKey(String algorithm, String format) {
+    public NativeECPublicKey(String algorithm, String format, ECParameterSpec params) {
         this.algorithm = algorithm;
         this.format = format;
+        this.params = params;
     }
 
     @Override
@@ -29,14 +33,19 @@ public abstract class NativeECPublicKey implements ECPublicKey {
         return format;
     }
 
+    @Override
+    public ECParameterSpec getParams() {
+        return params;
+    }
+
+    public abstract byte[] getData();
+
     private static class ANSIX962 extends NativeECPublicKey {
-        private byte[] keyData;
-        private ECParameterSpec params;
+        byte[] keyData;
 
         public ANSIX962(byte[] keyData, ECParameterSpec params) {
-            super("EC", "ANSI X9.62");
-            this.keyData = keyData;
-            this.params = params;
+            super("EC", "ANSI X9.62", params);
+            this.keyData = Arrays.clone(keyData);
         }
 
         @Override
@@ -49,9 +58,8 @@ public abstract class NativeECPublicKey implements ECPublicKey {
             return Arrays.clone(keyData);
         }
 
-        @Override
-        public ECParameterSpec getParams() {
-            return params;
+        public byte[] getData() {
+            return ECUtil.toX962Uncompressed(getW(), params);
         }
     }
 
@@ -64,6 +72,59 @@ public abstract class NativeECPublicKey implements ECPublicKey {
     public static class Botan extends ANSIX962 {
         public Botan(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
+        }
+    }
+
+    public static class Cryptopp extends ANSIX962 {
+        public Cryptopp(byte[] keyData, ECParameterSpec params) {
+            super(keyData, params);
+        }
+    }
+
+    public static class Openssl extends ANSIX962 {
+        public Openssl(byte[] keyData, ECParameterSpec params) {
+            super(keyData, params);
+        }
+    }
+
+    public static class Mscng extends ANSIX962 {
+        // 0 -> implicit (meta = curveName UTF16, header = full);
+        // 1 -> explicit (meta = null, header = full);
+        // 2 -> nist (meta = null, header = full)
+        private int flag;
+        private byte[] meta = null;
+        private byte[] header;
+        private byte[] x;
+        private byte[] y;
+
+        public Mscng(int flag, byte[] meta, byte[] header, byte[] x, byte[] y, ECParameterSpec params) {
+            super(ByteUtil.concatenate(new byte[]{0x04}, x, y), params);
+            this.flag = flag;
+            this.meta = Arrays.clone(meta);
+            this.header = Arrays.clone(header);
+            this.x = Arrays.clone(x);
+            this.y = Arrays.clone(y);
+        }
+
+        public int getFlag() {
+            return flag;
+        }
+
+        public byte[] getMeta() {
+            return Arrays.clone(meta);
+        }
+
+        public byte[] getHeader() {
+            return Arrays.clone(header);
+        }
+
+        public byte[] getBlob() {
+            return ByteUtil.concatenate(header, x, y);
+        }
+
+        @Override
+        public byte[] getData() {
+            return getBlob();
         }
     }
 }

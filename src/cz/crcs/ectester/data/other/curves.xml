@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<curves xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../schema.xsd">
+    <curve>
+        <id>M-221</id>
+        <bits>221</bits>
+        <field>prime</field>
+        <file>m221.csv</file>
+        <desc>Montgomery M-221 curve from eprint 2013/647, transformed into short Weierstrass form</desc>
+    </curve>
+    <curve>
+        <id>M-383</id>
+        <bits>383</bits>
+        <field>prime</field>
+        <file>m383.csv</file>
+        <desc>Montgomery M-383 curve from eprint 2013/647, transformed into short Weierstrass form</desc>
+    </curve>
+    <curve>
+        <id>M-511</id>
+        <bits>511</bits>
+        <field>prime</field>
+        <file>m511.csv</file>
+        <desc>Montgomery M-511 curve from eprint 2013/647, transformed into short Weierstrass form</desc>
+    </curve>
+
+    <curve>
+        <id>Curve25519</id>
+        <bits>256</bits>
+        <field>prime</field>
+        <file>curve25519.csv</file>
+        <desc>Curve25519 transformed into short Weierstrass form</desc>
+    </curve>
+</curves>

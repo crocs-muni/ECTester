@@ -1,56 +1,100 @@
 package cz.crcs.ectester.common.test;
 
 import cz.crcs.ectester.common.output.TestWriter;
-import cz.crcs.ectester.data.EC_Store;
-
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
 public abstract class TestSuite {
     protected String name;
-    protected String description;
-    protected TestWriter writer;
+    protected String[] description;
+    private TestWriter writer;
+    private Test running;
+    private int ran = 0;
+    private int runFrom = 0;
+    private int runTo = -1;
 
-    public TestSuite(TestWriter writer, String name, String description) {
+    public TestSuite(TestWriter writer, String name, String... description) {
         this.writer = writer;
         this.name = name;
         this.description = description;
     }
 
-    public void run() throws TestException {
+    /**
+     * Run the <code>TestSuite</code>.
+     */
+    public void run() {
+        run(0);
+    }
+
+    public void run(int from) {
+        run(from, -1);
+    }
+
+    public void run(int from, int to) {
+        this.runFrom = from;
+        this.runTo = to;
         writer.begin(this);
         try {
             runTests();
+        } catch (TestException e) {
+            writer.outputError(running, e, ran);
         } catch (Exception e) {
-            throw new TestException(e);
+            writer.end();
+            throw new TestSuiteException(e);
         }
         writer.end();
     }
 
-    protected Test runTest(Test t) throws TestException {
+    /**
+     * Run the given test and return it back.
+     *
+     * @param t The test to run.
+     * @return The test that was run.
+     * @throws TestException
+     */
+    protected <T extends Test> T runTest(T t) {
+        running = t;
         t.run();
+        running = null;
         return t;
     }
 
-    protected Test doTest(Test t) throws TestException {
-        t.run();
-        writer.outputTest(t);
+    /**
+     * Run the given test, output it and return it back.
+     *
+     * @param t The test to run.
+     * @return The test that was run.
+     * @throws TestException
+     */
+    protected <T extends Test> T doTest(T t) {
+        if (ran >= runFrom && (runTo < 0 || ran <= runTo)) {
+            runTest(t);
+            writer.outputTest(t, ran);
+        }
+        ran++;
         return t;
     }
 
+    /**
+     *
+     */
     protected abstract void runTests() throws Exception;
 
     public String getName() {
         return name;
     }
 
-    public String getDescription() {
+    public String[] getDescription() {
         return description;
+    }
+
+    public String getTextDescription() {
+        return String.join(System.lineSeparator(), description);
+    }
+
+    public String toString() {
+        return null;
     }
 
 }

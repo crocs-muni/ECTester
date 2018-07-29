@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 #
 # Script for plotting ECTester ECDH results.
@@ -13,14 +13,16 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
+from matplotlib import ticker, colors
 import argparse
+from copy import deepcopy
 from operator import itemgetter
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Plot ECTester ECDH timing.")
     parser.add_argument("-o", "--output", dest="output", type=argparse.FileType("wb"), help="Write image to [file], do not display.", metavar="file")
     parser.add_argument("--skip-first", dest="skip_first", action="store_true", help="Skip first entry, as it's usually a large outlier.")
+    parser.add_argument("-t", "--title", dest="title", nargs="?", default="", type=str, help="What title to give the figure.")
     parser.add_argument("file", type=str, help="The file to plot(csv).")
 
     opts = parser.parse_args()
@@ -36,23 +38,31 @@ if __name__ == "__main__":
 
     if "nano" in header_names[1]:
         unit = r"$\mu s$"
-        time_data = map(lambda x: x[1]/1000, data)
+        time_data = map(lambda x: x[1]//1000, data)
     else:
         unit = r"ms"
         time_data = map(itemgetter(1), data)
-    priv_data = map(itemgetter(2), data)
-    pub_data = map(itemgetter(3), data)
-    secret_data = map(itemgetter(4), data)
+    time_data = list(time_data)
+    priv_data = list(map(itemgetter(2), data))
+    pub_data = list(map(itemgetter(3), data))
+    secret_data = list(map(itemgetter(4), data))
 
     plt.style.use("ggplot")
-    fig = plt.figure(tight_layout=True)
-    fig.suptitle(opts.file)
+    fig = plt.figure()
+    layout_kwargs = {}
+    if opts.title is None:
+        fig.suptitle(opts.file)
+        layout_kwargs["rect"] = [0, 0.02, 1, 0.98]
+    elif opts.title:
+        fig.suptitle(opts.title)
+        layout_kwargs["rect"] = [0, 0.02, 1, 0.98]
+    fig.tight_layout(**layout_kwargs)
 
-    axe_hist = fig.add_subplot(1,1,1)
+    axe_hist = fig.add_subplot(2,1,1)
     time_max = max(time_data)
     time_avg = np.average(time_data)
     time_median = np.median(time_data)
-    axe_hist.hist(time_data, bins=time_max/3, log=True)
+    axe_hist.hist(time_data, bins=time_max//3, log=True)
     axe_hist.axvline(x=time_avg, alpha=0.7, linestyle="dotted", color="red", label="avg = {}".format(time_avg))
     axe_hist.axvline(x=time_median, alpha=0.7, linestyle="dotted", color="green", label="median = {}".format(time_median))
     axe_hist.set_ylabel("count\n(log)")
@@ -60,10 +70,38 @@ if __name__ == "__main__":
     axe_hist.xaxis.set_major_locator(ticker.MaxNLocator())
     axe_hist.legend(loc="best")
 
+    priv_bit_bins = {}
+    for i in range(len(data)):
+        skey = priv_data[i]
+        time = time_data[i]
+        skey_hw = 0
+        while skey:
+            skey_hw += 1
+            skey &= skey - 1
+        if skey_hw in priv_bit_bins:
+            priv_bit_bins[skey_hw].append(time)
+        else:
+            priv_bit_bins[skey_hw] = [time]
+    priv_bit_x = []
+    priv_bit_y = []
+    for k,v in priv_bit_bins.items():
+        priv_bit_x.extend([k] * len(v))
+        priv_bit_y.extend(v)
+
+    axe_priv_hist = fig.add_subplot(2,1,2)
+    h, xe, ye = np.histogram2d(priv_bit_x, priv_bit_y, bins=[max(priv_bit_bins) - min(priv_bit_bins), (time_max - min(time_data))//5])
+    cmap = deepcopy(plt.cm.plasma)
+    cmap.set_bad("black")
+    im = axe_priv_hist.imshow(h.T, origin="low", cmap=cmap, aspect="auto", extent=[xe[0], xe[-1], ye[0], ye[-1]], norm=colors.LogNorm())
+    axe_priv_hist.set_xlabel("private key Hamming weight")
+    axe_priv_hist.set_ylabel("time ({})".format(unit))
+    fig.colorbar(im, ax=axe_priv_hist)
+
     fig.text(0.01, 0.02, "Data size: {}".format(len(time_data)), size="small")
 
     if opts.output is None:
         plt.show()
     else:
         fig.set_size_inches(12, 10)
-        plt.savefig(opts.output, dpi=400)
+        ext = opts.output.name.split(".")[-1]
+        plt.savefig(opts.output, format=ext, dpi=400, bbox_inches='tight')

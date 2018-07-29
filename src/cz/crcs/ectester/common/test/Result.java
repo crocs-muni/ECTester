@@ -8,13 +8,13 @@ package cz.crcs.ectester.common.test;
 public class Result {
 
     private Value value;
-    private String cause;
+    private Object cause;
 
     public Result(Value value) {
         this.value = value;
     }
 
-    public Result(Value value, String cause) {
+    public Result(Value value, Object cause) {
         this(value);
         this.cause = cause;
     }
@@ -23,7 +23,7 @@ public class Result {
         return value;
     }
 
-    public String getCause() {
+    public Object getCause() {
         return cause;
     }
 
@@ -49,16 +49,22 @@ public class Result {
      * A result value of a Test.
      */
     public enum Value {
-        SUCCESS(true),
-        FAILURE(false),
-        UXSUCCESS(false),
-        XFAILURE(true),
-        ERROR(false);
+        SUCCESS(true, "Expected success."),
+        FAILURE(false, "Unexpected failure."),
+        UXSUCCESS(false, "Unexpected success."),
+        XFAILURE(true, "Expected failure."),
+        ERROR(false, "Error.");
 
         private boolean ok;
+        private String desc;
 
         Value(boolean ok) {
             this.ok = ok;
+        }
+
+        Value(boolean ok, String desc) {
+            this(ok);
+            this.desc = desc;
         }
 
         public static Value fromExpected(ExpectedValue expected, boolean successful) {
@@ -68,7 +74,7 @@ public class Result {
                 case FAILURE:
                     return successful ? UXSUCCESS : XFAILURE;
                 case ANY:
-                    return SUCCESS;
+                    return successful ? SUCCESS : XFAILURE;
             }
             return SUCCESS;
         }
@@ -82,6 +88,10 @@ public class Result {
 
         public boolean ok() {
             return ok;
+        }
+
+        public String description() {
+            return desc;
         }
     }
 

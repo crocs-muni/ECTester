@@ -6,77 +6,90 @@
         <bits>128</bits>
         <field>prime</field>
         <file>wrongp128.csv</file>
+        <desc>The field is not prime.</desc>
     </curve>
     <curve>
         <id>wrongp160</id>
         <bits>160</bits>
         <field>prime</field>
         <file>wrongp160.csv</file>
+        <desc>The field is not prime.</desc>
     </curve>
     <curve>
         <id>wrongp192</id>
         <bits>192</bits>
         <field>prime</field>
         <file>wrongp192.csv</file>
+        <desc>The field is not prime.</desc>
     </curve>
     <curve>
         <id>wrongp224</id>
         <bits>224</bits>
         <field>prime</field>
         <file>wrongp224.csv</file>
+        <desc>The field is not prime.</desc>
     </curve>
     <curve>
         <id>wrongp256</id>
         <bits>256</bits>
         <field>prime</field>
         <file>wrongp256.csv</file>
+        <desc>The field is not prime.</desc>
     </curve>
     <curve>
         <id>wrongp384</id>
         <bits>384</bits>
         <field>prime</field>
         <file>wrongp384.csv</file>
+        <desc>The field is not prime.</desc>
     </curve>
     <curve>
         <id>wrongp521</id>
         <bits>521</bits>
         <field>prime</field>
         <file>wrongp521.csv</file>
+        <desc>The field is not prime.</desc>
     </curve>
     <curve>
         <id>wrongt163</id>
         <bits>163</bits>
         <field>binary</field>
         <file>wrongt163.csv</file>
+        <desc>The field polynomial is not irreducible in F_2^163[x].</desc>
     </curve>
     <curve>
         <id>wrongt233</id>
         <bits>233</bits>
         <field>binary</field>
         <file>wrongt233.csv</file>
+        <desc>The field polynomial is not irreducible in F_2^233[x].</desc>
     </curve>
     <curve>
         <id>wrongt239</id>
         <bits>239</bits>
         <field>binary</field>
         <file>wrongt239.csv</file>
+        <desc>The field polynomial is not irreducible in F_2^239[x].</desc>
     </curve>
     <curve>
         <id>wrongt283</id>
         <bits>283</bits>
         <field>binary</field>
         <file>wrongt283.csv</file>
+        <desc>The field polynomial is not irreducible in F_2^283[x].</desc>
     </curve>
     <curve>
         <id>wrongt409</id>
         <bits>409</bits>
         <field>binary</field>
         <file>wrongt409.csv</file>
+        <desc>The field polynomial is not irreducible in F_2^409[x].</desc>
     </curve>
     <curve>
         <id>wrongt571</id>
         <bits>571</bits>
         <field>binary</field>
         <file>wrongt571.csv</file>
+        <desc>The field polynomial is not irreducible in F_2^571[x].</desc>
     </curve>
 </curves>

@@ -1,12 +1,18 @@
-# Tests
+# Test suites
 
  - `default`
  - `test-vectors`
- - `wrong`
- - `composite`
- - `invalid`
+ - `compression`
+ - `miscellaneous`
+ - `wrong`*
+ - `composite`*
+ - `invalid`*
+ - `twist`*
+ - `degenerate`*
+ - `cofactor`*
+ - `edge-cases`*
  
-**NOTE: The `wrong`, `composite` and `invalid` test suites caused temporary DoS of some cards. These test suites prompt you for
+**\*NOTE: The `wrong`, `composite`, `invalid`,`twist`, `cofactor`, `edge-cases` and `degenerate` test suites caused temporary/permanent DoS of some cards. These test suites prompt you for
 confirmation before running, be cautious.**
 
 ## Default
@@ -18,14 +24,10 @@ This test suite is run if no argument is provided to `-t / --test`.
 
 For example:
 ```bash
-java -jar ECTester.jar -a -fp -t
+java -jar ECTester.jar -t
 ```
-tests all(`-a`), prime field(`-fp`), using the default test suite.
+tests prime field and binary field curves, using the default test suite.
 
-```bash
-java -jar ECTester.jar-a -f2m -t
-```
-tests all(`-a`), binary field(`-f2m`), curves.
 
 ## Test-Vectors
 Tests using known test vectors provided by NIST/SECG/Brainpool:
@@ -40,43 +42,142 @@ Tests using known test vectors provided by NIST/SECG/Brainpool:
 
 For example:
 ```bash
-java -jar ECTester.jar -t test-vectors -nc nist -a -f2m
+java -jar ECTester.jar -t test-vectors
 ```
-tests all(`-a`), binary field(`-f2m`) NIST curves for which test-vectors are provided. Although this test suite is better for general testing:
+tests all curves for which test-vectors are provided.
+
+## Compression
+Tests support for compression of public points in ECDH as specified in ANSI X9.62. Tests ECDH with points in compressed
+and hybrid form. Also tests card response to a hybrid point with wrong `y` coordinate and to the point at infinity(as public key in ECDH).
+
+For example:
 ```bash
-java -jar ECTester.jar -t test-vectors -a
+java -jar ECTester.jar -t compression
 ```
+
 ## Wrong
-Tests using the default tests on a category of wrong curves. These curves are not really curves as they have:
+Tests on a category of wrong curves. These curves are not really curves as they have:
  - non-prime field in the prime-field case
  - reducible polynomial as the field polynomial in the binary case
 
-These tests should fail generally. They are equivalent with `java -jar ECTester.jar -nc wrong -t`, the default tests over the `wrong` category
-of curves.
- 
+This test suite also does some additional tests with corrupting the parameters:
+ - Fp:
+   - p = 0
+   - p = 1
+   - p = q^2; q prime
+   - p = q * s; q and s prime
+   - G = random point not on curve
+   - G = random data
+   - G = infinity
+   - r = 0
+   - r = 1
+   - r = some prime larger than original r (and \[r\]G != infinity)
+   - r = some prime smaller than original r (and \[r\]G != infninity)
+   - r = some composite number (and \[r\]G != infinity)
+   - k = 0xff
+   - k = 0
+ - F2m:
+   - e1 = e2 = e3 = 0
+   - m < e1 < e2 < e3
+
+These tests should fail generally.
+
 For example:
 ```bash
-java -jar ECTester.jar -t wrong -b 521 -fp
+java -jar ECTester.jar -t wrong
 ```
-tests a 521 bit(`-b`), prime-field(`-fp`) wrong curve.
+does all wrong curve tests.
+
 
 ## Composite
 Tests using curves that don't have a prime order/nearly prime order.
-These tests should generally fail, a success here implies the card **WILL** use a non-secure curve if such curve is set
+These tests should generally fail, a success here implies the card will use a non-secure curve if such curve is set
 by the applet. Operations over such curves are susceptible to small-subgroup attacks.
 
+   - r = quite a smooth number, many small factors, r = |G|
+   - r = small prime(of increasing bit lengths), r = |G|
+   - r = p * q = |G|
+   - r = G = Carmichael number = p * q * s
+   - \[r\]G = infinity but r != |G|, so |G| divides r
+   
 For example:
 ```bash
-java -jar ECTester.jar -t composite -b 160 -fp
+java -jar ECTester.jar -t composite
 ```
+
 
 ## Invalid
-Tests using known named curves from several categories(SECG/NIST/Brainpool) against pregenerated *invalid* public keys.
-These tests should definitely fail, a success here implies the card is susceptible to invalid curve attacks.
+Tests using known named curves from several categories(SECG/NIST/Brainpool) against pre-generated *invalid* public keys.
+ECDH should definitely fail, a success here implies the card is susceptible to invalid curve attacks.
 
+See [Practical Invalid Curve Attacks on TLS-ECDH](https://www.nds.rub.de/media/nds/veroeffentlichungen/2015/09/14/main-full.pdf) for more information.
 
 For example:
 ```bash
-java -jar ECTester.jar -t invalid -nc nist -a -fp
+java -jar ECTester.jar -t invalid
 ```
-tests using all(`-a`), prime-field(`-fp`) NIST curves and pregenerated *invalid* public keys for these curves.
+tests using all curves with pregenerated *invalid* public keys for these curves.
+
+
+## Twist
+Tests using known named curves froms several categories(SECG/NIST) against pre-generated points on twists of said curves.
+ECDH should fail, a success here implies the card is not twist secure, if a curve with an unsecure twist is used,
+the card might compute on the twist, if a point on the twist is supplied.
+
+See [SafeCurves on twist security](https://safecurves.cr.yp.to/twist.html) for more information.
+
+For example:
+```bash
+java -jar ECTester.jar -t twist
+```
+
+## Degenerate
+Tests using known named curves froms several categories(SECG/NIST) against pre-generated points on the degenerate line
+`Y: x = 0`. ECDH should fail, a success here might mean the card does not check that the point lies on the correct curve
+and uses a curve model vulnerable to such degenerate points.
+
+See [Degenerate Curve Attacks - Extending Invalid Curve Attacks to Edwards Curves and Other Models](https://eprint.iacr.org/2015/1233.pdf) for more information.
+
+For example:
+```bash
+java -jar ECTester.jar -t degenerate
+```
+
+## Cofactor
+Tests whether the card correctly rejects points that lie on the curve but not on the subgroup generated by the specified generator
+during ECDH. Does this with curves where the cofactor subgroup has small order, then with curves that have order equal to the product
+of two large primes, sets the generator with order of one prime and tries points on the subgroup of the other prime order.
+
+For example:
+```bash
+java -jar ECTester.jar -t cofactor
+```
+
+## Edge-Cases
+Tests various inputs to ECDH which may cause an implementation to achieve a certain edge-case state during ECDH. 
+Some of the data is from the google/Wycheproof project. Tests include [CVE-2017-10176](https://nvd.nist.gov/vuln/detail/CVE-2017-10176) and [CVE-2017-8932](https://nvd.nist.gov/vuln/detail/CVE-2017-8932).
+Various custom edge private key values are also tested.
+
+CVE-2017-10176 was in implementation issue in the SunEC Java library that caused the implementation to reach the point at infinity during ECDH computation.
+
+CVE-2017-8932 was an implementation issue in the Go standard library, in particular its scalar multiplication algorithm on the
+P-256 curve which leaked information about the private key.
+
+Custom private key values over SECG curves are tested:
+   - s = 0, s = 1
+   - s < r, s = r, s > r
+   - s = r - 1, s = r + 1
+   - s = k\*r - 1, s = k\*r, s = k\*r + 1 
+
+For example:
+```bash
+java -jar ECTester.jar -t edge-cases
+```
+
+## Miscellaneous
+Some miscellaneous tests, tries ECDH and ECDSA over supersingular curves and Barreto-Naehrig curves with small embedding degree and CM discriminant.
+
+For example:
+```bash
+java -jar ECTester.jar -t miscellaneous
+```

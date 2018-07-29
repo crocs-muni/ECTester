@@ -82,7 +82,7 @@ public class TreeParser implements CommandLineParser {
             }
         } else {
             if (required) {
-                throw new MissingOptionException(new ArrayList(parsers.keySet()));
+                throw new MissingOptionException(new ArrayList<>(parsers.keySet()));
             }
         }
 

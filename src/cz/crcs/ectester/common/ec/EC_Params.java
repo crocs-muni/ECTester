@@ -9,10 +9,11 @@ import java.util.List;
 
 /**
  * A list of EC parameters, can contain a subset of the Fp/F2M, A, B, G, R, K, W, S parameters.
- *
+ * <p>
  * The set of parameters is uniquely identified by a short bit string.
  * The parameters can be exported to a byte array via <code>flatten()</code> or to a comma delimited
  * string via <code>expand()</code>.
+ *
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class EC_Params extends EC_Data {
@@ -61,15 +62,15 @@ public class EC_Params extends EC_Data {
                 if (masked == EC_Consts.PARAMETER_F2M) {
                     result = new byte[4][];
                     result[0] = data[i].clone();
-                    result[1] = data[i+1].clone();
-                    result[2] = data[i+2].clone();
-                    result[3] = data[i+3].clone();
+                    result[1] = data[i + 1].clone();
+                    result[2] = data[i + 2].clone();
+                    result[3] = data[i + 3].clone();
                     break;
                 }
                 if (masked == EC_Consts.PARAMETER_G || masked == EC_Consts.PARAMETER_W) {
                     result = new byte[2][];
                     result[0] = data[i].clone();
-                    result[1] = data[i+1].clone();
+                    result[1] = data[i + 1].clone();
                     break;
                 }
                 result = new byte[1][];
@@ -189,6 +190,6 @@ public class EC_Params extends EC_Data {
             }
             paramMask = (short) (paramMask << 1);
         }
-        return out.toArray(new String[out.size()]);
+        return out.toArray(new String[0]);
     }
 }

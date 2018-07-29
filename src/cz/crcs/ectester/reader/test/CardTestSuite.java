@@ -12,7 +12,7 @@ public abstract class CardTestSuite extends TestSuite {
     ECTesterReader.Config cfg;
     CardMngr card;
 
-    CardTestSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager, String name, String description) {
+    CardTestSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager, String name, String... description) {
         super(writer, name, description);
         this.card = cardManager;
         this.cfg = cfg;

@@ -146,16 +146,22 @@ public class ECUtil {
                 alpha = alpha.add(x.multiply(a));
                 alpha = alpha.add(b);
 
+                if(!isResidue(alpha, p)) {
+                    throw new IllegalArgumentException();
+                }
+
                 BigInteger beta = modSqrt(alpha, p);
                 if (beta.getLowestSetBit() == 0) {
                     // rightmost bit is one
                     if (data[0] == 0x02) {
-                        beta = beta.negate();
+                        // yp is 0
+                        beta = p.subtract(beta);
                     }
                 } else {
                     // rightmost bit is zero
                     if (data[0] == 0x03) {
-                        beta = beta.negate();
+                        // yp is 1
+                        beta = p.subtract(beta);
                     }
                 }
 

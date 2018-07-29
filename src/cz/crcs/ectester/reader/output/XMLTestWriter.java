@@ -5,6 +5,7 @@ import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.test.Testable;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.reader.CardMngr;
+import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.test.CardTestSuite;
@@ -26,16 +27,27 @@ public class XMLTestWriter extends BaseXMLTestWriter {
 
     private Element commandElement(Command c) {
         Element commandElem = doc.createElement("command");
+        if (c == null) {
+            return commandElem;
+        }
 
         Element apdu = doc.createElement("apdu");
         apdu.setTextContent(ByteUtil.bytesToHex(c.getAPDU().getBytes()));
         commandElem.appendChild(apdu);
+
+        Element description = doc.createElement("desc");
+        description.setTextContent(c.getDescription());
+        commandElem.appendChild(description);
 
         return commandElem;
     }
 
     private Element responseElement(Response r) {
         Element responseElem = doc.createElement("response");
+        if (r == null) {
+            return responseElem;
+        }
+
         responseElem.setAttribute("successful", r.successful() ? "true" : "false");
 
         Element apdu = doc.createElement("apdu");
@@ -102,6 +114,7 @@ public class XMLTestWriter extends BaseXMLTestWriter {
             CardTestSuite cardSuite = (CardTestSuite) suite;
             Element result = doc.createElement("device");
             result.setAttribute("type", "card");
+            result.setAttribute("ectester", ECTesterReader.VERSION + ECTesterReader.GIT_COMMIT);
             result.appendChild(cplcElement(cardSuite.getCard()));
 
             Element atr = doc.createElement("ATR");

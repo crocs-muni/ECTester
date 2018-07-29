@@ -59,7 +59,7 @@ public class EC_KAResult extends EC_Data {
 
     @Override
     public String toString() {
-        return "<" + getId() + "> " + ka + " result over " + curve + ", " + oneKey + " + " + otherKey + (desc == null ? "" : ": " + desc);
+        return "<" + getId() + "> " + ka + " result over " + curve + ", " + oneKey + " + " + otherKey + (desc == null ? "" : ": " + desc) + System.lineSeparator() + super.toString();
     }
 
 }

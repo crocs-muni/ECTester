@@ -7,15 +7,27 @@ package cz.crcs.ectester.common.util;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class ByteUtil {
+
+    /**
+     * Gen a short from a byte array at <code>offset</code>, big-endian.
+     * @return the short value
+     */
     public static short getShort(byte[] array, int offset) {
         return (short) (((array[offset] & 0xFF) << 8) | (array[offset + 1] & 0xFF));
     }
 
+    /**
+     * Set a short in a byte array at <code>offset</code>, big-endian.
+     */
     public static void setShort(byte[] array, int offset, short value) {
         array[offset + 1] = (byte) (value & 0xFF);
         array[offset] = (byte) ((value >> 8) & 0xFF);
     }
 
+    /**
+     * Compare two byte arrays upto <code>length</code> and get first difference.
+     * @return the position of the first difference in the two byte arrays, or <code>length</code> if they are equal.
+     */
     public static int diffBytes(byte[] one, int oneOffset, byte[] other, int otherOffset, int length) {
         for (int i = 0; i < length; ++i) {
             byte a = one[i + oneOffset];
@@ -27,10 +39,17 @@ public class ByteUtil {
         return length;
     }
 
+    /**
+     * Compare two byte arrays, upto <code>length</code>.
+     * @return whether the arrays are equal upto <code>length</code>
+     */
     public static boolean compareBytes(byte[] one, int oneOffset, byte[] other, int otherOffset, int length) {
         return diffBytes(one, oneOffset, other, otherOffset, length) == length;
     }
 
+    /**
+     * Test if the byte array has all values equal to <code>value</code>.
+     */
     public static boolean allValue(byte[] array, byte value) {
         for (byte a : array) {
             if (a != value)
@@ -39,10 +58,38 @@ public class ByteUtil {
         return true;
     }
 
+    public static byte[] shortToBytes(short value) {
+        byte[] result = new byte[2];
+        setShort(result, 0, value);
+        return result;
+    }
+
+    public static byte[] shortToBytes(short[] shorts) {
+        if (shorts == null) {
+            return null;
+        }
+        byte[] result = new byte[shorts.length * 2];
+        for (int i = 0; i < shorts.length; ++i) {
+            setShort(result, 2 * i, shorts[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Parse a hex string into a byte array, big-endian.
+     * @param hex The String to parse.
+     * @return the byte array from the hex string.
+     */
     public static byte[] hexToBytes(String hex) {
         return hexToBytes(hex, true);
     }
 
+    /**
+     * Parse a hex string into a byte-array, specify endianity.
+     * @param hex The String to parse.
+     * @param bigEndian Whether to parse as big-endian.
+     * @return the byte array from the hex string.
+     */
     public static byte[] hexToBytes(String hex, boolean bigEndian) {
         hex = hex.replace(" ", "");
         int len = hex.length();
@@ -124,5 +171,9 @@ public class ByteUtil {
             offset += array.length;
         }
         return out;
+    }
+
+    public static byte[] prependLength(byte[] data) {
+        return concatenate(ByteUtil.shortToBytes((short) data.length), data);
     }
 }

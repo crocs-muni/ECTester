@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  *
  * @author Jan Jancar johny@neuromancer.sk
  */
-public abstract class EC_Data {
+public abstract class EC_Data implements Comparable<EC_Data> {
     String id;
     int count;
     byte[][] data;
@@ -123,7 +123,7 @@ public abstract class EC_Data {
     public boolean readCSV(InputStream in) {
         Scanner s = new Scanner(in);
 
-        s.useDelimiter(",|;");
+        s.useDelimiter("[,;]");
         List<String> data = new LinkedList<>();
         while (s.hasNext()) {
             String field = s.next();
@@ -213,5 +213,53 @@ public abstract class EC_Data {
             return this.id.hashCode();
         }
         return Arrays.deepHashCode(this.data);
+    }
+
+    @Override
+    public int compareTo(EC_Data o) {
+        if (o == this) return 0;
+        if (this.id != null && o.id != null) {
+
+            int minLength = Math.min(this.id.length(), o.id.length());
+            for (int i = 0; i < minLength; i++) {
+                if (this.id.charAt(i) != o.id.charAt(i)) {
+                    String thisEnd = this.id.substring(i);
+                    String oEnd = o.id.substring(i);
+                    try {
+                        int thisIndex = Integer.parseInt(thisEnd);
+                        int oIndex = Integer.parseInt(oEnd);
+                        return Integer.compare(thisIndex, oIndex);
+                    } catch (NumberFormatException ignored) {
+                        break;
+                    }
+                }
+            }
+            return this.id.compareTo(o.id);
+        } else if (this.id == null && o.id == null) {
+            if (Arrays.equals(this.data, o.data)) {
+                return 0;
+            } else {
+                int minCount = (this.count < o.count) ? this.count : o.count;
+                for (int i = 0; i < minCount; ++i) {
+                    byte[] thisData = this.data[i];
+                    byte[] oData = o.data[i];
+                    int innerMinCount = (thisData.length < oData.length) ? thisData.length : oData.length;
+                    for (int j = 0; j < innerMinCount; ++j) {
+                        if (thisData[j] < oData[j]) {
+                            return -1;
+                        } else if (thisData[j] > oData[j]) {
+                            return 1;
+                        }
+                    }
+                }
+            }
+        } else {
+            if (this.id == null) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
+        return 0;
     }
 }

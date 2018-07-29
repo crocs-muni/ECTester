@@ -1,4 +1,5 @@
 # Built artifacts in /dist and /applet.
+/build/
 /dist/lib/
 /dist/ECTesterReader.jar
 /dist/ECTesterReader-dist.jar
@@ -8,7 +9,26 @@
 /dist/ECTesterStandalone-dist.jar
 /applet/ectester.cap
 
+# Test runs in /dist
+/dist/*.default
+/dist/*.test-vectors
+/dist/*.compression
+/dist/*.cofactor
+/dist/*.composite
+/dist/*.wrong
+/dist/*.invalid
+/dist/*.twist
+/dist/*.miscellaneous
+/dist/*.degenerate
+/dist/*.edge-cases
+/dist/*.xml
+
 # Built binaries in /src.
 /src/**/*.a
 /src/**/*.o
+/src/**/*.obj
 /src/**/*.so
+/src/**/*.dll
+/src/**/*.exp
+/src/**/*.lib
+/src/**/*.pdb

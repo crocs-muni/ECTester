@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <categories xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="schema.xsd">
+    <!-- Standard curves -->
     <category>
         <name>anomalous</name>
         <directory>anomalous</directory>
@@ -32,24 +33,51 @@
         <desc>GOST R 34.10-2001: RFC5832</desc>
     </category>
     <category>
-        <name>composite</name>
-        <directory>composite</directory>
-        <desc>Composite order curves, with points of very small order pregenerated.</desc>
+        <name>x962</name>
+        <directory>x962</directory>
+        <desc>ANSI X9.62 example curves.</desc>
     </category>
     <category>
-        <name>wrong</name>
-        <directory>wrong</directory>
-        <desc>Wrong field curves. These should definitely give an error when used. Since the "prime" used for the field are not prime, and the field polynomials are also not irreducible. Simply put these parameters don't specify a valid elliptic curve.</desc>
+        <name>Barreto-Naehrig</name>
+        <directory>bn</directory>
+        <desc>Barreto-Naehrig curves from: A Family of Implementation-Friendly BN Elliptic Curves - https://eprint.iacr.org/2010/429.pdf.</desc>
     </category>
+    <category>
+        <name>other</name>
+        <directory>other</directory>
+        <desc>An assortment of some other curves.</desc>
+    </category>
+
+    <!-- Custom curves -->
     <category>
         <name>invalid</name>
         <directory>invalid</directory>
-        <desc></desc>
+        <desc>Invalid curves and points on them for common standard named curves.</desc>
     </category>
     <category>
         <name>twist</name>
         <directory>twist</directory>
-        <desc></desc>
+        <desc>Points on quadratic twists of common standard named curves.</desc>
+    </category>
+    <category>
+        <name>degenerate</name>
+        <directory>degenerate</directory>
+        <desc>Points on degenerate curves for common standard named curves.</desc>
+    </category>
+    <category>
+        <name>cofactor</name>
+        <directory>cofactor</directory>
+        <desc>Curves of order n * p, with p prime and n in {2,4,8,16,32,64,128}. Generator of order p, with points on the subgroup of order n.</desc>
+    </category>
+    <category>
+        <name>composite</name>
+        <directory>composite</directory>
+        <desc>Composite order curves, with points of very small order pre-generated. Also curves with order of a product of two large primes.</desc>
+    </category>
+    <category>
+        <name>wrong</name>
+        <directory>wrong</directory>
+        <desc>Wrong field curves. These should definitely give an error when used. Since the "prime" used for the field is not prime, and the field polynomials are also not irreducible. Simply put these parameters don't specify a valid elliptic curve.</desc>
     </category>
     <category>
         <name>test</name>
@@ -57,8 +85,13 @@
         <desc>Test vectors</desc>
     </category>
     <category>
-        <name>x962</name>
-        <directory>x962</directory>
-        <desc>ANSI X9.62 example curves.</desc>
+        <name>wycheproof</name>
+        <directory>wycheproof</directory>
+        <desc>Test cases from google Wycheproof project: https://github.com/google/wycheproof</desc>
+    </category>
+	<category>
+        <name>supersingular</name>
+        <directory>supersingular</directory>
+        <desc>Some supersingular curves, over F_p with order equal to p + 1.</desc>
     </category>
 </categories>

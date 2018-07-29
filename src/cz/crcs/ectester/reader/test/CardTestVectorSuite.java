@@ -4,14 +4,16 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.ec.*;
 import cz.crcs.ectester.common.output.TestWriter;
-import cz.crcs.ectester.common.test.*;
+import cz.crcs.ectester.common.test.CompoundTest;
+import cz.crcs.ectester.common.test.Result;
+import cz.crcs.ectester.common.test.Test;
+import cz.crcs.ectester.common.test.TestCallback;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
-import javacard.security.KeyPair;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -38,12 +40,6 @@ public class CardTestVectorSuite extends CardTestSuite {
         Map<String, EC_KAResult> results = EC_Store.getInstance().getObjects(EC_KAResult.class, "test");
         for (EC_KAResult result : results.values()) {
             EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, result.getCurve());
-            if (curve.getBits() != cfg.bits && !cfg.all) {
-                continue;
-            }
-            if (curve.getField() == KeyPair.ALG_EC_FP && !cfg.primeField || curve.getField() == KeyPair.ALG_EC_F2M && !cfg.binaryField) {
-                continue;
-            }
             EC_Params onekey = EC_Store.getInstance().getObject(EC_Keypair.class, result.getOneKey());
             if (onekey == null) {
                 onekey = EC_Store.getInstance().getObject(EC_Key.Private.class, result.getOneKey());
@@ -61,7 +57,7 @@ public class CardTestVectorSuite extends CardTestSuite {
             testVector.add(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.SUCCESS));
             testVector.add(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, onekey.flatten(EC_Consts.PARAMETER_S)), ExpectedValue.SUCCESS));
             testVector.add(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_W, otherkey.flatten(EC_Consts.PARAMETER_W)), ExpectedValue.SUCCESS));
-            testVector.add(CommandTest.function(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, result.getJavaCardKA()), new TestCallback<CommandTestable>() {
+            testVector.add(CommandTest.function(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, result.getJavaCardKA()), new TestCallback<CommandTestable>() {
                 @Override
                 public Result apply(CommandTestable testable) {
                     Response.ECDH dh = (Response.ECDH) testable.getResponse();
@@ -76,8 +72,10 @@ public class CardTestVectorSuite extends CardTestSuite {
                     return new Result(Value.SUCCESS);
                 }
             }));
-            doTest(CompoundTest.all(ExpectedValue.SUCCESS, "Test vector " + result.getId(), testVector.toArray(new Test[0])));
-            new Command.Cleanup(this.card).send();
+            if (cfg.cleanup) {
+                testVector.add(CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.SUCCESS));
+            }
+            doTest(CompoundTest.greedyAll(ExpectedValue.SUCCESS, "Test vector " + result.getId(), testVector.toArray(new Test[0])));
         }
     }
 }

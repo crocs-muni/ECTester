@@ -3,25 +3,22 @@ package cz.crcs.ectester.common.cli;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class ParserOptions {
     private CommandLineParser parser;
     private Options options;
-    private List<Argument> arguments;
+    private String description;
 
     public ParserOptions(CommandLineParser parser, Options options) {
         this.parser = parser;
         this.options = options;
     }
 
-    public ParserOptions(CommandLineParser parser, Options options, List<Argument> arguments) {
+    public ParserOptions(CommandLineParser parser, Options options, String description) {
         this(parser, options);
-        this.arguments = arguments;
+        this.description = description;
     }
 
     public CommandLineParser getParser() {
@@ -32,7 +29,7 @@ public class ParserOptions {
         return options;
     }
 
-    public List<Argument> getArguments() {
-        return Collections.unmodifiableList(arguments);
+    public String getDescription() {
+        return description;
     }
 }

@@ -15,6 +15,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -24,6 +27,7 @@ public abstract class BaseXMLTestWriter implements TestWriter {
     private DocumentBuilder db;
     protected Document doc;
     private Node root;
+    private Node tests;
 
     public BaseXMLTestWriter(OutputStream output) throws ParserConfigurationException {
         this.output = output;
@@ -35,28 +39,65 @@ public abstract class BaseXMLTestWriter implements TestWriter {
         doc = db.newDocument();
         Element rootElem = doc.createElement("testSuite");
         rootElem.setAttribute("name", suite.getName());
-        rootElem.setAttribute("desc", suite.getDescription());
+        rootElem.setAttribute("desc", suite.getTextDescription());
+        DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+        Date date = new Date();
+        rootElem.setAttribute("date", dateFormat.format(date));
 
         root = rootElem;
         doc.appendChild(root);
         root.appendChild(deviceElement(suite));
+        tests = doc.createElement("tests");
+        root.appendChild(tests);
     }
 
     protected abstract Element testableElement(Testable t);
 
     protected abstract Element deviceElement(TestSuite suite);
 
-    private Element testElement(Test t) {
+    private String causeString(Object cause) {
+        if (cause == null) {
+            return "null";
+        } else if (cause instanceof Throwable) {
+            StringBuilder sb = new StringBuilder();
+            for (Throwable t = (Throwable) cause; t != null; t = t.getCause()) {
+                sb.append(t.toString());
+                sb.append(System.lineSeparator());
+            }
+            return sb.toString();
+        } else {
+            return cause.toString();
+        }
+    }
+
+    private Element resultElement(Result result) {
+        Element resultElem = doc.createElement("result");
+
+        Element ok = doc.createElement("ok");
+        ok.setTextContent(String.valueOf(result.ok()));
+        Element value = doc.createElement("value");
+        value.setTextContent(result.getValue().name());
+        Element cause = doc.createElement("cause");
+        cause.setTextContent(causeString(result.getCause()));
+
+        resultElem.appendChild(ok);
+        resultElem.appendChild(value);
+        resultElem.appendChild(cause);
+
+        return resultElem;
+    }
+
+    private Element testElement(Test t, int index) {
         Element testElem;
         if (t instanceof CompoundTest) {
             CompoundTest test = (CompoundTest) t;
             testElem = doc.createElement("test");
             testElem.setAttribute("type", "compound");
-            for (Test innerTest : test.getTests()) {
-                testElem.appendChild(testElement(innerTest));
+            for (Test innerTest : test.getStartedTests()) {
+                testElem.appendChild(testElement(innerTest, -1));
             }
         } else {
-            SimpleTest test = (SimpleTest) t;
+            SimpleTest<? extends BaseTestable> test = (SimpleTest<? extends BaseTestable>) t;
             testElem = testableElement(test.getTestable());
         }
 
@@ -64,26 +105,26 @@ public abstract class BaseXMLTestWriter implements TestWriter {
         description.setTextContent(t.getDescription());
         testElem.appendChild(description);
 
-        Element result = doc.createElement("result");
-        Element ok = doc.createElement("ok");
-        ok.setTextContent(String.valueOf(t.ok()));
-        Element value = doc.createElement("value");
-        value.setTextContent(t.getResultValue().name());
-        Element cause = doc.createElement("cause");
-        cause.setTextContent(t.getResultCause());
-        result.appendChild(ok);
-        result.appendChild(value);
-        result.appendChild(cause);
+        Element result = resultElement(t.getResult());
         testElem.appendChild(result);
+
+        if (index != -1) {
+            testElem.setAttribute("index", String.valueOf(index));
+        }
 
         return testElem;
     }
 
     @Override
-    public void outputTest(Test t) {
+    public void outputTest(Test t, int index) {
         if (!t.hasRun())
             return;
-        root.appendChild(testElement(t));
+        tests.appendChild(testElement(t, index));
+    }
+
+    @Override
+    public void outputError(Test t, Throwable cause, int index) {
+        tests.appendChild(testElement(t, index));
     }
 
     @Override

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2016-2017 Petr Svenda <petr@svenda.com>
+ * ECTester, tool for testing Elliptic curve cryptography implementations.
+ * Copyright (c) 2016-2018 Petr Svenda <petr@svenda.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,18 +25,17 @@ package cz.crcs.ectester.reader;
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.cli.CLITools;
+import cz.crcs.ectester.common.cli.Colors;
 import cz.crcs.ectester.common.ec.EC_Params;
 import cz.crcs.ectester.common.output.OutputLogger;
 import cz.crcs.ectester.common.output.TestWriter;
-import cz.crcs.ectester.common.test.TestException;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.common.util.CardUtil;
+import cz.crcs.ectester.common.util.FileUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.command.Command;
+import cz.crcs.ectester.reader.output.FileTestWriter;
 import cz.crcs.ectester.reader.output.ResponseWriter;
-import cz.crcs.ectester.reader.output.TextTestWriter;
-import cz.crcs.ectester.reader.output.XMLTestWriter;
-import cz.crcs.ectester.reader.output.YAMLTestWriter;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.test.*;
 import javacard.security.KeyPair;
@@ -44,21 +44,24 @@ import org.apache.commons.cli.*;
 import javax.smartcardio.CardException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.jar.Manifest;
 
-import static cz.crcs.ectester.applet.ECTesterApplet.KeyAgreement_ALG_EC_SVDP_DH;
-import static cz.crcs.ectester.applet.ECTesterApplet.Signature_ALG_ECDSA_SHA;
+import static cz.crcs.ectester.applet.EC_Consts.KeyAgreement_ALG_EC_SVDP_DH;
+import static cz.crcs.ectester.applet.EC_Consts.Signature_ALG_ECDSA_SHA;
 
 /**
  * Reader part of ECTester, a tool for testing Elliptic curve support on javacards.
  *
  * @author Petr Svenda petr@svenda.com
  * @author Jan Jancar johny@neuromancer.sk
- * @version v0.1.0
+ * @version v0.2.0
  */
 public class ECTesterReader {
     private CardMngr cardManager;
@@ -67,20 +70,39 @@ public class ECTesterReader {
     private Config cfg;
 
     private Options opts = new Options();
-    private static final String VERSION = "v0.1.0";
-    private static final String DESCRIPTION = "ECTesterReader " + VERSION + ", a javacard Elliptic Curve Cryptography support tester/utility.";
-    private static final String LICENSE = "MIT Licensed\nCopyright (c) 2016-2017 Petr Svenda <petr@svenda.com>";
-    private static final String CLI_HEADER = "\n" + DESCRIPTION + "\n\n";
-    private static final String CLI_FOOTER = "\n" + LICENSE;
+    public static final String VERSION = "v0.2.0";
+    public static String GIT_COMMIT = "";
+    private static String DESCRIPTION;
+    private static String LICENSE = "MIT Licensed\nCopyright (c) 2016-2018 Petr Svenda <petr@svenda.com>";
+    private static String CLI_HEADER;
+    private static String CLI_FOOTER = "\n" + LICENSE;
 
     private static final byte[] SELECT_ECTESTERAPPLET = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x0a,
             (byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x65, (byte) 0x72, (byte) 0x30, (byte) 0x31};
     private static final byte[] AID = {(byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x65, (byte) 0x72, (byte) 0x30, (byte) 0x31};
     private static final byte[] INSTALL_DATA = new byte[10];
 
+    static {
+        URLClassLoader cl = (URLClassLoader) ECTesterReader.class.getClassLoader();
+        try {
+            URL url = cl.findResource("META-INF/MANIFEST.MF");
+            Manifest manifest = new Manifest(url.openStream());
+            String commit = manifest.getMainAttributes().getValue("Git-Commit");
+            GIT_COMMIT = (commit == null) ? "" : "(git " + commit + ")";
+        } catch (Exception ignored) {
+        }
+
+        DESCRIPTION = "ECTesterReader " + VERSION + GIT_COMMIT + ", a javacard Elliptic Curve Cryptography support tester/utility.";
+        CLI_HEADER = "\n" + DESCRIPTION + "\n\n";
+        ;
+    }
+
     private void run(String[] args) {
         try {
             CommandLine cli = parseArgs(args);
+
+            cfg = new Config();
+            boolean optsOk = cfg.readOptions(cli);
 
             //if help, print and quit
             if (cli.hasOption("help")) {
@@ -90,10 +112,9 @@ public class ECTesterReader {
                 CLITools.version(DESCRIPTION, LICENSE);
                 return;
             }
-            cfg = new Config();
 
-            //if not, read other options first, into attributes, then do action
-            if (!cfg.readOptions(cli)) {
+            //if opts failed, quit
+            if (!optsOk) {
                 return;
             }
 
@@ -103,18 +124,23 @@ public class ECTesterReader {
                 return;
             }
 
+            if (cli.hasOption("list-suites")) {
+                listSuites();
+                return;
+            }
+
             //init CardManager
             cardManager = new CardMngr(cfg.verbose, cfg.simulate);
 
             //connect or simulate connection
             if (cfg.simulate) {
                 if (!cardManager.prepareLocalSimulatorApplet(AID, INSTALL_DATA, ECTesterApplet.class)) {
-                    System.err.println("Failed to establish a simulator.");
+                    System.err.println(Colors.error("Failed to establish a simulator."));
                     System.exit(1);
                 }
             } else {
                 if (!cardManager.connectToCardSelect()) {
-                    System.err.println("Failed to connect to card.");
+                    System.err.println(Colors.error("Failed to connect to card."));
                     System.exit(1);
                 }
                 cardManager.send(SELECT_ECTESTERAPPLET);
@@ -143,7 +169,7 @@ public class ECTesterReader {
             logger.close();
 
         } catch (MissingOptionException moex) {
-            System.err.println("Missing required options, one of:");
+            System.err.println(Colors.error("Missing required options, one of:"));
             for (Object opt : moex.getMissingOptions().toArray()) {
                 if (opt instanceof OptionGroup) {
                     for (Option o : ((OptionGroup) opt).getOptions()) {
@@ -171,14 +197,14 @@ public class ECTesterReader {
                 }
             }
         } catch (MissingArgumentException maex) {
-            System.err.println("Option, " + maex.getOption().getOpt() + " requires an argument: " + maex.getOption().getArgName());
+            System.err.println(Colors.error("Option, " + maex.getOption().getOpt() + " requires an argument: " + maex.getOption().getArgName()));
         } catch (NumberFormatException nfex) {
-            System.err.println("Not a number. " + nfex.getMessage());
+            System.err.println(Colors.error("Not a number. " + nfex.getMessage()));
         } catch (FileNotFoundException fnfe) {
-            System.err.println("File " + fnfe.getMessage() + " not found.");
+            System.err.println(Colors.error("File " + fnfe.getMessage() + " not found."));
         } catch (ParseException | IOException ex) {
-            System.err.println(ex.getMessage());
-        } catch (CardException | TestException ex) {
+            System.err.println(Colors.error(ex.getMessage()));
+        } catch (CardException ex) {
             if (logger != null)
                 logger.println(ex.getMessage());
             ex.printStackTrace();
@@ -236,10 +262,12 @@ public class ECTesterReader {
          * -l / --log [log_file]
          *
          * -f / --fresh
+         * --cleanup
          * -s / --simulate
          * -y / --yes
          * -ka/ --ka-type <type>
          * -sig/--sig-type <type>
+         * -C / --color
          */
         OptionGroup actions = new OptionGroup();
         actions.setRequired(true);
@@ -247,10 +275,11 @@ public class ECTesterReader {
         actions.addOption(Option.builder("h").longOpt("help").desc("Print help.").build());
         actions.addOption(Option.builder("ln").longOpt("list-named").desc("Print the list of supported named curves and keys.").hasArg().argName("what").optionalArg(true).build());
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
-        actions.addOption(Option.builder("g").longOpt("generate").desc("Generate [amount] of EC keys.").hasArg().argName("amount").optionalArg(true).build());
-        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. [test_suite]:\n- default:\n- invalid:\n- twist:\n- wrong:\n- composite:\n- test-vectors:").hasArg().argName("test_suite").optionalArg(true).build());
+        actions.addOption(Option.builder("g").longOpt("generate").desc("Generate <amount> of EC keys.").hasArg().argName("amount").optionalArg(true).build());
+        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. Optionally specify a test number to run only a part of a test suite. <test_suite>:\n- default:\n- compression:\n- invalid:\n- twist:\n- degenerate:\n- cofactor:\n- wrong:\n- composite:\n- test-vectors:\n- edge-cases:\n- miscellaneous:").hasArg().argName("test_suite[:from[:to]]").optionalArg(true).build());
         actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do EC KeyAgreement (ECDH...), [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
+        actions.addOption(Option.builder("ls").longOpt("list-suites").desc("List supported test suites.").build());
 
         opts.addOptionGroup(actions);
 
@@ -284,20 +313,43 @@ public class ECTesterReader {
         opts.addOptionGroup(key);
 
         opts.addOption(Option.builder("i").longOpt("input").desc("Input from file <input_file>, for ECDSA signing.").hasArg().argName("input_file").build());
-        opts.addOption(Option.builder("o").longOpt("output").desc("Output into file <output_file>.").hasArg().argName("output_file").build());
+        opts.addOption(Option.builder("o").longOpt("output").desc("Output into file <output_file>. The file can be prefixed by the format (one of text,yml,xml), such as: xml:<output_file>.").hasArgs().argName("output_file").build());
         opts.addOption(Option.builder("l").longOpt("log").desc("Log output into file [log_file].").hasArg().argName("log_file").optionalArg(true).build());
         opts.addOption(Option.builder("v").longOpt("verbose").desc("Turn on verbose logging.").build());
         opts.addOption(Option.builder().longOpt("format").desc("Output format to use. One of: text,yml,xml.").hasArg().argName("format").build());
 
         opts.addOption(Option.builder("f").longOpt("fresh").desc("Generate fresh keys (set domain parameters before every generation).").build());
+        opts.addOption(Option.builder().longOpt("cleanup").desc("Send the cleanup command trigerring JCSystem.requestObjectDeletion() after some operations.").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
         opts.addOption(Option.builder("y").longOpt("yes").desc("Accept all warnings and prompts.").build());
 
         opts.addOption(Option.builder("ka").longOpt("ka-type").desc("Set KeyAgreement object [type], corresponds to JC.KeyAgreement constants.").hasArg().argName("type").optionalArg(true).build());
         opts.addOption(Option.builder("sig").longOpt("sig-type").desc("Set Signature object [type], corresponds to JC.Signature constants.").hasArg().argName("type").optionalArg(true).build());
+        opts.addOption(Option.builder("C").longOpt("color").desc("Print stuff with color, requires ANSI terminal.").build());
 
         CommandLineParser parser = new DefaultParser();
         return parser.parse(opts, args);
+    }
+
+    private void listSuites() {
+        CardTestSuite[] suites = new CardTestSuite[]{
+                new CardDefaultSuite(null, null, null),
+                new CardTestVectorSuite(null, null, null),
+                new CardCompressionSuite(null, null, null),
+                new CardWrongSuite(null, null, null),
+                new CardDegenerateSuite(null, null, null),
+                new CardCofactorSuite(null, null, null),
+                new CardCompositeSuite(null, null, null),
+                new CardInvalidSuite(null, null, null),
+                new CardEdgeCasesSuite(null, null, null),
+                new CardTwistSuite(null, null, null),
+                new CardMiscSuite(null, null, null)};
+        for (CardTestSuite suite : suites) {
+            System.out.println(" - " + Colors.bold(suite.getName()));
+            for (String line : suite.getDescription()) {
+                System.out.println("\t" + line);
+            }
+        }
     }
 
     /**
@@ -310,17 +362,17 @@ public class ECTesterReader {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
 
         List<Response> sent = new LinkedList<>();
-        sent.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass).send());
+        sent.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send());
         sent.add(new Command.Clear(cardManager, ECTesterApplet.KEYPAIR_LOCAL).send());
         sent.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL).send());
 
         // Cofactor generally isn't set on the default curve parameters on cards,
         // since its not necessary for ECDH, only ECDHC which not many cards implement
         // TODO: check if its assumend to be == 1?
-        short domainAll = cfg.primeField ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
-        short domain = (short) (domainAll ^ EC_Consts.PARAMETER_K);
-        Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_PUBLIC, domainAll).send();
+        short domain = cfg.primeField ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
+        Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_PUBLIC, domain).send();
         if (!export.successful()) {
+            domain = (short) (domain ^ EC_Consts.PARAMETER_K);
             export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_PUBLIC, domain).send();
         }
         sent.add(export);
@@ -328,11 +380,19 @@ public class ECTesterReader {
         for (Response r : sent) {
             respWriter.outputResponse(r);
         }
+        if (cfg.cleanup) {
+            Response cleanup = new Command.Cleanup(cardManager).send();
+            respWriter.outputResponse(cleanup);
+        }
 
-        EC_Params exported = new EC_Params(domain, export.getParams());
-
-        FileOutputStream out = new FileOutputStream(cfg.output);
-        exported.writeCSV(out);
+        PrintStream out = new PrintStream(FileUtil.openStream(cfg.outputs));
+        byte[][] params = export.getParams();
+        for (int i = 0; i < params.length; ++i) {
+            out.print(ByteUtil.bytesToHex(params[i], false));
+            if (i != params.length - 1) {
+                out.print(",");
+            }
+        }
         out.close();
     }
 
@@ -345,11 +405,11 @@ public class ECTesterReader {
     private void generate() throws CardException, IOException {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
 
-        Response allocate = new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass).send();
+        Response allocate = new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send();
         respWriter.outputResponse(allocate);
-        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass);
+        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass);
 
-        FileWriter keysFile = new FileWriter(cfg.output);
+        OutputStreamWriter keysFile = FileUtil.openFiles(cfg.outputs);
         keysFile.write("index;time;pubW;privS\n");
 
         int generated = 0;
@@ -363,6 +423,7 @@ public class ECTesterReader {
             Command.Generate generate = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL);
             Response.Generate response = generate.send();
             long elapsed = response.getDuration();
+            respWriter.outputResponse(response);
 
             Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR).send();
 
@@ -371,11 +432,10 @@ public class ECTesterReader {
                     retry++;
                     continue;
                 } else {
-                    System.err.println("Keys could not be generated.");
+                    System.err.println(Colors.error("Keys could not be generated/exported."));
                     break;
                 }
             }
-            respWriter.outputResponse(response);
 
             String pub = ByteUtil.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_W), false);
             String priv = ByteUtil.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S), false);
@@ -384,8 +444,10 @@ public class ECTesterReader {
             keysFile.flush();
             generated++;
         }
-        Response cleanup = new Command.Cleanup(cardManager).send();
-        respWriter.outputResponse(cleanup);
+        if (cfg.cleanup) {
+            Response cleanup = new Command.Cleanup(cardManager).send();
+            respWriter.outputResponse(cleanup);
+        }
 
         keysFile.close();
     }
@@ -393,27 +455,10 @@ public class ECTesterReader {
     /**
      * Tests Elliptic curve support for a given curve/curves.
      *
-     * @throws CardException if APDU transmission fails
-     * @throws IOException   if an IO error occurs when writing to key file.
+     * @throws IOException if an IO error occurs
      */
-    private void test() throws IOException, TestException, ParserConfigurationException {
-        TestWriter writer = null;
-        if (cfg.format == null) {
-            writer = new TextTestWriter(logger.getPrintStream());
-        } else {
-            switch (cfg.format) {
-                case "text":
-                    writer = new TextTestWriter(logger.getPrintStream());
-                    break;
-                case "xml":
-                    writer = new XMLTestWriter(logger.getOutputStream());
-                    break;
-                case "yaml":
-                case "yml":
-                    writer = new YAMLTestWriter(logger.getPrintStream());
-                    break;
-            }
-        }
+    private void test() throws ParserConfigurationException, IOException {
+        TestWriter writer = new FileTestWriter(cfg.format, true, cfg.outputs);
 
         CardTestSuite suite;
 
@@ -424,10 +469,17 @@ public class ECTesterReader {
             case "test-vectors":
                 suite = new CardTestVectorSuite(writer, cfg, cardManager);
                 break;
+            case "compression":
+                suite = new CardCompressionSuite(writer, cfg, cardManager);
+                break;
+            case "misc":
+            case "miscellaneous":
+                suite = new CardMiscSuite(writer, cfg, cardManager);
+                break;
             default:
                 // These run are dangerous, prompt before them.
                 System.out.println("The test you selected (" + cfg.testSuite + ") is potentially dangerous.");
-                System.out.println("Some of these run have caused temporary DoS of some cards.");
+                System.out.println("Some of these run have caused temporary(or even permanent) DoS of some cards.");
                 if (!cfg.yes) {
                     System.out.print("Do you want to proceed? (y/n): ");
                     Scanner in = new Scanner(System.in);
@@ -439,25 +491,34 @@ public class ECTesterReader {
                 }
                 switch (cfg.testSuite) {
                     case "wrong":
-                        suite = new CardWrongCurvesSuite(writer, cfg, cardManager);
+                        suite = new CardWrongSuite(writer, cfg, cardManager);
                         break;
                     case "composite":
-                        suite = new CardCompositeCurvesSuite(writer, cfg, cardManager);
+                        suite = new CardCompositeSuite(writer, cfg, cardManager);
                         break;
                     case "invalid":
-                        suite = new CardInvalidCurvesSuite(writer, cfg, cardManager);
+                        suite = new CardInvalidSuite(writer, cfg, cardManager);
+                        break;
+                    case "degenerate":
+                        suite = new CardDegenerateSuite(writer, cfg, cardManager);
                         break;
                     case "twist":
-                        suite = new CardTwistTestSuite(writer, cfg, cardManager);
+                        suite = new CardTwistSuite(writer, cfg, cardManager);
+                        break;
+                    case "cofactor":
+                        suite = new CardCofactorSuite(writer, cfg, cardManager);
+                        break;
+                    case "edge-cases":
+                        suite = new CardEdgeCasesSuite(writer, cfg, cardManager);
                         break;
                     default:
-                        System.err.println("Unknown test suite.");
+                        System.err.println(Colors.error("Unknown test suite."));
                         return;
                 }
                 break;
         }
 
-        suite.run();
+        suite.run(cfg.testFrom, cfg.testTo);
     }
 
     /**
@@ -470,8 +531,8 @@ public class ECTesterReader {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
         List<Response> prepare = new LinkedList<>();
         prepare.add(new Command.AllocateKeyAgreement(cardManager, cfg.ECKAType).send()); // Prepare KeyAgreement or required type
-        prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, keyClass).send());
-        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_BOTH, (short) cfg.bits, keyClass);
+        prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, cfg.bits, keyClass).send());
+        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_BOTH, cfg.bits, keyClass);
         if (curve != null)
             prepare.add(curve.send());
 
@@ -488,9 +549,9 @@ public class ECTesterReader {
             generate.add(Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_REMOTE));
         }
 
-        FileWriter out = null;
-        if (cfg.output != null) {
-            out = new FileWriter(cfg.output);
+        OutputStreamWriter out = null;
+        if (cfg.outputs != null) {
+            out = FileUtil.openFiles(cfg.outputs);
             out.write("index;time;pubW;privS;secret\n");
         }
 
@@ -498,24 +559,24 @@ public class ECTesterReader {
         int done = 0;
         while (done < cfg.ECKACount) {
             List<Response> ecdh = Command.sendAll(generate);
-
-            Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR).send();
-            ecdh.add(export);
-            byte pubkey_bytes[] = export.getParameter(pubkey, EC_Consts.PARAMETER_W);
-            byte privkey_bytes[] = export.getParameter(privkey, EC_Consts.PARAMETER_S);
-
-            Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, EC_Consts.CORRUPTION_NONE, cfg.ECKAType).send();
-            ecdh.add(perform);
             for (Response r : ecdh) {
                 respWriter.outputResponse(r);
             }
+
+            Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR).send();
+            respWriter.outputResponse(export);
+            byte pubkey_bytes[] = export.getParameter(pubkey, EC_Consts.PARAMETER_W);
+            byte privkey_bytes[] = export.getParameter(privkey, EC_Consts.PARAMETER_S);
+
+            Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, cfg.ECKAType).send();
+            respWriter.outputResponse(perform);
 
             if (!perform.successful() || !perform.hasSecret()) {
                 if (retry < 10) {
                     ++retry;
                     continue;
                 } else {
-                    System.err.println("Couldn't obtain ECDH secret from card response.");
+                    System.err.println(Colors.error("Couldn't obtain ECDH secret from card response."));
                     break;
                 }
             }
@@ -526,8 +587,10 @@ public class ECTesterReader {
 
             ++done;
         }
-        Response cleanup = new Command.Cleanup(cardManager).send();
-        respWriter.outputResponse(cleanup);
+        if (cfg.cleanup) {
+            Response cleanup = new Command.Cleanup(cardManager).send();
+            respWriter.outputResponse(cleanup);
+        }
 
         if (out != null)
             out.close();
@@ -561,8 +624,8 @@ public class ECTesterReader {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
         List<Response> prepare = new LinkedList<>();
         prepare.add(new Command.AllocateSignature(cardManager, cfg.ECDSAType).send());
-        prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass).send());
-        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL, (short) cfg.bits, keyClass);
+        prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send());
+        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass);
         if (curve != null)
             prepare.add(curve.send());
 
@@ -570,30 +633,25 @@ public class ECTesterReader {
             respWriter.outputResponse(r);
         }
 
-        FileWriter out = null;
-        if (cfg.output != null) {
-            out = new FileWriter(cfg.output);
+        OutputStreamWriter out = FileUtil.openFiles(cfg.outputs);
+        if (out != null) {
             out.write("index;time;signature\n");
         }
 
         int retry = 0;
         int done = 0;
         while (done < cfg.ECDSACount) {
-            List<Response> ecdsa = new LinkedList<>();
-            ecdsa.add(generate.send());
+            respWriter.outputResponse(generate.send());
 
             Response.ECDSA perform = new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.ECDSAType, ECTesterApplet.EXPORT_TRUE, data).send();
-            ecdsa.add(perform);
-            for (Response r : ecdsa) {
-                respWriter.outputResponse(r);
-            }
+            respWriter.outputResponse(perform);
 
             if (!perform.successful() || !perform.hasSignature()) {
                 if (retry < 10) {
                     ++retry;
                     continue;
                 } else {
-                    System.err.println("Couldn't obtain ECDSA signature from card response.");
+                    System.err.println(Colors.error("Couldn't obtain ECDSA signature from card response."));
                     break;
                 }
             }
@@ -604,9 +662,10 @@ public class ECTesterReader {
 
             ++done;
         }
-        Response cleanup = new Command.Cleanup(cardManager).send();
-        respWriter.outputResponse(cleanup);
-
+        if (cfg.cleanup) {
+            Response cleanup = new Command.Cleanup(cardManager).send();
+            respWriter.outputResponse(cleanup);
+        }
         if (out != null)
             out.close();
     }
@@ -647,15 +706,19 @@ public class ECTesterReader {
 
         public boolean verbose = false;
         public String input;
-        public String output;
+        public String[] outputs;
         public boolean fresh = false;
+        public boolean cleanup = false;
         public boolean simulate = false;
         public boolean yes = false;
         public String format;
+        public boolean color;
 
         //Action-related options
         public String listNamed;
         public String testSuite;
+        public int testFrom;
+        public int testTo;
         public int generateAmount;
         public int ECKACount;
         public byte ECKAType = KeyAgreement_ALG_EC_SVDP_DH;
@@ -698,83 +761,82 @@ public class ECTesterReader {
 
             verbose = cli.hasOption("verbose");
             input = cli.getOptionValue("input");
-            output = cli.getOptionValue("output");
+            outputs = cli.getOptionValues("output");
             fresh = cli.hasOption("fresh");
+            cleanup = cli.hasOption("cleanup");
             simulate = cli.hasOption("simulate");
             yes = cli.hasOption("yes");
+            color = cli.hasOption("color");
+            Colors.enabled = color;
 
             if (cli.hasOption("list-named")) {
                 listNamed = cli.getOptionValue("list-named");
                 return true;
             }
 
-            format = cli.getOptionValue("format", "text");
+            format = cli.getOptionValue("format");
             String formats[] = new String[]{"text", "xml", "yaml", "yml"};
-            if (!Arrays.asList(formats).contains(format)) {
-                System.err.println("Wrong output format " + format + ". Should be one of " + Arrays.toString(formats));
+            if (format != null && !Arrays.asList(formats).contains(format)) {
+                System.err.println(Colors.error("Wrong output format " + format + ". Should be one of " + Arrays.toString(formats)));
                 return false;
             }
 
             if ((key != null || namedKey != null) && (anyPublicKey || anyPrivateKey)) {
-                System.err.print("Can only specify the whole key with --key/--named-key or pubkey and privkey with --public/--named-public and --private/--named-private.");
+                System.err.print(Colors.error("Can only specify the whole key with --key/--named-key or pubkey and privkey with --public/--named-public and --private/--named-private."));
                 return false;
             }
             if (bits < 0) {
-                System.err.println("Bit-size must not be negative.");
-                return false;
-            }
-            if (bits == 0 && !all) {
-                System.err.println("You must specify either bit-size with -b or all bit-sizes with -a.");
+                System.err.println(Colors.error("Bit-size must not be negative."));
                 return false;
             }
 
             if (key != null && namedKey != null || publicKey != null && namedPublicKey != null || privateKey != null && namedPrivateKey != null) {
-                System.err.println("You cannot specify both a named key and a key file.");
+                System.err.println(Colors.error("You cannot specify both a named key and a key file."));
                 return false;
             }
 
             if (cli.hasOption("export")) {
                 if (primeField == binaryField) {
-                    System.err.print("Need to specify field with -fp or -f2m. (not both)");
+                    System.err.print(Colors.error("Need to specify field with -fp or -f2m. (not both)"));
                     return false;
                 }
                 if (anyKeypart) {
-                    System.err.println("Keys should not be specified when exporting curve params.");
+                    System.err.println(Colors.error("Keys should not be specified when exporting curve params."));
                     return false;
                 }
                 if (namedCurve != null || customCurve || curveFile != null) {
-                    System.err.println("Specifying a curve for curve export makes no sense.");
+                    System.err.println(Colors.error("Specifying a curve for curve export makes no sense."));
                     return false;
                 }
-                if (output == null) {
-                    System.err.println("You have to specify an output file for curve parameter export.");
+                if (outputs == null) {
+                    System.err.println(Colors.error("You have to specify an output file for curve parameter export."));
                     return false;
                 }
-                if (all) {
-                    System.err.println("You have to specify curve bit-size with -b");
+                if (all || bits == 0) {
+                    System.err.println(Colors.error("You have to specify curve bit-size with -b"));
                     return false;
                 }
             } else if (cli.hasOption("generate")) {
                 if (primeField == binaryField) {
-                    System.err.print("Need to specify field with -fp or -f2m. (not both)");
+                    System.err.print(Colors.error("Need to specify field with -fp or -f2m. (not both)"));
                     return false;
                 }
                 if (anyKeypart) {
-                    System.err.println("Keys should not be specified when generating keys.");
+                    System.err.println(Colors.error("Keys should not be specified when generating keys."));
                     return false;
                 }
-                if (output == null) {
-                    System.err.println("You have to specify an output file for the key generation process.");
+                if (outputs == null) {
+                    System.err.println(Colors.error("You have to specify an output file for the key generation process."));
                     return false;
                 }
-                if (all) {
-                    System.err.println("You have to specify curve bit-size with -b");
+                if (all || bits == 0) {
+                    System.err.println(Colors.error("You have to specify curve bit-size with -b"));
                     return false;
                 }
 
                 generateAmount = Integer.parseInt(cli.getOptionValue("generate", "0"));
                 if (generateAmount < 0) {
-                    System.err.println("Amount of keys generated cant be negative.");
+                    System.err.println(Colors.error("Amount of keys generated cant be negative."));
                     return false;
                 }
             } else if (cli.hasOption("test")) {
@@ -783,47 +845,74 @@ public class ECTesterReader {
                     primeField = true;
                 }
 
-                testSuite = cli.getOptionValue("test", "default").toLowerCase();
-                String[] tests = new String[]{"default", "composite", "invalid", "test-vectors", "wrong", "twist"};
+                String suiteOpt = cli.getOptionValue("test", "default").toLowerCase();
+                if (suiteOpt.contains(":")) {
+                    String[] parts = suiteOpt.split(":");
+                    testSuite = parts[0];
+                    try {
+                        testFrom = Integer.parseInt(parts[1]);
+                    } catch (NumberFormatException nfe) {
+                        System.err.println("Invalid test from number: " + parts[1] + ".");
+                        return false;
+                    }
+                    if (parts.length == 3) {
+                        try {
+                            testTo = Integer.parseInt(parts[2]);
+                        } catch (NumberFormatException nfe) {
+                            System.err.println("Invalid test to number: " + parts[2] + ".");
+                            return false;
+                        }
+                    } else if (parts.length != 2) {
+                        System.err.println("Invalid test suite selection.");
+                        return false;
+                    } else {
+                        testTo = -1;
+                    }
+                } else {
+                    testSuite = suiteOpt;
+                    testFrom = 0;
+                    testTo = -1;
+                }
+                String[] tests = new String[]{"default", "composite", "compression", "invalid", "degenerate", "test-vectors", "wrong", "twist", "cofactor", "edge-cases", "miscellaneous"};
                 if (!Arrays.asList(tests).contains(testSuite)) {
-                    System.err.println("Unknown test suite " + testSuite + ". Should be one of: " + Arrays.toString(tests));
+                    System.err.println(Colors.error("Unknown test suite " + testSuite + ". Should be one of: " + Arrays.toString(tests)));
                     return false;
                 }
             } else if (cli.hasOption("ecdh")) {
                 if (primeField == binaryField) {
-                    System.err.print("Need to specify field with -fp or -f2m. (not both)");
+                    System.err.print(Colors.error("Need to specify field with -fp or -f2m. (not both)"));
                     return false;
                 }
-                if (all) {
-                    System.err.println("You have to specify curve bit-size with -b");
+                if (all || bits == 0) {
+                    System.err.println(Colors.error("You have to specify curve bit-size with -b"));
                     return false;
                 }
 
                 ECKACount = Integer.parseInt(cli.getOptionValue("ecdh", "1"));
                 if (ECKACount <= 0) {
-                    System.err.println("ECDH count cannot be <= 0.");
+                    System.err.println(Colors.error("ECDH count cannot be <= 0."));
                     return false;
                 }
 
                 ECKAType = CardUtil.parseKAType(cli.getOptionValue("ka-type", "1"));
             } else if (cli.hasOption("ecdsa")) {
                 if (primeField == binaryField) {
-                    System.err.print("Need to specify field with -fp or -f2m. (but not both)");
+                    System.err.print(Colors.error("Need to specify field with -fp or -f2m. (but not both)"));
                     return false;
                 }
-                if (all) {
-                    System.err.println("You have to specify curve bit-size with -b");
+                if (all || bits == 0) {
+                    System.err.println(Colors.error("You have to specify curve bit-size with -b"));
                     return false;
                 }
 
                 if ((anyPublicKey) != (anyPrivateKey) && !anyKey) {
-                    System.err.println("You cannot only specify a part of a keypair.");
+                    System.err.println(Colors.error("You cannot only specify a part of a keypair."));
                     return false;
                 }
 
                 ECDSACount = Integer.parseInt(cli.getOptionValue("ecdsa", "1"));
                 if (ECDSACount <= 0) {
-                    System.err.println("ECDSA count cannot be <= 0.");
+                    System.err.println(Colors.error("ECDSA count cannot be <= 0."));
                     return false;
                 }
 

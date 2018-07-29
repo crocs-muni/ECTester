@@ -22,7 +22,7 @@ public class CLITools {
     public static void help(String prog, String header, Options options, String footer, boolean usage) {
         HelpFormatter help = new HelpFormatter();
         help.setOptionComparator(null);
-        help.printHelp(prog, header, options, footer, usage);
+        help.printHelp(Colors.bold(prog), header, options, footer, usage);
     }
 
     private static void help(HelpFormatter help, PrintWriter pw, CommandLineParser cli, Options opts, int depth) {
@@ -37,7 +37,8 @@ public class CLITools {
             }
             tp.getParsers().forEach((key, value) -> {
                 pw.println();
-                help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, String.format("%" + depth + "s" + key + ":", " "));
+                String description = value.getDescription() == null ? "" : "    | " + value.getDescription() + " |";
+                help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, String.format("%" + depth + "s" + key + ":" + description, " "));
                 CLITools.help(help, pw, value.getParser(), value.getOptions(), depth + 1);
             });
         }
@@ -96,7 +97,7 @@ public class CLITools {
             StringWriter uw = new StringWriter();
             PrintWriter upw = new PrintWriter(uw);
             usage(help, upw, baseParser, baseOpts);
-            pw.print("usage: " + prog);
+            pw.print("usage: " + Colors.bold(prog));
             help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, uw.toString());
             upw.close();
             pw.println();

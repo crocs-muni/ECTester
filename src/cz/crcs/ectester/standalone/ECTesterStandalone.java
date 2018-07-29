@@ -1,3 +1,25 @@
+/*
+ * ECTester, tool for testing Elliptic curve cryptography implementations.
+ * Copyright (c) 2016-2018 Petr Svenda <petr@svenda.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package cz.crcs.ectester.standalone;
 
 import cz.crcs.ectester.common.cli.*;
@@ -14,14 +36,15 @@ import cz.crcs.ectester.standalone.libs.*;
 import cz.crcs.ectester.standalone.output.TextTestWriter;
 import cz.crcs.ectester.standalone.output.XMLTestWriter;
 import cz.crcs.ectester.standalone.output.YAMLTestWriter;
-import cz.crcs.ectester.standalone.test.StandaloneDefaultSuite;
-import cz.crcs.ectester.standalone.test.StandaloneTestSuite;
+import cz.crcs.ectester.standalone.test.suites.StandaloneDefaultSuite;
+import cz.crcs.ectester.standalone.test.suites.StandaloneTestSuite;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import javax.crypto.KeyAgreement;
+import javax.crypto.SecretKey;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,6 +54,7 @@ import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,18 +63,18 @@ import java.util.stream.Collectors;
  * Standalone part of ECTester, a tool for testing Elliptic curve implementations in software libraries.
  *
  * @author Jan Jancar johny@neuromancer.sk
- * @version v0.1.0
+ * @version v0.2.0
  */
 public class ECTesterStandalone {
-    private ProviderECLibrary[] libs = new ProviderECLibrary[]{new SunECLib(), new BouncyCastleLib(), new TomcryptLib(), new BotanLib()};
+    private ProviderECLibrary[] libs = new ProviderECLibrary[]{new SunECLib(), new BouncyCastleLib(), new TomcryptLib(), new BotanLib(), new CryptoppLib(), new OpensslLib(), new MscngLib()};
     private Config cfg;
 
     private Options opts = new Options();
     private TreeParser optParser;
     private TreeCommandLine cli;
-    private static final String VERSION = "v0.1.0";
+    public static final String VERSION = "v0.2.0";
     private static final String DESCRIPTION = "ECTesterStandalone " + VERSION + ", an Elliptic Curve Cryptography support tester/utility.";
-    private static final String LICENSE = "MIT Licensed\nCopyright (c) 2016-2017 Petr Svenda <petr@svenda.com>";
+    private static final String LICENSE = "MIT Licensed\nCopyright (c) 2016-2018 Petr Svenda <petr@svenda.com>";
     private static final String CLI_HEADER = "\n" + DESCRIPTION + "\n\n";
     private static final String CLI_FOOTER = "\n" + LICENSE;
 
@@ -79,6 +103,8 @@ public class ECTesterStandalone {
                 listLibraries();
             } else if (cli.isNext("list-data")) {
                 CLITools.listNamed(EC_Store.getInstance(), cli.getNext().getArg(0));
+            } else if (cli.isNext("list-suites")) {
+                listSuites();
             } else if (cli.isNext("ecdh")) {
                 ecdh();
             } else if (cli.isNext("ecdsa")) {
@@ -98,7 +124,7 @@ public class ECTesterStandalone {
         } catch (NoSuchAlgorithmException nsaex) {
             System.err.println("Algorithm not supported by the selected library: " + nsaex.getMessage());
             nsaex.printStackTrace();
-        } catch (InvalidKeyException | SignatureException | TestException e) {
+        } catch (InvalidKeyException | SignatureException e) {
             e.printStackTrace();
         }
     }
@@ -106,61 +132,72 @@ public class ECTesterStandalone {
     private TreeCommandLine parseArgs(String[] args) throws ParseException {
         Map<String, ParserOptions> actions = new TreeMap<>();
 
-        Option namedCurve = Option.builder("nc").longOpt("named-curve").desc("Use a named curve, from CurveDB: <cat/id>").hasArg().argName("cat/id").build();
+        Option namedCurve = Option.builder("nc").longOpt("named-curve").desc("Use a named curve, from CurveDB: <cat/id>").hasArg().argName("cat/id").optionalArg(false).build();
+        Option curveName = Option.builder("cn").longOpt("curve-name").desc("Use a named curve, search from curves supported by the library: <name>").hasArg().argName("name").optionalArg(false).build();
         Option bits = Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").build();
 
         Options testOpts = new Options();
         testOpts.addOption(bits);
         testOpts.addOption(namedCurve);
+        testOpts.addOption(curveName);
         testOpts.addOption(Option.builder("gt").longOpt("kpg-type").desc("Set the KeyPairGenerator object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("kt").longOpt("ka-type").desc("Set the KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("st").longOpt("sig-type").desc("Set the Signature object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("f").longOpt("format").desc("Set the output format, one of text,yaml,xml.").hasArg().argName("format").optionalArg(false).build());
+        testOpts.addOption(Option.builder().longOpt("key-type").desc("Set the key [algorithm] for which the key should be derived in KeyAgreements with KDF. Default is \"AES\".").hasArg().argName("algorithm").optionalArg(false).build());
         List<Argument> testArgs = new LinkedList<>();
-        testArgs.add(new Argument("test_suite", "The test suite to run.", true));
-        ParserOptions test = new ParserOptions(new DefaultParser(), testOpts, testArgs);
+        testArgs.add(new Argument("test-suite", "The test suite to run.", true));
+        ParserOptions test = new ParserOptions(new TreeParser(Collections.emptyMap(), true, testArgs), testOpts, "Test a library.");
         actions.put("test", test);
 
         Options ecdhOpts = new Options();
         ecdhOpts.addOption(bits);
         ecdhOpts.addOption(namedCurve);
+        ecdhOpts.addOption(curveName);
         ecdhOpts.addOption(Option.builder("t").longOpt("type").desc("Set KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
+        ecdhOpts.addOption(Option.builder().longOpt("key-type").desc("Set the key [algorithm] for which the key should be derived in KeyAgreements with KDF. Default is \"AES\".").hasArg().argName("algorithm").optionalArg(false).build());
         ecdhOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDH [amount] times.").build());
-        ParserOptions ecdh = new ParserOptions(new DefaultParser(), ecdhOpts);
+        ParserOptions ecdh = new ParserOptions(new DefaultParser(), ecdhOpts, "Perform EC based KeyAgreement.");
         actions.put("ecdh", ecdh);
 
         Options ecdsaOpts = new Options();
         ecdsaOpts.addOption(bits);
         ecdsaOpts.addOption(namedCurve);
+        ecdsaOpts.addOption(curveName);
         ecdsaOpts.addOption(Option.builder("t").longOpt("type").desc("Set Signature object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdsaOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDSA [amount] times.").build());
         ecdsaOpts.addOption(Option.builder("f").longOpt("file").hasArg().argName("file").optionalArg(false).desc("Input [file] to sign.").build());
-        ParserOptions ecdsa = new ParserOptions(new DefaultParser(), ecdsaOpts);
+        ParserOptions ecdsa = new ParserOptions(new DefaultParser(), ecdsaOpts, "Perform EC based Signature.");
         actions.put("ecdsa", ecdsa);
 
         Options generateOpts = new Options();
         generateOpts.addOption(bits);
         generateOpts.addOption(namedCurve);
+        generateOpts.addOption(curveName);
         generateOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Generate [amount] of EC keys.").build());
         generateOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPairGenerator object [type].").build());
-        ParserOptions generate = new ParserOptions(new DefaultParser(), generateOpts);
+        ParserOptions generate = new ParserOptions(new DefaultParser(), generateOpts, "Generate EC keypairs.");
         actions.put("generate", generate);
 
         Options exportOpts = new Options();
-        exportOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPair object [type].").build());
         exportOpts.addOption(bits);
-        ParserOptions export = new ParserOptions(new DefaultParser(), exportOpts);
+        exportOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPair object [type].").build());
+        ParserOptions export = new ParserOptions(new DefaultParser(), exportOpts, "Export default curve parameters.");
         actions.put("export", export);
 
         Options listDataOpts = new Options();
         List<Argument> listDataArgs = new LinkedList<>();
         listDataArgs.add(new Argument("what", "what to list.", false));
-        ParserOptions listData = new ParserOptions(new TreeParser(Collections.emptyMap(), false, listDataArgs), listDataOpts);
+        ParserOptions listData = new ParserOptions(new TreeParser(Collections.emptyMap(), false, listDataArgs), listDataOpts, "List/show contained EC domain parameters/keys.");
         actions.put("list-data", listData);
 
         Options listLibsOpts = new Options();
-        ParserOptions listLibs = new ParserOptions(new DefaultParser(), listLibsOpts);
+        ParserOptions listLibs = new ParserOptions(new DefaultParser(), listLibsOpts, "List supported libraries.");
         actions.put("list-libs", listLibs);
+
+        Options listSuitesOpts = new Options();
+        ParserOptions listSuites = new ParserOptions(new DefaultParser(), listSuitesOpts, "List supported test suites.");
+        actions.put("list-suites", listSuites);
 
         List<Argument> baseArgs = new LinkedList<>();
         baseArgs.add(new Argument("lib", "What library to use.", false));
@@ -168,6 +205,7 @@ public class ECTesterStandalone {
 
         opts.addOption(Option.builder("V").longOpt("version").desc("Print version info.").build());
         opts.addOption(Option.builder("h").longOpt("help").desc("Print help.").build());
+        opts.addOption(Option.builder("C").longOpt("color").desc("Print stuff with color, requires ANSI terminal.").build());
 
         return optParser.parse(opts, args);
     }
@@ -176,26 +214,39 @@ public class ECTesterStandalone {
      *
      */
     private void listLibraries() {
-        for (ECLibrary lib : libs) {
+        for (ProviderECLibrary lib : libs) {
             if (lib.isInitialized() && (cfg.selected == null || lib == cfg.selected)) {
-                System.out.println("\t- " + lib.name());
+                System.out.println("\t- " + Colors.bold(lib.name()));
                 Set<KeyPairGeneratorIdent> kpgs = lib.getKPGs();
                 if (!kpgs.isEmpty()) {
-                    System.out.println("\t\t- KeyPairGenerators: " + String.join(",", kpgs.stream().map(KeyPairGeneratorIdent::getName).collect(Collectors.toList())));
+                    System.out.println(Colors.bold("\t\t- KeyPairGenerators: ") + String.join(", ", kpgs.stream().map(KeyPairGeneratorIdent::getName).collect(Collectors.toList())));
                 }
                 Set<KeyAgreementIdent> eckas = lib.getKAs();
                 if (!eckas.isEmpty()) {
-                    System.out.println("\t\t- KeyAgreements: " + String.join(",", eckas.stream().map(KeyAgreementIdent::getName).collect(Collectors.toList())));
+                    System.out.println(Colors.bold("\t\t- KeyAgreements: ") + String.join(", ", eckas.stream().map(KeyAgreementIdent::getName).collect(Collectors.toList())));
                 }
                 Set<SignatureIdent> sigs = lib.getSigs();
                 if (!sigs.isEmpty()) {
-                    System.out.println("\t\t- Signatures: " + String.join(",", sigs.stream().map(SignatureIdent::getName).collect(Collectors.toList())));
+                    System.out.println(Colors.bold("\t\t- Signatures: ") + String.join(", ", sigs.stream().map(SignatureIdent::getName).collect(Collectors.toList())));
                 }
                 Set<String> curves = lib.getCurves();
                 if (!curves.isEmpty()) {
-                    System.out.println("\t\t- Curves: " + String.join(",", curves));
+                    System.out.println(Colors.bold("\t\t- Curves: ") + String.join(", ", curves));
                 }
                 System.out.println();
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private void listSuites() {
+        StandaloneTestSuite[] suites = new StandaloneTestSuite[]{new StandaloneDefaultSuite(null, null, null)};
+        for (StandaloneTestSuite suite : suites) {
+            System.out.println(" - " + suite.getName());
+            for (String line : suite.getDescription()) {
+                System.out.println("\t" + line);
             }
         }
     }
@@ -207,6 +258,7 @@ public class ECTesterStandalone {
         ProviderECLibrary lib = cfg.selected;
 
         String algo = cli.getOptionValue("ecdh.type", "ECDH");
+        String keyAlgo = cli.getOptionValue("ecdh.key-type", "AES");
         KeyAgreementIdent kaIdent = lib.getKAs().stream()
                 .filter((ident) -> ident.contains(algo))
                 .findFirst()
@@ -222,7 +274,6 @@ public class ECTesterStandalone {
                                 .filter((ident) -> ident.contains("EC"))
                                 .findFirst()
                                 .orElse(null)));
-
 
         if (kaIdent == null || kpIdent == null) {
             throw new NoSuchAlgorithmException(algo);
@@ -242,7 +293,11 @@ public class ECTesterStandalone {
                 }
                 spec = curve.toSpec();
                 kpg.initialize(spec);
-            }//TODO: allow ECGenNamedSpec
+            } else if (cli.hasOption("ecdh.curve-name")) {
+                String curveName = cli.getOptionValue("ecdh.curve-name");
+                spec = new ECGenParameterSpec(curveName);
+                kpg.initialize(spec);
+            }
 
             System.out.println("index;nanotime;pubW;privS;secret");
 
@@ -262,7 +317,16 @@ public class ECTesterStandalone {
                 }
                 ka.doPhase(pubkey, true);
                 elapsed += System.nanoTime();
-                byte[] result = ka.generateSecret();
+                SecretKey derived;
+                byte[] result;
+                elapsed -= System.nanoTime();
+                if (kaIdent.requiresKeyAlgo()) {
+                    derived = ka.generateSecret(keyAlgo);
+                    result = derived.getEncoded();
+                } else {
+                    result = ka.generateSecret();
+                }
+                elapsed += System.nanoTime();
                 ka = kaIdent.getInstance(lib.getProvider());
 
                 String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW(), pubkey.getParams()), false);
@@ -327,6 +391,9 @@ public class ECTesterStandalone {
                     return;
                 }
                 kpg.initialize(curve.toSpec());
+            } else if (cli.hasOption("ecdsa.curve-name")) {
+                String curveName = cli.getOptionValue("ecdsa.curve-name");
+                kpg.initialize(new ECGenParameterSpec(curveName));
             }
 
             System.out.println("index;data;signtime;verifytime;pubW;privS;signature;verified");
@@ -389,6 +456,9 @@ public class ECTesterStandalone {
                     return;
                 }
                 kpg.initialize(curve.toSpec());
+            } else if (cli.hasOption("generate.curve-name")) {
+                String curveName = cli.getOptionValue("generate.curve-name");
+                kpg.initialize(new ECGenParameterSpec(curveName));
             }
             System.out.println("index;nanotime;pubW;privS");
 
@@ -410,7 +480,7 @@ public class ECTesterStandalone {
     /**
      *
      */
-    private void test() throws NoSuchAlgorithmException, TestException, ParserConfigurationException {
+    private void test() throws TestException, ParserConfigurationException {
         TestWriter writer;
         switch (cli.getOptionValue("test.format", "text").toLowerCase()) {
             case "yaml":
@@ -434,7 +504,7 @@ public class ECTesterStandalone {
      *
      */
     private void export() throws NoSuchAlgorithmException, IOException {
-        ProviderECLibrary lib = (ProviderECLibrary) cfg.selected;
+        ProviderECLibrary lib = cfg.selected;
         KeyPairGeneratorIdent ident = null;
         String algo = cli.getOptionValue("export.type", "EC");
         for (KeyPairGeneratorIdent kpIdent : lib.getKPGs()) {
@@ -472,12 +542,16 @@ public class ECTesterStandalone {
     public static class Config {
         private ProviderECLibrary[] libs;
         public ProviderECLibrary selected = null;
+        public boolean color = false;
 
         public Config(ProviderECLibrary[] libs) {
             this.libs = libs;
         }
 
         boolean readOptions(TreeCommandLine cli) {
+            color = cli.hasOption("color");
+            Colors.enabled = color;
+
             if (cli.isNext("generate") || cli.isNext("export") || cli.isNext("ecdh") || cli.isNext("ecdsa") || cli.isNext("test")) {
                 if (!cli.hasArg(-1)) {
                     System.err.println("Missing library name argument.");
@@ -485,28 +559,33 @@ public class ECTesterStandalone {
                 }
 
                 String next = cli.getNextName();
-                if (cli.hasOption(next + ".bits") && cli.hasOption(next + ".named-curve")) {
-                    System.err.println("You can only specify bitsize or a named curve, nor both.");
+                boolean hasBits = cli.hasOption(next + ".bits");
+                boolean hasNamedCurve = cli.hasOption(next + ".named-curve");
+                boolean hasCurveName = cli.hasOption(next + ".curve-name");
+                if (hasBits ^ hasNamedCurve ? hasCurveName : hasBits) {
+                    System.err.println("You can only specify bitsize or a named curve/curve name, nor both.");
                     return false;
                 }
             }
 
-            String libraryName = cli.getArg(-1);
-            if (libraryName != null) {
-                List<ProviderECLibrary> matchedLibs = new LinkedList<>();
-                for (ProviderECLibrary lib : libs) {
-                    if (lib.name().toLowerCase().contains(libraryName.toLowerCase())) {
-                        matchedLibs.add(lib);
+            if (!cli.isNext("list-data") && !cli.isNext("list-suites")) {
+                String libraryName = cli.getArg(-1);
+                if (libraryName != null) {
+                    List<ProviderECLibrary> matchedLibs = new LinkedList<>();
+                    for (ProviderECLibrary lib : libs) {
+                        if (lib.isInitialized() && lib.name().toLowerCase().contains(libraryName.toLowerCase())) {
+                            matchedLibs.add(lib);
+                        }
                     }
-                }
-                if (matchedLibs.size() == 0) {
-                    System.err.println("No library " + libraryName + " found.");
-                    return false;
-                } else if (matchedLibs.size() > 1) {
-                    System.err.println("Multiple matching libraries found: " + String.join(",", matchedLibs.stream().map(ECLibrary::name).collect(Collectors.toList())));
-                    return false;
-                } else {
-                    selected = matchedLibs.get(0);
+                    if (matchedLibs.size() == 0) {
+                        System.err.println("No library " + libraryName + " found.");
+                        return false;
+                    } else if (matchedLibs.size() > 1) {
+                        System.err.println("Multiple matching libraries found: " + String.join(",", matchedLibs.stream().map(ECLibrary::name).collect(Collectors.toList())));
+                        return false;
+                    } else {
+                        selected = matchedLibs.get(0);
+                    }
                 }
             }
 

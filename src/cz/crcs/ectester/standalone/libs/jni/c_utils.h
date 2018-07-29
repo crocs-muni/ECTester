@@ -26,3 +26,21 @@ void init_classes(JNIEnv *env, const char* lib_name);
  * Throw a new exception of class with message.
  */
 void throw_new(JNIEnv *env, const char *class, const char *message);
+
+/**
+ * Throw a new exception of class, with formatted message.
+ */
+void throw_new_var(JNIEnv *env, const char *class, const char *format, ...);
+
+/**
+ * Some useful defines to init the provider.
+ */
+#define INIT_PROVIDER(env, provider_class) jmethodID provider_put = (*env)->GetMethodID(env, provider_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
+#define ADD_PROPERTY(env, self, base_name, base_class, prop_name, prop_class) do {                                                              \
+                                                                           jstring ec = (*env)->NewStringUTF(env, base_name prop_name);         \
+                                                                           jstring ec_value = (*env)->NewStringUTF(env, base_class prop_class); \
+                                                                           (*env)->CallObjectMethod(env, self, provider_put, ec, ec_value);     \
+                                                                       } while (0)
+#define ADD_KPG(env, self, kpg_name, kpg_class)       ADD_PROPERTY(env, self, "KeyPairGenerator.", "cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$", kpg_name, kpg_class)
+#define ADD_KA(env, self, ka_name, ka_class)          ADD_PROPERTY(env, self, "KeyAgreement.", "cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$", ka_name, ka_class)
+#define ADD_SIG(env, self, sig_name, sig_class)       ADD_PROPERTY(env, self, "Signature.", "cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$", sig_name, sig_class)

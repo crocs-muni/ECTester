@@ -21,9 +21,8 @@ import javax.xml.validation.SchemaFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.function.Function;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -42,6 +41,7 @@ public class EC_Store {
             dbf.setSchema(sch);
             dbf.setNamespaceAware(true);
             dbf.setIgnoringComments(true);
+            dbf.setXIncludeAware(true);
             dbf.setIgnoringElementContentWhitespace(true);
             db = dbf.newDocumentBuilder();
             db.setErrorHandler(new ErrorHandler() {
@@ -153,7 +153,7 @@ public class EC_Store {
 
                     InputStream csv = parseDataElement(dir, curveElem);
                     if (!curve.readCSV(csv)) {
-                        throw new IOException("Invalid csv data.");
+                        throw new IOException("Invalid csv data." + id.getTextContent());
                     }
                     csv.close();
 
@@ -219,7 +219,7 @@ public class EC_Store {
 
                     InputStream csv = parseDataElement(dir, elem);
                     if (!kaResult.readCSV(csv)) {
-                        throw new IOException("Invalid csv data.");
+                        throw new IOException("Invalid csv data. " + id.getTextContent());
                     }
                     csv.close();
 
@@ -257,7 +257,7 @@ public class EC_Store {
 
         InputStream csv = parseDataElement(dir, elem);
         if (!result.readCSV(csv)) {
-            throw new IOException("Invalid CSV data.");
+            throw new IOException("Invalid CSV data. " + id.getTextContent());
         }
         csv.close();
 
@@ -317,6 +317,48 @@ public class EC_Store {
             return null;
         }
         return getObject(objClass, query.substring(0, split), query.substring(split + 1));
+    }
+
+    private static <T extends EC_Data> List<Map.Entry<EC_Curve, List<T>>> mapKeyToCurve(Collection<T> data, Function<T, String> getter) {
+        Map<EC_Curve, List<T>> curves = new TreeMap<>();
+        for (T item : data) {
+            EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, getter.apply(item));
+            List<T> curveKeys = curves.getOrDefault(curve, new LinkedList<>());
+            curveKeys.add(item);
+            curves.putIfAbsent(curve, curveKeys);
+        }
+        for (List<T> keyList : curves.values()) {
+            Collections.sort(keyList);
+        }
+        List<Map.Entry<EC_Curve, List<T>>> curveList = new LinkedList<>();
+        curveList.addAll(curves.entrySet());
+        Comparator<Map.Entry<EC_Curve, List<T>>> c = Comparator.comparing(Map.Entry::getKey);
+        return curveList;
+    }
+
+    public static <T extends EC_Key> List<Map.Entry<EC_Curve, List<T>>> mapKeyToCurve(Collection<T> keys) {
+        return mapKeyToCurve(keys, EC_Key::getCurve);
+    }
+
+    public static List<Map.Entry<EC_Curve, List<EC_KAResult>>> mapResultToCurve(Collection<EC_KAResult> results) {
+        return mapKeyToCurve(results, EC_KAResult::getCurve);
+    }
+
+    public static <T extends EC_Data> List<Map.Entry<String, List<T>>> mapToPrefix(Collection<T> data) {
+        Map<String, List<T>> groups = new TreeMap<>();
+        for (T item : data) {
+            String prefix = item.getId().split("/")[0];
+            List<T> group = groups.getOrDefault(prefix, new LinkedList<>());
+            group.add(item);
+            groups.putIfAbsent(prefix, group);
+        }
+        for (List<T> itemList : groups.values()) {
+            Collections.sort(itemList);
+        }
+        List<Map.Entry<String, List<T>>> result = new LinkedList<>();
+        result.addAll(groups.entrySet());
+        result.sort(Comparator.comparing(Map.Entry::getKey));
+        return result;
     }
 
     public static EC_Store getInstance() {

@@ -61,10 +61,11 @@
     <xs:simpleType name="kaType">
         <xs:restriction base="xs:string">
             <xs:enumeration value="DH"/>
-            <xs:enumeration value="ECDH"/>
             <xs:enumeration value="DHC"/>
-            <xs:enumeration value="ECDHC"/>
-            <xs:enumeration value="BOTH"/>
+            <xs:enumeration value="DH_PLAIN"/>
+            <xs:enumeration value="DHC_PLAIN"/>
+            <xs:enumeration value="PACE_GM"/>
+            <xs:enumeration value="DH_PLAIN_XY"/>
             <xs:enumeration value="ANY"/>
         </xs:restriction>
     </xs:simpleType>

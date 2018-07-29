@@ -1,9 +1,9 @@
 package cz.crcs.ectester.reader;
 
-import com.licel.jcardsim.io.CAD;
 import com.licel.jcardsim.io.JavaxSmartCardInterface;
 import cz.crcs.ectester.common.util.ByteUtil;
 import javacard.framework.AID;
+import javacard.framework.Applet;
 import javacard.framework.ISO7816;
 
 import javax.smartcardio.*;
@@ -19,7 +19,6 @@ public class CardMngr {
     private Card card = null;
 
     // Simulator related attributes
-    private CAD cad = null;
     private JavaxSmartCardInterface simulator = null;
 
     private boolean simulate = false;
@@ -351,13 +350,11 @@ public class CardMngr {
         return sendAPDU(commandAPDU);
     }
 
-    public boolean prepareLocalSimulatorApplet(byte[] appletAIDArray, byte[] installData, Class appletClass) {
-        System.setProperty("com.licel.jcardsim.terminal.type", "2");
-        cad = new CAD(System.getProperties());
-        simulator = (JavaxSmartCardInterface) cad.getCardInterface();
+    public boolean prepareLocalSimulatorApplet(byte[] appletAIDArray, byte[] installData, Class<? extends Applet> appletClass) {
+        simulator = new JavaxSmartCardInterface();
         AID appletAID = new AID(appletAIDArray, (short) 0, (byte) appletAIDArray.length);
 
-        AID appletAIDRes = simulator.installApplet(appletAID, appletClass, installData, (short) 0, (byte) installData.length);
+        simulator.installApplet(appletAID, appletClass, installData, (short) 0, (byte) installData.length);
         return simulator.selectApplet(appletAID);
     }
 

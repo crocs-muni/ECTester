@@ -57,3 +57,27 @@ void throw_new(JNIEnv *env, const std::string& klass, const std::string& message
     jclass clazz = env->FindClass(klass.c_str());
     env->ThrowNew(clazz, message.c_str());
 }
+
+static void add_provider_property(JNIEnv *env, const std::string &type, const std::string &klass, jobject provider, jmethodID put_method) {
+    jstring type_str = env->NewStringUTF(type.c_str());
+    jstring class_str = env->NewStringUTF(klass.c_str());
+    env->CallObjectMethod(provider, put_method, type_str, class_str);
+}
+
+void add_kpg(JNIEnv *env, const std::string &type, const std::string &klass, jobject provider, jmethodID put_method) {
+    const std::string full_type = "KeyPairGenerator." + type;
+    const std::string full_class = "cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$" + klass;
+    add_provider_property(env, full_type, full_class, provider, put_method);
+}
+
+void add_ka(JNIEnv *env, const std::string &type, const std::string &klass, jobject provider, jmethodID put_method) {
+    const std::string full_type = "KeyAgreement." + type;
+    const std::string full_class = "cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$" + klass;
+    add_provider_property(env, full_type, full_class, provider, put_method);
+}
+
+void add_sig(JNIEnv *env, const std::string &type, const std::string &klass, jobject provider, jmethodID put_method) {
+    const std::string full_type = "Signature." + type;
+    const std::string full_class = "cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$" + klass;
+    add_provider_property(env, full_type, full_class, provider, put_method);
+}

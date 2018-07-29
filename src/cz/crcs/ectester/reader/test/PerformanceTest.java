@@ -5,6 +5,7 @@ import cz.crcs.ectester.common.test.SimpleTest;
 import cz.crcs.ectester.common.test.TestCallback;
 import cz.crcs.ectester.common.test.TestException;
 import cz.crcs.ectester.reader.command.Command;
+import cz.crcs.ectester.reader.response.Response;
 
 import java.util.Arrays;
 
@@ -13,12 +14,14 @@ import java.util.Arrays;
  */
 public class PerformanceTest extends SimpleTest<CommandTestable> {
     private long[] times;
+    private Response[] responses;
     private long mean;
     private long median;
     private long mode;
     private int count;
+    private String desc;
 
-    private PerformanceTest(CommandTestable testable, int count) {
+    private PerformanceTest(CommandTestable testable, int count, String desc) {
         super(testable, new TestCallback<CommandTestable>() {
             @Override
             public Result apply(CommandTestable testable) {
@@ -26,26 +29,31 @@ public class PerformanceTest extends SimpleTest<CommandTestable> {
             }
         });
         this.count = count;
+        this.desc = desc;
     }
 
     public static PerformanceTest repeat(Command cmd, int count) {
-        return new PerformanceTest(new CommandTestable(cmd), count);
+        return new PerformanceTest(new CommandTestable(cmd), count, null);
+    }
+
+    public static PerformanceTest repeat(String desc, Command cmd, int count) {
+        return new PerformanceTest(new CommandTestable(cmd), count, desc);
     }
 
     @Override
     public String getDescription() {
-        return String.format("Mean = %d ns, Median = %d ns, Mode = %d ns", mean, median, mode);
+        String rest = String.format("Mean = %d ns, Median = %d ns, Mode = %d ns", mean, median, mode);
+        return (desc == null ? rest : desc + " (" + rest + ")");
     }
 
     @Override
-    public void run() throws TestException {
-        if (hasRun)
-            return;
-
+    protected void runSelf() {
         times = new long[count];
+        responses = new Response[count];
         for (int i = 0; i < count; ++i) {
             testable.run();
-            times[i] = testable.getResponse().getDuration();
+            responses[i] = testable.getResponse();
+            times[i] = responses[i].getDuration();
             testable.reset();
         }
 
@@ -73,7 +81,6 @@ public class PerformanceTest extends SimpleTest<CommandTestable> {
                 mode = current_value;
             }
         }
-        hasRun = true;
         result = callback.apply(testable);
     }
 
@@ -83,6 +90,10 @@ public class PerformanceTest extends SimpleTest<CommandTestable> {
 
     public Command getCommand() {
         return testable.getCommand();
+    }
+
+    public Response[] getResponses() {
+        return responses;
     }
 
     public long[] getTimes() {

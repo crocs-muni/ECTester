@@ -4,9 +4,12 @@ import cz.crcs.ectester.common.output.BaseXMLTestWriter;
 import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.test.Testable;
 import cz.crcs.ectester.common.util.ByteUtil;
-import cz.crcs.ectester.standalone.test.KeyAgreementTestable;
-import cz.crcs.ectester.standalone.test.KeyGeneratorTestable;
-import cz.crcs.ectester.standalone.test.SignatureTestable;
+import cz.crcs.ectester.standalone.ECTesterStandalone;
+import cz.crcs.ectester.standalone.test.base.KeyAgreementTestable;
+import cz.crcs.ectester.standalone.test.base.KeyGeneratorTestable;
+import cz.crcs.ectester.standalone.test.base.SignatureTestable;
+import cz.crcs.ectester.standalone.test.base.StandaloneTestable;
+import cz.crcs.ectester.standalone.test.suites.StandaloneTestSuite;
 import org.w3c.dom.Element;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -95,25 +98,59 @@ public class XMLTestWriter extends BaseXMLTestWriter {
         return sigElem;
     }
 
+    private Element stageElement(StandaloneTestable<?> t) {
+        Element result = doc.createElement("stage");
+        result.setTextContent(t.getStage().name());
+        return result;
+    }
+
+    private String causeObject(Object cause) {
+        if (cause == null) {
+            return "";
+        } else if (cause instanceof Exception) {
+            Exception ex = ((Exception) cause);
+            return ex.getClass().getCanonicalName() + " : " + ex.getMessage();
+        } else {
+            return cause.toString();
+        }
+    }
+
     @Override
     protected Element testableElement(Testable t) {
         Element result = doc.createElement("test");
-        if (t instanceof KeyGeneratorTestable) {
-            result.setAttribute("type", "key-pair-generator");
-            result.appendChild(kgtElement((KeyGeneratorTestable) t));
-        } else if (t instanceof KeyAgreementTestable) {
-            result.setAttribute("type", "key-agreement");
-            result.appendChild(kaElement((KeyAgreementTestable) t));
-        } else if (t instanceof SignatureTestable) {
-            result.setAttribute("type", "signature");
-            result.appendChild(sigElement((SignatureTestable) t));
+        if (t instanceof StandaloneTestable) {
+            StandaloneTestable<?> testable = (StandaloneTestable) t;
+            if (t instanceof KeyGeneratorTestable) {
+                result.setAttribute("type", "key-pair-generator");
+                result.appendChild(kgtElement((KeyGeneratorTestable) t));
+            } else if (t instanceof KeyAgreementTestable) {
+                result.setAttribute("type", "key-agreement");
+                result.appendChild(kaElement((KeyAgreementTestable) t));
+            } else if (t instanceof SignatureTestable) {
+                result.setAttribute("type", "signature");
+                result.appendChild(sigElement((SignatureTestable) t));
+            }
+            result.appendChild(stageElement(testable));
+            Element exception = doc.createElement("exception");
+            exception.setTextContent(causeObject(testable.getException()) + causeObject(testable.errorCause()));
+            result.appendChild(exception);
         }
         return result;
     }
 
     @Override
     protected Element deviceElement(TestSuite suite) {
-        //TODO
+        if (suite instanceof StandaloneTestSuite) {
+            StandaloneTestSuite standaloneSuite = (StandaloneTestSuite) suite;
+            Element result = doc.createElement("device");
+            result.setAttribute("type", "library");
+            result.setAttribute("ectester", ECTesterStandalone.VERSION);
+
+            Element name = doc.createElement("name");
+            name.setTextContent(standaloneSuite.getLibrary().name());
+            result.appendChild(name);
+            return result;
+        }
         return null;
     }
 }

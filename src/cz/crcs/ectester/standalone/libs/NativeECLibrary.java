@@ -110,7 +110,8 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
 
             provider = createProvider();
             return super.initialize();
-        } catch (IOException | UnsatisfiedLinkError ignored) {
+        } catch (IOException | UnsatisfiedLinkError ex) {
+            System.err.println(ex.getMessage());
         }
         return false;
     }

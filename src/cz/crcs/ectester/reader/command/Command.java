@@ -2,15 +2,16 @@ package cz.crcs.ectester.reader.command;
 
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
-import cz.crcs.ectester.common.util.ByteUtil;
-import cz.crcs.ectester.data.EC_Store;
-import cz.crcs.ectester.reader.CardMngr;
-import cz.crcs.ectester.reader.ECTesterReader;
-import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.common.ec.EC_Key;
 import cz.crcs.ectester.common.ec.EC_Keypair;
 import cz.crcs.ectester.common.ec.EC_Params;
+import cz.crcs.ectester.common.util.ByteUtil;
+import cz.crcs.ectester.common.util.CardUtil;
+import cz.crcs.ectester.data.EC_Store;
+import cz.crcs.ectester.reader.CardMngr;
+import cz.crcs.ectester.reader.ECTesterReader;
+import cz.crcs.ectester.reader.response.Response;
 import javacard.security.KeyPair;
 
 import javax.smartcardio.CardException;
@@ -24,7 +25,7 @@ import java.util.List;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
-public abstract class Command {
+public abstract class Command implements Cloneable {
     CommandAPDU cmd;
     CardMngr cardManager;
 
@@ -44,6 +45,13 @@ public abstract class Command {
             result.add(cmd.send());
         }
         return result;
+    }
+
+    public abstract String getDescription();
+
+    @Override
+    protected Command clone() throws CloneNotSupportedException {
+        return (Command) super.clone();
     }
 
 
@@ -179,6 +187,71 @@ public abstract class Command {
         return new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, params, data);
     }
 
+    /**
+     *
+     */
+    public static class AllocateKeyAgreement extends Command {
+        private byte kaType;
+
+        /**
+         * Creates the INS_ALLOCATE_KA instruction.
+         *
+         * @param cardManager cardManager to send APDU through
+         * @param kaType      which type of KeyAgreement to use
+         */
+        public AllocateKeyAgreement(CardMngr cardManager, byte kaType) {
+            super(cardManager);
+            this.kaType = kaType;
+            byte[] data = new byte[]{kaType};
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ALLOCATE_KA, 0x00, 0x00, data);
+        }
+
+        @Override
+        public Response.AllocateKeyAgreement send() throws CardException {
+            long elapsed = -System.nanoTime();
+            ResponseAPDU response = cardManager.send(cmd);
+            elapsed += System.nanoTime();
+            return new Response.AllocateKeyAgreement(response, getDescription(), elapsed, kaType);
+        }
+
+        @Override
+        public String getDescription() {
+            return String.format("Allocate KeyAgreement(%s) object", CardUtil.getKATypeString(kaType));
+        }
+    }
+
+    /**
+     *
+     */
+    public static class AllocateSignature extends Command {
+        private byte sigType;
+
+        /**
+         * Creates the INS_ALLOCATE_SIG instruction.
+         *
+         * @param cardManager cardManager to send APDU through
+         * @param sigType     which type of Signature to use
+         */
+        public AllocateSignature(CardMngr cardManager, byte sigType) {
+            super(cardManager);
+            this.sigType = sigType;
+            byte[] data = new byte[]{sigType};
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ALLOCATE_SIG, 0x00, 0x00, data);
+        }
+
+        @Override
+        public Response.AllocateSignature send() throws CardException {
+            long elapsed = -System.nanoTime();
+            ResponseAPDU response = cardManager.send(cmd);
+            elapsed += System.nanoTime();
+            return new Response.AllocateSignature(response, getDescription(), elapsed, sigType);
+        }
+
+        @Override
+        public String getDescription() {
+            return String.format("Allocate Signature(%s) object", CardUtil.getSigTypeString(sigType));
+        }
+    }
 
     /**
      *
@@ -212,78 +285,19 @@ public abstract class Command {
             long elapsed = -System.nanoTime();
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
-            return new Response.Allocate(response, elapsed, keyPair, keyLength, keyClass);
+            return new Response.Allocate(response, getDescription(), elapsed, keyPair, keyLength, keyClass);
         }
 
         @Override
-        public String toString() {
-            return "Allocate";
-        }
-    }
-
-    /**
-     *
-     */
-    public static class AllocateKeyAgreement extends Command {
-        private byte kaType;
-
-        /**
-         * Creates the INS_ALLOCATE_KA instruction.
-         *
-         * @param cardManager cardManager to send APDU through
-         * @param kaType which type of KeyAgreement to use
-         */
-        public AllocateKeyAgreement(CardMngr cardManager, byte kaType) {
-            super(cardManager);
-            this.kaType = kaType;
-            byte[] data = new byte[]{kaType};
-            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ALLOCATE_KA, 0x00, 0x00, data);
-        }
-
-        @Override
-        public Response.AllocateKeyAgreement send() throws CardException {
-            long elapsed = -System.nanoTime();
-            ResponseAPDU response = cardManager.send(cmd);
-            elapsed += System.nanoTime();
-            return new Response.AllocateKeyAgreement(response, elapsed, kaType);
-        }
-
-        @Override
-        public String toString() {
-            return "AllocateKeyAgreement";
-        }
-    }
-
-    /**
-     *
-     */
-    public static class AllocateSignature extends Command {
-        private byte sigType;
-
-        /**
-         * Creates the INS_ALLOCATE_SIG instruction.
-         *
-         * @param cardManager cardManager to send APDU through
-         * @param sigType which type of Signature to use
-         */
-        public AllocateSignature(CardMngr cardManager, byte sigType) {
-            super(cardManager);
-            this.sigType = sigType;
-            byte[] data = new byte[]{sigType};
-            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ALLOCATE_SIG, 0x00, 0x00, data);
-        }
-
-        @Override
-        public Response.AllocateSignature send() throws CardException {
-            long elapsed = -System.nanoTime();
-            ResponseAPDU response = cardManager.send(cmd);
-            elapsed += System.nanoTime();
-            return new Response.AllocateSignature(response, elapsed, sigType);
-        }
-
-        @Override
-        public String toString() {
-            return "AllocateSignature";
+        public String getDescription() {
+            String field = keyClass == KeyPair.ALG_EC_FP ? "ALG_EC_FP" : "ALG_EC_F2M";
+            String key;
+            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
+                key = "both keypairs";
+            } else {
+                key = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
+            }
+            return String.format("Allocate %s %db %s", key, keyLength, field);
         }
     }
 
@@ -309,12 +323,18 @@ public abstract class Command {
             long elapsed = -System.nanoTime();
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
-            return new Response.Clear(response, elapsed, keyPair);
+            return new Response.Clear(response, getDescription(), elapsed, keyPair);
         }
 
         @Override
-        public String toString() {
-            return "Clear";
+        public String getDescription() {
+            String key;
+            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
+                key = "both keypairs";
+            } else {
+                key = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
+            }
+            return String.format("Clear %s", key);
         }
     }
 
@@ -358,56 +378,85 @@ public abstract class Command {
             long elapsed = -System.nanoTime();
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
-            return new Response.Set(response, elapsed, keyPair, curve, params);
+            return new Response.Set(response, getDescription(), elapsed, keyPair, curve, params);
         }
 
         @Override
-        public String toString() {
-            return "Set";
+        public String getDescription() {
+            String name;
+            switch (curve) {
+                case EC_Consts.CURVE_default:
+                    name = "default";
+                    break;
+                case EC_Consts.CURVE_external:
+                    name = "external";
+                    break;
+                default:
+                    name = "custom";
+                    break;
+            }
+            String what = CardUtil.getParameterString(params);
+
+            String pair;
+            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
+                pair = "both keypairs";
+            } else {
+                pair = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
+            }
+            return String.format("Set %s %s parameters on %s", name, what, pair);
         }
     }
 
     /**
      *
      */
-    public static class Corrupt extends Command {
+    public static class Transform extends Command {
         private byte keyPair;
         private byte key;
         private short params;
-        private byte corruption;
+        private short transformation;
 
         /**
          * @param cardManager cardManager to send APDU through
-         * @param keyPair     which keyPair to corrupt, local/remote (KEYPAIR_* || ...)
-         * @param key         key to corrupt (EC_Consts.KEY_* | ...)
-         * @param params      parameters to corrupt (EC_Consts.PARAMETER_* | ...)
-         * @param corruption  corruption type (EC_Consts.CORRUPTION_*)
+         * @param keyPair     which keyPair to transform, local/remote (KEYPAIR_* || ...)
+         * @param key         key to transform (EC_Consts.KEY_* | ...)
+         * @param params      parameters to transform (EC_Consts.PARAMETER_* | ...)
+         * @param transformation  transformation type (EC_Consts.TRANSFORMATION_*)
          */
-        public Corrupt(CardMngr cardManager, byte keyPair, byte key, short params, byte corruption) {
+        public Transform(CardMngr cardManager, byte keyPair, byte key, short params, short transformation) {
             super(cardManager);
             this.keyPair = keyPair;
             this.key = key;
             this.params = params;
-            this.corruption = corruption;
+            this.transformation = transformation;
 
-            byte[] data = new byte[3];
+            byte[] data = new byte[4];
             ByteUtil.setShort(data, 0, params);
-            data[2] = corruption;
+            ByteUtil.setShort(data, 2, transformation);
 
-            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_CORRUPT, keyPair, key, data);
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_TRANSFORM, keyPair, key, data);
         }
 
         @Override
-        public Response.Corrupt send() throws CardException {
+        public Response.Transform send() throws CardException {
             long elapsed = -System.nanoTime();
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
-            return new Response.Corrupt(response, elapsed, keyPair, key, params, corruption);
+            return new Response.Transform(response, getDescription(), elapsed, keyPair, key, params, transformation);
         }
 
         @Override
-        public String toString() {
-            return "Corrupt";
+        public String getDescription() {
+            String stringParams = CardUtil.getParams(params);
+            String transform = CardUtil.getTransformation(transformation);
+
+            String pair;
+            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
+                pair = "both keypairs";
+            } else {
+                pair = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
+            }
+            return String.format("Transform params %s of %s, %s", stringParams, pair, transform);
         }
     }
 
@@ -435,12 +484,18 @@ public abstract class Command {
             long elapsed = -System.nanoTime();
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
-            return new Response.Generate(response, elapsed, keyPair);
+            return new Response.Generate(response, getDescription(), elapsed, keyPair);
         }
 
         @Override
-        public String toString() {
-            return "Generate";
+        public String getDescription() {
+            String key;
+            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
+                key = "both keypairs";
+            } else {
+                key = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
+            }
+            return String.format("Generate %s", key);
         }
     }
 
@@ -477,12 +532,26 @@ public abstract class Command {
             long elapsed = -System.nanoTime();
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
-            return new Response.Export(response, elapsed, keyPair, key, params);
+            return new Response.Export(response, getDescription(), elapsed, keyPair, key, params);
         }
 
         @Override
-        public String toString() {
-            return "Export";
+        public String getDescription() {
+            String what = CardUtil.getParameterString(params);
+
+            String source;
+            if (key == EC_Consts.KEY_BOTH) {
+                source = "both keys";
+            } else {
+                source = ((key == EC_Consts.KEY_PUBLIC) ? "public" : "private") + " key";
+            }
+            String pair;
+            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
+                pair = "both keypairs";
+            } else {
+                pair = ((keyPair == ECTesterApplet.KEYPAIR_LOCAL) ? "local" : "remote") + " keypair";
+            }
+            return String.format("Export %s params from %s of %s", what, source, pair);
         }
     }
 
@@ -493,7 +562,7 @@ public abstract class Command {
         private byte pubkey;
         private byte privkey;
         private byte export;
-        private short corruption;
+        private short transformation;
         private byte type;
 
         /**
@@ -503,19 +572,19 @@ public abstract class Command {
          * @param pubkey      keyPair to use for public key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
          * @param privkey     keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
          * @param export      whether to export ECDH secret
-         * @param corruption  whether to invalidate the pubkey before ECDH (EC_Consts.CORRUPTION_* | ...)
+         * @param transformation  whether to transform the pubkey before ECDH (EC_Consts.TRANSFORMATION_* | ...)
          * @param type        ECDH algorithm type (EC_Consts.KA_* | ...)
          */
-        public ECDH(CardMngr cardManager, byte pubkey, byte privkey, byte export, short corruption, byte type) {
+        public ECDH(CardMngr cardManager, byte pubkey, byte privkey, byte export, short transformation, byte type) {
             super(cardManager);
             this.pubkey = pubkey;
             this.privkey = privkey;
             this.export = export;
-            this.corruption = corruption;
+            this.transformation = transformation;
             this.type = type;
 
-            byte[] data = new byte[]{export, 0,0, type};
-            ByteUtil.setShort(data, 1, corruption);
+            byte[] data = new byte[]{export, 0, 0, type};
+            ByteUtil.setShort(data, 1, transformation);
 
             this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ECDH, pubkey, privkey, data);
         }
@@ -525,12 +594,23 @@ public abstract class Command {
             long elapsed = -System.nanoTime();
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
-            return new Response.ECDH(response, elapsed, pubkey, privkey, export, corruption, type);
+            return new Response.ECDH(response, getDescription(), elapsed, pubkey, privkey, export, transformation, type);
         }
 
         @Override
-        public String toString() {
-            return "ECDH";
+        public String getDescription() {
+            String algo = CardUtil.getKATypeString(type);
+
+            String pub = pubkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
+            String priv = privkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
+
+            String validity;
+            if (transformation == EC_Consts.TRANSFORMATION_NONE) {
+                validity = "";
+            } else {
+                validity = String.format("(%s point)", CardUtil.getTransformation(transformation));
+            }
+            return String.format("%s of %s pubkey and %s privkey%s", algo, pub, priv, validity);
         }
     }
 
@@ -540,7 +620,7 @@ public abstract class Command {
     public static class ECDH_direct extends Command {
         private byte privkey;
         private byte export;
-        private short corruption;
+        private short transformation;
         private byte type;
         private byte[] pubkey;
 
@@ -550,20 +630,20 @@ public abstract class Command {
          * @param cardManager cardManager to send APDU through
          * @param privkey     keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
          * @param export      whether to export ECDH secret
-         * @param corruption  whether to invalidate the pubkey before ECDH (EC_Consts.CORRUPTION_* | ...)
+         * @param transformation  whether to transform the pubkey before ECDH (EC_Consts.TRANSFORMATION_* | ...)
          * @param type        EC KeyAgreement type
          * @param pubkey      pubkey data to do ECDH with.
          */
-        public ECDH_direct(CardMngr cardManager, byte privkey, byte export, short corruption, byte type, byte[] pubkey) {
+        public ECDH_direct(CardMngr cardManager, byte privkey, byte export, short transformation, byte type, byte[] pubkey) {
             super(cardManager);
             this.privkey = privkey;
             this.export = export;
-            this.corruption = corruption;
+            this.transformation = transformation;
             this.type = type;
             this.pubkey = pubkey;
 
             byte[] data = new byte[3 + pubkey.length];
-            ByteUtil.setShort(data, 0, corruption);
+            ByteUtil.setShort(data, 0, transformation);
             data[2] = type;
             System.arraycopy(pubkey, 0, data, 3, pubkey.length);
 
@@ -575,12 +655,22 @@ public abstract class Command {
             long elapsed = -System.nanoTime();
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
-            return new Response.ECDH(response, elapsed, ECTesterApplet.KEYPAIR_REMOTE, privkey, export, corruption, type);
+            return new Response.ECDH(response, getDescription(), elapsed, ECTesterApplet.KEYPAIR_REMOTE, privkey, export, transformation, type);
         }
 
         @Override
-        public String toString() {
-            return "ECDH_direct";
+        public String getDescription() {
+            String algo = CardUtil.getKATypeString(type);
+
+            String priv = privkey == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
+
+            String validity;
+            if (transformation == EC_Consts.TRANSFORMATION_NONE) {
+                validity = "";
+            } else {
+                validity = String.format("(%s point)", CardUtil.getTransformation(transformation));
+            }
+            return String.format("%s of external pubkey and %s privkey%s", algo, priv, validity);
         }
     }
 
@@ -601,6 +691,10 @@ public abstract class Command {
          */
         public ECDSA(CardMngr cardManager, byte keyPair, byte sigType, byte export, byte[] raw) {
             super(cardManager);
+            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
+                throw new IllegalArgumentException();
+            }
+
             this.keyPair = keyPair;
             this.sigType = sigType;
             this.export = export;
@@ -622,12 +716,124 @@ public abstract class Command {
             long elapsed = -System.nanoTime();
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
-            return new Response.ECDSA(response, elapsed, keyPair, sigType, export, raw);
+            return new Response.ECDSA(response, getDescription(), elapsed, keyPair, sigType, export, raw);
         }
 
         @Override
-        public String toString() {
-            return "ECDSA";
+        public String getDescription() {
+            String algo = CardUtil.getSigTypeString(sigType);
+            String key = keyPair == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
+            String data = raw == null ? "random" : "provided";
+            return String.format("%s with %s keypair(%s data)", algo, key, data);
+        }
+    }
+
+    public static class ECDSA_sign extends Command {
+        private byte keyPair;
+        private byte sigType;
+        private byte export;
+        private byte[] raw;
+
+        /**
+         * Creates the INS_ECDSA_SIGN instruction.
+         *
+         * @param cardManager cardManager to send APDU through
+         * @param keyPair     keyPair to use for signing and verification (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
+         * @param sigType     Signature type to use
+         * @param export      whether to export ECDSA signature
+         * @param raw         data to sign, can be null, in which case random data is signed.
+         */
+        public ECDSA_sign(CardMngr cardManager, byte keyPair, byte sigType, byte export, byte[] raw) {
+            super(cardManager);
+            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
+                throw new IllegalArgumentException();
+            }
+
+            this.keyPair = keyPair;
+            this.sigType = sigType;
+            this.export = export;
+            this.raw = raw;
+
+            int len = raw != null ? raw.length : 0;
+            byte[] data = new byte[3 + len];
+            data[0] = sigType;
+            ByteUtil.setShort(data, 1, (short) len);
+            if (raw != null) {
+                System.arraycopy(raw, 0, data, 3, len);
+            }
+
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ECDSA_SIGN, keyPair, export, data);
+        }
+
+        @Override
+        public Response.ECDSA send() throws CardException {
+            long elapsed = -System.nanoTime();
+            ResponseAPDU response = cardManager.send(cmd);
+            elapsed += System.nanoTime();
+            return new Response.ECDSA(response, getDescription(), elapsed, keyPair, sigType, export, raw);
+        }
+
+        @Override
+        public String getDescription() {
+            String algo = CardUtil.getSigTypeString(sigType);
+            String key = keyPair == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
+            String data = raw == null ? "random" : "provided";
+            return String.format("%s signature with %s keypair(%s data)", algo, key, data);
+        }
+    }
+
+    public static class ECDSA_verify extends Command {
+        private byte keyPair;
+        private byte sigType;
+        private byte[] raw;
+        private byte[] signature;
+
+        /**
+         * Creates the INS_ECDSA_VERIFY instruction.
+         *
+         * @param cardManager cardManager to send APDU through
+         * @param keyPair     keyPair to use for signing and verification (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
+         * @param sigType     Signature type to use
+         * @param raw         data to sign
+         * @param signature   signature data
+         */
+        public ECDSA_verify(CardMngr cardManager, byte keyPair, byte sigType, byte[] raw, byte[] signature) {
+            super(cardManager);
+            if (keyPair == ECTesterApplet.KEYPAIR_BOTH) {
+                throw new IllegalArgumentException();
+            }
+            if (raw == null || signature == null) {
+                throw new IllegalArgumentException();
+            }
+
+            this.keyPair = keyPair;
+            this.sigType = sigType;
+            this.raw = raw;
+            this.signature = signature;
+
+            byte[] data = new byte[4 + raw.length + signature.length];
+            ByteUtil.setShort(data, 0, (short) raw.length);
+            System.arraycopy(raw, 0, data, 2, raw.length);
+            ByteUtil.setShort(data, 2 + raw.length, (short) signature.length);
+            System.arraycopy(signature, 0, data, 2 + raw.length + 2, signature.length);
+
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ECDSA_VERIFY, keyPair, sigType, data);
+        }
+
+        @Override
+        public Response.ECDSA send() throws CardException {
+            long elapsed = -System.nanoTime();
+            ResponseAPDU response = cardManager.send(cmd);
+            elapsed += System.nanoTime();
+            return new Response.ECDSA(response, getDescription(), elapsed, keyPair, sigType, ECTesterApplet.EXPORT_FALSE, raw);
+        }
+
+        @Override
+        public String getDescription() {
+            String algo = CardUtil.getSigTypeString(sigType);
+            String key = keyPair == ECTesterApplet.KEYPAIR_LOCAL ? "local" : "remote";
+            String data = raw == null ? "random" : "provided";
+            return String.format("%s verification with %s keypair(%s data)", algo, key, data);
         }
     }
 
@@ -650,12 +856,12 @@ public abstract class Command {
             long elapsed = -System.nanoTime();
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();
-            return new Response.Cleanup(response, elapsed);
+            return new Response.Cleanup(response, getDescription(), elapsed);
         }
 
         @Override
-        public String toString() {
-            return "Cleanup";
+        public String getDescription() {
+            return "Request JCSystem object deletion";
         }
     }
 }
