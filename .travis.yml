@@ -5,6 +5,8 @@ addons:
     packages:
     - libtomcrypt-dev
     - libtommath-dev
+    - libssl-dev
+    - libcrypto++-dev
     - gcc-6
     - g++-6
 language: java
