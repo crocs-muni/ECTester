@@ -20,6 +20,10 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
     ECPublicKey publicKey;
     ECParameterSpec params;
 
+    public NativeKeyAgreementSpi() {
+
+    }
+
     @Override
     protected void engineInit(Key key, SecureRandom random) throws InvalidKeyException {
         if (!(key instanceof ECPrivateKey)) {
@@ -77,6 +81,10 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
 
     private abstract static class SimpleKeyAgreementSpi extends NativeKeyAgreementSpi {
 
+        public SimpleKeyAgreementSpi() {
+
+        }
+
         @Override
         protected byte[] engineGenerateSecret() throws IllegalStateException {
             byte[] pubkey;
@@ -98,6 +106,10 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
     }
 
     private abstract static class ExtendedKeyAgreementSpi extends NativeKeyAgreementSpi {
+
+        public ExtendedKeyAgreementSpi() {
+
+        }
 
         @Override
         protected byte[] engineGenerateSecret() throws IllegalStateException {
