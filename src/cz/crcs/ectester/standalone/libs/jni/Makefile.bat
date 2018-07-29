@@ -5,6 +5,7 @@ setlocal EnableDelayedExpansion
 ::  - JAVA_HOME
 ::  - CC
 ::  - USE_EXT_MSCNG
+::  - DEBUG
 
 :: See if we are cleaning.
 if "%1" == "clean" (
@@ -13,11 +14,13 @@ if "%1" == "clean" (
   exit
 )
 
+set TAB=	
+
 
 :: Determine arch.
-reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL && (set ARCH=32& set ARCH_S=x86& set ARCH_VS=x86) || (set ARCH=64& set ARCH_S=x64& set ARCH_VS=amd64)
+reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL 2>&1 && (set ARCH=32& set ARCH_S=x86& set ARCH_VS=x86) || (set ARCH=64& set ARCH_S=x64& set ARCH_VS=amd64)
 
-echo ** ARCH %ARCH_S%
+echo ** ARCH%TAB%%TAB%%ARCH_S%
 
 
 :: Find a working visual studio environment.
@@ -27,7 +30,7 @@ set vsw_path="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
 set vs_path=
 for /f "usebackq delims=" %%i in (`%vsw_path% -nologo -prerelease -latest -property installationPath`) do (
   if exist "%%i\Common7\Tools\vsdevcmd.bat" (
-	echo ** VsDevCmd at %%i\Common7\Tools\vsdevcmd.bat
+	echo ** VsDevCmd%TAB%%TAB%%%i\Common7\Tools\vsdevcmd.bat
     call "%%i\Common7\Tools\vsdevcmd.bat" -no_logo -arch=%ARCH_VS%
 	if ERRORLEVEL 1 (
 	  echo nope.
@@ -45,7 +48,7 @@ if %found% EQU 0 (
   exit /b 2
 )
 
-echo ** VS_PATH %vs_path%
+echo ** VS_PATH%TAB%%TAB%%vs_path%
 
 
 :: Try to find vcruntime.
@@ -55,7 +58,7 @@ if exist %vc_base% (
   for /f "delims=" %%i in ('dir /b /on "!vc_base!"') do (
     set vc_version=%%i
   )
-  echo ** VC_VERSION !vc_version!
+  echo ** VC_VERSION%TAB%!vc_version!
   set vc_include=%vc_base%!vc_version!\include
   set vc_lib=%vc_base%!vc_version!\lib\%ARCH_S%
 )
@@ -77,8 +80,8 @@ popd
 
 set mscng_lib_arch=%mscng_lib%\X%ARCH%
 
-echo ** CNG_INCLUDE !mscng_include!
-echo ** CNG_LIB !mscng_lib!
+echo ** CNG_INCLUDE%TAB%%mscng_include%
+echo ** CNG_LIB%TAB%%TAB%%mscng_lib_arch%
 
 
 :: Get the paths to Java JNI.
@@ -92,7 +95,7 @@ if not defined JAVA_HOME (
   popd
 )
 
-echo ** JAVA_HOME !JAVA_HOME!
+echo ** JAVA_HOME%TAB%%JAVA_HOME%
 
 set JNI_INCLUDEDIR=%JAVA_HOME%\include
 set JNI_PLATFORMINCLUDEDIR=%JNI_INCLUDEDIR%\win32
@@ -104,7 +107,7 @@ if not defined CC (
   set CC=cl.exe
 )
 
-echo ** CC !CC!
+echo ** CC%TAB%%TAB%%CC%
 
 
 :: Try to find uCRT.
@@ -114,7 +117,7 @@ if exist %ucrt_base% (
   for /f "delims=" %%i in ('dir /b /on "!ucrt_base!\Include"') do (
     set ucrt_version=%%i
   )
-  echo ** uCRT !ucrt_version!
+  echo ** uCRT%TAB%%TAB%!ucrt_version!
   set ucrt_include=%ucrt_base%Include\!ucrt_version!\ucrt
   set ucrt_lib=%ucrt_base%Lib\!ucrt_version!
   set ucrt_lib_arch=!ucrt_lib!\ucrt\%ARCH_S%
@@ -128,8 +131,8 @@ if defined USE_EXT_MSCNG (
   set INCLUDE_CLI=!INCLUDE_CLI! /I"%mscng_include%"
 )
 
-echo ** INCLUDE %INCLUDE%
-echo ** INCLUDE_CLI %INCLUDE_CLI%
+echo ** INCLUDE%TAB%%TAB%%INCLUDE%
+echo ** INCLUDE_CLI%TAB%%INCLUDE_CLI%
 
 
 :: Setup LIB paths.
@@ -139,9 +142,22 @@ if defined USE_EXT_MSCNG (
   set LIBPATH=!LIBPATH! /LIBPATH:"%mscng_lib_arch%"
 )
 
-echo ** LIB %LIB%
-echo ** LIBPATH %LIBPATH%
+echo ** LIB%TAB%%TAB%%LIB%
+echo ** LIBPATH%TAB%%TAB%%LIBPATH%
+
+
+:: Setup DEBUB options.
+set OTHER_CLI=
+if defined DEBUG (
+  set OTHER_CLI=/Od /Z7
+) else (
+  set OTHER_CLI=/O2
+)
+
+echo ** OTHER_CLI%TAB%%OTHER_CLI%
 echo.
 
+echo ^>^> %CC% /W2 /EHsc %OTHER_CLI% %INCLUDE_CLI% mscng.c c_utils.c bcrypt.lib jvm.lib /Femscng_provider.dll /LD /link %LIBPATH% /nologo
+echo.
 
-%CC%  /EHsc %INCLUDE_CLI% mscng.c c_utils.c bcrypt.lib jvm.lib /Femscng_provider.dll /LD /link %LIBPATH% 
+%CC% /W2 /EHsc %OTHER_CLI% %INCLUDE_CLI% mscng.c c_utils.c bcrypt.lib jvm.lib /Femscng_provider.dll /LD /link %LIBPATH% /nologo

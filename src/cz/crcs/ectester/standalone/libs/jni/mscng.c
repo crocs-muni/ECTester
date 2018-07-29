@@ -28,9 +28,10 @@ typedef struct {
 //Provider things
 static jclass provider_class;
 
-#define KEYFLAG_IMPLICIT 0
-#define KEYFLAG_EXPLICIT 1
-#define KEYFLAG_NIST     2
+#define KEYFLAG_IMPLICIT 0		//Mscng native key, over named curve
+#define KEYFLAG_EXPLICIT 1		//Mscng native key, over explicit ecc parameters
+#define KEYFLAG_NIST     2		//Mscng native key, over NIST parameters, custom ECDH/ECDSA_P* algo
+#define KEYFLAG_OTHER	 3		//Other key, explicit ecc parameters
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_MscngLib_createProvider(JNIEnv *env, jobject self) {
 	jclass local_provider_class = (*env)->FindClass(env, "cz/crcs/ectester/standalone/libs/jni/NativeProvider$Mscng");
@@ -797,11 +798,12 @@ static NTSTATUS init_use_algo(JNIEnv *env, BCRYPT_ALG_HANDLE *handle, LPCWSTR ty
 	}
 
 	switch (keyflag) {
-		case 0:
-		case 1:
+		case KEYFLAG_IMPLICIT:
+		case KEYFLAG_EXPLICIT:
+		case KEYFLAG_OTHER:
 			algo = algos[0];
 			break;
-		case 2: {
+		case KEYFLAG_NIST: {
 			jmethodID get_curve = (*env)->GetMethodID(env, ec_parameter_spec_class, "getCurve", "()Ljava/security/spec/EllipticCurve;");
 			jobject elliptic_curve = (*env)->CallObjectMethod(env, params, get_curve);
 
@@ -834,7 +836,7 @@ static NTSTATUS init_use_algo(JNIEnv *env, BCRYPT_ALG_HANDLE *handle, LPCWSTR ty
 	}
 
 	switch (keyflag) {
-		case 0: {
+		case KEYFLAG_IMPLICIT: {
 			jint meta_len = (*env)->GetArrayLength(env, meta);
 			jbyte *meta_data = (*env)->GetByteArrayElements(env, meta, NULL);
 			//if (NT_FAILURE(status = BCryptSetProperty(*handle, BCRYPT_ECC_CURVE_NAME, meta_data, meta_len, 0))) {
@@ -845,7 +847,8 @@ static NTSTATUS init_use_algo(JNIEnv *env, BCRYPT_ALG_HANDLE *handle, LPCWSTR ty
 			(*env)->ReleaseByteArrayElements(env, meta, meta_data, JNI_ABORT);
 			break;
 		}
-		case 1: {
+		case KEYFLAG_EXPLICIT:
+		case KEYFLAG_OTHER: {
 			PBYTE curve;
 			ULONG curve_len = create_curve(env, params, &curve);
 			if (NT_FAILURE(status = BCryptSetProperty(*handle, BCRYPT_ECC_PARAMETERS, curve, curve_len, 0))) {
@@ -861,15 +864,23 @@ static NTSTATUS init_use_algo(JNIEnv *env, BCRYPT_ALG_HANDLE *handle, LPCWSTR ty
 }
 
 static jint get_keyflag(JNIEnv *env, jobject key) {
-	jclass key_class = (*env)->GetObjectClass(env, key);
-	jmethodID get_flag = (*env)->GetMethodID(env, key_class, "getFlag", "()I");
-	return (*env)->CallIntMethod(env, key, get_flag);
+	if ((*env)->IsInstanceOf(env, key, pubkey_class) || (*env)->IsInstanceOf(env, key, privkey_class)) {
+		jclass key_class = (*env)->GetObjectClass(env, key);
+		jmethodID get_flag = (*env)->GetMethodID(env, key_class, "getFlag", "()I");
+		return (*env)->CallIntMethod(env, key, get_flag);
+	} else {
+		return KEYFLAG_OTHER;
+	}
 }
 
 static jbyteArray get_meta(JNIEnv *env, jobject key) {
-	jclass key_class = (*env)->GetObjectClass(env, key);
-	jmethodID get_meta = (*env)->GetMethodID(env, key_class, "getMeta", "()[B");
-	return (jbyteArray)(*env)->CallObjectMethod(env, key, get_meta);
+	if ((*env)->IsInstanceOf(env, key, pubkey_class) || (*env)->IsInstanceOf(env, key, privkey_class)) {
+		jclass key_class = (*env)->GetObjectClass(env, key);
+		jmethodID get_meta = (*env)->GetMethodID(env, key_class, "getMeta", "()[B");
+		return (jbyteArray)(*env)->CallObjectMethod(env, key, get_meta);
+	} else {
+		return NULL;
+	}
 }
 
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Mscng_generateSecret(JNIEnv *env, jobject self, jobject pubkey, jobject privkey, jobject params) {
@@ -897,6 +908,10 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 	BCRYPT_ALG_HANDLE kaHandle = NULL;
 
 	jint pub_flag = get_keyflag(env, pubkey);
+	if (pub_flag == KEYFLAG_OTHER) {
+		throw_new(env, "java/security/InvalidAlgorithmParameterException", "Cannot import non-native public key.");
+		return NULL;
+	}
 	jbyteArray meta = get_meta(env, pubkey);
 
 	if (NT_FAILURE(status = init_use_algo(env, &kaHandle, BCRYPT_ECDH_ALGORITHM, pub_flag, meta, params))) {
@@ -906,27 +921,38 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 	BCRYPT_KEY_HANDLE pkey = NULL;
 	BCRYPT_KEY_HANDLE skey = NULL;
 
-	jint pub_length = (*env)->GetArrayLength(env, pubkey);
-	jbyte *pub_data = (*env)->GetByteArrayElements(env, pubkey, NULL);
+	jmethodID get_data_priv = (*env)->GetMethodID(env, pubkey_class, "getData", "()[B");
+	jbyteArray pubkey_barray = (jbyteArray)(*env)->CallObjectMethod(env, pubkey, get_data_priv);
+
+	jint pub_length = (*env)->GetArrayLength(env, pubkey_barray);
+	jbyte *pub_data = (*env)->GetByteArrayElements(env, pubkey_barray, NULL);
 	if (NT_FAILURE(status = BCryptImportKeyPair(kaHandle, NULL, BCRYPT_ECCFULLPUBLIC_BLOB, &pkey, pub_data, pub_length, 0))) {
 		throw_new_var(env, "java/security/GeneralSecurityException", "Error 0x%x returned by BCryptImportKeyPair(pub)\n", status);
 		BCryptCloseAlgorithmProvider(kaHandle, 0);
-		(*env)->ReleaseByteArrayElements(env, pubkey, pub_data, JNI_ABORT);
+		(*env)->ReleaseByteArrayElements(env, pubkey_barray, pub_data, JNI_ABORT);
 		return NULL;
 	}
-	(*env)->ReleaseByteArrayElements(env, pubkey, pub_data, JNI_ABORT);
+	(*env)->ReleaseByteArrayElements(env, pubkey_barray, pub_data, JNI_ABORT);
 
 	jint priv_flag = get_keyflag(env, privkey);
-	jint priv_length = (*env)->GetArrayLength(env, privkey);
-	jbyte *priv_data = (*env)->GetByteArrayElements(env, privkey, NULL);
+	if (priv_flag == KEYFLAG_OTHER) {
+		throw_new(env, "java/security/InvalidAlgorithmParameterException", "Cannot import non-native private key.");
+		return NULL;
+	}
+
+	jmethodID get_data_pub = (*env)->GetMethodID(env, privkey_class, "getData", "()[B");
+	jbyteArray privkey_barray = (jbyteArray)(*env)->CallObjectMethod(env, privkey, get_data_pub);
+
+	jint priv_length = (*env)->GetArrayLength(env, privkey_barray);
+	jbyte *priv_data = (*env)->GetByteArrayElements(env, privkey_barray, NULL);
 	if (NT_FAILURE(status = BCryptImportKeyPair(kaHandle, NULL, BCRYPT_ECCFULLPRIVATE_BLOB, &skey, priv_data, priv_length, 0))) {
 		throw_new_var(env, "java/security/GeneralSecurityException", "Error 0x%x returned by BCryptImportKeyPair(priv)\n", status);
 		BCryptCloseAlgorithmProvider(kaHandle, 0);
 		BCryptDestroyKey(pkey);
-		(*env)->ReleaseByteArrayElements(env, privkey, priv_data, JNI_ABORT);
+		(*env)->ReleaseByteArrayElements(env, privkey_barray, priv_data, JNI_ABORT);
 		return NULL;
 	}
-	(*env)->ReleaseByteArrayElements(env, privkey, priv_data, JNI_ABORT);
+	(*env)->ReleaseByteArrayElements(env, privkey_barray, priv_data, JNI_ABORT);
 
 	BCRYPT_SECRET_HANDLE ka = NULL;
 
@@ -1002,6 +1028,10 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 	BCRYPT_ALG_HANDLE sigHandle = NULL;
 
 	jint keyflag = get_keyflag(env, privkey);
+	if (keyflag == KEYFLAG_OTHER) {
+		throw_new(env, "java/security/InvalidAlgorithmParameterException", "Cannot import non-native private key.");
+		return NULL;
+	}
 	jbyteArray meta = get_meta(env, privkey);
 
 	if (NT_FAILURE(status = init_use_algo(env, &sigHandle, BCRYPT_ECDSA_ALGORITHM, keyflag, meta, params))) {
@@ -1099,6 +1129,10 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 	BCRYPT_ALG_HANDLE sigHandle = NULL;
 
 	jint keyflag = get_keyflag(env, pubkey);
+	if (keyflag == KEYFLAG_OTHER) { // TODO: This is not necessary
+		throw_new(env, "java/security/InvalidAlgorithmParameterException", "Cannot import non-native public key.");
+		return JNI_FALSE;
+	}
 	jbyteArray meta = get_meta(env, pubkey);
 
 	if (NT_FAILURE(status = init_use_algo(env, &sigHandle, BCRYPT_ECDSA_ALGORITHM, keyflag, meta, params))) {

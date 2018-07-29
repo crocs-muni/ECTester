@@ -11,6 +11,7 @@ import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECParameterSpec;
+import java.security.spec.ECGenParameterSpec;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -18,7 +19,7 @@ import java.security.spec.ECParameterSpec;
 public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
     ECPrivateKey privateKey;
     ECPublicKey publicKey;
-    ECParameterSpec params;
+    AlgorithmParameterSpec params;
 
     @Override
     protected void engineInit(Key key, SecureRandom random) throws InvalidKeyException {
@@ -28,15 +29,6 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         }
         privateKey = (ECPrivateKey) key;
         this.params = privateKey.getParams();
-    }
-
-    @Override
-    protected void engineInit(Key key, AlgorithmParameterSpec params, SecureRandom random) throws InvalidKeyException, InvalidAlgorithmParameterException {
-        if (!(params instanceof ECParameterSpec)) {
-            throw new InvalidAlgorithmParameterException();
-        }
-        engineInit(key, random);
-        this.params = (ECParameterSpec) params;
     }
 
     @Override
@@ -71,11 +63,20 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
 
     @Override
     protected SecretKey engineGenerateSecret(String algorithm) throws IllegalStateException, NoSuchAlgorithmException, InvalidKeyException {
-        // TODO: This is dangerous/not correct ! Need to actually implement KDF1 and KDF2 here probably.
+        // TODO: This is dangerous/not correct ! Need to actually implement KDF1 and KDF2 here probably. Or just pass it off to the libs through some different interface.
         return new SecretKeySpec(engineGenerateSecret(), algorithm);
     }
 
     private abstract static class SimpleKeyAgreementSpi extends NativeKeyAgreementSpi {
+
+        @Override
+        protected void engineInit(Key key, AlgorithmParameterSpec params, SecureRandom random) throws InvalidKeyException, InvalidAlgorithmParameterException {
+            if (!(params instanceof ECParameterSpec)) {
+                throw new InvalidAlgorithmParameterException();
+            }
+            engineInit(key, random);
+            this.params = params;
+        }
 
         @Override
         protected byte[] engineGenerateSecret() throws IllegalStateException {
@@ -83,15 +84,15 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
             if (publicKey instanceof NativeECPublicKey) {
                 pubkey = ((NativeECPublicKey) publicKey).getData();
             } else {
-                pubkey = ECUtil.toX962Uncompressed(publicKey.getW(), params.getCurve());
+                pubkey = ECUtil.toX962Uncompressed(publicKey.getW(), ((ECParameterSpec) params).getCurve());
             }
             byte[] privkey;
             if (privateKey instanceof NativeECPrivateKey) {
                 privkey = ((NativeECPrivateKey) privateKey).getData();
             } else {
-                privkey = ECUtil.toByteArray(privateKey.getS(), params.getCurve().getField().getFieldSize());
+                privkey = ECUtil.toByteArray(privateKey.getS(), ((ECParameterSpec) params).getCurve().getField().getFieldSize());
             }
-            return generateSecret(pubkey, privkey, params);
+            return generateSecret(pubkey, privkey, (ECParameterSpec) params);
         }
 
         abstract byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
@@ -100,11 +101,20 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
     private abstract static class ExtendedKeyAgreementSpi extends NativeKeyAgreementSpi {
 
         @Override
+        protected void engineInit(Key key, AlgorithmParameterSpec params, SecureRandom random) throws InvalidKeyException, InvalidAlgorithmParameterException {
+            if (!(params instanceof ECParameterSpec || params instanceof ECGenParameterSpec)) {
+                throw new InvalidAlgorithmParameterException();
+            }
+            engineInit(key, random);
+            this.params = params;
+        }
+
+        @Override
         protected byte[] engineGenerateSecret() throws IllegalStateException {
             return generateSecret(publicKey, privateKey, params);
         }
 
-        abstract byte[] generateSecret(ECPublicKey pubkey, ECPrivateKey privkey, ECParameterSpec params);
+        abstract byte[] generateSecret(ECPublicKey pubkey, ECPrivateKey privkey, AlgorithmParameterSpec params);
     }
 
 
@@ -203,7 +213,7 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         }
 
         @Override
-        native byte[] generateSecret(ECPublicKey pubkey, ECPrivateKey privkey, ECParameterSpec params);
+        native byte[] generateSecret(ECPublicKey pubkey, ECPrivateKey privkey, AlgorithmParameterSpec params);
     }
 
     public static class MscngECDHwithSHA1KDF extends Mscng {

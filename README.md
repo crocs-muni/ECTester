@@ -239,9 +239,9 @@ API to expose and test native libraries. OpenJDK for Windows can be obtained fro
 Installing the Java Cryptography Extension Unlimited Strength policy files is necessary to do testing
 with quite a lot of practical key sizes, they are available for download:
 
- * [Java 6](http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html)
- * [Java 7](http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html)
- * [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html)
+ - [Java 6](http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html)
+ - [Java 7](http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html)
+ - [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html)
 
 To install, place them in `${java.home}/jre/lib/security/`.
 
