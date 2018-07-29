@@ -180,8 +180,8 @@ public class ECTesterStandalone {
         actions.put("generate", generate);
 
         Options exportOpts = new Options();
-        exportOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPair object [type].").build());
         exportOpts.addOption(bits);
+        exportOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPair object [type].").build());
         ParserOptions export = new ParserOptions(new DefaultParser(), exportOpts, "Export default curve parameters.");
         actions.put("export", export);
 

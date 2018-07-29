@@ -231,6 +231,11 @@ For more information on ECC libraries see [LIBS](docs/LIBS.md).
 
 ### Setup
 
+OpenJDK JRE is required to test ECDH on Windows properly, as  Oracle JRE requires the Java Cryptography Providers
+for certain classes (such as a [KeyAgreement](https://docs.oracle.com/javase/8/docs/api/javax/crypto/KeyAgreement.html)) 
+to be signed by keys that are signed by their JCA Code Signing Authority. ECTester internally uses Java Cryptography Provider
+API to expose and test native libraries. OpenJDK for Windows can be obtained from [ojdkbuild/ojdkbuild](https://github.com/ojdkbuild/ojdkbuild).
+
 Installing the Java Cryptography Extension Unlimited Strength policy files is necessary to do testing
 with quite a lot of practical key sizes, they are available for download:
 
@@ -243,49 +248,70 @@ To install, place them in `${java.home}/jre/lib/security/`.
 ### Options
 
 ```
-usage: ECTesterStandalone.jar [-V] [-h] [ (ecdh [-t <type>] [-n <amount>] [-b <n>] [-nc <cat/id>]) |
-(ecdsa [-t <type>] [-n <amount>] [-b <n>] [-nc <cat/id>] [-f <file>]) |
-(export [-t <type>] [-b <n>]) | (generate [-nc <cat/id>] [-n <amount>] [-t
-<type>] [-b <n>]) | (list-data  [what]) | (list-libs) | (test [-gt <type>]
-[-kt <type>] [-st <type>] [-b <n>] [-nc <cat/id>]) ] [lib]
+usage: ECTesterStandalone.jar [-V] [-h] [-C]
+ [ (ecdh [-b <n>] [-nc <cat/id>] [-cn <name>] [-t <type>] [--key-type <algorithm>] [-n <amount>]) |
+   (ecdsa [-b <n>] [-nc <cat/id>] [-cn <name>] [-t <type>] [-n <amount>] [-f <file>]) |
+   (export [-b <n>] [-t <type>]) |
+   (generate [-b <n>] [-nc <cat/id>] [-cn <name>] [-n <amount>] [-t <type>]) |
+   (list-data [what]) |
+   (list-libs) |
+   (list-suites) |
+   (test [-b <n>] [-nc <cat/id>] [-cn <name>] [-gt <type>] [-kt <type>] [-st <type>] [-f <format>] [--key-type <algorithm>]
+         <test-suite>) ]
+ [lib]
 
-  -V,--version   Print version info.
-  -h,--help      Print help.
-  [lib]   What library to use.
-
- ecdh:
-   -t,--type <type>             Set KeyAgreement object [type].
-   -n,--amount <amount>         Do ECDH [amount] times.
+ ecdh:    | Perform EC based KeyAgreement. |
    -b,--bits <n>                What size of curve to use.
    -nc,--named-curve <cat/id>   Use a named curve, from CurveDB: <cat/id>
+   -cn,--curve-name <name>      Use a named curve, search from curves
+                                supported by the library: <name>
+   -t,--type <type>             Set KeyAgreement object [type].
+      --key-type <algorithm>    Set the key [algorithm] for which the key
+                                should be derived in KeyAgreements with
+                                KDF. Default is "AES".
+   -n,--amount <amount>         Do ECDH [amount] times.
 
- ecdsa:
+ ecdsa:    | Perform EC based Signature. |
+   -b,--bits <n>                What size of curve to use.
+   -nc,--named-curve <cat/id>   Use a named curve, from CurveDB: <cat/id>
+   -cn,--curve-name <name>      Use a named curve, search from curves
+                                supported by the library: <name>
    -t,--type <type>             Set Signature object [type].
    -n,--amount <amount>         Do ECDSA [amount] times.
-   -b,--bits <n>                What size of curve to use.
-   -nc,--named-curve <cat/id>   Use a named curve, from CurveDB: <cat/id>
    -f,--file <file>             Input [file] to sign.
 
- export:
-   -t,--type <type>   Set KeyPair object [type].
-   -b,--bits <n>      What size of curve to use.
+ export:    | Export default curve parameters. |
+   -b,--bits <n>                What size of curve to use.
+   -t,--type <type>             Set KeyPair object [type].
 
- generate:
+ generate:    | Generate EC keypairs. |
+   -b,--bits <n>                What size of curve to use.
    -nc,--named-curve <cat/id>   Use a named curve, from CurveDB: <cat/id>
+   -cn,--curve-name <name>      Use a named curve, search from curves
+                                supported by the library: <name>
    -n,--amount <amount>         Generate [amount] of EC keys.
    -t,--type <type>             Set KeyPairGenerator object [type].
+
+ list-data:    | List/show contained EC domain parameters/keys. |
+   [what]                       what to list.
+
+ list-libs:    | List supported libraries. |
+
+ list-suites:    | List supported test suites. |
+
+ test:    | Test a library. |
    -b,--bits <n>                What size of curve to use.
-
- list-data:
-   [what]   what to list.
-
- list-libs:
-
- test:
+   -nc,--named-curve <cat/id>   Use a named curve, from CurveDB: <cat/id>
+   -cn,--curve-name <name>      Use a named curve, search from curves
+                                supported by the library: <name>
    -gt,--kpg-type <type>        Set the KeyPairGenerator object [type].
    -kt,--ka-type <type>         Set the KeyAgreement object [type].
    -st,--sig-type <type>        Set the Signature object [type].
-   -b,--bits <n>                What size of curve to use.
-   -nc,--named-curve <cat/id>   Use a named curve, from CurveDB: <cat/id>
+   -f,--format <format>         Set the output format, one of
+                                text,yaml,xml.
+      --key-type <algorithm>    Set the key [algorithm] for which the key
+                                should be derived in KeyAgreements with
+                                KDF. Default is "AES".
+   <test-suite>                 The test suite to run.
 ```
 
