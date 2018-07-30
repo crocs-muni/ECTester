@@ -36,6 +36,7 @@ public abstract class Ident {
         try {
             instance = getter.apply(name, provider);
         } catch (Exception ignored) {
+            ignored.printStackTrace();
         }
 
         if (instance == null) {
@@ -46,6 +47,7 @@ public abstract class Ident {
                         break;
                     }
                 } catch (Exception ignored) {
+                    ignored.printStackTrace();
                 }
             }
         }

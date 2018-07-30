@@ -264,16 +264,26 @@ public class ECTesterStandalone {
                 .findFirst()
                 .orElse(null);
 
+        String baseAlgo;
+        if (algo.contains("with")) {
+            baseAlgo = algo.split("with")[0];
+        } else {
+            baseAlgo = algo;
+        }
+
         KeyPairGeneratorIdent kpIdent = lib.getKPGs().stream()
                 .filter((ident) -> ident.contains(algo))
                 .findFirst()
                 .orElse(lib.getKPGs().stream()
-                        .filter((ident) -> ident.contains("ECDH"))
+                        .filter((ident) -> ident.contains(baseAlgo))
                         .findFirst()
                         .orElse(lib.getKPGs().stream()
-                                .filter((ident) -> ident.contains("EC"))
+                                .filter((ident) -> ident.contains("ECDH"))
                                 .findFirst()
-                                .orElse(null)));
+                                .orElse(lib.getKPGs().stream()
+                                        .filter((ident) -> ident.contains("EC"))
+                                        .findFirst()
+                                        .orElse(null))));
 
         if (kaIdent == null || kpIdent == null) {
             throw new NoSuchAlgorithmException(algo);
@@ -367,13 +377,26 @@ public class ECTesterStandalone {
                 .findFirst()
                 .orElse(null);
 
+        String baseAlgo;
+        if (algo.contains("with")) {
+            baseAlgo = algo.split("with")[1];
+        } else {
+            baseAlgo = algo;
+        }
+
         KeyPairGeneratorIdent kpIdent = lib.getKPGs().stream()
                 .filter((ident) -> ident.contains(algo))
                 .findFirst()
                 .orElse(lib.getKPGs().stream()
-                        .filter((ident) -> ident.contains("EC"))
+                        .filter((ident) -> ident.contains(baseAlgo))
                         .findFirst()
-                        .orElse(null));
+                        .orElse(lib.getKPGs().stream()
+                                .filter((ident) -> ident.contains("ECDSA"))
+                                .findFirst()
+                                .orElse(lib.getKPGs().stream()
+                                        .filter((ident) -> ident.contains("EC"))
+                                        .findFirst()
+                                        .orElse(null))));
 
         if (sigIdent == null || kpIdent == null) {
             throw new NoSuchAlgorithmException(algo);

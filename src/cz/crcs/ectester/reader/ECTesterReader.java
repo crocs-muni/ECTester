@@ -94,7 +94,6 @@ public class ECTesterReader {
 
         DESCRIPTION = "ECTesterReader " + VERSION + GIT_COMMIT + ", a javacard Elliptic Curve Cryptography support tester/utility.";
         CLI_HEADER = "\n" + DESCRIPTION + "\n\n";
-        ;
     }
 
     private void run(String[] args) {

@@ -19,6 +19,7 @@ script:
   - ant -f build-applet.xml build
   - ant -f build-reader.xml package
   - ant -f build-standalone.xml package
+  - ./util/test.sh
 
 before_deploy:
   - zip "dist/ECTester.zip" "dist/ECTesterReader-dist.jar" "dist/ECTesterReader.jar" "applet/ectester.cap" "dist/ECTesterStandalone-dist.jar" "dist/ECTesterStandalone.jar"
