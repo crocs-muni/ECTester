@@ -35,7 +35,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_getC
 extern "C" {
 #endif
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_TomCrypt_serialVersionUID
-#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_TomCrypt_serialVersionUID 1421746759512286392i64
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_TomCrypt_serialVersionUID 1421746759512286392LL
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_TomCrypt_MAX_ARRAY_SIZE
 #define cz_crcs_ectester_standalone_libs_jni_NativeProvider_TomCrypt_MAX_ARRAY_SIZE 2147483639L
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_TomCrypt_KEYS
@@ -45,9 +45,9 @@ extern "C" {
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_TomCrypt_ENTRIES
 #define cz_crcs_ectester_standalone_libs_jni_NativeProvider_TomCrypt_ENTRIES 2L
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_TomCrypt_serialVersionUID
-#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_TomCrypt_serialVersionUID 4112578634029874840i64
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_TomCrypt_serialVersionUID 4112578634029874840LL
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_TomCrypt_serialVersionUID
-#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_TomCrypt_serialVersionUID -4298000515446427739i64
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_TomCrypt_serialVersionUID -4298000515446427739LL
 /*
  * Class:     cz_crcs_ectester_standalone_libs_jni_NativeProvider_TomCrypt
  * Method:    setup
@@ -67,6 +67,8 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_TomCrypt_DEFAULT_KEYSIZE
+#define cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_TomCrypt_DEFAULT_KEYSIZE 256L
 /*
  * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_TomCrypt
  * Method:    keysizeSupported
@@ -137,8 +139,16 @@ extern "C" {
  * Method:    generateSecret
  * Signature: ([B[BLjava/security/spec/ECParameterSpec;)[B
  */
-JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024TomCrypt_generateSecret
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024TomCrypt_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2
   (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_TomCrypt
+ * Method:    generateSecret
+ * Signature: ([B[BLjava/security/spec/ECParameterSpec;Ljava/lang/String;)Ljavax/crypto/SecretKey;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024TomCrypt_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2Ljava_lang_String_2
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject, jstring);
 
 #ifdef __cplusplus
 }
@@ -206,7 +216,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_getCurv
 extern "C" {
 #endif
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Botan_serialVersionUID
-#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Botan_serialVersionUID 1421746759512286392i64
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Botan_serialVersionUID 1421746759512286392LL
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Botan_MAX_ARRAY_SIZE
 #define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Botan_MAX_ARRAY_SIZE 2147483639L
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Botan_KEYS
@@ -216,9 +226,9 @@ extern "C" {
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Botan_ENTRIES
 #define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Botan_ENTRIES 2L
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Botan_serialVersionUID
-#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Botan_serialVersionUID 4112578634029874840i64
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Botan_serialVersionUID 4112578634029874840LL
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Botan_serialVersionUID
-#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Botan_serialVersionUID -4298000515446427739i64
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Botan_serialVersionUID -4298000515446427739LL
 /*
  * Class:     cz_crcs_ectester_standalone_libs_jni_NativeProvider_Botan
  * Method:    setup
@@ -238,6 +248,8 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Botan_DEFAULT_KEYSIZE
+#define cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Botan_DEFAULT_KEYSIZE 256L
 /*
  * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Botan
  * Method:    keysizeSupported
@@ -308,8 +320,16 @@ extern "C" {
  * Method:    generateSecret
  * Signature: ([B[BLjava/security/spec/ECParameterSpec;)[B
  */
-JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Botan_generateSecret
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Botan_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2
   (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Botan
+ * Method:    generateSecret
+ * Signature: ([B[BLjava/security/spec/ECParameterSpec;Ljava/lang/String;)Ljavax/crypto/SecretKey;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Botan_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2Ljava_lang_String_2
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject, jstring);
 
 #ifdef __cplusplus
 }
@@ -377,7 +397,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_getC
 extern "C" {
 #endif
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Cryptopp_serialVersionUID
-#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Cryptopp_serialVersionUID 1421746759512286392i64
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Cryptopp_serialVersionUID 1421746759512286392LL
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Cryptopp_MAX_ARRAY_SIZE
 #define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Cryptopp_MAX_ARRAY_SIZE 2147483639L
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Cryptopp_KEYS
@@ -387,9 +407,9 @@ extern "C" {
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Cryptopp_ENTRIES
 #define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Cryptopp_ENTRIES 2L
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Cryptopp_serialVersionUID
-#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Cryptopp_serialVersionUID 4112578634029874840i64
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Cryptopp_serialVersionUID 4112578634029874840LL
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Cryptopp_serialVersionUID
-#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Cryptopp_serialVersionUID -4298000515446427739i64
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Cryptopp_serialVersionUID -4298000515446427739LL
 /*
  * Class:     cz_crcs_ectester_standalone_libs_jni_NativeProvider_Cryptopp
  * Method:    setup
@@ -409,6 +429,8 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Cryptopp_DEFAULT_KEYSIZE
+#define cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Cryptopp_DEFAULT_KEYSIZE 256L
 /*
  * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Cryptopp
  * Method:    keysizeSupported
@@ -479,8 +501,16 @@ extern "C" {
  * Method:    generateSecret
  * Signature: ([B[BLjava/security/spec/ECParameterSpec;)[B
  */
-JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Cryptopp_generateSecret
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Cryptopp_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2
   (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Cryptopp
+ * Method:    generateSecret
+ * Signature: ([B[BLjava/security/spec/ECParameterSpec;Ljava/lang/String;)Ljavax/crypto/SecretKey;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Cryptopp_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2Ljava_lang_String_2
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject, jstring);
 
 #ifdef __cplusplus
 }
@@ -548,7 +578,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_getCu
 extern "C" {
 #endif
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_serialVersionUID
-#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_serialVersionUID 1421746759512286392i64
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_serialVersionUID 1421746759512286392LL
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_MAX_ARRAY_SIZE
 #define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_MAX_ARRAY_SIZE 2147483639L
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_KEYS
@@ -558,9 +588,9 @@ extern "C" {
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_ENTRIES
 #define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_ENTRIES 2L
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_serialVersionUID
-#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_serialVersionUID 4112578634029874840i64
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_serialVersionUID 4112578634029874840LL
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_serialVersionUID
-#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_serialVersionUID -4298000515446427739i64
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl_serialVersionUID -4298000515446427739LL
 /*
  * Class:     cz_crcs_ectester_standalone_libs_jni_NativeProvider_Openssl
  * Method:    setup
@@ -580,6 +610,8 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Openssl_DEFAULT_KEYSIZE
+#define cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Openssl_DEFAULT_KEYSIZE 256L
 /*
  * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Openssl
  * Method:    keysizeSupported
@@ -650,8 +682,16 @@ extern "C" {
  * Method:    generateSecret
  * Signature: ([B[BLjava/security/spec/ECParameterSpec;)[B
  */
-JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Openssl_generateSecret
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Openssl_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2
   (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Openssl
+ * Method:    generateSecret
+ * Signature: ([B[BLjava/security/spec/ECParameterSpec;Ljava/lang/String;)Ljavax/crypto/SecretKey;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Openssl_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2Ljava_lang_String_2
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject, jstring);
 
 #ifdef __cplusplus
 }
@@ -719,7 +759,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_MscngLib_getCurv
 extern "C" {
 #endif
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Mscng_serialVersionUID
-#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Mscng_serialVersionUID 1421746759512286392i64
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Mscng_serialVersionUID 1421746759512286392LL
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Mscng_MAX_ARRAY_SIZE
 #define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Mscng_MAX_ARRAY_SIZE 2147483639L
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Mscng_KEYS
@@ -729,9 +769,9 @@ extern "C" {
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Mscng_ENTRIES
 #define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Mscng_ENTRIES 2L
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Mscng_serialVersionUID
-#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Mscng_serialVersionUID 4112578634029874840i64
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Mscng_serialVersionUID 4112578634029874840LL
 #undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Mscng_serialVersionUID
-#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Mscng_serialVersionUID -4298000515446427739i64
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Mscng_serialVersionUID -4298000515446427739LL
 /*
  * Class:     cz_crcs_ectester_standalone_libs_jni_NativeProvider_Mscng
  * Method:    setup
@@ -751,6 +791,8 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Mscng_DEFAULT_KEYSIZE
+#define cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Mscng_DEFAULT_KEYSIZE 256L
 /*
  * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Mscng
  * Method:    keysizeSupported
@@ -821,8 +863,16 @@ extern "C" {
  * Method:    generateSecret
  * Signature: (Ljava/security/interfaces/ECPublicKey;Ljava/security/interfaces/ECPrivateKey;Ljava/security/spec/AlgorithmParameterSpec;)[B
  */
-JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Mscng_generateSecret
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Mscng_generateSecret__Ljava_security_interfaces_ECPublicKey_2Ljava_security_interfaces_ECPrivateKey_2Ljava_security_spec_AlgorithmParameterSpec_2
   (JNIEnv *, jobject, jobject, jobject, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Mscng
+ * Method:    generateSecret
+ * Signature: (Ljava/security/interfaces/ECPublicKey;Ljava/security/interfaces/ECPrivateKey;Ljava/security/spec/AlgorithmParameterSpec;Ljava/lang/String;)Ljavax/crypto/SecretKey;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Mscng_generateSecret__Ljava_security_interfaces_ECPublicKey_2Ljava_security_interfaces_ECPrivateKey_2Ljava_security_spec_AlgorithmParameterSpec_2Ljava_lang_String_2
+  (JNIEnv *, jobject, jobject, jobject, jobject, jstring);
 
 #ifdef __cplusplus
 }

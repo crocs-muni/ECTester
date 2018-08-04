@@ -86,7 +86,12 @@ public class ECTesterStandalone {
                 CLITools.version(DESCRIPTION, LICENSE);
                 return;
             } else if (cli.hasOption("help") || cli.getNext() == null) {
-                CLITools.help("ECTesterStandalone.jar", CLI_HEADER, opts, optParser, CLI_FOOTER, true);
+                String command = cli.getOptionValue("help");
+                if (command == null) {
+                    CLITools.help("ECTesterStandalone.jar", CLI_HEADER, opts, optParser, CLI_FOOTER, true);
+                } else {
+                    CLITools.help(CLI_HEADER, optParser, CLI_FOOTER, command);
+                }
                 return;
             }
 
@@ -204,7 +209,7 @@ public class ECTesterStandalone {
         optParser = new TreeParser(actions, false, baseArgs);
 
         opts.addOption(Option.builder("V").longOpt("version").desc("Print version info.").build());
-        opts.addOption(Option.builder("h").longOpt("help").desc("Print help.").build());
+        opts.addOption(Option.builder("h").longOpt("help").desc("Print help(about <command>).").hasArg().argName("command").optionalArg(true).build());
         opts.addOption(Option.builder("C").longOpt("color").desc("Print stuff with color, requires ANSI terminal.").build());
 
         return optParser.parse(opts, args);

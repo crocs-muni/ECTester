@@ -7,6 +7,7 @@
  */
 extern jclass ec_parameter_spec_class;
 extern jclass ecgen_parameter_spec_class;
+extern jclass secret_key_spec_class;
 extern jclass pubkey_class;
 extern jclass privkey_class;
 extern jclass keypair_class;
@@ -31,6 +32,11 @@ void throw_new(JNIEnv *env, const char *class, const char *message);
  * Throw a new exception of class, with formatted message.
  */
 void throw_new_var(JNIEnv *env, const char *class, const char *format, ...);
+
+/**
+ * Get the size of the specified key algorithm in bits, for ECDH KDF output size.
+ */
+jint get_kdf_bits(JNIEnv *env, jstring algorithm);
 
 /**
  * Some useful defines to init the provider.

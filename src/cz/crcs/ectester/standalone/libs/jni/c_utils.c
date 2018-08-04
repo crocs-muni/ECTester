@@ -1,9 +1,11 @@
 #include "c_utils.h"
 #define _ISOC99_SOURCE
 #include <string.h>
+#include <stdlib.h>
 
 jclass ec_parameter_spec_class;
 jclass ecgen_parameter_spec_class;
+jclass secret_key_spec_class;
 jclass pubkey_class;
 jclass privkey_class;
 jclass keypair_class;
@@ -20,6 +22,9 @@ void init_classes(JNIEnv *env, const char* lib_name) {
 
     jclass local_ecgen_parameter_spec_class = (*env)->FindClass(env, "java/security/spec/ECGenParameterSpec");
     ecgen_parameter_spec_class = (*env)->NewGlobalRef(env, local_ecgen_parameter_spec_class);
+
+    jclass local_secret_key_spec_class = (*env)->FindClass(env, "javax/crypto/spec/SecretKeySpec");
+    secret_key_spec_class = (*env)->NewGlobalRef(env, local_secret_key_spec_class);
 
     const char *pubkey_base = "cz/crcs/ectester/standalone/libs/jni/NativeECPublicKey$";
 	char pubkey_class_name[2048] = { 0 }; //strlen(pubkey_base) + strlen(lib_name) + 1
@@ -73,4 +78,31 @@ void throw_new_var(JNIEnv *env, const char *class, const char *format, ...) {
 	int res = vsnprintf(buffer, 2048, format, args);
 	va_end(args);
 	throw_new(env, class, buffer);
+}
+
+jint get_kdf_bits(JNIEnv *env, jstring algorithm) {
+    if (algorithm == NULL) {
+        return 0;
+    }
+
+    const char *algo_data = (*env)->GetStringUTFChars(env, algorithm, NULL);
+
+    jint result = 0;
+    if (strcmp(algo_data, "DES") == 0) {
+        result = 64;
+    } else if (strcmp(algo_data, "BLOWFISH") == 0) {
+        result = 128;
+    } else if (strcmp(algo_data, "DESEDE") == 0) {
+        result = 192;
+    } else if (strcmp(algo_data, "AES") == 0 || strcmp(algo_data, "CAMELLIA") == 0) {
+        result = 256;
+    } else {
+        char *end;
+        long bits = strtol(algo_data, &end, 10);
+        if (*end == 0) {
+            result = (jint) bits;
+        }
+    }
+    (*env)->ReleaseStringUTFChars(env, algorithm, algo_data);
+    return result;
 }
