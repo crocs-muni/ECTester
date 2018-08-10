@@ -1,6 +1,13 @@
 package cz.crcs.ectester.common.util;
 
+import cz.crcs.ectester.applet.EC_Consts;
+import cz.crcs.ectester.common.ec.*;
+import cz.crcs.ectester.data.EC_Store;
+
 import java.math.BigInteger;
+import java.security.KeyPair;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
 import java.security.spec.*;
 
 /**
@@ -33,12 +40,8 @@ public class ECUtil {
         return ByteUtil.concatenate(new byte[]{marker}, x);
     }
 
-    public static byte[] toX962Compressed(ECPoint point, EllipticCurve curve) {
-        return toX962Compressed(point, curve.getField().getFieldSize());
-    }
-
     public static byte[] toX962Compressed(ECPoint point, ECParameterSpec spec) {
-        return toX962Compressed(point, spec.getCurve());
+        return toX962Compressed(point, spec.getOrder().bitLength());
     }
 
     public static byte[] toX962Uncompressed(ECPoint point, int bits) {
@@ -50,12 +53,8 @@ public class ECUtil {
         return ByteUtil.concatenate(new byte[]{0x04}, x, y);
     }
 
-    public static byte[] toX962Uncompressed(ECPoint point, EllipticCurve curve) {
-        return toX962Uncompressed(point, curve.getField().getFieldSize());
-    }
-
     public static byte[] toX962Uncompressed(ECPoint point, ECParameterSpec spec) {
-        return toX962Uncompressed(point, spec.getCurve());
+        return toX962Uncompressed(point, spec.getOrder().bitLength());
     }
 
     public static byte[] toX962Hybrid(ECPoint point, int bits) {
@@ -146,7 +145,7 @@ public class ECUtil {
                 alpha = alpha.add(x.multiply(a));
                 alpha = alpha.add(b);
 
-                if(!isResidue(alpha, p)) {
+                if (!isResidue(alpha, p)) {
                     throw new IllegalArgumentException();
                 }
 
@@ -174,5 +173,41 @@ public class ECUtil {
         } else {
             throw new IllegalArgumentException();
         }
+    }
+
+    private static ECPoint toPoint(EC_Params params) {
+        return new ECPoint(
+                new BigInteger(1, params.getParam(EC_Consts.PARAMETER_W)[0]),
+                new BigInteger(1, params.getParam(EC_Consts.PARAMETER_W)[1]));
+    }
+
+    private static BigInteger toScalar(EC_Params params) {
+        return new BigInteger(1, params.getParam(EC_Consts.PARAMETER_S)[0]);
+    }
+
+    public static ECPublicKey toPublicKey(EC_Key.Public pubkey) {
+        EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, pubkey.getCurve());
+        if (curve == null) {
+            throw new IllegalArgumentException("pubkey curve nor found: " + pubkey.getCurve());
+        }
+        return new RawECPublicKey(toPoint(pubkey), curve.toSpec());
+    }
+
+    public static ECPrivateKey toPrivateKey(EC_Key.Private privkey) {
+        EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, privkey.getCurve());
+        if (curve == null) {
+            throw new IllegalArgumentException("privkey curve nor found: " + privkey.getCurve());
+        }
+        return new RawECPrivateKey(toScalar(privkey), curve.toSpec());
+    }
+
+    public static KeyPair toKeyPair(EC_Keypair kp) {
+        EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, kp.getCurve());
+        if (curve == null) {
+            throw new IllegalArgumentException("keypair curve nor found: " + kp.getCurve());
+        }
+        ECPublicKey pubkey = new RawECPublicKey(toPoint(kp), curve.toSpec());
+        ECPrivateKey privkey = new RawECPrivateKey(toScalar(kp), curve.toSpec());
+        return new KeyPair(pubkey, privkey);
     }
 }

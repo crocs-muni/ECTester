@@ -76,7 +76,7 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
             if (publicKey instanceof NativeECPublicKey) {
                 return ((NativeECPublicKey) publicKey).getData();
             } else {
-                return ECUtil.toX962Uncompressed(publicKey.getW(), ((ECParameterSpec) params).getCurve());
+                return ECUtil.toX962Uncompressed(publicKey.getW(), ((ECParameterSpec) params));
             }
         }
 
@@ -84,7 +84,7 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
             if (privateKey instanceof NativeECPrivateKey) {
                 return ((NativeECPrivateKey) privateKey).getData();
             } else {
-                return ECUtil.toByteArray(privateKey.getS(), ((ECParameterSpec) params).getCurve().getField().getFieldSize());
+                return ECUtil.toByteArray(privateKey.getS(), ((ECParameterSpec) params).getOrder().bitLength());
             }
         }
 

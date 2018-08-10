@@ -524,6 +524,8 @@ public class ECTesterStandalone {
                 break;
         }
 
+        String suiteName = cli.getArg(0);
+
         StandaloneTestSuite suite = new StandaloneDefaultSuite(writer, cfg, cli);
         suite.run();
     }
