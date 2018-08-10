@@ -103,11 +103,11 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
     
     add_ka(env, "ECDH", "CryptoppECDH", self, provider_put);
     
-    add_sig(env, "SHA1withECDSA", "CryptoppECDSAwithSHA1", self, provider_put);
-    add_sig(env, "SHA224withECDSA", "CryptoppECDSAwithSHA224", self, provider_put);
-    add_sig(env, "SHA256withECDSA", "CryptoppECDSAwithSHA256", self, provider_put);
-    add_sig(env, "SHA384withECDSA", "CryptoppECDSAwithSHA384", self, provider_put);
-    add_sig(env, "SHA512withECDSA", "CryptoppECDSAwithSHA512", self, provider_put);
+    add_sig(env, "SHA1withECDSA(raw)", "CryptoppECDSAwithSHA1", self, provider_put);
+    add_sig(env, "SHA224withECDSA(raw)", "CryptoppECDSAwithSHA224", self, provider_put);
+    add_sig(env, "SHA256withECDSA(raw)", "CryptoppECDSAwithSHA256", self, provider_put);
+    add_sig(env, "SHA384withECDSA(raw)", "CryptoppECDSAwithSHA384", self, provider_put);
+    add_sig(env, "SHA512withECDSA(raw)", "CryptoppECDSAwithSHA512", self, provider_put);
 
     init_classes(env, "Cryptopp");
 }
