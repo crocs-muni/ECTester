@@ -79,12 +79,6 @@ public class SignatureIdent extends Ident {
         ALL.add(new SignatureIdent("SHA224withECGDSA", "1.3.36.3.3.2.5.4.4"));
         ALL.add(new SignatureIdent("SHA384withECGDSA", "1.3.36.3.3.2.5.4.5"));
         ALL.add(new SignatureIdent("SHA512withECGDSA", "1.3.36.3.3.2.5.4.6"));
-        // Raw ECDSA, result is padded concatenation of (r, s)
-        ALL.add(new SignatureIdent("SHA1withECDSA(raw)"));
-        ALL.add(new SignatureIdent("SHA224withECDSA(raw)"));
-        ALL.add(new SignatureIdent("SHA256withECDSA(raw)"));
-        ALL.add(new SignatureIdent("SHA384withECDSA(raw)"));
-        ALL.add(new SignatureIdent("SHA512withECDSA(raw)"));
     }
 
     public static SignatureIdent get(String ident) {

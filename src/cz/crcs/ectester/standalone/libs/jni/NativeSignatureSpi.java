@@ -275,35 +275,35 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
     public static class CryptoppECDSAwithSHA1 extends Cryptopp {
 
         public CryptoppECDSAwithSHA1() {
-            super("SHA1withECDSA(raw)");
+            super("SHA1withECDSA");
         }
     }
 
     public static class CryptoppECDSAwithSHA224 extends Cryptopp {
 
         public CryptoppECDSAwithSHA224() {
-            super("SHA224withECDSA(raw)");
+            super("SHA224withECDSA");
         }
     }
 
     public static class CryptoppECDSAwithSHA256 extends Cryptopp {
 
         public CryptoppECDSAwithSHA256() {
-            super("SHA256withECDSA(raw)");
+            super("SHA256withECDSA");
         }
     }
 
     public static class CryptoppECDSAwithSHA384 extends Cryptopp {
 
         public CryptoppECDSAwithSHA384() {
-            super("SHA384withECDSA(raw)");
+            super("SHA384withECDSA");
         }
     }
 
     public static class CryptoppECDSAwithSHA512 extends Cryptopp {
 
         public CryptoppECDSAwithSHA512() {
-            super("SHA512withECDSA(raw)");
+            super("SHA512withECDSA");
         }
     }
 
