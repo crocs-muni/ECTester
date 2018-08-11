@@ -51,8 +51,6 @@
                 <xs:element name="privkey" type="keyType" minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element name="pubkey" type="keyType" minOccurs="0" maxOccurs="unbounded"/>
             </xs:choice>
-            <xs:attribute name="category" type="xs:string"/>
-            <xs:attribute name="desc" type="xs:string"/>
         </xs:complexType>
     </xs:element>
 
@@ -70,7 +68,7 @@
         </xs:restriction>
     </xs:simpleType>
 
-    <xs:complexType name="resultType">
+    <xs:complexType name="kaResultType">
         <xs:all>
             <xs:element name="id" type="xs:string"/>
             <xs:element name="ka" type="kaType"/>
@@ -82,10 +80,33 @@
         </xs:all>
     </xs:complexType>
 
+    <xs:simpleType name="sigType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="SHA1"/>
+            <xs:enumeration value="SHA224"/>
+            <xs:enumeration value="SHA256"/>
+            <xs:enumeration value="SHA384"/>
+            <xs:enumeration value="SHA512"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="sigResultType">
+        <xs:all>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="sig" type="sigType"/>
+            <xs:element ref="data"/>
+            <xs:element name="curve" type="xs:string"/>
+            <xs:element name="signkey" type="xs:string"/>
+            <xs:element name="verifykey" type="xs:string"/>
+            <xs:element name="desc" type="xs:string" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
     <xs:element name="results">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="result" type="resultType" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="kaResult" type="kaResultType" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="sigResult" type="sigResultType" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

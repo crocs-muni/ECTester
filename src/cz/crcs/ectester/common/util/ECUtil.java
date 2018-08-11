@@ -210,4 +210,8 @@ public class ECUtil {
         ECPrivateKey privkey = new RawECPrivateKey(toScalar(kp), curve.toSpec());
         return new KeyPair(pubkey, privkey);
     }
+
+    public static byte[] toDERSignature(byte[] r, byte[] s) {
+        return ByteUtil.concatenate(new byte[]{0x30, (byte) (r.length + s.length + 4), 0x02, (byte) r.length}, r, new byte[]{0x02, (byte) s.length}, s);
+    }
 }

@@ -47,23 +47,7 @@ public class CardTwistSuite extends CardTestSuite {
             }
             Test ecdh = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform ECDH with public points on twist", ecdhTests.toArray(new Test[0]));
 
-            Random r = new Random();
-            byte[] raw = new byte[128];
-            byte[] sig = new byte[40];
-            r.nextBytes(raw);
-            r.nextBytes(sig);
-
-            List<Test> ecdsaTests = new LinkedList<>();
-            for (EC_Key.Public pub : keys) {
-                Command setCommand = new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, pub.getParams(), pub.flatten());
-                Test setTest = CommandTest.expect(setCommand, Result.ExpectedValue.ANY);
-                Command ecdsaCommand = new Command.ECDSA_verify(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.Signature_ALG_ECDSA_SHA, raw, sig);
-                Test ecdsaTest = CommandTest.expect(ecdsaCommand, Result.ExpectedValue.FAILURE);
-                ecdsaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Verify random ECDSA signature by " + pub.getId(), setTest, ecdsaTest));
-            }
-            Test ecdsa = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Verify random ECDSA signature by public points on twist", ecdsaTests.toArray(new Test[0]));
-
-            Test tests = CompoundTest.all(Result.ExpectedValue.SUCCESS, ecdh, ecdsa);
+            Test tests = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Do tests.", ecdh);
             if (cfg.cleanup) {
                 Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.SUCCESS);
                 doTest(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Twist test of " + curve.getId(), prepare, tests, cleanup));

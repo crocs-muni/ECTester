@@ -1,71 +1,71 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="../schema.xsd">
-    <result>
+    <kaResult>
         <id>addsub/secp224r1/1test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x475fd96e0eb8cb8f100a5d7fe043a7a6851d1d611da2643a3c6ae708</inline>
         <curve>secg/secp224r1</curve>
         <onekey>wycheproof/addsub/secp224r1/1s</onekey>
         <otherkey>wycheproof/addsub/secp224r1/1w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp224r1/2test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x41ef931d669d1f57d8bb95a01a92321da74be8c6cbc3bbe0b2e73ebd</inline>
         <curve>secg/secp224r1</curve>
         <onekey>wycheproof/addsub/secp224r1/2s</onekey>
         <otherkey>wycheproof/addsub/secp224r1/2w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp224r1/3test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x11ff15126411299cbd49e2b7542e69e91ef132e2551a16ecfebb23a3</inline>
         <curve>secg/secp224r1</curve>
         <onekey>wycheproof/addsub/secp224r1/3s</onekey>
         <otherkey>wycheproof/addsub/secp224r1/3w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp256r1/1test</id>
         <ka>DH_PLAIN</ka>
         <inline>0xf7407d61fdf581be4f564621d590ca9b7ba37f31396150f9922f1501da8c83ef</inline>
         <curve>secg/secp256r1</curve>
         <onekey>wycheproof/addsub/secp256r1/1s</onekey>
         <otherkey>wycheproof/addsub/secp256r1/1w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp256r1/2test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x82236fd272208693e0574555ca465c6cc512163486084fa57f5e1bd2e2ccc0b3</inline>
         <curve>secg/secp256r1</curve>
         <onekey>wycheproof/addsub/secp256r1/2s</onekey>
         <otherkey>wycheproof/addsub/secp256r1/2w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp256r1/3test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x06537149664dba1a9924654cb7f787ed224851b0df25ef53fcf54f8f26cd5f3f</inline>
         <curve>secg/secp256r1</curve>
         <onekey>wycheproof/addsub/secp256r1/3s</onekey>
         <otherkey>wycheproof/addsub/secp256r1/3w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp256r1/4test</id>
         <ka>DH_PLAIN</ka>
         <inline>0xf2b38539bce995d443c7bfeeefadc9e42cc2c89c60bf4e86eac95d51987bd112</inline>
         <curve>secg/secp256r1</curve>
         <onekey>wycheproof/addsub/secp256r1/4s</onekey>
         <otherkey>wycheproof/addsub/secp256r1/4w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp256r1/5test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x027b013a6f166db655d69d643c127ef8ace175311e667dff2520f5b5c75b7659</inline>
         <curve>secg/secp256r1</curve>
         <onekey>wycheproof/addsub/secp256r1/5s</onekey>
         <otherkey>wycheproof/addsub/secp256r1/5w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp384r1/1test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x2ecf9dc47e8b07ae61ddbd1680ead02698e9e8469f78d5a28328e48d0c9d7a2ac787e50cba58cc44a32fb1235d2d7027
@@ -73,8 +73,8 @@
         <curve>secg/secp384r1</curve>
         <onekey>wycheproof/addsub/secp384r1/1s</onekey>
         <otherkey>wycheproof/addsub/secp384r1/1w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp384r1/2test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x06ee9f55079d3d3c18c683ba33e0d2521be97c4fbf7917bf3b6287d58ffcde2df88842e3f5530b39549ac20974b1b60e
@@ -82,8 +82,8 @@
         <curve>secg/secp384r1</curve>
         <onekey>wycheproof/addsub/secp384r1/2s</onekey>
         <otherkey>wycheproof/addsub/secp384r1/2w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp384r1/3test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x024c5281487216058270cd1cfe259e948310e4adc263a9edaa4da0bc3f5f8ce8ffc88ae41b2c050bf6dd9c8c66857237
@@ -91,8 +91,8 @@
         <curve>secg/secp384r1</curve>
         <onekey>wycheproof/addsub/secp384r1/3s</onekey>
         <otherkey>wycheproof/addsub/secp384r1/3w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp521r1/1test</id>
         <ka>DH_PLAIN</ka>
         <inline>
@@ -101,8 +101,8 @@
         <curve>secg/secp521r1</curve>
         <onekey>wycheproof/addsub/secp521r1/1s</onekey>
         <otherkey>wycheproof/addsub/secp521r1/1w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp521r1/2test</id>
         <ka>DH_PLAIN</ka>
         <inline>
@@ -111,8 +111,8 @@
         <curve>secg/secp521r1</curve>
         <onekey>wycheproof/addsub/secp521r1/2s</onekey>
         <otherkey>wycheproof/addsub/secp521r1/2w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp521r1/3test</id>
         <ka>DH_PLAIN</ka>
         <inline>
@@ -121,8 +121,8 @@
         <curve>secg/secp521r1</curve>
         <onekey>wycheproof/addsub/secp521r1/3s</onekey>
         <otherkey>wycheproof/addsub/secp521r1/3w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp521r1/4test</id>
         <ka>DH_PLAIN</ka>
         <inline>
@@ -131,8 +131,8 @@
         <curve>secg/secp521r1</curve>
         <onekey>wycheproof/addsub/secp521r1/4s</onekey>
         <otherkey>wycheproof/addsub/secp521r1/4w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp521r1/5test</id>
         <ka>DH_PLAIN</ka>
         <inline>
@@ -141,8 +141,8 @@
         <curve>secg/secp521r1</curve>
         <onekey>wycheproof/addsub/secp521r1/5s</onekey>
         <otherkey>wycheproof/addsub/secp521r1/5w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp521r1/6test</id>
         <ka>DH_PLAIN</ka>
         <inline>
@@ -151,160 +151,160 @@
         <curve>secg/secp521r1</curve>
         <onekey>wycheproof/addsub/secp521r1/6s</onekey>
         <otherkey>wycheproof/addsub/secp521r1/6w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp256k1/1test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x09c7337df6c2b35edf3a21382511cc5add1a71a84cbf8d3396a5be548d92fa67</inline>
         <curve>secg/secp256k1</curve>
         <onekey>wycheproof/addsub/secp256k1/1s</onekey>
         <otherkey>wycheproof/addsub/secp256k1/1w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp256k1/2test</id>
         <ka>DH_PLAIN</ka>
         <inline>0xd16caedd25793666f9e26f5331382106f54095b3d20d40c745b68ca76c0e6983</inline>
         <curve>secg/secp256k1</curve>
         <onekey>wycheproof/addsub/secp256k1/2s</onekey>
         <otherkey>wycheproof/addsub/secp256k1/2w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp256k1/3test</id>
         <ka>DH_PLAIN</ka>
         <inline>0xb8ae1e21d8b34ce4caffed7167a26868ec80a7d4a6a98b639d4d05cd226504de</inline>
         <curve>secg/secp256k1</curve>
         <onekey>wycheproof/addsub/secp256k1/3s</onekey>
         <otherkey>wycheproof/addsub/secp256k1/3w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp256k1/4test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x02776315fe147a36a4b0987492b6503acdea60f926450e5eddb9f88fc82178d3</inline>
         <curve>secg/secp256k1</curve>
         <onekey>wycheproof/addsub/secp256k1/4s</onekey>
         <otherkey>wycheproof/addsub/secp256k1/4w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp256k1/5test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x3988c9c7050a28794934e5bd67629b556d97a4858d22812835f4a37dca351943</inline>
         <curve>secg/secp256k1</curve>
         <onekey>wycheproof/addsub/secp256k1/5s</onekey>
         <otherkey>wycheproof/addsub/secp256k1/5w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/secp256k1/6test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x4b52257d8b3ba387797fdf7a752f195ddc4f7d76263de61d0d52a5ec14a36cbf</inline>
         <curve>secg/secp256k1</curve>
         <onekey>wycheproof/addsub/secp256k1/6s</onekey>
         <otherkey>wycheproof/addsub/secp256k1/6w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP224r1/1test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x1be0d59d1f0f3a743ae19c5246099391098f71444223831e16cfa0c5</inline>
         <curve>brainpool/brainpoolP224r1</curve>
         <onekey>wycheproof/addsub/brainpoolP224r1/1s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP224r1/1w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP224r1/2test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x7e00a9267243cea4ba7617860b6fcf404e0357d1202d8c85dc5e07d3</inline>
         <curve>brainpool/brainpoolP224r1</curve>
         <onekey>wycheproof/addsub/brainpoolP224r1/2s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP224r1/2w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP224r1/3test</id>
         <ka>DH_PLAIN</ka>
         <inline>0xaac6a805f4ce1b6dcc13ec4ed16a889dc4d708f7f6f1e23471338324</inline>
         <curve>brainpool/brainpoolP224r1</curve>
         <onekey>wycheproof/addsub/brainpoolP224r1/3s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP224r1/3w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP256r1/1test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x1950b7ce510d4d8648e80c6385a42d005433fc5ca61e2022a1405fe18142c246</inline>
         <curve>brainpool/brainpoolP256r1</curve>
         <onekey>wycheproof/addsub/brainpoolP256r1/1s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP256r1/1w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP256r1/2test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x5c05c4d877a0e2af5ffa004c122630bb87157cf346dbeb8ae13017162da208f4</inline>
         <curve>brainpool/brainpoolP256r1</curve>
         <onekey>wycheproof/addsub/brainpoolP256r1/2s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP256r1/2w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP256r1/3test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x9639bbd4e22194ce3892a814c82eddbd21dde05cfac20e99396e3d6ef0841f7c</inline>
         <curve>brainpool/brainpoolP256r1</curve>
         <onekey>wycheproof/addsub/brainpoolP256r1/3s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP256r1/3w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP256r1/4test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x341cbdf61f9dd620ba6873a74804afe30a06b0a113a6916a4104d2d4cc196aec</inline>
         <curve>brainpool/brainpoolP256r1</curve>
         <onekey>wycheproof/addsub/brainpoolP256r1/4s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP256r1/4w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP320r1/1test</id>
         <ka>DH_PLAIN</ka>
         <inline>0xc0038da858441f559a864dcd6c4558437f9ad091a67c3fda69a9e0cb6f446a8b47ae95edc2f4eade</inline>
         <curve>brainpool/brainpoolP320r1</curve>
         <onekey>wycheproof/addsub/brainpoolP320r1/1s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP320r1/1w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP320r1/2test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x8258131a80bc9f2b8ba532ef1253ef39dce25e6deb85227c670273521c311dbb9bf1a56dd29107b3</inline>
         <curve>brainpool/brainpoolP320r1</curve>
         <onekey>wycheproof/addsub/brainpoolP320r1/2s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP320r1/2w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP320r1/3test</id>
         <ka>DH_PLAIN</ka>
         <inline>0xae752e75684a9adfc6198e6c1ce9249d26743104e8b0bd0417998c62982622ea2fdf6917413d547c</inline>
         <curve>brainpool/brainpoolP320r1</curve>
         <onekey>wycheproof/addsub/brainpoolP320r1/3s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP320r1/3w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP320r1/4test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x37bfbb637fce27ee80b3af326546303e0bd8af01b72f591830a548609055bda489d9a4e6b5e3f43e</inline>
         <curve>brainpool/brainpoolP320r1</curve>
         <onekey>wycheproof/addsub/brainpoolP320r1/4s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP320r1/4w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP320r1/5test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x854ce9516e73c6cc8d0d6ce3cdf933541a719578712440f02a86829af1398fcab2bb0949c1d63106</inline>
         <curve>brainpool/brainpoolP320r1</curve>
         <onekey>wycheproof/addsub/brainpoolP320r1/5s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP320r1/5w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP320r1/6test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x7dfd07c1cfe70db4772cf9f6bb6b58a10bbc9509e5ce86651d5c395f3544f62d6d8f8109edba441a</inline>
         <curve>brainpool/brainpoolP320r1</curve>
         <onekey>wycheproof/addsub/brainpoolP320r1/6s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP320r1/6w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP384r1/1test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x3729bcd215b41c658b832686c81362b3485d75b09478c6dde3b5e278564ef4162bdd6ff65afc6e8213bba9b6c54ba1eb
@@ -312,8 +312,8 @@
         <curve>brainpool/brainpoolP384r1</curve>
         <onekey>wycheproof/addsub/brainpoolP384r1/1s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP384r1/1w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP384r1/2test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x12ba4622daf1f2f950aad6d54aaab821885a47a98573afea49bc1896041ee9501acef82810f3755ff284e16665bd0f62
@@ -321,8 +321,8 @@
         <curve>brainpool/brainpoolP384r1</curve>
         <onekey>wycheproof/addsub/brainpoolP384r1/2s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP384r1/2w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP384r1/3test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x7fb5398519857f2c17cddd0a9d2c1660ac35b4723e4a049ba5c58c458b742dfa813a5c7175e1c0974b514bfaeb0039f8
@@ -330,8 +330,8 @@
         <curve>brainpool/brainpoolP384r1</curve>
         <onekey>wycheproof/addsub/brainpoolP384r1/3s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP384r1/3w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP384r1/4test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x0f0a1d20ba6a7b2c48154b43870be4890979d9261950736de96c29f371233b1ef94a79c2ab698868f00cea7e912deb94
@@ -339,8 +339,8 @@
         <curve>brainpool/brainpoolP384r1</curve>
         <onekey>wycheproof/addsub/brainpoolP384r1/4s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP384r1/4w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP512r1/1test</id>
         <ka>DH_PLAIN</ka>
         <inline>
@@ -349,8 +349,8 @@
         <curve>brainpool/brainpoolP512r1</curve>
         <onekey>wycheproof/addsub/brainpoolP512r1/1s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP512r1/1w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP512r1/2test</id>
         <ka>DH_PLAIN</ka>
         <inline>
@@ -359,8 +359,8 @@
         <curve>brainpool/brainpoolP512r1</curve>
         <onekey>wycheproof/addsub/brainpoolP512r1/2s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP512r1/2w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP512r1/3test</id>
         <ka>DH_PLAIN</ka>
         <inline>
@@ -369,8 +369,8 @@
         <curve>brainpool/brainpoolP512r1</curve>
         <onekey>wycheproof/addsub/brainpoolP512r1/3s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP512r1/3w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP512r1/4test</id>
         <ka>DH_PLAIN</ka>
         <inline>
@@ -379,112 +379,112 @@
         <curve>brainpool/brainpoolP512r1</curve>
         <onekey>wycheproof/addsub/brainpoolP512r1/4s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP512r1/4w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP224t1/1test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x97ded4c2e06b5a13c9109be3fa42dc2ca93a306fdf9e85ac4bb02e22</inline>
         <curve>brainpool/brainpoolP224t1</curve>
         <onekey>wycheproof/addsub/brainpoolP224t1/1s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP224t1/1w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP224t1/2test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x686798270c7e188e6ab3e28a10754f965d5d02f33d30d8faf38155f4</inline>
         <curve>brainpool/brainpoolP224t1</curve>
         <onekey>wycheproof/addsub/brainpoolP224t1/2s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP224t1/2w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP224t1/3test</id>
         <ka>DH_PLAIN</ka>
         <inline>0xd64f68debaf751d63da1883668822031c69e913cc53b969e5fbae845</inline>
         <curve>brainpool/brainpoolP224t1</curve>
         <onekey>wycheproof/addsub/brainpoolP224t1/3s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP224t1/3w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP256t1/1test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x4875ed4b2bc7e7a0cb89d93b359fa72ddaf0377ddeddd33f62ec2450cd80e7cd</inline>
         <curve>brainpool/brainpoolP256t1</curve>
         <onekey>wycheproof/addsub/brainpoolP256t1/1s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP256t1/1w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP256t1/2test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x315637f94d6776cc3928c1ffbe3c7004aa70b787cc0687faee1da5f9324a36c4</inline>
         <curve>brainpool/brainpoolP256t1</curve>
         <onekey>wycheproof/addsub/brainpoolP256t1/2s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP256t1/2w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP256t1/3test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x54d1009ab7d3cb9d4314ea7512f7bc4d916ecd47bc9e491ad4a6d65a40672554</inline>
         <curve>brainpool/brainpoolP256t1</curve>
         <onekey>wycheproof/addsub/brainpoolP256t1/3s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP256t1/3w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP256t1/4test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x892923527eb529de963e902641c01701a66cd999d1b665717d7b11cbb5a96f7c</inline>
         <curve>brainpool/brainpoolP256t1</curve>
         <onekey>wycheproof/addsub/brainpoolP256t1/4s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP256t1/4w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP320t1/1test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x147c9b3b4880f7f6d4eb96f891672cb0d09a6bef15574ab2a43f09ae7f8090cdfa81517e098dac1e</inline>
         <curve>brainpool/brainpoolP320t1</curve>
         <onekey>wycheproof/addsub/brainpoolP320t1/1s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP320t1/1w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP320t1/2test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x47f4412278edc51ba0635853a82e033b164a68194d4c3e2492017432daaa8c35684c343f701f6b02</inline>
         <curve>brainpool/brainpoolP320t1</curve>
         <onekey>wycheproof/addsub/brainpoolP320t1/2s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP320t1/2w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP320t1/3test</id>
         <ka>DH_PLAIN</ka>
         <inline>0xa64c2b075abf446a9ba43f6ffcefda795835ab2e1c4d19bd9c9ede59cd9eaf9c831a520b1e0ce269</inline>
         <curve>brainpool/brainpoolP320t1</curve>
         <onekey>wycheproof/addsub/brainpoolP320t1/3s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP320t1/3w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP320t1/4test</id>
         <ka>DH_PLAIN</ka>
         <inline>0xb3b25821ac9b07c614f6fce7f9a1c2325d3cbd51cac82dadeb79037a23bce03b0352407ccd447af8</inline>
         <curve>brainpool/brainpoolP320t1</curve>
         <onekey>wycheproof/addsub/brainpoolP320t1/4s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP320t1/4w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP320t1/5test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x594aebd8010757d15f79631af0e481310359e0086e4e988ab5525a9303aaf800cd4ef123ceb68875</inline>
         <curve>brainpool/brainpoolP320t1</curve>
         <onekey>wycheproof/addsub/brainpoolP320t1/5s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP320t1/5w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP320t1/6test</id>
         <ka>DH_PLAIN</ka>
         <inline>0xc7e67dc2f64d0e66841777a6f014340b8a63f42024c6cd5ac5e10cec3b02a2d050c2fd8f078a754f</inline>
         <curve>brainpool/brainpoolP320t1</curve>
         <onekey>wycheproof/addsub/brainpoolP320t1/6s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP320t1/6w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP384t1/1test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x22d772bd2104c3d24b8505b3e7d1f3f00ca2dacb493ca729170854ef2158407a0ffab006153d5cb7781e9cb57cda505f
@@ -492,8 +492,8 @@
         <curve>brainpool/brainpoolP384t1</curve>
         <onekey>wycheproof/addsub/brainpoolP384t1/1s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP384t1/1w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP384t1/2test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x2b2c617f8c84713f8440e5e273341d69edf9e6ea2056af38ccfc6ee733a9c11e1f9aa63cb3615d2b3cebe69d8360a2bd
@@ -501,8 +501,8 @@
         <curve>brainpool/brainpoolP384t1</curve>
         <onekey>wycheproof/addsub/brainpoolP384t1/2s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP384t1/2w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP384t1/3test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x28518f75e020e00095d47166f7825f1767b6425172decde390c9266764c8b631608dc323b8415c39c9d0b8a24cd337ac
@@ -510,8 +510,8 @@
         <curve>brainpool/brainpoolP384t1</curve>
         <onekey>wycheproof/addsub/brainpoolP384t1/3s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP384t1/3w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP384t1/4test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x4424a1b48eba0524e4aa82455e282b35cf0d13d8536fe6c410cd5050f3d4d1739254945a8f580d43ee0245b1df67de56
@@ -519,8 +519,8 @@
         <curve>brainpool/brainpoolP384t1</curve>
         <onekey>wycheproof/addsub/brainpoolP384t1/4s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP384t1/4w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP512t1/1test</id>
         <ka>DH_PLAIN</ka>
         <inline>
@@ -529,8 +529,8 @@
         <curve>brainpool/brainpoolP512t1</curve>
         <onekey>wycheproof/addsub/brainpoolP512t1/1s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP512t1/1w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP512t1/2test</id>
         <ka>DH_PLAIN</ka>
         <inline>
@@ -539,8 +539,8 @@
         <curve>brainpool/brainpoolP512t1</curve>
         <onekey>wycheproof/addsub/brainpoolP512t1/2s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP512t1/2w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP512t1/3test</id>
         <ka>DH_PLAIN</ka>
         <inline>
@@ -549,8 +549,8 @@
         <curve>brainpool/brainpoolP512t1</curve>
         <onekey>wycheproof/addsub/brainpoolP512t1/3s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP512t1/3w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>addsub/brainpoolP512t1/4test</id>
         <ka>DH_PLAIN</ka>
         <inline>
@@ -559,8 +559,8 @@
         <curve>brainpool/brainpoolP512t1</curve>
         <onekey>wycheproof/addsub/brainpoolP512t1/4s</onekey>
         <otherkey>wycheproof/addsub/brainpoolP512t1/4w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>cve_2017_10176/secp521r1/1test</id>
         <ka>DH_PLAIN</ka>
         <inline>
@@ -569,21 +569,21 @@
         <curve>secg/secp521r1</curve>
         <onekey>wycheproof/cve_2017_10176/secp521r1/1s</onekey>
         <otherkey>wycheproof/cve_2017_10176/secp521r1/1w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>cve_2017_8932/secp256r1/1test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x4d4de80f1534850d261075997e3049321a0864082d24a917863366c0724f5ae3</inline>
         <curve>secg/secp256r1</curve>
         <onekey>wycheproof/cve_2017_8932/secp256r1/1s</onekey>
         <otherkey>wycheproof/cve_2017_8932/secp256r1/1w</otherkey>
-    </result>
-    <result>
+    </kaResult>
+    <kaResult>
         <id>cve_2017_8932/secp256r1/2test</id>
         <ka>DH_PLAIN</ka>
         <inline>0x831c3f6b5f762d2f461901577af41354ac5f228c2591f84f8a6e51e2e3f17991</inline>
         <curve>secg/secp256r1</curve>
         <onekey>wycheproof/cve_2017_8932/secp256r1/2s</onekey>
         <otherkey>wycheproof/cve_2017_8932/secp256r1/2w</otherkey>
-    </result>
+    </kaResult>
 </results>

@@ -6,6 +6,8 @@ import cz.crcs.ectester.common.test.TestCallback;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
 
+import java.util.Arrays;
+
 /**
  * A simple test that runs one Command to get and evaluate one Response
  * to get a Result and compare it with the expected one.
@@ -45,6 +47,23 @@ public class CommandTest extends SimpleTest<CommandTestable> {
 
     public static CommandTest expect(Command command, Result.ExpectedValue expectedValue) {
         return expect(command, expectedValue, null, null);
+    }
+
+    public static CommandTest expectSW(CommandTestable command, short... expectedSWS) {
+        return new CommandTest(command,  new TestCallback<CommandTestable>() {
+            @Override
+            public Result apply(CommandTestable commandTestable) {
+                if (Arrays.equals(commandTestable.getResponse().getSWs(), expectedSWS)) {
+                    return new Result(Result.Value.SUCCESS);
+                } else {
+                    return new Result(Result.Value.FAILURE);
+                }
+            }
+        });
+    }
+
+    public static CommandTest expectSW(Command command, short... expectedSWS) {
+        return expectSW(new CommandTestable(command), expectedSWS);
     }
 
     public Command getCommand() {

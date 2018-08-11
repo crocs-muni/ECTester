@@ -27,9 +27,7 @@
         <!ENTITY secp256r1 SYSTEM "invalid/secg/secp256r1.xml">
         ]>
 <keys xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="../schema.xsd"
-      category="invalid"
-      desc="">
+      xsi:noNamespaceSchemaLocation="../schema.xsd">
     <!--
     This is messy and what not, but Java XML api doesn't support
     the XInclude selector necessary to make this work nicely, so XInclude is out...

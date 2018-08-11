@@ -23,9 +23,7 @@
         <!ENTITY secp521r1 SYSTEM "twist/secg/secp521r1.xml">
         ]>
 <keys xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="../schema.xsd"
-      category="twist"
-      desc="">
+      xsi:noNamespaceSchemaLocation="../schema.xsd">
     &k163;
     &k233;
     &k283;

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <keys xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="../schema.xsd"
-      category="wycheproof"
-      desc="">
+      xsi:noNamespaceSchemaLocation="../schema.xsd">
     <privkey>
         <id>addsub/secp224r1/1s</id>
         <inline>0x0ffffffffffffffffffffffffffff16a2e0b8f03e13dd29455c5c29b7</inline>

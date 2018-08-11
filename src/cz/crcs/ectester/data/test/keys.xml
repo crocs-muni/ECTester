@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <keys xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="../schema.xsd"
-      category="test"
-      desc="Test vectors">
+      xsi:noNamespaceSchemaLocation="../schema.xsd">
     <keypair>
         <id>secp160r1-U</id>
         <file>secg/secp160r1-keyU.csv</file>
