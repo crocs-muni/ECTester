@@ -417,11 +417,11 @@ public abstract class Command implements Cloneable {
         private short transformation;
 
         /**
-         * @param cardManager cardManager to send APDU through
-         * @param keyPair     which keyPair to transform, local/remote (KEYPAIR_* || ...)
-         * @param key         key to transform (EC_Consts.KEY_* | ...)
-         * @param params      parameters to transform (EC_Consts.PARAMETER_* | ...)
-         * @param transformation  transformation type (EC_Consts.TRANSFORMATION_*)
+         * @param cardManager    cardManager to send APDU through
+         * @param keyPair        which keyPair to transform, local/remote (KEYPAIR_* || ...)
+         * @param key            key to transform (EC_Consts.KEY_* | ...)
+         * @param params         parameters to transform (EC_Consts.PARAMETER_* | ...)
+         * @param transformation transformation type (EC_Consts.TRANSFORMATION_*)
          */
         public Transform(CardMngr cardManager, byte keyPair, byte key, short params, short transformation) {
             super(cardManager);
@@ -568,12 +568,12 @@ public abstract class Command implements Cloneable {
         /**
          * Creates the INS_ECDH instruction.
          *
-         * @param cardManager cardManager to send APDU through
-         * @param pubkey      keyPair to use for public key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
-         * @param privkey     keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
-         * @param export      whether to export ECDH secret
-         * @param transformation  whether to transform the pubkey before ECDH (EC_Consts.TRANSFORMATION_* | ...)
-         * @param type        ECDH algorithm type (EC_Consts.KA_* | ...)
+         * @param cardManager    cardManager to send APDU through
+         * @param pubkey         keyPair to use for public key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
+         * @param privkey        keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
+         * @param export         whether to export ECDH secret
+         * @param transformation whether to transform the pubkey before ECDH (EC_Consts.TRANSFORMATION_* | ...)
+         * @param type           ECDH algorithm type (EC_Consts.KA_* | ...)
          */
         public ECDH(CardMngr cardManager, byte pubkey, byte privkey, byte export, short transformation, byte type) {
             super(cardManager);
@@ -627,12 +627,12 @@ public abstract class Command implements Cloneable {
         /**
          * Creates the INS_ECDH_DIRECT instruction.
          *
-         * @param cardManager cardManager to send APDU through
-         * @param privkey     keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
-         * @param export      whether to export ECDH secret
-         * @param transformation  whether to transform the pubkey before ECDH (EC_Consts.TRANSFORMATION_* | ...)
-         * @param type        EC KeyAgreement type
-         * @param pubkey      pubkey data to do ECDH with.
+         * @param cardManager    cardManager to send APDU through
+         * @param privkey        keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
+         * @param export         whether to export ECDH secret
+         * @param transformation whether to transform the pubkey before ECDH (EC_Consts.TRANSFORMATION_* | ...)
+         * @param type           EC KeyAgreement type
+         * @param pubkey         pubkey data to do ECDH with.
          */
         public ECDH_direct(CardMngr cardManager, byte privkey, byte export, short transformation, byte type, byte[] pubkey) {
             super(cardManager);
