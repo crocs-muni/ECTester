@@ -6,6 +6,7 @@
  - `test-vectors`
  - `compression`
  - `miscellaneous`
+ - `signature`
  - `wrong`*
  - `composite`*
  - `invalid`*
@@ -13,7 +14,7 @@
  - `degenerate`*
  - `cofactor`*
  - `edge-cases`*
- 
+
 **\*NOTE: The `wrong`, `composite`, `invalid`,`twist`, `cofactor`, `edge-cases` and `degenerate` test suites caused temporary/permanent DoS of some cards. These test suites prompt you for
 confirmation before running, be cautious.**
 
@@ -26,7 +27,7 @@ This test suite is run if no argument is provided to `-t / --test`.
 
 For example:
 ```bash
-java -jar ECTester.jar -t
+java -jar ECTesterReader.jar -t
 ```
 tests prime field and binary field curves, using the default test suite.
 
@@ -44,7 +45,7 @@ Tests using known test vectors provided by NIST/SECG/Brainpool:
 
 For example:
 ```bash
-java -jar ECTester.jar -t test-vectors
+java -jar ECTesterReader.jar -t test-vectors
 ```
 tests all curves for which test-vectors are provided.
 
@@ -54,33 +55,42 @@ and hybrid form. Also tests card response to a hybrid point with wrong `y` coord
 
 For example:
 ```bash
-java -jar ECTester.jar -t compression
+java -jar ECTesterReader.jar -t compression
 ```
 
 ## Wrong
 Tests on a category of wrong curves. These curves are not really curves as they have:
+
  - non-prime field in the prime-field case
  - reducible polynomial as the field polynomial in the binary case
 
 This test suite also does some additional tests with corrupting the parameters:
+
  - Fp:
-   - p = 0
-   - p = 1
-   - p = q^2; q prime
-   - p = q * s; q and s prime
-   - G = infinity
-   - G = random point not on curve
-   - r = some prime (and \[r\]G != infinity)
-   - r = some composite number (and \[r\]G != infinity)
+    - p = 0
+    - p = 1
+    - p = q^2; q prime
+    - p = q * s; q and s prime
+    - G = random point not on curve
+    - G = random data
+    - G = infinity
+    - r = 0
+    - r = 1
+    - r = some prime larger than original r (and [r]G != infinity)
+    - r = some prime smaller than original r (and [r]G != infninity)
+    - r = some composite number (and [r]G != infinity)
+    - k = 0xff
+    - k = 0
+
  - F2m:
-   - e1 = e2 = e3 = 0
-   - m < e1 < e2 < e3
+    - e1 = e2 = e3 = 0
+    - m < e1 < e2 < e3
 
 These tests should fail generally.
 
 For example:
 ```bash
-java -jar ECTester.jar -t wrong
+java -jar ECTesterReader.jar -t wrong
 ```
 does all wrong curve tests.
 
@@ -90,12 +100,15 @@ Tests using curves that don't have a prime order/nearly prime order.
 These tests should generally fail, a success here implies the card will use a non-secure curve if such curve is set
 by the applet. Operations over such curves are susceptible to small-subgroup attacks.
 
-   - r = p * q
-   - \[r\]G = infinity but r != |G|, so |G| divides r
-   
+   - r = quite a smooth number, many small factors, r = |G|
+   - r = prime(of increasing bit lengths), r = |G|
+   - r = p * q = |G|
+   - r = G = Carmichael number = p * q * s
+   - [r]G = infinity but r != |G|, so |G| divides r
+
 For example:
 ```bash
-java -jar ECTester.jar -t composite
+java -jar ECTesterReader.jar -t composite
 ```
 
 
@@ -107,7 +120,7 @@ See [Practical Invalid Curve Attacks on TLS-ECDH](https://www.nds.rub.de/media/n
 
 For example:
 ```bash
-java -jar ECTester.jar -t invalid
+java -jar ECTesterReader.jar -t invalid
 ```
 tests using all curves with pregenerated *invalid* public keys for these curves.
 
@@ -121,7 +134,7 @@ See [SafeCurves on twist security](https://safecurves.cr.yp.to/twist.html) for m
 
 For example:
 ```bash
-java -jar ECTester.jar -t twist
+java -jar ECTesterReader.jar -t twist
 ```
 
 ## Degenerate
@@ -133,7 +146,7 @@ See [Degenerate Curve Attacks - Extending Invalid Curve Attacks to Edwards Curve
 
 For example:
 ```bash
-java -jar ECTester.jar -t degenerate
+java -jar ECTesterReader.jar -t degenerate
 ```
 
 ## Cofactor
@@ -143,27 +156,62 @@ of two large primes, sets the generator with order of one prime and tries points
 
 For example:
 ```bash
-java -jar ECTester.jar -t cofactor
+java -jar ECTesterReader.jar -t cofactor
 ```
 
 ## Edge-Cases
-Tests various inputs to ECDH which may cause an implementation to achieve a certain edge-case state during ECDH. 
+Tests various inputs to ECDH which may cause an implementation to achieve a certain edge-case state during ECDH.
 Some of the data is from the google/Wycheproof project. Tests include [CVE-2017-10176](https://nvd.nist.gov/vuln/detail/CVE-2017-10176) and [CVE-2017-8932](https://nvd.nist.gov/vuln/detail/CVE-2017-8932).
+Various custom edge private key values are also tested.
 
-CVE-2017-10176 was in implementation issue in the SunEC Java library that caused the implementation to reach the point at infinity during ECDH computation.
+CVE-2017-10176 was in implementation issue in the SunEC Java library (and NSS(CVE-2017-7781), thus also anything that used it) that caused the implementation to reach the point at infinity during ECDH computation.
+See [blog](http://blog.intothesymmetry.com/2017/08/cve-2017-7781cve-2017-10176-issue-with.html) for more info.
 
 CVE-2017-8932 was an implementation issue in the Go standard library, in particular its scalar multiplication algorithm on the
 P-256 curve which leaked information about the private key.
 
+Custom private key values over SECG curves are tested:
+
+   - s = 0, s = 1
+   - s < r, s = r, s > r
+   - s = r - 1, s = r + 1
+   - s = k\*r - 1, s = k\*r, s = k\*r + 1
+
 For example:
 ```bash
-java -jar ECTester.jar -t edge-cases
+java -jar ECTesterReader.jar -t edge-cases
 ```
 
 ## Miscellaneous
-Some miscellaneous tests, tries ECDH and ECDSA over supersingular curves and Barreto-Naehrig curves with small embedding degree and CM discriminant.
+Some miscellaneous tests, tries ECDH and ECDSA over supersingular curves, anomalous curves and Barreto-Naehrig curves with small embedding degree and CM discriminant.
 
 For example:
 ```bash
-java -jar ECTester.jar -t miscellaneous
+java -jar ECTesterReader.jar -t miscellaneous
+```
+
+## Signature
+Tests ECDSA verification, with invalid signatures.
+
+   - Well-formed(DER) invalid signatures:
+       - r = random, s = random
+       - r = 0, s = random
+       - r = random, s = 0
+       - r = 1, s = random
+       - r = random, s = 1
+       - r = 0, s = 0
+       - r = 0, s = 1
+       - r = 1, s = 0
+       - r = 1, s = 1
+       - s = p
+       - s = 2 * p
+   - Invalid signatures:
+       - Signature shorter than specified in ASN.1 SEQUENCE header.
+       - Signature longer than specified in ASN.1 SEQUENCE header.
+       - r shorter/longer than specified in its ASN.1 header.
+       - s shorter/longer than specified in its ASN.1 header.
+
+For example:
+```bash
+java -jar ECTesterReader.jar -t signature
 ```

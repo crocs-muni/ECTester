@@ -1,0 +1,39 @@
+---
+layout: default
+---
+
+{% include suite_header.html suite="Signature" %}
+Tests ECDSA verification, with invalid signatures.<br/>
+
+<ul>
+<li>Well-formed(DER) invalid signatures:<br/>
+	<ul>
+	<li>r = random, s = random</li>
+	<li>r = 0, s = random</li>
+	<li>r = random, s = 0</li>
+	<li>r = 1, s = random</li>
+	<li>r = random, s = 1</li>
+	<li>r = 0, s = 0</li>
+	<li>r = 0, s = 1</li>
+	<li>r = 1, s = 0</li>
+	<li>r = 1, s = 1</li>
+	<li>s = p</li>
+	<li>s = 2 * p</li>
+	</ul>
+</li>
+<li>Invalid signatures:<br/>
+	<ul>
+	<li>Signature shorter than specified in ASN.1 SEQUENCE header.</li>
+	<li>Signature longer than specified in ASN.1 SEQUENCE header.</li>
+	<li>r shorter/longer than specified in its ASN.1 header.</li>
+	<li>s shorter/longer than specified in its ASN.1 header.</li>
+	</ul>
+</li>
+</ul>
+<br/>
+
+{% include result_header.html testRun=page.testRun %}
+
+{% include result_table.html testRun=page.testRun %}
+
+{% include result_footer.html %}
