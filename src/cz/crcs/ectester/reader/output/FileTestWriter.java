@@ -26,7 +26,7 @@ public class FileTestWriter extends TeeTestWriter {
             String fName = files[i];
             String format = null;
             if (PREFIX.matcher(fName).matches()) {
-                String[] split = fName.split(":",2);
+                String[] split = fName.split(":", 2);
                 format = split[0];
                 fName = split[1];
             }

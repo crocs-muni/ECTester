@@ -3,7 +3,6 @@ package cz.crcs.ectester.reader.test;
 import cz.crcs.ectester.common.test.Result;
 import cz.crcs.ectester.common.test.SimpleTest;
 import cz.crcs.ectester.common.test.TestCallback;
-import cz.crcs.ectester.common.test.TestException;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
 

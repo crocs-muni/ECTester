@@ -50,7 +50,7 @@ public class CommandTest extends SimpleTest<CommandTestable> {
     }
 
     public static CommandTest expectSW(CommandTestable command, short... expectedSWS) {
-        return new CommandTest(command,  new TestCallback<CommandTestable>() {
+        return new CommandTest(command, new TestCallback<CommandTestable>() {
             @Override
             public Result apply(CommandTestable commandTestable) {
                 if (Arrays.equals(commandTestable.getResponse().getSWs(), expectedSWS)) {

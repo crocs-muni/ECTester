@@ -26,7 +26,6 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.cli.CLITools;
 import cz.crcs.ectester.common.cli.Colors;
-import cz.crcs.ectester.common.ec.EC_Params;
 import cz.crcs.ectester.common.output.OutputLogger;
 import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.util.ByteUtil;
