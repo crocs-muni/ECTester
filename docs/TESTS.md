@@ -4,6 +4,7 @@
  - `test-vectors`
  - `compression`
  - `miscellaneous`
+ - `signature`
  - `wrong`*
  - `composite`*
  - `invalid`*
@@ -24,7 +25,7 @@ This test suite is run if no argument is provided to `-t / --test`.
 
 For example:
 ```bash
-java -jar ECTester.jar -t
+java -jar ECTesterReader.jar -t
 ```
 tests prime field and binary field curves, using the default test suite.
 
@@ -42,7 +43,7 @@ Tests using known test vectors provided by NIST/SECG/Brainpool:
 
 For example:
 ```bash
-java -jar ECTester.jar -t test-vectors
+java -jar ECTesterReader.jar -t test-vectors
 ```
 tests all curves for which test-vectors are provided.
 
@@ -52,11 +53,12 @@ and hybrid form. Also tests card response to a hybrid point with wrong `y` coord
 
 For example:
 ```bash
-java -jar ECTester.jar -t compression
+java -jar ECTesterReader.jar -t compression
 ```
 
 ## Wrong
 Tests on a category of wrong curves. These curves are not really curves as they have:
+
  - non-prime field in the prime-field case
  - reducible polynomial as the field polynomial in the binary case
 
@@ -86,7 +88,7 @@ These tests should fail generally.
 
 For example:
 ```bash
-java -jar ECTester.jar -t wrong
+java -jar ECTesterReader.jar -t wrong
 ```
 does all wrong curve tests.
 
@@ -104,7 +106,7 @@ by the applet. Operations over such curves are susceptible to small-subgroup att
 
 For example:
 ```bash
-java -jar ECTester.jar -t composite
+java -jar ECTesterReader.jar -t composite
 ```
 
 
@@ -116,7 +118,7 @@ See [Practical Invalid Curve Attacks on TLS-ECDH](https://www.nds.rub.de/media/n
 
 For example:
 ```bash
-java -jar ECTester.jar -t invalid
+java -jar ECTesterReader.jar -t invalid
 ```
 tests using all curves with pregenerated *invalid* public keys for these curves.
 
@@ -130,7 +132,7 @@ See [SafeCurves on twist security](https://safecurves.cr.yp.to/twist.html) for m
 
 For example:
 ```bash
-java -jar ECTester.jar -t twist
+java -jar ECTesterReader.jar -t twist
 ```
 
 ## Degenerate
@@ -142,7 +144,7 @@ See [Degenerate Curve Attacks - Extending Invalid Curve Attacks to Edwards Curve
 
 For example:
 ```bash
-java -jar ECTester.jar -t degenerate
+java -jar ECTesterReader.jar -t degenerate
 ```
 
 ## Cofactor
@@ -152,7 +154,7 @@ of two large primes, sets the generator with order of one prime and tries points
 
 For example:
 ```bash
-java -jar ECTester.jar -t cofactor
+java -jar ECTesterReader.jar -t cofactor
 ```
 
 ## Edge-Cases
@@ -167,6 +169,7 @@ CVE-2017-8932 was an implementation issue in the Go standard library, in particu
 P-256 curve which leaked information about the private key.
 
 Custom private key values over SECG curves are tested:
+
    - s = 0, s = 1
    - s < r, s = r, s > r
    - s = r - 1, s = r + 1
@@ -174,7 +177,7 @@ Custom private key values over SECG curves are tested:
 
 For example:
 ```bash
-java -jar ECTester.jar -t edge-cases
+java -jar ECTesterReader.jar -t edge-cases
 ```
 
 ## Miscellaneous
@@ -182,5 +185,31 @@ Some miscellaneous tests, tries ECDH and ECDSA over supersingular curves, anomal
 
 For example:
 ```bash
-java -jar ECTester.jar -t miscellaneous
+java -jar ECTesterReader.jar -t miscellaneous
+```
+
+## Signature
+Tests ECDSA verification, with invalid signatures.
+
+   - Well-formed(DER) invalid signatures:
+       - r = random, s = random
+       - r = 0, s = random
+       - r = random, s = 0
+       - r = 1, s = random
+       - r = random, s = 1
+       - r = 0, s = 0
+       - r = 0, s = 1
+       - r = 1, s = 0
+       - r = 1, s = 1
+       - s = p
+       - s = 2 * p
+   - Invalid signatures:
+       - Signature shorter than specified in ASN.1 SEQUENCE header.
+       - Signature longer than specified in ASN.1 SEQUENCE header.
+       - r shorter/longer than specified in its ASN.1 header.
+       - s shorter/longer than specified in its ASN.1 header.
+
+For example:
+```bash
+java -jar ECTesterReader.jar -t signature
 ```

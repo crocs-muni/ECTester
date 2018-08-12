@@ -12,7 +12,7 @@
         <desc>A correct signature by the default key.</desc>
     </sigResult>
     <sigResult>
-        <id>nok/random_negated</id>
+        <id>nok/negated</id>
         <sig>SHA1</sig>
         <inline>0x304402203988322ab9f52c7f11d5d1aa92a2ac0b00275bcad8e934682257323fda672482022052231597382268e8f3b82b99e386ebb7c7db1a8b4a8bdacd496190314e4c5bad</inline>
         <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
