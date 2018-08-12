@@ -95,6 +95,7 @@
             <xs:element name="id" type="xs:string"/>
             <xs:element name="sig" type="sigType"/>
             <xs:element ref="data"/>
+            <xs:element name="raw" type="xs:string" minOccurs="0"/>
             <xs:element name="curve" type="xs:string"/>
             <xs:element name="signkey" type="xs:string"/>
             <xs:element name="verifykey" type="xs:string"/>

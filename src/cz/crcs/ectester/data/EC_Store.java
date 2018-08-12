@@ -245,8 +245,13 @@ public class EC_Store {
             Node sig = elem.getElementsByTagName("sig").item(0);
             Node signkey = elem.getElementsByTagName("signkey").item(0);
             Node verifykey = elem.getElementsByTagName("verifykey").item(0);
+            NodeList datas = elem.getElementsByTagName("raw");
+            String data = null;
+            if (datas.getLength() != 0) {
+                data = datas.item(0).getTextContent();
+            }
 
-            result = new EC_SigResult(id.getTextContent(), sig.getTextContent(), curve.getTextContent(), signkey.getTextContent(), verifykey.getTextContent());
+            result = new EC_SigResult(id.getTextContent(), sig.getTextContent(), curve.getTextContent(), signkey.getTextContent(), verifykey.getTextContent(), data, descs);
         } else {
             throw new SAXException("?");
         }

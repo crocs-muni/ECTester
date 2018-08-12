@@ -13,23 +13,25 @@ public class EC_SigResult extends EC_Data {
     private String signKey;
     private String verifyKey;
 
+    private String data;
     private String desc;
 
-    public EC_SigResult(String sig, String curve, String signKey, String verifyKey) {
+    public EC_SigResult(String sig, String curve, String signKey, String verifyKey, String raw) {
         super(1);
         this.sig = sig;
         this.curve = curve;
         this.signKey = signKey;
         this.verifyKey = verifyKey;
+        this.data = raw;
     }
 
-    public EC_SigResult(String id, String sig, String curve, String signKey, String verifyKey) {
-        this(sig, curve, signKey, verifyKey);
+    public EC_SigResult(String id, String sig, String curve, String signKey, String verifyKey, String data) {
+        this(sig, curve, signKey, verifyKey, data);
         this.id = id;
     }
 
-    public EC_SigResult(String id, String sig, String curve, String signKey, String verifyKey, String desc) {
-        this(id, sig, curve, signKey, verifyKey);
+    public EC_SigResult(String id, String sig, String curve, String signKey, String verifyKey, String data, String desc) {
+        this(id, sig, curve, signKey, verifyKey, data);
         this.desc = desc;
     }
 
@@ -53,13 +55,21 @@ public class EC_SigResult extends EC_Data {
         return verifyKey;
     }
 
+    public byte[] getSigData() {
+        if (data == null) {
+            return null;
+        } else {
+            return parse(data);
+        }
+    }
+
     public String getDesc() {
         return desc;
     }
 
     @Override
     public String toString() {
-        return "<" + getId() + "> " + sig + " result over " + curve + ", " + signKey + " + " + verifyKey + (desc == null ? "" : ": " + desc) + System.lineSeparator() + super.toString();
+        return "<" + getId() + "> " + sig + " result over " + curve + ", " + signKey + " + " + verifyKey + (data == null ? "" : " of data \"" + data + "\"")  + (desc == null ? "" : ": " + desc) + System.lineSeparator() + super.toString();
     }
 
 }

@@ -14,6 +14,7 @@ import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,19 +28,35 @@ public class CardSignatureSuite extends CardTestSuite {
     @Override
     protected void runTests() throws Exception {
         Map<String, EC_SigResult> results = EC_Store.getInstance().getObjects(EC_SigResult.class, "wrong");
-        for (Map.Entry<String, EC_SigResult> result : results.entrySet()) {
-            EC_SigResult sig = result.getValue();
+        List<Map.Entry<String, List<EC_SigResult>>> groupList = EC_Store.mapToPrefix(results.values());
 
-            EC_Key.Public pubkey = EC_Store.getInstance().getObject(EC_Key.Public.class, sig.getVerifyKey());
-            byte[] data = new byte[128];
+        List<EC_SigResult> nok = groupList.stream().filter((e) -> e.getKey().equals("nok")).findFirst().get().getValue();
 
-            EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, sig.getCurve());
-            Test allocate = CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_LOCAL, curve.getBits(), curve.getField()), Result.ExpectedValue.SUCCESS);
-            Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.ExpectedValue.SUCCESS);
-            Test setVerifyKey = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, pubkey.getParams(), pubkey.flatten()), Result.ExpectedValue.SUCCESS);
-            Test ecdsaVerify = CommandTest.expect(new Command.ECDSA_verify(this.card, ECTesterApplet.KEYPAIR_LOCAL, sig.getJavaCardSig(), data, sig.getData(0)), Result.ExpectedValue.FAILURE);
-
-            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "ECDSA test of " + result.getKey() + ".", allocate, set, setVerifyKey, ecdsaVerify));
+        byte[] data = "Some stuff that is not the actual data".getBytes();
+        for (EC_SigResult sig : nok) {
+            ecdsaTest(sig, Result.ExpectedValue.FAILURE, data);
         }
+
+        List<EC_SigResult> ok = groupList.stream().filter((e) -> e.getKey().equals("ok")).findFirst().get().getValue();
+        for (EC_SigResult sig : ok) {
+            ecdsaTest(sig, Result.ExpectedValue.SUCCESS, null);
+        }
+    }
+
+    private void ecdsaTest(EC_SigResult sig, Result.ExpectedValue expected, byte[] defaultData) {
+        EC_Key.Public pubkey = EC_Store.getInstance().getObject(EC_Key.Public.class, sig.getVerifyKey());
+
+        byte[] data = sig.getSigData();
+        if (data == null) {
+            data = defaultData;
+        }
+
+        EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, sig.getCurve());
+        Test allocate = CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_LOCAL, curve.getBits(), curve.getField()), Result.ExpectedValue.SUCCESS);
+        Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.ExpectedValue.SUCCESS);
+        Test setVerifyKey = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, pubkey.getParams(), pubkey.flatten()), Result.ExpectedValue.SUCCESS);
+        Test ecdsaVerify = CommandTest.expect(new Command.ECDSA_verify(this.card, ECTesterApplet.KEYPAIR_LOCAL, sig.getJavaCardSig(), data, sig.getData(0)), expected);
+
+        doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "ECDSA test of " + sig.getId() + ".", allocate, set, setVerifyKey, ecdsaVerify));
     }
 }
