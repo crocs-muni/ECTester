@@ -91,9 +91,9 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
                 System.setProperty("java.library.path", newPath);
                 Field fieldSysPath;
                 try {
-                    fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
-                    fieldSysPath.setAccessible( true );
-                    fieldSysPath.set( null, null );
+                    fieldSysPath = ClassLoader.class.getDeclaredField("sys_paths");
+                    fieldSysPath.setAccessible(true);
+                    fieldSysPath.set(null, null);
                 } catch (NoSuchFieldException | IllegalAccessException ignored) {
                 }
             }

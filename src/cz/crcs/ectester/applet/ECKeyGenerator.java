@@ -39,7 +39,6 @@ public class ECKeyGenerator {
     }
 
     /**
-     *
      * @param keypair
      * @param key
      * @return
@@ -70,7 +69,6 @@ public class ECKeyGenerator {
     }
 
     /**
-     *
      * @param keypair
      * @param curve
      * @param buffer
@@ -82,7 +80,6 @@ public class ECKeyGenerator {
     }
 
     /**
-     *
      * @param keypair
      * @param curve
      * @param params
@@ -95,7 +92,6 @@ public class ECKeyGenerator {
     }
 
     /**
-     *
      * @param keypair
      * @param key
      * @param curve

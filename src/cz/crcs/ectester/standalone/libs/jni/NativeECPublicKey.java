@@ -4,7 +4,6 @@ import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.common.util.ECUtil;
 import org.bouncycastle.util.Arrays;
 
-import javax.swing.event.AncestorEvent;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPoint;

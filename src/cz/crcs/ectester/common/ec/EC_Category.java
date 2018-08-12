@@ -10,6 +10,7 @@ import java.util.TreeMap;
 /**
  * A category of EC_Data objects, has a name, description and represents a directory in
  * the cz.crcs.ectester.data package.
+ *
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class EC_Category {

@@ -10,6 +10,7 @@ public class ByteUtil {
 
     /**
      * Gen a short from a byte array at <code>offset</code>, big-endian.
+     *
      * @return the short value
      */
     public static short getShort(byte[] array, int offset) {
@@ -26,6 +27,7 @@ public class ByteUtil {
 
     /**
      * Compare two byte arrays upto <code>length</code> and get first difference.
+     *
      * @return the position of the first difference in the two byte arrays, or <code>length</code> if they are equal.
      */
     public static int diffBytes(byte[] one, int oneOffset, byte[] other, int otherOffset, int length) {
@@ -41,6 +43,7 @@ public class ByteUtil {
 
     /**
      * Compare two byte arrays, upto <code>length</code>.
+     *
      * @return whether the arrays are equal upto <code>length</code>
      */
     public static boolean compareBytes(byte[] one, int oneOffset, byte[] other, int otherOffset, int length) {
@@ -77,6 +80,7 @@ public class ByteUtil {
 
     /**
      * Parse a hex string into a byte array, big-endian.
+     *
      * @param hex The String to parse.
      * @return the byte array from the hex string.
      */
@@ -86,7 +90,8 @@ public class ByteUtil {
 
     /**
      * Parse a hex string into a byte-array, specify endianity.
-     * @param hex The String to parse.
+     *
+     * @param hex       The String to parse.
      * @param bigEndian Whether to parse as big-endian.
      * @return the byte array from the hex string.
      */

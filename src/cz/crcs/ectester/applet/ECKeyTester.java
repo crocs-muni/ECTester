@@ -46,13 +46,13 @@ public class ECKeyTester {
      * Uses {@code pubkeyBuffer} at {@code pubkeyOffset} for computations.
      * Output should equal with ECDHC output.
      *
-     * @param privatePair  KeyPair from which the private key is used
-     * @param publicPair   KeyPair from which the public key is used
-     * @param pubkeyBuffer buffer to be used for the public key
-     * @param pubkeyOffset offset into pubkeyBuffer that can be used for the public key
-     * @param outputBuffer buffer to be used for the secret output
-     * @param outputOffset offset into the outputBuffer
-     * @param transformation   (EC_Consts.TRANSFORMATION_* | ...)
+     * @param privatePair    KeyPair from which the private key is used
+     * @param publicPair     KeyPair from which the public key is used
+     * @param pubkeyBuffer   buffer to be used for the public key
+     * @param pubkeyOffset   offset into pubkeyBuffer that can be used for the public key
+     * @param outputBuffer   buffer to be used for the secret output
+     * @param outputOffset   offset into the outputBuffer
+     * @param transformation (EC_Consts.TRANSFORMATION_* | ...)
      * @return derived secret length
      **/
     public short testKA(KeyPair privatePair, KeyPair publicPair, byte[] pubkeyBuffer, short pubkeyOffset, byte[] outputBuffer, short outputOffset, short transformation) {
@@ -131,7 +131,6 @@ public class ECKeyTester {
     }
 
     /**
-     *
      * @param signKey
      * @param inputBuffer
      * @param inputOffset
@@ -154,7 +153,6 @@ public class ECKeyTester {
     }
 
     /**
-     *
      * @param verifyKey
      * @param inputBuffer
      * @param inputOffset

@@ -19,14 +19,13 @@ public interface TestWriter {
     void begin(TestSuite suite);
 
     /**
-     *
      * @param t
      * @param index
      */
     void outputTest(Test t, int index);
 
     /**
-     *  @param t
+     * @param t
      * @param cause
      * @param index
      */

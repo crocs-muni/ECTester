@@ -22,7 +22,7 @@ public class KeyAgreementIdent extends Ident {
         // ECDH and ECDHC with SHA as KDF, OIDs from RFC 3278
         ALL.add(new KeyAgreementIdent("ECDHwithSHA1KDF", true, "1.3.133.16.840.63.0.2"));
         ALL.add(new KeyAgreementIdent("ECCDHwithSHA1KDF", true, "1.3.133.16.840.63.0.3"));
-        ALL.add(new KeyAgreementIdent("ECDHwithSHA224KDF",true,  "1.3.132.1.11.0"));
+        ALL.add(new KeyAgreementIdent("ECDHwithSHA224KDF", true, "1.3.132.1.11.0"));
         ALL.add(new KeyAgreementIdent("ECCDHwithSHA224KDF", true, "1.3.132.1.14.0"));
         ALL.add(new KeyAgreementIdent("ECDHwithSHA256KDF", true, "1.3.132.1.11.1"));
         ALL.add(new KeyAgreementIdent("ECCDHwithSHA256KDF", true, "1.3.132.1.14.1"));
