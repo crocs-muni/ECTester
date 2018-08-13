@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <pubkey>
     <id>secp256r1/0</id>
-    <inline>0x8f12f2d85ee6c6fb911b0b6c636785e347256edd7add0da5091fe43844f3ad0e,0x0</inline>
+    <inline>0x8f12f2d85ee6c6fb911b0b6c636785e347256edd7add0da5091fe43844f3ad0e,0x0000000000000000000000000000000000000000000000000000000000000000</inline>
     <curve>secg/secp256r1</curve>
     <desc>invalid order = 2</desc>
 </pubkey>
