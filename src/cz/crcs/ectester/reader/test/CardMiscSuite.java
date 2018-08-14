@@ -50,7 +50,7 @@ public class CardMiscSuite extends CardTestSuite {
             Test perform = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform ECDH and ECDSA", ka, sig);
 
             if (cfg.cleanup) {
-                Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.SUCCESS);
+                Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY);
                 doTest(CompoundTest.greedyAll(Result.ExpectedValue.SUCCESS, "Tests over " + curve.getBits() + " " + catName + " curve: " + curve.getId() + ".", allocateFirst, set, generate, perform, cleanup));
             } else {
                 doTest(CompoundTest.greedyAll(Result.ExpectedValue.SUCCESS, "Tests over " + curve.getBits() + " " + catName + " curve: " + curve.getId() + ".", allocateFirst, set, generate, perform));

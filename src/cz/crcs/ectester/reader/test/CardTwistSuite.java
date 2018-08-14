@@ -53,7 +53,7 @@ public class CardTwistSuite extends CardTestSuite {
 
             Test tests = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Do tests.", ecdh);
             if (cfg.cleanup) {
-                Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.SUCCESS);
+                Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY);
                 doTest(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Twist test of " + curve.getId(), prepare, tests, cleanup));
             } else {
                 doTest(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Twist test of " + curve.getId(), prepare, tests));

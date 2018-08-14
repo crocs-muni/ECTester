@@ -281,11 +281,7 @@ public class ECTesterReader {
 
         opts.addOptionGroup(actions);
 
-        OptionGroup size = new OptionGroup();
-        size.addOption(Option.builder("b").longOpt("bit-size").desc("Set curve size.").hasArg().argName("bits").build());
-        size.addOption(Option.builder("a").longOpt("all").desc("Test all curve sizes.").build());
-        opts.addOptionGroup(size);
-
+        opts.addOption(Option.builder("b").longOpt("bit-size").desc("Set curve size.").hasArg().argName("bits").build());
         opts.addOption(Option.builder("fp").longOpt("prime-field").desc("Use a prime field.").build());
         opts.addOption(Option.builder("f2m").longOpt("binary-field").desc("Use a binary field.").build());
 
@@ -362,8 +358,14 @@ public class ECTesterReader {
 
         List<Response> sent = new LinkedList<>();
         sent.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send());
-        sent.add(new Command.Clear(cardManager, ECTesterApplet.KEYPAIR_LOCAL).send());
+        //sent.add(new Command.Clear(cardManager, ECTesterApplet.KEYPAIR_LOCAL).send());
         sent.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL).send());
+
+        // Also support exporting set parameters, to verify they are set correctly.
+        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass);
+        if (curve != null) {
+            sent.add(curve.send());
+        }
 
         // Cofactor generally isn't set on the default curve parameters on cards,
         // since its not necessary for ECDH, only ECDHC which not many cards implement
@@ -804,10 +806,6 @@ public class ECTesterReader {
                 }
                 if (anyKeypart) {
                     System.err.println(Colors.error("Keys should not be specified when exporting curve params."));
-                    return false;
-                }
-                if (namedCurve != null || customCurve || curveFile != null) {
-                    System.err.println(Colors.error("Specifying a curve for curve export makes no sense."));
                     return false;
                 }
                 if (outputs == null) {

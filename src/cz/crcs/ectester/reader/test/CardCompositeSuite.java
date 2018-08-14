@@ -109,7 +109,7 @@ public class CardCompositeSuite extends CardTestSuite {
             Test perform = CompoundTest.all(ExpectedValue.SUCCESS, "Perform ECDH and ECDSA.", ecdh, ecdsa);
 
             if (cfg.cleanup) {
-                Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.SUCCESS);
+                Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.ANY);
                 doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, description, allocate, set, generate, perform, cleanup));
             } else {
                 doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, description, allocate, set, generate, perform));

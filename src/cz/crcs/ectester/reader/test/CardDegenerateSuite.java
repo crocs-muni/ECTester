@@ -53,7 +53,7 @@ public class CardDegenerateSuite extends CardTestSuite {
             }
             Test ecdh = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform ECDH with degenerate public points", ecdhTests.toArray(new Test[0]));
             if (cfg.cleanup) {
-                Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.SUCCESS);
+                Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY);
                 doTest(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Degenerate curve test of " + curve.getId(), prepare, ecdh, cleanup));
             } else {
                 doTest(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Degenerate curve test of " + curve.getId(), prepare, ecdh));

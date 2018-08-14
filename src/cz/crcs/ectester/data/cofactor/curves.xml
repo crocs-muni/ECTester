@@ -81,7 +81,13 @@
         <field>prime</field>
         <file>cofactor160p64.csv</file>
     </curve>
-    
+
+    <curve>
+        <id>cofactor192p2</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>cofactor192p2.csv</file>
+    </curve>
     
     <curve>
         <id>cofactor163t2</id>

@@ -58,7 +58,7 @@ public class CardInvalidSuite extends CardTestSuite {
             Test ecdh = CompoundTest.all(ExpectedValue.SUCCESS, "Perform ECDH with invalid public points", ecdhTests.toArray(new Test[0]));
 
             if (cfg.cleanup) {
-                Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.SUCCESS);
+                Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.ANY);
                 doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Invalid curve test of " + curve.getId(), prepare, ecdh, cleanup));
             } else {
                 doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Invalid curve test of " + curve.getId(), prepare, ecdh));

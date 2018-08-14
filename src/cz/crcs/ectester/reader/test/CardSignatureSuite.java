@@ -57,6 +57,12 @@ public class CardSignatureSuite extends CardTestSuite {
         Test setVerifyKey = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, pubkey.getParams(), pubkey.flatten()), Result.ExpectedValue.SUCCESS);
         Test ecdsaVerify = CommandTest.expect(new Command.ECDSA_verify(this.card, ECTesterApplet.KEYPAIR_LOCAL, sig.getJavaCardSig(), data, sig.getData(0)), expected);
 
-        doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "ECDSA test of " + sig.getId() + ".", allocate, set, setVerifyKey, ecdsaVerify));
+        if (cfg.cleanup) {
+            Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY);
+            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "ECDSA test of " + sig.getId() + ".", allocate, set, setVerifyKey, ecdsaVerify, cleanup));
+        } else {
+            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "ECDSA test of " + sig.getId() + ".", allocate, set, setVerifyKey, ecdsaVerify));
+        }
+
     }
 }

@@ -54,7 +54,7 @@ public class CardCofactorSuite extends CardTestSuite {
             Test ecdh = CompoundTest.all(ExpectedValue.SUCCESS, "Perform ECDH with public points on non-generator subgroup.", ecdhTests.toArray(new Test[0]));
 
             if (cfg.cleanup) {
-                Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.SUCCESS);
+                Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.ANY);
                 doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Cofactor test of " + curve.getId() + ".", prepare, ecdh, cleanup));
             } else {
                 doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Cofactor test of " + curve.getId() + ".", prepare, ecdh));

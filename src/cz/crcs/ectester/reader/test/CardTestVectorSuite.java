@@ -73,7 +73,7 @@ public class CardTestVectorSuite extends CardTestSuite {
                 }
             }));
             if (cfg.cleanup) {
-                testVector.add(CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.SUCCESS));
+                testVector.add(CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.ANY));
             }
             doTest(CompoundTest.greedyAll(ExpectedValue.SUCCESS, "Test vector " + result.getId(), testVector.toArray(new Test[0])));
         }

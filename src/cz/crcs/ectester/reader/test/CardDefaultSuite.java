@@ -131,7 +131,7 @@ public class CardDefaultSuite extends CardTestSuite {
             ExpectedValue[] testExpects = {ExpectedValue.SUCCESS, ExpectedValue.ANY, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS};
             List<ExpectedValue> expects = Stream.of(testExpects).collect(Collectors.toList());
             if (cfg.cleanup) {
-                supportTests.add(CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.SUCCESS));
+                supportTests.add(CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY));
                 expects.add(ExpectedValue.ANY);
             }
 
