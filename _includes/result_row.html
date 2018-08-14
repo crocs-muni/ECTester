@@ -47,6 +47,7 @@
 	    {{ ok }}
 	    <td style="padding-left: {{ include.depth | times: 12 }}px;"><i class="far fa-credit-card" title="Command test"></i> {{ include.test.desc }}{{ index }}</td>
 	    <td class="tooltip sw-tooltip" data-natural-sw="'{{ include.test.response.natural_sw }}'" data-sws="'{{ include.test.response.sws | join: ',' }}'">{{ include.test.result.value }}</td>
+	    <td>{{ include.test.response.duration | divided_by: 1000000 }} ms</td>
 	</tr>
 {% elsif include.test.type == "compound" %}
 	<tr class="test" data-depth="{{ include.depth }}" style="{{ hidden }}{{ color }}">
@@ -54,6 +55,7 @@
 	    {{ ok }}
 	    <td style="padding-left: {{ include.depth | times: 12 }}px;"><i class="far fa-clone" title="Compound test"></i> {{ include.test.desc }}{{ index }}</td>
 	    <td>{{ include.test.result.value }}</td>
+	    <td></td>
 	</tr>
 	{% for test in include.test.tests %}
 		{% assign new_depth=include.depth | plus: 1 %}

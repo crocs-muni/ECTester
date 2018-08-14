@@ -5,71 +5,128 @@
 
 <p>Tests support and behavior of elliptic curve cryptography implementations on JavaCards (<code>TYPE_EC_FP</code> and <code>TYPE_EC_F2M</code>) and on selected software libraries. See our <a href="https://github.com/crocs-muni/ECTester">github</a> for more info. </p>
 
-<a href="#algo_support" class="btn body-btn">Support table</a> <a href="#implementation_guide" class="btn body-btn">Implementation guide</a> <a href="#test_runs" class="btn body-btn">Test runs</a> <a href="#docs" class="btn body-btn">Docs</a>
+<style>
+#sticky-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  transition: transform 0.2s;
+}
 
-<hr/>
+#sticky-bar.js-is-stuck {
+  transform: translateX(-190px);
+  flex-direction: column;
+  width: 18%;
+}
+
+#sticky-bar.js-is-stuck a {
+  font-size: 0.9em;
+  width: 100%;
+}
+
+#sticky-bar .btn {
+  margin: 0.2em;
+}
+
+#sticky-bar.js-is-stuck ~ #sticky-hr {
+  margin-top: -150px;
+}
+</style>
+
+<div id="sticky-bar">
+	<a href="#algo_support" class="btn body-btn sticky-btn">Support table</a> <a href="#implementation_guide" class="btn body-btn sticky-btn">Implementation guide</a> <a href="#test_runs" class="btn body-btn sticky-btn">Test runs</a> <a href="#docs" class="btn body-btn sticky-btn">Documentation</a>
+</div>
+<hr id="sticky-hr"/>
+
+<script>
+$("#sticky-bar").stickybits({useStickyClasses: true, stickyBitStickyOffset: 80});
+</script>
 
 <h2 id="algo_support">JavaCard Elliptic curve algorithm support<a href="#algo_support">#</a></h2>
 The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API</a> has support for basic Elliptic Curve Cryptography, such as ECDH and ECDSA. However not many cards actually support these algorithms. The table below displays support and performance obtained by ECTester for common curve sizes. For detailed support and implementation tests see <a href="#test_runs">test runs</a>.
 
 <style>
-	 .yes {
-		 background-color: rgba(0, 255, 0, 0.2);
-	}
-	 .some {
-		 background-color: rgba(194, 194, 0, 0.2);
-	}
-	 .no {
-		 background-color: rgba(255, 0, 0, 0.2);
-	}
-	 .none {
-		 background-color: rgba(0,0,0,0.1);
-	}
-	 .legend {
-		 float: left;
-		 margin: 10pt;
-	}
-	 #support_table, #perf_table, #curve_table {
-		 text-align: center;
-	}
-	 td.split, tr.split td {
-		 border-top: 2px solid !important;
-	}
-	 #perf_table tr td:nth-of-type(2n) {
-		 border-right: 2px solid !important;
-	}
-	 #perf_table tr td:first-child {
-		 border-left: 2px solid !important;
-	}
-	 #curve_table td ~ td {
-		 font-size: 0.7em;
-		 padding: 0.2rem 0.5rem;
-	}
-	 #curve_table td ~ td:not(.yes) {
-		 background-color: rgba(0,0,0,0.05);
-	}
-	 #tests_table, #curve_table {
-		 margin-top: 1em;
-	}
-	 #tests_table th:not(:first-child) {
-		 height: 100px;
-		 white-space: nowrap;
-		 border: none;
-	}
-	 #tests_table th:not(:first-child) > div {
-		 transform: translate(0, 35px) rotate(315deg);
-		 width: 30px;
-	}
-	 #tests_table th:not(:first-child) > div > span {
-		 padding: 5px 10px;
-	}
-	 #tests_table th:first-child {
-		 border: none;
-		 transform: translate(0, 35px);
-	}
-	 #tests_table td:not(:first-child) {
-		 text-align: center;
-	}
+.yes {
+  background-color: rgba(0, 255, 0, 0.2);
+}
+
+.some {
+  background-color: rgba(194, 194, 0, 0.2);
+}
+
+.no {
+  background-color: rgba(255, 0, 0, 0.2);
+}
+
+.none {
+  background-color: rgba(0,0,0,0.1);
+}
+
+.legend {
+  float: left;
+  margin: 10pt;
+}
+
+#support_table, #perf_table, #curve_table {
+  text-align: center;
+}
+
+td.split, tr.split td {
+  border-top: 2px solid !important;
+}
+
+td.bottom, tr.bottom td {
+  border-bottom: 2px solid !important;
+}
+
+#perf_table {
+  border-collapse: separate !important;
+}
+
+#perf_table tr td:nth-of-type(2n) {
+  border-right: 2px solid !important;
+}
+
+#perf_table tr td:first-child {
+  border-left: 2px solid !important;
+}
+
+#curve_table td ~ td {
+  font-size: 0.7em;
+  padding: 0.2rem 0.5rem;
+}
+
+#curve_table td ~ td:not(.yes) {
+  background-color: rgba(0,0,0,0.05);
+}
+
+#tests_table, #curve_table {
+  margin-top: 1em;
+}
+
+#tests_table th:not(:first-child) {
+  height: 100px;
+  white-space: nowrap;
+  border: none;
+}
+
+#tests_table th:not(:first-child) > div {
+  transform: translate(0, 35px) rotate(315deg);
+  width: 30px;
+}
+
+#tests_table th:not(:first-child) > div > span {
+  padding: 5px 10px;
+}
+
+#tests_table th:first-child {
+  border: none;
+  transform: translate(0, 35px);
+}
+
+#tests_table td:not(:first-child) {
+  text-align: center;
+}
 </style>
 
 
@@ -704,7 +761,7 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
 		<td class="none"></td>
 	</tr>
     <tr>
-        <td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/NXP_JCOP_v2.4.2_R3/">NXP JCOP v2.4.2 R3</a></td>
+        <td rowspan="7" class="split bottom"><a href="{{ site.baseurl }}/results/default/NXP_JCOP_v2.4.2_R3/">NXP JCOP v2.4.2 R3</a></td>
     </tr>
 	<tr class="split"><td>1</td><td>a</td>
        	<td class="yes">101</td>
@@ -756,7 +813,7 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
 		<td class="no">✘</td>
 		<td class="no">✘</td>
 	</tr>
-	<tr><td>6</td><td class="none"></td>
+	<tr class="bottom"><td>6</td><td class="none"></td>
 		<td class="no">✘</td>
 		<td class="none"></td>
 		<td class="no">✘</td>

@@ -4,8 +4,12 @@
     }
 
     #result-table {
-	    margin-top: -120px;
+	    margin-top: -110px;
         margin-bottom: 2em;
+    }
+
+    #result-table th, #result-table td {
+    	border: 1.25px solid #606c71;
     }
 
     #expand-all {
@@ -13,11 +17,14 @@
     	top: 100px;
     	transform: translateX(-150px);
     }
+    
     #collapse-all {
     	position: sticky;
-    	top: 150px;
+    	top: 160px;
     	transform: translateX(-150px);
+    	margin-top: 20px;
     }
+    
     @media screen and (max-width: 64em) {
 		#expand-all, #collapse-all {
 			position: relative;
@@ -41,12 +48,18 @@
         <col span="1" style="width: 6%">
         <col span="1" style="width: 78%">
         <col span="1" style="width: 10%">
+        {% if include.testRun.device.type == "card" %}
+        <col span="1" style="width: 5%">
+        {% endif %}
     </colgroup>
     <tr>
         <th title="Dropdown"><i class="fa fa-list"></i></th>
         <th>Test result</th>
         <th>Description</th>
         <th>Result</th>
+        {% if include.testRun.device.type == "card" %}
+        <th>Duration</th>
+        {% endif %}
     </tr>
     {% for test in include.testRun.tests %}
     {% include result_row.html test=test depth=1 %}
