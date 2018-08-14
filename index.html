@@ -7,21 +7,47 @@
 
 <style>
 #sticky-bar {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
   transition: transform 0.2s;
-}
-
-#sticky-bar.js-is-stuck {
-  transform: translateX(-190px);
-  flex-direction: column;
-  width: 18%;
 }
 
 #sticky-bar.js-is-stuck a {
   font-size: 0.9em;
+  transition: transform 0.2s, background-color 0.1s;
   width: 100%;
+}
+
+@media screen and (max-width: 42em) {
+
+}
+
+@media screen and (min-width: 42em) and (max-width: 64em) {
+
+}
+
+@media screen and (min-width: 64em) {
+
+#sticky-bar.js-is-stuck {
+  transform: translateX(-190px);
+  width: 18%;
+  height: 50px;
+}
+
+#sticky-bar.js-is-stuck a:nth-child(1) {
+  transform: none;
+}
+
+#sticky-bar.js-is-stuck a:nth-child(2) {
+  transform: translateY(1.5em);
+}
+
+#sticky-bar.js-is-stuck a:nth-child(3) {
+  transform: translateY(3em);
+}
+
+#sticky-bar.js-is-stuck a:nth-child(4) {
+  transform: translateY(4.5em);
+}
+
 }
 
 #sticky-bar .btn {
@@ -29,17 +55,19 @@
 }
 
 #sticky-bar.js-is-stuck ~ #sticky-hr {
-  margin-top: -150px;
+  /* margin-top: -150px; */
 }
 </style>
 
 <div id="sticky-bar">
-	<a href="#algo_support" class="btn body-btn sticky-btn">Support table</a> <a href="#implementation_guide" class="btn body-btn sticky-btn">Implementation guide</a> <a href="#test_runs" class="btn body-btn sticky-btn">Test runs</a> <a href="#docs" class="btn body-btn sticky-btn">Documentation</a>
+	<a href="#algo_support" class="btn body-btn sticky-btn"><i class="fas fa-table"></i> Support table</a> <a href="#implementation_guide" class="btn body-btn sticky-btn"><i class="fas fa-code"></i> Implementation guide</a> <a href="#test_runs" class="btn body-btn sticky-btn"><i class="far fa-file-alt"></i> Test runs</a> <a href="#docs" class="btn body-btn sticky-btn"><i class="fas fa-book"></i> Documentation</a>
 </div>
 <hr id="sticky-hr"/>
 
 <script>
-$("#sticky-bar").stickybits({useStickyClasses: true, stickyBitStickyOffset: 80});
+if (window.matchMedia("(min-width: 64em)").matches) {
+  $("#sticky-bar").stickybits({useStickyClasses: true, stickyBitStickyOffset: 80});	
+}
 </script>
 
 <h2 id="algo_support">JavaCard Elliptic curve algorithm support<a href="#algo_support">#</a></h2>
