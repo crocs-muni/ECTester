@@ -21,6 +21,7 @@ import cz.crcs.ectester.reader.response.Response;
 import javacard.security.CryptoException;
 import javacard.security.KeyPair;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
@@ -130,12 +131,17 @@ public class CardEdgeCasesSuite extends CardTestSuite {
             Test zeroS = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, EC_Consts.TRANSFORMATION_ZERO), "ECDH with S = 0.", Result.ExpectedValue.FAILURE, Result.ExpectedValue.FAILURE);
             Test oneS = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, EC_Consts.TRANSFORMATION_ONE), "ECDH with S = 1.", Result.ExpectedValue.FAILURE, Result.ExpectedValue.FAILURE);
 
-            byte[] r = curve.getParam(EC_Consts.PARAMETER_R)[0];
-            BigInteger R = new BigInteger(1, r);
+            byte[] rParam = curve.getParam(EC_Consts.PARAMETER_R)[0];
+            BigInteger R = new BigInteger(1, rParam);
             BigInteger smaller = new BigInteger(curve.getBits(), rand).mod(R);
             BigInteger diff = R.divide(BigInteger.valueOf(10));
             BigInteger randDiff = new BigInteger(diff.bitLength(), rand).mod(diff);
             BigInteger larger = R.add(randDiff);
+
+            BigInteger full = BigInteger.valueOf(1).shiftLeft(R.bitLength() - 1).subtract(BigInteger.ONE);
+
+            EC_Params fullParams = makeParams(full);
+            Test fullS = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, fullParams.getParams(), fullParams.flatten()), "ECDH with S = 2^((log2 r) - 1) - 1.", Result.ExpectedValue.SUCCESS, Result.ExpectedValue.SUCCESS);
 
             EC_Params smallerParams = makeParams(smaller);
             Test smallerS = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, smallerParams.getParams(), smallerParams.flatten()), "ECDH with S < r.", Result.ExpectedValue.SUCCESS, Result.ExpectedValue.SUCCESS);
@@ -172,11 +178,70 @@ public class CardEdgeCasesSuite extends CardTestSuite {
 
             if (cfg.cleanup) {
                 Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY);
-                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with edge-case private key values over " + curve.getId() + ".", setup, zeroS, oneS, smallerS, exactS, largerS, rm1S, rp1S, krS, krm1S, krp1S, cleanup));
+                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with edge-case private key values over " + curve.getId() + ".", setup, zeroS, oneS, fullS, smallerS, exactS, largerS, rm1S, rp1S, krS, krm1S, krp1S, cleanup));
             } else {
-                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with edge-case private key values over " + curve.getId() + ".", setup, zeroS, oneS, smallerS, exactS, largerS, rm1S, rp1S, krS, krm1S, krp1S));
+                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with edge-case private key values over " + curve.getId() + ".", setup, zeroS, oneS, fullS, smallerS, exactS, largerS, rm1S, rp1S, krS, krm1S, krp1S));
             }
         }
+
+        EC_Curve secp160r1 = EC_Store.getInstance().getObject(EC_Curve.class, "secg/secp160r1");
+        byte[] pData = secp160r1.getParam(EC_Consts.PARAMETER_FP)[0];
+        BigInteger p = new BigInteger(1, pData);
+        byte[] rData = secp160r1.getParam(EC_Consts.PARAMETER_R)[0];
+        BigInteger r = new BigInteger(1, rData);
+
+        BigInteger range = r.subtract(p);
+        BigInteger deviation = range.divide(BigInteger.valueOf(5));
+        BigDecimal dev = new BigDecimal(deviation);
+        BigDecimal smallDev = new BigDecimal(10000);
+        int n = 10;
+        BigInteger[] rs = new BigInteger[n];
+        BigInteger[] ps = new BigInteger[n];
+        BigInteger[] zeros = new BigInteger[n];
+        for (int i = 0; i < n; ++i) {
+            double sample;
+            do {
+                sample = rand.nextGaussian();
+            } while (sample >= -1 && sample <= 1);
+            BigInteger where = dev.multiply(new BigDecimal(sample)).toBigInteger();
+            rs[i] = where.add(r);
+            ps[i] = where.add(p);
+            zeros[i] = smallDev.multiply(new BigDecimal(sample)).toBigInteger().abs();
+        }
+
+        Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, secp160r1.getBits(), KeyPair.ALG_EC_FP), Result.ExpectedValue.SUCCESS));
+        if (!key.ok()) {
+            doTest(CompoundTest.all(Result.ExpectedValue.FAILURE, "No support for " + secp160r1.getBits() + "b ALG_EC_FP.", key));
+            return;
+        }
+        Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, secp160r1.getParams(), secp160r1.flatten()), Result.ExpectedValue.SUCCESS);
+        Test generate = CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_LOCAL), Result.ExpectedValue.SUCCESS);
+        Test setup = CompoundTest.all(Result.ExpectedValue.SUCCESS, "KeyPair setup.", key, set, generate);
+
+        Test[] zeroTests = new Test[n];
+        int i = 0;
+        for (BigInteger nearZero : zeros) {
+            EC_Params params = makeParams(nearZero);
+            zeroTests[i++] = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, params.getParams(), params.flatten()), nearZero.toString(16), Result.ExpectedValue.ANY, Result.ExpectedValue.ANY);
+        }
+        Test zeroTest = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Near zero.", zeroTests);
+
+        Test[] pTests = new Test[n];
+        i = 0;
+        for (BigInteger nearP : ps) {
+            EC_Params params = makeParams(nearP);
+            pTests[i++] = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, params.getParams(), params.flatten()), nearP.toString(16) + (nearP.compareTo(p) > 0 ? " (>p)" : " (<=p)"), Result.ExpectedValue.ANY, Result.ExpectedValue.ANY);
+        }
+        Test pTest = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Near p.", pTests);
+
+        Test[] rTests = new Test[n];
+        i = 0;
+        for (BigInteger nearR : rs) {
+            EC_Params params = makeParams(nearR);
+            rTests[i++] = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, params.getParams(), params.flatten()), nearR.toString(16) + (nearR.compareTo(r) > 0 ? " (>r)" : " (<=r)"), Result.ExpectedValue.ANY, Result.ExpectedValue.ANY);
+        }
+        Test rTest = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Near r.", rTests);
+        doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Test private key values near zero, near p and near/larger than the order.", setup, zeroTest, pTest, rTest));
     }
 
     private Test ecdhTest(Command setPriv, String desc, Result.ExpectedValue setExpect, Result.ExpectedValue ecdhExpect) {
