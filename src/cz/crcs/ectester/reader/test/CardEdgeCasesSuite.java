@@ -23,10 +23,7 @@ import javacard.security.KeyPair;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -208,6 +205,9 @@ public class CardEdgeCasesSuite extends CardTestSuite {
             ps[i] = where.add(p);
             zeros[i] = smallDev.multiply(new BigDecimal(sample)).toBigInteger().abs();
         }
+        Arrays.sort(rs);
+        Arrays.sort(ps);
+        Arrays.sort(zeros);
 
         Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, secp160r1.getBits(), KeyPair.ALG_EC_FP), Result.ExpectedValue.SUCCESS));
         if (!key.ok()) {
