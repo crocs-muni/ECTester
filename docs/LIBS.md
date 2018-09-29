@@ -2,11 +2,12 @@
 
 Popular libraries with at least some ECC support:
 
+ - [NSS](https://hg.mozilla.org/projects/nss)
  - [libgcrypt](https://www.gnupg.org/related_software/libgcrypt/)
  - [mbedTLS](https://tls.mbed.org/)
  - [Nettle](http://www.lysator.liu.se/~nisse/nettle/)
  - [OpenSSL (FIPS mode)](https://www.openssl.org/docs/fipsnotes.html)
- - BoringSSL
+ - [BoringSSL](https://boringssl.googlesource.com/boringssl)
  - [Microsoft .NET crypto](https://docs.microsoft.com/en-us/dotnet/standard/security/cryptography-model)
 
 # Supported libraries
