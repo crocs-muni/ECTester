@@ -225,6 +225,7 @@ Currently supported libraries include:
  - BouncyCastle
  - SunEC
  - OpenSSL
+ - BoringSSL
  - Crypto++
  - libtomcrypt
  - botan

@@ -54,7 +54,7 @@ else
   CXXFLAGS+=-O2
 endif
 
-all: tomcrypt_provider.so botan_provider.so cryptopp_provider.so openssl_provider.so
+all: tomcrypt_provider.so botan_provider.so cryptopp_provider.so openssl_provider.so boringssl_provider.so
 
 # Common utils
 c_utils.o: c_utils.c
@@ -70,6 +70,15 @@ openssl_provider.so: openssl.o c_utils.o
 
 openssl.o: openssl.c
 	$(CC) $(shell pkg-config --cflags openssl) $(CFLAGS) -c $<
+
+
+# BoringSSL shim
+boringssl_provider.so: boringssl.o c_utils.o
+	$(CC) $(LFLAGS) -o $@ $^ -L. ../../../../../../../ext/boringssl/build/crypto/libcrypto.so
+	cp ../../../../../../../ext/boringssl/build/crypto/libcrypto.so lib_boringssl.so
+
+boringssl.o: boringssl.c
+	$(CC) -I../../../../../../../ext/boringssl/include/ $(CFLAGS) -c $<
 
 
 # Libtomcrypt shim
