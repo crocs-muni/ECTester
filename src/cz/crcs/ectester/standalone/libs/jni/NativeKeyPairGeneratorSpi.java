@@ -180,6 +180,24 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
         native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
     }
 
+    public static class Boringssl extends NativeKeyPairGeneratorSpi {
+        public Boringssl() {
+            initialize(256, new SecureRandom());
+        }
+
+        @Override
+        native boolean keysizeSupported(int keysize);
+
+        @Override
+        native boolean paramsSupported(AlgorithmParameterSpec params);
+
+        @Override
+        native KeyPair generate(int keysize, SecureRandom random);
+
+        @Override
+        native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
+    }
+
     public static abstract class Mscng extends NativeKeyPairGeneratorSpi {
         private String type;
 

@@ -234,6 +234,26 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         }
     }
 
+    public abstract static class Boringssl extends SimpleKeyAgreementSpi {
+        private String type;
+
+        public Boringssl(String type) {
+            this.type = type;
+        }
+
+        @Override
+        native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native SecretKey generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params, String algorithm);
+    }
+
+    public static class BoringsslECDH extends Boringssl {
+        public BoringsslECDH() {
+            super("ECDH");
+        }
+    }
+
     public abstract static class Mscng extends ExtendedKeyAgreementSpi {
         private String type;
 

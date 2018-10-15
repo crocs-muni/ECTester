@@ -85,6 +85,12 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
         }
     }
 
+    public static class Boringssl extends Raw {
+        public Boringssl(byte[] keyData, ECParameterSpec params) {
+            super(keyData, params);
+        }
+    }
+
     public static class Mscng extends Raw {
         // 0 -> implicit (meta = curveName UTF16, header = full);
         // 1 -> explicit (meta = null, header = full);

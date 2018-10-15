@@ -7,7 +7,6 @@ Popular libraries with at least some ECC support:
  - [mbedTLS](https://tls.mbed.org/)
  - [Nettle](http://www.lysator.liu.se/~nisse/nettle/)
  - [OpenSSL (FIPS mode)](https://www.openssl.org/docs/fipsnotes.html)
- - [BoringSSL](https://boringssl.googlesource.com/boringssl)
  - [Microsoft .NET crypto](https://docs.microsoft.com/en-us/dotnet/standard/security/cryptography-model)
 
 # Supported libraries
@@ -61,6 +60,17 @@ Popular libraries with at least some ECC support:
         - Also uses multiplication with precomputation by wNAF splitting(ec_mult.c)
     - For binary field curves:
         - Uses Jacobian coordinates, and Lopez-Dahab ladder, also uses wNAF-based interleaving multi-exponentiation method(ec2_smpl.c)
+ - [BoringSSL](https://boringssl.googlesource.com/boringssl)
+    - C
+    - Supports prime field curves only:
+       - Use Jacobian coordinates, and Montgomery ladder, also uses optimized arithmetic on NIST P-224, P-256.
+    - Bundled as a git submodule in `ext/boringssl`. To build and use run:
+```bash
+cd ext/boringssl
+mkdir build && cd build
+cmake -DBUILD_SHARED_LIBS=1 -GNinja ..
+ninja
+```
  - [Botan](https://botan.randombit.net/)
     - C++
     - Uses blinded(randomized) Montgomery ladder.

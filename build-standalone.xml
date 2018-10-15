@@ -157,6 +157,13 @@
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Mscng"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Mscng"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Mscng"/>
+            <class name="cz.crcs.ectester.standalone.libs.BoringsslLib"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeProvider$Boringssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Boringssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$Boringssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Boringssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Boringssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Boringssl"/>
         </javah>
     </target>
 </project>
