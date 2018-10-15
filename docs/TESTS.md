@@ -144,7 +144,8 @@ of two large primes, sets the generator with order of one prime and tries points
 
 ## Edge-Cases
 Tests various inputs to ECDH which may cause an implementation to achieve a certain edge-case state during ECDH.
-Some of the data is from the google/Wycheproof project. Tests include [CVE-2017-10176](https://nvd.nist.gov/vuln/detail/CVE-2017-10176) and [CVE-2017-8932](https://nvd.nist.gov/vuln/detail/CVE-2017-8932).
+Some of the data is from the google/Wycheproof project. Tests include [CVE-2017-10176](https://nvd.nist.gov/vuln/detail/CVE-2017-10176) and [CVE-2017-8932](https://nvd.nist.gov/vuln/detail/CVE-2017-8932) and an OpenSSL modular reduction bug
+presented in [Practical realisation and elimination of an ECC-related software bug attack](https://eprint.iacr.org/2011/633).
 Various custom edge private key values are also tested.
 
 CVE-2017-10176 was in implementation issue in the SunEC Java library (and NSS ([CVE-2017-7781](https://nvd.nist.gov/vuln/detail/CVE-2017-7781)), thus also anything that used it) that caused the implementation to reach the point at infinity during ECDH computation.

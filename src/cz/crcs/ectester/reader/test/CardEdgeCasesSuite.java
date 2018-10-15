@@ -110,6 +110,33 @@ public class CardEdgeCasesSuite extends CardTestSuite {
             doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, description, groupTests.toArray(new Test[0])));
         }
 
+        {
+            EC_KAResult openssl_bug = EC_Store.getInstance().getObject(EC_KAResult.class, "other", "openssl-bug");
+            EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, openssl_bug.getCurve());
+            EC_Key.Private skey = EC_Store.getInstance().getObject(EC_Key.Private.class, openssl_bug.getOtherKey());
+            EC_Key.Public pkey = EC_Store.getInstance().getObject(EC_Key.Public.class, openssl_bug.getOneKey());
+            Test key = CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), KeyPair.ALG_EC_FP), Result.ExpectedValue.SUCCESS);
+            Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.ExpectedValue.SUCCESS);
+            Test setPrivate = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, skey.flatten(EC_Consts.PARAMETER_S)), Result.ExpectedValue.SUCCESS);
+            Test setPublic = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_W, pkey.flatten(EC_Consts.PARAMETER_W)), Result.ExpectedValue.SUCCESS);
+            Test ecdh = CommandTest.function(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, openssl_bug.getJavaCardKA()), new TestCallback<CommandTestable>() {
+                @Override
+                public Result apply(CommandTestable testable) {
+                    Response.ECDH dh = (Response.ECDH) testable.getResponse();
+                    if (!dh.successful())
+                        return new Result(Result.Value.FAILURE, "ECDH was unsuccessful.");
+                    if (!dh.hasSecret())
+                        return new Result(Result.Value.FAILURE, "ECDH response did not contain the derived secret.");
+                    if (ByteUtil.compareBytes(dh.getSecret(), 0, openssl_bug.getData(0), 0, dh.secretLength())) {
+                        return new Result(Result.Value.FAILURE, "OpenSSL bug is present, derived secret matches example.");
+                    }
+                    return new Result(Result.Value.SUCCESS);
+                }
+            });
+
+            doTest(CompoundTest.greedyAll(Result.ExpectedValue.SUCCESS, "Test OpenSSL modular reduction bug.", key, set, setPrivate, setPublic, ecdh));
+        }
+
         Map<String, EC_Curve> curveMap = EC_Store.getInstance().getObjects(EC_Curve.class, "secg");
         List<EC_Curve> curves = curveMap.entrySet().stream().filter((e) -> e.getKey().endsWith("r1") && e.getValue().getField() == KeyPair.ALG_EC_FP).map(Map.Entry::getValue).collect(Collectors.toList());
         curves.add(EC_Store.getInstance().getObject(EC_Curve.class, "cofactor/cofactor128p2"));

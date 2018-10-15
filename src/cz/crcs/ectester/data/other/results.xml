@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="../schema.xsd">
+    <kaResult>
+        <id>openssl-bug</id>
+        <ka>DH</ka>
+        <inline>0xdb6f7cd6a06846bf9da9b4928caa5e4b7c8f58d9</inline>
+        <!-- == SHA1(0x1D0F27241C177385B0D5025029FABD5D5D8475DA4E267DCD177B49C63605C25A) -->
+        <curve>secg/secp256r1</curve>
+        <onekey>other/openssl-bug/pkey</onekey>
+        <otherkey>other/openssl-bug/skey</otherkey>
+        <desc>https://eprint.iacr.org/2011/633</desc>
+    </kaResult>
+</results>
