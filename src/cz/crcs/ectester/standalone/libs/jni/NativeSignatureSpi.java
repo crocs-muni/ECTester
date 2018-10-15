@@ -71,7 +71,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
             if (signKey instanceof NativeECPrivateKey) {
                 privkey = ((NativeECPrivateKey) signKey).getData();
             } else {
-                privkey = ECUtil.toByteArray(signKey.getS(), params.getCurve().getField().getFieldSize());
+                privkey = ECUtil.toByteArray(signKey.getS(), params.getOrder().bitLength());
             }
             return sign(buffer.toByteArray(), privkey, params);
         }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<keys xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../schema.xsd">
+    <privkey>
+        <id>openssl-bug/skey</id>
+        <inline>0x4543A4D2C9DDD5516FD16D5498034C76D4EAB340276B6BAD8FF57756F4ECA8E6</inline>
+        <curve>secg/secp256r1</curve>
+    </privkey>
+    <pubkey>
+        <id>openssl-bug/pkey</id>
+        <inline>0x296D416994A4801B9A48E8C67C98E0C05DE1C0E85D4DC676F32FEACDC4998F0E,0xA91F9BE06C1D50EEB0295A35CA0F130F17EA647147626318E28AEC97F0653749</inline>
+        <curve>secg/secp256r1</curve>
+    </pubkey>
+</keys>

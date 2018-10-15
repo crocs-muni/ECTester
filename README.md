@@ -115,6 +115,9 @@ For format of this file see [FORMAT](docs/FORMAT.md).
 
 Perform support,performance and vulnerability tests of ECC.
 
+To select which tests will be performed, it is possible to enter the test suite name with a suffix
+which specifies the number of the first test to be run, and optionally the number of the last test to be run as `-t <test_suite>[:start_index[:stop_index]]`.
+
 Use with `-o / --output [out_type:]<out_file>` to output the test results to a file.
 For possible formats of this file see [FORMAT](docs/FORMAT.md).
 For more info about the test suites see [TESTS](docs/TESTS.md).

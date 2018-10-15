@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<keys xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../schema.xsd">
+    <pubkey>
+        <id>default_pub</id>
+        <inline>0x116d77bea845d4bd0204cb8b954c957431c23a7111a0eda94d41a3c774260e37,0x9589952dcc2034be9cb36411c59e8978fc40a7ebce5dc296d8c693a25b637969</inline>
+        <curve>secg/secp256r1</curve>
+        <desc>A random public key for default_priv.</desc>
+    </pubkey>
+    <privkey>
+        <id>default_priv</id>
+        <inline>0x92d375aebbc233bc9b60124ff7adf963917ab77bfc254418900f7ba51c85cc09</inline>
+        <curve>secg/secp256r1</curve>
+        <desc>A random private key for default_pub.</desc>
+    </privkey>
+    <pubkey>
+        <id>negated_pub</id>
+        <inline>0x116d77bea845d4bd0204cb8b954c957431c23a7111a0eda94d41a3c774260e37,0x6a766ad133dfcb42634c9bee3a61768703bf581531a23d6927396c5da49c8696</inline>
+        <curve>secg/secp256r1</curve>
+        <desc>A negation of default_pub(public key for negated_priv).</desc>
+    </pubkey>
+    <privkey>
+        <id>negated_priv</id>
+        <inline>0x6d2c8a50443dcc44649fedb00852069c2b6c4331aaf25a6c63aa4f1ddfdd5948</inline>
+        <curve>secg/secp256r1</curve>
+        <desc>A negation of default_priv(private key for negated_pub).</desc>
+    </privkey>
+</keys>

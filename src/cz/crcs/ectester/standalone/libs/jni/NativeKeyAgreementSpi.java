@@ -5,13 +5,12 @@ import cz.crcs.ectester.common.util.ECUtil;
 import javax.crypto.KeyAgreementSpi;
 import javax.crypto.SecretKey;
 import javax.crypto.ShortBufferException;
-import javax.crypto.spec.SecretKeySpec;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.ECParameterSpec;
 import java.security.spec.ECGenParameterSpec;
+import java.security.spec.ECParameterSpec;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -61,12 +60,6 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         return secret.length;
     }
 
-    @Override
-    protected SecretKey engineGenerateSecret(String algorithm) throws IllegalStateException, NoSuchAlgorithmException, InvalidKeyException {
-        // TODO: This is dangerous/not correct ! Need to actually implement KDF1 and KDF2 here probably. Or just pass it off to the libs through some different interface.
-        return new SecretKeySpec(engineGenerateSecret(), algorithm);
-    }
-
     private abstract static class SimpleKeyAgreementSpi extends NativeKeyAgreementSpi {
 
         @Override
@@ -78,24 +71,38 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
             this.params = params;
         }
 
+        private byte[] getPubkey() {
+            if (publicKey instanceof NativeECPublicKey) {
+                return ((NativeECPublicKey) publicKey).getData();
+            } else {
+                return ECUtil.toX962Uncompressed(publicKey.getW(), ((ECParameterSpec) params));
+            }
+        }
+
+        private byte[] getPrivkey() {
+            if (privateKey instanceof NativeECPrivateKey) {
+                return ((NativeECPrivateKey) privateKey).getData();
+            } else {
+                return ECUtil.toByteArray(privateKey.getS(), ((ECParameterSpec) params).getOrder().bitLength());
+            }
+        }
+
         @Override
         protected byte[] engineGenerateSecret() throws IllegalStateException {
-            byte[] pubkey;
-            if (publicKey instanceof NativeECPublicKey) {
-                pubkey = ((NativeECPublicKey) publicKey).getData();
-            } else {
-                pubkey = ECUtil.toX962Uncompressed(publicKey.getW(), ((ECParameterSpec) params).getCurve());
-            }
-            byte[] privkey;
-            if (privateKey instanceof NativeECPrivateKey) {
-                privkey = ((NativeECPrivateKey) privateKey).getData();
-            } else {
-                privkey = ECUtil.toByteArray(privateKey.getS(), ((ECParameterSpec) params).getCurve().getField().getFieldSize());
-            }
-            return generateSecret(pubkey, privkey, (ECParameterSpec) params);
+            return generateSecret(getPubkey(), getPrivkey(), (ECParameterSpec) params);
         }
 
         abstract byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        protected SecretKey engineGenerateSecret(String algorithm) throws IllegalStateException, NoSuchAlgorithmException, InvalidKeyException {
+            if (algorithm == null) {
+                throw new NoSuchAlgorithmException("Algorithm must not be null");
+            }
+            return generateSecret(getPubkey(), getPrivkey(), (ECParameterSpec) params, algorithm);
+        }
+
+        abstract SecretKey generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params, String algorithm);
     }
 
     private abstract static class ExtendedKeyAgreementSpi extends NativeKeyAgreementSpi {
@@ -115,6 +122,16 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         }
 
         abstract byte[] generateSecret(ECPublicKey pubkey, ECPrivateKey privkey, AlgorithmParameterSpec params);
+
+        @Override
+        protected SecretKey engineGenerateSecret(String algorithm) throws IllegalStateException, NoSuchAlgorithmException, InvalidKeyException {
+            if (algorithm == null) {
+                throw new NoSuchAlgorithmException("Algorithm must not be null");
+            }
+            return generateSecret(publicKey, privateKey, params, algorithm);
+        }
+
+        abstract SecretKey generateSecret(ECPublicKey pubkey, ECPrivateKey privkey, AlgorithmParameterSpec params, String algorithm);
     }
 
 
@@ -122,6 +139,9 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
 
         @Override
         native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native SecretKey generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params, String algorithm);
     }
 
     public abstract static class Botan extends SimpleKeyAgreementSpi {
@@ -133,6 +153,9 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
 
         @Override
         native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native SecretKey generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params, String algorithm);
     }
 
     public static class BotanECDH extends Botan {
@@ -180,6 +203,9 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
 
         @Override
         native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native SecretKey generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params, String algorithm);
     }
 
     public static class CryptoppECDH extends Cryptopp {
@@ -197,6 +223,9 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
 
         @Override
         native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native SecretKey generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params, String algorithm);
     }
 
     public static class OpensslECDH extends Openssl {
@@ -214,29 +243,32 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
 
         @Override
         native byte[] generateSecret(ECPublicKey pubkey, ECPrivateKey privkey, AlgorithmParameterSpec params);
+
+        @Override
+        native SecretKey generateSecret(ECPublicKey pubkey, ECPrivateKey privkey, AlgorithmParameterSpec params, String algorithm);
     }
 
     public static class MscngECDHwithSHA1KDF extends Mscng {
         public MscngECDHwithSHA1KDF() {
-            super("ECDHwithSHA1KDF");
+            super("ECDHwithSHA1KDF(CNG)");
         }
     }
 
     public static class MscngECDHwithSHA256KDF extends Mscng {
         public MscngECDHwithSHA256KDF() {
-            super("ECDHwithSHA256KDF");
+            super("ECDHwithSHA256KDF(CNG)");
         }
     }
 
     public static class MscngECDHwithSHA384KDF extends Mscng {
         public MscngECDHwithSHA384KDF() {
-            super("ECDHwithSHA384KDF");
+            super("ECDHwithSHA384KDF(CNG)");
         }
     }
 
     public static class MscngECDHwithSHA512KDF extends Mscng {
         public MscngECDHwithSHA512KDF() {
-            super("ECDHwithSHA512KDF");
+            super("ECDHwithSHA512KDF(CNG)");
         }
     }
 }

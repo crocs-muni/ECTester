@@ -13,6 +13,8 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
     private boolean useKeysize;
     private boolean useParams;
 
+    public static final int DEFAULT_KEYSIZE = 256;
+
     @Override
     public void initialize(int keysize, SecureRandom random) {
         if (!keysizeSupported(keysize)) {
@@ -37,6 +39,12 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
 
     @Override
     public KeyPair generateKeyPair() {
+        if (!useKeysize && !useParams) {
+            if (keysizeSupported(DEFAULT_KEYSIZE)) {
+                initialize(DEFAULT_KEYSIZE, new SecureRandom());
+            }
+        }
+
         if (useKeysize) {
             return generate(keysize, random);
         } else if (useParams) {
@@ -57,7 +65,6 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
     public static class TomCrypt extends NativeKeyPairGeneratorSpi {
 
         public TomCrypt() {
-            initialize(256, new SecureRandom());//TODO: maybe remove this default init?
         }
 
         @Override
@@ -78,7 +85,6 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
 
         public Botan(String type) {
             this.type = type;
-            initialize(256, new SecureRandom());//TODO: maybe remove this default init?
         }
 
         @Override
@@ -127,7 +133,6 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
 
         public Cryptopp(String type) {
             this.type = type;
-            initialize(256, new SecureRandom());//TODO: maybe remove this default init?
         }
 
         @Override
@@ -180,7 +185,6 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
 
         public Mscng(String type) {
             this.type = type;
-            initialize(256, new SecureRandom());
         }
 
         @Override

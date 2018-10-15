@@ -13,7 +13,10 @@ import cz.crcs.ectester.reader.test.CommandTestable;
 
 import javax.smartcardio.CardException;
 import java.io.PrintStream;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk

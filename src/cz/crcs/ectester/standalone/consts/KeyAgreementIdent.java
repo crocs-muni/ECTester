@@ -22,7 +22,7 @@ public class KeyAgreementIdent extends Ident {
         // ECDH and ECDHC with SHA as KDF, OIDs from RFC 3278
         ALL.add(new KeyAgreementIdent("ECDHwithSHA1KDF", true, "1.3.133.16.840.63.0.2"));
         ALL.add(new KeyAgreementIdent("ECCDHwithSHA1KDF", true, "1.3.133.16.840.63.0.3"));
-        ALL.add(new KeyAgreementIdent("ECDHwithSHA224KDF",true,  "1.3.132.1.11.0"));
+        ALL.add(new KeyAgreementIdent("ECDHwithSHA224KDF", true, "1.3.132.1.11.0"));
         ALL.add(new KeyAgreementIdent("ECCDHwithSHA224KDF", true, "1.3.132.1.14.0"));
         ALL.add(new KeyAgreementIdent("ECDHwithSHA256KDF", true, "1.3.132.1.11.1"));
         ALL.add(new KeyAgreementIdent("ECCDHwithSHA256KDF", true, "1.3.132.1.14.1"));
@@ -30,14 +30,20 @@ public class KeyAgreementIdent extends Ident {
         ALL.add(new KeyAgreementIdent("ECCDHwithSHA384KDF", true, "1.3.132.1.14.2"));
         ALL.add(new KeyAgreementIdent("ECDHwithSHA512KDF", true, "1.3.132.1.11.3"));
         ALL.add(new KeyAgreementIdent("ECCDHwithSHA512KDF", true, "1.3.132.1.14.3"));
-        ALL.add(new KeyAgreementIdent("ECDHwithSHA1CKDF", true));
-        ALL.add(new KeyAgreementIdent("ECCDHwithSHA1CKDF", true));
-        ALL.add(new KeyAgreementIdent("ECDHwithSHA256CKDF", true));
-        ALL.add(new KeyAgreementIdent("ECCDHwithSHA256CKDF", true));
-        ALL.add(new KeyAgreementIdent("ECDHwithSHA384CKDF", true));
-        ALL.add(new KeyAgreementIdent("ECCDHwithSHA384CKDF", true));
-        ALL.add(new KeyAgreementIdent("ECDHwithSHA512CKDF", true));
-        ALL.add(new KeyAgreementIdent("ECCDHwithSHA512CKDF", true));
+        // Microsoft specific KDF
+        ALL.add(new KeyAgreementIdent("ECDHwithSHA1KDF(CNG)"));
+        ALL.add(new KeyAgreementIdent("ECDHwithSHA256KDF(CNG)"));
+        ALL.add(new KeyAgreementIdent("ECDHwithSHA384KDF(CNG)"));
+        ALL.add(new KeyAgreementIdent("ECDHwithSHA512KDF(CNG)"));
+        // CKDF requires custom AlgorithmParameterSpec (only BouncyCastle)
+        //ALL.add(new KeyAgreementIdent("ECDHwithSHA1CKDF", true));
+        //ALL.add(new KeyAgreementIdent("ECCDHwithSHA1CKDF", true));
+        //ALL.add(new KeyAgreementIdent("ECDHwithSHA256CKDF", true));
+        //ALL.add(new KeyAgreementIdent("ECCDHwithSHA256CKDF", true));
+        //ALL.add(new KeyAgreementIdent("ECDHwithSHA384CKDF", true));
+        //ALL.add(new KeyAgreementIdent("ECCDHwithSHA384CKDF", true));
+        //ALL.add(new KeyAgreementIdent("ECDHwithSHA512CKDF", true));
+        //ALL.add(new KeyAgreementIdent("ECCDHwithSHA512CKDF", true));
         // ECMQV - Disable for now as it needs diferent params(too different from DH)
         //ALL.add(new KeyAgreementIdent("ECMQV"));
         //ALL.add(new KeyAgreementIdent("ECMQVwithSHA1KDF", true));

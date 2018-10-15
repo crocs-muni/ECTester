@@ -64,7 +64,7 @@ public class SignatureIdent extends Ident {
         ALL.add(new SignatureIdent("SHA3-384withECDDSA", "SHA3-384withDETECDSA"));
         ALL.add(new SignatureIdent("SHA3-512withECDDSA", "SHA3-512withDETECDSA"));
         // ECKCDSA? Botan provides.
-        ALL.add(new SignatureIdent("ECKCDSA","SHA1withECKCDSA", "1.2.410.200004.1.100.4.3"));
+        ALL.add(new SignatureIdent("ECKCDSA", "SHA1withECKCDSA", "1.2.410.200004.1.100.4.3"));
         ALL.add(new SignatureIdent("NONEwithECKCDSA"));
         ALL.add(new SignatureIdent("RIPEMD160withECKCDSA"));
         ALL.add(new SignatureIdent("SHA224withECKCDSA", "1.2.410.200004.1.100.4.4"));
@@ -79,7 +79,6 @@ public class SignatureIdent extends Ident {
         ALL.add(new SignatureIdent("SHA224withECGDSA", "1.3.36.3.3.2.5.4.4"));
         ALL.add(new SignatureIdent("SHA384withECGDSA", "1.3.36.3.3.2.5.4.5"));
         ALL.add(new SignatureIdent("SHA512withECGDSA", "1.3.36.3.3.2.5.4.6"));
-
     }
 
     public static SignatureIdent get(String ident) {

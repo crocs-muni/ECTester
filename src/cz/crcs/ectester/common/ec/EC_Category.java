@@ -10,6 +10,7 @@ import java.util.TreeMap;
 /**
  * A category of EC_Data objects, has a name, description and represents a directory in
  * the cz.crcs.ectester.data package.
+ *
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class EC_Category {
@@ -116,11 +117,24 @@ public class EC_Category {
             out.append(System.lineSeparator());
         }
 
-        Map<String, EC_KAResult> results = getObjects(EC_KAResult.class);
-        size = results.size();
+        Map<String, EC_KAResult> kaResults = getObjects(EC_KAResult.class);
+        size = kaResults.size();
         if (size > 0) {
-            out.append(Colors.bold("\t\tResults: "));
-            for (Map.Entry<String, EC_KAResult> result : results.entrySet()) {
+            out.append(Colors.bold("\t\tResults(KA): "));
+            for (Map.Entry<String, EC_KAResult> result : kaResults.entrySet()) {
+                out.append(result.getKey());
+                size--;
+                if (size > 0)
+                    out.append(", ");
+            }
+            out.append(System.lineSeparator());
+        }
+
+        Map<String, EC_SigResult> sigResults = getObjects(EC_SigResult.class);
+        size = sigResults.size();
+        if (size > 0) {
+            out.append(Colors.bold("\t\tResults(SIG): "));
+            for (Map.Entry<String, EC_SigResult> result : sigResults.entrySet()) {
                 out.append(result.getKey());
                 size--;
                 if (size > 0)

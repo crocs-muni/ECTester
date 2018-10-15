@@ -314,7 +314,37 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
     return generate_from_group(env, self, curve_group);
 }
 
-JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Botan_generateSecret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params){
+static std::string get_kdf(const std::string& type_str, size_t *kdf_bits) {
+    std::string kdf;
+    size_t key_len = 0;
+    if (type_str == "ECDH") {
+        kdf = "Raw";
+        //key len unused
+    } else if (type_str == "ECDHwithSHA1KDF") {
+        kdf = "KDF2(SHA-1)";
+        key_len = 20;
+    } else if (type_str == "ECDHwithSHA224KDF") {
+        kdf = "KDF2(SHA-224)";
+        key_len = 28;
+    } else if (type_str == "ECDHwithSHA256KDF") {
+        kdf = "KDF2(SHA-256)";
+        key_len = 32;
+    } else if (type_str == "ECDHwithSHA384KDF") {
+        kdf = "KDF2(SHA-384)";
+        key_len = 48;
+    } else if (type_str == "ECDHwithSHA512KDF") {
+        kdf = "KDF2(SHA-512)";
+        key_len = 64;
+    }
+
+    if (*kdf_bits == 0) {
+        *kdf_bits = key_len;
+    }
+
+    return kdf;
+}
+
+jbyteArray generate_secret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params, jstring algorithm) {
     Botan::EC_Group curve_group = group_from_params(env, params);
 
     jsize privkey_length = env->GetArrayLength(privkey);
@@ -341,27 +371,8 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     std::string type_str(type_data);
     env->ReleaseStringUTFChars(type, type_data);
 
-    std::string kdf;
-    size_t key_len = 0;
-    if (type_str == "ECDH") {
-        kdf = "Raw";
-        //key len unused
-    } else if (type_str == "ECDHwithSHA1KDF") {
-        kdf = "KDF2(SHA-1)";
-        key_len = 20;
-    } else if (type_str == "ECDHwithSHA224KDF") {
-        kdf = "KDF2(SHA-224)";
-        key_len = 28;
-    } else if (type_str == "ECDHwithSHA256KDF") {
-        kdf = "KDF2(SHA-256)";
-        key_len = 32;
-    } else if (type_str == "ECDHwithSHA384KDF") {
-        kdf = "KDF2(SHA-384)";
-        key_len = 48;
-    } else if (type_str == "ECDHwithSHA512KDF") {
-        kdf = "KDF2(SHA-512)";
-        key_len = 64;
-    }
+    size_t key_len = (get_kdf_bits(env, algorithm) + 7) / 8;
+    std::string kdf = get_kdf(type_str, &key_len);
 
     Botan::PK_Key_Agreement ka(skey, rng, kdf);
 
@@ -378,6 +389,19 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     env->ReleaseByteArrayElements(result, result_data, 0);
 
     return result;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Botan_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params){
+    return generate_secret(env, self, pubkey, privkey, params, NULL);
+}
+
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Botan_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2Ljava_lang_String_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params, jstring algorithm) {
+    jbyteArray secret = generate_secret(env, self, pubkey, privkey, params, algorithm);
+    if (secret == NULL) {
+        return NULL;
+    }
+    jmethodID spec_init = env->GetMethodID(secret_key_spec_class, "<init>", ("([BLjava/lang/String;)V"));
+    return env->NewObject(secret_key_spec_class, spec_init, secret, algorithm);
 }
 
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Botan_sign(JNIEnv *env, jobject self, jbyteArray data, jbyteArray privkey, jobject params){

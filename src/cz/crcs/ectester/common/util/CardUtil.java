@@ -14,6 +14,23 @@ import java.util.List;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class CardUtil {
+    public static byte getSig(String name) {
+        switch (name) {
+            case "SHA1":
+                return EC_Consts.Signature_ALG_ECDSA_SHA;
+            case "SHA224":
+                return EC_Consts.Signature_ALG_ECDSA_SHA_224;
+            case "SHA256":
+                return EC_Consts.Signature_ALG_ECDSA_SHA_256;
+            case "SHA384":
+                return EC_Consts.Signature_ALG_ECDSA_SHA_384;
+            case "SHA512":
+                return EC_Consts.Signature_ALG_ECDSA_SHA_512;
+            default:
+                return EC_Consts.Signature_ALG_ECDSA_SHA;
+        }
+    }
+
     public static byte getKA(String name) {
         switch (name) {
             case "DH":

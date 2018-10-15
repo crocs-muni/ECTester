@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <pubkey>
     <id>secp128r1/0</id>
-    <inline>0xad532d7437555507e85fee6591b8565,0x000000000000000000000000000000000</inline>
+    <inline>0x0ad532d7437555507e85fee6591b8565,0x00000000000000000000000000000000</inline>
     <curve>secg/secp128r1</curve>
     <desc>invalid order = 2</desc>
 </pubkey>
@@ -19,7 +19,7 @@
 </pubkey>
 <pubkey>
     <id>secp128r1/3</id>
-    <inline>0xcd1deefa8374505908cb6959fb919cc7,0x29013f0415d73458e13fbc11655001b</inline>
+    <inline>0xcd1deefa8374505908cb6959fb919cc7,0x029013f0415d73458e13fbc11655001b</inline>
     <curve>secg/secp128r1</curve>
     <desc>invalid order = 7</desc>
 </pubkey>

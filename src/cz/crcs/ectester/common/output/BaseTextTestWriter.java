@@ -54,17 +54,17 @@ public abstract class BaseTextTestWriter implements TestWriter {
 
         Result result = t.getResult();
 
-		String line = "";
-		if (prefix.equals("")) {
-			char charLine[] = new char[BASE_WIDTH + 24];
-			new String(new char[BASE_WIDTH + 24]).replace("\0", "━").getChars(0, charLine.length - 1, charLine, 0);
-			charLine[0] = '■';
-			charLine[4] = '┳';
-			charLine[BASE_WIDTH + 1] = '┳';
-			charLine[BASE_WIDTH + 13] = '┳';
-			charLine[BASE_WIDTH + 23] = '┓';
-			line = new String(charLine) + System.lineSeparator();
-		}
+        String line = "";
+        if (prefix.equals("")) {
+            char charLine[] = new char[BASE_WIDTH + 24];
+            new String(new char[BASE_WIDTH + 24]).replace("\0", "━").getChars(0, charLine.length - 1, charLine, 0);
+            charLine[0] = '■';
+            charLine[4] = '┳';
+            charLine[BASE_WIDTH + 1] = '┳';
+            charLine[BASE_WIDTH + 13] = '┳';
+            charLine[BASE_WIDTH + 23] = '┓';
+            line = new String(charLine) + System.lineSeparator();
+        }
 
         StringBuilder out = new StringBuilder();
         out.append(t.ok() ? Colors.ok(" OK ") : Colors.error("NOK "));

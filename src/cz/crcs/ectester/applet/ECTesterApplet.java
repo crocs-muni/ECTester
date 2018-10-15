@@ -477,7 +477,6 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     }
 
     /**
-     *
      * @param apdu P1   = byte keyPair (KEYPAIR_*)
      *             P2   = byte export (EXPORT_TRUE || EXPORT_FALSE)
      *             DATA = byte sigType
@@ -502,7 +501,6 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     }
 
     /**
-     *
      * @param apdu P1   = byte keyPair (KEYPAIR_*)
      *             P2   = byte sigType
      *             DATA = short dataLength (00 = random data generated, !00 = data length)
@@ -609,12 +607,12 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     }
 
     /**
-     * @param keyPair    KeyPair to transform
-     * @param key        key to transform (EC_Consts.KEY_* | ...)
-     * @param params     parameters to transform (EC_Consts.PARAMETER_* | ...)
+     * @param keyPair        KeyPair to transform
+     * @param key            key to transform (EC_Consts.KEY_* | ...)
+     * @param params         parameters to transform (EC_Consts.PARAMETER_* | ...)
      * @param transformation transformation type (EC_Consts.TRANSFORMATION_*)
-     * @param outBuffer  buffer to output sw to
-     * @param outOffset  output offset in buffer
+     * @param outBuffer      buffer to output sw to
+     * @param outOffset      output offset in buffer
      * @return length of data written to the buffer
      */
     private short transform(KeyPair keyPair, byte key, short params, short transformation, byte[] outBuffer, short outOffset) {
@@ -665,13 +663,13 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
     }
 
     /**
-     * @param pubkey     keyPair to use for public key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
-     * @param privkey    keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
-     * @param export     whether to export ECDH secret
+     * @param pubkey         keyPair to use for public key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
+     * @param privkey        keyPair to use for private key, (KEYPAIR_LOCAL || KEYPAIR_REMOTE)
+     * @param export         whether to export ECDH secret
      * @param transformation whether to transform the pubkey before ECDH
-     * @param type       KeyAgreement type to test
-     * @param outBuffer  buffer to write sw to, and export ECDH secret {@code if(export == EXPORT_TRUE)}
-     * @param outOffset  output offset in buffer
+     * @param type           KeyAgreement type to test
+     * @param outBuffer      buffer to write sw to, and export ECDH secret {@code if(export == EXPORT_TRUE)}
+     * @param outOffset      output offset in buffer
      * @return length of data written to the buffer
      */
     private short ecdh(byte pubkey, byte privkey, byte export, short transformation, byte type, byte[] outBuffer, short outOffset) {
@@ -813,9 +811,9 @@ public class ECTesterApplet extends Applet implements ExtendedLength {
         short length = 0;
 
         short dataLength = Util.getShort(inBuffer, inOffset);
-        short dataOffset = (short)(inOffset + 2);
-        short sigLength = Util.getShort(inBuffer, (short)(dataOffset + dataLength));
-        short sigOffset = (short)(dataOffset + dataLength + 2);
+        short dataOffset = (short) (inOffset + 2);
+        short sigLength = Util.getShort(inBuffer, (short) (dataOffset + dataLength));
+        short sigOffset = (short) (dataOffset + dataLength + 2);
 
         if (keyTester.getSigType() == sigType) {
             keyTester.testECDSA_verify((ECPublicKey) verify.getPublic(), inBuffer, dataOffset, dataLength, inBuffer, sigOffset, sigLength);

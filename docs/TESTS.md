@@ -4,14 +4,15 @@
  - `test-vectors`
  - `compression`
  - `miscellaneous`
+ - `signature`
  - `wrong`*
- - `composite`*
  - `invalid`*
  - `twist`*
  - `degenerate`*
+ - `composite`*
  - `cofactor`*
  - `edge-cases`*
- 
+
 **\*NOTE: The `wrong`, `composite`, `invalid`,`twist`, `cofactor`, `edge-cases` and `degenerate` test suites caused temporary/permanent DoS of some cards. These test suites prompt you for
 confirmation before running, be cautious.**
 
@@ -21,12 +22,6 @@ Tests keypair allocation, generation, ECDH and ECDSA. ECDH is first tested with 
 with a compressed public key to test support for compressed points.
 
 This test suite is run if no argument is provided to `-t / --test`.
-
-For example:
-```bash
-java -jar ECTester.jar -t
-```
-tests prime field and binary field curves, using the default test suite.
 
 
 ## Test-Vectors
@@ -40,53 +35,65 @@ Tests using known test vectors provided by NIST/SECG/Brainpool:
 
 [Brainpool - RFC7027](https://tools.ietf.org/html/rfc7027#appendix-A)
 
-For example:
-```bash
-java -jar ECTester.jar -t test-vectors
-```
-tests all curves for which test-vectors are provided.
 
 ## Compression
 Tests support for compression of public points in ECDH as specified in ANSI X9.62. Tests ECDH with points in compressed
 and hybrid form. Also tests card response to a hybrid point with wrong `y` coordinate and to the point at infinity(as public key in ECDH).
 
-For example:
-```bash
-java -jar ECTester.jar -t compression
-```
+
+## Miscellaneous
+Some miscellaneous tests, tries ECDH and ECDSA over supersingular curves, anomalous curves and Barreto-Naehrig curves with small embedding degree and CM discriminant.
+
+
+## Signature
+Tests ECDSA verification, with invalid signatures.
+
+   - Well-formed(DER) invalid signatures:
+       - r = random, s = random
+       - r = 0, s = random
+       - r = random, s = 0
+       - r = 1, s = random
+       - r = random, s = 1
+       - r = 0, s = 0
+       - r = 0, s = 1
+       - r = 1, s = 0
+       - r = 1, s = 1
+       - s = p
+       - s = 2 * p
+   - Invalid signatures:
+       - Signature shorter than specified in ASN.1 SEQUENCE header.
+       - Signature longer than specified in ASN.1 SEQUENCE header.
+       - r shorter/longer than specified in its ASN.1 header.
+       - s shorter/longer than specified in its ASN.1 header.
+
 
 ## Wrong
 Tests on a category of wrong curves. These curves are not really curves as they have:
+
  - non-prime field in the prime-field case
  - reducible polynomial as the field polynomial in the binary case
 
 This test suite also does some additional tests with corrupting the parameters:
+
  - Fp:
-   - p = 0
-   - p = 1
-   - p = q^2; q prime
-   - p = q * s; q and s prime
-   - G = random point not on curve
-   - G = random data
-   - G = infinity
-   - r = 0
-   - r = 1
-   - r = some prime larger than original r (and \[r\]G != infinity)
-   - r = some prime smaller than original r (and \[r\]G != infninity)
-   - r = some composite number (and \[r\]G != infinity)
-   - k = 0xff
-   - k = 0
+    - p = 0
+    - p = 1
+    - p = q^2; q prime
+    - p = q * s; q and s prime
+    - G = random point not on curve
+    - G = random data
+    - G = infinity
+    - r = 0
+    - r = 1
+    - r = some prime larger than original r (and \[r\]G != infinity)
+    - r = some prime smaller than original r (and \[r\]G != infninity)
+    - r = some composite number (and \[r\]G != infinity)
+    - k = 0xff
+    - k = 0
+
  - F2m:
-   - e1 = e2 = e3 = 0
-   - m < e1 < e2 < e3
-
-These tests should fail generally.
-
-For example:
-```bash
-java -jar ECTester.jar -t wrong
-```
-does all wrong curve tests.
+    - e1 = e2 = e3 = 0
+    - m < e1 < e2 < e3
 
 
 ## Composite
@@ -94,16 +101,16 @@ Tests using curves that don't have a prime order/nearly prime order.
 These tests should generally fail, a success here implies the card will use a non-secure curve if such curve is set
 by the applet. Operations over such curves are susceptible to small-subgroup attacks.
 
-   - r = quite a smooth number, many small factors, r = |G|
-   - r = small prime(of increasing bit lengths), r = |G|
-   - r = p * q = |G|
+   - r = quite a smooth number, many small factors, r = \|G\|
+   - r = prime(of increasing bit lengths), r = \|G\|
+
+     This is performed over a 160 bit field size, in two passes:
+      - First pass tests the full range from 2 bits to 152, with more frequent tests towards the beginning and end.
+      - The second pass tests the range 140 - 158 bits with one bit steps.
+       
+   - r = p * q = \|G\|
    - r = G = Carmichael number = p * q * s
-   - \[r\]G = infinity but r != |G|, so |G| divides r
-   
-For example:
-```bash
-java -jar ECTester.jar -t composite
-```
+   - \[r\]G = infinity but r != \|G\|, so \|G\| divides r
 
 
 ## Invalid
@@ -111,12 +118,6 @@ Tests using known named curves from several categories(SECG/NIST/Brainpool) agai
 ECDH should definitely fail, a success here implies the card is susceptible to invalid curve attacks.
 
 See [Practical Invalid Curve Attacks on TLS-ECDH](https://www.nds.rub.de/media/nds/veroeffentlichungen/2015/09/14/main-full.pdf) for more information.
-
-For example:
-```bash
-java -jar ECTester.jar -t invalid
-```
-tests using all curves with pregenerated *invalid* public keys for these curves.
 
 
 ## Twist
@@ -126,10 +127,6 @@ the card might compute on the twist, if a point on the twist is supplied.
 
 See [SafeCurves on twist security](https://safecurves.cr.yp.to/twist.html) for more information.
 
-For example:
-```bash
-java -jar ECTester.jar -t twist
-```
 
 ## Degenerate
 Tests using known named curves froms several categories(SECG/NIST) against pre-generated points on the degenerate line
@@ -138,46 +135,31 @@ and uses a curve model vulnerable to such degenerate points.
 
 See [Degenerate Curve Attacks - Extending Invalid Curve Attacks to Edwards Curves and Other Models](https://eprint.iacr.org/2015/1233.pdf) for more information.
 
-For example:
-```bash
-java -jar ECTester.jar -t degenerate
-```
 
 ## Cofactor
 Tests whether the card correctly rejects points that lie on the curve but not on the subgroup generated by the specified generator
 during ECDH. Does this with curves where the cofactor subgroup has small order, then with curves that have order equal to the product
 of two large primes, sets the generator with order of one prime and tries points on the subgroup of the other prime order.
 
-For example:
-```bash
-java -jar ECTester.jar -t cofactor
-```
 
 ## Edge-Cases
-Tests various inputs to ECDH which may cause an implementation to achieve a certain edge-case state during ECDH. 
-Some of the data is from the google/Wycheproof project. Tests include [CVE-2017-10176](https://nvd.nist.gov/vuln/detail/CVE-2017-10176) and [CVE-2017-8932](https://nvd.nist.gov/vuln/detail/CVE-2017-8932).
+Tests various inputs to ECDH which may cause an implementation to achieve a certain edge-case state during ECDH.
+Some of the data is from the google/Wycheproof project. Tests include [CVE-2017-10176](https://nvd.nist.gov/vuln/detail/CVE-2017-10176) and [CVE-2017-8932](https://nvd.nist.gov/vuln/detail/CVE-2017-8932) and an OpenSSL modular reduction bug
+presented in [Practical realisation and elimination of an ECC-related software bug attack](https://eprint.iacr.org/2011/633).
 Various custom edge private key values are also tested.
 
-CVE-2017-10176 was in implementation issue in the SunEC Java library that caused the implementation to reach the point at infinity during ECDH computation.
+CVE-2017-10176 was in implementation issue in the SunEC Java library (and NSS ([CVE-2017-7781](https://nvd.nist.gov/vuln/detail/CVE-2017-7781)), thus also anything that used it) that caused the implementation to reach the point at infinity during ECDH computation.
+See [blog](http://blog.intothesymmetry.com/2017/08/cve-2017-7781cve-2017-10176-issue-with.html) for more info.
 
 CVE-2017-8932 was an implementation issue in the Go standard library, in particular its scalar multiplication algorithm on the
 P-256 curve which leaked information about the private key.
 
-Custom private key values over SECG curves are tested:
+Custom edge-case private key values over SECG curves are tested:
+
    - s = 0, s = 1
    - s < r, s = r, s > r
    - s = r - 1, s = r + 1
-   - s = k\*r - 1, s = k\*r, s = k\*r + 1 
-
-For example:
-```bash
-java -jar ECTester.jar -t edge-cases
-```
-
-## Miscellaneous
-Some miscellaneous tests, tries ECDH and ECDSA over supersingular curves and Barreto-Naehrig curves with small embedding degree and CM discriminant.
-
-For example:
-```bash
-java -jar ECTester.jar -t miscellaneous
-```
+   - s = k\*r - 1, s = k\*r, s = k\*r + 1
+   - s around r (s < r, on a curve where \|r\| > \|p\|)
+   - s around p (on a curve where where \|r\| > \|p\|)
+   - s around 0 (s > 0, on a curve where \|r\| > \|p\|)

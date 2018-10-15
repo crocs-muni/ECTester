@@ -51,10 +51,10 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
 	ADD_KPG(env, self, "ECDH", "MscngECDH");
 	ADD_KPG(env, self, "ECDSA", "MscngECDSA");
 
-	ADD_KA(env, self, "ECDHwithSHA1KDF", "MscngECDHwithSHA1KDF");
-	ADD_KA(env, self, "ECDHwithSHA256KDF", "MscngECDHwithSHA256KDF");
-	ADD_KA(env, self, "ECDHwithSHA384KDF", "MscngECDHwithSHA384KDF");
-	ADD_KA(env, self, "ECDHwithSHA512KDF", "MscngECDHwithSHA512KDF");
+	ADD_KA(env, self, "ECDHwithSHA1KDF(CNG)", "MscngECDHwithSHA1KDF");
+	ADD_KA(env, self, "ECDHwithSHA256KDF(CNG)", "MscngECDHwithSHA256KDF");
+	ADD_KA(env, self, "ECDHwithSHA384KDF(CNG)", "MscngECDHwithSHA384KDF");
+	ADD_KA(env, self, "ECDHwithSHA512KDF(CNG)", "MscngECDHwithSHA512KDF");
 
 	ADD_SIG(env, self, "SHA1withECDSA", "MscngECDSAwithSHA1");
 	ADD_SIG(env, self, "SHA256withECDSA", "MscngECDSAwithSHA256");
@@ -883,7 +883,7 @@ static jbyteArray get_meta(JNIEnv *env, jobject key) {
 	}
 }
 
-JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Mscng_generateSecret(JNIEnv *env, jobject self, jobject pubkey, jobject privkey, jobject params) {
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Mscng_generateSecret__Ljava_security_interfaces_ECPublicKey_2Ljava_security_interfaces_ECPrivateKey_2Ljava_security_spec_AlgorithmParameterSpec_2(JNIEnv *env, jobject self, jobject pubkey, jobject privkey, jobject params) {
 	NTSTATUS status;
 
 	jclass mscng_ka_class = (*env)->FindClass(env, "cz/crcs/ectester/standalone/libs/jni/NativeKeyAgreementSpi$Mscng");
@@ -891,13 +891,13 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 	jstring type = (jstring)(*env)->GetObjectField(env, self, type_id);
 	const char* type_data = (*env)->GetStringUTFChars(env, type, NULL);
 	LPCWSTR kdf_algo;
-	if (strcmp(type_data, "ECDHwithSHA1KDF") == 0) {
+	if (strcmp(type_data, "ECDHwithSHA1KDF(CNG)") == 0) {
 		kdf_algo = BCRYPT_SHA1_ALGORITHM;
-	} else if (strcmp(type_data, "ECDHwithSHA256KDF") == 0) {
+	} else if (strcmp(type_data, "ECDHwithSHA256KDF(CNG)") == 0) {
 		kdf_algo = BCRYPT_SHA256_ALGORITHM;
-	} else if (strcmp(type_data, "ECDHwithSHA384KDF") == 0) {
+	} else if (strcmp(type_data, "ECDHwithSHA384KDF(CNG)") == 0) {
 		kdf_algo = BCRYPT_SHA384_ALGORITHM;
-	} else if (strcmp(type_data, "ECDHwithSHA512KDF") == 0) {
+	} else if (strcmp(type_data, "ECDHwithSHA512KDF(CNG)") == 0) {
 		kdf_algo = BCRYPT_SHA512_ALGORITHM;
 	} else {
 		//unreachable
@@ -973,7 +973,6 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 	paramList.pBuffers = kdfParams;
 	paramList.ulVersion = BCRYPTBUFFER_VERSION;
 
-	//TODO: Is this the actual KDF-1 or KDF-2 algo or something completely different? *This does not use the counter!!!*
 	ULONG bufSize = 0;
 	if (NT_FAILURE(status = BCryptDeriveKey(ka, BCRYPT_KDF_HASH, &paramList, NULL, 0, &bufSize, 0))) {
 		throw_new_var(env, "java/security/GeneralSecurityException", "Error 0x%x returned by BCryptDeriveKey(length only)\n", status);
@@ -997,6 +996,11 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 	BCryptDestroySecret(ka);
 	BCryptCloseAlgorithmProvider(kaHandle, 0);
 	return result;
+}
+
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Mscng_generateSecret__Ljava_security_interfaces_ECPublicKey_2Ljava_security_interfaces_ECPrivateKey_2Ljava_security_spec_AlgorithmParameterSpec_2Ljava_lang_String_2(JNIEnv *env, jobject self, jobject pubkey, jobject privkey, jobject params, jstring algorithm) {
+    throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
+    return NULL;
 }
 
 static LPCWSTR get_sighash_algo(JNIEnv *env, jobject self) {

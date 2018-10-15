@@ -57,6 +57,11 @@ using CryptoPP::SecByteBlock;
 #include "cryptopp/oids.h"
 using CryptoPP::OID;
 
+#include "cryptopp/dsa.h"
+using CryptoPP::DSAConvertSignatureFormat;
+using CryptoPP::DSA_DER;
+using CryptoPP::DSA_P1363;
+
 // ASN1 is a namespace, not an object
 #include "cryptopp/asn.h"
 using namespace CryptoPP::ASN1;
@@ -553,7 +558,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
     return NULL;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Cryptopp_generateSecret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params) {
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Cryptopp_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params) {
     jsize privkey_length = env->GetArrayLength(privkey);
     jbyte *privkey_data = env->GetByteArrayElements(privkey, NULL);
     SecByteBlock private_key((byte *) privkey_data, privkey_length);
@@ -598,6 +603,11 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     return result;
 }
 
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Cryptopp_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2Ljava_lang_String_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params, jstring algorithm){
+    throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
+    return NULL;
+}
+
 template <class EC, class H>
 jbyteArray sign_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray data, const Integer & private_key_x) {
     AutoSeededRandomPool prng;
@@ -614,9 +624,12 @@ jbyteArray sign_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray
     env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
     signature.resize(len);
 
-    jbyteArray result = env->NewByteArray(len);
+    byte sig[4096];
+    size_t sig_len = DSAConvertSignatureFormat(sig, sizeof(sig), DSA_DER, (byte *)signature.c_str(), len, DSA_P1363);
+
+    jbyteArray result = env->NewByteArray(sig_len);
     jbyte *result_bytes = env->GetByteArrayElements(result, NULL);
-    std::copy(signature.begin(), signature.end(), result_bytes);
+    std::copy(sig, sig+sig_len, result_bytes);
     env->ReleaseByteArrayElements(result, result_bytes, 0);
 
     return result;
@@ -680,13 +693,20 @@ jboolean verify_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray
     pkey.Initialize(group, pkey_point);
     typename ECDSA<EC, H>::Verifier verifier(pkey);
 
-    jsize data_length = env->GetArrayLength(data);
-    jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
+    size_t bit_length = group.GetCurve().GetField().MaxElementBitLength();
+    size_t bytes = (bit_length + 7)/8;
+
     jsize sig_length = env->GetArrayLength(signature);
     jbyte *sig_bytes = env->GetByteArrayElements(signature, NULL);
-    bool result = verifier.VerifyMessage((byte *)data_bytes, data_length, (byte *)sig_bytes, sig_length);
-    env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
+
+    byte sig[bytes * 2];
+    size_t sig_len = DSAConvertSignatureFormat(sig, bytes * 2, DSA_P1363, (byte *)sig_bytes, sig_length, DSA_DER);
     env->ReleaseByteArrayElements(signature, sig_bytes, JNI_ABORT);
+
+    jsize data_length = env->GetArrayLength(data);
+    jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
+    bool result = verifier.VerifyMessage((byte *)data_bytes, data_length, sig, sig_len);
+    env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
 
     return result;
 }

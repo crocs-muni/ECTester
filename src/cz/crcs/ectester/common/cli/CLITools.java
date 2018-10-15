@@ -25,6 +25,12 @@ public class CLITools {
         help.printHelp(Colors.bold(prog), header, options, footer, usage);
     }
 
+    private static void help(HelpFormatter help, PrintWriter pw, String cmd, ParserOptions parser, int depth) {
+        String description = parser.getDescription() == null ? "" : "    | " + parser.getDescription() + " |";
+        help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, String.format("%" + depth + "s" + cmd + ":" + description, " "));
+        CLITools.help(help, pw, parser.getParser(), parser.getOptions(), depth + 1);
+    }
+
     private static void help(HelpFormatter help, PrintWriter pw, CommandLineParser cli, Options opts, int depth) {
         if (opts.getOptions().size() > 0) {
             help.printOptions(pw, HelpFormatter.DEFAULT_WIDTH, opts, HelpFormatter.DEFAULT_LEFT_PAD + depth, HelpFormatter.DEFAULT_DESC_PAD);
@@ -37,9 +43,7 @@ public class CLITools {
             }
             tp.getParsers().forEach((key, value) -> {
                 pw.println();
-                String description = value.getDescription() == null ? "" : "    | " + value.getDescription() + " |";
-                help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, String.format("%" + depth + "s" + key + ":" + description, " "));
-                CLITools.help(help, pw, value.getParser(), value.getOptions(), depth + 1);
+                help(help, pw, key, value, depth);
             });
         }
     }
@@ -103,6 +107,22 @@ public class CLITools {
             pw.println();
         }
         help(help, pw, baseParser, baseOpts, 1);
+        help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, footer);
+        System.out.println(sw.toString());
+    }
+
+    public static void help(String header, TreeParser baseParser, String footer, String command) {
+        ParserOptions opts = baseParser.getParsers().get(command);
+        if (opts == null) {
+            System.err.println("Command not found: " + command);
+            return;
+        }
+        HelpFormatter help = new HelpFormatter();
+        help.setOptionComparator(null);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, header);
+        help(help, pw, command, opts, 1);
         help.printWrapped(pw, HelpFormatter.DEFAULT_WIDTH, footer);
         System.out.println(sw.toString());
     }

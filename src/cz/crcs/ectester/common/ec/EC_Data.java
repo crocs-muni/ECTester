@@ -95,7 +95,7 @@ public abstract class EC_Data implements Comparable<EC_Data> {
         return null;
     }
 
-    private static byte[] parse(String param) {
+    protected static byte[] parse(String param) {
         byte[] data;
         if (param.startsWith("0x") || param.startsWith("0X")) {
             data = ByteUtil.hexToBytes(param.substring(2));

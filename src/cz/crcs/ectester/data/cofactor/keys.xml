@@ -3,9 +3,7 @@
 	<!ENTITY secg SYSTEM "cofactor/secg_keys.xml">
 	]>
 <keys xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="../schema.xsd"
-      category="cofactor"
-      desc="">
+      xsi:noNamespaceSchemaLocation="../schema.xsd">
 
     <pubkey>
         <id>cofactor128p2/0</id>

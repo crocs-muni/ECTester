@@ -2,6 +2,7 @@
 
 jclass ec_parameter_spec_class;
 jclass ecgen_parameter_spec_class;
+jclass secret_key_spec_class;
 jclass pubkey_class;
 jclass privkey_class;
 jclass keypair_class;
@@ -18,6 +19,9 @@ void init_classes(JNIEnv *env, std::string lib_name) {
 
     jclass local_ecgen_parameter_spec_class = env->FindClass("java/security/spec/ECGenParameterSpec");
     ecgen_parameter_spec_class = (jclass) env->NewGlobalRef(local_ecgen_parameter_spec_class);
+
+    jclass local_secret_key_spec_class = env->FindClass("javax/crypto/spec/SecretKeySpec");
+    secret_key_spec_class = (jclass) env->NewGlobalRef(local_secret_key_spec_class);
 
     std::string pubkey_class_name("cz/crcs/ectester/standalone/libs/jni/NativeECPublicKey$");
     pubkey_class_name += lib_name;
@@ -56,6 +60,34 @@ void init_classes(JNIEnv *env, std::string lib_name) {
 void throw_new(JNIEnv *env, const std::string& klass, const std::string& message) {
     jclass clazz = env->FindClass(klass.c_str());
     env->ThrowNew(clazz, message.c_str());
+}
+
+jint get_kdf_bits(JNIEnv *env, jstring algorithm) {
+    if (algorithm == NULL) {
+        return 0;
+    }
+
+    const char *algo_data = env->GetStringUTFChars(algorithm, NULL);
+    std::string algo(algo_data);
+
+    jint result = 0;
+    if (algo == "DES") {
+        result = 64;
+    } else if (algo == "BLOWFISH") {
+        result = 128;
+    } else if (algo == "DESEDE") {
+        result = 192;
+    } else if (algo == "AES" || algo == "CAMELLIA") {
+        result = 256;
+    } else {
+        char *end;
+        long bits = strtol(algo_data, &end, 10);
+        if (*end == 0) {
+            result = (jint) bits;
+        }
+    }
+    env->ReleaseStringUTFChars(algorithm, algo_data);
+    return result;
 }
 
 static void add_provider_property(JNIEnv *env, const std::string &type, const std::string &klass, jobject provider, jmethodID put_method) {

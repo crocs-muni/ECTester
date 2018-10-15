@@ -77,7 +77,7 @@
     <category>
         <name>wrong</name>
         <directory>wrong</directory>
-        <desc>Wrong field curves. These should definitely give an error when used. Since the "prime" used for the field is not prime, and the field polynomials are also not irreducible. Simply put these parameters don't specify a valid elliptic curve.</desc>
+        <desc>Wrong field curves and other wrong parameters. These should definitely give an error when used. Since the "prime" used for the field is not prime, and the field polynomials are also not irreducible. Simply put these parameters don't specify a valid elliptic curve.</desc>
     </category>
     <category>
         <name>test</name>

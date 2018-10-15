@@ -26,7 +26,6 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.cli.CLITools;
 import cz.crcs.ectester.common.cli.Colors;
-import cz.crcs.ectester.common.ec.EC_Params;
 import cz.crcs.ectester.common.output.OutputLogger;
 import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.util.ByteUtil;
@@ -94,7 +93,6 @@ public class ECTesterReader {
 
         DESCRIPTION = "ECTesterReader " + VERSION + GIT_COMMIT + ", a javacard Elliptic Curve Cryptography support tester/utility.";
         CLI_HEADER = "\n" + DESCRIPTION + "\n\n";
-        ;
     }
 
     private void run(String[] args) {
@@ -276,18 +274,14 @@ public class ECTesterReader {
         actions.addOption(Option.builder("ln").longOpt("list-named").desc("Print the list of supported named curves and keys.").hasArg().argName("what").optionalArg(true).build());
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate <amount> of EC keys.").hasArg().argName("amount").optionalArg(true).build());
-        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. Optionally specify a test number to run only a part of a test suite. <test_suite>:\n- default:\n- compression:\n- invalid:\n- twist:\n- degenerate:\n- cofactor:\n- wrong:\n- composite:\n- test-vectors:\n- edge-cases:\n- miscellaneous:").hasArg().argName("test_suite[:from[:to]]").optionalArg(true).build());
+        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. Optionally specify a test number to run only a part of a test suite. <test_suite>:\n- default:\n- compression:\n- invalid:\n- twist:\n- degenerate:\n- cofactor:\n- wrong:\n- signature:\n- composite:\n- test-vectors:\n- edge-cases:\n- miscellaneous:").hasArg().argName("test_suite[:from[:to]]").optionalArg(true).build());
         actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do EC KeyAgreement (ECDH...), [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("ls").longOpt("list-suites").desc("List supported test suites.").build());
 
         opts.addOptionGroup(actions);
 
-        OptionGroup size = new OptionGroup();
-        size.addOption(Option.builder("b").longOpt("bit-size").desc("Set curve size.").hasArg().argName("bits").build());
-        size.addOption(Option.builder("a").longOpt("all").desc("Test all curve sizes.").build());
-        opts.addOptionGroup(size);
-
+        opts.addOption(Option.builder("b").longOpt("bit-size").desc("Set curve size.").hasArg().argName("bits").build());
         opts.addOption(Option.builder("fp").longOpt("prime-field").desc("Use a prime field.").build());
         opts.addOption(Option.builder("f2m").longOpt("binary-field").desc("Use a binary field.").build());
 
@@ -342,6 +336,7 @@ public class ECTesterReader {
                 new CardCompositeSuite(null, null, null),
                 new CardInvalidSuite(null, null, null),
                 new CardEdgeCasesSuite(null, null, null),
+                new CardSignatureSuite(null, null, null),
                 new CardTwistSuite(null, null, null),
                 new CardMiscSuite(null, null, null)};
         for (CardTestSuite suite : suites) {
@@ -363,8 +358,14 @@ public class ECTesterReader {
 
         List<Response> sent = new LinkedList<>();
         sent.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send());
-        sent.add(new Command.Clear(cardManager, ECTesterApplet.KEYPAIR_LOCAL).send());
+        //sent.add(new Command.Clear(cardManager, ECTesterApplet.KEYPAIR_LOCAL).send());
         sent.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL).send());
+
+        // Also support exporting set parameters, to verify they are set correctly.
+        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass);
+        if (curve != null) {
+            sent.add(curve.send());
+        }
 
         // Cofactor generally isn't set on the default curve parameters on cards,
         // since its not necessary for ECDH, only ECDHC which not many cards implement
@@ -475,6 +476,9 @@ public class ECTesterReader {
             case "misc":
             case "miscellaneous":
                 suite = new CardMiscSuite(writer, cfg, cardManager);
+                break;
+            case "signature":
+                suite = new CardSignatureSuite(writer, cfg, cardManager);
                 break;
             default:
                 // These run are dangerous, prompt before them.
@@ -804,10 +808,6 @@ public class ECTesterReader {
                     System.err.println(Colors.error("Keys should not be specified when exporting curve params."));
                     return false;
                 }
-                if (namedCurve != null || customCurve || curveFile != null) {
-                    System.err.println(Colors.error("Specifying a curve for curve export makes no sense."));
-                    return false;
-                }
                 if (outputs == null) {
                     System.err.println(Colors.error("You have to specify an output file for curve parameter export."));
                     return false;
@@ -873,7 +873,7 @@ public class ECTesterReader {
                     testFrom = 0;
                     testTo = -1;
                 }
-                String[] tests = new String[]{"default", "composite", "compression", "invalid", "degenerate", "test-vectors", "wrong", "twist", "cofactor", "edge-cases", "miscellaneous"};
+                String[] tests = new String[]{"default", "composite", "compression", "invalid", "degenerate", "test-vectors", "wrong", "twist", "cofactor", "edge-cases", "miscellaneous", "signature"};
                 if (!Arrays.asList(tests).contains(testSuite)) {
                     System.err.println(Colors.error("Unknown test suite " + testSuite + ". Should be one of: " + Arrays.toString(tests)));
                     return false;

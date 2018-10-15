@@ -203,27 +203,15 @@ public class EC_Store {
                 if (direct instanceof Element) {
                     Element elem = (Element) direct;
 
-                    Node id = elem.getElementsByTagName("id").item(0);
-                    Node ka = elem.getElementsByTagName("ka").item(0);
-                    Node curve = elem.getElementsByTagName("curve").item(0);
-                    Node onekey = elem.getElementsByTagName("onekey").item(0);
-                    Node otherkey = elem.getElementsByTagName("otherkey").item(0);
-
-                    NodeList descc = elem.getElementsByTagName("desc");
-                    String descs = null;
-                    if (descc.getLength() != 0) {
-                        descs = descc.item(0).getTextContent();
+                    NodeList ids = elem.getElementsByTagName("id");
+                    if (ids.getLength() != 1) {
+                        throw new SAXException("result no id?");
                     }
+                    String id = ids.item(0).getTextContent();
 
-                    EC_KAResult kaResult = new EC_KAResult(id.getTextContent(), ka.getTextContent(), curve.getTextContent(), onekey.getTextContent(), otherkey.getTextContent(), descs);
+                    EC_Data result = parseResultlike(dir, elem);
 
-                    InputStream csv = parseDataElement(dir, elem);
-                    if (!kaResult.readCSV(csv)) {
-                        throw new IOException("Invalid csv data. " + id.getTextContent());
-                    }
-                    csv.close();
-
-                    objMap.put(id.getTextContent(), kaResult);
+                    objMap.put(id, result);
                 } else {
                     throw new SAXException("?");
                 }
@@ -232,6 +220,49 @@ public class EC_Store {
         }
 
         return new EC_Category(name, dir, desc, objMap);
+    }
+
+    private EC_Data parseResultlike(String dir, Element elem) throws SAXException, IOException {
+        String tag = elem.getTagName();
+        Node id = elem.getElementsByTagName("id").item(0);
+
+        NodeList descc = elem.getElementsByTagName("desc");
+        String descs = null;
+        if (descc.getLength() != 0) {
+            descs = descc.item(0).getTextContent();
+        }
+
+        Node curve = elem.getElementsByTagName("curve").item(0);
+
+        EC_Data result;
+        if (tag.equals("kaResult")) {
+            Node ka = elem.getElementsByTagName("ka").item(0);
+            Node onekey = elem.getElementsByTagName("onekey").item(0);
+            Node otherkey = elem.getElementsByTagName("otherkey").item(0);
+
+            result = new EC_KAResult(id.getTextContent(), ka.getTextContent(), curve.getTextContent(), onekey.getTextContent(), otherkey.getTextContent(), descs);
+        } else if (tag.equals("sigResult")) {
+            Node sig = elem.getElementsByTagName("sig").item(0);
+            Node signkey = elem.getElementsByTagName("signkey").item(0);
+            Node verifykey = elem.getElementsByTagName("verifykey").item(0);
+            NodeList datas = elem.getElementsByTagName("raw");
+            String data = null;
+            if (datas.getLength() != 0) {
+                data = datas.item(0).getTextContent();
+            }
+
+            result = new EC_SigResult(id.getTextContent(), sig.getTextContent(), curve.getTextContent(), signkey.getTextContent(), verifykey.getTextContent(), data, descs);
+        } else {
+            throw new SAXException("?");
+        }
+
+        InputStream csv = parseDataElement(dir, elem);
+        if (!result.readCSV(csv)) {
+            throw new IOException("Invalid csv data. " + id.getTextContent());
+        }
+        csv.close();
+
+        return result;
     }
 
     private EC_Params parseKeylike(String dir, Element elem) throws SAXException, IOException {
