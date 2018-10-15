@@ -60,7 +60,7 @@ import static cz.crcs.ectester.applet.EC_Consts.Signature_ALG_ECDSA_SHA;
  *
  * @author Petr Svenda petr@svenda.com
  * @author Jan Jancar johny@neuromancer.sk
- * @version v0.2.0
+ * @version v0.3.0
  */
 public class ECTesterReader {
     private CardMngr cardManager;
@@ -69,7 +69,7 @@ public class ECTesterReader {
     private Config cfg;
 
     private Options opts = new Options();
-    public static final String VERSION = "v0.2.0";
+    public static final String VERSION = "v0.3.0";
     public static String GIT_COMMIT = "";
     private static String DESCRIPTION;
     private static String LICENSE = "MIT Licensed\nCopyright (c) 2016-2018 Petr Svenda <petr@svenda.com>";
