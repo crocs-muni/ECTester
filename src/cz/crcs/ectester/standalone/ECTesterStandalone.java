@@ -66,7 +66,7 @@ import java.util.stream.Collectors;
  * @version v0.3.0
  */
 public class ECTesterStandalone {
-    private ProviderECLibrary[] libs = new ProviderECLibrary[]{new SunECLib(), new BouncyCastleLib(), new TomcryptLib(), new BotanLib(), new CryptoppLib(), new OpensslLib(), new BoringsslLib(), new MscngLib()};
+    private ProviderECLibrary[] libs = new ProviderECLibrary[]{new SunECLib(), new BouncyCastleLib(), new TomcryptLib(), new BotanLib(), new CryptoppLib(), new OpensslLib(), new BoringsslLib(), new GcryptLib(), new MscngLib()};
     private Config cfg;
 
     private Options opts = new Options();

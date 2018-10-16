@@ -92,6 +92,12 @@ public abstract class NativeECPublicKey implements ECPublicKey {
         }
     }
 
+    public static class Gcrypt extends ANSIX962 {
+        public Gcrypt(byte[] keyData, ECParameterSpec params) {
+            super(keyData, params);
+        }
+    }
+
     public static class Mscng extends ANSIX962 {
         // 0 -> implicit (meta = curveName UTF16, header = full);
         // 1 -> explicit (meta = null, header = full);
