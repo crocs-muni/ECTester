@@ -325,7 +325,7 @@ public class ECTesterStandalone {
                 ECPublicKey pubkey = (ECPublicKey) other.getPublic();
 
                 long elapsed = -System.nanoTime();
-                if (spec != null) {
+                if (spec instanceof ECParameterSpec) {
                     ka.init(privkey, spec);
                 } else {
                     ka.init(privkey);

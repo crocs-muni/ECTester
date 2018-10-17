@@ -52,7 +52,7 @@ public class SignatureIdent extends Ident {
         ALL.add(new SignatureIdent("ECGOST3410-2012-512", "GOST-3410-2012-512"));
         ALL.add(new SignatureIdent("GOST3411-2012-512withECGOST3410-2012-512", "GOST3411-2012-512/ECGOST3410-2012-5120", "1.2.643.7.1.1.3.3"));
         ALL.add(new SignatureIdent("SM3withSM2"));
-        // ECDDSA
+        // ECDDSA (rfc6979?)
         ALL.add(new SignatureIdent("ECDDSA", "DETECDSA", "ECDETDSA"));
         ALL.add(new SignatureIdent("SHA1withECDDSA", "SHA1withDETECDSA"));
         ALL.add(new SignatureIdent("SHA224withECDDSA", "SHA224withDETECDSA"));

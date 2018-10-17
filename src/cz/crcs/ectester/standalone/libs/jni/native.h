@@ -1191,3 +1191,79 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
 }
 #endif
 #endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeECPublicKey_Gcrypt */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPublicKey_Gcrypt
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPublicKey_Gcrypt
+#ifdef __cplusplus
+extern "C" {
+#endif
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeECPrivateKey_Gcrypt */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPrivateKey_Gcrypt
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPrivateKey_Gcrypt
+#ifdef __cplusplus
+extern "C" {
+#endif
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Gcrypt */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Gcrypt
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Gcrypt
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Gcrypt
+ * Method:    generateSecret
+ * Signature: ([B[BLjava/security/spec/ECParameterSpec;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Gcrypt_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Gcrypt
+ * Method:    generateSecret
+ * Signature: ([B[BLjava/security/spec/ECParameterSpec;Ljava/lang/String;)Ljavax/crypto/SecretKey;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Gcrypt_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2Ljava_lang_String_2
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject, jstring);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Gcrypt */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Gcrypt
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Gcrypt
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Gcrypt
+ * Method:    sign
+ * Signature: ([B[BLjava/security/spec/ECParameterSpec;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Gcrypt_sign
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Gcrypt
+ * Method:    verify
+ * Signature: ([B[B[BLjava/security/spec/ECParameterSpec;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Gcrypt_verify
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jbyteArray, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif

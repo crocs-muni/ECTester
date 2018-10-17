@@ -169,6 +169,8 @@
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Gcrypt"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$Gcrypt"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Gcrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Gcrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Gcrypt"/>
         </javah>
     </target>
 </project>
