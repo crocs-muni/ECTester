@@ -3,13 +3,15 @@
 Popular libraries with at least some ECC support:
 
  - [NSS](https://hg.mozilla.org/projects/nss)
- - [libgcrypt](https://www.gnupg.org/related_software/libgcrypt/)
  - [mbedTLS](https://tls.mbed.org/)
+ - [LibreSSL](https://www.libressl.org/)
  - [Nettle](http://www.lysator.liu.se/~nisse/nettle/)
  - [OpenSSL (FIPS mode)](https://www.openssl.org/docs/fipsnotes.html)
  - [Microsoft .NET crypto](https://docs.microsoft.com/en-us/dotnet/standard/security/cryptography-model)
 
 # Supported libraries
+
+Libraries that ECTester can test.
 
  - [BouncyCastle](https://bouncycastle.org/java.html)
     - Java
@@ -71,6 +73,23 @@ mkdir build && cd build
 cmake -DBUILD_SHARED_LIBS=1 -GNinja ..
 ninja
 ```
+ - [Crypto++](https://cryptopp.com/)
+    - C++
+    - For prime field curves:
+        - Uses projective coordinates and sliding window scalar multiplication algorithm.
+    - For binary field curves:
+        - Uses affine coordinates and sliding window scalar multiplication algorithm.
+ - [libtomcrypt](http://www.libtom.net/LibTomCrypt/)
+    - C
+    - Uses Jacobian coordinates.
+    - Sliding window scalar multiplication algorithm.
+ - [libgcrypt](https://www.gnupg.org/related_software/libgcrypt/)
+    - C
+    - Only supports prime field curves.
+    - Uses short Weierstrass, Montgomery and Twisted Edwards models.
+       - Uses left-to-right double-and-add always scalar multiplication and Jacobian coordinates in short Weierstrass form.
+       - Uses Montgomery ladder and X-only in Montgomery form.
+       - Uses left-to-right double-and-add always scalar multiplication in Twisted Edwards form.
  - [Botan](https://botan.randombit.net/)
     - C++
     - Uses blinded(randomized) Montgomery ladder.
@@ -78,16 +97,6 @@ ninja
     - <https://hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-3.html#doubling-dbl-1986-cc>
     - <https://eprint.iacr.org/2015/657>
     - ECTester supports v2.4.0 and up.
- - [libtomcrypt](http://www.libtom.net/LibTomCrypt/)
-    - C
-    - Uses Jacobian coordinates.
-    - Sliding window scalar multiplication algorithm.
- - [Crypto++](https://cryptopp.com/)
-    - C++
-    - For prime field curves:
-        - Uses projective coordinates and sliding window scalar multiplication algorithm.
-    - For binary field curves:
-        - Uses affine coordinates and sliding window scalar multiplication algorithm.
  - [Microsoft CNG](https://msdn.microsoft.com/en-us/library/windows/desktop/aa376210(v=vs.85).aspx)
     - C API.
     - Closed source.
