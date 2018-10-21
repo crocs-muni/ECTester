@@ -1,6 +1,5 @@
 #include "native.h"
 #include <string.h>
-#include <stdio.h>
 
 #include <openssl/conf.h>
 #include <openssl/opensslv.h>
@@ -327,7 +326,6 @@ static jobject create_ec_param_spec(JNIEnv *env, const EC_GROUP *curve) {
 
     jmethodID elliptic_curve_init = (*env)->GetMethodID(env, elliptic_curve_class, "<init>", "(Ljava/security/spec/ECField;Ljava/math/BigInteger;Ljava/math/BigInteger;)V");
     jobject elliptic_curve = (*env)->NewObject(env, elliptic_curve_class, elliptic_curve_init, field, a_int, b_int);
-    fflush(stderr);
 
     BN_free(a);
     BN_free(b);

@@ -222,14 +222,15 @@ If you are interested in testing support for other JavaCard algorithms, please v
 ## Standalone library testing
 
 Currently supported libraries include:
- - BouncyCastle
- - SunEC
- - OpenSSL
- - BoringSSL
- - Crypto++
- - libtomcrypt
- - botan
- - Microsoft CNG
+ - [BouncyCastle](https://bouncycastle.org/java.html)
+ - [Sun EC](https://docs.oracle.com/javase/7/docs/technotes/guides/security/SunProviders.html#SunEC)
+ - [OpenSSL](https://www.openssl.org/)
+ - [BoringSSL](https://boringssl.googlesource.com/boringssl)
+ - [Crypto++](https://cryptopp.com/)
+ - [libtomcrypt](http://www.libtom.net/LibTomCrypt/)
+ - [libgcrypt](https://www.gnupg.org/related_software/libgcrypt/)
+ - [Botan](https://botan.randombit.net/)
+ - [Microsoft CNG](https://msdn.microsoft.com/en-us/library/windows/desktop/aa376210(v=vs.85).aspx)
  
 For more information on ECC libraries see [LIBS](docs/LIBS.md).
 

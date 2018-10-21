@@ -75,7 +75,7 @@ void throw_new_var(JNIEnv *env, const char *class, const char *format, ...) {
 	char buffer[2048];
 	va_list args;
 	va_start(args, format);
-	int res = vsnprintf(buffer, 2048, format, args);
+	vsnprintf(buffer, 2048, format, args);
 	va_end(args);
 	throw_new(env, class, buffer);
 }
@@ -105,4 +105,103 @@ jint get_kdf_bits(JNIEnv *env, jstring algorithm) {
     }
     (*env)->ReleaseStringUTFChars(env, algorithm, algo_data);
     return result;
+}
+
+jbyteArray asn1_der_encode(JNIEnv *env, const jbyte *r, size_t r_len, const jbyte *s, size_t s_len) {
+    jbyte r_length = (jbyte) r_len + (r[0] & 0x80 ? 1 : 0);
+    jbyte s_length = (jbyte) s_len + (s[0] & 0x80 ? 1 : 0);
+
+    // R and S are < 128 bytes, so 1 byte tag + 1 byte len + len bytes value
+    size_t seq_value_len = 2 + r_length + 2 + s_length;
+    size_t whole_len = seq_value_len;
+
+    // The SEQUENCE length might be >= 128, so more bytes of length
+    size_t seq_len_len = 0;
+    if (seq_value_len >= 128) {
+        size_t s = seq_value_len;
+        while ((s = s >> 8)) {
+            seq_len_len++;
+        }
+    }
+    // seq_len_len bytes for length and one for length of length
+    whole_len += seq_len_len + 1;
+
+    // 1 byte tag for SEQUENCE
+    whole_len += 1;
+
+    jbyteArray result = (jbyteArray) (*env)->NewByteArray(env, whole_len);
+    jbyte *data = (*env)->GetByteArrayElements(env, result, NULL);
+    size_t i = 0;
+    data[i++] = 0x30; // SEQUENCE
+    if (seq_value_len < 128) {
+        data[i++] = (jbyte) seq_value_len;
+    } else {
+        data[i++] = (jbyte) (seq_len_len | (1 << 7));
+        for (size_t j = 0; j < seq_len_len; ++j) {
+            data[i++] = (jbyte) (seq_value_len & (0xff << (seq_len_len - j)));
+        }
+    }
+    data[i++] = 0x02; //INTEGER
+    data[i++] = r_length;
+    if (r[0] & 0x80) {
+        data[i++] = 0;
+    }
+    memcpy(data + i, r, r_len);
+    i += r_len;
+    data[i++] = 0x02; //INTEGER
+    data[i++] = s_length;
+    if (s[0] & 0x80) {
+        data[i++] = 0;
+    }
+    memcpy(data + i, s, s_len);
+    i += s_len;
+    (*env)->ReleaseByteArrayElements(env, result, data, 0);
+
+    return result;
+}
+
+bool asn1_der_decode(JNIEnv *env, jbyteArray sig, jbyte **r_data, size_t *r_len, jbyte **s_data, size_t *s_len) {
+    size_t sig_len = (*env)->GetArrayLength(env, sig);
+    jbyte *data = (*env)->GetByteArrayElements(env, sig, NULL);
+    size_t i = 0;
+    if (data[i++] != 0x30) {//SEQUENCE
+        (*env)->ReleaseByteArrayElements(env, sig, data, JNI_ABORT);
+        return false;
+    }
+    size_t seq_value_len = 0;
+    if (!(data[i] & 0x80)) {
+        seq_value_len = data[i++];
+    } else {
+        size_t seq_len_len = data[i++] & 0x7f;
+        while (seq_len_len > 0) {
+            seq_value_len |= (data[i++] << (seq_len_len - 1));
+            seq_len_len--;
+        }
+    }
+
+    if (data[i++] != 0x02) {//INTEGER
+        (*env)->ReleaseByteArrayElements(env, sig, data, JNI_ABORT);
+        return false;
+    }
+    size_t r_length = data[i++];
+    jbyte *r_out = malloc(r_length);
+    memcpy(r_out, data + i, r_length);
+    i += r_length;
+
+    if (data[i++] != 0x02) {//INTEGER
+        free(r_out);
+        (*env)->ReleaseByteArrayElements(env, sig, data, JNI_ABORT);
+        return false;
+    }
+    size_t s_length = data[i++];
+    jbyte *s_out = malloc(s_length);
+    memcpy(s_out, data + i, s_length);
+    i += s_length;
+
+    *r_len = r_length;
+    *r_data = r_out;
+    *s_len = s_length;
+    *s_data = s_out;
+    (*env)->ReleaseByteArrayElements(env, sig, data, JNI_ABORT);
+    return true;
 }

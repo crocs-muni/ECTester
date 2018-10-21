@@ -74,6 +74,16 @@ public abstract class NativeProvider extends Provider {
         native void setup();
     }
 
+    public static class Gcrypt extends NativeProvider {
+
+        public Gcrypt(String name, double version, String info) {
+            super(name, version, info);
+        }
+
+        @Override
+        native void setup();
+    }
+
     public static class Mscng extends NativeProvider {
 
         public Mscng(String name, double version, String info) {

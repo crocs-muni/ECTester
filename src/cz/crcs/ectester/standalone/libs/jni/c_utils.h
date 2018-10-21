@@ -1,6 +1,7 @@
 #pragma once
 
 #include "native.h"
+#include <stdbool.h>
 
 /**
  * Classes that are accessed alot are cached here, manually.
@@ -37,6 +38,16 @@ void throw_new_var(JNIEnv *env, const char *class, const char *format, ...);
  * Get the size of the specified key algorithm in bits, for ECDH KDF output size.
  */
 jint get_kdf_bits(JNIEnv *env, jstring algorithm);
+
+/**
+ * DER encode the r and s values.
+ */
+jbyteArray asn1_der_encode(JNIEnv *env, const jbyte *r, size_t r_len, const jbyte *s, size_t s_len);
+
+/**
+ * DER decode a signature into r and s values.
+ */
+bool asn1_der_decode(JNIEnv *env, jbyteArray sig, jbyte **r_data, size_t *r_len, jbyte **s_data, size_t *s_len);
 
 /**
  * Some useful defines to init the provider.

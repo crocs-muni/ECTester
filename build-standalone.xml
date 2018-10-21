@@ -164,6 +164,13 @@
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Boringssl"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Boringssl"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Boringssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.GcryptLib"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeProvider$Gcrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Gcrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$Gcrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Gcrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Gcrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Gcrypt"/>
         </javah>
     </target>
 </project>
