@@ -11,6 +11,8 @@ import java.util.List;
  */
 public class KeyAgreementIdent extends Ident {
     private boolean requiresKeyAlgo;
+    private String kdf;
+    private String algo;
 
     private static final List<KeyAgreementIdent> ALL = new LinkedList<>();
 
@@ -73,6 +75,19 @@ public class KeyAgreementIdent extends Ident {
 
     private KeyAgreementIdent(String name, String... aliases) {
         super(name, aliases);
+        if (name.contains("with")) {
+            int split = name.indexOf("with");
+            this.algo = name.substring(0, split);
+            this.kdf = name.substring(split + 4);
+        } else {
+            for (String alias : aliases) {
+                if (alias.contains("with")) {
+                    int split = alias.indexOf("with");
+                    this.algo = alias.substring(0, split);
+                    this.kdf = alias.substring(split + 4);
+                }
+            }
+        }
     }
 
     private KeyAgreementIdent(String name, boolean requiresKeyAlgo, String... aliases) {
@@ -82,6 +97,14 @@ public class KeyAgreementIdent extends Ident {
 
     public boolean requiresKeyAlgo() {
         return requiresKeyAlgo;
+    }
+
+    public String getKdfAlgo() {
+        return kdf;
+    }
+
+    public String getBaseAlgo() {
+        return algo;
     }
 
     public KeyAgreement getInstance(Provider provider) throws NoSuchAlgorithmException {
