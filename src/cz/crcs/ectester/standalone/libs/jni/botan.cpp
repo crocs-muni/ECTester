@@ -19,6 +19,7 @@
 #include "cpp_utils.hpp"
 
 static jclass provider_class;
+static Botan::AutoSeeded_RNG rng;
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_createProvider(JNIEnv *env, jobject self) {
     /* Create the custom provider. */
@@ -234,8 +235,6 @@ static jobject params_from_group(JNIEnv *env, Botan::EC_Group group) {
 }
 
 static jobject generate_from_group(JNIEnv* env, jobject self, Botan::EC_Group group) {
-    Botan::AutoSeeded_RNG rng;
-
     jclass botan_kpg_class = env->FindClass("cz/crcs/ectester/standalone/libs/jni/NativeKeyPairGeneratorSpi$Botan");
     jfieldID type_id = env->GetFieldID(botan_kpg_class, "type", "Ljava/lang/String;");
     jstring type = (jstring) env->GetObjectField(self, type_id);
@@ -348,8 +347,6 @@ jbyteArray generate_secret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteAr
     Botan::BigInt privkey_scalar((unsigned char *) privkey_data, privkey_length);
     env->ReleaseByteArrayElements(privkey, privkey_data, JNI_ABORT);
 
-    Botan::AutoSeeded_RNG rng;
-
     Botan::ECDH_PrivateKey skey(rng, curve_group, privkey_scalar);
 
     jsize pubkey_length = env->GetArrayLength(pubkey);
@@ -415,8 +412,6 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     Botan::BigInt privkey_scalar((uint8_t*) privkey_bytes, privkey_length);
     env->ReleaseByteArrayElements(privkey, privkey_bytes, JNI_ABORT);
 
-    Botan::AutoSeeded_RNG rng;
-
     std::unique_ptr<Botan::EC_PrivateKey> skey;
     if (type_str.find("ECDSA") != std::string::npos) {
         skey = std::make_unique<Botan::ECDSA_PrivateKey>(rng, curve_group, privkey_scalar);
@@ -426,22 +421,22 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
         skey = std::make_unique<Botan::ECGDSA_PrivateKey>(rng, curve_group, privkey_scalar);
     }
 
-    std::string kdf;
+    std::string emsa;
     if (type_str.find("NONE") != std::string::npos) {
-        kdf = "Raw";
+        emsa = "Raw";
     } else if (type_str.find("SHA1") != std::string::npos) {
-        kdf = "EMSA1(SHA-1)";
+        emsa = "EMSA1(SHA-1)";
     } else if (type_str.find("SHA224") != std::string::npos) {
-        kdf = "EMSA1(SHA-224)";
+        emsa = "EMSA1(SHA-224)";
     } else if (type_str.find("SHA256") != std::string::npos) {
-        kdf = "EMSA1(SHA-256)";
+        emsa = "EMSA1(SHA-256)";
     } else if (type_str.find("SHA384") != std::string::npos) {
-        kdf = "EMSA1(SHA-384)";
+        emsa = "EMSA1(SHA-384)";
     } else if (type_str.find("SHA512") != std::string::npos) {
-        kdf = "EMSA1(SHA-512)";
+        emsa = "EMSA1(SHA-512)";
     }
 
-    Botan::PK_Signer signer(*skey, rng, kdf, Botan::DER_SEQUENCE);
+    Botan::PK_Signer signer(*skey, rng, emsa, Botan::DER_SEQUENCE);
 
     jsize data_length = env->GetArrayLength(data);
     jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
@@ -487,22 +482,22 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
         pkey = std::make_unique<Botan::ECGDSA_PublicKey>(curve_group, public_point);
     }
 
-    std::string kdf;
+    std::string emsa;
     if (type_str.find("NONE") != std::string::npos) {
-        kdf = "Raw";
+        emsa = "Raw";
     } else if (type_str.find("SHA1") != std::string::npos) {
-        kdf = "EMSA1(SHA-1)";
+        emsa = "EMSA1(SHA-1)";
     } else if (type_str.find("SHA224") != std::string::npos) {
-        kdf = "EMSA1(SHA-224)";
+        emsa = "EMSA1(SHA-224)";
     } else if (type_str.find("SHA256") != std::string::npos) {
-        kdf = "EMSA1(SHA-256)";
+        emsa = "EMSA1(SHA-256)";
     } else if (type_str.find("SHA384") != std::string::npos) {
-        kdf = "EMSA1(SHA-384)";
+        emsa = "EMSA1(SHA-384)";
     } else if (type_str.find("SHA512") != std::string::npos) {
-        kdf = "EMSA1(SHA-512)";
+        emsa = "EMSA1(SHA-512)";
     }
 
-    Botan::PK_Verifier verifier(*pkey, kdf, Botan::DER_SEQUENCE);
+    Botan::PK_Verifier verifier(*pkey, emsa, Botan::DER_SEQUENCE);
 
     jsize data_length = env->GetArrayLength(data);
     jsize sig_length = env->GetArrayLength(signature);

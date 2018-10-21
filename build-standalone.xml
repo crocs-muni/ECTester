@@ -118,7 +118,8 @@
         </exec>
     </target>
 
-    <target name="-post-compile"/>
+    <target name="-post-compile" depends="libs-try"/>
+
     <target name="-post-clean">
         <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="make" osfamily="unix">
             <arg value="clean"/>

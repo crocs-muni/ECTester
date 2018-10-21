@@ -23,7 +23,6 @@ using CryptoPP::byte;
 
 #include "cryptopp/osrng.h"
 using CryptoPP::AutoSeededRandomPool;
-using CryptoPP::AutoSeededX917RNG;
 
 #include "cryptopp/sha.h"
 using CryptoPP::SHA1;
@@ -73,6 +72,7 @@ using CryptoPP::Integer;
 #include "cpp_utils.hpp"
 
 static jclass provider_class;
+static AutoSeededRandomPool rng;
 
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_createProvider(JNIEnv *env, jobject self) {
@@ -494,7 +494,6 @@ template <> jobject params_from_group<EC2N>(JNIEnv *env, DL_GroupParameters_EC<E
 }
 
 template <class EC> jobject generate_from_group(JNIEnv *env, DL_GroupParameters_EC<EC> group, jobject params) {
-    AutoSeededRandomPool rng;
     typename ECDH<EC>::Domain ec_domain(group);
     SecByteBlock priv(ec_domain.PrivateKeyLength()), pub(ec_domain.PublicKeyLength());
 
@@ -616,7 +615,6 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgr
 
 template <class EC, class H>
 jbyteArray sign_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray data, const Integer & private_key_x) {
-    AutoSeededRandomPool prng;
 
     typename ECDSA<EC, H>::PrivateKey pkey;
     pkey.Initialize(group, private_key_x);
@@ -626,7 +624,7 @@ jbyteArray sign_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray
 
     jsize data_length = env->GetArrayLength(data);
     jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
-    size_t len = signer.SignMessage(prng, (byte *)data_bytes, data_length, (byte *)signature.c_str());
+    size_t len = signer.SignMessage(rng, (byte *)data_bytes, data_length, (byte *)signature.c_str());
     env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
     signature.resize(len);
 
