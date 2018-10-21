@@ -251,18 +251,18 @@ static jobject generate_from_curve(JNIEnv *env, const ltc_ecc_set_type *curve) {
     unsigned long key_len = 2*curve->size + 1;
     jbyteArray pub_bytes = (*env)->NewByteArray(env, key_len);
     jbyte *key_pub = (*env)->GetByteArrayElements(env, pub_bytes, NULL);
-    ecc_ansi_x963_export(&key, key_pub, &key_len);
+    ecc_ansi_x963_export(&key, (unsigned char *) key_pub, &key_len);
     (*env)->ReleaseByteArrayElements(env, pub_bytes, key_pub, 0);
 
     jobject ec_param_spec = create_ec_param_spec(env, curve);
 
     jobject ec_pub_param_spec = (*env)->NewLocalRef(env, ec_param_spec);
     jmethodID ec_pub_init = (*env)->GetMethodID(env, pubkey_class, "<init>", "([BLjava/security/spec/ECParameterSpec;)V");
-    jobject pubkey = (*env)->NewObject(env, pubkey_class, ec_pub_init, pub_bytes, ec_param_spec);
+    jobject pubkey = (*env)->NewObject(env, pubkey_class, ec_pub_init, pub_bytes, ec_pub_param_spec);
 
     jbyteArray priv_bytes = (*env)->NewByteArray(env, curve->size);
     jbyte *key_priv = (*env)->GetByteArrayElements(env, priv_bytes, NULL);
-    ltc_mp.unsigned_write(key.k, key_priv);
+    ltc_mp.unsigned_write(key.k, (unsigned char *) key_priv);
     (*env)->ReleaseByteArrayElements(env, priv_bytes, key_priv, 0);
 
     jobject ec_priv_param_spec = (*env)->NewLocalRef(env, ec_param_spec);
@@ -334,7 +334,7 @@ static jboolean privkey_from_bytes(JNIEnv *env, jbyteArray privkey, const ltc_ec
     out->idx = -1;
     out->dp = curve;
     ltc_mp.init(&out->k);
-    ltc_mp.unsigned_read(out->k, priv_data, (unsigned long) curve->size);
+    ltc_mp.unsigned_read(out->k, (unsigned char *) priv_data, (unsigned long) curve->size);
 
     (*env)->ReleaseByteArrayElements(env, privkey, priv_data, JNI_ABORT);
     return JNI_TRUE;
@@ -355,8 +355,8 @@ static jboolean pubkey_from_bytes(JNIEnv *env, jbyteArray pubkey, const ltc_ecc_
     out->dp = curve;
     ltc_init_multi(&out->pubkey.x, &out->pubkey.y, &out->pubkey.z, NULL);
     ltc_mp.set_int(out->pubkey.z, 1);
-    ltc_mp.unsigned_read(out->pubkey.x, pub_data + 1, (unsigned long) curve->size);
-    ltc_mp.unsigned_read(out->pubkey.y, pub_data + 1 + curve->size, (unsigned long) curve->size);
+    ltc_mp.unsigned_read(out->pubkey.x, (unsigned char *) pub_data + 1, (unsigned long) curve->size);
+    ltc_mp.unsigned_read(out->pubkey.y, (unsigned char *) pub_data + 1 + curve->size, (unsigned long) curve->size);
 
     (*env)->ReleaseByteArrayElements(env, pubkey, pub_data, JNI_ABORT);
 
@@ -417,7 +417,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     unsigned char result[curve->size*4];
     unsigned long output_len = curve->size*4;
     int err;
-    if ((err = ecc_sign_hash(data_data, data_size, result, &output_len, &ltc_prng, find_prng("yarrow"), &priv)) != CRYPT_OK) {
+    if ((err = ecc_sign_hash((unsigned char *) data_data, data_size, result, &output_len, &ltc_prng, find_prng("yarrow"), &priv)) != CRYPT_OK) {
         throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
         free_curve(curve);
         (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
@@ -452,7 +452,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 
     int err;
     int result;
-    if ((err = ecc_verify_hash(sig_data, sig_size, data_data, data_size, &result, &pub)) != CRYPT_OK) {
+    if ((err = ecc_verify_hash((unsigned char *) sig_data, sig_size, (unsigned char *) data_data, data_size, &result, &pub)) != CRYPT_OK) {
         throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
         free_curve(curve);
         (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);

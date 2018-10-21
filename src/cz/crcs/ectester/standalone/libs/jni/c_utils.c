@@ -198,10 +198,16 @@ bool asn1_der_decode(JNIEnv *env, jbyteArray sig, jbyte **r_data, size_t *r_len,
     memcpy(s_out, data + i, s_length);
     i += s_length;
 
+    (*env)->ReleaseByteArrayElements(env, sig, data, JNI_ABORT);
+    if (i != sig_len) {
+        free(r_out);
+        free(s_out);
+        return false;
+    }
+
     *r_len = r_length;
     *r_data = r_out;
     *s_len = s_length;
     *s_data = s_out;
-    (*env)->ReleaseByteArrayElements(env, sig, data, JNI_ABORT);
     return true;
 }

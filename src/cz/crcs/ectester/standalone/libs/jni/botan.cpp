@@ -145,7 +145,7 @@ static Botan::BigInt bigint_from_biginteger(JNIEnv *env, jobject biginteger) {
     jbyteArray byte_array = (jbyteArray) env->CallObjectMethod(biginteger, to_byte_array);
     jsize byte_length = env->GetArrayLength(byte_array);
     jbyte *byte_data = env->GetByteArrayElements(byte_array, NULL);
-    Botan::BigInt result((unsigned uint8_t*) byte_data, byte_length);
+    Botan::BigInt result((unsigned char *) byte_data, byte_length);
     env->ReleaseByteArrayElements(byte_array, byte_data, JNI_ABORT);
     return result;
 }
@@ -157,10 +157,6 @@ static Botan::EC_Group group_from_params(JNIEnv *env, jobject params) {
     
         jmethodID get_field = env->GetMethodID(elliptic_curve_class, "getField", "()Ljava/security/spec/ECField;");
         jobject field = env->CallObjectMethod(elliptic_curve, get_field);
-    
-        jmethodID get_bits = env->GetMethodID(fp_field_class, "getFieldSize", "()I");
-        jint bits = env->CallIntMethod(field, get_bits);
-        jint bytes = (bits + 7) / 8;
 
         jmethodID get_a = env->GetMethodID(elliptic_curve_class, "getA", "()Ljava/math/BigInteger;");
         jobject a = env->CallObjectMethod(elliptic_curve, get_a);
@@ -299,7 +295,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
     for (auto it = curves.begin(); it != curves.end(); ++it) {
         Botan::EC_Group curve_group = Botan::EC_Group(*it);
         size_t curve_size = curve_group.get_p_bits();
-        if (curve_size == keysize) {
+        if (curve_size == (size_t) keysize) {
             //generate on this group. Even thou no default groups are present...
             return generate_from_group(env, self, curve_group);
         }
@@ -349,7 +345,7 @@ jbyteArray generate_secret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteAr
 
     jsize privkey_length = env->GetArrayLength(privkey);
     jbyte *privkey_data = env->GetByteArrayElements(privkey, NULL);
-    Botan::BigInt privkey_scalar((unsigned uint8_t*) privkey_data, privkey_length);
+    Botan::BigInt privkey_scalar((unsigned char *) privkey_data, privkey_length);
     env->ReleaseByteArrayElements(privkey, privkey_data, JNI_ABORT);
 
     Botan::AutoSeeded_RNG rng;

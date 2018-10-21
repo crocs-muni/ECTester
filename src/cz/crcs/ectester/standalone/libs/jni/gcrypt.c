@@ -85,6 +85,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
     return JNI_FALSE;
 }
 
+/*
 static void print_sexp(gcry_sexp_t sexp) {
     size_t len = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, NULL, 0);
     char string[len];
@@ -99,6 +100,7 @@ static void print_chrray(unsigned char *arr, size_t len) {
     }
     printf("\n");
 }
+*/
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Gcrypt_paramsSupported(JNIEnv *env, jobject this, jobject params) {
     if (params == NULL) {
@@ -131,7 +133,7 @@ static gcry_mpi_t bytearray_to_mpi(JNIEnv *env, jbyteArray array) {
     gcry_mpi_t result;
 
     size_t length = (*env)->GetArrayLength(env, array);
-    char data[length + 1];
+    jbyte data[length + 1];
     data[0] = 0;
     (*env)->GetByteArrayRegion(env, array, 0, length, data + 1);
     gcry_mpi_scan(&result, GCRYMPI_FMT_USG, data, length + 1, NULL);
@@ -286,7 +288,7 @@ static jobject generate_from_sexp(JNIEnv *env, gcry_sexp_t gen_sexp) {
 	gcry_mpi_print(GCRYMPI_FMT_USG, NULL, 0, &priv_len, d);
 	jbyteArray priv_bytes = (*env)->NewByteArray(env, priv_len);
 	jbyte *key_priv = (*env)->GetByteArrayElements(env, priv_bytes, NULL);
-	gcry_mpi_print(GCRYMPI_FMT_USG, key_priv, priv_len, NULL, d);
+	gcry_mpi_print(GCRYMPI_FMT_USG, (unsigned char *) key_priv, priv_len, NULL, d);
     (*env)->ReleaseByteArrayElements(env, priv_bytes, key_priv, 0);
 
     jobject ec_pub_param_spec = (*env)->NewLocalRef(env, ec_param_spec);
@@ -339,7 +341,6 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
 }
 
 static gcry_sexp_t create_key(JNIEnv *env, jobject ec_param_spec, const char *key_fmt, gcry_mpi_t q, gcry_mpi_t d) {
-    gcry_sexp_t inner;
     gcry_mpi_t p, a, b, g, n, h;
 
     jmethodID get_curve = (*env)->GetMethodID(env, ec_parameter_spec_class, "getCurve", "()Ljava/security/spec/EllipticCurve;");
@@ -397,7 +398,8 @@ static gcry_sexp_t create_key(JNIEnv *env, jobject ec_param_spec, const char *ke
     jmethodID get_h = (*env)->GetMethodID(env, ec_parameter_spec_class, "getCofactor", "()I");
     jint jh = (*env)->CallIntMethod(env, ec_param_spec, get_h);
     h = gcry_mpi_set_ui(NULL, jh);
-
+    
+    gcry_sexp_t inner = NULL;
     if (q && d) {
         gcry_sexp_build(&inner, NULL, "(ecc (flags param) (p %M) (a %M) (b %M) (g %M) (n %M) (h %M) (q %M) (d %M))", p, a, b, g, n, h, q, d, NULL);
     } else if (q && !d) {

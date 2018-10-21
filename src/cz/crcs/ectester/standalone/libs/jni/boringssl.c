@@ -87,7 +87,7 @@ static jobject bignum_to_biginteger(JNIEnv *env, const BIGNUM *bn) {
     int size = BN_num_bytes(bn);
     jbyteArray bytes = (*env)->NewByteArray(env, size);
     jbyte *data = (*env)->GetByteArrayElements(env, bytes, NULL);
-    BN_bn2bin(bn, data);
+    BN_bn2bin(bn, (unsigned char *) data);
     (*env)->ReleaseByteArrayElements(env, bytes, data, 0);
     jobject result = (*env)->NewObject(env, biginteger_class, biginteger_init, 1, bytes);
     return result;
@@ -99,7 +99,7 @@ static BIGNUM *biginteger_to_bignum(JNIEnv *env, jobject bigint) {
     jbyteArray byte_array = (jbyteArray) (*env)->CallObjectMethod(env, bigint, to_byte_array);
     jsize byte_length = (*env)->GetArrayLength(env, byte_array);
     jbyte *byte_data = (*env)->GetByteArrayElements(env, byte_array, NULL);
-    BIGNUM *result = BN_bin2bn(byte_data, byte_length, NULL);
+    BIGNUM *result = BN_bin2bn((unsigned char *) byte_data, byte_length, NULL);
     (*env)->ReleaseByteArrayElements(env, byte_array, byte_data, JNI_ABORT);
     return result;
 }
@@ -114,10 +114,6 @@ static EC_GROUP *create_curve(JNIEnv *env, jobject params) {
     if ((*env)->IsInstanceOf(env, field, f2m_field_class)) {
         return NULL;
     }
-
-    jmethodID get_bits = (*env)->GetMethodID(env, fp_field_class, "getFieldSize", "()I");
-    jint bits = (*env)->CallIntMethod(env, field, get_bits);
-    jint bytes = (bits + 7) / 8;
 
     jmethodID get_a = (*env)->GetMethodID(env, elliptic_curve_class, "getA", "()Ljava/math/BigInteger;");
     jobject a = (*env)->CallObjectMethod(env, elliptic_curve, get_a);
@@ -218,7 +214,6 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
 }
 
 static jobject create_ec_param_spec(JNIEnv *env, const EC_GROUP *curve) {
-    int field_type = EC_METHOD_get_field_type(EC_GROUP_method_of(curve));
     BIGNUM *a;
     BIGNUM *b;
 
@@ -292,13 +287,13 @@ static jobject generate_from_curve(JNIEnv *env, const EC_GROUP *curve) {
 
     jbyteArray priv_bytes = (*env)->NewByteArray(env, key_bytes);
     jbyte *key_priv = (*env)->GetByteArrayElements(env, priv_bytes, NULL);
-    BN_bn2bin_padded(key_priv, key_bytes, EC_KEY_get0_private_key(key));
+    BN_bn2bin_padded((unsigned char *) key_priv, key_bytes, EC_KEY_get0_private_key(key));
     (*env)->ReleaseByteArrayElements(env, priv_bytes, key_priv, 0);
 
     unsigned long key_len = 2*key_bytes + 1;
     jbyteArray pub_bytes = (*env)->NewByteArray(env, key_len);
     jbyte *key_pub = (*env)->GetByteArrayElements(env, pub_bytes, NULL);
-    EC_POINT_point2oct(curve, EC_KEY_get0_public_key(key), POINT_CONVERSION_UNCOMPRESSED, key_pub, key_len, NULL);
+    EC_POINT_point2oct(curve, EC_KEY_get0_public_key(key), POINT_CONVERSION_UNCOMPRESSED, (unsigned char *) key_pub, key_len, NULL);
     (*env)->ReleaseByteArrayElements(env, pub_bytes, key_pub, 0);
 
     EC_KEY_free(key);
@@ -307,7 +302,7 @@ static jobject generate_from_curve(JNIEnv *env, const EC_GROUP *curve) {
 
     jobject ec_pub_param_spec = (*env)->NewLocalRef(env, ec_param_spec);
     jmethodID ec_pub_init = (*env)->GetMethodID(env, pubkey_class, "<init>", "([BLjava/security/spec/ECParameterSpec;)V");
-    jobject pubkey = (*env)->NewObject(env, pubkey_class, ec_pub_init, pub_bytes, ec_param_spec);
+    jobject pubkey = (*env)->NewObject(env, pubkey_class, ec_pub_init, pub_bytes, ec_pub_param_spec);
 
     jobject ec_priv_param_spec = (*env)->NewLocalRef(env, ec_param_spec);
     jmethodID ec_priv_init = (*env)->GetMethodID(env, privkey_class, "<init>", "([BLjava/security/spec/ECParameterSpec;)V");
@@ -354,7 +349,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
         size_t ncurves = EC_get_builtin_curves(NULL, 0);
         EC_builtin_curve curves[ncurves];
         EC_get_builtin_curves(curves, ncurves);
-        EC_GROUP *curve;
+        EC_GROUP *curve = NULL;
         for (size_t i = 0; i < ncurves; ++i) {
             if (strcasecmp(utf_name, OBJ_nid2sn(curves[i].nid)) == 0) {
                 curve = EC_GROUP_new_by_curve_name(curves[i].nid);
@@ -381,7 +376,7 @@ EC_KEY *barray_to_pubkey(JNIEnv *env, const EC_GROUP *curve, jbyteArray pub) {
     jsize pub_len = (*env)->GetArrayLength(env, pub);
     jbyte *pub_data = (*env)->GetByteArrayElements(env, pub, NULL);
     EC_POINT *pub_point = EC_POINT_new(curve);
-    EC_POINT_oct2point(curve, pub_point, pub_data, pub_len, NULL);
+    EC_POINT_oct2point(curve, pub_point, (unsigned char *) pub_data, pub_len, NULL);
     (*env)->ReleaseByteArrayElements(env, pub, pub_data, JNI_ABORT);
     EC_KEY_set_public_key(result, pub_point);
     EC_POINT_free(pub_point);
@@ -393,7 +388,7 @@ EC_KEY *barray_to_privkey(JNIEnv *env,  const EC_GROUP *curve, jbyteArray priv) 
     EC_KEY_set_group(result, curve);
     jsize priv_len = (*env)->GetArrayLength(env, priv);
     jbyte *priv_data = (*env)->GetByteArrayElements(env, priv, NULL);
-    BIGNUM *s = BN_bin2bn(priv_data, priv_len, NULL);
+    BIGNUM *s = BN_bin2bn((unsigned char *) priv_data, priv_len, NULL);
     (*env)->ReleaseByteArrayElements(env, priv, priv_data, JNI_ABORT);
     EC_KEY_set_private_key(result, s);
     BN_free(s);
@@ -448,7 +443,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     jsize data_size = (*env)->GetArrayLength(env, data);
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
     // TODO: Do more Signatures here, maybe use the EVP interface to get to the hashes easier and not hash manually?
-    ECDSA_SIG *signature = ECDSA_do_sign(data_data, data_size, priv);
+    ECDSA_SIG *signature = ECDSA_do_sign((unsigned char *) data_data, data_size, priv);
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
     if (!signature) {
         throw_new(env, "java/security/GeneralSecurityException", "Error signing, ECDSA_do_sign.");
@@ -486,7 +481,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 
     jsize data_size = (*env)->GetArrayLength(env, data);
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
-    int result = ECDSA_do_verify(data_data, data_size, sig_obj, pub);
+    int result = ECDSA_do_verify((unsigned char *) data_data, data_size, sig_obj, pub);
     if (result < 0) {
         throw_new(env, "java/security/GeneralSecurityException", "Error verifying, ECDSA_do_verify.");
         EC_KEY_free(pub); EC_GROUP_free(curve); ECDSA_SIG_free(sig_obj);

@@ -89,7 +89,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_crea
     std::stringstream ss;
     ss << lib_name << " ";
     ss << info_str[0];
-    for (int i = 1; i < info_str.size(); ++i) {
+    for (size_t i = 1; i < info_str.size(); ++i) {
         ss << "." << info_str[i];
     }
 
@@ -470,6 +470,8 @@ template <> jobject params_from_group<EC2N>(JNIEnv *env, DL_GroupParameters_EC<E
         //pentanomial
         ks = env->NewIntArray(3);
         to_find = 3;
+    } else {
+        return NULL;
     }
     jint *ks_data = env->GetIntArrayElements(ks, NULL);
     for (int i = m - 1; i > 0 && found < to_find; --i) {
@@ -594,6 +596,10 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
             return NULL;
         }
     }
+    if (!success) {
+        throw_new(env, "java/security/GeneralSecurityException", "Agreement was unsuccessful.");
+        return NULL;
+    }
 
     jbyteArray result = env->NewByteArray(secret->size());
     jbyte *result_data = env->GetByteArrayElements(result, NULL);
@@ -648,7 +654,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     Integer private_key_x((byte *) privkey_data, (size_t) privkey_length);
     env->ReleaseByteArrayElements(privkey, privkey_data, JNI_ABORT);
 
-    jbyteArray result;
+    jbyteArray result = NULL;
 
     std::unique_ptr<DL_GroupParameters_EC<ECP>> ecp_group = fp_group_from_params(env, params);
     if (ecp_group == nullptr) {
