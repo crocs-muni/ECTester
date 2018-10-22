@@ -68,6 +68,9 @@
 if (window.matchMedia("(min-width: 64em)").matches) {
   $("#sticky-bar").stickybits({useStickyClasses: true, stickyBitStickyOffset: 80});	
 }
+if (location.hash) {
+  $("#sticky-bar").addClass("js-is-stuck").removeClass("js-is-sticky");
+}
 </script>
 
 <h2 id="algo_support">JavaCard Elliptic curve algorithm support<a href="#algo_support">#</a></h2>
@@ -315,16 +318,16 @@ td.bottom, tr.bottom td {
 <h3>$ \mathbb{F}_p $ performance</h3>
 <table id="perf_table">
     <colgroup>
-        <col span="1" style="width: 20%">
+        <col span="1" style="width: 12%">
         <col span="1" style="width: 2%">
         <col span="1" style="width: 2%">
+        <col span="1" style="width: 8%">
         <col span="1" style="width: 10%">
+        <col span="1" style="width: 8%">
         <col span="1" style="width: 10%">
+        <col span="1" style="width: 8%">
         <col span="1" style="width: 10%">
-        <col span="1" style="width: 10%">
-        <col span="1" style="width: 10%">
-        <col span="1" style="width: 10%">
-        <col span="1" style="width: 10%">
+        <col span="1" style="width: 8%">
         <col span="1" style="width: 10%">
     </colgroup>
     <tr>
