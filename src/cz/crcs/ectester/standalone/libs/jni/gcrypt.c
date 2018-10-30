@@ -136,7 +136,7 @@ static gcry_mpi_t bytearray_to_mpi(JNIEnv *env, jbyteArray array) {
     jbyte data[length + 1];
     data[0] = 0;
     (*env)->GetByteArrayRegion(env, array, 0, length, data + 1);
-    gcry_mpi_scan(&result, GCRYMPI_FMT_USG, data, length + 1, NULL);
+    gcry_mpi_scan(&result, GCRYMPI_FMT_STD, data, length + 1, NULL);
     return result;
 }
 
@@ -401,11 +401,11 @@ static gcry_sexp_t create_key(JNIEnv *env, jobject ec_param_spec, const char *ke
     
     gcry_sexp_t inner = NULL;
     if (q && d) {
-        gcry_sexp_build(&inner, NULL, "(ecc (flags param) (p %M) (a %M) (b %M) (g %M) (n %M) (h %M) (q %M) (d %M))", p, a, b, g, n, h, q, d, NULL);
+        gcry_sexp_build(&inner, NULL, "(ecc (flags param) (p %m) (a %m) (b %m) (g %m) (n %m) (h %m) (q %M) (d %M))", p, a, b, g, n, h, q, d, NULL);
     } else if (q && !d) {
-        gcry_sexp_build(&inner, NULL, "(ecc (flags param) (p %M) (a %M) (b %M) (g %M) (n %M) (h %M) (q %M))", p, a, b, g, n, h, q, NULL);
+        gcry_sexp_build(&inner, NULL, "(ecc (flags param) (p %m) (a %m) (b %m) (g %m) (n %m) (h %m) (q %m))", p, a, b, g, n, h, q, NULL);
     } else if (!q && d) {
-        gcry_sexp_build(&inner, NULL, "(ecc (flags param) (p %M) (a %M) (b %M) (g %M) (n %M) (h %M) (d %M))", p, a, b, g, n, h, d, NULL);
+        gcry_sexp_build(&inner, NULL, "(ecc (flags param) (p %m) (a %m) (b %m) (g %m) (n %m) (h %m) (d %m))", p, a, b, g, n, h, d, NULL);
     }
     gcry_sexp_t result;
     gcry_sexp_build(&result, NULL, key_fmt, inner, NULL);
