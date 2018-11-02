@@ -39,8 +39,8 @@ public class CardEdgeCasesSuite extends CardTestSuite {
     @Override
     protected void runTests() throws Exception {
         Map<String, EC_KAResult> results = EC_Store.getInstance().getObjects(EC_KAResult.class, "wycheproof");
-        List<Map.Entry<String, List<EC_KAResult>>> groupList = EC_Store.mapToPrefix(results.values());
-        for (Map.Entry<String, List<EC_KAResult>> e : groupList) {
+        Map<String, List<EC_KAResult>> groups = EC_Store.mapToPrefix(results.values());
+        for (Map.Entry<String, List<EC_KAResult>> e : groups.entrySet()) {
             String description = null;
             switch (e.getKey()) {
                 case "addsub":
@@ -55,8 +55,8 @@ public class CardEdgeCasesSuite extends CardTestSuite {
             }
 
             List<Test> groupTests = new LinkedList<>();
-            List<Map.Entry<EC_Curve, List<EC_KAResult>>> curveList = EC_Store.mapResultToCurve(e.getValue());
-            for (Map.Entry<EC_Curve, List<EC_KAResult>> c : curveList) {
+            Map<EC_Curve, List<EC_KAResult>> curveList = EC_Store.mapResultToCurve(e.getValue());
+            for (Map.Entry<EC_Curve, List<EC_KAResult>> c : curveList.entrySet()) {
                 EC_Curve curve = c.getKey();
 
                 List<Test> curveTests = new LinkedList<>();

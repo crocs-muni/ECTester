@@ -28,16 +28,16 @@ public class CardSignatureSuite extends CardTestSuite {
     @Override
     protected void runTests() throws Exception {
         Map<String, EC_SigResult> results = EC_Store.getInstance().getObjects(EC_SigResult.class, "wrong");
-        List<Map.Entry<String, List<EC_SigResult>>> groupList = EC_Store.mapToPrefix(results.values());
+        Map<String, List<EC_SigResult>> groups = EC_Store.mapToPrefix(results.values());
 
-        List<EC_SigResult> nok = groupList.stream().filter((e) -> e.getKey().equals("nok")).findFirst().get().getValue();
+        List<EC_SigResult> nok = groups.entrySet().stream().filter((e) -> e.getKey().equals("nok")).findFirst().get().getValue();
 
         byte[] data = "Some stuff that is not the actual data".getBytes();
         for (EC_SigResult sig : nok) {
             ecdsaTest(sig, Result.ExpectedValue.FAILURE, data);
         }
 
-        List<EC_SigResult> ok = groupList.stream().filter((e) -> e.getKey().equals("ok")).findFirst().get().getValue();
+        List<EC_SigResult> ok = groups.entrySet().stream().filter((e) -> e.getKey().equals("ok")).findFirst().get().getValue();
         for (EC_SigResult sig : ok) {
             ecdsaTest(sig, Result.ExpectedValue.SUCCESS, null);
         }

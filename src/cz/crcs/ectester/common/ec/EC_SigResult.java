@@ -69,7 +69,7 @@ public class EC_SigResult extends EC_Data {
 
     @Override
     public String toString() {
-        return "<" + getId() + "> " + sig + " result over " + curve + ", " + signKey + " + " + verifyKey + (data == null ? "" : " of data \"" + data + "\"")  + (desc == null ? "" : ": " + desc) + System.lineSeparator() + super.toString();
+        return "<" + getId() + "> " + sig + " result over " + curve + ", " + signKey + " + " + verifyKey + (data == null ? "" : " of data \"" + data + "\"") + (desc == null ? "" : ": " + desc) + System.lineSeparator() + super.toString();
     }
 
 }
