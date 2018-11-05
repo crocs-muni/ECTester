@@ -141,12 +141,12 @@ public class CardCompressionSuite extends CardTestSuite {
                 continue;
             }
             tests.add(allocate);
-            tests.add(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.ExpectedValue.ANY));
-            tests.add(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_LOCAL), Result.ExpectedValue.ANY));
+            tests.add(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.ExpectedValue.SUCCESS));
+            tests.add(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_LOCAL), Result.ExpectedValue.SUCCESS));
             byte[] pointData = ECUtil.toX962Compressed(key.getParam(EC_Consts.PARAMETER_W));
             byte[] pointDataEncoded = ByteUtil.prependLength(pointData);
             tests.add(CommandTest.expect(new Command.ECDH_direct(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH, pointDataEncoded), Result.ExpectedValue.FAILURE));
-            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Non-residue test of " + curve.getId() + ".", tests.toArray(new Test[0])));
+            doTest(CompoundTest.greedyAll(Result.ExpectedValue.SUCCESS, "Non-residue test of " + curve.getId() + ".", tests.toArray(new Test[0])));
         }
     }
 }
