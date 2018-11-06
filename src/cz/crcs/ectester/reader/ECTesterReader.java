@@ -144,9 +144,8 @@ public class ECTesterReader {
                 cardManager.send(SELECT_ECTESTERAPPLET);
             }
 
-            // Setup logger, testWriter and respWriter
+            // Setup logger and respWriter
             logger = new OutputLogger(true, cfg.log);
-
             respWriter = new ResponseWriter(logger.getPrintStream());
 
             //do action

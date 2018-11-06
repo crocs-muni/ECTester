@@ -8,6 +8,8 @@
 /dist/ECTesterStandalone.jar
 /dist/ECTesterStandalone-dist.jar
 /applet/ectester.cap
+/applet/ectester221.cap
+/applet/ectester222.cap
 
 # Test runs in /dist
 /dist/*.default

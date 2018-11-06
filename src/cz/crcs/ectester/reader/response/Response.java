@@ -79,6 +79,10 @@ public abstract class Response {
         return resp;
     }
 
+    public byte[] getData() {
+        return resp.getData();
+    }
+
     public long getDuration() {
         return time;
     }
@@ -422,6 +426,47 @@ public abstract class Response {
             super(response, description, time);
 
             parse(1, 0);
+        }
+    }
+
+    /**
+     *
+     */
+    public static class GetInfo extends Response {
+        private short base;
+        private short jcVersion;
+        private short cleanupSupport;
+
+        public GetInfo(ResponseAPDU response, String description, long time) {
+            super(response, description, time);
+
+            parse(1, 1);
+            int offset = 2 + 2 + getParamLength(0);
+            byte[] data = getData();
+            base = ByteUtil.getShort(data, offset);
+            offset += 2;
+            jcVersion = ByteUtil.getShort(data, offset);
+            offset += 2;
+            cleanupSupport = ByteUtil.getShort(data, offset);
+        }
+
+        public String getVersion() {
+            return new String(getParam(0));
+        }
+
+        public short getBase() {
+            return base;
+        }
+
+        public float getJavaCardVersion() {
+            byte major = (byte) (jcVersion >> 8);
+            byte minor = (byte) (jcVersion & 0xff);
+            int minorSize = (int) Math.ceil(Math.log10(minor));
+            return (major + ((float) (minor) / (minorSize * 10)));
+        }
+
+        public boolean getCleanupSupport() {
+            return cleanupSupport == 1;
         }
     }
 }

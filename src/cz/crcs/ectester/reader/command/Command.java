@@ -864,5 +864,33 @@ public abstract class Command implements Cloneable {
             return "Request JCSystem object deletion";
         }
     }
+
+    /**
+     *
+     */
+    public static class GetInfo extends Command {
+
+        /**
+         * @param cardManager cardManager to send APDU through
+         */
+        public GetInfo(CardMngr cardManager) {
+            super(cardManager);
+
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_GET_INFO, 0, 0);
+        }
+
+        @Override
+        public Response.GetInfo send() throws CardException {
+            long elapsed = -System.nanoTime();
+            ResponseAPDU response = cardManager.send(cmd);
+            elapsed += System.nanoTime();
+            return new Response.GetInfo(response, getDescription(), elapsed);
+        }
+
+        @Override
+        public String getDescription() {
+            return "Get applet info";
+        }
+    }
 }
 

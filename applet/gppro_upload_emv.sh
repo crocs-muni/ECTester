@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-java -jar gp.jar --deletedeps --verbose -emv --delete 4C6162616B417070
-java -jar gp.jar --deletedeps --verbose -emv --delete 4A43416C6754657374
-java -jar gp.jar --deletedeps --verbose -emv --delete 4543546573746572
+if [ "$#" -ne 2 ]; then
+        echo "gppro_upload.sh <AID> <CAP file>" >&2
+        exit 1
+fi
 
-java -jar gp.jar --install ectester.cap --verbose  --emv -d
+java -jar gp.jar --deletedeps --verbose -emv --delete $1
+java -jar gp.jar --install $2 --verbose  --emv -d
 
 

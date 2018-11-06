@@ -27,8 +27,8 @@
 package cz.crcs.ectester.applet;
 
 import javacard.framework.APDU;
-import javacard.framework.ISO7816;
 import javacard.framework.ISOException;
+import javacardx.apdu.ExtendedLength;
 
 /**
  * Applet part of ECTester, a tool for testing Elliptic curve support on javacards.
@@ -36,27 +36,26 @@ import javacard.framework.ISOException;
  * @author Petr Svenda petr@svenda.com
  * @author Jan Jancar johny@neuromancer.sk
  */
-public class ECTesterApplet extends AppletBase {
-    protected ECTesterApplet(byte[] buffer, short offset, byte length) {
+public class ECTesterAppletExtended extends AppletBase implements ExtendedLength {
+    protected ECTesterAppletExtended(byte[] buffer, short offset, byte length) {
         super(buffer, offset, length);
         register();
     }
 
     public static void install(byte[] bArray, short bOffset, byte bLength) throws ISOException {
         // applet instance creation
-        new ECTesterApplet(bArray, bOffset, bLength);
+        new ECTesterAppletExtended(bArray, bOffset, bLength);
     }
 
     short getOffsetCdata(APDU apdu) {
-        return ISO7816.OFFSET_CDATA;
+        return apdu.getOffsetCdata();
     }
 
     short getIncomingLength(APDU apdu) {
-        byte[] apduBuffer = apdu.getBuffer();
-        return apduBuffer[ISO7816.OFFSET_LC];
+        return apdu.getIncomingLength();
     }
 
     short getBase() {
-        return AppletBase.BASE_221;
+        return AppletBase.BASE_222;
     }
 }

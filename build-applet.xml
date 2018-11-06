@@ -1,39 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="build" name="ECTesterApplet">
-    <!-- Based on Martin Paljak's applets playground -->
-    <!-- Applet building dependencies -->
-    <property name="SDK_PATH" value="ext/sdks"/>
+	<!-- Based on Martin Paljak's applets playground -->
+	<!-- Applet building dependencies -->
+	<property name="SDK_PATH" value="ext/sdks"/>
 
-    <property name="JC212" value="${SDK_PATH}/jc212_kit"/>
-    <property name="JC221" value="${SDK_PATH}/jc221_kit"/>
-    <property name="JC222" value="${SDK_PATH}/jc222_kit"/>
-    <property name="JC303" value="${SDK_PATH}/jc303_kit"/>
-    <property name="JC304" value="${SDK_PATH}/jc304_kit"/>
-    <property name="JC305u1" value="${SDK_PATH}/jc305u1_kit"/>
+	<property name="JC212" value="${SDK_PATH}/jc212_kit"/>
+	<property name="JC221" value="${SDK_PATH}/jc221_kit"/>
+	<property name="JC222" value="${SDK_PATH}/jc222_kit"/>
+	<property name="JC303" value="${SDK_PATH}/jc303_kit"/>
+	<property name="JC304" value="${SDK_PATH}/jc304_kit"/>
+	<property name="JC305u1" value="${SDK_PATH}/jc305u1_kit"/>
 
-    <!-- ant-javacard task from javacard.pro -->
-    <taskdef name="javacard" classname="pro.javacard.ant.JavaCard" classpath="ext/ant-javacard.jar"/>
+	<!-- ant-javacard task from javacard.pro -->
+	<taskdef name="javacard" classname="pro.javacard.ant.JavaCard" classpath="ext/ant-javacard.jar"/>
 
-    <target name="build" description="Builds the CAP file.">
-        <javacard jckit="${JC222}">
-            <cap output="applet/ectester.cap" sources="src/cz/crcs/ectester/applet" aid="4543546573746572">
-                <applet class="cz.crcs.ectester.applet.ECTesterApplet" aid="45435465737465723031"/>
-            </cap>
-        </javacard>
-    </target>
+	<!-- applet properties -->
+	<property name="pkg_aid" value="4543546573746572"/>
+	<property name="applet_aid" value="45435465737465723031"/>
+	<property name="cap_221" value="ectester221.cap"/>
+	<property name="cap_222" value="ectester222.cap"/>
+	<property name="cap" value="${cap_222}"/>
 
-    <target name="upload" depends="build" description="Uploads the CAP file to the card, using gp.jar">
-        <exec dir="applet" executable="./gppro_upload.sh" osfamily="unix"/>
-        <exec dir="applet" executable="./gppro_upload.bat" osfamily="windows"/>
-    </target>
+	<target name="build-221" description="Builds the CAP file for JavaCard 2.2.1.">
+		<javacard jckit="${JC221}">
+			<cap output="applet/ectester221.cap" sources="src/cz/crcs/ectester/applet" aid="${pkg_aid}" excludes="ECTesterAppletExtended.*">
+				<applet class="cz.crcs.ectester.applet.ECTesterApplet" aid="${applet_aid}"/>
+			</cap>
+		</javacard>
+	</target>
 
-    <target name="upload-emv" depends="build"
-            description="Uploads the CAP file to the card, using gp.jar, uses the EMV protocol">
-        <exec dir="applet" executable="./gppro_upload_emv.sh" osfamily="unix"/>
-        <exec dir="applet" executable="./gppro_upload_emv.bat" osfamily="windows"/>
-    </target>
+	<target name="build-222" description="Builds the CAP file for JavaCard 2.2.2.">
+		<javacard jckit="${JC222}">
+			<cap output="applet/ectester222.cap" sources="src/cz/crcs/ectester/applet" aid="${pkg_aid}" excludes="ECTesterApplet.*">
+				<applet class="cz.crcs.ectester.applet.ECTesterAppletExtended" aid="${applet_aid}"/>
+			</cap>
+		</javacard>
+	</target>
 
-    <target name="clean" description="Clean the built CAP file.">
-        <delete file="applet/ectester.cap" quiet="true"/>
-    </target>
+	<target name="build" description="Builds the CAP file." depends="build-221,build-222">
+	</target>
+
+	<target name="upload" depends="build" description="Uploads the CAP file to the card, using gp.jar.">
+		<exec dir="applet" executable="./gppro_upload.sh" osfamily="unix">
+			<arg value="${pkg_aid}"/>
+			<arg value="${cap}"/>
+		</exec>
+		<exec dir="applet" executable="./gppro_upload.bat" osfamily="windows">
+		   	<arg value="${pkg_aid}"/>
+		   	<arg value="${cap}"/>
+		</exec>
+	</target>
+
+	<target name="upload-emv" depends="build" description="Uploads the CAP file to the card, using gp.jar, uses the EMV protocol">
+		<exec dir="applet" executable="./gppro_upload_emv.sh" osfamily="unix">
+		   	<arg value="${pkg_aid}"/>
+		   	<arg value="${cap}"/>
+	   	</exec>
+		<exec dir="applet" executable="./gppro_upload_emv.bat" osfamily="windows">
+		   	<arg value="${pkg_aid}"/>
+		   	<arg value="${cap}"/>
+	   	</exec>
+	</target>
+
+	<target name="clean" description="Clean the built CAP files.">
+		<delete file="applet/${cap_221}" quiet="true"/>
+		<delete file="applet/${cap_222}" quiet="true"/>
+	</target>
 </project>

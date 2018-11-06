@@ -19,8 +19,12 @@
         <echo message="ECTester is built using three ant files:"/>
         <echo message=" - build-applet.xml - For building the JavaCard applet."/>
         <echo message="     -> build: Build the applet."/>
+        <echo message="     -> build-221: Build the applet for JavaCard 2.2.1."/>
+        <echo message="     -> build-222: Build the applet for JavaCard 2.2.2."/>
         <echo message="     -> upload: Upload the applet using the GPPro tool."/>
-        <echo message="     -> upload-emv: Uploat the applet using the GPPro tool and the EMV key protocol."/>
+        <echo message="                (use `-Dcap=ectester221.cap` to upload the 2.2.1 version.)"/>
+        <echo message="     -> upload-emv: Upload the applet using the GPPro tool and the EMV key protocol."/>
+        <echo message="                    (use `-Dcap=ectester221.cap` to upload the 2.2.1 version.)"/>
         <echo message=" - build-reader.xml - For building the reader app."/>
         <echo message="     -> jar: Build the reader app."/>
         <echo message="     -> package: Build the reader app into a distributable single jar, along with dependencies."/>
