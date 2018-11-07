@@ -34,71 +34,84 @@ See `java -jar ECTesterReader.jar -h` for more.
 ### Options
 
 ```
- -dsa,--ecdsa <count>              Sign data with ECDSA, [count] times.
- -t,--test <test_suite>            Test ECC support. [test_suite]:
-                                   - default:
-                                   - invalid:
-                                   - compression:
-                                   - twist:
-                                   - degenerate:
-                                   - cofactor:
-                                   - wrong:
-                                   - composite:
-                                   - test-vectors:
- -dh,--ecdh <count>                Do EC KeyAgreement (ECDH...), [count]
-                                   times.
- -e,--export                       Export the defaut curve parameters of
-                                   the card(if any).
- -V,--version                      Print version info.
- -ln,--list-named <what>           Print the list of supported named
-                                   curves and keys.
- -h,--help                         Print help.
- 
- -a,--all                          Test all curve sizes.
- -b,--bit-size <bits>              Set curve size.
- 
- -fp,--prime-field                 Use a prime field.
- -f2m,--binary-field               Use a binary field.
- 
- -c,--curve <curve_file>           Use curve from file <curve_file>
-                                   (field,a,b,gx,gy,r,k).
- -nc,--named-curve <cat/id>        Use a named curve, from CurveDB:
-                                   <cat/id>
- -u,--custom                       Use a custom curve (applet-side
-                                   embedded, SECG curves).
- -npub,--named-public <cat/id>     Use public key from KeyDB: <cat/id>
- -pub,--public <pubkey_file>       Use public key from file <pubkey_file>
-                                   (wx,wy).
- -priv,--private <privkey_file>    Use private key from file
-                                   <privkey_file> (s).
- -npriv,--named-private <cat/id>   Use private key from KeyDB: <cat/id>
- -k,--key <key_file>               Use keyPair from file <key_file>
-                                   (wx,wy,s).
- -nk,--named-key <cat/id>          Use keyPair from KeyDB: <cat/id>
+ -V,--version                         Print version info.
+ -h,--help                            Print help.
+ -ln,--list-named <what>              Print the list of supported named
+                                      curves and keys, (CurveDB and KeyDB).
+ -ls,--list-suites                    List supported test suites.
+ -e,--export                          Export the defaut curve parameters
+                                      of the card(if any).
+ -g,--generate <amount>               Generate <amount> of EC keys.
+ -t,--test <test_suite[:from[:to]]>   Test ECC support. Optionally specify
+                                      a test number to run only a part of
+                                      a test suite. <test_suite>:
+                                        - default
+                                        - compression
+                                        - invalid
+                                        - twist
+                                        - degenerate
+                                        - cofactor
+                                        - wrong
+                                        - signature
+                                        - composite
+                                        - test-vectors
+                                        - edge-cases
+                                        - miscellaneous
+ -dh,--ecdh <count>                   Do EC KeyAgreement (ECDH...),
+                                      [count] times.
+ -dsa,--ecdsa <count>                 Sign data with ECDSA, [count] times.
+ -nf,--info                           Get applet info.
 
- -i,--input <input_file>           Input from file <input_file>, for ECDSA
-                                   signing.
- -o,--output <output_file>         Output into file <output_file>.
- -l,--log <log_file>               Log output into file [log_file].
- -v,--verbose                      Turn on verbose logging.
-    --format <format>              Output format to use. One of:
-                                   text,yml,xml.
- -f,--fresh                        Generate fresh keys (set domain
-                                   parameters before every generation).
- --cleanup                         Send the cleanup command trigerring
-                                   JCSystem.requestObjectDeletion()
-                                   after some operations.
- -s,--simulate                     Simulate a card with jcardsim instead
-                                   of using a terminal.
- -y,--yes                          Accept all warnings and prompts.
- 
- -ka,--ka-type <type>              Set KeyAgreement object [type],
-                                   corresponds to JC.KeyAgreement
-                                   constants.
- -sig,--sig-type <type>            Set Signature object [type],
-                                   corresponds to JC.Signature constants.
- -C,--color                        Print stuff with color, requires ANSI
-                                   terminal.
+ -b,--bit-size <bits>                 Set curve size.
+ -fp,--prime-field                    Use a prime field.
+ -f2m,--binary-field                  Use a binary field.
+
+ -nc,--named-curve <cat/id>           Use a named curve, from CurveDB:
+                                      <cat/id>
+ -c,--curve <curve_file>              Use curve from file <curve_file>
+                                      (field,a,b,gx,gy,r,k).
+ -u,--custom                          Use a custom curve (applet-side
+                                      embedded, SECG curves).
+
+ -npub,--named-public <cat/id>        Use public key from KeyDB: <cat/id>
+ -pub,--public <pubkey_file>          Use public key from file
+                                      <pubkey_file> (wx,wy).
+
+ -npriv,--named-private <cat/id>      Use private key from KeyDB: <cat/id>
+ -priv,--private <privkey_file>       Use private key from file
+                                      <privkey_file> (s).
+
+ -nk,--named-key <cat/id>             Use KeyPair from KeyDB: <cat/id>
+ -k,--key <key_file>                  Use KeyPair from file <key_file>
+                                      (wx,wy,s).
+
+ -i,--input <input_file>              Input from file <input_file>, for
+                                      ECDSA signing.
+ -o,--output <output_file>            Output into file <output_file>. The
+                                      file can be prefixed by the format
+                                      (one of text,yml,xml), such as:
+                                      xml:<output_file>.
+ -l,--log <log_file>                  Log output into file [log_file].
+ -v,--verbose                         Turn on verbose logging.
+    --format <format>                 Output format to use. One of:
+                                      text,yml,xml.
+
+ -f,--fresh                           Generate fresh keys (set domain
+                                      parameters before every generation).
+    --cleanup                         Send the cleanup command trigerring
+                                      JCSystem.requestObjectDeletion()
+                                      after some operations.
+ -s,--simulate                        Simulate a card with jcardsim
+                                      instead of using a terminal.
+ -y,--yes                             Accept all warnings and prompts.
+ -ka,--ka-type <type>                 Set KeyAgreement object [type],
+                                      corresponds to JavaCard KeyAgreement
+                                      constants.
+ -sig,--sig-type <type>               Set Signature object [type],
+                                      corresponds to JavaCard Signature
+                                      constants.
+ -C,--color                           Print stuff with color, requires
+                                      ANSI terminal.
 ```
 
 ### Actions
@@ -159,6 +172,20 @@ For example:
 `secg/secp192r1` identifies the SECG 192 bit prime field curve known as `secp192r1`.
 
 For more info about the curves and curve categories see [CURVES](docs/CURVES.md).
+
+#### List test suites
+`-ls / --list-suites`
+
+Lists the implemented test suites and gives their short description.
+
+#### Get applet info
+`-nf / --info`
+
+Get and print ECTester applet info from an applet installed on a card. Outputs:
+ - ECTester applet version
+ - ECTester APDU support
+ - JavaCard API version
+ - JavaCard cleanup support
 
 ### Example
 

@@ -461,7 +461,12 @@ public abstract class Response {
         public float getJavaCardVersion() {
             byte major = (byte) (jcVersion >> 8);
             byte minor = (byte) (jcVersion & 0xff);
-            int minorSize = (int) Math.ceil(Math.log10(minor));
+            int minorSize;
+			if (minor == 0) {
+				minorSize = 1;
+			} else {
+				minorSize = (int) Math.ceil(Math.log10(minor));				
+			}
             return (major + ((float) (minor) / (minorSize * 10)));
         }
 

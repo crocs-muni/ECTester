@@ -37,10 +37,12 @@ import cz.crcs.ectester.reader.output.FileTestWriter;
 import cz.crcs.ectester.reader.output.ResponseWriter;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.test.*;
+import javacard.framework.ISO7816;
 import javacard.security.KeyPair;
 import org.apache.commons.cli.*;
 
 import javax.smartcardio.CardException;
+import javax.smartcardio.ResponseAPDU;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.URL;
@@ -141,7 +143,12 @@ public class ECTesterReader {
                     System.err.println(Colors.error("Failed to connect to card."));
                     System.exit(1);
                 }
-                cardManager.send(SELECT_ECTESTERAPPLET);
+                ResponseAPDU selectResp = cardManager.send(SELECT_ECTESTERAPPLET);
+                if ((short) selectResp.getSW() != ISO7816.SW_NO_ERROR) {
+                	System.err.println(Colors.error("Failed to select ECTester applet, is it installed?"));
+                	cardManager.disconnectFromCard();
+                	System.exit(1);
+                }
             }
 
             // Setup logger and respWriter
@@ -159,6 +166,8 @@ public class ECTesterReader {
                 ecdh();
             } else if (cli.hasOption("ecdsa")) {
                 ecdsa();
+            } else if (cli.hasOption("info")) {
+            	info();
             }
 
             //disconnect
@@ -231,6 +240,8 @@ public class ECTesterReader {
          * -dh / --ecdh [count]]
          * -dsa / --ecdsa [count]
          * -ln / --list-named [obj]
+         * -ls / --list-suites
+         * -nfo / --info
          *
          * Options:
          * -b / --bit-size <b> // -a / --all
@@ -271,12 +282,13 @@ public class ECTesterReader {
         actions.addOption(Option.builder("V").longOpt("version").desc("Print version info.").build());
         actions.addOption(Option.builder("h").longOpt("help").desc("Print help.").build());
         actions.addOption(Option.builder("ln").longOpt("list-named").desc("Print the list of supported named curves and keys.").hasArg().argName("what").optionalArg(true).build());
+		actions.addOption(Option.builder("ls").longOpt("list-suites").desc("List supported test suites.").build());
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate <amount> of EC keys.").hasArg().argName("amount").optionalArg(true).build());
         actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. Optionally specify a test number to run only a part of a test suite. <test_suite>:\n- default:\n- compression:\n- invalid:\n- twist:\n- degenerate:\n- cofactor:\n- wrong:\n- signature:\n- composite:\n- test-vectors:\n- edge-cases:\n- miscellaneous:").hasArg().argName("test_suite[:from[:to]]").optionalArg(true).build());
         actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do EC KeyAgreement (ECDH...), [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
-        actions.addOption(Option.builder("ls").longOpt("list-suites").desc("List supported test suites.").build());
+        actions.addOption(Option.builder("nf").longOpt("info").desc("Get applet info.").build());
 
         opts.addOptionGroup(actions);
 
@@ -344,6 +356,14 @@ public class ECTesterReader {
                 System.out.println("\t" + line);
             }
         }
+    }
+
+    private void info() throws CardException {
+    	Response.GetInfo info = new Command.GetInfo(cardManager).send();
+    	System.out.println(String.format("ECTester applet version: %s", info.getVersion()));
+    	System.out.println(String.format("ECTester applet APDU support: %s", (info.getBase() == ECTesterApplet.BASE_221) ? "basic" : "extended length"));
+    	System.out.println(String.format("JavaCard API version: %.1f", info.getJavaCardVersion()));
+    	System.out.println(String.format("JavaCard supports system cleanup: %s", info.getCleanupSupport()));
     }
 
     /**
