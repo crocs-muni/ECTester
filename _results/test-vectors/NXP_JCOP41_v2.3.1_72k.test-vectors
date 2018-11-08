@@ -1,0 +1,863 @@
+---
+testRun:
+  date: 2018.11.08 10:39:46
+  suite:
+    name: test
+    desc: The test-vectors suite contains a collection of test vectors which test
+      basic ECDH correctness.
+  device:
+    type: card
+    ectester: v0.3.0(git f0ae5fd)
+    cplc: {
+      }
+    ATR: 3bfa1800ff8131fe454a434f5034315632333163
+  tests:
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 a3 04
+        desc: Allocate both keypairs 163b ALG_EC_F2M
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 564402030
+        desc: Allocate both keypairs 163b ALG_EC_F2M
+      desc: Allocate both keypairs 163b ALG_EC_F2M
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff 82 00 7e 00 08 00 a3 00 07 00 06 00 03 00 15 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 15 02 0a 60 19 07
+          b8 c9 53 ca 14 81 eb 10 51 2f 78 74 4a 32 05 fd 00 2b 04 03 f0 eb a1 62
+          86 a2 d5 7e a0 99 11 68 d4 99 46 37 e8 34 3e 36 00 d5 1f bc 6c 71 a0 09
+          4f a2 cd d5 45 b1 1c 5c 0c 79 73 24 f1 00 15 04 00 00 00 00 00 00 00 00
+          00 02 92 fe 77 e7 0c 12 a4 23 4c 33 00 02 00 02
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 743530653
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 01 ff 19 01 00 00 15 03 ed ae 17 3d e8 fa 0c f0 41 2d 6a 7b dc
+          81 fd bd 06 17 ad f8
+        desc: Set external privkey parameters on local keypair
+      response:
+        successful: true
+        apdu: 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 48344911
+        desc: Set external privkey parameters on local keypair
+      desc: Set external privkey parameters on local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 02 ff 2f 00 80 00 2b 04 03 a6 47 ba 32 da c7 1e c6 78 0b 06 38
+          a7 0c d2 4f c3 bd 4c 8e 02 e6 9e 96 15 41 84 4a 4a a3 37 69 a7 bc e7 10
+          f6 64 0a 56 0c
+        desc: Set external pubkey parameters on remote keypair
+      response:
+        successful: true
+        apdu: 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 49858436
+        desc: Set external pubkey parameters on remote keypair
+      desc: Set external pubkey parameters on remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 02
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey
+      response:
+        successful: true
+        apdu: 90 00 00 14 3e 2a e5 f2 f6 b2 bb 70 4c fa 5b 0a fc d1 da cf fb aa 4e
+          55 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 267002823
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey
+      result:
+        ok: false
+        value: FAILURE
+        cause: ECDH derived secret does not match the test-vector, first difference
+          was at byte 0.
+    index: 0
+    type: compound
+    desc: Test vector b163-dhc
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 e9 04
+        desc: Allocate both keypairs 233b ALG_EC_F2M
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 562427066
+        desc: Allocate both keypairs 233b ALG_EC_F2M
+      desc: Allocate both keypairs 233b ALG_EC_F2M
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff ab 00 7e 00 04 00 e9 00 4a 00 1e 00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 1e
+          00 66 64 7e de 6c 33 2c 7f 8c 09 23 bb 58 21 3b 33 3b 20 e9 ce 42 81 fe
+          11 5f 7d 8f 90 ad 00 3d 04 00 fa c9 df cb ac 83 13 bb 21 39 f1 bb 75 5f
+          ef 65 bc 39 1f 8b 36 f8 f8 eb 73 71 fd 55 8b 01 00 6a 08 a4 19 03 35 06
+          78 e5 85 28 be bf 8a 0b ef f8 67 a7 ca 36 71 6f 7e 01 f8 10 52 00 1e 01
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 13 e9 74 e7 2f 8a 69 22 03 1d
+          26 03 cf e0 d7 00 02 00 02
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: false
+        apdu: 00 01 00 01 90 00
+        natural_sw: 36864
+        sws:
+        - 1
+        - 1
+        duration: 79473451
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 1
+    type: compound
+    desc: Test vector b233-dhc
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 01 1b 04
+        desc: Allocate both keypairs 283b ALG_EC_F2M
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 129821854
+        desc: Allocate both keypairs 283b ALG_EC_F2M
+      desc: Allocate both keypairs 283b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 2
+    type: compound
+    desc: Test vector b283-dhc
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 01 99 04
+        desc: Allocate both keypairs 409b ALG_EC_F2M
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 107420828
+        desc: Allocate both keypairs 409b ALG_EC_F2M
+      desc: Allocate both keypairs 409b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 3
+    type: compound
+    desc: Test vector b409-dhc
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 02 3b 04
+        desc: Allocate both keypairs 571b ALG_EC_F2M
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 108999865
+        desc: Allocate both keypairs 571b ALG_EC_F2M
+      desc: Allocate both keypairs 571b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 4
+    type: compound
+    desc: Test vector b571-dhc
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 e0 05
+        desc: Allocate both keypairs 224b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 107693336
+        desc: Allocate both keypairs 224b ALG_EC_FP
+      desc: Allocate both keypairs 224b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 5
+    type: compound
+    desc: Test vector brainpoolP224r1-dh
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 01 00 05
+        desc: Allocate both keypairs 256b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 107154377
+        desc: Allocate both keypairs 256b ALG_EC_FP
+      desc: Allocate both keypairs 256b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 6
+    type: compound
+    desc: Test vector brainpoolP256r1-dh
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 01 80 05
+        desc: Allocate both keypairs 384b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 107486811
+        desc: Allocate both keypairs 384b ALG_EC_FP
+      desc: Allocate both keypairs 384b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 7
+    type: compound
+    desc: Test vector brainpoolP384r1-dh
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 02 00 05
+        desc: Allocate both keypairs 512b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 107344294
+        desc: Allocate both keypairs 512b ALG_EC_FP
+      desc: Allocate both keypairs 512b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 8
+    type: compound
+    desc: Test vector brainpoolP512r1-dh
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 a3 04
+        desc: Allocate both keypairs 163b ALG_EC_F2M
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 564360631
+        desc: Allocate both keypairs 163b ALG_EC_F2M
+      desc: Allocate both keypairs 163b ALG_EC_F2M
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff 82 00 7e 00 08 00 a3 00 07 00 06 00 03 00 15 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 15 02 0a 60 19 07
+          b8 c9 53 ca 14 81 eb 10 51 2f 78 74 4a 32 05 fd 00 2b 04 03 f0 eb a1 62
+          86 a2 d5 7e a0 99 11 68 d4 99 46 37 e8 34 3e 36 00 d5 1f bc 6c 71 a0 09
+          4f a2 cd d5 45 b1 1c 5c 0c 79 73 24 f1 00 15 04 00 00 00 00 00 00 00 00
+          00 02 92 fe 77 e7 0c 12 a4 23 4c 33 00 02 00 02
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 738406329
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 01 ff 19 01 00 00 15 00 66 53 b6 07 73 98 fa dc 7b f5 e6 01 58
+          17 01 48 c3 dc 45 27
+        desc: Set external privkey parameters on local keypair
+      response:
+        successful: true
+        apdu: 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 47749686
+        desc: Set external privkey parameters on local keypair
+      desc: Set external privkey parameters on local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 02 ff 2f 00 80 00 2b 04 05 74 23 6f 14 28 c4 32 13 09 46 78 3a
+          5b 3a ab b6 c2 7e a5 d6 07 90 8c 25 1b 8d a0 21 cb ac 28 1f 12 3f 7a f4
+          fa c5 b3 db b8
+        desc: Set external pubkey parameters on remote keypair
+      response:
+        successful: true
+        apdu: 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 49749828
+        desc: Set external pubkey parameters on remote keypair
+      desc: Set external pubkey parameters on remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 02
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey
+      response:
+        successful: false
+        apdu: 00 01 00 00 90 00
+        natural_sw: 36864
+        sws:
+        - 1
+        duration: 112470215
+        desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey
+      desc: ALG_EC_SVDP_DHC of remote pubkey and local privkey
+      result:
+        ok: false
+        value: FAILURE
+        cause: ECDH was unsuccessful.
+    index: 9
+    type: compound
+    desc: Test vector k163-dhc
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 e9 04
+        desc: Allocate both keypairs 233b ALG_EC_F2M
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 572649642
+        desc: Allocate both keypairs 233b ALG_EC_F2M
+      desc: Allocate both keypairs 233b ALG_EC_F2M
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff ab 00 7e 00 04 00 e9 00 4a 00 1e 00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 1e
+          00 66 64 7e de 6c 33 2c 7f 8c 09 23 bb 58 21 3b 33 3b 20 e9 ce 42 81 fe
+          11 5f 7d 8f 90 ad 00 3d 04 00 fa c9 df cb ac 83 13 bb 21 39 f1 bb 75 5f
+          ef 65 bc 39 1f 8b 36 f8 f8 eb 73 71 fd 55 8b 01 00 6a 08 a4 19 03 35 06
+          78 e5 85 28 be bf 8a 0b ef f8 67 a7 ca 36 71 6f 7e 01 f8 10 52 00 1e 01
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 13 e9 74 e7 2f 8a 69 22 03 1d
+          26 03 cf e0 d7 00 02 00 02
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: false
+        apdu: 00 01 00 01 90 00
+        natural_sw: 36864
+        sws:
+        - 1
+        - 1
+        duration: 79484833
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 10
+    type: compound
+    desc: Test vector k233-dhc
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 01 1b 04
+        desc: Allocate both keypairs 283b ALG_EC_F2M
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 130803829
+        desc: Allocate both keypairs 283b ALG_EC_F2M
+      desc: Allocate both keypairs 283b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 11
+    type: compound
+    desc: Test vector k283-dhc
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 01 99 04
+        desc: Allocate both keypairs 409b ALG_EC_F2M
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 107954987
+        desc: Allocate both keypairs 409b ALG_EC_F2M
+      desc: Allocate both keypairs 409b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 12
+    type: compound
+    desc: Test vector k409-dhc
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 02 3b 04
+        desc: Allocate both keypairs 571b ALG_EC_F2M
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 108162849
+        desc: Allocate both keypairs 571b ALG_EC_F2M
+      desc: Allocate both keypairs 571b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 13
+    type: compound
+    desc: Test vector k571-dhc
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 c0 05
+        desc: Allocate both keypairs 192b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 107993430
+        desc: Allocate both keypairs 192b ALG_EC_FP
+      desc: Allocate both keypairs 192b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 14
+    type: compound
+    desc: Test vector p192-dhc
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 e0 05
+        desc: Allocate both keypairs 224b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 108238991
+        desc: Allocate both keypairs 224b ALG_EC_FP
+      desc: Allocate both keypairs 224b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 15
+    type: compound
+    desc: Test vector p224-dhc
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 01 00 05
+        desc: Allocate both keypairs 256b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 108531464
+        desc: Allocate both keypairs 256b ALG_EC_FP
+      desc: Allocate both keypairs 256b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 16
+    type: compound
+    desc: Test vector p256-dhc
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 01 80 05
+        desc: Allocate both keypairs 384b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 110199090
+        desc: Allocate both keypairs 384b ALG_EC_FP
+      desc: Allocate both keypairs 384b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 17
+    type: compound
+    desc: Test vector p384-dhc
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 02 09 05
+        desc: Allocate both keypairs 521b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 108492254
+        desc: Allocate both keypairs 521b ALG_EC_FP
+      desc: Allocate both keypairs 521b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 18
+    type: compound
+    desc: Test vector p521-dhc
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 a0 05
+        desc: Allocate both keypairs 160b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 108997340
+        desc: Allocate both keypairs 160b ALG_EC_FP
+      desc: Allocate both keypairs 160b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 19
+    type: compound
+    desc: Test vector secp160r1-dh
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 a3 04
+        desc: Allocate both keypairs 163b ALG_EC_F2M
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 572277137
+        desc: Allocate both keypairs 163b ALG_EC_F2M
+      desc: Allocate both keypairs 163b ALG_EC_F2M
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff 82 00 7e 00 08 00 a3 00 07 00 06 00 03 00 15 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 15 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 2b 04 02 fe 13 c0 53
+          7b bc 11 ac aa 07 d7 93 de 4e 6d 5e 5c 94 ee e8 02 89 07 0f b0 5d 38 ff
+          58 32 1f 2e 80 05 36 d5 38 cc da a3 d9 00 15 04 00 00 00 00 00 00 00 00
+          00 02 01 08 a2 e0 cc 0d 99 f8 a5 ef 00 02 00 02
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 740062408
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 01 ff 19 01 00 00 15 03 a4 14 34 aa 99 c2 ef 40 c8 49 5b 2e d9
+          73 9c b2 15 5a 1e 0d
+        desc: Set external privkey parameters on local keypair
+      response:
+        successful: true
+        apdu: 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 49556328
+        desc: Set external privkey parameters on local keypair
+      desc: Set external privkey parameters on local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 02 ff 2f 00 80 00 2b 04 07 27 83 fa ab 95 49 00 2b 4f 13 14 0b
+          88 13 2d 1c 75 b3 88 6c 05 a9 76 79 4e a7 9a 4d e2 6e 2e 19 41 8f 09 79
+          42 c0 86 41 c7
+        desc: Set external pubkey parameters on remote keypair
+      response:
+        successful: true
+        apdu: 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 49797110
+        desc: Set external pubkey parameters on remote keypair
+      desc: Set external pubkey parameters on remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 70 02 01 04 ff 00 00 01
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
+      response:
+        successful: true
+        apdu: 90 00 00 14 13 13 2f 80 88 d6 0f 9f e0 d9 55 ae 04 c9 d2 0d a8 29 a3
+          8b 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 289908577
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 75 00 00
+        desc: Request JCSystem object deletion
+      response:
+        successful: true
+        apdu: 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 2186221283
+        desc: Request JCSystem object deletion
+      desc: Request JCSystem object deletion
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    index: 20
+    type: compound
+    desc: Test vector sect163k1-dh
+
+---
