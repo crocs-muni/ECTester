@@ -204,11 +204,10 @@ public class ECKeyGenerator {
                         short i1 = Util.getShort(data, (short) (offset + 2));
                         short i2 = Util.getShort(data, (short) (offset + 4));
                         short i3 = Util.getShort(data, (short) (offset + 6));
-//                        if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i1, i2, i3);
-//                        if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i1, i2, i3);
-                        // TODO: fix this, ^^ fails on jcardsim, but is up to spec
-                        if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i3, i2, i1);
-                        if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i3, i2, i1);
+                        if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i1, i2, i3);
+                        if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i1, i2, i3);
+                        // if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i3, i2, i1);
+                        // if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i3, i2, i1);
                     } else {
                         sw = ISO7816.SW_UNKNOWN;
                     }

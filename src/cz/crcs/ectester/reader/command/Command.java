@@ -133,6 +133,9 @@ public abstract class Command implements Cloneable {
             } else {
                 keypair = dataStore.getObject(EC_Keypair.class, cfg.namedKey);
             }
+            if (keypair == null) {
+                throw new IOException("KeyPair not found.");
+            }
 
             data = keypair.flatten();
             if (data == null) {
@@ -155,6 +158,9 @@ public abstract class Command implements Cloneable {
                     pub = dataStore.getObject(EC_Keypair.class, cfg.namedPublicKey);
                 }
             }
+            if (pub == null) {
+                throw new IOException("Public key not found.");
+            }
 
             byte[] pubkey = pub.flatten(EC_Consts.PARAMETER_W);
             if (pubkey == null) {
@@ -176,6 +182,9 @@ public abstract class Command implements Cloneable {
                 if (priv == null) {
                     priv = dataStore.getObject(EC_Keypair.class, cfg.namedPrivateKey);
                 }
+            }
+            if (priv == null) {
+                throw new IOException("Private key not found.");
             }
 
             byte[] privkey = priv.flatten(EC_Consts.PARAMETER_S);

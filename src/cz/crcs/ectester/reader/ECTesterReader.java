@@ -424,10 +424,10 @@ public class ECTesterReader {
      */
     private void generate() throws CardException, IOException {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
+        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass);
 
         Response allocate = new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send();
         respWriter.outputResponse(allocate);
-        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass);
 
         OutputStreamWriter keysFile = FileUtil.openFiles(cfg.outputs);
         keysFile.write("index;time;pubW;privS\n");
@@ -552,10 +552,10 @@ public class ECTesterReader {
      */
     private void ecdh() throws IOException, CardException {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
+        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_BOTH, cfg.bits, keyClass);
         List<Response> prepare = new LinkedList<>();
         prepare.add(new Command.AllocateKeyAgreement(cardManager, cfg.ECKAType).send()); // Prepare KeyAgreement or required type
         prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, cfg.bits, keyClass).send());
-        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_BOTH, cfg.bits, keyClass);
         if (curve != null)
             prepare.add(curve.send());
 
