@@ -4,7 +4,7 @@
 Tests support and behavior of elliptic curve cryptography implementations on JavaCards (`TYPE_EC_FP` and `TYPE_EC_F2M`) and on selected software libraries.
 For more information on ECC support on JavaCards see the [github page](https://crocs-muni.github.io/ECTester/), with results, tables and docs.
 
-## Build
+## Setup
 
 ECTester uses ant. There are three parts of ECTester, the JavaCard applet used for testing, the reader app which controls it and the standalone app which tests software libraries.
 ```bash
@@ -16,20 +16,28 @@ ant -f build-applet.xml build                 # To build the applet (cap) -> "ap
 Build produces both a lightweight version of the JARs and a full version of the JARs with dependencies included, the latter has the `*-dist.jar` suffix.
 The standalone build tries building test binaries for all the supported libraries, and silently fails if the library is not properly supported.
 
+The applet comes in two flavors, targeting JavaCard 2.2.1 and 2.2.2. The 2.2.2 version supports extended length APDUs which are necessary for some commands
+to work properly. Use the `cap` ant property to specify which CAP file to build, either `ectester221.cap` or `ectester222.cap`.
+
+To build the 221 version do:
+```bash
+ant -f build-applet.xml build -Dcap=ectester221.cap
+```
+
 ## JavaCard testing
 
-1. Upload `!uploader/ectester.cap` using your favorite tool (e.g., [GlobalPlatformPro tool](https://github.com/martinpaljak/GlobalPlatform))
-2. Run `java -jar dist/ECTesterReader.jar -t`
-3. Inspect output log with annotated results
+1. Upload `applet/ectester.cap` using your favorite tool (e.g., [GlobalPlatformPro tool](https://github.com/martinpaljak/GlobalPlatform)) or the `build-applet.xml` ant file.
+2. Run `java -jar dist/ECTesterReader.jar -t`.
+3. Inspect output log with annotated results.
 
-Following operations are tested:
+Following operations are tested in the default suite:
 - Allocation of new KeyPair class for specified parameters
 - Generation of KeyPair with default curve
 - Setting of custom curve and KeyPair generation
 - Generation of shared secret via ECDH
 - Signature via ECDSA
 
-See `java -jar ECTesterReader.jar -h` for more.
+See `java -jar ECTesterReader.jar -h`, `java -jar ECTesterReader.jar -ls` and [DOCS](docs/TESTS.md) for more.
 
 ### Options
 
@@ -181,7 +189,10 @@ Lists the implemented test suites and gives their short description.
 #### Get applet info
 `-nf / --info`
 
-Get and print ECTester applet info from an applet installed on a card. Outputs:
+Get and print ECTester applet info from an applet installed on a card.
+
+Outputs:
+
  - ECTester applet version
  - ECTester APDU support
  - JavaCard API version
@@ -192,43 +203,49 @@ Get and print ECTester applet info from an applet installed on a card. Outputs:
 Snippet below shows running the default test suite while simulating(`-s`), so using JCardSim.
 This shows that JCardsim simulates 112b Fp support with default curve present and supports ECDH, ECDHC and ECDSA.
 
-    > java -jar ECTesterReader.jar -t -s
-    ═══ Running test suite: default ═══
-    ═══ The default test suite tests basic support of ECDH and ECDSA.
-    ═══ Date: 2018.05.02 20:29:38
-    ═══ ECTester version: v0.2.0
-    ═══ Card ATR: 3bfa1800008131fe454a434f5033315632333298
-     OK ┳ (0) Tests of 112b ALG_EC_FP support.                                                   ┃ SUCCESS   ┃ All sub-tests matched the expected mask.
-        ┣  OK ━ Allocate both keypairs 112b ALG_EC_FP                                            ┃ SUCCESS   ┃   22 ms ┃  OK   (0x9000) OK   (0x9000)
-        ┣  OK ━ Generate both keypairs                                                           ┃ SUCCESS   ┃   23 ms ┃  OK   (0x9000) OK   (0x9000)
-        ┣  OK ━ Allocate both keypairs 112b ALG_EC_FP                                            ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000) OK   (0x9000)
-        ┣  OK ━ Set custom curve parameters on both keypairs                                     ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000) OK   (0x9000)
-        ┣  OK ━ Generate both keypairs                                                           ┃ SUCCESS   ┃    8 ms ┃  OK   (0x9000) OK   (0x9000)
-        ┣  OK ┳ KeyAgreement tests.                                                              ┃ SUCCESS   ┃ Some sub-tests did have the expected result.
-        ┃     ┣  OK ┳ Test of the ALG_EC_SVDP_DH KeyAgreement.                                   ┃ SUCCESS   ┃ Some ECDH is supported.
-        ┃     ┃     ┣  OK ━ Allocate KeyAgreement(ALG_EC_SVDP_DH) object                         ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
-        ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DH of local pubkey and remote privkey(unchanged point)   ┃ SUCCESS   ┃    2 ms ┃  OK   (0x9000)
-        ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)  ┃ SUCCESS   ┃    2 ms ┃  OK   (0x9000)
-        ┃     ┃     ┗  OK ━ Mean = 1722885 ns, Median = 1718807 ns, Mode = 1614047 ns            ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
-        ┃     ┣  OK ┳ Test of the ALG_EC_SVDP_DHC KeyAgreement.                                  ┃ SUCCESS   ┃ Some ECDH is supported.
-        ┃     ┃     ┣  OK ━ Allocate KeyAgreement(ALG_EC_SVDP_DHC) object                        ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000)
-        ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DHC of local pubkey and remote privkey(unchanged point)  ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
-        ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point) ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
-        ┃     ┃     ┗  OK ━ Mean = 1563980 ns, Median = 1549170 ns, Mode = 1514747 ns            ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
-        ┃     ┣ NOK ━ Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object                         ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-        ┃     ┣ NOK ━ Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object                        ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-        ┃     ┣ NOK ━ Allocate KeyAgreement(ALG_EC_PACE_GM) object                               ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-        ┃     ┗ NOK ━ Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object                      ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-        ┗  OK ┳ Signature tests.                                                                 ┃ SUCCESS   ┃ Some sub-tests did have the expected result.
-              ┣  OK ┳ Test of the ALG_ECDSA_SHA signature.                                       ┃ SUCCESS   ┃ All sub-tests had the expected result.
-              ┃     ┣  OK ━ Allocate Signature(ALG_ECDSA_SHA) object                             ┃ SUCCESS   ┃    3 ms ┃  OK   (0x9000)
-              ┃     ┣  OK ━ ALG_ECDSA_SHA with local keypair(random data)                        ┃ SUCCESS   ┃   14 ms ┃  OK   (0x9000)
-              ┃     ┣  OK ━ Sign (Mean = 1890914 ns, Median = 1500125 ns, Mode = 1422588 ns)     ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
-              ┃     ┗  OK ━ Verify (Mean = 1873952 ns, Median = 1870348 ns, Mode = 1843902 ns)   ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
-              ┣ NOK ━ Allocate Signature(ALG_ECDSA_SHA_224) object                               ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-              ┣ NOK ━ Allocate Signature(ALG_ECDSA_SHA_256) object                               ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-              ┣ NOK ━ Allocate Signature(ALG_ECDSA_SHA_384) object                               ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-              ┗ NOK ━ Allocate Signature(ALG_ECDSA_SHA_512) object                               ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+```
+> java -jar ECTesterReader.jar -t -s
+═══ Running test suite: default ═══
+═══ The default test suite tests basic support of ECDH and ECDSA.
+═══ Date: 2018.05.02 20:29:38
+═══ ECTester version: v0.3.0
+═══ Card ATR: 3bfa1800008131fe454a434f5033315632333298
+■━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━┓
+ OK ╋ (0) Get applet info: v0.3.0; 3.0; basic                                                             ┃ SUCCESS   ┃ All sub-tests had the expected result.
+    ┗  OK ━ Get applet info                                                                               ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000)
+■━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━┓
+ OK ╋ (1) Tests of 112b ALG_EC_FP support.                                                                ┃ SUCCESS   ┃ All sub-tests matched the expected mask.
+    ┣  OK ━ Allocate both keypairs 112b ALG_EC_FP                                                         ┃ SUCCESS   ┃  166 ms ┃  OK   (0x9000) OK   (0x9000)
+    ┣  OK ━ Generate both keypairs                                                                        ┃ SUCCESS   ┃   19 ms ┃  OK   (0x9000) OK   (0x9000)
+    ┣  OK ━ Allocate both keypairs 112b ALG_EC_FP                                                         ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000) OK   (0x9000)
+    ┣  OK ━ Set custom curve parameters on both keypairs                                                  ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000) OK   (0x9000)
+    ┣  OK ━ Generate both keypairs                                                                        ┃ SUCCESS   ┃    5 ms ┃  OK   (0x9000) OK   (0x9000)
+    ┣  OK ┳ KeyAgreement tests.                                                                           ┃ SUCCESS   ┃ Some sub-tests did have the expected result.
+    ┃     ┣  OK ┳ Test of the ALG_EC_SVDP_DH KeyAgreement.                                                ┃ SUCCESS   ┃ Some ECDH is supported.
+    ┃     ┃     ┣  OK ━ Allocate KeyAgreement(ALG_EC_SVDP_DH) object                                      ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+    ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DH of local pubkey and remote privkey                                 ┃ SUCCESS   ┃    2 ms ┃  OK   (0x9000)
+    ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)               ┃ SUCCESS   ┃    3 ms ┃  OK   (0x9000)
+    ┃     ┃     ┗  OK ━ Mean = 1879950 ns, Median = 1835076 ns, Mode = 1763287 ns                         ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+    ┃     ┣  OK ┳ Test of the ALG_EC_SVDP_DHC KeyAgreement.                                               ┃ SUCCESS   ┃ Some ECDH is supported.
+    ┃     ┃     ┣  OK ━ Allocate KeyAgreement(ALG_EC_SVDP_DHC) object                                     ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000)
+    ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DHC of local pubkey and remote privkey                                ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+    ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)              ┃ SUCCESS   ┃    2 ms ┃  OK   (0x9000)
+    ┃     ┃     ┗  OK ━ Mean = 1748499 ns, Median = 1760792 ns, Mode = 1647372 ns                         ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+    ┃     ┣ NOK ━ Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object                                      ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+    ┃     ┣ NOK ━ Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object                                     ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+    ┃     ┣ NOK ━ Allocate KeyAgreement(ALG_EC_PACE_GM) object                                            ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+    ┃     ┗ NOK ━ Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object                                   ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+    ┗  OK ┳ Signature tests.                                                                              ┃ SUCCESS   ┃ Some sub-tests did have the expected result.
+          ┣  OK ┳ Test of the ALG_ECDSA_SHA signature.                                                    ┃ SUCCESS   ┃ All sub-tests had the expected result.
+          ┃     ┣  OK ━ Allocate Signature(ALG_ECDSA_SHA) object                                          ┃ SUCCESS   ┃    2 ms ┃  OK   (0x9000)
+          ┃     ┣  OK ━ ALG_ECDSA_SHA with local keypair(random data)                                     ┃ SUCCESS   ┃   17 ms ┃  OK   (0x9000)
+          ┃     ┣  OK ━ Sign (Mean = 1451086 ns, Median = 1413292 ns, Mode = 1378296 ns)                  ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+          ┃     ┗  OK ━ Verify (Mean = 1850022 ns, Median = 1837022 ns, Mode = 1744613 ns)                ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+          ┣ NOK ━ Allocate Signature(ALG_ECDSA_SHA_224) object                                            ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+          ┣ NOK ━ Allocate Signature(ALG_ECDSA_SHA_256) object                                            ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+          ┣ NOK ━ Allocate Signature(ALG_ECDSA_SHA_384) object                                            ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+          ┗ NOK ━ Allocate Signature(ALG_ECDSA_SHA_512) object                                            ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+```
 
 #### Legend
  - Some general information about the test suite and card is output first, test data follows after.

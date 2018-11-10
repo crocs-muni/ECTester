@@ -21,7 +21,26 @@
 	<property name="cap_222" value="ectester222.cap"/>
 	<property name="cap" value="${cap_222}"/>
 
-	<target name="build-221" description="Builds the CAP file for JavaCard 2.2.1.">
+
+
+	<condition property="cap_extended">
+		<equals arg1="${cap}" arg2="${cap_222}"/>
+	</condition>
+
+	<target name="build-check">
+		<fail message="Invalid cap name!">
+			<condition>
+				<not>
+					<or>
+						<equals arg1="${cap}" arg2="${cap_222}"/>
+						<equals arg1="${cap}" arg2="${cap_221}"/>
+					</or>
+				</not>
+			</condition>
+		</fail>
+	</target>
+	
+	<target name="build-221" description="Builds the CAP file for JavaCard 2.2.1." unless="cap_extended">
 		<javacard jckit="${JC221}">
 			<cap output="applet/ectester221.cap" sources="src/cz/crcs/ectester/applet" aid="${pkg_aid}" excludes="ECTesterAppletExtended.*">
 				<applet class="cz.crcs.ectester.applet.ECTesterApplet" aid="${applet_aid}"/>
@@ -29,7 +48,7 @@
 		</javacard>
 	</target>
 
-	<target name="build-222" description="Builds the CAP file for JavaCard 2.2.2.">
+	<target name="build-222" description="Builds the CAP file for JavaCard 2.2.2." if="cap_extended">
 		<javacard jckit="${JC222}">
 			<cap output="applet/ectester222.cap" sources="src/cz/crcs/ectester/applet" aid="${pkg_aid}" excludes="ECTesterApplet.*">
 				<applet class="cz.crcs.ectester.applet.ECTesterAppletExtended" aid="${applet_aid}"/>
@@ -37,7 +56,7 @@
 		</javacard>
 	</target>
 
-	<target name="build" description="Builds the CAP file." depends="build-221,build-222">
+	<target name="build" description="Builds the CAP file." depends="build-check,build-221,build-222">
 	</target>
 
 	<target name="upload" depends="build" description="Uploads the CAP file to the card, using gp.jar.">
