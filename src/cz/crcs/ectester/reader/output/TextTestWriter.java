@@ -1,5 +1,6 @@
 package cz.crcs.ectester.reader.output;
 
+import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.common.cli.Colors;
 import cz.crcs.ectester.common.output.BaseTextTestWriter;
 import cz.crcs.ectester.common.test.TestSuite;
@@ -7,6 +8,7 @@ import cz.crcs.ectester.common.test.Testable;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
+import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.test.CardTestSuite;
 import cz.crcs.ectester.reader.test.CommandTestable;
@@ -43,9 +45,12 @@ public class TextTestWriter extends BaseTextTestWriter {
         if (suite instanceof CardTestSuite) {
             CardTestSuite cardSuite = (CardTestSuite) suite;
             StringBuilder sb = new StringBuilder();
-            sb.append("═══ ").append(Colors.underline("ECTester version:")).append(" ").append(ECTesterReader.VERSION).append(ECTesterReader.GIT_COMMIT).append(System.lineSeparator());
-            sb.append("═══ ").append(Colors.underline("Card ATR:")).append(" ").append(ByteUtil.bytesToHex(cardSuite.getCard().getATR().getBytes(), false)).append(System.lineSeparator());
             try {
+                sb.append("═══ ").append(Colors.underline("ECTester version:")).append(" ").append(ECTesterReader.VERSION).append(ECTesterReader.GIT_COMMIT).append(System.lineSeparator());
+                Response.GetInfo info = new Command.GetInfo(cardSuite.getCard()).send();
+                sb.append("═══ ").append(Colors.underline("ECTester applet version:")).append(" ").append(info.getVersion()).append(info.getBase() == ECTesterApplet.BASE_221 ? "" : " (extended length)").append(System.lineSeparator());
+                sb.append("═══ ").append(Colors.underline("Card ATR:")).append(" ").append(ByteUtil.bytesToHex(cardSuite.getCard().getATR().getBytes(), false)).append(System.lineSeparator());
+                sb.append("═══ ").append(Colors.underline("JavaCard version:")).append(" ").append(info.getJavaCardVersion()).append(System.lineSeparator());
                 CardMngr.CPLC cplc = cardSuite.getCard().getCPLC();
                 if (!cplc.values().isEmpty()) {
                     sb.append("═══ ").append(Colors.underline("Card CPLC data:")).append(System.lineSeparator());

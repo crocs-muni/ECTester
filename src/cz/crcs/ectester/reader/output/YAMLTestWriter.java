@@ -83,6 +83,19 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
         return result;
     }
 
+    private Map<String, Object> appletObject(CardMngr card) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        try {
+            Response.GetInfo info = new Command.GetInfo(card).send();
+            result.put("version", info.getVersion());
+            result.put("javacard", info.getJavaCardVersion());
+            result.put("base", info.getBase());
+            result.put("cleanup", info.getCleanupSupport());
+        } catch (CardException ignored) {
+        }
+        return result;
+    }
+
     @Override
     protected Map<String, Object> deviceObject(TestSuite suite) {
         if (suite instanceof CardTestSuite) {
@@ -91,6 +104,7 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
             result.put("type", "card");
             result.put("ectester", ECTesterReader.VERSION + ECTesterReader.GIT_COMMIT);
             result.put("cplc", cplcObject(cardSuite.getCard()));
+            result.put("applet", appletObject(cardSuite.getCard()));
             result.put("ATR", ByteUtil.bytesToHex(cardSuite.getCard().getATR().getBytes(), false));
             return result;
         }

@@ -34,10 +34,6 @@ public class CardDefaultSuite extends CardTestSuite {
 
     @Override
     protected void runTests() throws Exception {
-        CommandTest getInfo = runTest(CommandTest.expect(new Command.GetInfo(this.card), ExpectedValue.SUCCESS));
-        Response.GetInfo info = (Response.GetInfo) getInfo.getResponse();
-        doTest(CompoundTest.all(ExpectedValue.SUCCESS, String.format("Get applet info: %s; %.1f; %s", info.getVersion(), info.getJavaCardVersion(), info.getBase() == ECTesterApplet.BASE_221 ? "basic" : "extended"), getInfo));
-
         if (cfg.primeField) {
             runDefault(KeyPair.ALG_EC_FP);
         }

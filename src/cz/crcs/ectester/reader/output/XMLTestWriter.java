@@ -108,6 +108,19 @@ public class XMLTestWriter extends BaseXMLTestWriter {
         return result;
     }
 
+    private Element appletElement(CardMngr card) {
+        Element result = doc.createElement("applet");
+        try {
+            Response.GetInfo info = new Command.GetInfo(card).send();
+            result.setAttribute("version", info.getVersion());
+            result.setAttribute("javacard", String.format("%.1f", info.getJavaCardVersion()));
+            result.setAttribute("base", String.format("%#x",info.getBase()));
+            result.setAttribute("cleanup", String.valueOf(info.getCleanupSupport()));
+        } catch (CardException ignored) {
+        }
+        return result;
+    }
+
     @Override
     protected Element deviceElement(TestSuite suite) {
         if (suite instanceof CardTestSuite) {
@@ -116,6 +129,7 @@ public class XMLTestWriter extends BaseXMLTestWriter {
             result.setAttribute("type", "card");
             result.setAttribute("ectester", ECTesterReader.VERSION + ECTesterReader.GIT_COMMIT);
             result.appendChild(cplcElement(cardSuite.getCard()));
+            result.appendChild(appletElement(cardSuite.getCard()));
 
             Element atr = doc.createElement("ATR");
             atr.setTextContent(ByteUtil.bytesToHex(cardSuite.getCard().getATR().getBytes(), false));
