@@ -121,6 +121,42 @@
         <desc>Well-formed invalid signature with s = 2 * p.</desc>
     </sigResult>
     <sigResult>
+        <id>nok/length_overflow16</id>
+        <sig>SHA1</sig>
+        <inline>0x3083ff000002203988322ab9f52c7f11d5d1aa92a2ac0b00275bcad8e934682257323fda672482022052231597382268e8f3b82b99e386ebb7c7db1a8b4a8bdacd496190314e4c5bad</inline>
+        <curve>secg/secp256r1</curve>
+        <signkey>wrong/default_priv</signkey>
+        <verifykey>wrong/default_pub</verifykey>
+        <desc>Invalid signature, that is shorter than specified in its ASN.1 SEQUENCE length header and its length overflows 16bits.</desc>
+    </sigResult>
+    <sigResult>
+        <id>nok/length_overflow32</id>
+        <sig>SHA1</sig>
+        <inline>0x3085ff0000000002203988322ab9f52c7f11d5d1aa92a2ac0b00275bcad8e934682257323fda672482022052231597382268e8f3b82b99e386ebb7c7db1a8b4a8bdacd496190314e4c5bad</inline>
+        <curve>secg/secp256r1</curve>
+        <signkey>wrong/default_priv</signkey>
+        <verifykey>wrong/default_pub</verifykey>
+        <desc>Invalid signature, that is shorter than specified in its ASN.1 SEQUENCE length header and its length overflows 32bits.</desc>
+    </sigResult>
+    <sigResult>
+        <id>nok/length_overflow64</id>
+        <sig>SHA1</sig>
+        <inline>0x3089ff000000000000000002203988322ab9f52c7f11d5d1aa92a2ac0b00275bcad8e934682257323fda672482022052231597382268e8f3b82b99e386ebb7c7db1a8b4a8bdacd496190314e4c5bad</inline>
+        <curve>secg/secp256r1</curve>
+        <signkey>wrong/default_priv</signkey>
+        <verifykey>wrong/default_pub</verifykey>
+        <desc>Invalid signature, that is shorter than specified in its ASN.1 SEQUENCE length header and its length overflows 64bits.</desc>
+    </sigResult>
+    <sigResult>
+        <id>nok/length_indefinite</id>
+        <sig>SHA1</sig>
+        <inline>0x308002203988322ab9f52c7f11d5d1aa92a2ac0b00275bcad8e934682257323fda672482022052231597382268e8f3b82b99e386ebb7c7db1a8b4a8bdacd496190314e4c5bad</inline>
+        <curve>secg/secp256r1</curve>
+        <signkey>wrong/default_priv</signkey>
+        <verifykey>wrong/default_pub</verifykey>
+        <desc>Invalid signature, with indefinite length.</desc>
+    </sigResult>
+    <sigResult>
         <id>nok/long</id>
         <sig>SHA1</sig>
         <inline>0x30420220e641671e6415629dc8398e35ae1362cb647f293a92553b1594d57fff58df302c02206baafface035e3758eea0dd9ef734976c70b6dd06f4d81d33f5e28bfb8730624</inline>
