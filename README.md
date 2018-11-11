@@ -270,6 +270,7 @@ Currently supported libraries include:
  - [Sun EC](https://docs.oracle.com/javase/7/docs/technotes/guides/security/SunProviders.html#SunEC)
  - [OpenSSL](https://www.openssl.org/)
  - [BoringSSL](https://boringssl.googlesource.com/boringssl)
+ - [wolfSSL](https://www.wolfssl.com/)
  - [Crypto++](https://cryptopp.com/)
  - [libtomcrypt](http://www.libtom.net/LibTomCrypt/)
  - [libgcrypt](https://www.gnupg.org/related_software/libgcrypt/)

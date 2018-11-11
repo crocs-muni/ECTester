@@ -49,6 +49,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
@@ -66,7 +67,17 @@ import java.util.stream.Collectors;
  * @version v0.3.0
  */
 public class ECTesterStandalone {
-    private ProviderECLibrary[] libs = new ProviderECLibrary[]{new SunECLib(), new BouncyCastleLib(), new TomcryptLib(), new BotanLib(), new CryptoppLib(), new OpensslLib(), new BoringsslLib(), new GcryptLib(), new MscngLib()};
+    private ProviderECLibrary[] libs = new ProviderECLibrary[]{
+            new SunECLib(),
+            new BouncyCastleLib(),
+            new TomcryptLib(),
+            new BotanLib(),
+            new CryptoppLib(),
+            new OpensslLib(),
+            new BoringsslLib(),
+            new GcryptLib(),
+            new MscngLib(),
+            new WolfCryptLib()};
     private Config cfg;
 
     private Options opts = new Options();

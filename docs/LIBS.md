@@ -55,6 +55,8 @@ Libraries that ECTester can test.
         - Uses Lopez-Dahab (Montgomery) ladder, XZ coordinates (ec2_mont.c): Fast multiplication on elliptic curves over GF(2^m) without precomputation (Algorithm 2P)
         - Contains an implementation of IEEE P1363 algorithm A.10.3 using affine coordinates (ec2_aff.c)
     - Has some custom arithmetic for some of the NIST primes.
+ - [WolfCrypt](https://www.wolfssl.com)
+    - C + Java
  - [OpenSSL](https://www.openssl.org/)
     - C
     - For prime field curves:
