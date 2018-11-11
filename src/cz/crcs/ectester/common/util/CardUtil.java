@@ -409,6 +409,58 @@ public class CardUtil {
         }
     }
 
+    public static String getCurveName(byte curve) {
+        String result = "";
+        switch (curve) {
+            case EC_Consts.CURVE_default:
+                result = "default";
+                break;
+            case EC_Consts.CURVE_external:
+                result = "external";
+                break;
+            case EC_Consts.CURVE_secp112r1:
+                result = "secp112r1";
+                break;
+            case EC_Consts.CURVE_secp128r1:
+                result = "secp128r1";
+                break;
+            case EC_Consts.CURVE_secp160r1:
+                result = "secp160r1";
+                break;
+            case EC_Consts.CURVE_secp192r1:
+                result = "secp192r1";
+                break;
+            case EC_Consts.CURVE_secp224r1:
+                result = "secp224r1";
+                break;
+            case EC_Consts.CURVE_secp256r1:
+                result = "secp256r1";
+                break;
+            case EC_Consts.CURVE_secp384r1:
+                result = "secp384r1";
+                break;
+            case EC_Consts.CURVE_secp521r1:
+                result = "secp521r1";
+                break;
+            case EC_Consts.CURVE_sect163r1:
+                result = "sect163r1";
+                break;
+            case EC_Consts.CURVE_sect233r1:
+                result = "sect233r1";
+                break;
+            case EC_Consts.CURVE_sect283r1:
+                result = "sect283r1";
+                break;
+            case EC_Consts.CURVE_sect409r1:
+                result = "sect409r1";
+                break;
+            case EC_Consts.CURVE_sect571r1:
+                result = "sect571r1";
+                break;
+        }
+        return result;
+    }
+
     public static String getParameterString(short params) {
         String what = "";
         if (params == EC_Consts.PARAMETERS_DOMAIN_F2M || params == EC_Consts.PARAMETERS_DOMAIN_FP) {

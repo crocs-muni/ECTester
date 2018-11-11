@@ -392,18 +392,7 @@ public abstract class Command implements Cloneable {
 
         @Override
         public String getDescription() {
-            String name;
-            switch (curve) {
-                case EC_Consts.CURVE_default:
-                    name = "default";
-                    break;
-                case EC_Consts.CURVE_external:
-                    name = "external";
-                    break;
-                default:
-                    name = "custom";
-                    break;
-            }
+            String name = CardUtil.getCurveName(curve);
             String what = CardUtil.getParameterString(params);
 
             String pair;

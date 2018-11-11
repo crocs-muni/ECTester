@@ -67,27 +67,28 @@ public class CardCompressionSuite extends CardTestSuite {
 
         for (short keyLength : keySizes) {
             String spec = keyLength + "b " + CardUtil.getKeyTypeString(field);
+            byte curveId = EC_Consts.getCurve(keyLength, field);
 
             Test allocateFirst = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, keyLength, field), Result.ExpectedValue.SUCCESS));
             if (!allocateFirst.ok()) {
-                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "No support for " + spec + ".", allocateFirst));
+                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "No support for compression test on " + spec + ".", allocateFirst));
                 continue;
             }
 
             List<Test> compressionTests = new LinkedList<>();
             compressionTests.add(allocateFirst);
-            Test setCustom = runTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.getCurve(keyLength, field), domain, null), Result.ExpectedValue.SUCCESS));
+            Test setCustom = runTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, curveId, domain, null), Result.ExpectedValue.SUCCESS));
             Test genCustom = runTest(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_BOTH), Result.ExpectedValue.SUCCESS));
             compressionTests.add(setCustom);
             compressionTests.add(genCustom);
 
             Response.Export key = new Command.Export(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.KEY_PUBLIC, EC_Consts.PARAMETER_W).send();
             byte[] pubkey = key.getParameter(ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.KEY_PUBLIC);
+            EC_Curve secgCurve = EC_Store.getInstance().getObject(EC_Curve.class, "secg", CardUtil.getCurveName(curveId));
             ECPoint pub;
             try {
-                pub = ECUtil.fromX962(pubkey, null);
+                pub = ECUtil.fromX962(pubkey, secgCurve.toCurve());
             } catch (IllegalArgumentException iae) {
-                // TODO: use external SECG curves so we have them here.
                 doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "", compressionTests.toArray(new Test[0])));
                 continue;
             }
@@ -129,7 +130,7 @@ public class CardCompressionSuite extends CardTestSuite {
     }
 
     private void runNonResidue() {
-        Map<String, EC_Key.Public> otherKeys = EC_Store.getInstance().getObjects(EC_Key.Public.class, "other");
+        Map<String, EC_Key.Public> otherKeys = EC_Store.getInstance().getObjects(EC_Key.Public.class, "misc");
         List<EC_Key.Public> compressionKeys = EC_Store.mapToPrefix(otherKeys.values()).get("compression");
 
         for (EC_Key.Public key : compressionKeys) {
@@ -137,7 +138,7 @@ public class CardCompressionSuite extends CardTestSuite {
             List<Test> tests = new LinkedList<>();
             Test allocate = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_LOCAL, curve.getBits(), curve.getField()), Result.ExpectedValue.SUCCESS));
             if (!allocate.ok()) {
-                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "No support for " + curve.getBits() + "b " + CardUtil.getKeyTypeString(curve.getField()) + ".", allocate));
+                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "No support for non-residue test on " + curve.getBits() + "b " + curve.getId() + ".", allocate));
                 continue;
             }
             tests.add(allocate);

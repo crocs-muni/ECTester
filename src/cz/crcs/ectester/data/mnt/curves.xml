@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<curves xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../schema.xsd">
+    <curve>
+        <id>mnt1</id>
+        <bits>170</bits>
+        <field>prime</field>
+        <file>mnt1.csv</file>
+        <desc>Example 1</desc>
+    </curve>
+    <curve>
+        <id>mnt2/1</id>
+        <bits>159</bits>
+        <field>prime</field>
+        <file>mnt2_1.csv</file>
+        <desc>Example 2/1</desc>
+    </curve>
+    <curve>
+        <id>mnt2/2</id>
+        <bits>159</bits>
+        <field>prime</field>
+        <file>mnt2_2.csv</file>
+        <desc>Example 2/2</desc>
+    </curve>
+    <curve>
+        <id>mnt3/1</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>mnt3_1.csv</file>
+        <desc>Example 3/1</desc>
+    </curve>
+    <curve>
+        <id>mnt3/2</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>mnt3_2.csv</file>
+        <desc>Example 3/2</desc>
+    </curve>
+    <curve>
+        <id>mnt3/3</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>mnt3_3.csv</file>
+        <desc>Example 3/3</desc>
+    </curve>
+    <curve>
+        <id>mnt4</id>
+        <bits>240</bits>
+        <field>prime</field>
+        <file>mnt4.csv</file>
+        <desc>Example 4</desc>
+    </curve>
+    <curve>
+        <id>mnt5/1</id>
+        <bits>240</bits>
+        <field>prime</field>
+        <file>mnt5_1.csv</file>
+        <desc>Example 5/1</desc>
+    </curve>
+    <curve>
+        <id>mnt5/2</id>
+        <bits>240</bits>
+        <field>prime</field>
+        <file>mnt5_2.csv</file>
+        <desc>Example 5/2</desc>
+    </curve>
+    <curve>
+        <id>mnt5/3</id>
+        <bits>240</bits>
+        <field>prime</field>
+        <file>mnt5_3.csv</file>
+        <desc>Example 5/3</desc>
+    </curve>
+</curves>
