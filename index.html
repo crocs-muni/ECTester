@@ -67,9 +67,20 @@
 <script>
 if (window.matchMedia("(min-width: 64em)").matches) {
   $("#sticky-bar").stickybits({useStickyClasses: true, stickyBitStickyOffset: 80});	
-}
-if (location.hash) {
-  $("#sticky-bar").addClass("js-is-stuck").removeClass("js-is-sticky");
+
+  $(window).on("load", function() {
+  	if (location.hash || $(window).scrollTop() > 270) {
+  	  $("#sticky-bar").addClass("js-is-stuck").removeClass("js-is-sticky");
+  	}
+  });
+  
+  var hash = "";
+  $(window).on("hashchange",  function() {
+  	if (location.hash != hash) {
+  	  hash = location.hash;
+  	  $("#sticky-bar").addClass("js-is-stuck").removeClass("js-is-sticky");
+  	}
+  });
 }
 </script>
 
@@ -160,7 +171,6 @@ td.bottom, tr.bottom td {
 }
 </style>
 
-
 <h3>Legend</h3>
 <div class="legend" id="ecdh_types">
     ∗ <strong>ECDH types</strong>
@@ -193,6 +203,22 @@ td.bottom, tr.bottom td {
     </ul>
 </div>
 <div style="clear:both"></div>
+
+<h3>Card list</h3>
+
+This page contains results for the following cards:<br/>
+<ul>
+	<li>Athena IDProtect</li>
+	<li>Feitian A22CR</li>
+	<li>G&D SmartCafe Expert 6.0</li>
+	<li>G&D SmartCafe Expert 7.0</li>
+	<li>Infineon CJTOP 80K INF SLJ 52GLA080AL M8.4</li>
+	<li>Infineon SLE78 Universal JCard</li>
+	<li>NXP JCOP31 v2.4.1</li>
+	<li>NXP JCOP CJ2A081</li>
+	<li>NXP JCOP v2.4.2 R2</li>
+	<li>NXP JCOP v2.4.2 R3</li>
+</ul>
 
 <h3>$ \mathbb{F}_p $ support</h3>
 
@@ -248,7 +274,7 @@ td.bottom, tr.bottom td {
         <td></td>
     </tr>
     <tr>
-        <td><a href="{{ site.baseurl }}/results/default/GD_Smartcafe_6.0/">GD SmartCafe 6.0</a></td>
+        <td><a href="{{ site.baseurl }}/results/default/G&D_Smartcafe_6.0/">G&D SmartCafe 6.0</a></td>
         <td class="yes">1,2,3,4</td>
         <td class="yes">a,b,c,d,e</td>
         <td class="yes">1,2,4,3</td>
@@ -259,7 +285,7 @@ td.bottom, tr.bottom td {
         <td class="no">✘</td>
     </tr>
     <tr>
-        <td><a href="{{ site.baseurl }}/results/default/GD_Smartcafe_7/">GD SmartCafe 7</a></td>
+        <td><a href="{{ site.baseurl }}/results/default/G&D_Smartcafe_7.0/">G&D SmartCafe 7.0</a></td>
         <td class="yes">1,2,3,4</td>
         <td class="yes">a,b,c,d,e</td>
         <td class="yes">1,2,4,3</td>
@@ -270,7 +296,7 @@ td.bottom, tr.bottom td {
         <td class="yes">a,b,c,d,e</td>
     </tr>
     <tr>
-       	<td><a href="{{ site.baseurl }}/results/default/Infineon_CJTOP/">Infineon CJTOP</a></td>
+       	<td><a href="{{ site.baseurl }}/results/default/Infineon_CJTOP/">Infineon CJTOP 80k</a></td>
        	<td class="yes">1,2,3,4</td>
        	<td class="yes">a,b,c,d,e</td>
        	<td class="yes">1,2,3,4</td>
@@ -338,6 +364,10 @@ td.bottom, tr.bottom td {
 </table>
 
 <h3>$ \mathbb{F}_p $ performance</h3>
+The following table shows performance of tested cards in ECDH and ECDSA over popular $ \mathbb{F}_p $ curve sizes. Key generation
+performance is similar to ECDH performance. ECDSA timings are split for sign+verify operations. Times are in milliseconds.
+<br/>
+
 <table id="perf_table">
     <colgroup>
         <col span="1" style="width: 12%">
@@ -499,7 +529,7 @@ td.bottom, tr.bottom td {
       	<td class="none"></td>
 	</tr>
     <tr>
-        <td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/GD_Smartcafe_6.0/">GD SmartCafe 6.0</a></td>
+        <td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/G&D_Smartcafe_6.0/">G&D SmartCafe 6.0</a></td>
     </tr>
 	<tr class="split"><td>1</td><td>a</td>
        	<td class="yes">128</td>
@@ -562,7 +592,7 @@ td.bottom, tr.bottom td {
 		<td class="none"></td>
 	</tr>
 	<tr>
-        <td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/GD_Smartcafe_7/">GD SmartCafe 7</a></td>
+        <td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/G&D_Smartcafe_7.0/">G&D SmartCafe 7.0</a></td>
     </tr>
 	<tr class="split"><td>1</td><td>a</td>
        	<td class="yes">67</td>
@@ -625,7 +655,7 @@ td.bottom, tr.bottom td {
 		<td class="none"></td>
 	</tr>
     <tr>
-       	<td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/Infineon_CJTOP/">Infineon CJTOP</a></td>
+       	<td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/Infineon_CJTOP/">Infineon CJTOP 80k</a></td>
     </tr>
 	<tr class="split"><td>1</td><td>a</td>
        	<td class="yes">138</td>
@@ -943,6 +973,8 @@ td.bottom, tr.bottom td {
 
 <h3>$ \mathbb{F}_p $ default curves</h3>
 The JavaCard API allows cards to specify default curves to be used when generating EC keys using the <code class="java">KeyPair</code> class.
+<span style="background-color: rgba(0,0,0,0.05);">Grey</span> background shows that no default curve is present and one should be specified after creating
+the keypair, see the <a href="#implementation_guide">implementation guide</a>.
 
 <table id="curve_table">
     <colgroup>
@@ -969,13 +1001,13 @@ The JavaCard API allows cards to specify default curves to be used when generati
 	<td>FeitianFeitian A22</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
 	</tr>
 	<tr>
-	<td>GD Smartcafe 6.0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	<td>G&D Smartcafe 6.0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
 	</tr>
 	<tr>
-	<td>GD Smartcafe Expert 7</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	<td>G&D Smartcafe 7.0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
 	</tr>
 	<tr>
-	<td>Infineon CJTOP</td><td></td><td></td><td class="yes">brainpoolP160r1</td><td class="yes">brainpoolP192r</td><td class="yes">brainpoolP224r1</td><td class="yes">brainpoolP256r1</td><td></td><td></td>
+	<td>Infineon CJTOP 80k</td><td></td><td></td><td class="yes">brainpoolP160r1</td><td class="yes">brainpoolP192r</td><td class="yes">brainpoolP224r1</td><td class="yes">brainpoolP256r1</td><td></td><td></td>
 	</tr>
 	<tr>
 	<td>Infineon SLE78</td><td></td><td></td><td></td><td></td><td></td><td class="yes">brainpoolP256r1</td><td></td><td></td>
@@ -999,95 +1031,6 @@ The JavaCard API allows cards to specify default curves to be used when generati
 
 <h3>$ \mathbb{F}_{2^m} $</h3>
 Support for binary field curves on cards is very weak, very little cards have any. For more information see <a href="https://www.fi.muni.cz/~xsvenda/jcalgtest/table.html">JCAlgTest</a> support table.
-<!--
-
-<table>
-    <colgroup>
-        <col span="1" style="width: 12%">
-        <col span="1" style="width: 10%">
-        <col span="1" style="width: 10%">
-        <col span="1" style="width: 10%">
-        <col span="1" style="width: 10%">
-        <col span="1" style="width: 10%">
-        <col span="1" style="width: 10%">
-        <col span="1" style="width: 10%">
-        <col span="1" style="width: 10%">
-    </colgroup>
-    <tr>
-        <th></th>
-        <th colspan="2">163b</th>
-        <th colspan="2">233b</th>
-        <th colspan="2">283b</th>
-        <th colspan="2">409b</th>
-    </tr>
-    <tr>
-        <th></th>
-        <th>ECDH</th>
-        <th>ECDSA</th>
-        <th>ECDH</th>
-        <th>ECDSA</th>
-        <th>ECDH</th>
-        <th>ECDSA</th>
-        <th>ECDH</th>
-        <th>ECDSA</th>
-    </tr>
-    <tr>
-        <td><a href="{{ site.baseurl }}/results/default/Feitian_A22CR/">Feitian A22CR</a></td>
-        <td class="some"></td>
-        <td></td>
-        <td class="some"></td>
-        <td></td>
-        <td class="some"></td>
-        <td></td>
-        <td class="some"></td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><a href="{{ site.baseurl }}/results/default/GD_Smartcafe_6.0/">GD SmartCafe 6.0</a></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-    </tr>
-    <tr>
-        <td><a href="{{ site.baseurl }}/results/default/NXP_JCOP31_v2.4.1/">JCOP31 v2.4.1</a></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-    </tr>
-    <tr>
-        <td><a href="{{ site.baseurl }}/results/default/NXP_JCOP_CJ2A081/">NXP JCOP CJ2A081</a></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-    </tr>
-    <tr>
-        <td><a href="{{ site.baseurl }}/results/default/NXP_JCOP_v2.4.2_R3/">NXP JCOP v2.4.2 R3</a></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-        <td class="no"></td>
-    </tr>
-</table>
--->
 
 <h2 id="implementation_guide">Implementation guide<a href="#implementation_guide">#</a></h2>
 A basic example of EC KeyPair generation is visible below, for a more complete example see <a href="{{ site.baseurl}}/assets/ECExample.java">ECExample.java</a>.
