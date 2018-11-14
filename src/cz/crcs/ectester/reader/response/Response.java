@@ -308,7 +308,7 @@ public abstract class Response {
                     if (pair == keyPair && param == mask) {
                         return index;
                     }
-                    if ((parameters & mask) != 0 && (pair & keyPair) != 0) {
+                    if ((parameters & mask) != 0 && (pair & this.keyPair) != 0) {
                         if (mask == EC_Consts.PARAMETER_W) {
                             if ((key & EC_Consts.KEY_PUBLIC) != 0)
                                 index++;
