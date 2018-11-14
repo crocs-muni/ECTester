@@ -91,56 +91,21 @@ public class EC_Category {
             out.append(System.lineSeparator());
         }
 
-        Map<String, EC_Key> keys = getObjects(EC_Key.class);
-        size = keys.size();
-        if (size > 0) {
-            out.append(Colors.bold("\t\tKeys: "));
-            for (Map.Entry<String, EC_Key> key : keys.entrySet()) {
-                out.append(key.getKey());
-                size--;
-                if (size > 0)
-                    out.append(", ");
+        String[] headers = new String[]{"Public keys", "Private keys", "KeyPairs", "Results(KA)", "Results(SIG)"};
+        Class[] classes = new Class[]{EC_Key.Public.class, EC_Key.Private.class, EC_Keypair.class, EC_KAResult.class, EC_SigResult.class};
+        for (int i = 0; i < headers.length; ++i) {
+            Map<String, EC_Data> data = getObjects(classes[i]);
+            size = data.size();
+            if (size > 0) {
+                out.append(Colors.bold(String.format("\t\t%s: ", headers[i])));
+                for (Map.Entry<String, EC_Data> key : data.entrySet()) {
+                    out.append(key.getKey());
+                    size--;
+                    if (size > 0)
+                        out.append(", ");
+                }
+                out.append(System.lineSeparator());
             }
-            out.append(System.lineSeparator());
-        }
-
-        Map<String, EC_Keypair> keypairs = getObjects(EC_Keypair.class);
-        size = keypairs.size();
-        if (size > 0) {
-            out.append(Colors.bold("\t\tKeypairs: "));
-            for (Map.Entry<String, EC_Keypair> key : keypairs.entrySet()) {
-                out.append(key.getKey());
-                size--;
-                if (size > 0)
-                    out.append(", ");
-            }
-            out.append(System.lineSeparator());
-        }
-
-        Map<String, EC_KAResult> kaResults = getObjects(EC_KAResult.class);
-        size = kaResults.size();
-        if (size > 0) {
-            out.append(Colors.bold("\t\tResults(KA): "));
-            for (Map.Entry<String, EC_KAResult> result : kaResults.entrySet()) {
-                out.append(result.getKey());
-                size--;
-                if (size > 0)
-                    out.append(", ");
-            }
-            out.append(System.lineSeparator());
-        }
-
-        Map<String, EC_SigResult> sigResults = getObjects(EC_SigResult.class);
-        size = sigResults.size();
-        if (size > 0) {
-            out.append(Colors.bold("\t\tResults(SIG): "));
-            for (Map.Entry<String, EC_SigResult> result : sigResults.entrySet()) {
-                out.append(result.getKey());
-                size--;
-                if (size > 0)
-                    out.append(", ");
-            }
-            out.append(System.lineSeparator());
         }
         return out.toString();
     }

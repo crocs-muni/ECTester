@@ -58,7 +58,7 @@ public abstract class AppletBase extends Applet {
     //
     public static final byte[] VERSION = {'v', '0', '.', '3', '.', '0'};
 
-    public static final short ARRAY_LENGTH = 0xff;
+    public static final short ARRAY_LENGTH = 0x100;
     public static final short APDU_MAX_LENGTH = 1024;
 
     // TEMPORARRY ARRAY IN RAM
