@@ -51,6 +51,7 @@ public class TextTestWriter extends BaseTextTestWriter {
                 sb.append("═══ ").append(Colors.underline("ECTester applet version:")).append(" ").append(info.getVersion()).append(info.getBase() == ECTesterApplet.BASE_221 ? "" : " (extended length)").append(System.lineSeparator());
                 sb.append("═══ ").append(Colors.underline("Card ATR:")).append(" ").append(ByteUtil.bytesToHex(cardSuite.getCard().getATR().getBytes(), false)).append(System.lineSeparator());
                 sb.append("═══ ").append(Colors.underline("JavaCard version:")).append(" ").append(info.getJavaCardVersion()).append(System.lineSeparator());
+                sb.append("═══ ").append(Colors.underline("Array sizes (apduBuf, ram, ram2, apduArr):")).append(" ").append(String.format("%d %d %d %d", info.getApduBufferLength(), info.getRamArrayLength(), info.getRamArray2Length(), info.getApduArrayLength())).append(System.lineSeparator());
                 CardMngr.CPLC cplc = cardSuite.getCard().getCPLC();
                 if (!cplc.values().isEmpty()) {
                     sb.append("═══ ").append(Colors.underline("Card CPLC data:")).append(System.lineSeparator());

@@ -873,6 +873,14 @@ public abstract class AppletBase extends Applet {
         length += 2;
         Util.setShort(buffer, (short) (offset + length), (short) (JCSystem.isObjectDeletionSupported() ? 1 : 0));
         length += 2;
+        Util.setShort(buffer, (short) (offset + length), (short) buffer.length);
+        length += 2;
+        Util.setShort(buffer, (short) (offset + length), (short) ramArray.length);
+        length += 2;
+        Util.setShort(buffer, (short) (offset + length), (short) ramArray2.length);
+        length += 2;
+        Util.setShort(buffer, (short) (offset + length), (short) apduArray.length);
+        length += 2;
         return length;
     }
 }

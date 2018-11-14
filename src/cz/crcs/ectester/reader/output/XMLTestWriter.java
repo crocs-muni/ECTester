@@ -116,6 +116,24 @@ public class XMLTestWriter extends BaseXMLTestWriter {
             result.setAttribute("javacard", String.format("%.1f", info.getJavaCardVersion()));
             result.setAttribute("base", String.format("%#x",info.getBase()));
             result.setAttribute("cleanup", String.valueOf(info.getCleanupSupport()));
+            Element arrays = doc.createElement("arrays");
+            Element apduBuf = doc.createElement("length");
+            apduBuf.setAttribute("name", "apduBuf");
+            apduBuf.setTextContent(String.valueOf(info.getApduBufferLength()));
+            Element ramArray = doc.createElement("length");
+            ramArray.setAttribute("name", "ramArray");
+            ramArray.setTextContent(String.valueOf(info.getRamArrayLength()));
+            Element ramArray2 = doc.createElement("length");
+            ramArray2.setAttribute("name", "ramArray2");
+            ramArray2.setTextContent(String.valueOf(info.getRamArray2Length()));
+            Element apduArray = doc.createElement("length");
+            apduArray.setAttribute("name", "apduArray");
+            apduArray.setTextContent(String.valueOf(info.getApduArrayLength()));
+            arrays.appendChild(apduBuf);
+            arrays.appendChild(ramArray);
+            arrays.appendChild(ramArray2);
+            arrays.appendChild(apduArray);
+            result.appendChild(arrays);
         } catch (CardException ignored) {
         }
         return result;

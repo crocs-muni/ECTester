@@ -91,6 +91,12 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
             result.put("javacard", info.getJavaCardVersion());
             result.put("base", info.getBase());
             result.put("cleanup", info.getCleanupSupport());
+            Map<String, Integer> arrays = new LinkedHashMap<>();
+            arrays.put("apduBuf", Short.toUnsignedInt(info.getApduBufferLength()));
+            arrays.put("ramArray", Short.toUnsignedInt(info.getRamArrayLength()));
+            arrays.put("ramArray2", Short.toUnsignedInt(info.getRamArray2Length()));
+            arrays.put("apduArray", Short.toUnsignedInt(info.getApduArrayLength()));
+            result.put("arrays", arrays);
         } catch (CardException ignored) {
         }
         return result;

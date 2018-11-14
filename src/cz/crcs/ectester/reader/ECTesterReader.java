@@ -40,6 +40,7 @@ import cz.crcs.ectester.reader.test.*;
 import javacard.framework.ISO7816;
 import javacard.security.KeyPair;
 import org.apache.commons.cli.*;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.smartcardio.CardException;
 import javax.smartcardio.ResponseAPDU;
@@ -48,6 +49,7 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.security.Security;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -145,15 +147,21 @@ public class ECTesterReader {
                 }
                 ResponseAPDU selectResp = cardManager.send(SELECT_ECTESTERAPPLET);
                 if ((short) selectResp.getSW() != ISO7816.SW_NO_ERROR) {
-                	System.err.println(Colors.error("Failed to select ECTester applet, is it installed?"));
-                	cardManager.disconnectFromCard();
-                	System.exit(1);
+                    System.err.println(Colors.error("Failed to select ECTester applet, is it installed?"));
+                    cardManager.disconnectFromCard();
+                    System.exit(1);
                 }
             }
 
             // Setup logger and respWriter
             logger = new OutputLogger(true, cfg.log);
             respWriter = new ResponseWriter(logger.getPrintStream());
+
+            // Try adding the BouncyCastleProvider, which might be used in some parts of ECTester.
+            try {
+                Security.addProvider(new BouncyCastleProvider());
+            } catch (SecurityException | NoClassDefFoundError ignored) {
+            }
 
             //do action
             if (cli.hasOption("export")) {
@@ -167,7 +175,7 @@ public class ECTesterReader {
             } else if (cli.hasOption("ecdsa")) {
                 ecdsa();
             } else if (cli.hasOption("info")) {
-            	info();
+                info();
             }
 
             //disconnect
@@ -282,7 +290,7 @@ public class ECTesterReader {
         actions.addOption(Option.builder("V").longOpt("version").desc("Print version info.").build());
         actions.addOption(Option.builder("h").longOpt("help").desc("Print help.").build());
         actions.addOption(Option.builder("ln").longOpt("list-named").desc("Print the list of supported named curves and keys.").hasArg().argName("what").optionalArg(true).build());
-		actions.addOption(Option.builder("ls").longOpt("list-suites").desc("List supported test suites.").build());
+        actions.addOption(Option.builder("ls").longOpt("list-suites").desc("List supported test suites.").build());
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate <amount> of EC keys.").hasArg().argName("amount").optionalArg(true).build());
         actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. Optionally specify a test number to run only a part of a test suite. <test_suite>:\n- default:\n- compression:\n- invalid:\n- twist:\n- degenerate:\n- cofactor:\n- wrong:\n- signature:\n- composite:\n- test-vectors:\n- edge-cases:\n- miscellaneous:").hasArg().argName("test_suite[:from[:to]]").optionalArg(true).build());
@@ -359,11 +367,12 @@ public class ECTesterReader {
     }
 
     private void info() throws CardException {
-    	Response.GetInfo info = new Command.GetInfo(cardManager).send();
-    	System.out.println(String.format("ECTester applet version: %s", info.getVersion()));
-    	System.out.println(String.format("ECTester applet APDU support: %s", (info.getBase() == ECTesterApplet.BASE_221) ? "basic" : "extended length"));
-    	System.out.println(String.format("JavaCard API version: %.1f", info.getJavaCardVersion()));
-    	System.out.println(String.format("JavaCard supports system cleanup: %s", info.getCleanupSupport()));
+        Response.GetInfo info = new Command.GetInfo(cardManager).send();
+        System.out.println(String.format("ECTester applet version: %s", info.getVersion()));
+        System.out.println(String.format("ECTester applet APDU support: %s", (info.getBase() == ECTesterApplet.BASE_221) ? "basic" : "extended length"));
+        System.out.println(String.format("JavaCard API version: %.1f", info.getJavaCardVersion()));
+        System.out.println(String.format("JavaCard supports system cleanup: %s", info.getCleanupSupport()));
+        System.out.println(String.format("Array sizes (apduBuf, ram, ram2, apduArr): %d %d %d %d", info.getApduBufferLength(), info.getRamArrayLength(), info.getRamArray2Length(), info.getApduArrayLength()));
     }
 
     /**
@@ -446,6 +455,7 @@ public class ECTesterReader {
             respWriter.outputResponse(response);
 
             Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR).send();
+            respWriter.outputResponse(export);
 
             if (!response.successful() || !export.successful()) {
                 if (retry < 10) {

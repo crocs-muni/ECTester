@@ -436,6 +436,10 @@ public abstract class Response {
         private short base;
         private short jcVersion;
         private short cleanupSupport;
+        private short apduBufferLength;
+        private short ramArrayLength;
+        private short ramArray2Length;
+        private short apduArrayLength;
 
         public GetInfo(ResponseAPDU response, String description, long time) {
             super(response, description, time);
@@ -448,6 +452,14 @@ public abstract class Response {
             jcVersion = ByteUtil.getShort(data, offset);
             offset += 2;
             cleanupSupport = ByteUtil.getShort(data, offset);
+            offset += 2;
+            apduBufferLength = ByteUtil.getShort(data, offset);
+            offset += 2;
+            ramArrayLength = ByteUtil.getShort(data, offset);
+            offset += 2;
+            ramArray2Length = ByteUtil.getShort(data, offset);
+            offset += 2;
+            apduArrayLength = ByteUtil.getShort(data, offset);
         }
 
         public String getVersion() {
@@ -472,6 +484,22 @@ public abstract class Response {
 
         public boolean getCleanupSupport() {
             return cleanupSupport == 1;
+        }
+
+        public short getApduBufferLength() {
+            return apduBufferLength;
+        }
+
+        public short getRamArrayLength() {
+            return ramArrayLength;
+        }
+
+        public short getRamArray2Length() {
+            return ramArray2Length;
+        }
+
+        public short getApduArrayLength() {
+            return apduArrayLength;
         }
     }
 }
