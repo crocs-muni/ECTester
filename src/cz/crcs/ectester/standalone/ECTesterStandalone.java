@@ -325,7 +325,7 @@ public class ECTesterStandalone {
                 kpg.initialize(spec);
             }
 
-            System.out.println("index;nanotime;pubW;privS;secret");
+            System.out.println("index;time[nano];pubW;privS;secret");
 
             int amount = Integer.parseInt(cli.getOptionValue("ecdh.amount", "1"));
             for (int i = 0; i < amount; ++i) {
@@ -435,7 +435,7 @@ public class ECTesterStandalone {
                 kpg.initialize(new ECGenParameterSpec(curveName));
             }
 
-            System.out.println("index;data;signtime;verifytime;pubW;privS;signature;verified");
+            System.out.println("index;data;signTime[nano];verifyTime[nano];pubW;privS;signature;verified");
 
             int amount = Integer.parseInt(cli.getOptionValue("ecdsa.amount", "1"));
             for (int i = 0; i < amount; ++i) {
@@ -499,7 +499,7 @@ public class ECTesterStandalone {
                 String curveName = cli.getOptionValue("generate.curve-name");
                 kpg.initialize(new ECGenParameterSpec(curveName));
             }
-            System.out.println("index;nanotime;pubW;privS");
+            System.out.println("index;time[nano];pubW;privS");
 
             int amount = Integer.parseInt(cli.getOptionValue("generate.amount", "1"));
             for (int i = 0; i < amount; ++i) {

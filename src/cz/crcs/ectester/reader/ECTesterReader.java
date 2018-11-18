@@ -439,7 +439,7 @@ public class ECTesterReader {
         respWriter.outputResponse(allocate);
 
         OutputStreamWriter keysFile = FileUtil.openFiles(cfg.outputs);
-        keysFile.write("index;time;pubW;privS\n");
+        keysFile.write("index;genTime;exportTime;pubW;privS\n");
 
         int generated = 0;
         int retry = 0;
@@ -451,7 +451,6 @@ public class ECTesterReader {
 
             Command.Generate generate = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL);
             Response.Generate response = generate.send();
-            long elapsed = response.getDuration();
             respWriter.outputResponse(response);
 
             Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR).send();
@@ -469,7 +468,7 @@ public class ECTesterReader {
 
             String pub = ByteUtil.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_W), false);
             String priv = ByteUtil.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S), false);
-            String line = String.format("%d;%d;%s;%s\n", generated, elapsed / 1000000, pub, priv);
+            String line = String.format("%d;%d;%d;%s;%s\n", generated, response.getDuration() / 1000000, export.getDuration() / 1000000, pub, priv);
             keysFile.write(line);
             keysFile.flush();
             generated++;
