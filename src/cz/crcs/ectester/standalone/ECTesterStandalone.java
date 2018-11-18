@@ -502,7 +502,7 @@ public class ECTesterStandalone {
             System.out.println("index;time[nano];pubW;privS");
 
             int amount = Integer.parseInt(cli.getOptionValue("generate.amount", "1"));
-            for (int i = 0; i < amount; ++i) {
+            for (int i = 0; i < amount || amount == 0; ++i) {
                 long elapsed = -System.nanoTime();
                 KeyPair kp = kpg.genKeyPair();
                 elapsed += System.nanoTime();
