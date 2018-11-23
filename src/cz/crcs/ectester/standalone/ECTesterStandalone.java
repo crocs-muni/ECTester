@@ -383,6 +383,9 @@ public class ECTesterStandalone {
                 result = ka.generateSecret();
             }
             elapsed += System.nanoTime();
+            if (lib.supportsNativeTiming()) {
+                elapsed = lib.getLastNativeTiming();
+            }
             ka = kaIdent.getInstance(lib.getProvider());
 
             String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW(), pubkey.getParams()), false);
@@ -490,6 +493,9 @@ public class ECTesterStandalone {
             long signTime = -System.nanoTime();
             byte[] signature = sig.sign();
             signTime += System.nanoTime();
+            if (lib.supportsNativeTiming()) {
+                signTime = lib.getLastNativeTiming();
+            }
 
             sig.initVerify(pubkey);
             sig.update(data);
@@ -497,6 +503,9 @@ public class ECTesterStandalone {
             long verifyTime = -System.nanoTime();
             boolean verified = sig.verify(signature);
             verifyTime += System.nanoTime();
+            if (lib.supportsNativeTiming()) {
+                verifyTime = lib.getLastNativeTiming();
+            }
 
             String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW(), pubkey.getParams()), false);
             String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
@@ -612,19 +621,18 @@ public class ECTesterStandalone {
         }
         if (ident == null) {
             throw new NoSuchAlgorithmException(algo);
-        } else {
-            KeyPairGenerator kpg = ident.getInstance(lib.getProvider());
-            if (cli.hasOption("export.bits")) {
-                int bits = Integer.parseInt(cli.getOptionValue("export.bits"));
-                kpg.initialize(bits);
-            }
-            KeyPair kp = kpg.genKeyPair();
-            ECPrivateKey privateKey = (ECPrivateKey) kp.getPrivate();
-            ECParameterSpec params = privateKey.getParams();
-            System.out.println(params);
-            EC_Curve curve = EC_Curve.fromSpec(params);
-            curve.writeCSV(System.out);
         }
+        KeyPairGenerator kpg = ident.getInstance(lib.getProvider());
+        if (cli.hasOption("export.bits")) {
+            int bits = Integer.parseInt(cli.getOptionValue("export.bits"));
+            kpg.initialize(bits);
+        }
+        KeyPair kp = kpg.genKeyPair();
+        ECPrivateKey privateKey = (ECPrivateKey) kp.getPrivate();
+        ECParameterSpec params = privateKey.getParams();
+        System.out.println(params);
+        EC_Curve curve = EC_Curve.fromSpec(params);
+        curve.writeCSV(System.out);
     }
 
     public static void main(String[] args) {
