@@ -241,6 +241,7 @@ public class ECTesterStandalone {
         for (ProviderECLibrary lib : libs) {
             if (lib.isInitialized() && (cfg.selected == null || lib == cfg.selected)) {
                 System.out.println("\t- " + Colors.bold(lib.name()));
+                System.out.println(Colors.bold("\t\t- Supports native timing: ") + lib.supportsNativeTiming());
                 Set<KeyPairGeneratorIdent> kpgs = lib.getKPGs();
                 if (!kpgs.isEmpty()) {
                     System.out.println(Colors.bold("\t\t- KeyPairGenerators: ") + String.join(", ", kpgs.stream().map(KeyPairGeneratorIdent::getName).collect(Collectors.toList())));
@@ -555,6 +556,9 @@ public class ECTesterStandalone {
             long elapsed = -System.nanoTime();
             KeyPair kp = kpg.genKeyPair();
             elapsed += System.nanoTime();
+            if (lib.supportsNativeTiming()) {
+                elapsed = lib.getLastNativeTiming();
+            }
             ECPublicKey publicKey = (ECPublicKey) kp.getPublic();
             ECPrivateKey privateKey = (ECPrivateKey) kp.getPrivate();
 

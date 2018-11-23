@@ -17,6 +17,7 @@
 #include <botan/ecdh.h>
 #include <botan/pubkey.h>
 #include "cpp_utils.hpp"
+#include "c_timing.h"
 
 static jclass provider_class;
 static Botan::AutoSeeded_RNG rng;
@@ -244,6 +245,7 @@ static jobject generate_from_group(JNIEnv* env, jobject self, Botan::EC_Group gr
 
     std::unique_ptr<Botan::EC_PrivateKey> skey;
     try {
+        native_timing_start();
         if (type_str == "ECDH") {
             skey = std::make_unique<Botan::ECDH_PrivateKey>(rng, group);
         } else if (type_str == "ECDSA") {
@@ -253,6 +255,7 @@ static jobject generate_from_group(JNIEnv* env, jobject self, Botan::EC_Group gr
         } else if (type_str == "ECGDSA") {
             skey = std::make_unique<Botan::ECGDSA_PrivateKey>(rng, group);
         }
+        native_timing_stop();
     } catch (Botan::Exception & ex) {
         throw_new(env, "java/security/GeneralSecurityException", ex.what());
         return NULL;
@@ -371,7 +374,9 @@ jbyteArray generate_secret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteAr
 
     std::vector<uint8_t> derived;
     try {
+        native_timing_start();
         derived = Botan::unlock(ka.derive_key(key_len, pkey.public_value()).bits_of());
+        native_timing_stop();
     } catch (Botan::Exception & ex) {
         throw_new(env, "java/security/GeneralSecurityException", ex.what());
         return NULL;
@@ -442,7 +447,9 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
     std::vector<uint8_t> sig;
     try {
+        native_timing_start();
         sig = signer.sign_message((uint8_t*) data_bytes, data_length, rng);
+        native_timing_stop();
     } catch (Botan::Exception & ex) {
         throw_new(env, "java/security/GeneralSecurityException", ex.what());
         env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
@@ -506,7 +513,9 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 
     bool result;
     try {
+        native_timing_start();
         result = verifier.verify_message((uint8_t*)data_bytes, data_length, (uint8_t*)sig_bytes, sig_length);
+        native_timing_stop();
     } catch (Botan::Exception & ex) {
         throw_new(env, "java/security/GeneralSecurityException", ex.what());
         env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
@@ -519,4 +528,16 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
         return JNI_TRUE;
     }
     return JNI_FALSE;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_supportsNativeTiming(JNIEnv *env, jobject self) {
+    return native_timing_supported();
+}
+
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_getNativeTimingResolution(JNIEnv *env, jobject self) {
+    return native_timing_resolution();
+}
+
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_getLastNativeTiming(JNIEnv *env, jobject self) {
+    return native_timing_last();
 }

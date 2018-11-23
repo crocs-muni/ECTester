@@ -3,6 +3,7 @@
 #include <string.h>
 #include <tomcrypt.h>
 #include "c_utils.h"
+#include "c_timing.h"
 
 static prng_state ltc_prng;
 static jclass provider_class;
@@ -19,7 +20,6 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_crea
 
     return (*env)->NewObject(env, provider_class, init, name, version, name);
 }
-
 
 JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_00024TomCrypt_setup(JNIEnv *env, jobject this) {
     /* Initialize libtommath as the math lib. */
@@ -243,8 +243,12 @@ static void free_curve(ltc_ecc_set_type *curve) {
 
 static jobject generate_from_curve(JNIEnv *env, const ltc_ecc_set_type *curve) {
     ecc_key key;
-    int err;
-    if ((err = ecc_make_key_ex(&ltc_prng, find_prng("yarrow"), &key, curve)) != CRYPT_OK) {
+
+    native_timing_start();
+    int err = ecc_make_key_ex(&ltc_prng, find_prng("yarrow"), &key, curve);
+    native_timing_stop();
+
+    if (err != CRYPT_OK) {
         throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
         return NULL;
     }
@@ -380,8 +384,12 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 
     unsigned char result[curve->size];
     unsigned long output_len = curve->size;
-    int err;
-    if ((err = ecc_shared_secret(&priv, &pub, result, &output_len)) != CRYPT_OK) {
+
+    native_timing_start();
+    int err = ecc_shared_secret(&priv, &pub, result, &output_len);
+    native_timing_stop();
+
+    if (err != CRYPT_OK) {
         throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
         free_curve(curve);
         return NULL;
@@ -416,8 +424,12 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 
     unsigned char result[curve->size*4];
     unsigned long output_len = curve->size*4;
-    int err;
-    if ((err = ecc_sign_hash((unsigned char *) data_data, data_size, result, &output_len, &ltc_prng, find_prng("yarrow"), &priv)) != CRYPT_OK) {
+
+    native_timing_start();
+    int err = ecc_sign_hash((unsigned char *) data_data, data_size, result, &output_len, &ltc_prng, find_prng("yarrow"), &priv);
+    native_timing_stop();
+
+    if (err != CRYPT_OK) {
         throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
         free_curve(curve);
         (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
@@ -450,9 +462,12 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     jsize sig_size = (*env)->GetArrayLength(env, signature);
     jbyte *sig_data = (*env)->GetByteArrayElements(env, signature, NULL);
 
-    int err;
     int result;
-    if ((err = ecc_verify_hash((unsigned char *) sig_data, sig_size, (unsigned char *) data_data, data_size, &result, &pub)) != CRYPT_OK) {
+    native_timing_start();
+    int err = ecc_verify_hash((unsigned char *) sig_data, sig_size, (unsigned char *) data_data, data_size, &result, &pub);
+    native_timing_stop();
+
+    if (err != CRYPT_OK) {
         throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
         free_curve(curve);
         (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
@@ -464,4 +479,16 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     (*env)->ReleaseByteArrayElements(env, signature, sig_data, JNI_ABORT);
     free_curve(curve);
     return result;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_supportsNativeTiming(JNIEnv *env, jobject this) {
+    return native_timing_supported();
+}
+
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_getNativeTimingResolution(JNIEnv *env, jobject this) {
+    return native_timing_resolution();
+}
+
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_getLastNativeTiming(JNIEnv *env, jobject this) {
+    return native_timing_last();
 }

@@ -17,17 +17,7 @@ from matplotlib import ticker, colors
 from copy import deepcopy
 import argparse
 
-def hw(i):
-    res = 0
-    while i:
-        res += 1
-        i &= i - 1
-    return res
-
-def moving_average(a, n) :
-    ret = np.cumsum(a, dtype=float)
-    ret[n:] = ret[n:] - ret[:-n]
-    return ret[n - 1:] / n
+from utils import hw, moving_average, plot_hist
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Plot results of ECTester key generation timing.")
@@ -85,7 +75,6 @@ if __name__ == "__main__":
     pub_data = data["pub"]
     priv_data = data["priv"]
 
-
     gen_unit = "ms"
     if header_names[1].endswith("[nano]"):
         gen_unit = r"$\mu s$"
@@ -121,39 +110,23 @@ if __name__ == "__main__":
     if plots[0]:
         axe_private = fig.add_subplot(n_plots, 1, plot_i)
         priv_msb = np.array(list(map(lambda x: x >> (bit_size - 8), priv_data)), dtype=np.dtype("u1"))
-        heatmap, xedges, yedges = np.histogram2d(priv_msb, gen_time_data, bins=[256, max_gen_time - min_gen_time])
-        extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
+        max_msb = max(priv_msb)
+        min_msb = min(priv_msb)
+        heatmap, xedges, yedges = np.histogram2d(priv_msb, gen_time_data, bins=[max_msb - min_msb, max_gen_time - min_gen_time])
+        extent = [min_msb, max_msb, yedges[0], yedges[-1]]
         axe_private.imshow(heatmap.T, extent=extent, aspect="auto", cmap=cmap, origin="low", interpolation="nearest", norm=norm)
-        axe_private.set_xlabel("private key MSB value\n(big endian)")
+        axe_private.set_xlabel("private key MSB value")
         axe_private.set_ylabel("keygen time ({})".format(gen_unit))
         plot_i += 1
 
     if plots[1]:
         axe_hist = fig.add_subplot(n_plots, 1, plot_i)
-        time_avg = np.average(gen_time_data)
-        time_median = np.median(gen_time_data)
-        axe_hist.hist(gen_time_data, bins=max_gen_time - min_gen_time, log=opts.log)
-        axe_hist.axvline(x=time_avg, alpha=0.7, linestyle="dotted", color="blue", label="avg = {}".format(time_avg))
-        axe_hist.axvline(x=time_median, alpha=0.7, linestyle="dotted", color="green", label="median = {}".format(time_median))
-        axe_hist.set_ylabel("count" + ("\n(log)" if opts.log else ""))
-        axe_hist.set_xlabel("keygen time ({})".format(gen_unit))
-        axe_hist.xaxis.set_major_locator(ticker.MaxNLocator())
-        axe_hist.legend(loc="best")
+        plot_hist(axe_hist, gen_time_data, "keygen time ({})".format(gen_unit), opts.log)
         plot_i += 1
 
     if plots[2]:
         axe_hist = fig.add_subplot(n_plots, 1, plot_i)
-        time_max = max(export_time_data)
-        time_min = min(export_time_data)
-        time_avg = np.average(export_time_data)
-        time_median = np.median(export_time_data)
-        axe_hist.hist(export_time_data, bins=time_max - time_min, log=opts.log)
-        axe_hist.axvline(x=time_avg, alpha=0.7, linestyle="dotted", color="blue", label="avg = {}".format(time_avg))
-        axe_hist.axvline(x=time_median, alpha=0.7, linestyle="dotted", color="green", label="median = {}".format(time_median))
-        axe_hist.set_ylabel("count" + ("\n(log)" if opts.log else ""))
-        axe_hist.set_xlabel("export time ({})".format(export_unit))
-        axe_hist.xaxis.set_major_locator(ticker.MaxNLocator())
-        axe_hist.legend(loc="best")
+        plot_hist(axe_hist, export_time_data, "export time ({})".format(export_unit), opts.log)
         plot_i += 1
 
     if plots[3]:

@@ -9,6 +9,30 @@ extern "C" {
 #endif
 /*
  * Class:     cz_crcs_ectester_standalone_libs_TomcryptLib
+ * Method:    supportsNativeTiming
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_supportsNativeTiming
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_TomcryptLib
+ * Method:    getNativeTimingResolution
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_getNativeTimingResolution
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_TomcryptLib
+ * Method:    getLastNativeTiming
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_getLastNativeTiming
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_TomcryptLib
  * Method:    createProvider
  * Signature: ()Ljava/security/Provider;
  */
@@ -188,6 +212,30 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 #ifdef __cplusplus
 extern "C" {
 #endif
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_BotanLib
+ * Method:    supportsNativeTiming
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_supportsNativeTiming
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_BotanLib
+ * Method:    getNativeTimingResolution
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_getNativeTimingResolution
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_BotanLib
+ * Method:    getLastNativeTiming
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_getLastNativeTiming
+  (JNIEnv *, jobject);
+
 /*
  * Class:     cz_crcs_ectester_standalone_libs_BotanLib
  * Method:    createProvider
@@ -371,6 +419,30 @@ extern "C" {
 #endif
 /*
  * Class:     cz_crcs_ectester_standalone_libs_CryptoppLib
+ * Method:    supportsNativeTiming
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_supportsNativeTiming
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_CryptoppLib
+ * Method:    getNativeTimingResolution
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_getNativeTimingResolution
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_CryptoppLib
+ * Method:    getLastNativeTiming
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_getLastNativeTiming
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_CryptoppLib
  * Method:    createProvider
  * Signature: ()Ljava/security/Provider;
  */
@@ -550,6 +622,30 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 #ifdef __cplusplus
 extern "C" {
 #endif
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_OpensslLib
+ * Method:    supportsNativeTiming
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_supportsNativeTiming
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_OpensslLib
+ * Method:    getNativeTimingResolution
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_getNativeTimingResolution
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_OpensslLib
+ * Method:    getLastNativeTiming
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_getLastNativeTiming
+  (JNIEnv *, jobject);
+
 /*
  * Class:     cz_crcs_ectester_standalone_libs_OpensslLib
  * Method:    createProvider
@@ -733,6 +829,30 @@ extern "C" {
 #endif
 /*
  * Class:     cz_crcs_ectester_standalone_libs_MscngLib
+ * Method:    supportsNativeTiming
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_MscngLib_supportsNativeTiming
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_MscngLib
+ * Method:    getNativeTimingResolution
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_MscngLib_getNativeTimingResolution
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_MscngLib
+ * Method:    getLastNativeTiming
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_MscngLib_getLastNativeTiming
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_MscngLib
  * Method:    createProvider
  * Signature: ()Ljava/security/Provider;
  */
@@ -914,6 +1034,30 @@ extern "C" {
 #endif
 /*
  * Class:     cz_crcs_ectester_standalone_libs_BoringsslLib
+ * Method:    supportsNativeTiming
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_BoringsslLib_supportsNativeTiming
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_BoringsslLib
+ * Method:    getNativeTimingResolution
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_BoringsslLib_getNativeTimingResolution
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_BoringsslLib
+ * Method:    getLastNativeTiming
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_BoringsslLib_getLastNativeTiming
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_BoringsslLib
  * Method:    createProvider
  * Signature: ()Ljava/security/Provider;
  */
@@ -1093,6 +1237,30 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 #ifdef __cplusplus
 extern "C" {
 #endif
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_GcryptLib
+ * Method:    supportsNativeTiming
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_GcryptLib_supportsNativeTiming
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_GcryptLib
+ * Method:    getNativeTimingResolution
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_GcryptLib_getNativeTimingResolution
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_GcryptLib
+ * Method:    getLastNativeTiming
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_GcryptLib_getLastNativeTiming
+  (JNIEnv *, jobject);
+
 /*
  * Class:     cz_crcs_ectester_standalone_libs_GcryptLib
  * Method:    createProvider

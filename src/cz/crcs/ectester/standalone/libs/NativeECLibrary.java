@@ -130,5 +130,14 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
         return true;
     }
 
+    @Override
+    public abstract boolean supportsNativeTiming();
+
+    @Override
+    public abstract long getNativeTimingResolution();
+
+    @Override
+    public abstract long getLastNativeTiming();
+
     abstract Provider createProvider();
 }

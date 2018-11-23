@@ -12,6 +12,8 @@
 #include <openssl/ecdsa.h>
 
 #include "c_utils.h"
+#include "c_timing.h"
+
 
 
 static jclass provider_class;
@@ -348,7 +350,12 @@ static jobject generate_from_curve(JNIEnv *env, const EC_GROUP *curve) {
 
     EC_KEY *key = EC_KEY_new();
     EC_KEY_set_group(key, curve);
-    if (!EC_KEY_generate_key(key)) {
+
+    native_timing_start();
+    int result = EC_KEY_generate_key(key);
+    native_timing_stop();
+
+    if (!result) {
         throw_new(env, "java/security/GeneralSecurityException", "Error generating key, EC_KEY_generate_key.");
         EC_KEY_free(key);
         return NULL;
@@ -481,7 +488,12 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     //      probably using the ECDH_KDF_X9_62 by wrapping it and dynamically choosing the EVP_MD. from the type string.
     jbyteArray result = (*env)->NewByteArray(env, secret_len);
     jbyte *result_data = (*env)->GetByteArrayElements(env, result, NULL);
-    if (ECDH_compute_key(result_data, secret_len, EC_KEY_get0_public_key(pub), priv, NULL) <= 0) {
+
+    native_timing_start();
+    int err = ECDH_compute_key(result_data, secret_len, EC_KEY_get0_public_key(pub), priv, NULL);
+    native_timing_stop();
+
+    if (err <= 0) {
         throw_new(env, "java/security/GeneralSecurityException", "Error computing ECDH, ECDH_compute_key.");
         EC_KEY_free(pub); EC_KEY_free(priv); EC_GROUP_free(curve);
         (*env)->ReleaseByteArrayElements(env, result, result_data, JNI_ABORT);
@@ -512,7 +524,11 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     jsize data_size = (*env)->GetArrayLength(env, data);
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
     // TODO: Do more Signatures here, maybe use the EVP interface to get to the hashes easier and not hash manually?
+
+    native_timing_start();
     ECDSA_SIG *signature = ECDSA_do_sign((unsigned char *) data_data, data_size, priv);
+    native_timing_stop();
+
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
     if (!signature) {
         throw_new(env, "java/security/GeneralSecurityException", "Error signing, ECDSA_do_sign.");
@@ -550,7 +566,11 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 
     jsize data_size = (*env)->GetArrayLength(env, data);
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
+
+    native_timing_start();
     int result = ECDSA_do_verify((unsigned char *) data_data, data_size, sig_obj, pub);
+    native_timing_stop();
+
     if (result < 0) {
         throw_new(env, "java/security/GeneralSecurityException", "Error verifying, ECDSA_do_verify.");
         EC_KEY_free(pub); EC_GROUP_free(curve); ECDSA_SIG_free(sig_obj);
@@ -563,4 +583,16 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     EC_KEY_free(pub);
     EC_GROUP_free(curve);
     return (result == 1) ? JNI_TRUE : JNI_FALSE;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_supportsNativeTiming(JNIEnv *env, jobject this) {
+    return native_timing_supported();
+}
+
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_getNativeTimingResolution(JNIEnv *env, jobject this) {
+    return native_timing_resolution();
+}
+
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_getLastNativeTiming(JNIEnv *env, jobject this) {
+    return native_timing_last();
 }

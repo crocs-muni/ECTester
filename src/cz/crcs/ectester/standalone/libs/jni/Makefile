@@ -64,12 +64,15 @@ all: tomcrypt_provider.so botan_provider.so cryptopp_provider.so openssl_provide
 c_utils.o: c_utils.c
 	$(CC) $(CFLAGS) -c $<
 
+c_timing.o: c_timing.c
+	$(CC) $(CFLAGS) -c $<
+
 cpp_utils.o: cpp_utils.cpp
 	$(CXX) $(CXXFLAGS) -c $<
 
 
 # OpenSSL shim
-openssl_provider.so: openssl.o c_utils.o
+openssl_provider.so: openssl.o c_utils.o c_timing.o
 	$(CC) $(LFLAGS) -o $@ $^ -L. $(shell pkg-config --libs openssl)
 
 openssl.o: openssl.c
@@ -77,7 +80,7 @@ openssl.o: openssl.c
 
 
 # BoringSSL shim
-boringssl_provider.so: boringssl.o c_utils.o
+boringssl_provider.so: boringssl.o c_utils.o c_timing.o
 	$(CC) $(LFLAGS) -o $@ $^ -L. ../../../../../../../ext/boringssl/build/crypto/libcrypto.so
 	cp ../../../../../../../ext/boringssl/build/crypto/libcrypto.so lib_boringssl.so
 
@@ -86,7 +89,7 @@ boringssl.o: boringssl.c
 
 
 # libgcrypt shim
-gcrypt_provider.so: gcrypt.o c_utils.o
+gcrypt_provider.so: gcrypt.o c_utils.o c_timing.o
 	$(CC) $(LFLAGS) -o $@ $^ -L. $(shell libgcrypt-config --libs)
 
 gcrypt.o: gcrypt.c
@@ -94,7 +97,7 @@ gcrypt.o: gcrypt.c
 
 
 # Libtomcrypt shim
-tomcrypt_provider.so: tomcrypt.o c_utils.o
+tomcrypt_provider.so: tomcrypt.o c_utils.o c_timing.o
 	$(CC) $(LFLAGS) -o $@ $^ -L. -ltommath $(shell pkg-config --libs libtomcrypt)
 
 tomcrypt.o: tomcrypt.c
@@ -102,7 +105,7 @@ tomcrypt.o: tomcrypt.c
 
 
 # Botan-2 shim
-botan_provider.so: botan.o cpp_utils.o
+botan_provider.so: botan.o cpp_utils.o c_timing.o
 	$(CXX) $(LFLAGS) -o $@ $^ -L. $(shell pkg-config --libs botan-2)
 
 botan.o: botan.cpp
@@ -110,7 +113,7 @@ botan.o: botan.cpp
 
 
 # Crypto++ shim
-cryptopp_provider.so: cryptopp.o cpp_utils.o
+cryptopp_provider.so: cryptopp.o cpp_utils.o c_timing.o
 	$(CXX) $(LFLAGS) -o $@ $^ -L. $(shell pkg-config --libs libcrypto++)
 
 cryptopp.o: cryptopp.cpp

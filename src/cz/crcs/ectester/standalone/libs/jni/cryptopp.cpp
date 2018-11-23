@@ -70,6 +70,7 @@ using CryptoPP::Integer;
 
 
 #include "cpp_utils.hpp"
+#include "c_timing.h"
 
 static jclass provider_class;
 static AutoSeededRandomPool rng;
@@ -498,7 +499,9 @@ template <class EC> jobject generate_from_group(JNIEnv *env, DL_GroupParameters_
     SecByteBlock priv(ec_domain.PrivateKeyLength()), pub(ec_domain.PublicKeyLength());
 
     try {
+        native_timing_start();
         ec_domain.GenerateKeyPair(rng, priv, pub);
+        native_timing_stop();
     } catch (Exception & ex) {
         throw_new(env, "java/security/GeneralSecurityException", ex.what());
         return NULL;
@@ -579,7 +582,9 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 
         try {
             secret = std::make_unique<SecByteBlock>(dh_agreement.AgreedValueLength());
+            native_timing_start();
             success = dh_agreement.Agree(*secret, private_key, public_key);
+            native_timing_stop();
         } catch (Exception & ex) {
             throw_new(env, "java/security/GeneralSecurityException", ex.what());
             return NULL;
@@ -589,7 +594,9 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 
         try {
             secret = std::make_unique<SecByteBlock>(dh_agreement.AgreedValueLength());
+            native_timing_start();
             success = dh_agreement.Agree(*secret, private_key, public_key);
+            native_timing_stop();
         } catch (Exception & ex) {
             throw_new(env, "java/security/GeneralSecurityException", ex.what());
             return NULL;
@@ -624,7 +631,9 @@ jbyteArray sign_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray
 
     jsize data_length = env->GetArrayLength(data);
     jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
+    native_timing_start();
     size_t len = signer.SignMessage(rng, (byte *)data_bytes, data_length, (byte *)signature.c_str());
+    native_timing_stop();
     env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
     signature.resize(len);
 
@@ -709,7 +718,9 @@ jboolean verify_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray
 
     jsize data_length = env->GetArrayLength(data);
     jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
+    native_timing_start();
     bool result = verifier.VerifyMessage((byte *)data_bytes, data_length, sig, sig_len);
+    native_timing_stop();
     env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
 
     return result;
@@ -753,4 +764,16 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     }
     // unreachable
     return JNI_FALSE;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_supportsNativeTiming(JNIEnv *env, jobject self) {
+    return native_timing_supported();
+}
+
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_getNativeTimingResolution(JNIEnv *env, jobject self) {
+    return native_timing_resolution();
+}
+
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_getLastNativeTiming(JNIEnv *env, jobject self) {
+    return native_timing_last();
 }

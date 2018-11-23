@@ -13,6 +13,15 @@ public class BotanLib extends NativeECLibrary {
     }
 
     @Override
+    public native boolean supportsNativeTiming();
+
+    @Override
+    public native long getNativeTimingResolution();
+
+    @Override
+    public native long getLastNativeTiming();
+
+    @Override
     native Provider createProvider();
 
     @Override
