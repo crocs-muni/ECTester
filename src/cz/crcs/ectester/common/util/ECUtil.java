@@ -31,6 +31,14 @@ public class ECUtil {
         return raw;
     }
 
+    public static byte[] toX962Compressed(byte[][] point) {
+        if (point.length != 2) {
+            return null;
+        }
+        byte ybit = (byte) (point[1][point[1].length - 1] % 2);
+        return ByteUtil.concatenate(new byte[]{(byte) (0x02 | ybit)}, point[0]);
+    }
+
     public static byte[] toX962Compressed(ECPoint point, int bits) {
         if (point.equals(ECPoint.POINT_INFINITY)) {
             return new byte[]{0};

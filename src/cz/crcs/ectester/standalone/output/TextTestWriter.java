@@ -33,10 +33,11 @@ public class TextTestWriter extends BaseTextTestWriter {
     protected String testableString(Testable t) {
         if (t instanceof StandaloneTestable) {
             StandaloneTestable<?> testable = (StandaloneTestable) t;
-            String stage = testable.getStage().name();
+            Enum<?> stage = testable.getStage();
+            String stageName = stage.name();
             String exception = causeString(testable.getException());
             String errorCause = causeString(testable.errorCause());
-            return stage + exception + errorCause;
+            return String.format("[%d/%d] %s %s %s", stage.ordinal() + 1, stage.getClass().getEnumConstants().length, stageName, exception, errorCause);
         }
         return "";
     }

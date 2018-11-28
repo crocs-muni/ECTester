@@ -133,6 +133,9 @@ public abstract class Command implements Cloneable {
             } else {
                 keypair = dataStore.getObject(EC_Keypair.class, cfg.namedKey);
             }
+            if (keypair == null) {
+                throw new IOException("KeyPair not found.");
+            }
 
             data = keypair.flatten();
             if (data == null) {
@@ -155,6 +158,9 @@ public abstract class Command implements Cloneable {
                     pub = dataStore.getObject(EC_Keypair.class, cfg.namedPublicKey);
                 }
             }
+            if (pub == null) {
+                throw new IOException("Public key not found.");
+            }
 
             byte[] pubkey = pub.flatten(EC_Consts.PARAMETER_W);
             if (pubkey == null) {
@@ -176,6 +182,9 @@ public abstract class Command implements Cloneable {
                 if (priv == null) {
                     priv = dataStore.getObject(EC_Keypair.class, cfg.namedPrivateKey);
                 }
+            }
+            if (priv == null) {
+                throw new IOException("Private key not found.");
             }
 
             byte[] privkey = priv.flatten(EC_Consts.PARAMETER_S);
@@ -383,18 +392,7 @@ public abstract class Command implements Cloneable {
 
         @Override
         public String getDescription() {
-            String name;
-            switch (curve) {
-                case EC_Consts.CURVE_default:
-                    name = "default";
-                    break;
-                case EC_Consts.CURVE_external:
-                    name = "external";
-                    break;
-                default:
-                    name = "custom";
-                    break;
-            }
+            String name = CardUtil.getCurveName(curve);
             String what = CardUtil.getParameterString(params);
 
             String pair;
@@ -862,6 +860,34 @@ public abstract class Command implements Cloneable {
         @Override
         public String getDescription() {
             return "Request JCSystem object deletion";
+        }
+    }
+
+    /**
+     *
+     */
+    public static class GetInfo extends Command {
+
+        /**
+         * @param cardManager cardManager to send APDU through
+         */
+        public GetInfo(CardMngr cardManager) {
+            super(cardManager);
+
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_GET_INFO, 0, 0);
+        }
+
+        @Override
+        public Response.GetInfo send() throws CardException {
+            long elapsed = -System.nanoTime();
+            ResponseAPDU response = cardManager.send(cmd);
+            elapsed += System.nanoTime();
+            return new Response.GetInfo(response, getDescription(), elapsed);
+        }
+
+        @Override
+        public String getDescription() {
+            return "Get applet info";
         }
     }
 }

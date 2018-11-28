@@ -65,7 +65,7 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         @Override
         protected void engineInit(Key key, AlgorithmParameterSpec params, SecureRandom random) throws InvalidKeyException, InvalidAlgorithmParameterException {
             if (!(params instanceof ECParameterSpec)) {
-                throw new InvalidAlgorithmParameterException();
+                throw new InvalidAlgorithmParameterException(params.toString());
             }
             engineInit(key, random);
             this.params = params;
@@ -233,6 +233,47 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
             super("ECDH");
         }
     }
+
+    public abstract static class Boringssl extends SimpleKeyAgreementSpi {
+        private String type;
+
+        public Boringssl(String type) {
+            this.type = type;
+        }
+
+        @Override
+        native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native SecretKey generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params, String algorithm);
+    }
+
+    public static class BoringsslECDH extends Boringssl {
+        public BoringsslECDH() {
+            super("ECDH");
+        }
+    }
+
+    public abstract static class Gcrypt extends SimpleKeyAgreementSpi {
+        private String type;
+
+        public Gcrypt(String type) {
+            this.type = type;
+        }
+
+        @Override
+        native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native SecretKey generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params, String algorithm);
+    }
+
+    public static class GcryptECDH extends Gcrypt {
+        public GcryptECDH() {
+            super("ECDH");
+        }
+    }
+
 
     public abstract static class Mscng extends ExtendedKeyAgreementSpi {
         private String type;

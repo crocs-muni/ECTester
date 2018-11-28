@@ -23,7 +23,6 @@ using CryptoPP::byte;
 
 #include "cryptopp/osrng.h"
 using CryptoPP::AutoSeededRandomPool;
-using CryptoPP::AutoSeededX917RNG;
 
 #include "cryptopp/sha.h"
 using CryptoPP::SHA1;
@@ -71,8 +70,10 @@ using CryptoPP::Integer;
 
 
 #include "cpp_utils.hpp"
+#include "c_timing.h"
 
 static jclass provider_class;
+static AutoSeededRandomPool rng;
 
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_createProvider(JNIEnv *env, jobject self) {
@@ -89,7 +90,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_crea
     std::stringstream ss;
     ss << lib_name << " ";
     ss << info_str[0];
-    for (int i = 1; i < info_str.size(); ++i) {
+    for (size_t i = 1; i < info_str.size(); ++i) {
         ss << "." << info_str[i];
     }
 
@@ -470,6 +471,8 @@ template <> jobject params_from_group<EC2N>(JNIEnv *env, DL_GroupParameters_EC<E
         //pentanomial
         ks = env->NewIntArray(3);
         to_find = 3;
+    } else {
+        return NULL;
     }
     jint *ks_data = env->GetIntArrayElements(ks, NULL);
     for (int i = m - 1; i > 0 && found < to_find; --i) {
@@ -492,12 +495,13 @@ template <> jobject params_from_group<EC2N>(JNIEnv *env, DL_GroupParameters_EC<E
 }
 
 template <class EC> jobject generate_from_group(JNIEnv *env, DL_GroupParameters_EC<EC> group, jobject params) {
-    AutoSeededRandomPool rng;
     typename ECDH<EC>::Domain ec_domain(group);
     SecByteBlock priv(ec_domain.PrivateKeyLength()), pub(ec_domain.PublicKeyLength());
 
     try {
+        native_timing_start();
         ec_domain.GenerateKeyPair(rng, priv, pub);
+        native_timing_stop();
     } catch (Exception & ex) {
         throw_new(env, "java/security/GeneralSecurityException", ex.what());
         return NULL;
@@ -578,7 +582,9 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 
         try {
             secret = std::make_unique<SecByteBlock>(dh_agreement.AgreedValueLength());
+            native_timing_start();
             success = dh_agreement.Agree(*secret, private_key, public_key);
+            native_timing_stop();
         } catch (Exception & ex) {
             throw_new(env, "java/security/GeneralSecurityException", ex.what());
             return NULL;
@@ -588,11 +594,17 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 
         try {
             secret = std::make_unique<SecByteBlock>(dh_agreement.AgreedValueLength());
+            native_timing_start();
             success = dh_agreement.Agree(*secret, private_key, public_key);
+            native_timing_stop();
         } catch (Exception & ex) {
             throw_new(env, "java/security/GeneralSecurityException", ex.what());
             return NULL;
         }
+    }
+    if (!success) {
+        throw_new(env, "java/security/GeneralSecurityException", "Agreement was unsuccessful.");
+        return NULL;
     }
 
     jbyteArray result = env->NewByteArray(secret->size());
@@ -610,7 +622,6 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgr
 
 template <class EC, class H>
 jbyteArray sign_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray data, const Integer & private_key_x) {
-    AutoSeededRandomPool prng;
 
     typename ECDSA<EC, H>::PrivateKey pkey;
     pkey.Initialize(group, private_key_x);
@@ -620,7 +631,9 @@ jbyteArray sign_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray
 
     jsize data_length = env->GetArrayLength(data);
     jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
-    size_t len = signer.SignMessage(prng, (byte *)data_bytes, data_length, (byte *)signature.c_str());
+    native_timing_start();
+    size_t len = signer.SignMessage(rng, (byte *)data_bytes, data_length, (byte *)signature.c_str());
+    native_timing_stop();
     env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
     signature.resize(len);
 
@@ -648,7 +661,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     Integer private_key_x((byte *) privkey_data, (size_t) privkey_length);
     env->ReleaseByteArrayElements(privkey, privkey_data, JNI_ABORT);
 
-    jbyteArray result;
+    jbyteArray result = NULL;
 
     std::unique_ptr<DL_GroupParameters_EC<ECP>> ecp_group = fp_group_from_params(env, params);
     if (ecp_group == nullptr) {
@@ -705,7 +718,9 @@ jboolean verify_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray
 
     jsize data_length = env->GetArrayLength(data);
     jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
+    native_timing_start();
     bool result = verifier.VerifyMessage((byte *)data_bytes, data_length, sig, sig_len);
+    native_timing_stop();
     env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
 
     return result;
@@ -749,4 +764,16 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     }
     // unreachable
     return JNI_FALSE;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_supportsNativeTiming(JNIEnv *env, jobject self) {
+    return native_timing_supported();
+}
+
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_getNativeTimingResolution(JNIEnv *env, jobject self) {
+    return native_timing_resolution();
+}
+
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_getLastNativeTiming(JNIEnv *env, jobject self) {
+    return native_timing_last();
 }

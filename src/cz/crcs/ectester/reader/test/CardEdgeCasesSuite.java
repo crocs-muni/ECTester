@@ -39,8 +39,8 @@ public class CardEdgeCasesSuite extends CardTestSuite {
     @Override
     protected void runTests() throws Exception {
         Map<String, EC_KAResult> results = EC_Store.getInstance().getObjects(EC_KAResult.class, "wycheproof");
-        List<Map.Entry<String, List<EC_KAResult>>> groupList = EC_Store.mapToPrefix(results.values());
-        for (Map.Entry<String, List<EC_KAResult>> e : groupList) {
+        Map<String, List<EC_KAResult>> groups = EC_Store.mapToPrefix(results.values());
+        for (Map.Entry<String, List<EC_KAResult>> e : groups.entrySet()) {
             String description = null;
             switch (e.getKey()) {
                 case "addsub":
@@ -55,8 +55,8 @@ public class CardEdgeCasesSuite extends CardTestSuite {
             }
 
             List<Test> groupTests = new LinkedList<>();
-            List<Map.Entry<EC_Curve, List<EC_KAResult>>> curveList = EC_Store.mapResultToCurve(e.getValue());
-            for (Map.Entry<EC_Curve, List<EC_KAResult>> c : curveList) {
+            Map<EC_Curve, List<EC_KAResult>> curveList = EC_Store.mapResultToCurve(e.getValue());
+            for (Map.Entry<EC_Curve, List<EC_KAResult>> c : curveList.entrySet()) {
                 EC_Curve curve = c.getKey();
 
                 List<Test> curveTests = new LinkedList<>();
@@ -111,7 +111,7 @@ public class CardEdgeCasesSuite extends CardTestSuite {
         }
 
         {
-            EC_KAResult openssl_bug = EC_Store.getInstance().getObject(EC_KAResult.class, "other", "openssl-bug");
+            EC_KAResult openssl_bug = EC_Store.getInstance().getObject(EC_KAResult.class, "misc", "openssl-bug");
             EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, openssl_bug.getCurve());
             EC_Key.Private skey = EC_Store.getInstance().getObject(EC_Key.Private.class, openssl_bug.getOtherKey());
             EC_Key.Public pkey = EC_Store.getInstance().getObject(EC_Key.Public.class, openssl_bug.getOneKey());
@@ -145,7 +145,7 @@ public class CardEdgeCasesSuite extends CardTestSuite {
         for (EC_Curve curve : curves) {
             Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), KeyPair.ALG_EC_FP), Result.ExpectedValue.SUCCESS));
             if (!key.ok()) {
-                doTest(CompoundTest.all(Result.ExpectedValue.FAILURE, "No support for " + curve.getBits() + "b ALG_EC_FP.", key));
+                doTest(CompoundTest.all(Result.ExpectedValue.FAILURE, "No support for " + curve.getBits() + "b " + curve.getId() + ".", key));
                 continue;
             }
             Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.ExpectedValue.SUCCESS);
@@ -238,7 +238,7 @@ public class CardEdgeCasesSuite extends CardTestSuite {
 
         Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, secp160r1.getBits(), KeyPair.ALG_EC_FP), Result.ExpectedValue.SUCCESS));
         if (!key.ok()) {
-            doTest(CompoundTest.all(Result.ExpectedValue.FAILURE, "No support for " + secp160r1.getBits() + "b ALG_EC_FP.", key));
+            doTest(CompoundTest.all(Result.ExpectedValue.FAILURE, "No support for " + secp160r1.getBits() + "b secp160r1.", key));
             return;
         }
         Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, secp160r1.getParams(), secp160r1.flatten()), Result.ExpectedValue.SUCCESS);

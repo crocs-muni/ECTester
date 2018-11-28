@@ -328,6 +328,118 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         }
     }
 
+    public abstract static class Boringssl extends SimpleSignatureSpi {
+        private String type;
+
+        public Boringssl(String type) {
+            this.type = type;
+        }
+
+        @Override
+        native byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
+    }
+
+    public static class BoringsslECDSAwithNONE extends Boringssl {
+
+        public BoringsslECDSAwithNONE() {
+            super("NONEwithECDSA");
+        }
+    }
+
+    public abstract static class Gcrypt extends SimpleSignatureSpi {
+        private String type;
+
+        public Gcrypt(String type) {
+            this.type = type;
+        }
+
+        @Override
+        native byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
+    }
+
+    public static class GcryptECDSAwithNONE extends Gcrypt {
+
+        public GcryptECDSAwithNONE() {
+            super("NONEwithECDSA");
+        }
+    }
+
+    public static class GcryptECDSAwithSHA1 extends Gcrypt {
+
+        public GcryptECDSAwithSHA1() {
+            super("SHA1withECDSA");
+        }
+    }
+
+    public static class GcryptECDSAwithSHA224 extends Gcrypt {
+
+        public GcryptECDSAwithSHA224() {
+            super("SHA224withECDSA");
+        }
+    }
+
+    public static class GcryptECDSAwithSHA256 extends Gcrypt {
+
+        public GcryptECDSAwithSHA256() {
+            super("SHA256withECDSA");
+        }
+    }
+
+    public static class GcryptECDSAwithSHA384 extends Gcrypt {
+
+        public GcryptECDSAwithSHA384() {
+            super("SHA384withECDSA");
+        }
+    }
+
+    public static class GcryptECDSAwithSHA512 extends Gcrypt {
+
+        public GcryptECDSAwithSHA512() {
+            super("SHA512withECDSA");
+        }
+    }
+
+    public static class GcryptECDDSAwithSHA1 extends Gcrypt {
+
+        public GcryptECDDSAwithSHA1() {
+            super("SHA1withECDDSA");
+        }
+    }
+
+    public static class GcryptECDDSAwithSHA224 extends Gcrypt {
+
+        public GcryptECDDSAwithSHA224() {
+            super("SHA224withECDDSA");
+        }
+    }
+
+    public static class GcryptECDDSAwithSHA256 extends Gcrypt {
+
+        public GcryptECDDSAwithSHA256() {
+            super("SHA256withECDDSA");
+        }
+    }
+
+    public static class GcryptECDDSAwithSHA384 extends Gcrypt {
+
+        public GcryptECDDSAwithSHA384() {
+            super("SHA384withECDDSA");
+        }
+    }
+
+    public static class GcryptECDDSAwithSHA512 extends Gcrypt {
+
+        public GcryptECDDSAwithSHA512() {
+            super("SHA512withECDDSA");
+        }
+    }
+
     public abstract static class Mscng extends ExtendedSignatureSpi {
         private String type;
 

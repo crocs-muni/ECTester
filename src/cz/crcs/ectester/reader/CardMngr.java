@@ -331,7 +331,7 @@ public class CardMngr {
         if (responseAPDU.getSW1() == (byte) 0x61) {
             CommandAPDU apduToSend = new CommandAPDU((byte) 0x00,
                     (byte) 0xC0, (byte) 0x00, (byte) 0x00,
-                    responseAPDU.getSW1());
+                    responseAPDU.getSW2());
 
             responseAPDU = channel.transmit(apduToSend);
             if (verbose)

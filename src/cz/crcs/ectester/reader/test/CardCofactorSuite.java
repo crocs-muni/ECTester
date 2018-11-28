@@ -31,8 +31,8 @@ public class CardCofactorSuite extends CardTestSuite {
     @Override
     protected void runTests() throws Exception {
         Map<String, EC_Key.Public> pubkeys = EC_Store.getInstance().getObjects(EC_Key.Public.class, "cofactor");
-        List<Map.Entry<EC_Curve, List<EC_Key.Public>>> curveList = EC_Store.mapKeyToCurve(pubkeys.values());
-        for (Map.Entry<EC_Curve, List<EC_Key.Public>> e : curveList) {
+        Map<EC_Curve, List<EC_Key.Public>> curveList = EC_Store.mapKeyToCurve(pubkeys.values());
+        for (Map.Entry<EC_Curve, List<EC_Key.Public>> e : curveList.entrySet()) {
             EC_Curve curve = e.getKey();
             List<EC_Key.Public> keys = e.getValue();
 
@@ -46,7 +46,7 @@ public class CardCofactorSuite extends CardTestSuite {
             for (EC_Key.Public pub : keys) {
                 Test setPub = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, pub.getParams(), pub.flatten()), Result.ExpectedValue.FAILURE);
                 Test ecdh = CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH), Result.ExpectedValue.FAILURE);
-                Test objectEcdh = CompoundTest.all(Result.ExpectedValue.SUCCESS, CardUtil.getKATypeString(EC_Consts.KeyAgreement_ALG_EC_SVDP_DH) + " test with degenerate pubkey.", setPub, ecdh);
+                Test objectEcdh = CompoundTest.any(Result.ExpectedValue.SUCCESS, CardUtil.getKATypeString(EC_Consts.KeyAgreement_ALG_EC_SVDP_DH) + " test with degenerate pubkey.", setPub, ecdh);
                 Command ecdhCommand = new Command.ECDH_direct(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH, pub.flatten());
                 Test rawEcdh = CommandTest.expect(ecdhCommand, ExpectedValue.FAILURE, "Card correctly rejected point on non-generator subgroup.", "Card incorrectly accepted point on non-generator subgroup.");
                 ecdhTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " cofactor key test.", objectEcdh, rawEcdh));

@@ -4,7 +4,7 @@
 Tests support and behavior of elliptic curve cryptography implementations on JavaCards (`TYPE_EC_FP` and `TYPE_EC_F2M`) and on selected software libraries.
 For more information on ECC support on JavaCards see the [github page](https://crocs-muni.github.io/ECTester/), with results, tables and docs.
 
-## Build
+## Setup
 
 ECTester uses ant. There are three parts of ECTester, the JavaCard applet used for testing, the reader app which controls it and the standalone app which tests software libraries.
 ```bash
@@ -16,89 +16,110 @@ ant -f build-applet.xml build                 # To build the applet (cap) -> "ap
 Build produces both a lightweight version of the JARs and a full version of the JARs with dependencies included, the latter has the `*-dist.jar` suffix.
 The standalone build tries building test binaries for all the supported libraries, and silently fails if the library is not properly supported.
 
+The applet comes in two flavors, targeting JavaCard 2.2.1 and 2.2.2. The 2.2.2 version supports extended length APDUs which are necessary for some commands
+to work properly. Use the `cap` ant property to specify which CAP file to build, either `ectester221.cap` or `ectester222.cap`.
+
+To build the 221 version do:
+```bash
+ant -f build-applet.xml build -Dcap=ectester221.cap
+```
+
 ## JavaCard testing
 
-1. Upload `!uploader/ectester.cap` using your favorite tool (e.g., [GlobalPlatformPro tool](https://github.com/martinpaljak/GlobalPlatform))
-2. Run `java -jar dist/ECTesterReader.jar -t`
-3. Inspect output log with annotated results
+1. Upload `applet/ectester.cap` using your favorite tool (e.g., [GlobalPlatformPro tool](https://github.com/martinpaljak/GlobalPlatform)) or the `build-applet.xml` ant file.
+2. Run `java -jar dist/ECTesterReader.jar -t`.
+3. Inspect output log with annotated results.
 
-Following operations are tested:
+Following operations are tested in the default suite:
 - Allocation of new KeyPair class for specified parameters
 - Generation of KeyPair with default curve
 - Setting of custom curve and KeyPair generation
 - Generation of shared secret via ECDH
 - Signature via ECDSA
 
-See `java -jar ECTesterReader.jar -h` for more.
+See `java -jar ECTesterReader.jar -h`, `java -jar ECTesterReader.jar -ls` and [DOCS](docs/TESTS.md) for more.
 
 ### Options
 
 ```
- -dsa,--ecdsa <count>              Sign data with ECDSA, [count] times.
- -t,--test <test_suite>            Test ECC support. [test_suite]:
-                                   - default:
-                                   - invalid:
-                                   - compression:
-                                   - twist:
-                                   - degenerate:
-                                   - cofactor:
-                                   - wrong:
-                                   - composite:
-                                   - test-vectors:
- -dh,--ecdh <count>                Do EC KeyAgreement (ECDH...), [count]
-                                   times.
- -e,--export                       Export the defaut curve parameters of
-                                   the card(if any).
- -V,--version                      Print version info.
- -ln,--list-named <what>           Print the list of supported named
-                                   curves and keys.
- -h,--help                         Print help.
- 
- -a,--all                          Test all curve sizes.
- -b,--bit-size <bits>              Set curve size.
- 
- -fp,--prime-field                 Use a prime field.
- -f2m,--binary-field               Use a binary field.
- 
- -c,--curve <curve_file>           Use curve from file <curve_file>
-                                   (field,a,b,gx,gy,r,k).
- -nc,--named-curve <cat/id>        Use a named curve, from CurveDB:
-                                   <cat/id>
- -u,--custom                       Use a custom curve (applet-side
-                                   embedded, SECG curves).
- -npub,--named-public <cat/id>     Use public key from KeyDB: <cat/id>
- -pub,--public <pubkey_file>       Use public key from file <pubkey_file>
-                                   (wx,wy).
- -priv,--private <privkey_file>    Use private key from file
-                                   <privkey_file> (s).
- -npriv,--named-private <cat/id>   Use private key from KeyDB: <cat/id>
- -k,--key <key_file>               Use keyPair from file <key_file>
-                                   (wx,wy,s).
- -nk,--named-key <cat/id>          Use keyPair from KeyDB: <cat/id>
+ -V,--version                         Print version info.
+ -h,--help                            Print help.
+ -ln,--list-named <what>              Print the list of supported named
+                                      curves and keys, (CurveDB and KeyDB).
+ -ls,--list-suites                    List supported test suites.
+ -e,--export                          Export the defaut curve parameters
+                                      of the card(if any).
+ -g,--generate <amount>               Generate <amount> of EC keys.
+ -t,--test <test_suite[:from[:to]]>   Test ECC support. Optionally specify
+                                      a test number to run only a part of
+                                      a test suite. <test_suite>:
+                                        - default
+                                        - compression
+                                        - invalid
+                                        - twist
+                                        - degenerate
+                                        - cofactor
+                                        - wrong
+                                        - signature
+                                        - composite
+                                        - test-vectors
+                                        - edge-cases
+                                        - miscellaneous
+ -dh,--ecdh <count>                   Do EC KeyAgreement (ECDH...),
+                                      [count] times.
+ -dsa,--ecdsa <count>                 Sign data with ECDSA, [count] times.
+ -nf,--info                           Get applet info.
 
- -i,--input <input_file>           Input from file <input_file>, for ECDSA
-                                   signing.
- -o,--output <output_file>         Output into file <output_file>.
- -l,--log <log_file>               Log output into file [log_file].
- -v,--verbose                      Turn on verbose logging.
-    --format <format>              Output format to use. One of:
-                                   text,yml,xml.
- -f,--fresh                        Generate fresh keys (set domain
-                                   parameters before every generation).
- --cleanup                         Send the cleanup command trigerring
-                                   JCSystem.requestObjectDeletion()
-                                   after some operations.
- -s,--simulate                     Simulate a card with jcardsim instead
-                                   of using a terminal.
- -y,--yes                          Accept all warnings and prompts.
- 
- -ka,--ka-type <type>              Set KeyAgreement object [type],
-                                   corresponds to JC.KeyAgreement
-                                   constants.
- -sig,--sig-type <type>            Set Signature object [type],
-                                   corresponds to JC.Signature constants.
- -C,--color                        Print stuff with color, requires ANSI
-                                   terminal.
+ -b,--bit-size <bits>                 Set curve size.
+ -fp,--prime-field                    Use a prime field.
+ -f2m,--binary-field                  Use a binary field.
+
+ -nc,--named-curve <cat/id>           Use a named curve, from CurveDB:
+                                      <cat/id>
+ -c,--curve <curve_file>              Use curve from file <curve_file>
+                                      (field,a,b,gx,gy,r,k).
+ -u,--custom                          Use a custom curve (applet-side
+                                      embedded, SECG curves).
+
+ -npub,--named-public <cat/id>        Use public key from KeyDB: <cat/id>
+ -pub,--public <pubkey_file>          Use public key from file
+                                      <pubkey_file> (wx,wy).
+
+ -npriv,--named-private <cat/id>      Use private key from KeyDB: <cat/id>
+ -priv,--private <privkey_file>       Use private key from file
+                                      <privkey_file> (s).
+
+ -nk,--named-key <cat/id>             Use KeyPair from KeyDB: <cat/id>
+ -k,--key <key_file>                  Use KeyPair from file <key_file>
+                                      (wx,wy,s).
+
+ -i,--input <input_file>              Input from file <input_file>, for
+                                      ECDSA signing.
+ -o,--output <output_file>            Output into file <output_file>. The
+                                      file can be prefixed by the format
+                                      (one of text,yml,xml), such as:
+                                      xml:<output_file>.
+ -l,--log <log_file>                  Log output into file [log_file].
+ -v,--verbose                         Turn on verbose logging.
+    --format <format>                 Output format to use. One of:
+                                      text,yml,xml.
+
+ -f,--fresh                           Generate fresh keys (set domain
+                                      parameters before every generation).
+    --cleanup                         Send the cleanup command trigerring
+                                      JCSystem.requestObjectDeletion()
+                                      after some operations.
+ -s,--simulate                        Simulate a card with jcardsim
+                                      instead of using a terminal.
+ -y,--yes                             Accept all warnings and prompts.
+ -ka,--ka-type <type>                 Set KeyAgreement object [type],
+                                      corresponds to JavaCard KeyAgreement
+                                      constants.
+ -sig,--sig-type <type>               Set Signature object [type],
+                                      corresponds to JavaCard Signature
+                                      constants.
+ -C,--color                           Print stuff with color, requires
+                                      ANSI terminal.
 ```
 
 ### Actions
@@ -160,48 +181,71 @@ For example:
 
 For more info about the curves and curve categories see [CURVES](docs/CURVES.md).
 
+#### List test suites
+`-ls / --list-suites`
+
+Lists the implemented test suites and gives their short description.
+
+#### Get applet info
+`-nf / --info`
+
+Get and print ECTester applet info from an applet installed on a card.
+
+Outputs:
+
+ - ECTester applet version
+ - ECTester APDU support
+ - JavaCard API version
+ - JavaCard cleanup support
+
 ### Example
 
 Snippet below shows running the default test suite while simulating(`-s`), so using JCardSim.
 This shows that JCardsim simulates 112b Fp support with default curve present and supports ECDH, ECDHC and ECDSA.
 
-    > java -jar ECTesterReader.jar -t -s
-    ═══ Running test suite: default ═══
-    ═══ The default test suite tests basic support of ECDH and ECDSA.
-    ═══ Date: 2018.05.02 20:29:38
-    ═══ ECTester version: v0.2.0
-    ═══ Card ATR: 3bfa1800008131fe454a434f5033315632333298
-     OK ┳ (0) Tests of 112b ALG_EC_FP support.                                                   ┃ SUCCESS   ┃ All sub-tests matched the expected mask.
-        ┣  OK ━ Allocate both keypairs 112b ALG_EC_FP                                            ┃ SUCCESS   ┃   22 ms ┃  OK   (0x9000) OK   (0x9000)
-        ┣  OK ━ Generate both keypairs                                                           ┃ SUCCESS   ┃   23 ms ┃  OK   (0x9000) OK   (0x9000)
-        ┣  OK ━ Allocate both keypairs 112b ALG_EC_FP                                            ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000) OK   (0x9000)
-        ┣  OK ━ Set custom curve parameters on both keypairs                                     ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000) OK   (0x9000)
-        ┣  OK ━ Generate both keypairs                                                           ┃ SUCCESS   ┃    8 ms ┃  OK   (0x9000) OK   (0x9000)
-        ┣  OK ┳ KeyAgreement tests.                                                              ┃ SUCCESS   ┃ Some sub-tests did have the expected result.
-        ┃     ┣  OK ┳ Test of the ALG_EC_SVDP_DH KeyAgreement.                                   ┃ SUCCESS   ┃ Some ECDH is supported.
-        ┃     ┃     ┣  OK ━ Allocate KeyAgreement(ALG_EC_SVDP_DH) object                         ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
-        ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DH of local pubkey and remote privkey(unchanged point)   ┃ SUCCESS   ┃    2 ms ┃  OK   (0x9000)
-        ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)  ┃ SUCCESS   ┃    2 ms ┃  OK   (0x9000)
-        ┃     ┃     ┗  OK ━ Mean = 1722885 ns, Median = 1718807 ns, Mode = 1614047 ns            ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
-        ┃     ┣  OK ┳ Test of the ALG_EC_SVDP_DHC KeyAgreement.                                  ┃ SUCCESS   ┃ Some ECDH is supported.
-        ┃     ┃     ┣  OK ━ Allocate KeyAgreement(ALG_EC_SVDP_DHC) object                        ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000)
-        ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DHC of local pubkey and remote privkey(unchanged point)  ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
-        ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point) ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
-        ┃     ┃     ┗  OK ━ Mean = 1563980 ns, Median = 1549170 ns, Mode = 1514747 ns            ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
-        ┃     ┣ NOK ━ Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object                         ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-        ┃     ┣ NOK ━ Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object                        ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-        ┃     ┣ NOK ━ Allocate KeyAgreement(ALG_EC_PACE_GM) object                               ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-        ┃     ┗ NOK ━ Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object                      ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-        ┗  OK ┳ Signature tests.                                                                 ┃ SUCCESS   ┃ Some sub-tests did have the expected result.
-              ┣  OK ┳ Test of the ALG_ECDSA_SHA signature.                                       ┃ SUCCESS   ┃ All sub-tests had the expected result.
-              ┃     ┣  OK ━ Allocate Signature(ALG_ECDSA_SHA) object                             ┃ SUCCESS   ┃    3 ms ┃  OK   (0x9000)
-              ┃     ┣  OK ━ ALG_ECDSA_SHA with local keypair(random data)                        ┃ SUCCESS   ┃   14 ms ┃  OK   (0x9000)
-              ┃     ┣  OK ━ Sign (Mean = 1890914 ns, Median = 1500125 ns, Mode = 1422588 ns)     ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
-              ┃     ┗  OK ━ Verify (Mean = 1873952 ns, Median = 1870348 ns, Mode = 1843902 ns)   ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
-              ┣ NOK ━ Allocate Signature(ALG_ECDSA_SHA_224) object                               ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-              ┣ NOK ━ Allocate Signature(ALG_ECDSA_SHA_256) object                               ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-              ┣ NOK ━ Allocate Signature(ALG_ECDSA_SHA_384) object                               ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
-              ┗ NOK ━ Allocate Signature(ALG_ECDSA_SHA_512) object                               ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+```
+> java -jar ECTesterReader.jar -t -s
+═══ Running test suite: default ═══
+═══ The default test suite tests basic support of ECDH and ECDSA.
+═══ Date: 2018.05.02 20:29:38
+═══ ECTester version: v0.3.0
+═══ Card ATR: 3bfa1800008131fe454a434f5033315632333298
+■━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━┓
+ OK ╋ (0) Get applet info: v0.3.0; 3.0; basic                                                             ┃ SUCCESS   ┃ All sub-tests had the expected result.
+    ┗  OK ━ Get applet info                                                                               ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000)
+■━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━┓
+ OK ╋ (1) Tests of 112b ALG_EC_FP support.                                                                ┃ SUCCESS   ┃ All sub-tests matched the expected mask.
+    ┣  OK ━ Allocate both keypairs 112b ALG_EC_FP                                                         ┃ SUCCESS   ┃  166 ms ┃  OK   (0x9000) OK   (0x9000)
+    ┣  OK ━ Generate both keypairs                                                                        ┃ SUCCESS   ┃   19 ms ┃  OK   (0x9000) OK   (0x9000)
+    ┣  OK ━ Allocate both keypairs 112b ALG_EC_FP                                                         ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000) OK   (0x9000)
+    ┣  OK ━ Set custom curve parameters on both keypairs                                                  ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000) OK   (0x9000)
+    ┣  OK ━ Generate both keypairs                                                                        ┃ SUCCESS   ┃    5 ms ┃  OK   (0x9000) OK   (0x9000)
+    ┣  OK ┳ KeyAgreement tests.                                                                           ┃ SUCCESS   ┃ Some sub-tests did have the expected result.
+    ┃     ┣  OK ┳ Test of the ALG_EC_SVDP_DH KeyAgreement.                                                ┃ SUCCESS   ┃ Some ECDH is supported.
+    ┃     ┃     ┣  OK ━ Allocate KeyAgreement(ALG_EC_SVDP_DH) object                                      ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+    ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DH of local pubkey and remote privkey                                 ┃ SUCCESS   ┃    2 ms ┃  OK   (0x9000)
+    ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)               ┃ SUCCESS   ┃    3 ms ┃  OK   (0x9000)
+    ┃     ┃     ┗  OK ━ Mean = 1879950 ns, Median = 1835076 ns, Mode = 1763287 ns                         ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+    ┃     ┣  OK ┳ Test of the ALG_EC_SVDP_DHC KeyAgreement.                                               ┃ SUCCESS   ┃ Some ECDH is supported.
+    ┃     ┃     ┣  OK ━ Allocate KeyAgreement(ALG_EC_SVDP_DHC) object                                     ┃ SUCCESS   ┃    0 ms ┃  OK   (0x9000)
+    ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DHC of local pubkey and remote privkey                                ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+    ┃     ┃     ┣  OK ━ ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)              ┃ SUCCESS   ┃    2 ms ┃  OK   (0x9000)
+    ┃     ┃     ┗  OK ━ Mean = 1748499 ns, Median = 1760792 ns, Mode = 1647372 ns                         ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+    ┃     ┣ NOK ━ Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object                                      ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+    ┃     ┣ NOK ━ Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object                                     ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+    ┃     ┣ NOK ━ Allocate KeyAgreement(ALG_EC_PACE_GM) object                                            ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+    ┃     ┗ NOK ━ Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object                                   ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+    ┗  OK ┳ Signature tests.                                                                              ┃ SUCCESS   ┃ Some sub-tests did have the expected result.
+          ┣  OK ┳ Test of the ALG_ECDSA_SHA signature.                                                    ┃ SUCCESS   ┃ All sub-tests had the expected result.
+          ┃     ┣  OK ━ Allocate Signature(ALG_ECDSA_SHA) object                                          ┃ SUCCESS   ┃    2 ms ┃  OK   (0x9000)
+          ┃     ┣  OK ━ ALG_ECDSA_SHA with local keypair(random data)                                     ┃ SUCCESS   ┃   17 ms ┃  OK   (0x9000)
+          ┃     ┣  OK ━ Sign (Mean = 1451086 ns, Median = 1413292 ns, Mode = 1378296 ns)                  ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+          ┃     ┗  OK ━ Verify (Mean = 1850022 ns, Median = 1837022 ns, Mode = 1744613 ns)                ┃ SUCCESS   ┃    1 ms ┃  OK   (0x9000)
+          ┣ NOK ━ Allocate Signature(ALG_ECDSA_SHA_224) object                                            ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+          ┣ NOK ━ Allocate Signature(ALG_ECDSA_SHA_256) object                                            ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+          ┣ NOK ━ Allocate Signature(ALG_ECDSA_SHA_384) object                                            ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+          ┗ NOK ━ Allocate Signature(ALG_ECDSA_SHA_512) object                                            ┃ FAILURE   ┃    0 ms ┃  fail (NO_SUCH_ALG, 0x0003)
+```
 
 #### Legend
  - Some general information about the test suite and card is output first, test data follows after.
@@ -222,13 +266,16 @@ If you are interested in testing support for other JavaCard algorithms, please v
 ## Standalone library testing
 
 Currently supported libraries include:
- - BouncyCastle
- - SunEC
- - OpenSSL
- - Crypto++
- - libtomcrypt
- - botan
- - Microsoft CNG
+ - [BouncyCastle](https://bouncycastle.org/java.html)
+ - [Sun EC](https://docs.oracle.com/javase/7/docs/technotes/guides/security/SunProviders.html#SunEC)
+ - [OpenSSL](https://www.openssl.org/)
+ - [BoringSSL](https://boringssl.googlesource.com/boringssl)
+ - [wolfSSL](https://www.wolfssl.com/)
+ - [Crypto++](https://cryptopp.com/)
+ - [libtomcrypt](http://www.libtom.net/LibTomCrypt/)
+ - [libgcrypt](https://www.gnupg.org/related_software/libgcrypt/)
+ - [Botan](https://botan.randombit.net/)
+ - [Microsoft CNG](https://msdn.microsoft.com/en-us/library/windows/desktop/aa376210(v=vs.85).aspx)
  
 For more information on ECC libraries see [LIBS](docs/LIBS.md).
 

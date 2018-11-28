@@ -40,6 +40,12 @@ Tests using known test vectors provided by NIST/SECG/Brainpool:
 Tests support for compression of public points in ECDH as specified in ANSI X9.62. Tests ECDH with points in compressed
 and hybrid form. Also tests card response to a hybrid point with wrong `y` coordinate and to the point at infinity(as public key in ECDH).
 
+   - Compressed form, valid
+   - Hybrid form, valid
+   - Hybrid form, invalid `y`
+   - Point at infinity
+   - Compressed form, invalid, `x^3 + ax + b` results in quadratic non-residue in modular square root computation.
+
 
 ## Miscellaneous
 Some miscellaneous tests, tries ECDH and ECDSA over supersingular curves, anomalous curves and Barreto-Naehrig curves with small embedding degree and CM discriminant.

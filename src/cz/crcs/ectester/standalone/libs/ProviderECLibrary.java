@@ -62,6 +62,18 @@ public abstract class ProviderECLibrary implements ECLibrary {
         return results;
     }
 
+    public boolean supportsNativeTiming() {
+        return false;
+    }
+
+    public long getNativeTimingResolution() {
+        return 0;
+    }
+
+    public long getLastNativeTiming() {
+        return 0;
+    }
+
     @Override
     public Set<KeyAgreementIdent> getKAs() {
         return getIdents("KeyAgreement", KeyAgreementIdent::get);

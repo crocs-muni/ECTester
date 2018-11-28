@@ -1,6 +1,5 @@
 #include "native.h"
 #include <string.h>
-#include <stdio.h>
 
 #include <openssl/conf.h>
 #include <openssl/opensslv.h>
@@ -13,6 +12,8 @@
 #include <openssl/ecdsa.h>
 
 #include "c_utils.h"
+#include "c_timing.h"
+
 
 
 static jclass provider_class;
@@ -88,7 +89,7 @@ static jobject bignum_to_biginteger(JNIEnv *env, const BIGNUM *bn) {
     int size = BN_num_bytes(bn);
     jbyteArray bytes = (*env)->NewByteArray(env, size);
     jbyte *data = (*env)->GetByteArrayElements(env, bytes, NULL);
-    BN_bn2bin(bn, data);
+    BN_bn2bin(bn, (unsigned char *) data);
     (*env)->ReleaseByteArrayElements(env, bytes, data, 0);
     jobject result = (*env)->NewObject(env, biginteger_class, biginteger_init, 1, bytes);
     return result;
@@ -100,7 +101,7 @@ static BIGNUM *biginteger_to_bignum(JNIEnv *env, jobject bigint) {
     jbyteArray byte_array = (jbyteArray) (*env)->CallObjectMethod(env, bigint, to_byte_array);
     jsize byte_length = (*env)->GetArrayLength(env, byte_array);
     jbyte *byte_data = (*env)->GetByteArrayElements(env, byte_array, NULL);
-    BIGNUM *result = BN_bin2bn(byte_data, byte_length, NULL);
+    BIGNUM *result = BN_bin2bn((unsigned char *) byte_data, byte_length, NULL);
     (*env)->ReleaseByteArrayElements(env, byte_array, byte_data, JNI_ABORT);
     return result;
 }
@@ -111,10 +112,6 @@ static EC_GROUP *create_curve(JNIEnv *env, jobject params) {
 
     jmethodID get_field = (*env)->GetMethodID(env, elliptic_curve_class, "getField", "()Ljava/security/spec/ECField;");
     jobject field = (*env)->CallObjectMethod(env, elliptic_curve, get_field);
-
-    jmethodID get_bits = (*env)->GetMethodID(env, fp_field_class, "getFieldSize", "()I");
-    jint bits = (*env)->CallIntMethod(env, field, get_bits);
-    jint bytes = (bits + 7) / 8;
 
     jmethodID get_a = (*env)->GetMethodID(env, elliptic_curve_class, "getA", "()Ljava/math/BigInteger;");
     jobject a = (*env)->CallObjectMethod(env, elliptic_curve, get_a);
@@ -286,7 +283,7 @@ static jobject create_ec_param_spec(JNIEnv *env, const EC_GROUP *curve) {
         if (basis_type == NID_X9_62_tpBasis) {
             ks = (*env)->NewIntArray(env, 1);
             ks_data = (*env)->GetIntArrayElements(env, ks, NULL);
-            if (!EC_GROUP_get_trinomial_basis(curve, &ks_data[0])) {
+            if (!EC_GROUP_get_trinomial_basis(curve, (unsigned int *) &ks_data[0])) {
                 throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating ECParameterSpec, EC_GROUP_get_trinomial_basis.");
                 BN_free(a); BN_free(b);
                 (*env)->ReleaseIntArrayElements(env, ks, ks_data, JNI_ABORT);
@@ -295,7 +292,7 @@ static jobject create_ec_param_spec(JNIEnv *env, const EC_GROUP *curve) {
         } else if (basis_type == NID_X9_62_ppBasis) {
             ks = (*env)->NewIntArray(env, 3);
             ks_data = (*env)->GetIntArrayElements(env, ks, NULL);
-            if (!EC_GROUP_get_pentanomial_basis(curve, &ks_data[0], &ks_data[1], &ks_data[2])) {
+            if (!EC_GROUP_get_pentanomial_basis(curve, (unsigned int *) &ks_data[0], (unsigned int *) &ks_data[1], (unsigned int *) &ks_data[2])) {
                 throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating ECParameterSpec, EC_GROUP_get_pentanomial_basis.");
                 BN_free(a); BN_free(b);
                 (*env)->ReleaseIntArrayElements(env, ks, ks_data, JNI_ABORT);
@@ -327,7 +324,6 @@ static jobject create_ec_param_spec(JNIEnv *env, const EC_GROUP *curve) {
 
     jmethodID elliptic_curve_init = (*env)->GetMethodID(env, elliptic_curve_class, "<init>", "(Ljava/security/spec/ECField;Ljava/math/BigInteger;Ljava/math/BigInteger;)V");
     jobject elliptic_curve = (*env)->NewObject(env, elliptic_curve_class, elliptic_curve_init, field, a_int, b_int);
-    fflush(stderr);
 
     BN_free(a);
     BN_free(b);
@@ -354,7 +350,12 @@ static jobject generate_from_curve(JNIEnv *env, const EC_GROUP *curve) {
 
     EC_KEY *key = EC_KEY_new();
     EC_KEY_set_group(key, curve);
-    if (!EC_KEY_generate_key(key)) {
+
+    native_timing_start();
+    int result = EC_KEY_generate_key(key);
+    native_timing_stop();
+
+    if (!result) {
         throw_new(env, "java/security/GeneralSecurityException", "Error generating key, EC_KEY_generate_key.");
         EC_KEY_free(key);
         return NULL;
@@ -362,13 +363,13 @@ static jobject generate_from_curve(JNIEnv *env, const EC_GROUP *curve) {
 
     jbyteArray priv_bytes = (*env)->NewByteArray(env, key_bytes);
     jbyte *key_priv = (*env)->GetByteArrayElements(env, priv_bytes, NULL);
-    BN_bn2binpad(EC_KEY_get0_private_key(key), key_priv, key_bytes);
+    BN_bn2binpad(EC_KEY_get0_private_key(key), (unsigned char *) key_priv, key_bytes);
     (*env)->ReleaseByteArrayElements(env, priv_bytes, key_priv, 0);
 
     unsigned long key_len = 2*key_bytes + 1;
     jbyteArray pub_bytes = (*env)->NewByteArray(env, key_len);
     jbyte *key_pub = (*env)->GetByteArrayElements(env, pub_bytes, NULL);
-    EC_POINT_point2oct(curve, EC_KEY_get0_public_key(key), POINT_CONVERSION_UNCOMPRESSED, key_pub, key_len, NULL);
+    EC_POINT_point2oct(curve, EC_KEY_get0_public_key(key), POINT_CONVERSION_UNCOMPRESSED, (unsigned char *) key_pub, key_len, NULL);
     (*env)->ReleaseByteArrayElements(env, pub_bytes, key_pub, 0);
 
     EC_KEY_free(key);
@@ -377,7 +378,7 @@ static jobject generate_from_curve(JNIEnv *env, const EC_GROUP *curve) {
 
     jobject ec_pub_param_spec = (*env)->NewLocalRef(env, ec_param_spec);
     jmethodID ec_pub_init = (*env)->GetMethodID(env, pubkey_class, "<init>", "([BLjava/security/spec/ECParameterSpec;)V");
-    jobject pubkey = (*env)->NewObject(env, pubkey_class, ec_pub_init, pub_bytes, ec_param_spec);
+    jobject pubkey = (*env)->NewObject(env, pubkey_class, ec_pub_init, pub_bytes, ec_pub_param_spec);
 
     jobject ec_priv_param_spec = (*env)->NewLocalRef(env, ec_param_spec);
     jmethodID ec_priv_init = (*env)->GetMethodID(env, privkey_class, "<init>", "([BLjava/security/spec/ECParameterSpec;)V");
@@ -424,7 +425,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
         size_t ncurves = EC_get_builtin_curves(NULL, 0);
         EC_builtin_curve curves[ncurves];
         EC_get_builtin_curves(curves, ncurves);
-        EC_GROUP *curve;
+        EC_GROUP *curve = NULL;
         for (size_t i = 0; i < ncurves; ++i) {
             if (strcasecmp(utf_name, OBJ_nid2sn(curves[i].nid)) == 0) {
                 curve = EC_GROUP_new_by_curve_name(curves[i].nid);
@@ -451,7 +452,7 @@ EC_KEY *barray_to_pubkey(JNIEnv *env, const EC_GROUP *curve, jbyteArray pub) {
     jsize pub_len = (*env)->GetArrayLength(env, pub);
     jbyte *pub_data = (*env)->GetByteArrayElements(env, pub, NULL);
     EC_POINT *pub_point = EC_POINT_new(curve);
-    EC_POINT_oct2point(curve, pub_point, pub_data, pub_len, NULL);
+    EC_POINT_oct2point(curve, pub_point, (unsigned char *) pub_data, pub_len, NULL);
     (*env)->ReleaseByteArrayElements(env, pub, pub_data, JNI_ABORT);
     EC_KEY_set_public_key(result, pub_point);
     EC_POINT_free(pub_point);
@@ -463,7 +464,7 @@ EC_KEY *barray_to_privkey(JNIEnv *env,  const EC_GROUP *curve, jbyteArray priv) 
     EC_KEY_set_group(result, curve);
     jsize priv_len = (*env)->GetArrayLength(env, priv);
     jbyte *priv_data = (*env)->GetByteArrayElements(env, priv, NULL);
-    BIGNUM *s = BN_bin2bn(priv_data, priv_len, NULL);
+    BIGNUM *s = BN_bin2bn((unsigned char *) priv_data, priv_len, NULL);
     (*env)->ReleaseByteArrayElements(env, priv, priv_data, JNI_ABORT);
     EC_KEY_set_private_key(result, s);
     BN_free(s);
@@ -487,7 +488,12 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     //      probably using the ECDH_KDF_X9_62 by wrapping it and dynamically choosing the EVP_MD. from the type string.
     jbyteArray result = (*env)->NewByteArray(env, secret_len);
     jbyte *result_data = (*env)->GetByteArrayElements(env, result, NULL);
-    if (ECDH_compute_key(result_data, secret_len, EC_KEY_get0_public_key(pub), priv, NULL) <= 0) {
+
+    native_timing_start();
+    int err = ECDH_compute_key(result_data, secret_len, EC_KEY_get0_public_key(pub), priv, NULL);
+    native_timing_stop();
+
+    if (err <= 0) {
         throw_new(env, "java/security/GeneralSecurityException", "Error computing ECDH, ECDH_compute_key.");
         EC_KEY_free(pub); EC_KEY_free(priv); EC_GROUP_free(curve);
         (*env)->ReleaseByteArrayElements(env, result, result_data, JNI_ABORT);
@@ -518,7 +524,11 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     jsize data_size = (*env)->GetArrayLength(env, data);
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
     // TODO: Do more Signatures here, maybe use the EVP interface to get to the hashes easier and not hash manually?
-    ECDSA_SIG *signature = ECDSA_do_sign(data_data, data_size, priv);
+
+    native_timing_start();
+    ECDSA_SIG *signature = ECDSA_do_sign((unsigned char *) data_data, data_size, priv);
+    native_timing_stop();
+
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
     if (!signature) {
         throw_new(env, "java/security/GeneralSecurityException", "Error signing, ECDSA_do_sign.");
@@ -556,7 +566,11 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 
     jsize data_size = (*env)->GetArrayLength(env, data);
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
-    int result = ECDSA_do_verify(data_data, data_size, sig_obj, pub);
+
+    native_timing_start();
+    int result = ECDSA_do_verify((unsigned char *) data_data, data_size, sig_obj, pub);
+    native_timing_stop();
+
     if (result < 0) {
         throw_new(env, "java/security/GeneralSecurityException", "Error verifying, ECDSA_do_verify.");
         EC_KEY_free(pub); EC_GROUP_free(curve); ECDSA_SIG_free(sig_obj);
@@ -569,4 +583,16 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     EC_KEY_free(pub);
     EC_GROUP_free(curve);
     return (result == 1) ? JNI_TRUE : JNI_FALSE;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_supportsNativeTiming(JNIEnv *env, jobject this) {
+    return native_timing_supported();
+}
+
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_getNativeTimingResolution(JNIEnv *env, jobject this) {
+    return native_timing_resolution();
+}
+
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_getLastNativeTiming(JNIEnv *env, jobject this) {
+    return native_timing_last();
 }

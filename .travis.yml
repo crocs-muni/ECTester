@@ -7,6 +7,7 @@ addons:
     - libtommath-dev
     - libssl-dev
     - libcrypto++-dev
+    - libgcrypt11-dev
     - gcc-6
     - g++-6
 language: java
@@ -31,7 +32,8 @@ deploy:
   file:
     - "dist/ECTesterReader-dist.jar"
     - "dist/ECTesterReader.jar"
-    - "applet/ectester.cap"
+    - "applet/ectester221.cap"
+    - "applet/ectester222.cap"
     - "dist/ECTesterStandalone-dist.jar"
     - "dist/ECTesterStandalone.jar"
     - "dist/ECTester.zip"

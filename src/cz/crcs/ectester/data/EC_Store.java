@@ -350,7 +350,7 @@ public class EC_Store {
         return getObject(objClass, query.substring(0, split), query.substring(split + 1));
     }
 
-    private static <T extends EC_Data> List<Map.Entry<EC_Curve, List<T>>> mapKeyToCurve(Collection<T> data, Function<T, String> getter) {
+    private static <T extends EC_Data> Map<EC_Curve, List<T>> mapKeyToCurve(Collection<T> data, Function<T, String> getter) {
         Map<EC_Curve, List<T>> curves = new TreeMap<>();
         for (T item : data) {
             EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, getter.apply(item));
@@ -361,21 +361,18 @@ public class EC_Store {
         for (List<T> keyList : curves.values()) {
             Collections.sort(keyList);
         }
-        List<Map.Entry<EC_Curve, List<T>>> curveList = new LinkedList<>();
-        curveList.addAll(curves.entrySet());
-        Comparator<Map.Entry<EC_Curve, List<T>>> c = Comparator.comparing(Map.Entry::getKey);
-        return curveList;
+        return curves;
     }
 
-    public static <T extends EC_Key> List<Map.Entry<EC_Curve, List<T>>> mapKeyToCurve(Collection<T> keys) {
+    public static <T extends EC_Key> Map<EC_Curve, List<T>> mapKeyToCurve(Collection<T> keys) {
         return mapKeyToCurve(keys, EC_Key::getCurve);
     }
 
-    public static List<Map.Entry<EC_Curve, List<EC_KAResult>>> mapResultToCurve(Collection<EC_KAResult> results) {
+    public static Map<EC_Curve, List<EC_KAResult>> mapResultToCurve(Collection<EC_KAResult> results) {
         return mapKeyToCurve(results, EC_KAResult::getCurve);
     }
 
-    public static <T extends EC_Data> List<Map.Entry<String, List<T>>> mapToPrefix(Collection<T> data) {
+    public static <T extends EC_Data> Map<String, List<T>> mapToPrefix(Collection<T> data) {
         Map<String, List<T>> groups = new TreeMap<>();
         for (T item : data) {
             String prefix = item.getId().split("/")[0];
@@ -386,10 +383,7 @@ public class EC_Store {
         for (List<T> itemList : groups.values()) {
             Collections.sort(itemList);
         }
-        List<Map.Entry<String, List<T>>> result = new LinkedList<>();
-        result.addAll(groups.entrySet());
-        result.sort(Comparator.comparing(Map.Entry::getKey));
-        return result;
+        return groups;
     }
 
     public static EC_Store getInstance() {

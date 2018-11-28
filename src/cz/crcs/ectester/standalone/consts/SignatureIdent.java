@@ -10,6 +10,9 @@ import java.util.List;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class SignatureIdent extends Ident {
+    private String hash;
+    private String sig;
+
     private static final List<SignatureIdent> ALL = new LinkedList<>();
 
     static {
@@ -52,9 +55,8 @@ public class SignatureIdent extends Ident {
         ALL.add(new SignatureIdent("ECGOST3410-2012-512", "GOST-3410-2012-512"));
         ALL.add(new SignatureIdent("GOST3411-2012-512withECGOST3410-2012-512", "GOST3411-2012-512/ECGOST3410-2012-5120", "1.2.643.7.1.1.3.3"));
         ALL.add(new SignatureIdent("SM3withSM2"));
-        // ECDDSA
-        ALL.add(new SignatureIdent("ECDDSA", "DETECDSA", "ECDETDSA"));
-        ALL.add(new SignatureIdent("SHA1withECDDSA", "SHA1withDETECDSA"));
+        // ECDDSA (rfc6979?)
+        ALL.add(new SignatureIdent("ECDDSA", "SHA1withECDDSA", "SHA1withDETECDSA", "DETECDSA", "ECDETDSA"));
         ALL.add(new SignatureIdent("SHA224withECDDSA", "SHA224withDETECDSA"));
         ALL.add(new SignatureIdent("SHA256withECDDSA", "SHA256withDETECDSA"));
         ALL.add(new SignatureIdent("SHA384withECDDSA", "SHA384withDETECDSA"));
@@ -92,6 +94,19 @@ public class SignatureIdent extends Ident {
 
     private SignatureIdent(String name, String... aliases) {
         super(name, aliases);
+        if (name.contains("with")) {
+            int split = name.indexOf("with");
+            this.hash = name.substring(0, split);
+            this.sig = name.substring(split + 4);
+        } else {
+            for (String alias : aliases) {
+                if (alias.contains("with")) {
+                    int split = alias.indexOf("with");
+                    this.hash = alias.substring(0, split);
+                    this.sig = alias.substring(split + 4);
+                }
+            }
+        }
     }
 
     public Signature getInstance(Provider provider) throws NoSuchAlgorithmException {
@@ -104,5 +119,13 @@ public class SignatureIdent extends Ident {
         }, provider);
         instance.getProvider();
         return instance;
+    }
+
+    public String getHashAlgo() {
+        return hash;
+    }
+
+    public String getSigType() {
+        return sig;
     }
 }

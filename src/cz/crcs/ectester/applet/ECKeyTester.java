@@ -122,7 +122,7 @@ public class ECKeyTester {
             ecdsaSignature.init(verifyKey, Signature.MODE_VERIFY);
             boolean correct = ecdsaSignature.verify(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset, length);
             if (!correct) {
-                sw = ECTesterApplet.SW_SIG_VERIFY_FAIL;
+                sw = AppletBase.SW_SIG_VERIFY_FAIL;
             }
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
@@ -170,7 +170,7 @@ public class ECKeyTester {
             ecdsaSignature.init(verifyKey, Signature.MODE_VERIFY);
             boolean correct = ecdsaSignature.verify(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset, sigLength);
             if (!correct) {
-                sw = ECTesterApplet.SW_SIG_VERIFY_FAIL;
+                sw = AppletBase.SW_SIG_VERIFY_FAIL;
             }
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();

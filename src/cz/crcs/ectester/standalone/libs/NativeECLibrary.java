@@ -47,39 +47,19 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
                     appData = Paths.get(System.getProperty("user.home"), ".local", "share");
                 }
             }
+            /* Resolve and create the ECTester directories in appData. */
             Path libDir = appData.resolve("ECTesterStandalone");
             File libDirFile = libDir.toFile();
+            Path libReqDir = libDir.resolve("lib");
+            File libReqDirFile = libReqDir.toFile();
             Path libPath = libDir.resolve(resource + "." + suffix);
-            File libFile = libPath.toFile();
 
-            URL jarURL = NativeECLibrary.class.getResource(LIB_RESOURCE_DIR + resource + "." + suffix);
-            if (jarURL == null) {
-                return false;
-            }
-            URLConnection jarConnection = jarURL.openConnection();
+            /* Create directory for shims and for requirements. */
+            libDirFile.mkdirs();
+            libReqDirFile.mkdirs();
 
-            /* Only write the file if it does not exist,
-             * or if the existing one is older than the
-             * one in the JAR.
-             */
-            boolean write = false;
-            if (libDirFile.isDirectory() && libFile.isFile()) {
-                long jarModified = jarConnection.getLastModified();
-
-                long libModified = Files.getLastModifiedTime(libPath).toMillis();
-                if (jarModified > libModified) {
-                    write = true;
-                }
-            } else {
-                libDir.toFile().mkdirs();
-                libFile.createNewFile();
-                write = true;
-            }
-
-            if (write) {
-                Files.copy(jarConnection.getInputStream(), libPath, StandardCopyOption.REPLACE_EXISTING);
-            }
-            jarConnection.getInputStream().close();
+            /* Write the shim. */
+            writeNewer(resource + "." + suffix, libPath);
 
             /*
              *  Need to hack in /usr/local/lib to path.
@@ -98,12 +78,24 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
                 }
             }
 
-            for (String requirement : requriements) {
-                System.loadLibrary(requirement);
-            }
-
-            if (suffix.equals("so")) {
-                System.setProperty("java.library.path", path);
+            /* Load the requirements, if they are bundled, write them in and load them. */
+            try {
+                for (String requirement : requriements) {
+                    if (requirement.endsWith(suffix)) {
+                        /* The requirement is bundled, write it */
+                        Path reqPath = libReqDir.resolve(requirement);
+                        writeNewer(requirement, reqPath);
+                        System.load(reqPath.toString());
+                    } else {
+                        System.loadLibrary(requirement);
+                    }
+                }
+            } catch (UnsatisfiedLinkError ule) {
+                return false;
+            } finally {
+                if (suffix.equals("so")) {
+                    System.setProperty("java.library.path", path);
+                }
             }
 
             System.load(libPath.toString());
@@ -115,6 +107,37 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
         }
         return false;
     }
+
+    private boolean isNewer(URLConnection jarConn, Path realPath) throws IOException {
+        if (realPath.toFile().isFile()) {
+            long jarModified = jarConn.getLastModified();
+            long realModified = Files.getLastModifiedTime(realPath).toMillis();
+            return jarModified > realModified;
+        }
+        return true;
+    }
+
+    private boolean writeNewer(String resource, Path outPath) throws IOException {
+        URL reqURL = NativeECLibrary.class.getResource(LIB_RESOURCE_DIR + resource);
+        if (reqURL == null) {
+            return false;
+        }
+        URLConnection reqConn = reqURL.openConnection();
+        if (isNewer(reqConn, outPath)) {
+            Files.copy(reqConn.getInputStream(), outPath, StandardCopyOption.REPLACE_EXISTING);
+        }
+        reqConn.getInputStream().close();
+        return true;
+    }
+
+    @Override
+    public abstract boolean supportsNativeTiming();
+
+    @Override
+    public abstract long getNativeTimingResolution();
+
+    @Override
+    public abstract long getLastNativeTiming();
 
     abstract Provider createProvider();
 }

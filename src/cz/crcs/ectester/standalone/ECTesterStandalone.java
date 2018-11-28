@@ -28,6 +28,7 @@ import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.TestException;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.common.util.ECUtil;
+import cz.crcs.ectester.common.util.FileUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
 import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
@@ -49,6 +50,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
@@ -66,7 +68,17 @@ import java.util.stream.Collectors;
  * @version v0.3.0
  */
 public class ECTesterStandalone {
-    private ProviderECLibrary[] libs = new ProviderECLibrary[]{new SunECLib(), new BouncyCastleLib(), new TomcryptLib(), new BotanLib(), new CryptoppLib(), new OpensslLib(), new MscngLib()};
+    private ProviderECLibrary[] libs = new ProviderECLibrary[]{
+            new SunECLib(),
+            new BouncyCastleLib(),
+            new TomcryptLib(),
+            new BotanLib(),
+            new CryptoppLib(),
+            new OpensslLib(),
+            new BoringsslLib(),
+            new GcryptLib(),
+            new MscngLib(),
+            new WolfCryptLib()};
     private Config cfg;
 
     private Options opts = new Options();
@@ -140,6 +152,7 @@ public class ECTesterStandalone {
         Option namedCurve = Option.builder("nc").longOpt("named-curve").desc("Use a named curve, from CurveDB: <cat/id>").hasArg().argName("cat/id").optionalArg(false).build();
         Option curveName = Option.builder("cn").longOpt("curve-name").desc("Use a named curve, search from curves supported by the library: <name>").hasArg().argName("name").optionalArg(false).build();
         Option bits = Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").build();
+        Option output = Option.builder("o").longOpt("output").desc("Output into file <output_file>.").hasArgs().argName("output_file").optionalArg(false).build();
 
         Options testOpts = new Options();
         testOpts.addOption(bits);
@@ -159,9 +172,12 @@ public class ECTesterStandalone {
         ecdhOpts.addOption(bits);
         ecdhOpts.addOption(namedCurve);
         ecdhOpts.addOption(curveName);
+        ecdhOpts.addOption(output);
         ecdhOpts.addOption(Option.builder("t").longOpt("type").desc("Set KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdhOpts.addOption(Option.builder().longOpt("key-type").desc("Set the key [algorithm] for which the key should be derived in KeyAgreements with KDF. Default is \"AES\".").hasArg().argName("algorithm").optionalArg(false).build());
         ecdhOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDH [amount] times.").build());
+        ecdhOpts.addOption(Option.builder().longOpt("fixed-private").desc("Perform ECDH with fixed private key.").build());
+        ecdhOpts.addOption(Option.builder().longOpt("fixed-public").desc("Perform ECDH with fixed public key.").build());
         ParserOptions ecdh = new ParserOptions(new DefaultParser(), ecdhOpts, "Perform EC based KeyAgreement.");
         actions.put("ecdh", ecdh);
 
@@ -169,6 +185,7 @@ public class ECTesterStandalone {
         ecdsaOpts.addOption(bits);
         ecdsaOpts.addOption(namedCurve);
         ecdsaOpts.addOption(curveName);
+        ecdhOpts.addOption(output);
         ecdsaOpts.addOption(Option.builder("t").longOpt("type").desc("Set Signature object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdsaOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDSA [amount] times.").build());
         ecdsaOpts.addOption(Option.builder("f").longOpt("file").hasArg().argName("file").optionalArg(false).desc("Input [file] to sign.").build());
@@ -179,6 +196,7 @@ public class ECTesterStandalone {
         generateOpts.addOption(bits);
         generateOpts.addOption(namedCurve);
         generateOpts.addOption(curveName);
+        ecdhOpts.addOption(output);
         generateOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Generate [amount] of EC keys.").build());
         generateOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPairGenerator object [type].").build());
         ParserOptions generate = new ParserOptions(new DefaultParser(), generateOpts, "Generate EC keypairs.");
@@ -186,6 +204,7 @@ public class ECTesterStandalone {
 
         Options exportOpts = new Options();
         exportOpts.addOption(bits);
+        ecdhOpts.addOption(output);
         exportOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPair object [type].").build());
         ParserOptions export = new ParserOptions(new DefaultParser(), exportOpts, "Export default curve parameters.");
         actions.put("export", export);
@@ -222,6 +241,7 @@ public class ECTesterStandalone {
         for (ProviderECLibrary lib : libs) {
             if (lib.isInitialized() && (cfg.selected == null || lib == cfg.selected)) {
                 System.out.println("\t- " + Colors.bold(lib.name()));
+                System.out.println(Colors.bold("\t\t- Supports native timing: ") + lib.supportsNativeTiming());
                 Set<KeyPairGeneratorIdent> kpgs = lib.getKPGs();
                 if (!kpgs.isEmpty()) {
                     System.out.println(Colors.bold("\t\t- KeyPairGenerators: ") + String.join(", ", kpgs.stream().map(KeyPairGeneratorIdent::getName).collect(Collectors.toList())));
@@ -259,7 +279,7 @@ public class ECTesterStandalone {
     /**
      *
      */
-    private void ecdh() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
+    private void ecdh() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, FileNotFoundException {
         ProviderECLibrary lib = cfg.selected;
 
         String algo = cli.getOptionValue("ecdh.type", "ECDH");
@@ -292,63 +312,90 @@ public class ECTesterStandalone {
 
         if (kaIdent == null || kpIdent == null) {
             throw new NoSuchAlgorithmException(algo);
+        }
+
+        KeyAgreement ka = kaIdent.getInstance(lib.getProvider());
+        KeyPairGenerator kpg = kpIdent.getInstance(lib.getProvider());
+        AlgorithmParameterSpec spec = null;
+        if (cli.hasOption("ecdh.bits")) {
+            int bits = Integer.parseInt(cli.getOptionValue("ecdh.bits"));
+            kpg.initialize(bits);
+        } else if (cli.hasOption("ecdh.named-curve")) {
+            String curveName = cli.getOptionValue("ecdh.named-curve");
+            EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
+            if (curve == null) {
+                System.err.println("Curve not found: " + curveName);
+                return;
+            }
+            spec = curve.toSpec();
+            kpg.initialize(spec);
+        } else if (cli.hasOption("ecdh.curve-name")) {
+            String curveName = cli.getOptionValue("ecdh.curve-name");
+            spec = new ECGenParameterSpec(curveName);
+            kpg.initialize(spec);
+        }
+
+        PrintStream out;
+        if (cli.hasOption("ecdh.output")) {
+            out = new PrintStream(FileUtil.openStream(cli.getOptionValues("ecdh.output")));
         } else {
-            KeyAgreement ka = kaIdent.getInstance(lib.getProvider());
-            KeyPairGenerator kpg = kpIdent.getInstance(lib.getProvider());
-            AlgorithmParameterSpec spec = null;
-            if (cli.hasOption("ecdh.bits")) {
-                int bits = Integer.parseInt(cli.getOptionValue("ecdh.bits"));
-                kpg.initialize(bits);
-            } else if (cli.hasOption("ecdh.named-curve")) {
-                String curveName = cli.getOptionValue("ecdh.named-curve");
-                EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
-                if (curve == null) {
-                    System.err.println("Curve not found: " + curveName);
-                    return;
-                }
-                spec = curve.toSpec();
-                kpg.initialize(spec);
-            } else if (cli.hasOption("ecdh.curve-name")) {
-                String curveName = cli.getOptionValue("ecdh.curve-name");
-                spec = new ECGenParameterSpec(curveName);
-                kpg.initialize(spec);
+            out = System.out;
+        }
+
+        out.println("index;time[nano];pubW;privS;secret");
+
+        KeyPair one = null;
+        if (cli.hasOption("ecdh.fixed-private")) {
+            one = kpg.genKeyPair();
+        }
+        KeyPair other = null;
+        if (cli.hasOption("ecdh.fixed-public")) {
+            other = kpg.genKeyPair();
+        }
+
+        int amount = Integer.parseInt(cli.getOptionValue("ecdh.amount", "1"));
+        for (int i = 0; i < amount; ++i) {
+            if (!cli.hasOption("ecdh.fixed-private")) {
+                one = kpg.genKeyPair();
+            }
+            if (!cli.hasOption("ecdh.fixed-public")) {
+                other = kpg.genKeyPair();
             }
 
-            System.out.println("index;nanotime;pubW;privS;secret");
+            ECPrivateKey privkey = (ECPrivateKey) one.getPrivate();
+            ECPublicKey pubkey = (ECPublicKey) other.getPublic();
 
-            int amount = Integer.parseInt(cli.getOptionValue("ecdh.amount", "1"));
-            for (int i = 0; i < amount; ++i) {
-                KeyPair one = kpg.genKeyPair();
-                KeyPair other = kpg.genKeyPair();
-
-                ECPrivateKey privkey = (ECPrivateKey) one.getPrivate();
-                ECPublicKey pubkey = (ECPublicKey) other.getPublic();
-
-                long elapsed = -System.nanoTime();
-                if (spec != null) {
-                    ka.init(privkey, spec);
-                } else {
-                    ka.init(privkey);
-                }
-                ka.doPhase(pubkey, true);
-                elapsed += System.nanoTime();
-                SecretKey derived;
-                byte[] result;
-                elapsed -= System.nanoTime();
-                if (kaIdent.requiresKeyAlgo()) {
-                    derived = ka.generateSecret(keyAlgo);
-                    result = derived.getEncoded();
-                } else {
-                    result = ka.generateSecret();
-                }
-                elapsed += System.nanoTime();
-                ka = kaIdent.getInstance(lib.getProvider());
-
-                String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW(), pubkey.getParams()), false);
-                String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
-                String dh = ByteUtil.bytesToHex(result, false);
-                System.out.println(String.format("%d;%d;%s;%s;%s", i, elapsed, pub, priv, dh));
+            long elapsed = -System.nanoTime();
+            if (spec instanceof ECParameterSpec) {
+                ka.init(privkey, spec);
+            } else {
+                ka.init(privkey);
             }
+            ka.doPhase(pubkey, true);
+            elapsed += System.nanoTime();
+            SecretKey derived;
+            byte[] result;
+            elapsed -= System.nanoTime();
+            if (kaIdent.requiresKeyAlgo()) {
+                derived = ka.generateSecret(keyAlgo);
+                result = derived.getEncoded();
+            } else {
+                result = ka.generateSecret();
+            }
+            elapsed += System.nanoTime();
+            if (lib.supportsNativeTiming()) {
+                elapsed = lib.getLastNativeTiming();
+            }
+            ka = kaIdent.getInstance(lib.getProvider());
+
+            String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW(), pubkey.getParams()), false);
+            String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
+            String dh = ByteUtil.bytesToHex(result, false);
+            out.println(String.format("%d;%d;%s;%s;%s", i, elapsed, pub, priv, dh));
+        }
+
+        if (cli.hasOption("ecdh.output")) {
+            out.close();
         }
     }
 
@@ -405,61 +452,76 @@ public class ECTesterStandalone {
 
         if (sigIdent == null || kpIdent == null) {
             throw new NoSuchAlgorithmException(algo);
+        }
+        Signature sig = sigIdent.getInstance(lib.getProvider());
+        KeyPairGenerator kpg = kpIdent.getInstance(lib.getProvider());
+        if (cli.hasOption("ecdsa.bits")) {
+            int bits = Integer.parseInt(cli.getOptionValue("ecdsa.bits"));
+            kpg.initialize(bits);
+        } else if (cli.hasOption("ecdsa.named-curve")) {
+            String curveName = cli.getOptionValue("ecdsa.named-curve");
+            EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
+            if (curve == null) {
+                System.err.println("Curve not found: " + curveName);
+                return;
+            }
+            kpg.initialize(curve.toSpec());
+        } else if (cli.hasOption("ecdsa.curve-name")) {
+            String curveName = cli.getOptionValue("ecdsa.curve-name");
+            kpg.initialize(new ECGenParameterSpec(curveName));
+        }
+
+        PrintStream out;
+        if (cli.hasOption("ecdsa.output")) {
+            out = new PrintStream(FileUtil.openStream(cli.getOptionValues("ecdh.output")));
         } else {
-            Signature sig = sigIdent.getInstance(lib.getProvider());
-            KeyPairGenerator kpg = kpIdent.getInstance(lib.getProvider());
-            if (cli.hasOption("ecdsa.bits")) {
-                int bits = Integer.parseInt(cli.getOptionValue("ecdsa.bits"));
-                kpg.initialize(bits);
-            } else if (cli.hasOption("ecdsa.named-curve")) {
-                String curveName = cli.getOptionValue("ecdsa.named-curve");
-                EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
-                if (curve == null) {
-                    System.err.println("Curve not found: " + curveName);
-                    return;
-                }
-                kpg.initialize(curve.toSpec());
-            } else if (cli.hasOption("ecdsa.curve-name")) {
-                String curveName = cli.getOptionValue("ecdsa.curve-name");
-                kpg.initialize(new ECGenParameterSpec(curveName));
+            out = System.out;
+        }
+
+        out.println("index;data;signTime[nano];verifyTime[nano];pubW;privS;signature;verified");
+
+        int amount = Integer.parseInt(cli.getOptionValue("ecdsa.amount", "1"));
+        for (int i = 0; i < amount; ++i) {
+            KeyPair one = kpg.genKeyPair();
+
+            ECPrivateKey privkey = (ECPrivateKey) one.getPrivate();
+            ECPublicKey pubkey = (ECPublicKey) one.getPublic();
+
+            sig.initSign(privkey);
+            sig.update(data);
+
+            long signTime = -System.nanoTime();
+            byte[] signature = sig.sign();
+            signTime += System.nanoTime();
+            if (lib.supportsNativeTiming()) {
+                signTime = lib.getLastNativeTiming();
             }
 
-            System.out.println("index;data;signtime;verifytime;pubW;privS;signature;verified");
+            sig.initVerify(pubkey);
+            sig.update(data);
 
-            int amount = Integer.parseInt(cli.getOptionValue("ecdsa.amount", "1"));
-            for (int i = 0; i < amount; ++i) {
-                KeyPair one = kpg.genKeyPair();
-
-                ECPrivateKey privkey = (ECPrivateKey) one.getPrivate();
-                ECPublicKey pubkey = (ECPublicKey) one.getPublic();
-
-                sig.initSign(privkey);
-                sig.update(data);
-
-                long signTime = -System.nanoTime();
-                byte[] signature = sig.sign();
-                signTime += System.nanoTime();
-
-                sig.initVerify(pubkey);
-                sig.update(data);
-
-                long verifyTime = -System.nanoTime();
-                boolean verified = sig.verify(signature);
-                verifyTime += System.nanoTime();
-
-
-                String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW(), pubkey.getParams()), false);
-                String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
-                String sign = ByteUtil.bytesToHex(signature, false);
-                System.out.println(String.format("%d;%s;%d;%d;%s;%s;%s;%d", i, dataString, signTime, verifyTime, pub, priv, sign, verified ? 1 : 0));
+            long verifyTime = -System.nanoTime();
+            boolean verified = sig.verify(signature);
+            verifyTime += System.nanoTime();
+            if (lib.supportsNativeTiming()) {
+                verifyTime = lib.getLastNativeTiming();
             }
+
+            String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW(), pubkey.getParams()), false);
+            String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
+            String sign = ByteUtil.bytesToHex(signature, false);
+            out.println(String.format("%d;%s;%d;%d;%s;%s;%s;%d", i, dataString, signTime, verifyTime, pub, priv, sign, verified ? 1 : 0));
+        }
+
+        if (cli.hasOption("ecdsa.output")) {
+            out.close();
         }
     }
 
     /**
      *
      */
-    private void generate() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+    private void generate() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException, FileNotFoundException {
         ProviderECLibrary lib = cfg.selected;
         KeyPairGeneratorIdent ident = null;
         String algo = cli.getOptionValue("generate.type", "EC");
@@ -471,37 +533,51 @@ public class ECTesterStandalone {
         }
         if (ident == null) {
             throw new NoSuchAlgorithmException(algo);
+        }
+        KeyPairGenerator kpg = ident.getInstance(lib.getProvider());
+        if (cli.hasOption("generate.bits")) {
+            int bits = Integer.parseInt(cli.getOptionValue("generate.bits"));
+            kpg.initialize(bits);
+        } else if (cli.hasOption("generate.named-curve")) {
+            String curveName = cli.getOptionValue("generate.named-curve");
+            EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
+            if (curve == null) {
+                System.err.println("Curve not found: " + curveName);
+                return;
+            }
+            kpg.initialize(curve.toSpec());
+        } else if (cli.hasOption("generate.curve-name")) {
+            String curveName = cli.getOptionValue("generate.curve-name");
+            kpg.initialize(new ECGenParameterSpec(curveName));
+        }
+
+        PrintStream out;
+        if (cli.hasOption("generate.output")) {
+            out = new PrintStream(FileUtil.openStream(cli.getOptionValues("ecdh.output")));
         } else {
-            KeyPairGenerator kpg = ident.getInstance(lib.getProvider());
-            if (cli.hasOption("generate.bits")) {
-                int bits = Integer.parseInt(cli.getOptionValue("generate.bits"));
-                kpg.initialize(bits);
-            } else if (cli.hasOption("generate.named-curve")) {
-                String curveName = cli.getOptionValue("generate.named-curve");
-                EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
-                if (curve == null) {
-                    System.err.println("Curve not found: " + curveName);
-                    return;
-                }
-                kpg.initialize(curve.toSpec());
-            } else if (cli.hasOption("generate.curve-name")) {
-                String curveName = cli.getOptionValue("generate.curve-name");
-                kpg.initialize(new ECGenParameterSpec(curveName));
-            }
-            System.out.println("index;nanotime;pubW;privS");
+            out = System.out;
+        }
 
-            int amount = Integer.parseInt(cli.getOptionValue("generate.amount", "1"));
-            for (int i = 0; i < amount; ++i) {
-                long elapsed = -System.nanoTime();
-                KeyPair kp = kpg.genKeyPair();
-                elapsed += System.nanoTime();
-                ECPublicKey publicKey = (ECPublicKey) kp.getPublic();
-                ECPrivateKey privateKey = (ECPrivateKey) kp.getPrivate();
+        out.println("index;time[nano];pubW;privS");
 
-                String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(publicKey.getW(), publicKey.getParams()), false);
-                String priv = ByteUtil.bytesToHex(privateKey.getS().toByteArray(), false);
-                System.out.println(String.format("%d;%d;%s;%s", i, elapsed, pub, priv));
+        int amount = Integer.parseInt(cli.getOptionValue("generate.amount", "1"));
+        for (int i = 0; i < amount || amount == 0; ++i) {
+            long elapsed = -System.nanoTime();
+            KeyPair kp = kpg.genKeyPair();
+            elapsed += System.nanoTime();
+            if (lib.supportsNativeTiming()) {
+                elapsed = lib.getLastNativeTiming();
             }
+            ECPublicKey publicKey = (ECPublicKey) kp.getPublic();
+            ECPrivateKey privateKey = (ECPrivateKey) kp.getPrivate();
+
+            String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(publicKey.getW(), publicKey.getParams()), false);
+            String priv = ByteUtil.bytesToHex(privateKey.getS().toByteArray(), false);
+            out.println(String.format("%d;%d;%s;%s", i, elapsed, pub, priv));
+        }
+
+        if (cli.hasOption("generate.output")) {
+            out.close();
         }
     }
 
@@ -545,19 +621,18 @@ public class ECTesterStandalone {
         }
         if (ident == null) {
             throw new NoSuchAlgorithmException(algo);
-        } else {
-            KeyPairGenerator kpg = ident.getInstance(lib.getProvider());
-            if (cli.hasOption("export.bits")) {
-                int bits = Integer.parseInt(cli.getOptionValue("export.bits"));
-                kpg.initialize(bits);
-            }
-            KeyPair kp = kpg.genKeyPair();
-            ECPrivateKey privateKey = (ECPrivateKey) kp.getPrivate();
-            ECParameterSpec params = privateKey.getParams();
-            System.out.println(params);
-            EC_Curve curve = EC_Curve.fromSpec(params);
-            curve.writeCSV(System.out);
         }
+        KeyPairGenerator kpg = ident.getInstance(lib.getProvider());
+        if (cli.hasOption("export.bits")) {
+            int bits = Integer.parseInt(cli.getOptionValue("export.bits"));
+            kpg.initialize(bits);
+        }
+        KeyPair kp = kpg.genKeyPair();
+        ECPrivateKey privateKey = (ECPrivateKey) kp.getPrivate();
+        ECParameterSpec params = privateKey.getParams();
+        System.out.println(params);
+        EC_Curve curve = EC_Curve.fromSpec(params);
+        curve.writeCSV(System.out);
     }
 
     public static void main(String[] args) {

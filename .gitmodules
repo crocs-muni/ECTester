@@ -7,3 +7,6 @@
 [submodule "ext/mscng"]
 	path = ext/mscng
 	url = https://github.com/J08nY/mscng-dev-kit
+[submodule "ext/boringssl"]
+	path = ext/boringssl
+	url = https://boringssl.googlesource.com/boringssl

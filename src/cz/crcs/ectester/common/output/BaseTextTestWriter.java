@@ -106,6 +106,9 @@ public abstract class BaseTextTestWriter implements TestWriter {
         } else {
             SimpleTest<? extends BaseTestable> test = (SimpleTest<? extends BaseTestable>) t;
             out.append(testableString(test.getTestable()));
+            if (t.getResult().getCause() != null) {
+                out.append(" ┃ ").append(t.getResult().getCause().toString());
+            }
         }
         return line + out.toString();
     }

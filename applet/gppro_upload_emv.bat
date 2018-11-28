@@ -1,7 +1,15 @@
-gp.exe -deletedeps -verbose -emv -delete 4C6162616B417070 
-gp.exe -deletedeps -verbose -emv -delete 4A43416C6754657374
-gp.exe -deletedeps -verbose -emv -delete 4543546573746572
+if "%1" == "" {
+	set err=yes
+}
+if "%2" == "" {
+	set err=yes
+}
+if "%err" == "yes" {
+	echo "gppro_upload_emv.bat <AID> <CAP file>"
+	exit
+}
 
-gp.exe -install ectester.cap -verbose  -emv -d
+gp.exe -deletedeps -verbose -emv -delete %1
+gp.exe -install %2 -verbose  -emv -d
 
 

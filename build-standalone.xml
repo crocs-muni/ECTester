@@ -106,11 +106,22 @@
           <arg value="Makefile.bat"/>
         </exec>
     </target>
+    <target name="libs-debug">
+        <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="make" osfamily="unix">
+            <arg value="-k"/>
+            <arg value="DEBUG=1"/>
+        </exec>
+        <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="cmd" osfamily="windows">
+          <arg value="/c"/>
+          <arg value="Makefile.bat"/>
+          <env key="DEBUG" value="1"/>
+        </exec>
+    </target>
 
     <target name="-post-compile" depends="libs-try"/>
+
     <target name="-post-clean">
-        <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="make"
-              osfamily="unix">
+        <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="make" osfamily="unix">
             <arg value="clean"/>
         </exec>
         <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="cmd" osfamily="windows">
@@ -157,6 +168,20 @@
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Mscng"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Mscng"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Mscng"/>
+            <class name="cz.crcs.ectester.standalone.libs.BoringsslLib"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeProvider$Boringssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Boringssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$Boringssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Boringssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Boringssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Boringssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.GcryptLib"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeProvider$Gcrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Gcrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$Gcrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Gcrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Gcrypt"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Gcrypt"/>
         </javah>
     </target>
 </project>

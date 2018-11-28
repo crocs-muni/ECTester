@@ -5,7 +5,7 @@
     <category>
         <name>anomalous</name>
         <directory>anomalous</directory>
-        <desc>These prime field curves have the same order as the field order, and are susceptible to attacks reducing ECDLP over a multiplicative group of the curve, to DLP over an additive group of the underlying field, which is easy (linear time).</desc>
+        <desc>These prime field curves have the same order as the field order. Some are from https://dspace.jaist.ac.jp/dspace/bitstream/10119/4464/1/73-61.pdf.</desc>
     </category>
     <category>
         <name>brainpool</name>
@@ -41,6 +41,11 @@
         <name>Barreto-Naehrig</name>
         <directory>bn</directory>
         <desc>Barreto-Naehrig curves from: A Family of Implementation-Friendly BN Elliptic Curves - https://eprint.iacr.org/2010/429.pdf.</desc>
+    </category>
+    <category>
+        <name>MNT</name>
+        <directory>mnt</directory>
+        <desc>MNT (Miyaji, Nakabayashi, and Takano) example curves from: New explicit conditions of elliptic curve traces for FR-reduction - https://dspace.jaist.ac.jp/dspace/bitstream/10119/4432/1/73-48.pdf.</desc>
     </category>
     <category>
         <name>other</name>
@@ -93,5 +98,10 @@
         <name>supersingular</name>
         <directory>supersingular</directory>
         <desc>Some supersingular curves, over F_p with order equal to p + 1.</desc>
+    </category>
+    <category>
+        <name>misc</name>
+        <directory>misc</directory>
+        <desc>Miscellaneous data.</desc>
     </category>
 </categories>

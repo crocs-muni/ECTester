@@ -37,15 +37,19 @@ import cz.crcs.ectester.reader.output.FileTestWriter;
 import cz.crcs.ectester.reader.output.ResponseWriter;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.test.*;
+import javacard.framework.ISO7816;
 import javacard.security.KeyPair;
 import org.apache.commons.cli.*;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.smartcardio.CardException;
+import javax.smartcardio.ResponseAPDU;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.security.Security;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -141,13 +145,23 @@ public class ECTesterReader {
                     System.err.println(Colors.error("Failed to connect to card."));
                     System.exit(1);
                 }
-                cardManager.send(SELECT_ECTESTERAPPLET);
+                ResponseAPDU selectResp = cardManager.send(SELECT_ECTESTERAPPLET);
+                if ((short) selectResp.getSW() != ISO7816.SW_NO_ERROR) {
+                    System.err.println(Colors.error("Failed to select ECTester applet, is it installed?"));
+                    cardManager.disconnectFromCard();
+                    System.exit(1);
+                }
             }
 
-            // Setup logger, testWriter and respWriter
+            // Setup logger and respWriter
             logger = new OutputLogger(true, cfg.log);
-
             respWriter = new ResponseWriter(logger.getPrintStream());
+
+            // Try adding the BouncyCastleProvider, which might be used in some parts of ECTester.
+            try {
+                Security.addProvider(new BouncyCastleProvider());
+            } catch (SecurityException | NoClassDefFoundError ignored) {
+            }
 
             //do action
             if (cli.hasOption("export")) {
@@ -160,6 +174,8 @@ public class ECTesterReader {
                 ecdh();
             } else if (cli.hasOption("ecdsa")) {
                 ecdsa();
+            } else if (cli.hasOption("info")) {
+                info();
             }
 
             //disconnect
@@ -232,6 +248,8 @@ public class ECTesterReader {
          * -dh / --ecdh [count]]
          * -dsa / --ecdsa [count]
          * -ln / --list-named [obj]
+         * -ls / --list-suites
+         * -nfo / --info
          *
          * Options:
          * -b / --bit-size <b> // -a / --all
@@ -272,12 +290,13 @@ public class ECTesterReader {
         actions.addOption(Option.builder("V").longOpt("version").desc("Print version info.").build());
         actions.addOption(Option.builder("h").longOpt("help").desc("Print help.").build());
         actions.addOption(Option.builder("ln").longOpt("list-named").desc("Print the list of supported named curves and keys.").hasArg().argName("what").optionalArg(true).build());
+        actions.addOption(Option.builder("ls").longOpt("list-suites").desc("List supported test suites.").build());
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate <amount> of EC keys.").hasArg().argName("amount").optionalArg(true).build());
         actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. Optionally specify a test number to run only a part of a test suite. <test_suite>:\n- default:\n- compression:\n- invalid:\n- twist:\n- degenerate:\n- cofactor:\n- wrong:\n- signature:\n- composite:\n- test-vectors:\n- edge-cases:\n- miscellaneous:").hasArg().argName("test_suite[:from[:to]]").optionalArg(true).build());
         actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do EC KeyAgreement (ECDH...), [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
-        actions.addOption(Option.builder("ls").longOpt("list-suites").desc("List supported test suites.").build());
+        actions.addOption(Option.builder("nf").longOpt("info").desc("Get applet info.").build());
 
         opts.addOptionGroup(actions);
 
@@ -347,6 +366,15 @@ public class ECTesterReader {
         }
     }
 
+    private void info() throws CardException {
+        Response.GetInfo info = new Command.GetInfo(cardManager).send();
+        System.out.println(String.format("ECTester applet version: %s", info.getVersion()));
+        System.out.println(String.format("ECTester applet APDU support: %s", (info.getBase() == ECTesterApplet.BASE_221) ? "basic" : "extended length"));
+        System.out.println(String.format("JavaCard API version: %.1f", info.getJavaCardVersion()));
+        System.out.println(String.format("JavaCard supports system cleanup: %s", info.getCleanupSupport()));
+        System.out.println(String.format("Array sizes (apduBuf, ram, ram2, apduArr): %d %d %d %d", info.getApduBufferLength(), info.getRamArrayLength(), info.getRamArray2Length(), info.getApduArrayLength()));
+    }
+
     /**
      * Exports default card/simulation EC domain parameters to output file.
      *
@@ -405,13 +433,13 @@ public class ECTesterReader {
      */
     private void generate() throws CardException, IOException {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
+        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass);
 
         Response allocate = new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send();
         respWriter.outputResponse(allocate);
-        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass);
 
         OutputStreamWriter keysFile = FileUtil.openFiles(cfg.outputs);
-        keysFile.write("index;time;pubW;privS\n");
+        keysFile.write("index;genTime;exportTime;pubW;privS\n");
 
         int generated = 0;
         int retry = 0;
@@ -423,10 +451,10 @@ public class ECTesterReader {
 
             Command.Generate generate = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL);
             Response.Generate response = generate.send();
-            long elapsed = response.getDuration();
             respWriter.outputResponse(response);
 
             Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR).send();
+            respWriter.outputResponse(export);
 
             if (!response.successful() || !export.successful()) {
                 if (retry < 10) {
@@ -440,7 +468,7 @@ public class ECTesterReader {
 
             String pub = ByteUtil.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_W), false);
             String priv = ByteUtil.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S), false);
-            String line = String.format("%d;%d;%s;%s\n", generated, elapsed / 1000000, pub, priv);
+            String line = String.format("%d;%d;%d;%s;%s\n", generated, response.getDuration() / 1000000, export.getDuration() / 1000000, pub, priv);
             keysFile.write(line);
             keysFile.flush();
             generated++;
@@ -533,10 +561,10 @@ public class ECTesterReader {
      */
     private void ecdh() throws IOException, CardException {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
+        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_BOTH, cfg.bits, keyClass);
         List<Response> prepare = new LinkedList<>();
         prepare.add(new Command.AllocateKeyAgreement(cardManager, cfg.ECKAType).send()); // Prepare KeyAgreement or required type
         prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, cfg.bits, keyClass).send());
-        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_BOTH, cfg.bits, keyClass);
         if (curve != null)
             prepare.add(curve.send());
 
