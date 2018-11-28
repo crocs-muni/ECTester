@@ -56,7 +56,7 @@ public abstract class AppletBase extends Applet {
     public static final short BASE_222 = (short) 0x0222;
 
     //
-    public static final byte[] VERSION = {'v', '0', '.', '3', '.', '0'};
+    public static final byte[] VERSION = {'v', '0', '.', '3', '.', '1'};
 
     public static final short ARRAY_LENGTH = 0x100;
     public static final short APDU_MAX_LENGTH = 1024;
