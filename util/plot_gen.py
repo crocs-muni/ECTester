@@ -12,6 +12,7 @@
 #
 
 import numpy as np
+from scipy.stats import entropy
 import matplotlib.pyplot as plt
 from matplotlib import ticker, colors
 from copy import deepcopy
@@ -68,6 +69,7 @@ if __name__ == "__main__":
     if opts.skip_first:
         data = data[opts.skip_first:]
 
+
     gen_time_data = data["gen_time"]
     export_time_data = None
     if "export_time" in data.dtype.names:
@@ -78,11 +80,11 @@ if __name__ == "__main__":
     gen_unit = "ms"
     if header_names[1].endswith("[nano]"):
         gen_unit = r"$\mu s$"
-        gen_time_data = list(map(lambda x: x//1000, gen_time_data))
+        np.floor_divide(gen_time_data, 1000, out=gen_time_data)
     export_unit = "ms"
     if len(header_names) == 5 and header_names[2].endswith("[nano]"):
         export_unit = r"$\mu s$"
-        export_time_data = list(map(lambda x: x//1000, export_time_data))
+        np.floor_divide(export_time_data, 1000, out=export_time_data)
 
     plt.style.use("ggplot")
     fig = plt.figure()
@@ -98,6 +100,23 @@ if __name__ == "__main__":
     max_gen_time = max(gen_time_data)
     min_gen_time = min(gen_time_data)
     bit_size = len(bin(max(priv_data))) - 2
+
+    sorted_data = np.sort(data, order="gen_time")
+
+    i = 0
+    entropies = {}
+    while i < len(data):
+        time_val = sorted_data["gen_time"][i]
+        j = i
+        msbs = [0 for _ in range(256)]
+        while j < len(data) and sorted_data["gen_time"][j] == time_val:
+            msbs[(sorted_data["priv"][j] >> (bit_size - 8)) & 0xff] += 1
+            j += 1
+        if j - 100 > i:
+            entropies[time_val] = entropy(msbs, base=2)
+        i = j
+
+    entropy = sum(entropies.values())/len(entropies)
 
     cmap = deepcopy(plt.cm.plasma)
     cmap.set_bad("black")
@@ -155,6 +174,7 @@ if __name__ == "__main__":
         fig.colorbar(im, ax=axe_priv_hist)
 
     fig.text(0.01, 0.02, "Data size: {}".format(len(gen_time_data)), size="small")
+    fig.text(0.01, 0.04, "Entropy of privkey MSB(estimated): {:.2f} b".format(entropy), size="small")
 
     if opts.output is None:
         plt.show()
