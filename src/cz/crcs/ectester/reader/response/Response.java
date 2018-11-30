@@ -502,4 +502,16 @@ public abstract class Response {
             return apduArrayLength;
         }
     }
+
+    /**
+     *
+     */
+    public static class SetDryRunMode extends Response {
+
+        public SetDryRunMode(ResponseAPDU response, String description, long time) {
+            super(response, description, time);
+
+            parse(1, 0);
+        }
+    }
 }

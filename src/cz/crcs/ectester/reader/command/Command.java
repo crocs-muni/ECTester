@@ -890,5 +890,36 @@ public abstract class Command implements Cloneable {
             return "Get applet info";
         }
     }
+
+    /**
+     *
+     */
+    public static class SetDryRunMode extends Command {
+        private byte dryRunMode;
+        /**
+         *
+         * @param cardManager
+         * @param dryRunMode
+         */
+        public SetDryRunMode(CardMngr cardManager, byte dryRunMode) {
+            super(cardManager);
+            this.dryRunMode = dryRunMode;
+
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_SET_DRY_RUN_MODE, dryRunMode, 0);
+        }
+
+        @Override
+        public Response send() throws CardException {
+            long elapsed = -System.nanoTime();
+            ResponseAPDU response = cardManager.send(cmd);
+            elapsed += System.nanoTime();
+            return new Response.SetDryRunMode(response, getDescription(), elapsed);
+        }
+
+        @Override
+        public String getDescription() {
+            return (dryRunMode == ECTesterApplet.MODE_NORMAL ? "Disable" : "Enable")  + " dry run mode";
+        }
+    }
 }
 

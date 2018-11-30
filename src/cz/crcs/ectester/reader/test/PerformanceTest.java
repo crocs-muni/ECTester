@@ -1,18 +1,24 @@
 package cz.crcs.ectester.reader.test;
 
+import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.common.test.Result;
 import cz.crcs.ectester.common.test.SimpleTest;
 import cz.crcs.ectester.common.test.TestCallback;
+import cz.crcs.ectester.common.test.TestException;
+import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
 
+import javax.smartcardio.CardException;
 import java.util.Arrays;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class PerformanceTest extends SimpleTest<CommandTestable> {
+    private CardMngr cardManager;
     private long[] times;
+    private long[] reducedTimes;
     private Response[] responses;
     private long mean;
     private long median;
@@ -20,23 +26,24 @@ public class PerformanceTest extends SimpleTest<CommandTestable> {
     private int count;
     private String desc;
 
-    private PerformanceTest(CommandTestable testable, int count, String desc) {
+    private PerformanceTest(CardMngr cardManager, CommandTestable testable, int count, String desc) {
         super(testable, new TestCallback<CommandTestable>() {
             @Override
             public Result apply(CommandTestable testable) {
                 return new Result(Result.Value.SUCCESS);
             }
         });
+        this.cardManager = cardManager;
         this.count = count;
         this.desc = desc;
     }
 
-    public static PerformanceTest repeat(Command cmd, int count) {
-        return new PerformanceTest(new CommandTestable(cmd), count, null);
+    public static PerformanceTest repeat(CardMngr cardManager, Command cmd, int count) {
+        return new PerformanceTest(cardManager, new CommandTestable(cmd), count, null);
     }
 
-    public static PerformanceTest repeat(String desc, Command cmd, int count) {
-        return new PerformanceTest(new CommandTestable(cmd), count, desc);
+    public static PerformanceTest repeat(CardMngr cardManager, String desc, Command cmd, int count) {
+        return new PerformanceTest(cardManager, new CommandTestable(cmd), count, desc);
     }
 
     @Override
@@ -47,18 +54,31 @@ public class PerformanceTest extends SimpleTest<CommandTestable> {
 
     @Override
     protected void runSelf() {
+        long baseTime = 0;
+        try {
+            new Command.SetDryRunMode(cardManager, ECTesterApplet.MODE_DRY_RUN).send();
+            testable.run();
+            baseTime = testable.getResponse().getDuration();
+            testable.reset();
+            new Command.SetDryRunMode(cardManager, ECTesterApplet.MODE_NORMAL).send();
+        } catch (CardException ce) {
+            throw new TestException(ce);
+        }
+
         times = new long[count];
+        reducedTimes = new long[count];
         responses = new Response[count];
         for (int i = 0; i < count; ++i) {
             testable.run();
             responses[i] = testable.getResponse();
             times[i] = responses[i].getDuration();
+            reducedTimes[i] = times[i] - baseTime;
             testable.reset();
         }
 
-        mean = Arrays.stream(times).sum() / count;
+        mean = Arrays.stream(reducedTimes).sum() / count;
 
-        long[] sorted = times.clone();
+        long[] sorted = reducedTimes.clone();
         Arrays.sort(sorted);
         if (count % 2 == 0) {
             median = (sorted[(count / 2) - 1] + sorted[count / 2]) / 2;
@@ -97,6 +117,10 @@ public class PerformanceTest extends SimpleTest<CommandTestable> {
 
     public long[] getTimes() {
         return times;
+    }
+
+    public long[] getReducedTimes() {
+        return reducedTimes;
     }
 
     public long getMean() {

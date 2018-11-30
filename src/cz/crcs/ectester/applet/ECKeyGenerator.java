@@ -14,6 +14,7 @@ import javacard.security.KeyPair;
 public class ECKeyGenerator {
 
     private short sw = ISO7816.SW_NO_ERROR;
+    private boolean dryRun = false;
 
     /**
      * @param keyClass
@@ -24,12 +25,14 @@ public class ECKeyGenerator {
         sw = ISO7816.SW_NO_ERROR;
         KeyPair ecKeyPair = null;
         try {
-            ecKeyPair = new KeyPair(keyClass, keyLength);
+            if (!dryRun) {
+                ecKeyPair = new KeyPair(keyClass, keyLength);
 
-            if (ecKeyPair.getPublic() == null || ecKeyPair.getPrivate() == null) {
-                try {
-                    ecKeyPair.genKeyPair();
-                } catch (Exception ignored) {
+                if (ecKeyPair.getPublic() == null || ecKeyPair.getPrivate() == null) {
+                    try {
+                        ecKeyPair.genKeyPair();
+                    } catch (Exception ignored) {
+                    }
                 }
             }
         } catch (CardRuntimeException ce) {
@@ -46,8 +49,10 @@ public class ECKeyGenerator {
     public short clearPair(KeyPair keypair, byte key) {
         try {
             sw = AppletUtil.keypairCheck(keypair);
-            if ((key & EC_Consts.KEY_PUBLIC) != 0) keypair.getPublic().clearKey();
-            if ((key & EC_Consts.KEY_PRIVATE) != 0) keypair.getPrivate().clearKey();
+            if (!dryRun) {
+                if ((key & EC_Consts.KEY_PUBLIC) != 0) keypair.getPublic().clearKey();
+                if ((key & EC_Consts.KEY_PRIVATE) != 0) keypair.getPrivate().clearKey();
+            }
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
         }
@@ -61,7 +66,9 @@ public class ECKeyGenerator {
     public short generatePair(KeyPair keypair) {
         try {
             sw = AppletUtil.keypairCheck(keypair);
-            keypair.genKeyPair();
+            if (!dryRun) {
+                keypair.genKeyPair();
+            }
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
         }
@@ -187,25 +194,35 @@ public class ECKeyGenerator {
         try {
             sw = AppletUtil.keypairCheck(keypair);
 
-            ECPublicKey ecPublicKey = (ECPublicKey) keypair.getPublic();
-            ECPrivateKey ecPrivateKey = (ECPrivateKey) keypair.getPrivate();
+            ECPublicKey ecPublicKey = null;
+            ECPrivateKey ecPrivateKey = null;
+            if (!dryRun) {
+                ecPublicKey = (ECPublicKey) keypair.getPublic();
+                ecPrivateKey = (ECPrivateKey) keypair.getPrivate();
+            }
 
             switch (param) {
                 case EC_Consts.PARAMETER_FP:
-                    if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldFP(data, offset, length);
-                    if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldFP(data, offset, length);
+                    if (!dryRun) {
+                        if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldFP(data, offset, length);
+                        if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldFP(data, offset, length);
+                    }
                     break;
                 case EC_Consts.PARAMETER_F2M:
                     if (length == 4) {
                         short i = Util.getShort(data, (short) (offset + 2));
-                        if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i);
-                        if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i);
+                        if (!dryRun) {
+                            if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i);
+                            if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i);
+                        }
                     } else if (length == 8) {
                         short i1 = Util.getShort(data, (short) (offset + 2));
                         short i2 = Util.getShort(data, (short) (offset + 4));
                         short i3 = Util.getShort(data, (short) (offset + 6));
-                        if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i1, i2, i3);
-                        if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i1, i2, i3);
+                        if (!dryRun) {
+                            if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i1, i2, i3);
+                            if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i1, i2, i3);
+                        }
                         // if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setFieldF2M(i3, i2, i1);
                         // if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setFieldF2M(i3, i2, i1);
                     } else {
@@ -213,20 +230,28 @@ public class ECKeyGenerator {
                     }
                     break;
                 case EC_Consts.PARAMETER_A:
-                    if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setA(data, offset, length);
-                    if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setA(data, offset, length);
+                    if (!dryRun) {
+                        if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setA(data, offset, length);
+                        if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setA(data, offset, length);
+                    }
                     break;
                 case EC_Consts.PARAMETER_B:
-                    if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setB(data, offset, length);
-                    if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setB(data, offset, length);
+                    if (!dryRun) {
+                        if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setB(data, offset, length);
+                        if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setB(data, offset, length);
+                    }
                     break;
                 case EC_Consts.PARAMETER_G:
-                    if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setG(data, offset, length);
-                    if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setG(data, offset, length);
+                    if (!dryRun) {
+                        if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setG(data, offset, length);
+                        if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setG(data, offset, length);
+                    }
                     break;
                 case EC_Consts.PARAMETER_R:
-                    if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setR(data, offset, length);
-                    if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setR(data, offset, length);
+                    if (!dryRun) {
+                        if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setR(data, offset, length);
+                        if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setR(data, offset, length);
+                    }
                     break;
                 case EC_Consts.PARAMETER_K:
                     short k = 0;
@@ -238,14 +263,20 @@ public class ECKeyGenerator {
                     } else if (length == 1) {
                         k = data[offset];
                     }
-                    if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setK(k);
-                    if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setK(k);
+                    if (!dryRun) {
+                        if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setK(k);
+                        if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setK(k);
+                    }
                     break;
                 case EC_Consts.PARAMETER_S:
-                    if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setS(data, offset, length);
+                    if (!dryRun) {
+                        if ((key & EC_Consts.KEY_PRIVATE) != 0) ecPrivateKey.setS(data, offset, length);
+                    }
                     break;
                 case EC_Consts.PARAMETER_W:
-                    if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setW(data, offset, length);
+                    if (!dryRun) {
+                        if ((key & EC_Consts.KEY_PUBLIC) != 0) ecPublicKey.setW(data, offset, length);
+                    }
                     break;
                 default:
                     ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
@@ -310,54 +341,75 @@ public class ECKeyGenerator {
         short length = 0;
         try {
             sw = AppletUtil.keypairCheck(keypair);
-            ECPublicKey ecPublicKey = (ECPublicKey) keypair.getPublic();
-            ECPrivateKey ecPrivateKey = (ECPrivateKey) keypair.getPrivate();
+
+            ECPublicKey ecPublicKey = null;
+            ECPrivateKey ecPrivateKey = null;
+            if (!dryRun) {
+                ecPublicKey = (ECPublicKey) keypair.getPublic();
+                ecPrivateKey = (ECPrivateKey) keypair.getPrivate();
+            }
 
             switch (param) {
                 case EC_Consts.PARAMETER_FP:
-                    if ((key & EC_Consts.KEY_PUBLIC) != 0) length = ecPublicKey.getField(outputBuffer, outputOffset);
-                    if ((key & EC_Consts.KEY_PRIVATE) != 0) length = ecPrivateKey.getField(outputBuffer, outputOffset);
+                    if (!dryRun) {
+                        if ((key & EC_Consts.KEY_PUBLIC) != 0)
+                            length = ecPublicKey.getField(outputBuffer, outputOffset);
+                        if ((key & EC_Consts.KEY_PRIVATE) != 0)
+                            length = ecPrivateKey.getField(outputBuffer, outputOffset);
+                    }
                     break;
                 case EC_Consts.PARAMETER_F2M:
-                    if ((key & EC_Consts.KEY_PUBLIC) != 0) {
+                    if ((key & EC_Consts.KEY_PUBLIC) != 0 && !dryRun) {
                         Util.setShort(outputBuffer, outputOffset, ecPublicKey.getSize());
                         length = 2;
                         length += ecPublicKey.getField(outputBuffer, (short) (outputOffset + 2));
                     }
-                    if ((key & EC_Consts.KEY_PRIVATE) != 0) {
+                    if ((key & EC_Consts.KEY_PRIVATE) != 0 && !dryRun) {
                         Util.setShort(outputBuffer, outputOffset, ecPrivateKey.getSize());
                         length = 2;
                         length += ecPrivateKey.getField(outputBuffer, (short) (outputOffset + 2));
                     }
                     break;
                 case EC_Consts.PARAMETER_A:
-                    if ((key & EC_Consts.KEY_PUBLIC) != 0) length = ecPublicKey.getA(outputBuffer, outputOffset);
-                    if ((key & EC_Consts.KEY_PRIVATE) != 0) length = ecPrivateKey.getA(outputBuffer, outputOffset);
+                    if (!dryRun) {
+                        if ((key & EC_Consts.KEY_PUBLIC) != 0) length = ecPublicKey.getA(outputBuffer, outputOffset);
+                        if ((key & EC_Consts.KEY_PRIVATE) != 0) length = ecPrivateKey.getA(outputBuffer, outputOffset);
+                    }
                     break;
                 case EC_Consts.PARAMETER_B:
-                    if ((key & EC_Consts.KEY_PUBLIC) != 0) length = ecPublicKey.getB(outputBuffer, outputOffset);
-                    if ((key & EC_Consts.KEY_PRIVATE) != 0) length = ecPrivateKey.getB(outputBuffer, outputOffset);
+                    if (!dryRun) {
+                        if ((key & EC_Consts.KEY_PUBLIC) != 0) length = ecPublicKey.getB(outputBuffer, outputOffset);
+                        if ((key & EC_Consts.KEY_PRIVATE) != 0) length = ecPrivateKey.getB(outputBuffer, outputOffset);
+                    }
                     break;
                 case EC_Consts.PARAMETER_G:
-                    if ((key & EC_Consts.KEY_PUBLIC) != 0) length = ecPublicKey.getG(outputBuffer, outputOffset);
-                    if ((key & EC_Consts.KEY_PRIVATE) != 0) length = ecPrivateKey.getG(outputBuffer, outputOffset);
+                    if (!dryRun) {
+                        if ((key & EC_Consts.KEY_PUBLIC) != 0) length = ecPublicKey.getG(outputBuffer, outputOffset);
+                        if ((key & EC_Consts.KEY_PRIVATE) != 0) length = ecPrivateKey.getG(outputBuffer, outputOffset);
+                    }
                     break;
                 case EC_Consts.PARAMETER_R:
-                    if ((key & EC_Consts.KEY_PUBLIC) != 0) length = ecPublicKey.getR(outputBuffer, outputOffset);
-                    if ((key & EC_Consts.KEY_PRIVATE) != 0) length = ecPrivateKey.getR(outputBuffer, outputOffset);
+                    if (!dryRun) {
+                        if ((key & EC_Consts.KEY_PUBLIC) != 0) length = ecPublicKey.getR(outputBuffer, outputOffset);
+                        if ((key & EC_Consts.KEY_PRIVATE) != 0) length = ecPrivateKey.getR(outputBuffer, outputOffset);
+                    }
                     break;
                 case EC_Consts.PARAMETER_K:
-                    length = 2;
-                    if ((key & EC_Consts.KEY_PUBLIC) != 0)
-                        Util.setShort(outputBuffer, outputOffset, ecPublicKey.getK());
-                    if ((key & EC_Consts.KEY_PRIVATE) != 0)
-                        Util.setShort(outputBuffer, outputOffset, ecPrivateKey.getK());
+                    if (!dryRun) {
+                        length = 2;
+                        if ((key & EC_Consts.KEY_PUBLIC) != 0)
+                            Util.setShort(outputBuffer, outputOffset, ecPublicKey.getK());
+                        if ((key & EC_Consts.KEY_PRIVATE) != 0)
+                            Util.setShort(outputBuffer, outputOffset, ecPrivateKey.getK());
+                    }
                     break;
                 case EC_Consts.PARAMETER_W:
-                    if ((key & EC_Consts.KEY_PUBLIC) != 0) length = ecPublicKey.getW(outputBuffer, outputOffset);
+                    if ((key & EC_Consts.KEY_PUBLIC) != 0 && !dryRun)
+                        length = ecPublicKey.getW(outputBuffer, outputOffset);
                     break;
                 case EC_Consts.PARAMETER_S:
-                    if ((key & EC_Consts.KEY_PRIVATE) != 0) length = ecPrivateKey.getS(outputBuffer, outputOffset);
+                    if ((key & EC_Consts.KEY_PRIVATE) != 0 && !dryRun)
+                        length = ecPrivateKey.getS(outputBuffer, outputOffset);
                     break;
                 default:
                     ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
@@ -438,5 +490,9 @@ public class ECKeyGenerator {
 
     public short getSW() {
         return sw;
+    }
+
+    public void setDryRun(boolean dryRun) {
+        this.dryRun = dryRun;
     }
 }

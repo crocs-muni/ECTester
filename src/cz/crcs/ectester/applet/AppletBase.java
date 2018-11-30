@@ -24,6 +24,7 @@ public abstract class AppletBase extends Applet {
     public static final byte INS_ALLOCATE_KA = (byte) 0x76;
     public static final byte INS_ALLOCATE_SIG = (byte) 0x77;
     public static final byte INS_GET_INFO = (byte) 0x78;
+    public static final byte INS_SET_DRY_RUN_MODE = (byte) 0x79;
 
     // PARAMETERS for P1 and P2
     public static final byte KEYPAIR_LOCAL = (byte) 0x01;
@@ -31,6 +32,8 @@ public abstract class AppletBase extends Applet {
     public static final byte KEYPAIR_BOTH = KEYPAIR_LOCAL | KEYPAIR_REMOTE;
     public static final byte EXPORT_TRUE = (byte) 0xff;
     public static final byte EXPORT_FALSE = (byte) 0x00;
+    public static final byte MODE_NORMAL = (byte) 0xaa;
+    public static final byte MODE_DRY_RUN = (byte) 0xbb;
 
     // STATUS WORDS
     public static final short SW_SIG_VERIFY_FAIL = (short) 0x0ee1;
@@ -159,6 +162,8 @@ public abstract class AppletBase extends Applet {
                     case INS_GET_INFO:
                         length = insGetInfo(apdu);
                         break;
+                    case INS_SET_DRY_RUN_MODE:
+                        length = insSetDryRunMode(apdu);
                     default:
                         // The INS code is not supported by the dispatcher
                         ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);
@@ -545,6 +550,26 @@ public abstract class AppletBase extends Applet {
     }
 
     /**
+     * Set the dry run mode of the applet.
+     *
+     * @param apdu P1 = byte mode (MODE_* || ...)
+     * @return length of response
+     */
+    private short insSetDryRunMode(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        byte mode = apduArray[ISO7816.OFFSET_P1];
+
+        short len = 0;
+        if (mode == MODE_NORMAL) {
+            len = setDryRunMode(apdubuf, false, (short) 0);
+        }
+        if (mode == MODE_DRY_RUN) {
+            len = setDryRunMode(apdubuf, true, (short) 0);
+        }
+        return len;
+    }
+
+    /**
      * @param keyPair   which keyPair to use, local/remote (KEYPAIR_* | ...)
      * @param keyLength key length to set
      * @param keyClass  key class to allocate
@@ -882,5 +907,16 @@ public abstract class AppletBase extends Applet {
         Util.setShort(buffer, (short) (offset + length), (short) apduArray.length);
         length += 2;
         return length;
+    }
+
+    private short setDryRunMode(byte[] buffer, boolean mode, short offset) {
+        if (keyTester != null) {
+            keyTester.setDryRun(mode);
+        }
+        if (keyGenerator != null) {
+            keyGenerator.setDryRun(mode);
+        }
+        Util.setShort(buffer, offset, ISO7816.SW_NO_ERROR);
+        return 2;
     }
 }

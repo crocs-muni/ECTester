@@ -83,7 +83,7 @@ public class CardDefaultSuite extends CardTestSuite {
 
                     Test compound;
                     if (ka.ok()) {
-                        Test perfTest = runTest(PerformanceTest.repeat(ecdh, 10));
+                        Test perfTest = runTest(PerformanceTest.repeat(this.card, ecdh, 10));
                         compound = runTest(CompoundTest.function(kaCallback, kaDesc, allocate, ka, kaCompressed, perfTest));
                     } else {
                         compound = runTest(CompoundTest.function(kaCallback, kaDesc, allocate, ka, kaCompressed));
@@ -114,10 +114,10 @@ public class CardDefaultSuite extends CardTestSuite {
                     Test compound;
                     if (expect.ok()) {
                         Command ecdsaSign = new Command.ECDSA_sign(this.card, ECTesterApplet.KEYPAIR_LOCAL, sigType, ECTesterApplet.EXPORT_TRUE, sigData);
-                        PerformanceTest signTest = runTest(PerformanceTest.repeat("Sign", ecdsaSign, 10));
+                        PerformanceTest signTest = runTest(PerformanceTest.repeat(this.card, "Sign", ecdsaSign, 10));
                         byte[] signature = signTest.getResponses()[0].getParam(0);
                         Command ecdsaVerify = new Command.ECDSA_verify(this.card, ECTesterApplet.KEYPAIR_LOCAL, sigType, sigData, signature);
-                        PerformanceTest verifyTest = runTest(PerformanceTest.repeat("Verify", ecdsaVerify, 10));
+                        PerformanceTest verifyTest = runTest(PerformanceTest.repeat(this.card, "Verify", ecdsaVerify, 10));
                         compound = runTest(CompoundTest.all(ExpectedValue.SUCCESS, signDesc, allocate, expect, signTest, verifyTest));
                     } else {
                         compound = runTest(CompoundTest.all(ExpectedValue.SUCCESS, signDesc, allocate, expect));
