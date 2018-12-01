@@ -88,6 +88,18 @@
         <field>prime</field>
         <file>cofactor192p2.csv</file>
     </curve>
+    <curve>
+        <id>cofactor192p4</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>cofactor192p4.csv</file>
+    </curve>
+    <curve>
+        <id>cofactor192p8</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>cofactor192p8.csv</file>
+    </curve>
     
     <curve>
         <id>cofactor163t2</id>
