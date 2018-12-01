@@ -50,10 +50,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.security.Security;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.jar.Manifest;
 
 import static cz.crcs.ectester.applet.EC_Consts.KeyAgreement_ALG_EC_SVDP_DH;
@@ -331,6 +328,7 @@ public class ECTesterReader {
         opts.addOption(Option.builder("v").longOpt("verbose").desc("Turn on verbose logging.").build());
         opts.addOption(Option.builder().longOpt("format").desc("Output format to use. One of: text,yml,xml.").hasArg().argName("format").build());
 
+        opts.addOption(Option.builder().longOpt("static").desc("Generate key(s) only once, keep them for later operations.").build());
         opts.addOption(Option.builder("f").longOpt("fresh").desc("Generate fresh keys (set domain parameters before every generation).").build());
         opts.addOption(Option.builder().longOpt("cleanup").desc("Send the cleanup command trigerring JCSystem.requestObjectDeletion() after some operations.").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
@@ -614,6 +612,7 @@ public class ECTesterReader {
             }
 
             if (out != null) {
+
                 out.write(String.format("%d;%d;%s;%s;%s\n", done, perform.getDuration() / 1000000, ByteUtil.bytesToHex(pubkey_bytes, false), ByteUtil.bytesToHex(privkey_bytes, false), ByteUtil.bytesToHex(perform.getSecret(), false)));
             }
 
@@ -644,6 +643,10 @@ public class ECTesterReader {
                 throw new FileNotFoundException(cfg.input);
             }
             data = Files.readAllBytes(in.toPath());
+        } else {
+            Random rand = new Random();
+            data = new byte[32];
+            rand.nextBytes(data);
         }
 
         Command generate;
@@ -667,18 +670,42 @@ public class ECTesterReader {
 
         OutputStreamWriter out = FileUtil.openFiles(cfg.outputs);
         if (out != null) {
-            out.write("index;time;signature\n");
+            out.write("index;signTime;verifyTime;data;pubW;privS;signature;valid\n");
+        }
+
+        Command.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR);
+        Response.Export exported = null;
+        if (cfg.staticKey) {
+            respWriter.outputResponse(generate.send());
+            exported = export.send();
+            respWriter.outputResponse(exported);
         }
 
         int retry = 0;
         int done = 0;
         while (done < cfg.ECDSACount) {
-            respWriter.outputResponse(generate.send());
+            if (!cfg.staticKey) {
+                respWriter.outputResponse(generate.send());
+                exported = export.send();
+                respWriter.outputResponse(exported);
+            }
 
-            Response.ECDSA perform = new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.ECDSAType, ECTesterApplet.EXPORT_TRUE, data).send();
-            respWriter.outputResponse(perform);
+            Response.ECDSA sign = new Command.ECDSA_sign(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.ECDSAType, ECTesterApplet.EXPORT_TRUE, data).send();
+            respWriter.outputResponse(sign);
+            if (!sign.successful() || ! sign.hasSignature()) {
+                if (retry < 10) {
+                    ++retry;
+                    continue;
+                } else {
+                    System.err.println(Colors.error("Couldn't obtain ECDSA signature from card response."));
+                    break;
+                }
+            }
+            byte[] signature = sign.getSignature();
+            Response.ECDSA verify = new Command.ECDSA_verify(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.ECDSAType, data, signature).send();
+            respWriter.outputResponse(verify);
 
-            if (!perform.successful() || !perform.hasSignature()) {
+            if (verify.error()) {
                 if (retry < 10) {
                     ++retry;
                     continue;
@@ -689,7 +716,10 @@ public class ECTesterReader {
             }
 
             if (out != null) {
-                out.write(String.format("%d;%d;%s\n", done, perform.getDuration() / 1000000, ByteUtil.bytesToHex(perform.getSignature(), false)));
+                String pub = ByteUtil.bytesToHex(exported.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_W), false);
+                String priv = ByteUtil.bytesToHex(exported.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S), false);
+                String dataString = (cfg.input != null) ? "" : ByteUtil.bytesToHex(data, false);
+                out.write(String.format("%d;%d;%d;%s;%s;%s;%s;%d\n", done, sign.getDuration() / 1000000, verify.getDuration() / 1000000, dataString, pub, priv, ByteUtil.bytesToHex(signature, false), verify.successful() ? 1 : 0));
             }
 
             ++done;
@@ -733,6 +763,7 @@ public class ECTesterReader {
         public String key;
 
         public boolean anyKeypart = false;
+        public boolean staticKey = false;
 
         public String log;
 
@@ -786,6 +817,7 @@ public class ECTesterReader {
             key = cli.getOptionValue("key");
             anyKey = (key != null) || (namedKey != null);
             anyKeypart = anyKey || anyPublicKey || anyPrivateKey;
+            staticKey = cli.hasOption("static");
 
             if (cli.hasOption("log")) {
                 log = cli.getOptionValue("log", String.format("ECTESTER_log_%d.log", System.currentTimeMillis() / 1000));

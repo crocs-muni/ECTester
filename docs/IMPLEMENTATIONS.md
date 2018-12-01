@@ -536,17 +536,27 @@ y_n &= \frac{(x_n + x_1)((x_n + x_1)(x_{n+1} + x_1) + x_1^2 + y_1)}{x_1} + y_1
 ## References
 
 [^1]: HANKERSON, Darrel; MENEZES, Alfred J.; VANSTONE, Scott. Guide to Elliptic Curve Cryptography. New York, USA: Springer, 2004. ISBN 9780387218465. Available from DOI: [10.1007/b97644](https://dx.doi.org/10.1007/b97644).
-[^2]: COHEN, Henri; FREY, Gerhard; AVANZI, Roberto M.; DOCHE, Christophe; LANGE,
-Tanja; NGUYEN, Kim; VERCAUTEREN, Frederik. Handbook of Elliptic and Hyper-
-elliptic Curve Cryptography. CRC Press, 2005-07-19. Discrete Mathematics and It’s Applications, no. 34. ISBN 9781584885184.
+
+[^2]: COHEN, Henri; FREY, Gerhard; AVANZI, Roberto M.; DOCHE, Christophe; LANGE, Tanja; NGUYEN, Kim; VERCAUTEREN, Frederik. Handbook of Elliptic and Hyper-elliptic Curve Cryptography. CRC Press, 2005-07-19. Discrete Mathematics and It’s Applications, no. 34. ISBN 9781584885184.
+
 [^3]: BERNSTEIN, Daniel J.; LANGE, Tanja. Explicit Formulas Database, <https://www.hyperelliptic.org/EFD/>
+
 [^4]: <http://point-at-infinity.org/ecc/>
+
 [^5]: KNUTH, Donald: The Art of Computer Programming, Volume 2: Seminumerical algorithms
+
 [^6]: GORDON, Daniel M.: A survey of fast exponentiation methods.
+
 [^7]: MORAIN, Francois; OLIVOS, Jorge: Speeding up the computations on an elliptic curve using addition-subtraction chains.
+
 [^8]: JOYE, Marc; YEN, Sung-Ming: The Montgomery Powering Ladder.
+
 [^9]: MOLLER, Bodo: Securing Elliptic Curve Point Multiplication against Side-Channel Attacks.
+
 [^10]: MOLLER, Bodo: Improved Techniques for Fast Exponentiation.
+
 [^11]: MOLLER, Bodo: Fractional Windows Revisited: Improved Signed-Digit Representations for Efficient Exponentiation.
+
 [^12]: KOYAMA, Kenji; TSURUOKA, Yukio: Speeding up Elliptic Cryptosystems by Using a Signed Binary Window Method.
+
 [^13]: GALLANT, Robert P.; LAMBERT, Robert J.; VANSTONE, Scott A.: Faster point multiplication on elliptic curves with efficient endomorphisms.
