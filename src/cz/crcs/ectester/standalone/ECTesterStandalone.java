@@ -51,6 +51,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
@@ -415,7 +416,7 @@ public class ECTesterStandalone {
             data = Files.readAllBytes(in.toPath());
             dataString = "";
         } else {
-            SecureRandom random = new SecureRandom();
+            Random random = new Random();
             data = new byte[32];
             random.nextBytes(data);
             dataString = ByteUtil.bytesToHex(data, false);
@@ -455,6 +456,7 @@ public class ECTesterStandalone {
         }
         Signature sig = sigIdent.getInstance(lib.getProvider());
         KeyPairGenerator kpg = kpIdent.getInstance(lib.getProvider());
+        ECParameterSpec spec = null;
         if (cli.hasOption("ecdsa.bits")) {
             int bits = Integer.parseInt(cli.getOptionValue("ecdsa.bits"));
             kpg.initialize(bits);
@@ -465,7 +467,8 @@ public class ECTesterStandalone {
                 System.err.println("Curve not found: " + curveName);
                 return;
             }
-            kpg.initialize(curve.toSpec());
+            spec = curve.toSpec();
+            kpg.initialize(spec);
         } else if (cli.hasOption("ecdsa.curve-name")) {
             String curveName = cli.getOptionValue("ecdsa.curve-name");
             kpg.initialize(new ECGenParameterSpec(curveName));
@@ -478,7 +481,7 @@ public class ECTesterStandalone {
             out = System.out;
         }
 
-        out.println("index;data;signTime[nano];verifyTime[nano];pubW;privS;signature;verified");
+        out.println("index;signTime[nano];verifyTime[nano];data;pubW;privS;signature;nonce;verified");
 
         int amount = Integer.parseInt(cli.getOptionValue("ecdsa.amount", "1"));
         for (int i = 0; i < amount; ++i) {
@@ -510,7 +513,14 @@ public class ECTesterStandalone {
             String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW(), pubkey.getParams()), false);
             String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
             String sign = ByteUtil.bytesToHex(signature, false);
-            out.println(String.format("%d;%s;%d;%d;%s;%s;%s;%d", i, dataString, signTime, verifyTime, pub, priv, sign, verified ? 1 : 0));
+            String k = "";
+            if (spec != null) {
+                BigInteger kValue = ECUtil.recoverSignatureNonce(signature, data, privkey.getS(), spec, sigIdent.getHashAlgo());
+                if (kValue != null) {
+                    k = ByteUtil.bytesToHex(kValue.toByteArray(), false);
+                }
+            }
+            out.println(String.format("%d;%d;%d;%s;%s;%s;%s;%s;%d", i, signTime, verifyTime, dataString, pub, priv, sign, k, verified ? 1 : 0));
         }
 
         if (cli.hasOption("ecdsa.output")) {

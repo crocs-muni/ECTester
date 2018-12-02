@@ -104,6 +104,7 @@ public class SignatureIdent extends Ident {
                     int split = alias.indexOf("with");
                     this.hash = alias.substring(0, split);
                     this.sig = alias.substring(split + 4);
+                    break;
                 }
             }
         }

@@ -254,6 +254,7 @@ public class ECUtil {
             BigInteger hrd = hashInt.add(rd).mod(params.getOrder());
             return s.modInverse(params.getOrder()).multiply(hrd).mod(params.getOrder());
         } catch (NoSuchAlgorithmException | IOException nsae) {
+            nsae.printStackTrace();
             return null;
         }
     }
