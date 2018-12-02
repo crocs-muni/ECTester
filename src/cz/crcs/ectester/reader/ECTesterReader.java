@@ -26,10 +26,12 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.cli.CLITools;
 import cz.crcs.ectester.common.cli.Colors;
+import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.common.output.OutputLogger;
 import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.common.util.CardUtil;
+import cz.crcs.ectester.common.util.ECUtil;
 import cz.crcs.ectester.common.util.FileUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.command.Command;
@@ -40,16 +42,22 @@ import cz.crcs.ectester.reader.test.*;
 import javacard.framework.ISO7816;
 import javacard.security.KeyPair;
 import org.apache.commons.cli.*;
+import org.bouncycastle.asn1.ASN1Integer;
+import org.bouncycastle.asn1.ASN1StreamParser;
+import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.DERSequenceParser;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.smartcardio.CardException;
 import javax.smartcardio.ResponseAPDU;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
+import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.security.Security;
+import java.security.spec.ECParameterSpec;
 import java.util.*;
 import java.util.jar.Manifest;
 
@@ -670,7 +678,7 @@ public class ECTesterReader {
 
         OutputStreamWriter out = FileUtil.openFiles(cfg.outputs);
         if (out != null) {
-            out.write("index;signTime;verifyTime;data;pubW;privS;signature;valid\n");
+            out.write("index;signTime;verifyTime;data;pubW;privS;signature;nonce;valid\n");
         }
 
         Command.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR);
@@ -719,7 +727,17 @@ public class ECTesterReader {
                 String pub = ByteUtil.bytesToHex(exported.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_W), false);
                 String priv = ByteUtil.bytesToHex(exported.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S), false);
                 String dataString = (cfg.input != null) ? "" : ByteUtil.bytesToHex(data, false);
-                out.write(String.format("%d;%d;%d;%s;%s;%s;%s;%d\n", done, sign.getDuration() / 1000000, verify.getDuration() / 1000000, dataString, pub, priv, ByteUtil.bytesToHex(signature, false), verify.successful() ? 1 : 0));
+                BigInteger privkey = new BigInteger(1, exported.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S));
+                EC_Curve actualCurve = Command.findCurve(EC_Store.getInstance(), cfg, cfg.bits, keyClass);
+                String k = "";
+                if (actualCurve != null) {
+                    ECParameterSpec params = actualCurve.toSpec();
+                    BigInteger kValue = ECUtil.recoverSignatureNonce(signature, data, privkey, params, CardUtil.getSigHashAlgo(cfg.ECDSAType));
+                    if (kValue != null) {
+                        k = ByteUtil.bytesToHex(kValue.toByteArray(), false);
+                    }
+                }
+                out.write(String.format("%d;%d;%d;%s;%s;%s;%s;%s;%d\n", done, sign.getDuration() / 1000000, verify.getDuration() / 1000000, dataString, pub, priv, ByteUtil.bytesToHex(signature, false), k,verify.successful() ? 1 : 0));
             }
 
             ++done;

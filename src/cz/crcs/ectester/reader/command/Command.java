@@ -54,23 +54,11 @@ public abstract class Command implements Cloneable {
         return (Command) super.clone();
     }
 
-
-    /**
-     * @param keyPair   which keyPair/s (local/remote) to set curve domain parameters on
-     * @param keyLength key length to choose
-     * @param keyClass  key class to choose
-     * @return a Command to send in order to prepare the curve on the keypairs.
-     * @throws IOException if curve file cannot be found/opened
-     */
-    public static Command prepareCurve(CardMngr cardManager, EC_Store dataStore, ECTesterReader.Config cfg, byte keyPair, short keyLength, byte keyClass) throws IOException {
-
+    public static EC_Curve findCurve(EC_Store dataStore, ECTesterReader.Config cfg, short keyLength, byte keyClass) throws IOException {
         if (cfg.customCurve) {
-            // Set custom curve (one of the SECG curves embedded applet-side)
-            short domainParams = keyClass == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
-            return new Command.Set(cardManager, keyPair, EC_Consts.getCurve(keyLength, keyClass), domainParams, null);
+            byte curveId = EC_Consts.getCurve(keyLength, keyClass);
+            return dataStore.getObject(EC_Curve.class, "secg", CardUtil.getCurveName(curveId));
         } else if (cfg.namedCurve != null) {
-            // Set a named curve.
-            // parse cfg.namedCurve -> cat / id | cat | id
             EC_Curve curve = dataStore.getObject(EC_Curve.class, cfg.namedCurve);
             if (curve == null) {
                 throw new IOException("Curve could no be found.");
@@ -81,34 +69,44 @@ public abstract class Command implements Cloneable {
             if (curve.getField() != keyClass) {
                 throw new IOException("Curve field mismatch.");
             }
-
-            byte[] external = curve.flatten();
-            if (external == null) {
-                throw new IOException("Couldn't read named curve data.");
-            }
-            return new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, curve.getParams(), external);
+            return curve;
         } else if (cfg.curveFile != null) {
-            // Set curve loaded from a file
             EC_Curve curve = new EC_Curve(null, keyLength, keyClass);
 
             FileInputStream in = new FileInputStream(cfg.curveFile);
             curve.readCSV(in);
             in.close();
-
-            byte[] external = curve.flatten();
-            if (external == null) {
-                throw new IOException("Couldn't read the curve file correctly.");
-            }
-            return new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, curve.getParams(), external);
+            return curve;
         } else {
-            // Set default curve
-            /* This command was generally causing problems for simulating on jcardsim.
-             * Since there, .clearKey() resets all the keys values, even the domain.
-             * This might break some other stuff.. But should not.
-             */
-            //commands.add(new Command.Clear(cardManager, keyPair));
             return null;
         }
+    }
+
+
+    /**
+     * @param keyPair   which keyPair/s (local/remote) to set curve domain parameters on
+     * @param keyLength key length to choose
+     * @param keyClass  key class to choose
+     * @return a Command to send in order to prepare the curve on the keypairs.
+     * @throws IOException if curve file cannot be found/opened
+     */
+    public static Command prepareCurve(CardMngr cardManager, EC_Store dataStore, ECTesterReader.Config cfg, byte keyPair, short keyLength, byte keyClass) throws IOException {
+        if (cfg.customCurve) {
+            // Set custom curve (one of the SECG curves embedded applet-side)
+            short domainParams = keyClass == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
+            return new Command.Set(cardManager, keyPair, EC_Consts.getCurve(keyLength, keyClass), domainParams, null);
+        }
+
+        EC_Curve curve = findCurve(dataStore, cfg, keyLength, keyClass);
+        if ((curve == null || curve.flatten() == null) && (cfg.namedCurve != null || cfg.curveFile != null)) {
+            if (cfg.namedCurve != null) {
+                throw new IOException("Couldn't read named curve data.");
+            }
+            throw new IOException("Couldn't read the curve file correctly.");
+        } else if (curve == null) {
+            return null;
+        }
+        return new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, curve.getParams(), curve.flatten());
     }
 
 
@@ -896,8 +894,8 @@ public abstract class Command implements Cloneable {
      */
     public static class SetDryRunMode extends Command {
         private byte dryRunMode;
+
         /**
-         *
          * @param cardManager
          * @param dryRunMode
          */
@@ -918,7 +916,7 @@ public abstract class Command implements Cloneable {
 
         @Override
         public String getDescription() {
-            return (dryRunMode == ECTesterApplet.MODE_NORMAL ? "Disable" : "Enable")  + " dry run mode";
+            return (dryRunMode == ECTesterApplet.MODE_NORMAL ? "Disable" : "Enable") + " dry run mode";
         }
     }
 }
