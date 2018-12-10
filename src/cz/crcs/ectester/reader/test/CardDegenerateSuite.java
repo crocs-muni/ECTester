@@ -40,7 +40,7 @@ public class CardDegenerateSuite extends CardTestSuite {
             Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.ExpectedValue.SUCCESS);
             Test generate = CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_LOCAL), Result.ExpectedValue.SUCCESS);
 
-            Test prepare = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Prepare and generate keypair on " + curve.getId(), allocate, set, generate);
+            Test prepare = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Prepare and generate keypair on " + curve.getId() + ".", allocate, set, generate);
 
             List<Test> ecdhTests = new LinkedList<>();
             for (EC_Key.Public pub : keys) {
@@ -50,13 +50,14 @@ public class CardDegenerateSuite extends CardTestSuite {
                 Command ecdhCommand = new Command.ECDH_direct(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH, pub.flatten());
                 Test rawEcdh = CommandTest.expect(ecdhCommand, Result.ExpectedValue.FAILURE, "Card correctly rejected point on degenerate curve.", "Card incorrectly accepted point on degenerate curve.");
                 ecdhTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " degenerate key test.", objectEcdh, rawEcdh));
+                //TODO: actually get the result of ECDH here, as well as export privkey and compare to exponentiation in Fp^*.
             }
-            Test ecdh = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform ECDH with degenerate public points", ecdhTests.toArray(new Test[0]));
+            Test ecdh = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform ECDH with degenerate public points.", ecdhTests.toArray(new Test[0]));
             if (cfg.cleanup) {
                 Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY);
-                doTest(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Degenerate curve test of " + curve.getId(), prepare, ecdh, cleanup));
+                doTest(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Degenerate curve test of " + curve.getId() + ".", prepare, ecdh, cleanup));
             } else {
-                doTest(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Degenerate curve test of " + curve.getId(), prepare, ecdh));
+                doTest(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Degenerate curve test of " + curve.getId() + ".", prepare, ecdh));
             }
 
         }

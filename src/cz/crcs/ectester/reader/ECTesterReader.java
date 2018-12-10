@@ -42,10 +42,6 @@ import cz.crcs.ectester.reader.test.*;
 import javacard.framework.ISO7816;
 import javacard.security.KeyPair;
 import org.apache.commons.cli.*;
-import org.bouncycastle.asn1.ASN1Integer;
-import org.bouncycastle.asn1.ASN1StreamParser;
-import org.bouncycastle.asn1.DERSequence;
-import org.bouncycastle.asn1.DERSequenceParser;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.smartcardio.CardException;
@@ -603,8 +599,8 @@ public class ECTesterReader {
 
             Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR).send();
             respWriter.outputResponse(export);
-            byte pubkey_bytes[] = export.getParameter(pubkey, EC_Consts.PARAMETER_W);
-            byte privkey_bytes[] = export.getParameter(privkey, EC_Consts.PARAMETER_S);
+            byte[] pubkey_bytes = export.getParameter(pubkey, EC_Consts.PARAMETER_W);
+            byte[] privkey_bytes = export.getParameter(privkey, EC_Consts.PARAMETER_S);
 
             Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, cfg.ECKAType).send();
             respWriter.outputResponse(perform);
@@ -643,7 +639,7 @@ public class ECTesterReader {
      */
     private void ecdsa() throws CardException, IOException {
         //read file, if asked to sign
-        byte[] data = null;
+        byte[] data;
         if (cfg.input != null) {
             File in = new File(cfg.input);
             long len = in.length();
@@ -700,7 +696,7 @@ public class ECTesterReader {
 
             Response.ECDSA sign = new Command.ECDSA_sign(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.ECDSAType, ECTesterApplet.EXPORT_TRUE, data).send();
             respWriter.outputResponse(sign);
-            if (!sign.successful() || ! sign.hasSignature()) {
+            if (!sign.successful() || !sign.hasSignature()) {
                 if (retry < 10) {
                     ++retry;
                     continue;
@@ -737,7 +733,7 @@ public class ECTesterReader {
                         k = ByteUtil.bytesToHex(kValue.toByteArray(), false);
                     }
                 }
-                out.write(String.format("%d;%d;%d;%s;%s;%s;%s;%s;%d\n", done, sign.getDuration() / 1000000, verify.getDuration() / 1000000, dataString, pub, priv, ByteUtil.bytesToHex(signature, false), k,verify.successful() ? 1 : 0));
+                out.write(String.format("%d;%d;%d;%s;%s;%s;%s;%s;%d\n", done, sign.getDuration() / 1000000, verify.getDuration() / 1000000, dataString, pub, priv, ByteUtil.bytesToHex(signature, false), k, verify.successful() ? 1 : 0));
             }
 
             ++done;
