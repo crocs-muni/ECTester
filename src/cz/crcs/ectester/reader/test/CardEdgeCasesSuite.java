@@ -164,8 +164,21 @@ public class CardEdgeCasesSuite extends CardTestSuite {
 
             BigInteger full = BigInteger.valueOf(1).shiftLeft(R.bitLength() - 1).subtract(BigInteger.ONE);
 
+            BigInteger alternate = full;
+            for (int i = 0; i < R.bitLength(); i += 2) {
+                alternate = alternate.clearBit(i);
+            }
+
+            BigInteger alternateOther = alternate.xor(full);
+
+            EC_Params alternateParams = makeParams(alternate);
+            Test alternateS = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, alternateParams.getParams(), alternateParams.flatten()), "ECDH with S = 101010101...01010.", Result.ExpectedValue.SUCCESS, Result.ExpectedValue.SUCCESS);
+
+            EC_Params alternateOtherParams = makeParams(alternateOther);
+            Test alternateOtherS = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, alternateOtherParams.getParams(), alternateOtherParams.flatten()), "ECDH with S = 01010101...10101.", Result.ExpectedValue.SUCCESS, Result.ExpectedValue.SUCCESS);
+
             EC_Params fullParams = makeParams(full);
-            Test fullS = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, fullParams.getParams(), fullParams.flatten()), "ECDH with S = 2^((log2 r) - 1) - 1.", Result.ExpectedValue.SUCCESS, Result.ExpectedValue.SUCCESS);
+            Test fullS = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, fullParams.getParams(), fullParams.flatten()), "ECDH with S = 111111...11111 (but < r).", Result.ExpectedValue.SUCCESS, Result.ExpectedValue.SUCCESS);
 
             EC_Params smallerParams = makeParams(smaller);
             Test smallerS = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, smallerParams.getParams(), smallerParams.flatten()), "ECDH with S < r.", Result.ExpectedValue.SUCCESS, Result.ExpectedValue.SUCCESS);
@@ -202,9 +215,9 @@ public class CardEdgeCasesSuite extends CardTestSuite {
 
             if (cfg.cleanup) {
                 Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY);
-                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with edge-case private key values over " + curve.getId() + ".", setup, zeroS, oneS, fullS, smallerS, exactS, largerS, rm1S, rp1S, krS, krm1S, krp1S, cleanup));
+                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with edge-case private key values over " + curve.getId() + ".", setup, zeroS, oneS, alternateS, alternateOtherS, fullS, smallerS, exactS, largerS, rm1S, rp1S, krS, krm1S, krp1S, cleanup));
             } else {
-                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with edge-case private key values over " + curve.getId() + ".", setup, zeroS, oneS, fullS, smallerS, exactS, largerS, rm1S, rp1S, krS, krm1S, krp1S));
+                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with edge-case private key values over " + curve.getId() + ".", setup, zeroS, oneS, alternateS, alternateOtherS, fullS, smallerS, exactS, largerS, rm1S, rp1S, krS, krm1S, krp1S));
             }
         }
 
