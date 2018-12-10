@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pubkey>
+    <id>cofactor128p4/0</id>
+    <inline>0x72294f8a7c88d510343c19b8251d7dd6,0x00000000000000000000000000000000</inline>
+    <curve>cofactor/cofactor128p4</curve>
+    <desc>twist order = 2</desc>
+</pubkey>
+<pubkey>
+    <id>cofactor128p4/1</id>
+    <inline>0x5d20662769138fe1506f2a2b44fd34c1,0x15d63a5aba305ccdee9f65e3f2c1d4e8</inline>
+    <curve>cofactor/cofactor128p4</curve>
+    <desc>twist order = 4</desc>
+</pubkey>
+<pubkey>
+    <id>cofactor128p4/2</id>
+    <inline>0x0b843b9da795292bfc598bae47fd0955,0x2944056236d430e404f6fd058a7a6624</inline>
+    <curve>cofactor/cofactor128p4</curve>
+    <desc>twist order = 17</desc>
+</pubkey>
+<pubkey>
+    <id>cofactor128p4/3</id>
+    <inline>0x663a7a5a7370a48f98ef5ba0cc2d19a1,0x13d59851b95e3916e1149b1f8345325d</inline>
+    <curve>cofactor/cofactor128p4</curve>
+    <desc>twist order = 37</desc>
+</pubkey>
+<pubkey>
+    <id>cofactor128p4/4</id>
+    <inline>0x415d46d2beb2357a567efeedd3e052a0,0x8b202b706af555d470fb42fb5919a64</inline>
+    <curve>cofactor/cofactor128p4</curve>
+    <desc>twist order = 24422261</desc>
+</pubkey>
+<pubkey>
+    <id>cofactor128p4/5</id>
+    <inline>0x6707ea110f83e67a9f6a43c184587bc6,0x1c44db735c6b30165e40660ecc5d8c3c</inline>
+    <curve>cofactor/cofactor128p4</curve>
+    <desc>twist order = 87024861802858114445834597</desc>
+</pubkey>
+<pubkey>
+    <id>cofactor128p4/gen</id>
+    <inline>0x5a1c6fd7a138377f22dabe0840a02ede,0x39395b4be5f4c131a0a5f778be1166e5</inline>
+    <curve>cofactor/cofactor128p4</curve>
+    <desc>twist generator</desc>
+</pubkey>
+
