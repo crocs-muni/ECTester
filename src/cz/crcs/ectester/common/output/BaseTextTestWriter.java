@@ -56,7 +56,7 @@ public abstract class BaseTextTestWriter implements TestWriter {
 
         String line = "";
         if (prefix.equals("")) {
-            char charLine[] = new char[BASE_WIDTH + 24];
+            char[] charLine = new char[BASE_WIDTH + 24];
             new String(new char[BASE_WIDTH + 24]).replace("\0", "━").getChars(0, charLine.length - 1, charLine, 0);
             charLine[0] = '■';
             charLine[4] = '┳';
@@ -70,7 +70,7 @@ public abstract class BaseTextTestWriter implements TestWriter {
         out.append(t.ok() ? Colors.ok(" OK ") : Colors.error("NOK "));
         out.append(compound ? (prefix.equals("") ? "╋ " : "┳ ") : "━ ");
         int width = BASE_WIDTH - (prefix.length() + 6);
-        String widthSpec = "%-" + String.valueOf(width) + "s";
+        String widthSpec = "%-" + width + "s";
         String desc = ((prefix.equals("")) ? "(" + index + ") " : "") + t.getDescription();
         out.append(String.format(widthSpec, desc));
         out.append(" ┃ ");
@@ -87,7 +87,7 @@ public abstract class BaseTextTestWriter implements TestWriter {
 
         if (compound) {
             CompoundTest test = (CompoundTest) t;
-            out.append(String.valueOf(result.getCause()));
+            out.append(result.getCause());
             out.append(System.lineSeparator());
             Test[] tests = test.getStartedTests();
             for (int i = 0; i < tests.length; ++i) {

@@ -249,7 +249,7 @@ Uses binary addition chain.
     INPUT: k = (k_{t-1}, ..., k_1, k_0)_2, P ∈ E(F_q).
     OUTPUT: [k]P.
     1. Q ← ∞.
-    2. For i from t - 1 downto 0 do
+    2. For i from 0 to t-1 do
     2.1 If k_i = 1 then Q ← Q + P.
     2.2 P ← 2P.
     3. Return(Q).
@@ -432,7 +432,7 @@ The same name, Montgomery ladder, is used both for the general ladder idea of ex
     INPUT: k = (k_{t-1}, ..., k_1, k_0)_2, P ∈ E(F_q).
     OUTPUT: [k]P .
     1. P_1 ← P and P_2 ← [2]P
-    2. For i = t − 2 downto 0 do
+    2. For i = t − 1 downto 0 do
     2.1 If k_i = 0 then
              P_1 ← [2]P_1; P_2 ← P_1 + P_2.
         Else
@@ -443,13 +443,13 @@ The same name, Montgomery ladder, is used both for the general ladder idea of ex
 
     INPUT: G ∈ E(F_q), k = (1, k_{t−2}, ..., k_0)2
     OUTPUT: Y = kG
-    R0 ← G; R1 ← [2]G
-    for j = t − 2 downto 0 do
-        if (k_j = 0) then
-            R1 ← R0 + R1; R0 ← [2]R0
-        else [if (kj = 1)]
-            R0 ← R0 + R1; R1 ← [2]R1
-    return R0
+    1. R0 ← G; R1 ← [2]G
+    2. for j = t − 2 downto 0 do
+    2.1  if (k_j = 0) then
+             R1 ← R0 + R1; R0 ← [2]R0
+         else [if (kj = 1)]
+             R0 ← R0 + R1; R1 ← [2]R1
+    3. return R0
 
 Montgomery addition formulas (Projective coordinates/XZ coordinates):[^2]
 
