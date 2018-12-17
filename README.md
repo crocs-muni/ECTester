@@ -45,7 +45,7 @@ See `java -jar ECTesterReader.jar -h`, `java -jar ECTesterReader.jar -ls` and [D
  -V,--version                         Print version info.
  -h,--help                            Print help.
  -ln,--list-named <what>              Print the list of supported named
-                                      curves and keys, (CurveDB and KeyDB).
+                                      curves and keys.
  -ls,--list-suites                    List supported test suites.
  -e,--export                          Export the defaut curve parameters
                                       of the card(if any).
@@ -53,46 +53,40 @@ See `java -jar ECTesterReader.jar -h`, `java -jar ECTesterReader.jar -ls` and [D
  -t,--test <test_suite[:from[:to]]>   Test ECC support. Optionally specify
                                       a test number to run only a part of
                                       a test suite. <test_suite>:
-                                        - default
-                                        - compression
-                                        - invalid
-                                        - twist
-                                        - degenerate
-                                        - cofactor
-                                        - wrong
-                                        - signature
-                                        - composite
-                                        - test-vectors
-                                        - edge-cases
-                                        - miscellaneous
+                                      - default:
+                                      - compression:
+                                      - invalid:
+                                      - twist:
+                                      - degenerate:
+                                      - cofactor:
+                                      - wrong:
+                                      - signature:
+                                      - composite:
+                                      - test-vectors:
+                                      - edge-cases:
+                                      - miscellaneous:
  -dh,--ecdh <count>                   Do EC KeyAgreement (ECDH...),
                                       [count] times.
  -dsa,--ecdsa <count>                 Sign data with ECDSA, [count] times.
  -nf,--info                           Get applet info.
-
  -b,--bit-size <bits>                 Set curve size.
  -fp,--prime-field                    Use a prime field.
  -f2m,--binary-field                  Use a binary field.
-
  -nc,--named-curve <cat/id>           Use a named curve, from CurveDB:
                                       <cat/id>
  -c,--curve <curve_file>              Use curve from file <curve_file>
                                       (field,a,b,gx,gy,r,k).
  -u,--custom                          Use a custom curve (applet-side
                                       embedded, SECG curves).
-
  -npub,--named-public <cat/id>        Use public key from KeyDB: <cat/id>
  -pub,--public <pubkey_file>          Use public key from file
                                       <pubkey_file> (wx,wy).
-
  -npriv,--named-private <cat/id>      Use private key from KeyDB: <cat/id>
  -priv,--private <privkey_file>       Use private key from file
                                       <privkey_file> (s).
-
- -nk,--named-key <cat/id>             Use KeyPair from KeyDB: <cat/id>
- -k,--key <key_file>                  Use KeyPair from file <key_file>
+ -nk,--named-key <cat/id>             Use keyPair from KeyDB: <cat/id>
+ -k,--key <key_file>                  Use keyPair from file <key_file>
                                       (wx,wy,s).
-
  -i,--input <input_file>              Input from file <input_file>, for
                                       ECDSA signing.
  -o,--output <output_file>            Output into file <output_file>. The
@@ -103,9 +97,18 @@ See `java -jar ECTesterReader.jar -h`, `java -jar ECTesterReader.jar -ls` and [D
  -v,--verbose                         Turn on verbose logging.
     --format <format>                 Output format to use. One of:
                                       text,yml,xml.
-
+    --fixed                           Generate key(s) only once, keep them
+                                      for later operations.
+    --fixed-private                   Generate private key only once, keep
+                                      it for later ECDH.
+    --fixed-public                    Generate public key only once, keep
+                                      it for later ECDH.
  -f,--fresh                           Generate fresh keys (set domain
                                       parameters before every generation).
+    --time                            Output better timing values, by
+                                      running command in dry run mode and
+                                      normal mode, and subtracting the
+                                      two.
     --cleanup                         Send the cleanup command trigerring
                                       JCSystem.requestObjectDeletion()
                                       after some operations.
@@ -113,10 +116,10 @@ See `java -jar ECTesterReader.jar -h`, `java -jar ECTesterReader.jar -ls` and [D
                                       instead of using a terminal.
  -y,--yes                             Accept all warnings and prompts.
  -ka,--ka-type <type>                 Set KeyAgreement object [type],
-                                      corresponds to JavaCard KeyAgreement
+                                      corresponds to JC.KeyAgreement
                                       constants.
  -sig,--sig-type <type>               Set Signature object [type],
-                                      corresponds to JavaCard Signature
+                                      corresponds to JC.Signature
                                       constants.
  -C,--color                           Print stuff with color, requires
                                       ANSI terminal.
@@ -298,58 +301,81 @@ To install, place them in `${java.home}/jre/lib/security/`.
 ### Options
 
 ```
-usage: ECTesterStandalone.jar [-V] [-h] [-C]
- [ (ecdh [-b <n>] [-nc <cat/id>] [-cn <name>] [-t <type>] [--key-type <algorithm>] [-n <amount>]) |
-   (ecdsa [-b <n>] [-nc <cat/id>] [-cn <name>] [-t <type>] [-n <amount>] [-f <file>]) |
-   (export [-b <n>] [-t <type>]) |
-   (generate [-b <n>] [-nc <cat/id>] [-cn <name>] [-n <amount>] [-t <type>]) |
-   (list-data [what]) |
-   (list-libs) |
-   (list-suites) |
-   (test [-b <n>] [-nc <cat/id>] [-cn <name>] [-gt <type>] [-kt <type>] [-st <type>] [-f <format>] [--key-type <algorithm>]
-         <test-suite>) ]
- [lib]
+usage: ECTesterStandalone.jar [-V] [-h <command>] [-C] [
+(ecdh [-b <n>] [-nc <cat/id>] [-cn <name>] [-o <output_file>] [-t <type>] [--key-type <algorithm>] [-n <amount>]
+      [-npriv <cat/id>] [--fixed-private] [-npub <cat/id>] [--fixed-public]) |
+(ecdsa [-b <n>] [-nc <cat/id>] [-cn <name>] [-o <output_file>] [-npriv <cat/id>] [-npub <cat/id>] [-t <type>]
+      [-n <amount>] [-f <file>]) |
+(export [-b <n>] [-o <output_file>] [-t <type>]) |
+(generate [-b <n>] [-nc <cat/id>] [-cn <name>] [-o <output_file>] [-n <amount>] [-t <type>]) |
+(list-data  [what]) |
+(list-libs) |
+(list-suites) |
+(test [-b <n>] [-nc <cat/id>] [-cn <name>] [-gt <type>] [-kt <type>] [-st <type>] [-f <format>] [--key-type <algorithm>]  <test-suite>) ]
+[lib]
 
- ecdh:    | Perform EC based KeyAgreement. |
-   -b,--bits <n>                What size of curve to use.
-   -nc,--named-curve <cat/id>   Use a named curve, from CurveDB: <cat/id>
-   -cn,--curve-name <name>      Use a named curve, search from curves
-                                supported by the library: <name>
-   -t,--type <type>             Set KeyAgreement object [type].
-      --key-type <algorithm>    Set the key [algorithm] for which the key
-                                should be derived in KeyAgreements with
-                                KDF. Default is "AES".
-   -n,--amount <amount>         Do ECDH [amount] times.
+  -V,--version          Print version info.
+  -h,--help <command>   Print help(about <command>).
+  -C,--color            Print stuff with color, requires ANSI terminal.
+  [lib]   What library to use.
 
- ecdsa:    | Perform EC based Signature. |
-   -b,--bits <n>                What size of curve to use.
-   -nc,--named-curve <cat/id>   Use a named curve, from CurveDB: <cat/id>
-   -cn,--curve-name <name>      Use a named curve, search from curves
-                                supported by the library: <name>
-   -t,--type <type>             Set Signature object [type].
-   -n,--amount <amount>         Do ECDSA [amount] times.
-   -f,--file <file>             Input [file] to sign.
+ ecdh:                               | Perform EC based KeyAgreement. |
+   -b,--bits <n>                     What size of curve to use.
+   -nc,--named-curve <cat/id>        Use a named curve, from CurveDB:
+                                     <cat/id>
+   -cn,--curve-name <name>           Use a named curve, search from curves
+                                     supported by the library: <name>
+   -o,--output <output_file>         Output into file <output_file>.
+   -t,--type <type>                  Set KeyAgreement object [type].
+      --key-type <algorithm>         Set the key [algorithm] for which the
+                                     key should be derived in
+                                     KeyAgreements with KDF. Default is
+                                     "AES".
+   -n,--amount <amount>              Do ECDH [amount] times.
+   -npriv,--named-private <cat/id>   Use a named private key, from
+                                     CurveDB: <cat/id>
+      --fixed-private                Perform ECDH with fixed private key.
+   -npub,--named-public <cat/id>     Use a named public key, from CurveDB:
+                                     <cat/id>
+      --fixed-public                 Perform ECDH with fixed public key.
 
- export:    | Export default curve parameters. |
+ ecdsa:                              | Perform EC based Signature. |
+   -b,--bits <n>                     What size of curve to use.
+   -nc,--named-curve <cat/id>        Use a named curve, from CurveDB:
+                                     <cat/id>
+   -cn,--curve-name <name>           Use a named curve, search from curves
+                                     supported by the library: <name>
+   -o,--output <output_file>         Output into file <output_file>.
+   -npriv,--named-private <cat/id>   Use a named private key, from
+                                     CurveDB: <cat/id>
+   -npub,--named-public <cat/id>     Use a named public key, from CurveDB:
+                                     <cat/id>
+   -t,--type <type>                  Set Signature object [type].
+   -n,--amount <amount>              Do ECDSA [amount] times.
+   -f,--file <file>                  Input [file] to sign.
+
+ export:                        | Export default curve parameters. |
    -b,--bits <n>                What size of curve to use.
+   -o,--output <output_file>    Output into file <output_file>.
    -t,--type <type>             Set KeyPair object [type].
 
- generate:    | Generate EC keypairs. |
+ generate:                      | Generate EC keypairs. |
    -b,--bits <n>                What size of curve to use.
    -nc,--named-curve <cat/id>   Use a named curve, from CurveDB: <cat/id>
    -cn,--curve-name <name>      Use a named curve, search from curves
                                 supported by the library: <name>
+   -o,--output <output_file>    Output into file <output_file>.
    -n,--amount <amount>         Generate [amount] of EC keys.
    -t,--type <type>             Set KeyPairGenerator object [type].
 
- list-data:    | List/show contained EC domain parameters/keys. |
-   [what]                       what to list.
+ list-data:                     | List/show contained EC domain parameters/keys. |
+   [what]   what to list.
 
- list-libs:    | List supported libraries. |
+ list-libs:                     | List supported libraries. |
 
- list-suites:    | List supported test suites. |
+ list-suites:                   | List supported test suites. |
 
- test:    | Test a library. |
+ test:                          | Test a library. |
    -b,--bits <n>                What size of curve to use.
    -nc,--named-curve <cat/id>   Use a named curve, from CurveDB: <cat/id>
    -cn,--curve-name <name>      Use a named curve, search from curves
@@ -362,6 +388,6 @@ usage: ECTesterStandalone.jar [-V] [-h] [-C]
       --key-type <algorithm>    Set the key [algorithm] for which the key
                                 should be derived in KeyAgreements with
                                 KDF. Default is "AES".
-   <test-suite>                 The test suite to run.
+   <test-suite>   The test suite to run.
 ```
 
