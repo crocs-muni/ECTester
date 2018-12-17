@@ -201,6 +201,9 @@ public class ECUtil {
     }
 
     public static ECPublicKey toPublicKey(EC_Key.Public pubkey) {
+        if (pubkey == null) {
+            return null;
+        }
         EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, pubkey.getCurve());
         if (curve == null) {
             throw new IllegalArgumentException("pubkey curve not found: " + pubkey.getCurve());
@@ -209,6 +212,9 @@ public class ECUtil {
     }
 
     public static ECPrivateKey toPrivateKey(EC_Key.Private privkey) {
+        if (privkey == null) {
+            return null;
+        }
         EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, privkey.getCurve());
         if (curve == null) {
             throw new IllegalArgumentException("privkey curve not found: " + privkey.getCurve());
@@ -217,6 +223,9 @@ public class ECUtil {
     }
 
     public static KeyPair toKeyPair(EC_Keypair kp) {
+        if (kp == null) {
+            return null;
+        }
         EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, kp.getCurve());
         if (curve == null) {
             throw new IllegalArgumentException("keypair curve not found: " + kp.getCurve());
