@@ -164,6 +164,7 @@ public abstract class AppletBase extends Applet {
                         break;
                     case INS_SET_DRY_RUN_MODE:
                         length = insSetDryRunMode(apdu);
+                        break;
                     default:
                         // The INS code is not supported by the dispatcher
                         ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);

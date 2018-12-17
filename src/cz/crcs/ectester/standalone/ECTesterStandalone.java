@@ -143,7 +143,6 @@ public class ECTesterStandalone {
             System.err.println("Invalid algorithm parameter: " + e.getMessage());
         } catch (NoSuchAlgorithmException nsaex) {
             System.err.println("Algorithm not supported by the selected library: " + nsaex.getMessage());
-            nsaex.printStackTrace();
         } catch (InvalidKeyException | SignatureException e) {
             e.printStackTrace();
         }
@@ -395,7 +394,7 @@ public class ECTesterStandalone {
             }
 
             long elapsed = -System.nanoTime();
-            if (spec instanceof ECParameterSpec) {
+            if (spec instanceof ECParameterSpec && lib instanceof NativeECLibrary) {
                 ka.init(privkey, spec);
             } else {
                 ka.init(privkey);
