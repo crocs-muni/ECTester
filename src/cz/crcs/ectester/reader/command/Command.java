@@ -11,6 +11,7 @@ import cz.crcs.ectester.common.util.CardUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
+import cz.crcs.ectester.reader.output.ResponseWriter;
 import cz.crcs.ectester.reader.response.Response;
 import javacard.security.KeyPair;
 
@@ -192,6 +193,19 @@ public abstract class Command implements Cloneable {
             data = ByteUtil.concatenate(data, privkey);
         }
         return new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, params, data);
+    }
+
+    public static long dryRunTime(CardMngr cardManager, Command cmd, int num, ResponseWriter respWriter) throws CardException {
+        long time = 0;
+        respWriter.outputResponse(new Command.SetDryRunMode(cardManager, ECTesterApplet.MODE_DRY_RUN).send());
+        for (int i = 0; i < num; ++i) {
+            Response dry = cmd.send();
+            respWriter.outputResponse(dry);
+            time += dry.getDuration();
+        }
+        time /= num;
+        respWriter.outputResponse(new Command.SetDryRunMode(cardManager, ECTesterApplet.MODE_NORMAL).send());
+        return time;
     }
 
     /**
@@ -907,7 +921,7 @@ public abstract class Command implements Cloneable {
         }
 
         @Override
-        public Response send() throws CardException {
+        public Response.SetDryRunMode send() throws CardException {
             long elapsed = -System.nanoTime();
             ResponseAPDU response = cardManager.send(cmd);
             elapsed += System.nanoTime();

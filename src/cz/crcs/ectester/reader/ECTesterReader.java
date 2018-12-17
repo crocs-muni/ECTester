@@ -336,6 +336,7 @@ public class ECTesterReader {
         opts.addOption(Option.builder().longOpt("fixed-private").desc("Generate private key only once, keep it for later ECDH.").build());
         opts.addOption(Option.builder().longOpt("fixed-public").desc("Generate public key only once, keep it for later ECDH.").build());
         opts.addOption(Option.builder("f").longOpt("fresh").desc("Generate fresh keys (set domain parameters before every generation).").build());
+        opts.addOption(Option.builder().longOpt("time").desc("Output better timing values, by running command in dry run mode and normal mode, and subtracting the two.").build());
         opts.addOption(Option.builder().longOpt("cleanup").desc("Send the cleanup command trigerring JCSystem.requestObjectDeletion() after some operations.").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
         opts.addOption(Option.builder("y").longOpt("yes").desc("Accept all warnings and prompts.").build());
@@ -454,7 +455,12 @@ public class ECTesterReader {
             }
 
             Command.Generate generate = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL);
+            long time = 0;
+            if (cfg.time) {
+                time = -Command.dryRunTime(cardManager, generate, 2, respWriter);
+            }
             Response.Generate response = generate.send();
+            time += response.getDuration();
             respWriter.outputResponse(response);
 
             Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR).send();
@@ -472,7 +478,7 @@ public class ECTesterReader {
 
             String pub = ByteUtil.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_W), false);
             String priv = ByteUtil.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S), false);
-            String line = String.format("%d;%d;%d;%s;%s\n", generated, response.getDuration() / 1000000, export.getDuration() / 1000000, pub, priv);
+            String line = String.format("%d;%d;%d;%s;%s\n", generated, time / 1000000, export.getDuration() / 1000000, pub, priv);
             keysFile.write(line);
             keysFile.flush();
             generated++;
@@ -622,10 +628,17 @@ public class ECTesterReader {
             byte[] pubkey_bytes = export.getParameter(ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.PARAMETER_W);
             byte[] privkey_bytes = export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S);
 
-            Response.ECDH perform = new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, cfg.ECKAType).send();
-            respWriter.outputResponse(perform);
+            Command.ECDH perform = new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, cfg.ECKAType);
 
-            if (!perform.successful() || !perform.hasSecret()) {
+            long time = 0;
+            if (cfg.time) {
+                time = -Command.dryRunTime(cardManager, perform, 2, respWriter);
+            }
+
+            Response.ECDH result = perform.send();
+            respWriter.outputResponse(result);
+
+            if (!result.successful() || !result.hasSecret()) {
                 if (retry < 10) {
                     ++retry;
                     continue;
@@ -636,8 +649,9 @@ public class ECTesterReader {
             }
 
             if (out != null) {
+                time += result.getDuration();
 
-                out.write(String.format("%d;%d;%s;%s;%s\n", done, perform.getDuration() / 1000000, ByteUtil.bytesToHex(pubkey_bytes, false), ByteUtil.bytesToHex(privkey_bytes, false), ByteUtil.bytesToHex(perform.getSecret(), false)));
+                out.write(String.format("%d;%d;%s;%s;%s\n", done, time / 1000000, ByteUtil.bytesToHex(pubkey_bytes, false), ByteUtil.bytesToHex(privkey_bytes, false), ByteUtil.bytesToHex(result.getSecret(), false)));
             }
 
             ++done;
@@ -714,9 +728,17 @@ public class ECTesterReader {
                 respWriter.outputResponse(exported);
             }
 
-            Response.ECDSA sign = new Command.ECDSA_sign(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.ECDSAType, ECTesterApplet.EXPORT_TRUE, data).send();
-            respWriter.outputResponse(sign);
-            if (!sign.successful() || !sign.hasSignature()) {
+            Command.ECDSA_sign sign = new Command.ECDSA_sign(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.ECDSAType, ECTesterApplet.EXPORT_TRUE, data);
+
+            long signTime = 0;
+            if (cfg.time) {
+                signTime = -Command.dryRunTime(cardManager, sign, 2, respWriter);
+            }
+
+            Response.ECDSA signResp = sign.send();
+            signTime += signResp.getDuration();
+            respWriter.outputResponse(signResp);
+            if (!signResp.successful() || !signResp.hasSignature()) {
                 if (retry < 10) {
                     ++retry;
                     continue;
@@ -725,11 +747,17 @@ public class ECTesterReader {
                     break;
                 }
             }
-            byte[] signature = sign.getSignature();
-            Response.ECDSA verify = new Command.ECDSA_verify(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.ECDSAType, data, signature).send();
-            respWriter.outputResponse(verify);
+            byte[] signature = signResp.getSignature();
+            Command.ECDSA_verify verify = new Command.ECDSA_verify(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.ECDSAType, data, signature);
+            long verifyTime = 0;
+            if (cfg.time) {
+                verifyTime = -Command.dryRunTime(cardManager, verify, 2, respWriter);
+            }
+            Response.ECDSA verifyResp = verify.send();
+            verifyTime += verifyResp.getDuration();
+            respWriter.outputResponse(verifyResp);
 
-            if (verify.error()) {
+            if (verifyResp.error()) {
                 if (retry < 10) {
                     ++retry;
                     continue;
@@ -753,7 +781,7 @@ public class ECTesterReader {
                         k = ByteUtil.bytesToHex(kValue.toByteArray(), false);
                     }
                 }
-                out.write(String.format("%d;%d;%d;%s;%s;%s;%s;%s;%d\n", done, sign.getDuration() / 1000000, verify.getDuration() / 1000000, dataString, pub, priv, ByteUtil.bytesToHex(signature, false), k, verify.successful() ? 1 : 0));
+                out.write(String.format("%d;%d;%d;%s;%s;%s;%s;%s;%d\n", done, signTime / 1000000, verifyTime / 1000000, dataString, pub, priv, ByteUtil.bytesToHex(signature, false), k, verifyResp.successful() ? 1 : 0));
             }
 
             ++done;
@@ -807,6 +835,7 @@ public class ECTesterReader {
         public String input;
         public String[] outputs;
         public boolean fresh = false;
+        public boolean time = false;
         public boolean cleanup = false;
         public boolean simulate = false;
         public boolean yes = false;
@@ -865,6 +894,7 @@ public class ECTesterReader {
             input = cli.getOptionValue("input");
             outputs = cli.getOptionValues("output");
             fresh = cli.hasOption("fresh");
+            time = cli.hasOption("time");
             cleanup = cli.hasOption("cleanup");
             simulate = cli.hasOption("simulate");
             yes = cli.hasOption("yes");

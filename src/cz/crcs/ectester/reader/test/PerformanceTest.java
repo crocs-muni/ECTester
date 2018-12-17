@@ -54,12 +54,16 @@ public class PerformanceTest extends SimpleTest<CommandTestable> {
 
     @Override
     protected void runSelf() {
-        long baseTime = 0;
+        long baseTime;
         try {
             new Command.SetDryRunMode(cardManager, ECTesterApplet.MODE_DRY_RUN).send();
             testable.run();
             baseTime = testable.getResponse().getDuration();
             testable.reset();
+            testable.run();
+            baseTime += testable.getResponse().getDuration();
+            testable.reset();
+            baseTime /= 2;
             new Command.SetDryRunMode(cardManager, ECTesterApplet.MODE_NORMAL).send();
         } catch (CardException ce) {
             throw new TestException(ce);
