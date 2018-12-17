@@ -18,7 +18,7 @@ from matplotlib import ticker, colors
 from copy import deepcopy
 import argparse
 
-from utils import hw, moving_average, plot_hist, jackknife_entropy, miller_correction
+from utils import hw, moving_average, plot_hist, miller_correction
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Plot results of ECTester key generation timing.")

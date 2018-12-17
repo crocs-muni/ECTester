@@ -332,7 +332,9 @@ public class ECTesterReader {
         opts.addOption(Option.builder("v").longOpt("verbose").desc("Turn on verbose logging.").build());
         opts.addOption(Option.builder().longOpt("format").desc("Output format to use. One of: text,yml,xml.").hasArg().argName("format").build());
 
-        opts.addOption(Option.builder().longOpt("static").desc("Generate key(s) only once, keep them for later operations.").build());
+        opts.addOption(Option.builder().longOpt("fixed").desc("Generate key(s) only once, keep them for later operations.").build());
+        opts.addOption(Option.builder().longOpt("fixed-private").desc("Generate private key only once, keep it for later ECDH.").build());
+        opts.addOption(Option.builder().longOpt("fixed-public").desc("Generate public key only once, keep it for later ECDH.").build());
         opts.addOption(Option.builder("f").longOpt("fresh").desc("Generate fresh keys (set domain parameters before every generation).").build());
         opts.addOption(Option.builder().longOpt("cleanup").desc("Send the cleanup command trigerring JCSystem.requestObjectDeletion() after some operations.").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
@@ -574,35 +576,53 @@ public class ECTesterReader {
             respWriter.outputResponse(r);
         }
 
-        byte pubkey = (cfg.anyPublicKey || cfg.anyKey) ? ECTesterApplet.KEYPAIR_REMOTE : ECTesterApplet.KEYPAIR_LOCAL;
-        byte privkey = (cfg.anyPrivateKey || cfg.anyKey) ? ECTesterApplet.KEYPAIR_REMOTE : ECTesterApplet.KEYPAIR_LOCAL;
-
-        List<Command> generate = new LinkedList<>();
-        generate.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH));
-        if (cfg.anyPublicKey || cfg.anyPrivateKey || cfg.anyKey) {
-            generate.add(Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_REMOTE));
-        }
-
         OutputStreamWriter out = null;
         if (cfg.outputs != null) {
             out = FileUtil.openFiles(cfg.outputs);
-            out.write("index;time;pubW;privS;secret\n");
+            out.write("index;time[milli];pubW;privS;secret\n");
+        }
+
+        Response gen = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH).send();
+        respWriter.outputResponse(gen);
+        if (cfg.anyPublicKey || cfg.anyKey) {
+            Response prep = Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_REMOTE).send();
+            respWriter.outputResponse(prep);
+        }
+        if (cfg.anyPrivateKey || cfg.anyKey) {
+            Response prep = Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL).send();
+            respWriter.outputResponse(prep);
+        }
+
+        byte kp = ECTesterApplet.KEYPAIR_BOTH;
+        if (cfg.fixedPrivate || cfg.anyPrivateKey) {
+            kp ^= ECTesterApplet.KEYPAIR_LOCAL;
+        }
+        if (cfg.fixedPublic || cfg.anyPublicKey) {
+            kp ^= ECTesterApplet.KEYPAIR_REMOTE;
+        }
+        if (cfg.fixedKey || cfg.anyKey) {
+            kp = 0;
+        }
+
+        Command generate = null;
+        if (kp != 0) {
+            generate = new Command.Generate(cardManager, kp);
         }
 
         int retry = 0;
         int done = 0;
         while (done < cfg.ECKACount) {
-            List<Response> ecdh = Command.sendAll(generate);
-            for (Response r : ecdh) {
-                respWriter.outputResponse(r);
+            if (generate != null) {
+                Response regen = generate.send();
+                respWriter.outputResponse(regen);
             }
 
             Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR).send();
             respWriter.outputResponse(export);
-            byte[] pubkey_bytes = export.getParameter(pubkey, EC_Consts.PARAMETER_W);
-            byte[] privkey_bytes = export.getParameter(privkey, EC_Consts.PARAMETER_S);
+            byte[] pubkey_bytes = export.getParameter(ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.PARAMETER_W);
+            byte[] privkey_bytes = export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S);
 
-            Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, cfg.ECKAType).send();
+            Response.ECDH perform = new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, cfg.ECKAType).send();
             respWriter.outputResponse(perform);
 
             if (!perform.successful() || !perform.hasSecret()) {
@@ -674,12 +694,12 @@ public class ECTesterReader {
 
         OutputStreamWriter out = FileUtil.openFiles(cfg.outputs);
         if (out != null) {
-            out.write("index;signTime;verifyTime;data;pubW;privS;signature;nonce;valid\n");
+            out.write("index;signTime[milli];verifyTime[milli];data;pubW;privS;signature;nonce;valid\n");
         }
 
         Command.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR);
         Response.Export exported = null;
-        if (cfg.staticKey) {
+        if (cfg.fixedKey) {
             respWriter.outputResponse(generate.send());
             exported = export.send();
             respWriter.outputResponse(exported);
@@ -688,7 +708,7 @@ public class ECTesterReader {
         int retry = 0;
         int done = 0;
         while (done < cfg.ECDSACount) {
-            if (!cfg.staticKey) {
+            if (!cfg.fixedKey) {
                 respWriter.outputResponse(generate.send());
                 exported = export.send();
                 respWriter.outputResponse(exported);
@@ -777,7 +797,9 @@ public class ECTesterReader {
         public String key;
 
         public boolean anyKeypart = false;
-        public boolean staticKey = false;
+        public boolean fixedKey = false;
+        public boolean fixedPrivate = false;
+        public boolean fixedPublic = false;
 
         public String log;
 
@@ -831,7 +853,9 @@ public class ECTesterReader {
             key = cli.getOptionValue("key");
             anyKey = (key != null) || (namedKey != null);
             anyKeypart = anyKey || anyPublicKey || anyPrivateKey;
-            staticKey = cli.hasOption("static");
+            fixedKey = cli.hasOption("fixed");
+            fixedPrivate = cli.hasOption("fixed-private");
+            fixedPublic = cli.hasOption("fixed-public");
 
             if (cli.hasOption("log")) {
                 log = cli.getOptionValue("log", String.format("ECTESTER_log_%d.log", System.currentTimeMillis() / 1000));
