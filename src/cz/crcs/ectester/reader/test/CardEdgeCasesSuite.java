@@ -104,6 +104,10 @@ public class CardEdgeCasesSuite extends CardTestSuite {
                     curveTests.add(one);
                 }
 
+                if (cfg.cleanup) {
+                    curveTests.add(CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY));
+                }
+
                 Test curveTest = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests", curveTests.toArray(new Test[0]));
                 groupTests.add(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Tests on " + curve.getId() + ".", prepareCurve, curveTest));
             }
@@ -278,7 +282,7 @@ public class CardEdgeCasesSuite extends CardTestSuite {
         int i = 0;
         for (BigInteger nearZero : zeros) {
             EC_Params params = makeParams(nearZero);
-            zeroTests[i++] = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, params.getParams(), params.flatten()), nearZero.toString(16), Result.ExpectedValue.ANY, Result.ExpectedValue.ANY);
+            zeroTests[i++] = ecdhTestBoth(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, params.getParams(), params.flatten()), nearZero.toString(16), Result.ExpectedValue.SUCCESS, Result.ExpectedValue.SUCCESS);
         }
         Test zeroTest = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Near zero.", zeroTests);
 
@@ -286,7 +290,7 @@ public class CardEdgeCasesSuite extends CardTestSuite {
         i = 0;
         for (BigInteger nearP : ps) {
             EC_Params params = makeParams(nearP);
-            pTests[i++] = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, params.getParams(), params.flatten()), nearP.toString(16) + (nearP.compareTo(p) > 0 ? " (>p)" : " (<=p)"), Result.ExpectedValue.ANY, Result.ExpectedValue.ANY);
+            pTests[i++] = ecdhTestBoth(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, params.getParams(), params.flatten()), nearP.toString(16) + (nearP.compareTo(p) > 0 ? " (>p)" : " (<=p)"), Result.ExpectedValue.SUCCESS, Result.ExpectedValue.SUCCESS);
         }
         Test pTest = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Near p.", pTests);
 
@@ -294,10 +298,21 @@ public class CardEdgeCasesSuite extends CardTestSuite {
         i = 0;
         for (BigInteger nearR : rs) {
             EC_Params params = makeParams(nearR);
-            rTests[i++] = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, params.getParams(), params.flatten()), nearR.toString(16) + (nearR.compareTo(r) > 0 ? " (>r)" : " (<=r)"), Result.ExpectedValue.ANY, Result.ExpectedValue.ANY);
+            if (nearR.compareTo(r) >= 0) {
+                rTests[i++] = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, params.getParams(), params.flatten()), nearR.toString(16) + " (>=r)", Result.ExpectedValue.FAILURE, Result.ExpectedValue.FAILURE);
+            } else {
+                rTests[i++] = ecdhTestBoth(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, params.getParams(), params.flatten()), nearR.toString(16) +" (<r)", Result.ExpectedValue.SUCCESS, Result.ExpectedValue.SUCCESS);
+            }
         }
         Test rTest = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Near r.", rTests);
         doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Test private key values near zero, near p and near/larger than the order.", setup, zeroTest, pTest, rTest));
+    }
+
+    private Test ecdhTestBoth(Command setPriv, String desc, Result.ExpectedValue setExpect, Result.ExpectedValue ecdhExpect) {
+        Test set = CommandTest.expect(setPriv, setExpect);
+        Test ecdh = CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH), ecdhExpect);
+
+        return CompoundTest.all(Result.ExpectedValue.SUCCESS, desc, set, ecdh);
     }
 
     private Test ecdhTest(Command setPriv, String desc, Result.ExpectedValue setExpect, Result.ExpectedValue ecdhExpect) {
