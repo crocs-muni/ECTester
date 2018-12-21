@@ -29,7 +29,7 @@ import static cz.crcs.ectester.common.test.Result.Value;
 public class CardDefaultSuite extends CardTestSuite {
 
     public CardDefaultSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "default", "The default test suite tests basic support of ECDH and ECDSA.");
+        super(writer, cfg, cardManager, "default", "The default test suite tests basic support and performance of ECDH and ECDSA.");
     }
 
     @Override

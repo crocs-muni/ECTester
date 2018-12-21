@@ -1,6 +1,14 @@
 # Format
 ECTester mostly reads/outputs data in either human-readable format or using CSV.
 
+## Test runs
+By default test runs are output in a human readable format, however YAML and XML is also supported and can be selected
+by using the `--format` option. Also, prefixing the output file name when using the `-o/--output` option allows to output 
+the same test run in different formats to different files.
+
+For example:
+`--format yaml -o default_output.yaml -o xml:output_file.xml -o text:readable_text_file.txt `
+
 ## Curves
 Input files for the `-c/--curve` option should be in CSV, little-endian hexadecimal format.
 Output of the `-e/--export` option will also be in this format.
@@ -42,22 +50,37 @@ Input files for the `-k/--key`, `-pub/--public` and `-priv/--private` options sh
 ## Key generation output(CSV)
 Output of the `-g/--generate` option.
 
-`index;time;pubW;privS`
+For ECTesterReader this has the format:
+
+`index;genTime[milli];exportTime[milli];pubW;privS` where `pubW` is the public key used in ANSI X9.62 format,
+`privS` is the private key, `genTime` is the time required to generate the keypair and `exportTime` is the time required to export it (send it to the reader).
+
+For ECTesterStandalone:
+
+`index;time[nano];pubW;privS`
 
 ## KeyAgreement output(CSV)
 Output of the `-dh/--ecdh` option.
 
-`index;time;pubW;privS;secret`
+For ECTesterReader this has the format:
+
+`index;time[milli];pubW;privS;secret` where `pubW` is the public key used in ANSI X9.62 format, `privS` is the private key
+and `secret` is the KeyAgreement result.
+
+For ECTesterStandalone this has the format: and the same meaning as for ECTesterReader.
+
+`index;time[nano];pubW;privS;secret` and the same meaning as for ECTesterReader.
 
 ## Signature output(CSV)
 Output of the `-dsa/--ecdsa` option.
 
-`index;time;signature`
+For ECTesterReader this has the format:
 
-## Test runs
-By default test runs are output in a human readable format, however YAML and XML is also supported and can be selected
-by using the `--format` option. Also, prefixing the output file name when using the `-o/--output` option allows to output 
-the same test run in different formats to different files.
+`index;signTime[milli];verifyTime[milli];data;pubW;privS;signature;nonce;valid` where `pubW` is the public key used
+in ANSI X9.62 format, `privS` is the private key, `signTime` and `verifyTime` are the durations of the sign and verify operations,
+`data` is the signed data (if available), `signature` is the produced signature, `nonce` is the `k` (nonce) value recovered from the signature
+abd the private key (if possible), `valid` denotes the verification result.  
 
-For example:
-`--format yaml -o default_output.yaml -o xml:output_file.xml -o text:readable_text_file.txt `
+For ECTesterStandalone this has the format:
+
+ `index;signTime[nano];verifyTime[nano];data;pubW;privS;signature;nonce;verified` and the same meaning as for ECTesterReader.

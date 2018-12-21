@@ -369,6 +369,8 @@ public class ECTesterReader {
                 System.out.println("\t" + line);
             }
         }
+        System.out.println();
+        System.out.println("For more information, look at the documentation at https://github.com/crocs-muni/ECTester.");
     }
 
     private void info() throws CardException {
@@ -444,7 +446,7 @@ public class ECTesterReader {
         respWriter.outputResponse(allocate);
 
         OutputStreamWriter keysFile = FileUtil.openFiles(cfg.outputs);
-        keysFile.write("index;genTime;exportTime;pubW;privS\n");
+        keysFile.write("index;genTime[milli];exportTime[milli];pubW;privS\n");
 
         int generated = 0;
         int retry = 0;

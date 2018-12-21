@@ -30,7 +30,7 @@ ant -f build-applet.xml build -Dcap=ectester221.cap
 2. Run `java -jar dist/ECTesterReader.jar -t`.
 3. Inspect output log with annotated results.
 
-Following operations are tested in the default suite:
+Following operations are tested in the default test suite:
 - Allocation of new KeyPair class for specified parameters
 - Generation of KeyPair with default curve
 - Setting of custom curve and KeyPair generation
@@ -137,7 +137,7 @@ For format of this file see [FORMAT](docs/FORMAT.md).
 #### Test
 `-t / --test [test_suite]`
 
-Perform support,performance and vulnerability tests of ECC.
+Perform support, performance and vulnerability tests of ECC.
 
 To select which tests will be performed, it is possible to enter the test suite name with a suffix
 which specifies the number of the first test to be run, and optionally the number of the last test to be run as `-t <test_suite>[:start_index[:stop_index]]`.
@@ -149,15 +149,19 @@ For more info about the test suites see [TESTS](docs/TESTS.md).
 #### Generate
 `-g / --generate [amount]`
 
-Generates batches of EC keypairs and exports them.
+Generates batch of EC keypairs and exports them.
+
 Use with `-o / --output [out_file]` to output the generated keys to a file.
+Use with `--time` to measure time as a difference of real duration of the operation and the dry-run duration of the operation.
 For format of this file see [FORMAT](docs/FORMAT.md).
 
 #### ECDH
 `-dh / --ecdh [count]`
 
 Performs ECDH.
+
 Use with `-o / --output [out_file]` to output into a file.
+Use with `--time` to measure time as a difference of real duration of the operation and the dry-run duration of the operation.
 For format of this file see [FORMAT](docs/FORMAT.md).
 Respects the KeyAgreement type specified in `-ka / --ka-type [type]`.
 
@@ -168,6 +172,7 @@ Respects the KeyAgreement type specified in `-ka / --ka-type [type]`.
 Performs ECDSA.
 Useful with `-i / --input [in_file]` to sign the contents of a file.
 Use with `-o / --output [out_file]` to output into a file.
+Use with `--time` to measure time as a difference of real duration of the operation and the dry-run duration of the operation.
 For format of these files see [FORMAT](docs/FORMAT.md).
 Respects the Signature type specified in `-sig / --sig-type [type]`.
 
@@ -175,9 +180,7 @@ Respects the Signature type specified in `-sig / --sig-type [type]`.
 `-ln / --list-named []`
 
 Lists categories of curves, keys and keypairs embedded in ECTester's jar, along with some information about them.
-These can be used as arguments to the `-n[c|k|pub|priv] / --named-[curve|key|public|private]` parameters.
-
-With the format: `category/name`.
+These can be used as arguments to the `-n[c|k|pub|priv] / --named-[curve|key|public|private]` parameters, using the format: `category/name`.
 
 For example:
 `secg/secp192r1` identifies the SECG 192 bit prime field curve known as `secp192r1`.
@@ -197,9 +200,10 @@ Get and print ECTester applet info from an applet installed on a card.
 Outputs:
 
  - ECTester applet version
- - ECTester APDU support
+ - ECTester APDU support (basic/extended APDU)
  - JavaCard API version
  - JavaCard cleanup support
+ - ECTester internal array sizes and APDU buffer size
 
 ### Example
 
