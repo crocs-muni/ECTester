@@ -101,9 +101,9 @@ This test suite also does some additional tests with corrupting the parameters:
     - G = infinity
     - r = 0
     - r = 1
-    - r = some prime larger than original r (and \[r\]G != infinity)
-    - r = some prime smaller than original r (and \[r\]G != infninity)
-    - r = some composite number (and \[r\]G != infinity)
+    - r = some prime larger than original r (and [r]G != infinity)
+    - r = some prime smaller than original r (and [r]G != infninity)
+    - r = some composite number (and [r]G != infinity)
     - k = 0xff
     - k = 0
 
@@ -123,10 +123,10 @@ by the applet. Operations over such curves are susceptible to small-subgroup att
      This is performed over a 160 bit field size, in two passes:
       - First pass tests the full range from 2 bits to 152, with more frequent tests towards the beginning and end.
       - The second pass tests the range 140 - 158 bits with one bit steps.
-       
+
    - r = p * q = \|G\|
    - r = G = Carmichael number = p * q * s
-   - \[r\]G = infinity but r != \|G\|, so \|G\| divides r
+   - [r]G = infinity but r != \|G\|, so \|G\| divides r
 
 
 ## Invalid

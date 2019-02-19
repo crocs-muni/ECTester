@@ -29,6 +29,11 @@ import java.util.List;
 public abstract class Command implements Cloneable {
     CommandAPDU cmd;
     CardMngr cardManager;
+    // Workaround for a stupid Java bug that went unfixed for !12! years,
+    // and for the even more stupid module system, which cannot properly work
+    // with the fact that JCardSim has some java.* packages...
+    final byte[] GOD_DAMN_JAVA_BUG_6474858_AND_GOD_DAMN_JAVA_12_MODULE_SYSTEM = new byte[]{0};
+    
 
     Command(CardMngr cardManager) {
         this.cardManager = cardManager;
@@ -336,7 +341,7 @@ public abstract class Command implements Cloneable {
             super(cardManager);
             this.keyPair = keyPair;
 
-            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_CLEAR, keyPair, 0x00);
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_CLEAR, keyPair, 0x00, GOD_DAMN_JAVA_BUG_6474858_AND_GOD_DAMN_JAVA_12_MODULE_SYSTEM);
         }
 
         @Override
@@ -486,7 +491,7 @@ public abstract class Command implements Cloneable {
             super(cardManager);
             this.keyPair = keyPair;
 
-            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_GENERATE, keyPair, 0);
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_GENERATE, keyPair, 0, GOD_DAMN_JAVA_BUG_6474858_AND_GOD_DAMN_JAVA_12_MODULE_SYSTEM);
         }
 
         @Override
@@ -858,7 +863,7 @@ public abstract class Command implements Cloneable {
         public Cleanup(CardMngr cardManager) {
             super(cardManager);
 
-            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_CLEANUP, 0, 0);
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_CLEANUP, 0, 0, GOD_DAMN_JAVA_BUG_6474858_AND_GOD_DAMN_JAVA_12_MODULE_SYSTEM);
         }
 
         @Override
@@ -886,7 +891,7 @@ public abstract class Command implements Cloneable {
         public GetInfo(CardMngr cardManager) {
             super(cardManager);
 
-            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_GET_INFO, 0, 0);
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_GET_INFO, 0, 0, GOD_DAMN_JAVA_BUG_6474858_AND_GOD_DAMN_JAVA_12_MODULE_SYSTEM);
         }
 
         @Override
@@ -917,7 +922,7 @@ public abstract class Command implements Cloneable {
             super(cardManager);
             this.dryRunMode = dryRunMode;
 
-            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_SET_DRY_RUN_MODE, dryRunMode, 0);
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_SET_DRY_RUN_MODE, dryRunMode, 0, GOD_DAMN_JAVA_BUG_6474858_AND_GOD_DAMN_JAVA_12_MODULE_SYSTEM);
         }
 
         @Override
