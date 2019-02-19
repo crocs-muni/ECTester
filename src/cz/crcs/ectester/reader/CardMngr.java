@@ -72,7 +72,14 @@ public class CardMngr {
 
             terminal = terminalList.get(i);
             if (terminal.isCardPresent()) {
-                card = terminal.connect("*");
+                try {
+                    card = terminal.connect("T=1");
+                } catch (CardException ex) {
+                    if (verbose)
+                        System.out.println("T=1 failed, trying protocol '*'");
+                    card = terminal.connect("*");
+                }
+
                 if (verbose)
                     System.out.println("card: " + card);
                 channel = card.getBasicChannel();
