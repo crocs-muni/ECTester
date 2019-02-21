@@ -7,9 +7,11 @@ import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1StreamParser;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERSequenceParser;
+import org.bouncycastle.crypto.digests.SHA1Digest;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -188,6 +190,27 @@ public class ECUtil {
         } else {
             throw new IllegalArgumentException();
         }
+    }
+
+    public static byte[] semiRandomKey(EC_Curve curve) {
+        int bytes = (curve.getBits() + 7) / 8;
+        byte[] result = new byte[bytes];
+        SHA1Digest digest = new SHA1Digest();
+        byte[] curveName = curve.getId().getBytes(StandardCharsets.US_ASCII);
+        digest.update(curveName, 0, curveName.length);
+        int written = 0;
+        while (written < bytes) {
+            byte[] dig = new byte[digest.getDigestSize()];
+            digest.doFinal(dig, 0);
+            int toWrite = digest.getDigestSize() > bytes - written ? bytes - written : digest.getDigestSize();
+            System.arraycopy(dig, 0, result, written, toWrite);
+            written += toWrite;
+            digest.update(dig, 0, dig.length);
+        }
+        BigInteger priv = new BigInteger(1, result);
+        BigInteger order = new BigInteger(1, curve.getParam(EC_Consts.PARAMETER_R)[0]);
+        priv = priv.mod(order);
+        return toByteArray(priv, curve.getBits());
     }
 
     private static ECPoint toPoint(EC_Params params) {

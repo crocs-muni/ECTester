@@ -49,11 +49,18 @@ public class CardCompositeSuite extends CardTestSuite {
             }
             tests.add(allocate);
             tests.add(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.ANY));
-            tests.add(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_LOCAL), ExpectedValue.ANY));
+
+            String name;
+            if (cfg.testOptions.contains("preset")) {
+                name = "preset semi-random key";
+            } else {
+                name = "generated key";
+            }
+            tests.add(genOrPreset(curve, ExpectedValue.ANY));
             for (EC_Key key : curveKeys.getValue()) {
                 Command ecdhCommand = new Command.ECDH_direct(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH, key.flatten());
                 Test ecdh = CommandTest.expect(ecdhCommand, ExpectedValue.FAILURE, "Card correctly rejected to do ECDH over a composite order curve.", "Card incorrectly does ECDH over a composite order curve, leaks bits of private key.");
-                tests.add(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Composite test of " + curve.getId() + ", " + key.getDesc(), ecdh));
+                tests.add(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Composite test of " + curve.getId() + ", with " + name + ", " + key.getDesc(), ecdh));
             }
             doTest(CompoundTest.all(ExpectedValue.SUCCESS, "Composite test of " + curve.getId() + ".", tests.toArray(new Test[0])));
         }

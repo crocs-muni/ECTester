@@ -340,6 +340,7 @@ public class ECTesterReader {
         opts.addOption(Option.builder().longOpt("cleanup").desc("Send the cleanup command trigerring JCSystem.requestObjectDeletion() after some operations.").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
         opts.addOption(Option.builder("y").longOpt("yes").desc("Accept all warnings and prompts.").build());
+        opts.addOption(Option.builder("to").longOpt("test-options").desc("Test options to use.").hasArg().argName("options").build());
 
         opts.addOption(Option.builder("ka").longOpt("ka-type").desc("Set KeyAgreement object [type], corresponds to JC.KeyAgreement constants.").hasArg().argName("type").optionalArg(true).build());
         opts.addOption(Option.builder("sig").longOpt("sig-type").desc("Set Signature object [type], corresponds to JC.Signature constants.").hasArg().argName("type").optionalArg(true).build());
@@ -854,6 +855,7 @@ public class ECTesterReader {
         public byte ECKAType = KeyAgreement_ALG_EC_SVDP_DH;
         public int ECDSACount;
         public byte ECDSAType = Signature_ALG_ECDSA_SHA;
+        public Set<String> testOptions;
 
         /**
          * Reads and validates options, also sets defaults.
@@ -1007,6 +1009,21 @@ public class ECTesterReader {
                 if (!Arrays.asList(tests).contains(testSuite)) {
                     System.err.println(Colors.error("Unknown test suite " + testSuite + ". Should be one of: " + Arrays.toString(tests)));
                     return false;
+                }
+
+                String[] opts = cli.getOptionValue("test-options", "").split(",");
+                List<String> validOpts = Arrays.asList("preset");
+                testOptions = new HashSet<>();
+                for (String opt : opts) {
+                    if (opt.equals("")) {
+                        continue;
+                    }
+                    if (!validOpts.contains(opt)) {
+                        System.err.println(Colors.error("Unknown test option " + opt + ". Should be one of: " + "preset."));
+                        return false;
+                    } else {
+                        testOptions.add(opt);
+                    }
                 }
             } else if (cli.hasOption("ecdh")) {
                 if (primeField == binaryField) {
