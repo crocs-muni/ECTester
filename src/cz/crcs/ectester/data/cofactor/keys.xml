@@ -702,4 +702,23 @@
         <curve>composite/pq/composite256/2</curve>
         <desc>cofactor order = 0x000000000000000000000000000000000000000000000000743bc7ea193d40db</desc>
     </pubkey>
+
+    <pubkey>
+        <id>large/cofactor128p56467/0</id>
+        <inline>0x8afd6cc280e0be7163bb6f285a7c6391,0xae64e0f1afc7bd5c75e2f36a7d85f668</inline>
+        <curve>cofactor/large/cofactor128p56467</curve>
+        <desc>cofactor order = 0xdc93</desc>
+    </pubkey>
+    <pubkey>
+        <id>large/cofactor128p65521/0</id>
+        <inline>0x70e43816ed51388caa54a68b6c500352,0xab05b43e2cde6086b12350abe79b9175</inline>
+        <curve>cofactor/large/cofactor128p65521</curve>
+        <desc>cofactor order = 0xfff1</desc>
+    </pubkey>
+    <pubkey>
+        <id>large/cofactor128p65535/0</id>
+        <inline>0x39d6ea56c3eb6382d2d7a9d327a191fd,0x3ebb3f4626d05df38572af3ae5fa60f2</inline>
+        <curve>cofactor/large/cofactor128p65535</curve>
+        <desc>cofactor order = 0xffff</desc>
+    </pubkey>
 </keys>
