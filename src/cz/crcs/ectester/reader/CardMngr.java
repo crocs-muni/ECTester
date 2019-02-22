@@ -352,7 +352,7 @@ public class CardMngr {
         return responseAPDU;
     }
 
-    public ResponseAPDU sendAPDU(byte apdu[]) throws CardException {
+    public ResponseAPDU sendAPDU(byte[] apdu) throws CardException {
         CommandAPDU commandAPDU = new CommandAPDU(apdu);
         return sendAPDU(commandAPDU);
     }

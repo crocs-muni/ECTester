@@ -10,7 +10,6 @@ import cz.crcs.ectester.common.util.CardUtil;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
-import cz.crcs.ectester.reader.response.Response;
 import javacard.security.KeyPair;
 
 import java.util.LinkedList;

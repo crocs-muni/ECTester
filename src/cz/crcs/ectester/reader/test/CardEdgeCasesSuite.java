@@ -92,7 +92,7 @@ public class CardEdgeCasesSuite extends CardTestSuite {
                                 int firstDiff = ByteUtil.diffBytes(dh.getSecret(), 0, value.getData(0), 0, dh.secretLength());
                                 System.err.println(ByteUtil.bytesToHex(dh.getSecret()));
                                 System.err.println(ByteUtil.bytesToHex(value.getData(0)));
-                                return new Result(Result.Value.FAILURE, "ECDH derived secret does not match the test-vector, first difference was at byte " + String.valueOf(firstDiff) + ".");
+                                return new Result(Result.Value.FAILURE, "ECDH derived secret does not match the test-vector, first difference was at byte " + firstDiff + ".");
                             }
                             return new Result(Result.Value.SUCCESS);
                         }
@@ -154,7 +154,7 @@ public class CardEdgeCasesSuite extends CardTestSuite {
                 continue;
             }
             Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.ExpectedValue.SUCCESS);
-            Test generate = CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_LOCAL), Result.ExpectedValue.SUCCESS);
+            Test generate = genOrPreset(curve, Result.ExpectedValue.SUCCESS);
             CommandTest export = CommandTest.expect(new Command.Export(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_PUBLIC, EC_Consts.PARAMETER_W), Result.ExpectedValue.SUCCESS);
             Test setup = runTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "KeyPair setup.", key, set, generate, export));
 
@@ -162,11 +162,11 @@ public class CardEdgeCasesSuite extends CardTestSuite {
             BigInteger p = new BigInteger(1, pParam);
             byte[] wParam = ((Response.Export) export.getResponse()).getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_W);
             byte[] yValue = new byte[(wParam.length - 1) / 2];
-            System.arraycopy(wParam, (wParam.length/2) + 1, yValue, 0, yValue.length);
+            System.arraycopy(wParam, (wParam.length / 2) + 1, yValue, 0, yValue.length);
             BigInteger y = new BigInteger(1, yValue);
             BigInteger negY = p.subtract(y);
             byte[] newY = ECUtil.toByteArray(negY, curve.getBits());
-            System.arraycopy(newY, 0, wParam, (wParam.length/2) + 1, newY.length);
+            System.arraycopy(newY, 0, wParam, (wParam.length / 2) + 1, newY.length);
 
             EC_Params negYParams = makeParams(newY);
             Test negYTest = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, negYParams.getParams(), negYParams.flatten()), "ECDH with pubkey negated.", Result.ExpectedValue.FAILURE, Result.ExpectedValue.FAILURE);
@@ -302,7 +302,7 @@ public class CardEdgeCasesSuite extends CardTestSuite {
             if (nearR.compareTo(r) >= 0) {
                 rTests[i++] = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, params.getParams(), params.flatten()), nearR.toString(16) + " (>=r)", Result.ExpectedValue.FAILURE, Result.ExpectedValue.FAILURE);
             } else {
-                rTests[i++] = ecdhTestBoth(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, params.getParams(), params.flatten()), nearR.toString(16) +" (<r)", Result.ExpectedValue.SUCCESS, Result.ExpectedValue.SUCCESS);
+                rTests[i++] = ecdhTestBoth(new Command.Set(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, params.getParams(), params.flatten()), nearR.toString(16) + " (<r)", Result.ExpectedValue.SUCCESS, Result.ExpectedValue.SUCCESS);
             }
         }
         Test rTest = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Near r.", rTests);

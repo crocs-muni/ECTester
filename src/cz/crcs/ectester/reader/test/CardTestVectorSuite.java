@@ -31,7 +31,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static cz.crcs.ectester.common.test.Result.ExpectedValue;
@@ -86,7 +85,7 @@ public class CardTestVectorSuite extends CardTestSuite {
                         return new Result(Value.FAILURE, "ECDH response did not contain the derived secret.");
                     if (!ByteUtil.compareBytes(dh.getSecret(), 0, result.getData(0), 0, dh.secretLength())) {
                         int firstDiff = ByteUtil.diffBytes(dh.getSecret(), 0, result.getData(0), 0, dh.secretLength());
-                        return new Result(Value.FAILURE, "ECDH derived secret does not match the test-vector, first difference was at byte " + String.valueOf(firstDiff) + ".");
+                        return new Result(Value.FAILURE, "ECDH derived secret does not match the test-vector, first difference was at byte " + firstDiff + ".");
                     }
                     return new Result(Value.SUCCESS);
                 }
@@ -183,7 +182,7 @@ public class CardTestVectorSuite extends CardTestSuite {
                         if (diff == secret.length) {
                             return new Result(Value.SUCCESS, "Derived secret matched expected value.");
                         } else {
-                            return new Result(Value.FAILURE, "Derived secret does not match expected value, first difference was at byte " + String.valueOf(diff) + ".");
+                            return new Result(Value.FAILURE, "Derived secret does not match expected value, first difference was at byte " + diff + ".");
                         }
                     } catch (InvalidKeyException ex) {
                         return new Result(Value.SUCCESS, "Result could not be verified. " + ex.getMessage());

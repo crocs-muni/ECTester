@@ -33,7 +33,7 @@ public abstract class Command implements Cloneable {
     // and for the even more stupid module system, which cannot properly work
     // with the fact that JCardSim has some java.* packages...
     final byte[] GOD_DAMN_JAVA_BUG_6474858_AND_GOD_DAMN_JAVA_12_MODULE_SYSTEM = new byte[]{0};
-    
+
 
     Command(CardMngr cardManager) {
         this.cardManager = cardManager;

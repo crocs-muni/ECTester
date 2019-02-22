@@ -911,7 +911,7 @@ public class ECTesterReader {
             }
 
             format = cli.getOptionValue("format");
-            String formats[] = new String[]{"text", "xml", "yaml", "yml"};
+            String[] formats = new String[]{"text", "xml", "yaml", "yml"};
             if (format != null && !Arrays.asList(formats).contains(format)) {
                 System.err.println(Colors.error("Wrong output format " + format + ". Should be one of " + Arrays.toString(formats)));
                 return false;
