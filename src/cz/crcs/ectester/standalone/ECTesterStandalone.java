@@ -68,7 +68,7 @@ import java.util.stream.Collectors;
  * Standalone part of ECTester, a tool for testing Elliptic curve implementations in software libraries.
  *
  * @author Jan Jancar johny@neuromancer.sk
- * @version v0.3.1
+ * @version v0.3.2
  */
 public class ECTesterStandalone {
     private ProviderECLibrary[] libs = new ProviderECLibrary[]{
@@ -87,7 +87,7 @@ public class ECTesterStandalone {
     private Options opts = new Options();
     private TreeParser optParser;
     private TreeCommandLine cli;
-    public static final String VERSION = "v0.3.1";
+    public static final String VERSION = "v0.3.2";
     private static final String DESCRIPTION = "ECTesterStandalone " + VERSION + ", an Elliptic Curve Cryptography support tester/utility.";
     private static final String LICENSE = "MIT Licensed\nCopyright (c) 2016-2018 Petr Svenda <petr@svenda.com>";
     private static final String CLI_HEADER = "\n" + DESCRIPTION + "\n\n";
