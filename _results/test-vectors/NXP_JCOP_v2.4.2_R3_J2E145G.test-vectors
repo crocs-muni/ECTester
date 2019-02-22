@@ -1,172 +1,181 @@
 ---
 testRun:
+  date: 2019.02.22 10:01:51
   suite:
     name: test
     desc: The test-vectors suite contains a collection of test vectors which test
       basic ECDH correctness.
+  device:
+    type: card
+    ectester: v0.3.1(git 950f5c0)
+    cplc: {
+      }
+    applet:
+      version: v0.3.1
+      javacard: 3.0
+      base: 546
+      cleanup: true
+      arrays:
+        apduBuf: 1454
+        ramArray: 256
+        ramArray2: 256
+        apduArray: 1024
+    ATR: 3bf01300008131fe45e8
   tests:
   - result:
-      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
+      cause: Some sub-tests did not have the expected result.
     tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
-      response:
-        duration: 87707538
-        natural_sw: 36864
-        apdu: 00 03 00 03 90 00
-        sws:
-        - 3
-        - 3
-        successful: false
-        desc: Allocate both keypairs 163b ALG_EC_F2M
-      type: command
+    - type: command
       command:
         apdu: b0 5a 03 00 03 00 a3 04
         desc: Allocate both keypairs 163b ALG_EC_F2M
-      desc: Allocate both keypairs 163b ALG_EC_F2M
-    type: compound
-    desc: Test vector b163-dhc
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
       response:
-        duration: 87428900
-        natural_sw: 36864
+        successful: false
         apdu: 00 03 00 03 90 00
+        natural_sw: 36864
         sws:
         - 3
         - 3
-        successful: false
-        desc: Allocate both keypairs 233b ALG_EC_F2M
-      type: command
+        duration: 77495390
+        desc: Allocate both keypairs 163b ALG_EC_F2M
+      desc: Allocate both keypairs 163b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 0
+    type: compound
+    desc: No support for 163b ALG_EC_F2M.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
       command:
         apdu: b0 5a 03 00 03 00 e9 04
         desc: Allocate both keypairs 233b ALG_EC_F2M
-      desc: Allocate both keypairs 233b ALG_EC_F2M
-    type: compound
-    desc: Test vector b233-dhc
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
       response:
-        duration: 86494442
-        natural_sw: 36864
+        successful: false
         apdu: 00 03 00 03 90 00
+        natural_sw: 36864
         sws:
         - 3
         - 3
-        successful: false
-        desc: Allocate both keypairs 283b ALG_EC_F2M
-      type: command
+        duration: 85276351
+        desc: Allocate both keypairs 233b ALG_EC_F2M
+      desc: Allocate both keypairs 233b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 1
+    type: compound
+    desc: No support for 233b ALG_EC_F2M.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
       command:
         apdu: b0 5a 03 00 03 01 1b 04
         desc: Allocate both keypairs 283b ALG_EC_F2M
-      desc: Allocate both keypairs 283b ALG_EC_F2M
-    type: compound
-    desc: Test vector b283-dhc
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
       response:
-        duration: 87358931
-        natural_sw: 36864
+        successful: false
         apdu: 00 03 00 03 90 00
+        natural_sw: 36864
         sws:
         - 3
         - 3
-        successful: false
-        desc: Allocate both keypairs 409b ALG_EC_F2M
-      type: command
+        duration: 86564537
+        desc: Allocate both keypairs 283b ALG_EC_F2M
+      desc: Allocate both keypairs 283b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 2
+    type: compound
+    desc: No support for 283b ALG_EC_F2M.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
       command:
         apdu: b0 5a 03 00 03 01 99 04
         desc: Allocate both keypairs 409b ALG_EC_F2M
-      desc: Allocate both keypairs 409b ALG_EC_F2M
-    type: compound
-    desc: Test vector b409-dhc
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
       response:
-        duration: 86258566
-        natural_sw: 36864
+        successful: false
         apdu: 00 03 00 03 90 00
+        natural_sw: 36864
         sws:
         - 3
         - 3
-        successful: false
-        desc: Allocate both keypairs 571b ALG_EC_F2M
-      type: command
+        duration: 85682755
+        desc: Allocate both keypairs 409b ALG_EC_F2M
+      desc: Allocate both keypairs 409b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 3
+    type: compound
+    desc: No support for 409b ALG_EC_F2M.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
       command:
         apdu: b0 5a 03 00 03 02 3b 04
         desc: Allocate both keypairs 571b ALG_EC_F2M
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 86661120
+        desc: Allocate both keypairs 571b ALG_EC_F2M
       desc: Allocate both keypairs 571b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 4
     type: compound
-    desc: Test vector b571-dhc
+    desc: No support for 571b ALG_EC_F2M.
   - result:
-      cause: All sub-tests had the expected result.
       ok: true
       value: SUCCESS
+      cause: All sub-tests had the expected result.
     tests:
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
-      response:
-        duration: 512036099
-        natural_sw: 36864
-        apdu: 90 00 90 00 90 00
-        sws:
-        - 36864
-        - 36864
-        successful: true
-        desc: Allocate both keypairs 224b ALG_EC_FP
-      type: command
+    - type: command
       command:
         apdu: b0 5a 03 00 03 00 e0 05
         desc: Allocate both keypairs 224b ALG_EC_FP
-      desc: Allocate both keypairs 224b ALG_EC_FP
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 967789688
-        natural_sw: 36864
+        successful: true
         apdu: 90 00 90 00 90 00
+        natural_sw: 36864
         sws:
         - 36864
         - 36864
-        successful: true
-        desc: Set external curve parameters on both keypairs
-      type: command
+        duration: 502087616
+        desc: Allocate both keypairs 224b ALG_EC_FP
+      desc: Allocate both keypairs 224b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 5c 03 ff b9 00 7d 00 1c d7 c1 34 aa 26 43 66 86 2a 18 30 25 75 d1
           d7 87 b0 9f 07 57 97 da 89 f5 7e c8 c0 ff 00 1c 68 a5 e6 2c a9 ce 6c 1c
@@ -177,101 +186,102 @@ testRun:
           24 35 4b 9e 99 ca a3 f6 d3 76 14 02 cd 00 1c d7 c1 34 aa 26 43 66 86 2a
           18 30 25 75 d0 fb 98 d1 16 bc 4b 6d de bc a3 a5 a7 93 9f 00 02 00 01
         desc: Set external curve parameters on both keypairs
-      desc: Set external curve parameters on both keypairs
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 66274341
+        successful: true
+        apdu: 90 00 90 00 90 00
         natural_sw: 36864
-        apdu: 90 00 90 00
         sws:
         - 36864
-        successful: true
-        desc: Set external privkey parameters on local keypair
-      type: command
+        - 36864
+        duration: 968036731
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 5c 01 ff 20 01 00 00 1c 7c 4b 7a 2c 8a 4b ad 1f bb 7d 79 cc 09 55
           db 7c 6a 46 60 ca 64 cc 47 78 15 9b 49 5e
         desc: Set external privkey parameters on local keypair
-      desc: Set external privkey parameters on local keypair
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 73657416
-        natural_sw: 36864
+        successful: true
         apdu: 90 00 90 00
+        natural_sw: 36864
         sws:
         - 36864
-        successful: true
-        desc: Set external pubkey parameters on remote keypair
-      type: command
+        duration: 68957833
+        desc: Set external privkey parameters on local keypair
+      desc: Set external privkey parameters on local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 5c 02 ff 3d 00 80 00 39 04 2a 97 08 9a 92 96 14 7b 71 b2 1a 4b 57
           4e 12 78 24 5b 53 6f 14 d8 c2 b9 d0 7a 87 4e 9b 90 0d 7c 77 a7 09 a7 97
           27 6b 8c a1 ba 61 bb 95 b5 46 fc 29 f8 62 e4 4d 59 d2 5b
         desc: Set external pubkey parameters on remote keypair
-      desc: Set external pubkey parameters on remote keypair
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 629381917
+        successful: true
+        apdu: 90 00 90 00
         natural_sw: 36864
-        apdu: 90 00 00 14 4a dc a2 e2 cf e8 db d4 f0 b9 ce 27 e4 42 2c 57 ee 0a 6b
-          98 90 00
         sws:
         - 36864
-        successful: true
-        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
-      type: command
+        duration: 76900266
+        desc: Set external pubkey parameters on remote keypair
+      desc: Set external pubkey parameters on remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 01
-        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
-      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
-    type: compound
-    desc: Test vector brainpoolP224r1-dh
-  - result:
-      cause: All sub-tests had the expected result.
-      ok: true
-      value: SUCCESS
-    tests:
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
       response:
-        duration: 508511269
+        successful: true
+        apdu: 90 00 00 14 4a dc a2 e2 cf e8 db d4 f0 b9 ce 27 e4 42 2c 57 ee 0a 6b
+          98 90 00
         natural_sw: 36864
-        apdu: 90 00 90 00 90 00
         sws:
         - 36864
-        - 36864
-        successful: true
-        desc: Allocate both keypairs 256b ALG_EC_FP
-      type: command
+        duration: 614229025
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    index: 5
+    type: compound
+    desc: Test vector brainpoolP224r1-dh.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
       command:
         apdu: b0 5a 03 00 03 01 00 05
         desc: Allocate both keypairs 256b ALG_EC_FP
-      desc: Allocate both keypairs 256b ALG_EC_FP
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 972362485
-        natural_sw: 36864
+        successful: true
         apdu: 90 00 90 00 90 00
+        natural_sw: 36864
         sws:
         - 36864
         - 36864
-        successful: true
-        desc: Set external curve parameters on both keypairs
-      type: command
+        duration: 499132470
+        desc: Allocate both keypairs 256b ALG_EC_FP
+      desc: Allocate both keypairs 256b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 5c 03 ff d1 00 7d 00 20 a9 fb 57 db a1 ee a9 bc 3e 66 0a 90 9d 83
           8d 72 6e 3b f6 23 d5 26 20 28 20 13 48 1d 1f 6e 53 77 00 20 7d 5a 09 75
@@ -283,277 +293,285 @@ testRun:
           54 5c 1d 54 c7 2f 04 69 97 00 20 a9 fb 57 db a1 ee a9 bc 3e 66 0a 90 9d
           83 8d 71 8c 39 7a a3 b5 61 a6 f7 90 1e 0e 82 97 48 56 a7 00 02 00 01
         desc: Set external curve parameters on both keypairs
-      desc: Set external curve parameters on both keypairs
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 67925742
+        successful: true
+        apdu: 90 00 90 00 90 00
         natural_sw: 36864
-        apdu: 90 00 90 00
         sws:
         - 36864
-        successful: true
-        desc: Set external privkey parameters on local keypair
-      type: command
+        - 36864
+        duration: 976496816
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 5c 01 ff 24 01 00 00 20 81 db 1e e1 00 15 0f f2 ea 33 8d 70 82 71
           be 38 30 0c b5 42 41 d7 99 50 f7 7b 06 30 39 80 4f 1d
         desc: Set external privkey parameters on local keypair
-      desc: Set external privkey parameters on local keypair
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 78828041
-        natural_sw: 36864
+        successful: true
         apdu: 90 00 90 00
+        natural_sw: 36864
         sws:
         - 36864
-        successful: true
-        desc: Set external pubkey parameters on remote keypair
-      type: command
+        duration: 68931008
+        desc: Set external privkey parameters on local keypair
+      desc: Set external privkey parameters on local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 5c 02 ff 45 00 80 00 41 04 8d 2d 68 8c 6c f9 3e 11 60 ad 04 cc 44
           29 11 7d c2 c4 18 25 e1 e9 fc a0 ad dd 34 e6 f1 b3 9f 7b 99 0c 57 52 08
           12 be 51 26 41 e4 70 34 83 21 06 bc 7d 3e 8d d0 e4 c7 f1 13 6d 70 06 54
           7c ec 6a
         desc: Set external pubkey parameters on remote keypair
-      desc: Set external pubkey parameters on remote keypair
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 604635437
+        successful: true
+        apdu: 90 00 90 00
         natural_sw: 36864
-        apdu: 90 00 00 14 4f 1c cf fb b2 a1 4d a1 f1 7d e2 91 da bc dd 10 9e b1 3b
-          b7 90 00
         sws:
         - 36864
-        successful: true
-        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
-      type: command
+        duration: 79739822
+        desc: Set external pubkey parameters on remote keypair
+      desc: Set external pubkey parameters on remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 01
-        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
-      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
+      response:
+        successful: true
+        apdu: 90 00 00 14 4f 1c cf fb b2 a1 4d a1 f1 7d e2 91 da bc dd 10 9e b1 3b
+          b7 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 604460063
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    index: 6
     type: compound
-    desc: Test vector brainpoolP256r1-dh
+    desc: Test vector brainpoolP256r1-dh.
   - result:
-      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
+      cause: Some sub-tests did not have the expected result.
     tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
-      response:
-        duration: 93172111
-        natural_sw: 36864
-        apdu: 00 03 00 03 90 00
-        sws:
-        - 3
-        - 3
-        successful: false
-        desc: Allocate both keypairs 384b ALG_EC_FP
-      type: command
+    - type: command
       command:
         apdu: b0 5a 03 00 03 01 80 05
         desc: Allocate both keypairs 384b ALG_EC_FP
-      desc: Allocate both keypairs 384b ALG_EC_FP
-    type: compound
-    desc: Test vector brainpoolP384r1-dh
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
       response:
-        duration: 86230023
-        natural_sw: 36864
+        successful: false
         apdu: 00 03 00 03 90 00
+        natural_sw: 36864
         sws:
         - 3
         - 3
-        successful: false
-        desc: Allocate both keypairs 512b ALG_EC_FP
-      type: command
+        duration: 93567372
+        desc: Allocate both keypairs 384b ALG_EC_FP
+      desc: Allocate both keypairs 384b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 7
+    type: compound
+    desc: No support for 384b ALG_EC_FP.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
       command:
         apdu: b0 5a 03 00 03 02 00 05
         desc: Allocate both keypairs 512b ALG_EC_FP
-      desc: Allocate both keypairs 512b ALG_EC_FP
-    type: compound
-    desc: Test vector brainpoolP512r1-dh
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
       response:
-        duration: 87351087
-        natural_sw: 36864
+        successful: false
         apdu: 00 03 00 03 90 00
+        natural_sw: 36864
         sws:
         - 3
         - 3
-        successful: false
-        desc: Allocate both keypairs 163b ALG_EC_F2M
-      type: command
+        duration: 86057266
+        desc: Allocate both keypairs 512b ALG_EC_FP
+      desc: Allocate both keypairs 512b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 8
+    type: compound
+    desc: No support for 512b ALG_EC_FP.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
       command:
         apdu: b0 5a 03 00 03 00 a3 04
         desc: Allocate both keypairs 163b ALG_EC_F2M
-      desc: Allocate both keypairs 163b ALG_EC_F2M
-    type: compound
-    desc: Test vector k163-dhc
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
       response:
-        duration: 86479405
-        natural_sw: 36864
+        successful: false
         apdu: 00 03 00 03 90 00
+        natural_sw: 36864
         sws:
         - 3
         - 3
-        successful: false
-        desc: Allocate both keypairs 233b ALG_EC_F2M
-      type: command
+        duration: 87175962
+        desc: Allocate both keypairs 163b ALG_EC_F2M
+      desc: Allocate both keypairs 163b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 9
+    type: compound
+    desc: No support for 163b ALG_EC_F2M.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
       command:
         apdu: b0 5a 03 00 03 00 e9 04
         desc: Allocate both keypairs 233b ALG_EC_F2M
-      desc: Allocate both keypairs 233b ALG_EC_F2M
-    type: compound
-    desc: Test vector k233-dhc
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
       response:
-        duration: 87549379
-        natural_sw: 36864
+        successful: false
         apdu: 00 03 00 03 90 00
+        natural_sw: 36864
         sws:
         - 3
         - 3
-        successful: false
-        desc: Allocate both keypairs 283b ALG_EC_F2M
-      type: command
+        duration: 86222836
+        desc: Allocate both keypairs 233b ALG_EC_F2M
+      desc: Allocate both keypairs 233b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 10
+    type: compound
+    desc: No support for 233b ALG_EC_F2M.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
       command:
         apdu: b0 5a 03 00 03 01 1b 04
         desc: Allocate both keypairs 283b ALG_EC_F2M
-      desc: Allocate both keypairs 283b ALG_EC_F2M
-    type: compound
-    desc: Test vector k283-dhc
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
       response:
-        duration: 86747565
-        natural_sw: 36864
+        successful: false
         apdu: 00 03 00 03 90 00
+        natural_sw: 36864
         sws:
         - 3
         - 3
-        successful: false
-        desc: Allocate both keypairs 409b ALG_EC_F2M
-      type: command
+        duration: 87255622
+        desc: Allocate both keypairs 283b ALG_EC_F2M
+      desc: Allocate both keypairs 283b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 11
+    type: compound
+    desc: No support for 283b ALG_EC_F2M.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
       command:
         apdu: b0 5a 03 00 03 01 99 04
         desc: Allocate both keypairs 409b ALG_EC_F2M
-      desc: Allocate both keypairs 409b ALG_EC_F2M
-    type: compound
-    desc: Test vector k409-dhc
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
       response:
-        duration: 87663511
-        natural_sw: 36864
+        successful: false
         apdu: 00 03 00 03 90 00
+        natural_sw: 36864
         sws:
         - 3
         - 3
-        successful: false
-        desc: Allocate both keypairs 571b ALG_EC_F2M
-      type: command
+        duration: 86295347
+        desc: Allocate both keypairs 409b ALG_EC_F2M
+      desc: Allocate both keypairs 409b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 12
+    type: compound
+    desc: No support for 409b ALG_EC_F2M.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
       command:
         apdu: b0 5a 03 00 03 02 3b 04
         desc: Allocate both keypairs 571b ALG_EC_F2M
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 87610007
+        desc: Allocate both keypairs 571b ALG_EC_F2M
       desc: Allocate both keypairs 571b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 13
     type: compound
-    desc: Test vector k571-dhc
+    desc: No support for 571b ALG_EC_F2M.
   - result:
-      cause: All sub-tests had the expected result.
       ok: true
       value: SUCCESS
+      cause: All sub-tests had the expected result.
     tests:
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
-      response:
-        duration: 509844748
-        natural_sw: 36864
-        apdu: 90 00 90 00 90 00
-        sws:
-        - 36864
-        - 36864
-        successful: true
-        desc: Allocate both keypairs 192b ALG_EC_FP
-      type: command
+    - type: command
       command:
         apdu: b0 5a 03 00 03 00 c0 05
         desc: Allocate both keypairs 192b ALG_EC_FP
-      desc: Allocate both keypairs 192b ALG_EC_FP
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 931177494
-        natural_sw: 36864
+        successful: true
         apdu: 90 00 90 00 90 00
+        natural_sw: 36864
         sws:
         - 36864
         - 36864
-        successful: true
-        desc: Set external curve parameters on both keypairs
-      type: command
+        duration: 503221364
+        desc: Allocate both keypairs 192b ALG_EC_FP
+      desc: Allocate both keypairs 192b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 5c 03 ff a1 00 7d 00 18 ff ff ff ff ff ff ff ff ff ff ff ff ff ff
           ff fe ff ff ff ff ff ff ff ff 00 18 ff ff ff ff ff ff ff ff ff ff ff ff
@@ -563,101 +581,102 @@ testRun:
           78 63 10 11 ed 6b 24 cd d5 73 f9 77 a1 1e 79 48 11 00 18 ff ff ff ff ff
           ff ff ff ff ff ff ff 99 de f8 36 14 6b c9 b1 b4 d2 28 31 00 02 00 01
         desc: Set external curve parameters on both keypairs
-      desc: Set external curve parameters on both keypairs
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 64967309
+        successful: true
+        apdu: 90 00 90 00 90 00
         natural_sw: 36864
-        apdu: 90 00 90 00
         sws:
         - 36864
-        successful: true
-        desc: Set external privkey parameters on local keypair
-      type: command
+        - 36864
+        duration: 933723636
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 5c 01 ff 1c 01 00 00 18 f1 7d 3f ea 36 7b 74 d3 40 85 1c a4 27 0d
           cb 24 c2 71 f4 45 be d9 d5 27
         desc: Set external privkey parameters on local keypair
-      desc: Set external privkey parameters on local keypair
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 70306409
-        natural_sw: 36864
+        successful: true
         apdu: 90 00 90 00
+        natural_sw: 36864
         sws:
         - 36864
-        successful: true
-        desc: Set external pubkey parameters on remote keypair
-      type: command
+        duration: 66426922
+        desc: Set external privkey parameters on local keypair
+      desc: Set external privkey parameters on local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 5c 02 ff 35 00 80 00 31 04 42 ea 6d d9 96 9d d2 a6 1f ea 1a ac 7f
           8e 98 ed cc 89 6c 6e 55 85 7c c0 df be 5d 7c 61 fa c8 8b 11 81 1b de 32
           8e 8a 0d 12 bf 01 a9 d2 04 b5 23
         desc: Set external pubkey parameters on remote keypair
-      desc: Set external pubkey parameters on remote keypair
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 382201950
+        successful: true
+        apdu: 90 00 90 00
         natural_sw: 36864
-        apdu: 90 00 00 14 cb 0f fa a3 d3 f9 d5 87 67 65 cf 08 2e e0 b8 93 c8 17 9d
-          19 90 00
         sws:
         - 36864
-        successful: true
-        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
-      type: command
+        duration: 68834036
+        desc: Set external pubkey parameters on remote keypair
+      desc: Set external pubkey parameters on remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 01
-        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
-      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
-    type: compound
-    desc: Test vector p192-dhc
-  - result:
-      cause: All sub-tests had the expected result.
-      ok: true
-      value: SUCCESS
-    tests:
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
       response:
-        duration: 507711502
+        successful: true
+        apdu: 90 00 00 14 cb 0f fa a3 d3 f9 d5 87 67 65 cf 08 2e e0 b8 93 c8 17 9d
+          19 90 00
         natural_sw: 36864
-        apdu: 90 00 90 00 90 00
         sws:
         - 36864
-        - 36864
-        successful: true
-        desc: Allocate both keypairs 224b ALG_EC_FP
-      type: command
+        duration: 383748049
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    index: 14
+    type: compound
+    desc: Test vector p192-dhc.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
       command:
         apdu: b0 5a 03 00 03 00 e0 05
         desc: Allocate both keypairs 224b ALG_EC_FP
-      desc: Allocate both keypairs 224b ALG_EC_FP
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 967316246
-        natural_sw: 36864
+        successful: true
         apdu: 90 00 90 00 90 00
+        natural_sw: 36864
         sws:
         - 36864
         - 36864
-        successful: true
-        desc: Set external curve parameters on both keypairs
-      type: command
+        duration: 500774208
+        desc: Allocate both keypairs 224b ALG_EC_FP
+      desc: Allocate both keypairs 224b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 5c 03 ff b9 00 7d 00 1c ff ff ff ff ff ff ff ff ff ff ff ff ff ff
           ff ff 00 00 00 00 00 00 00 00 00 00 00 01 00 1c ff ff ff ff ff ff ff ff
@@ -668,101 +687,102 @@ testRun:
           a0 5a 07 47 64 44 d5 81 99 85 00 7e 34 00 1c ff ff ff ff ff ff ff ff ff
           ff ff ff ff ff 16 a2 e0 b8 f0 3e 13 dd 29 45 5c 5c 2a 3d 00 02 00 01
         desc: Set external curve parameters on both keypairs
-      desc: Set external curve parameters on both keypairs
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 65478041
+        successful: true
+        apdu: 90 00 90 00 90 00
         natural_sw: 36864
-        apdu: 90 00 90 00
         sws:
         - 36864
-        successful: true
-        desc: Set external privkey parameters on local keypair
-      type: command
+        - 36864
+        duration: 969928919
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 5c 01 ff 20 01 00 00 1c 83 46 a6 0f c6 f2 93 ca 5a 0d 2a f6 8b a7
           1d 1d d3 89 e5 e4 08 37 94 2d f3 e4 3c bd
         desc: Set external privkey parameters on local keypair
-      desc: Set external privkey parameters on local keypair
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 76155739
-        natural_sw: 36864
+        successful: true
         apdu: 90 00 90 00
+        natural_sw: 36864
         sws:
         - 36864
-        successful: true
-        desc: Set external pubkey parameters on remote keypair
-      type: command
+        duration: 67431124
+        desc: Set external privkey parameters on local keypair
+      desc: Set external privkey parameters on local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 5c 02 ff 3d 00 80 00 39 04 af 33 cd 06 29 bc 7e 99 63 20 a3 f4 03
           68 f7 4d e8 70 4f a3 7b 8f ab 69 ab aa e2 80 88 20 92 cc bb a7 93 0f 41
           9a 8a 4f 9b b1 69 78 bb c3 83 87 29 99 25 59 a6 f2 e2 d7
         desc: Set external pubkey parameters on remote keypair
-      desc: Set external pubkey parameters on remote keypair
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 447293698
+        successful: true
+        apdu: 90 00 90 00
         natural_sw: 36864
-        apdu: 90 00 00 14 d0 22 bc f6 ea ef 77 89 ef 8d 2a ea a9 ab 9d 50 89 44 ce
-          03 90 00
         sws:
         - 36864
-        successful: true
-        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
-      type: command
+        duration: 74494392
+        desc: Set external pubkey parameters on remote keypair
+      desc: Set external pubkey parameters on remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 01
-        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
-      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
-    type: compound
-    desc: Test vector p224-dhc
-  - result:
-      cause: All sub-tests had the expected result.
-      ok: true
-      value: SUCCESS
-    tests:
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
       response:
-        duration: 507416257
+        successful: true
+        apdu: 90 00 00 14 d0 22 bc f6 ea ef 77 89 ef 8d 2a ea a9 ab 9d 50 89 44 ce
+          03 90 00
         natural_sw: 36864
-        apdu: 90 00 90 00 90 00
         sws:
         - 36864
-        - 36864
-        successful: true
-        desc: Allocate both keypairs 256b ALG_EC_FP
-      type: command
+        duration: 447671855
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    index: 15
+    type: compound
+    desc: Test vector p224-dhc.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
       command:
         apdu: b0 5a 03 00 03 01 00 05
         desc: Allocate both keypairs 256b ALG_EC_FP
-      desc: Allocate both keypairs 256b ALG_EC_FP
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 974065881
-        natural_sw: 36864
+        successful: true
         apdu: 90 00 90 00 90 00
+        natural_sw: 36864
         sws:
         - 36864
         - 36864
-        successful: true
-        desc: Set external curve parameters on both keypairs
-      type: command
+        duration: 503270627
+        desc: Allocate both keypairs 256b ALG_EC_FP
+      desc: Allocate both keypairs 256b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 5c 03 ff d1 00 7d 00 20 ff ff ff ff 00 00 00 01 00 00 00 00 00 00
           00 00 00 00 00 00 ff ff ff ff ff ff ff ff ff ff ff ff 00 20 ff ff ff ff
@@ -774,152 +794,155 @@ testRun:
           ce cb b6 40 68 37 bf 51 f5 00 20 ff ff ff ff 00 00 00 00 ff ff ff ff ff
           ff ff ff bc e6 fa ad a7 17 9e 84 f3 b9 ca c2 fc 63 25 51 00 02 00 01
         desc: Set external curve parameters on both keypairs
-      desc: Set external curve parameters on both keypairs
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 67967055
+        successful: true
+        apdu: 90 00 90 00 90 00
         natural_sw: 36864
-        apdu: 90 00 90 00
         sws:
         - 36864
-        successful: true
-        desc: Set external privkey parameters on local keypair
-      type: command
+        - 36864
+        duration: 974389993
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 5c 01 ff 24 01 00 00 20 7d 7d c5 f7 1e b2 9d da f8 0d 62 14 63 2e
           ea e0 3d 90 58 af 1f b6 d2 2e d8 0b ad b6 2b c1 a5 34
         desc: Set external privkey parameters on local keypair
-      desc: Set external privkey parameters on local keypair
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 78880540
-        natural_sw: 36864
+        successful: true
         apdu: 90 00 90 00
+        natural_sw: 36864
         sws:
         - 36864
-        successful: true
-        desc: Set external pubkey parameters on remote keypair
-      type: command
+        duration: 68162900
+        desc: Set external privkey parameters on local keypair
+      desc: Set external privkey parameters on local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 5c 02 ff 45 00 80 00 41 04 70 0c 48 f7 7f 56 58 4c 5c c6 32 ca 65
           64 0d b9 1b 6b ac ce 3a 4d f6 b4 2c e7 cc 83 88 33 d2 87 db 71 e5 09 e3
           fd 9b 06 0d db 20 ba 5c 51 dc c5 94 8d 46 fb f6 40 df e0 44 17 82 ca b8
           5f a4 ac
         desc: Set external pubkey parameters on remote keypair
-      desc: Set external pubkey parameters on remote keypair
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 604982567
+        successful: true
+        apdu: 90 00 90 00
         natural_sw: 36864
-        apdu: 90 00 00 14 38 1a e0 83 bf 9f f3 bb 49 73 0a 96 d4 e5 5a ab ae 1c 42
-          da 90 00
         sws:
         - 36864
-        successful: true
-        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
-      type: command
+        duration: 80685351
+        desc: Set external pubkey parameters on remote keypair
+      desc: Set external pubkey parameters on remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 01
-        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
-      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
+      response:
+        successful: true
+        apdu: 90 00 00 14 38 1a e0 83 bf 9f f3 bb 49 73 0a 96 d4 e5 5a ab ae 1c 42
+          da 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 604904297
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    index: 16
     type: compound
-    desc: Test vector p256-dhc
+    desc: Test vector p256-dhc.
   - result:
-      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
+      cause: Some sub-tests did not have the expected result.
     tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
-      response:
-        duration: 93398677
-        natural_sw: 36864
-        apdu: 00 03 00 03 90 00
-        sws:
-        - 3
-        - 3
-        successful: false
-        desc: Allocate both keypairs 384b ALG_EC_FP
-      type: command
+    - type: command
       command:
         apdu: b0 5a 03 00 03 01 80 05
         desc: Allocate both keypairs 384b ALG_EC_FP
-      desc: Allocate both keypairs 384b ALG_EC_FP
-    type: compound
-    desc: Test vector p384-dhc
-  - result:
-      cause: Some sub-tests did not have the expected result.
-      ok: false
-      value: FAILURE
-    tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
       response:
-        duration: 87485609
-        natural_sw: 36864
+        successful: false
         apdu: 00 03 00 03 90 00
+        natural_sw: 36864
         sws:
         - 3
         - 3
-        successful: false
-        desc: Allocate both keypairs 521b ALG_EC_FP
-      type: command
+        duration: 93818042
+        desc: Allocate both keypairs 384b ALG_EC_FP
+      desc: Allocate both keypairs 384b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 17
+    type: compound
+    desc: No support for 384b ALG_EC_FP.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
       command:
         apdu: b0 5a 03 00 03 02 09 05
         desc: Allocate both keypairs 521b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 87816923
+        desc: Allocate both keypairs 521b ALG_EC_FP
       desc: Allocate both keypairs 521b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 18
     type: compound
-    desc: Test vector p521-dhc
+    desc: No support for 521b ALG_EC_FP.
   - result:
-      cause: All sub-tests had the expected result.
       ok: true
       value: SUCCESS
+      cause: All sub-tests had the expected result.
     tests:
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
-      response:
-        duration: 509976958
-        natural_sw: 36864
-        apdu: 90 00 90 00 90 00
-        sws:
-        - 36864
-        - 36864
-        successful: true
-        desc: Allocate both keypairs 160b ALG_EC_FP
-      type: command
+    - type: command
       command:
         apdu: b0 5a 03 00 03 00 a0 05
         desc: Allocate both keypairs 160b ALG_EC_FP
-      desc: Allocate both keypairs 160b ALG_EC_FP
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 922183001
-        natural_sw: 36864
+        successful: true
         apdu: 90 00 90 00 90 00
+        natural_sw: 36864
         sws:
         - 36864
         - 36864
-        successful: true
-        desc: Set external curve parameters on both keypairs
-      type: command
+        duration: 506884733
+        desc: Allocate both keypairs 160b ALG_EC_FP
+      desc: Allocate both keypairs 160b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 5c 03 ff 8a 00 7d 00 14 ff ff ff ff ff ff ff ff ff ff ff ff ff ff
           ff ff 7f ff ff ff 00 14 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
@@ -928,93 +951,3320 @@ testRun:
           82 23 a6 28 55 31 68 94 7d 59 dc c9 12 04 23 51 37 7a c5 fb 32 00 15 01
           00 00 00 00 00 00 00 00 00 01 f4 c8 f9 27 ae d3 ca 75 22 57 00 02 00 01
         desc: Set external curve parameters on both keypairs
-      desc: Set external curve parameters on both keypairs
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 63443043
+        successful: true
+        apdu: 90 00 90 00 90 00
         natural_sw: 36864
-        apdu: 90 00 90 00
         sws:
         - 36864
-        successful: true
-        desc: Set external privkey parameters on local keypair
-      type: command
+        - 36864
+        duration: 921057107
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 5c 01 ff 18 01 00 00 14 aa 37 4f fc 3c e1 44 e6 b0 73 30 79 72 cb
           6d 57 b2 a4 e9 82
         desc: Set external privkey parameters on local keypair
-      desc: Set external privkey parameters on local keypair
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 65024181
-        natural_sw: 36864
+        successful: true
         apdu: 90 00 90 00
+        natural_sw: 36864
         sws:
         - 36864
-        successful: true
-        desc: Set external pubkey parameters on remote keypair
-      type: command
+        duration: 64723617
+        desc: Set external privkey parameters on local keypair
+      desc: Set external privkey parameters on local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 5c 02 ff 2d 00 80 00 29 04 49 b4 1e 0e 9c 03 69 c2 32 87 39 d9 0f
           63 d5 67 07 c6 e5 bc 26 e0 08 b5 67 01 5e d9 6d 23 2a 03 11 1c 3e dc 0e
           9c 8f 83
         desc: Set external pubkey parameters on remote keypair
-      desc: Set external pubkey parameters on remote keypair
-    - result:
-        cause: null
-        ok: true
-        value: SUCCESS
       response:
-        duration: 323828001
+        successful: true
+        apdu: 90 00 90 00
         natural_sw: 36864
-        apdu: 90 00 00 14 d2 48 31 3e 86 5a 1a e6 77 78 2b 54 b2 4d 8a ba f1 1a 53
-          c2 90 00
         sws:
         - 36864
-        successful: true
-        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
-      type: command
+        duration: 66032839
+        desc: Set external pubkey parameters on remote keypair
+      desc: Set external pubkey parameters on remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
       command:
         apdu: b0 70 02 01 04 ff 00 00 01
-        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
-      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey(unchanged point)
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
+      response:
+        successful: true
+        apdu: 90 00 00 14 d2 48 31 3e 86 5a 1a e6 77 78 2b 54 b2 4d 8a ba f1 1a 53
+          c2 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 325977636
+        desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
+      desc: ALG_EC_SVDP_DH of remote pubkey and local privkey
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    index: 19
     type: compound
-    desc: Test vector secp160r1-dh
+    desc: Test vector secp160r1-dh.
   - result:
-      cause: Some sub-tests did not have the expected result.
       ok: false
       value: FAILURE
+      cause: Some sub-tests did not have the expected result.
     tests:
-    - result:
-        cause: null
-        ok: false
-        value: FAILURE
-      response:
-        duration: 94580168
-        natural_sw: 36864
-        apdu: 00 03 00 03 90 00
-        sws:
-        - 3
-        - 3
-        successful: false
-        desc: Allocate both keypairs 163b ALG_EC_F2M
-      type: command
+    - type: command
       command:
         apdu: b0 5a 03 00 03 00 a3 04
         desc: Allocate both keypairs 163b ALG_EC_F2M
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 95085340
+        desc: Allocate both keypairs 163b ALG_EC_F2M
       desc: Allocate both keypairs 163b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 20
     type: compound
-    desc: Test vector sect163k1-dh
-  device:
-    cplc: {
-      }
-    type: card
-    ATR: 3bf01300008131fe45e8
+    desc: No support for 163b ALG_EC_F2M.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 70 05
+        desc: Allocate both keypairs 112b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 88425503
+        desc: Allocate both keypairs 112b ALG_EC_FP
+      desc: Allocate both keypairs 112b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 21
+    type: compound
+    desc: No support for 112b ALG_EC_FP.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 70 05
+        desc: Allocate both keypairs 112b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 87284281
+        desc: Allocate both keypairs 112b ALG_EC_FP
+      desc: Allocate both keypairs 112b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 22
+    type: compound
+    desc: No support for 112b ALG_EC_FP.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 80 05
+        desc: Allocate both keypairs 128b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 507302924
+        desc: Allocate both keypairs 128b ALG_EC_FP
+      desc: Allocate both keypairs 128b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff 71 00 7d 00 10 ff ff ff fd ff ff ff ff ff ff ff ff ff ff
+          ff ff 00 10 ff ff ff fd ff ff ff ff ff ff ff ff ff ff ff fc 00 10 e8 75
+          79 c1 10 79 f4 3d d8 24 99 3c 2c ee 5e d3 00 21 04 16 1f f7 52 8b 89 9b
+          2d 0c 28 60 7c a5 2c 5b 86 cf 5a c8 39 5b af eb 13 c0 2d a2 92 dd ed 7a
+          83 00 10 ff ff ff fe 00 00 00 00 75 a3 0d 1b 90 38 a1 15 00 02 00 01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 890707792
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 704239617
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 21 04 e3 0a 6f b3 ac dc a5 c6 6b fa 4f c9 f1 36 5d 02 61 1a
+          56 41 22 4b 7f b7 e3 8f c4 96 17 99 97 06 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 26497143
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 10 11 c8 c4 9e b1 5a 59 3d c6 06 1e 17 d8 f3 8f 04 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 25488240
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 f8 46 42 71 07 39 ed 1d 04 75 4c 34 c4 1c 8c 54 7d b0
+            8b a2 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 98866119
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 27 30 25 02 10 44 49 af 6e ff 5e 9b 28 0a 77 b0 c7 0b 87
+            fd f3 02 11 00 c0 b6 d9 e4 8a 59 aa b2 9b 66 b0 b0 2b 55 bf 53 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 208838619
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Signature verified.
+      type: compound
+      desc: ''
+    index: 23
+    type: compound
+    desc: Validation test on secp128r1.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 80 05
+        desc: Allocate both keypairs 128b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 502895566
+        desc: Allocate both keypairs 128b ALG_EC_FP
+      desc: Allocate both keypairs 128b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff 71 00 7d 00 10 ff ff ff fd ff ff ff ff ff ff ff ff ff ff
+          ff ff 00 10 d6 03 19 98 d1 b3 bb fe bf 59 cc 9b bf f9 ae e1 00 10 5e ee
+          fc a3 80 d0 29 19 dc 2c 65 58 bb 6d 8a 5d 00 21 04 7b 6a a5 d8 5e 57 29
+          83 e6 fb 32 a7 cd eb c1 40 27 b6 91 6a 89 4d 3a ee 71 06 fe 80 5f c3 4b
+          44 00 10 3f ff ff ff 7f ff ff ff be 00 24 72 06 13 b5 a3 00 02 00 04
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 894648837
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 701427208
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 21 04 e4 ab 7d 28 24 ad 38 f8 d5 ba ff 14 4c c2 2b c1 d3 ba
+          65 fd 4f 2b 24 35 6e 1b 38 62 92 90 7d 76 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 26590716
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 10 30 4e 75 a7 da 8a 2f 37 8d 26 0d 51 23 7c a1 d6 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 24927494
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: false
+        value: FAILURE
+        cause: Some sub-tests did not have the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 3f 3a fa e0 7b da d2 8f 64 1f ff 22 c3 9f f0 05 03 35
+            6c 15 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 97571297
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 26 30 24 02 10 04 5a 3c e2 65 1a 8d d5 41 d4 06 8d 15 c7
+            0c 9c 02 10 36 ee f8 e4 26 8f f7 55 ce 79 7c 2d 21 10 09 16 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 91555787
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: false
+          value: FAILURE
+          cause: Signature failed to verify.
+      type: compound
+      desc: ''
+    index: 24
+    type: compound
+    desc: Validation test on secp128r2.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 a0 05
+        desc: Allocate both keypairs 160b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 505016235
+        desc: Allocate both keypairs 160b ALG_EC_FP
+      desc: Allocate both keypairs 160b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff 8a 00 7d 00 14 ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff fe ff ff ac 73 00 14 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          00 00 00 00 00 14 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          00 07 00 29 04 3b 4c 38 2c e3 7a a1 92 a4 01 9e 76 30 36 f4 f5 dd 4d 7e
+          bb 93 8c f9 35 31 8f dc ed 6b c2 82 86 53 17 33 c3 f0 3c 4f ee 00 15 01
+          00 00 00 00 00 00 00 00 00 01 b8 fa 16 df ab 9a ca 16 b6 b3 00 02 00 01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 917620477
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 757396826
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 29 04 f5 db ba 6a 56 23 83 15 38 97 47 77 65 bd f0 2f 07 b8
+          1c 27 a2 73 7c bc f7 77 b9 b1 96 8a f6 38 cc ce 7c 56 2b fe e3 13 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 28965907
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 15 00 20 aa 35 c4 06 00 ed 95 8b 1f bf 47 f1 92 2a b1 64 a9
+          0e d9 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 27134811
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 14 15 91 28 c2 7e 4e 6f c9 3e 94 c4 97 98 16 48 a1 5d
+            19 eb 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 103161624
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 30 30 2e 02 15 00 6e dc 6b b1 ec e0 d4 00 65 f3 ac b6 53
+            91 29 cc c9 03 95 08 02 15 00 57 7b 24 11 88 fd 50 c8 ab e3 be 1f 47 6f
+            08 fd 07 58 45 ae 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 97180929
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Result could not be verified. error decoding signature bytes.
+      type: compound
+      desc: ''
+    index: 25
+    type: compound
+    desc: Validation test on secp160k1.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 a0 05
+        desc: Allocate both keypairs 160b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 506212994
+        desc: Allocate both keypairs 160b ALG_EC_FP
+      desc: Allocate both keypairs 160b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff 8a 00 7d 00 14 ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff 7f ff ff ff 00 14 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          7f ff ff fc 00 14 1c 97 be fc 54 bd 7a 8b 65 ac f8 9f 81 d4 d4 ad c5 65
+          fa 45 00 29 04 4a 96 b5 68 8e f5 73 28 46 64 69 89 68 c3 8b b9 13 cb fc
+          82 23 a6 28 55 31 68 94 7d 59 dc c9 12 04 23 51 37 7a c5 fb 32 00 15 01
+          00 00 00 00 00 00 00 00 00 01 f4 c8 f9 27 ae d3 ca 75 22 57 00 02 00 01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 923280910
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 756439706
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 29 04 ad 33 66 50 17 2a c6 d7 ca 9d c9 4f ff a7 92 d3 2c 54
+          64 5c df a5 83 db 54 e7 d5 04 9c cd c3 a9 c7 b3 cb e2 e9 a0 a8 71 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 28825747
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 15 00 25 07 79 74 e2 d9 b7 38 ba fb 5d 6f 84 fb 91 cc ed be
+          ec a9 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 27096751
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 8b 6b bb d2 90 1a 7c aa a8 c8 16 ff 3b 49 80 e3 62 36
+            39 db 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 102968701
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 30 30 2e 02 15 00 77 8d 3b 56 d3 29 f2 dc 4f 87 4a f3 d4
+            a0 db 85 37 1a 35 be 02 15 00 42 03 97 e3 0c 8c bb bf 49 1b 0a 10 f9 2a
+            6c 8d dc b6 2d ac 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 98429587
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Result could not be verified. error decoding signature bytes.
+      type: compound
+      desc: ''
+    index: 26
+    type: compound
+    desc: Validation test on secp160r1.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 a0 05
+        desc: Allocate both keypairs 160b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 506141359
+        desc: Allocate both keypairs 160b ALG_EC_FP
+      desc: Allocate both keypairs 160b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff 8a 00 7d 00 14 ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff fe ff ff ac 73 00 14 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff fe
+          ff ff ac 70 00 14 b4 e1 34 d3 fb 59 eb 8b ab 57 27 49 04 66 4d 5a f5 03
+          88 ba 00 29 04 52 dc b0 34 29 3a 11 7e 1f 4f f1 1b 30 f7 19 9d 31 44 ce
+          6d fe af fe f2 e3 31 f2 96 e0 71 fa 0d f9 98 2c fe a7 d4 3f 2e 00 15 01
+          00 00 00 00 00 00 00 00 00 00 35 1e e7 86 a8 18 f3 a1 a1 6b 00 02 00 01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 925418274
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 755601785
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 29 04 e1 72 ce cc e4 85 e6 17 61 24 ef 00 13 59 b3 85 16 ee
+          ee 0f d7 28 dd 97 aa 56 c9 19 4d ae 7c 5d 6b d9 3b 30 8b 06 bf 53 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 29000110
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 15 00 85 84 eb 36 30 7e f5 df 1d 6d 0d 49 d4 95 51 89 d5 86
+          9b ca 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 27157248
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 44 62 29 63 7a 5a 80 d3 29 0e 8e 3a bc 90 f6 ab 02 d2
+            15 9a 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 103780317
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 30 30 2e 02 15 00 d2 fc bd 46 36 ad 61 17 41 ce 11 e6 9b
+            c0 22 c9 b0 61 cd 8e 02 15 00 27 25 cc 58 9f a4 6e c4 8b 3b e8 4b cb 94
+            ed a6 f9 47 ba 3d 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 97046017
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Result could not be verified. error decoding signature bytes.
+      type: compound
+      desc: ''
+    index: 27
+    type: compound
+    desc: Validation test on secp160r2.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 c0 05
+        desc: Allocate both keypairs 192b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 508898916
+        desc: Allocate both keypairs 192b ALG_EC_FP
+      desc: Allocate both keypairs 192b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff a1 00 7d 00 18 ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff ff ff ff fe ff ff ee 37 00 18 00 00 00 00 00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 18 00 00 00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 03 00 31 04 db 4f f1 0e c0 57 e9
+          ae 26 b0 7d 02 80 b7 f4 34 1d a5 d1 b1 ea e0 6c 7d 9b 2f 2f 6d 9c 56 28
+          a7 84 41 63 d0 15 be 86 34 40 82 aa 88 d9 5e 2f 9d 00 18 ff ff ff ff ff
+          ff ff ff ff ff ff fe 26 f2 fc 17 0f 69 46 6a 74 de fd 8d 00 02 00 01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 924611030
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 898206839
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 31 04 b1 4a 56 48 10 0c 18 a3 9c 1c bf d5 84 02 58 fb 70 e9
+          fe 10 7a e1 9e 67 ad 6b 01 6a 67 78 31 88 b7 42 64 fc 78 1a 01 30 89 70
+          6a 0b 7a 6c 8c 69 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 30856549
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 18 ce 93 f2 a2 6b 47 51 93 f9 c6 ca 38 a4 68 69 f8 0b 68 6c
+          fb 57 ee 1f cb 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 27408819
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 33 63 8f bb 52 9d 9b 72 1d af bd 1a 3b 32 98 12 de 80
+            74 8b 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 115476485
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 36 30 34 02 18 45 ec 41 32 87 45 22 46 a5 91 37 48 9a 3b
+            a0 c8 f7 42 11 e5 c2 97 e5 e4 02 18 1e cf 51 9b fe 1f ec 10 fd 76 65 4a
+            ba 45 d1 5d 5d 25 e3 a4 3e da ce 83 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 107842419
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Signature verified.
+      type: compound
+      desc: ''
+    index: 28
+    type: compound
+    desc: Validation test on secp192k1.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 c0 05
+        desc: Allocate both keypairs 192b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 509791809
+        desc: Allocate both keypairs 192b ALG_EC_FP
+      desc: Allocate both keypairs 192b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff a1 00 7d 00 18 ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff fe ff ff ff ff ff ff ff ff 00 18 ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff ff fe ff ff ff ff ff ff ff fc 00 18 64 21 05 19 e5 9c 80 e7 0f a7
+          e9 ab 72 24 30 49 fe b8 de ec c1 46 b9 b1 00 31 04 18 8d a8 0e b0 30 90
+          f6 7c bf 20 eb 43 a1 88 00 f4 ff 0a fd 82 ff 10 12 07 19 2b 95 ff c8 da
+          78 63 10 11 ed 6b 24 cd d5 73 f9 77 a1 1e 79 48 11 00 18 ff ff ff ff ff
+          ff ff ff ff ff ff ff 99 de f8 36 14 6b c9 b1 b4 d2 28 31 00 02 00 01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 932763349
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 899547354
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 31 04 04 b5 69 3d c6 ca 4a cd f7 81 de 4c ef 78 1b 46 c1 48
+          4e 55 25 1a e9 fb c0 1d 90 49 9b a7 c9 cb b2 74 cb 28 17 90 1f c1 59 cb
+          47 98 1f 40 52 d1 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 31277901
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 18 f6 8a 58 2e 10 50 52 06 38 c3 a9 6d 33 60 21 f9 e1 0c e7
+          c1 08 9b 1b e3 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 28119550
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 7e 58 28 dd 90 76 42 cc d9 80 70 c8 30 d0 8b 80 48 1d
+            88 26 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 116571438
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 38 30 36 02 19 00 db 8c 77 33 08 50 0f c3 81 73 0e db 4c
+            d8 2b 22 ee d5 89 ef 3a 3b 81 a1 02 19 00 92 03 e5 c5 96 3e c0 03 e1 10
+            55 5e 23 70 9b 07 6a 48 99 6c 64 82 d7 cb 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 107290927
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Signature verified.
+      type: compound
+      desc: ''
+    index: 29
+    type: compound
+    desc: Validation test on secp192r1.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 e0 05
+        desc: Allocate both keypairs 224b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 512034033
+        desc: Allocate both keypairs 224b ALG_EC_FP
+      desc: Allocate both keypairs 224b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff b9 00 7d 00 1c ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff 00 00 00 00 00 00 00 00 00 00 00 01 00 1c ff ff ff ff ff ff ff ff
+          ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff fe 00 1c b4 05
+          0a 85 0c 04 b3 ab f5 41 32 56 50 44 b0 b7 d7 bf d8 ba 27 0b 39 43 23 55
+          ff b4 00 39 04 b7 0e 0c bd 6b b4 bf 7f 32 13 90 b9 4a 03 c1 d3 56 c2 11
+          22 34 32 80 d6 11 5c 1d 21 bd 37 63 88 b5 f7 23 fb 4c 22 df e6 cd 43 75
+          a0 5a 07 47 64 44 d5 81 99 85 00 7e 34 00 1c ff ff ff ff ff ff ff ff ff
+          ff ff ff ff ff 16 a2 e0 b8 f0 3e 13 dd 29 45 5c 5c 2a 3d 00 02 00 01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 969926135
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 1068714990
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 39 04 02 87 49 33 79 fc 06 53 11 1f 96 af 97 a9 04 e9 41 83
+          4f 95 10 50 9e d6 05 4a 3f 89 2e e7 a2 29 6d f3 98 4d 4e 78 eb 86 ca 30
+          ce 4c 89 ff ec e5 ea 69 22 a1 7c f0 0c 7f 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 33506979
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 1c a5 d4 1a 49 2c 87 13 36 e1 9f 50 86 f7 e9 b7 31 dc 92 7f
+          1d 37 b8 31 a7 0c 2b a2 57 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 29036045
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 5b 3d a5 71 49 a3 d6 84 e7 75 ab 28 02 ca 27 b6 71 aa
+            f9 6e 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 133147319
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 3e 30 3c 02 1c 6f eb a1 4b fb d5 73 58 09 f3 f6 47 ce ed
+            93 d8 9e 63 53 9d 8e f4 04 c2 be 26 29 29 02 1c 56 d5 9f 3c 81 7c b0 cf
+            aa 15 6b 56 69 b1 e1 86 aa 66 36 bc b8 ae 1f e9 c8 e3 09 06 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 119613389
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Signature verified.
+      type: compound
+      desc: ''
+    index: 30
+    type: compound
+    desc: Validation test on secp224r1.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 01 00 05
+        desc: Allocate both keypairs 256b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 514264382
+        desc: Allocate both keypairs 256b ALG_EC_FP
+      desc: Allocate both keypairs 256b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff d1 00 7d 00 20 ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff ff ff ff ff ff ff ff ff ff ff ff fe ff ff fc 2f 00 20 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          00 00 00 00 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 07 00 41 04 79 be 66 7e f9 dc bb
+          ac 55 a0 62 95 ce 87 0b 07 02 9b fc db 2d ce 28 d9 59 f2 81 5b 16 f8 17
+          98 48 3a da 77 26 a3 c4 65 5d a4 fb fc 0e 11 08 a8 fd 17 b4 48 a6 85 54
+          19 9c 47 d0 8f fb 10 d4 b8 00 20 ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff fe ba ae dc e6 af 48 a0 3b bf d2 5e 8c d0 36 41 41 00 02 00 01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 973131064
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 1269435775
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 41 04 76 94 83 f8 2c af a5 cc 2d 83 2e 2a 18 ff c5 1b 54 32
+          2b 11 43 9c d1 9f 19 22 36 a2 24 60 fb bd e0 fd c1 4a 67 22 f8 4a 21 76
+          0a 98 80 c6 dd 92 dd da f9 d0 e3 cd 91 6c cb 2b 31 06 10 2a 8c c4 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 36109972
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 20 7c c9 f7 ed fd fb eb bf a1 1b b1 a2 35 ef 77 04 d4 d2 72
+          5e eb 5b d0 60 6d 2e 21 68 bd a2 2a 56 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 30213082
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 28 56 d4 d6 ac 3e 14 bd 3b 81 16 c8 f2 d6 20 7a ee 10
+            ef 52 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 150312100
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 48 30 46 02 21 00 fa 8f 78 6c 01 93 f6 cc 32 6b c8 b6 77
+            91 52 c6 16 95 c2 bb 9a fb c4 87 2f 8e e5 02 a8 b1 9e c5 02 21 00 b1 04
+            20 ad 05 da 6f 08 e4 d0 f0 36 04 f2 be b9 12 23 40 3a ba ff 39 49 f4 a1
+            7e d8 28 6e a1 a6 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 134903791
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Signature verified.
+      type: compound
+      desc: ''
+    index: 31
+    type: compound
+    desc: Validation test on secp256k1.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 01 00 05
+        desc: Allocate both keypairs 256b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 515081289
+        desc: Allocate both keypairs 256b ALG_EC_FP
+      desc: Allocate both keypairs 256b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff d1 00 7d 00 20 ff ff ff ff 00 00 00 01 00 00 00 00 00 00
+          00 00 00 00 00 00 ff ff ff ff ff ff ff ff ff ff ff ff 00 20 ff ff ff ff
+          00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 ff ff ff ff ff ff ff ff
+          ff ff ff fc 00 20 5a c6 35 d8 aa 3a 93 e7 b3 eb bd 55 76 98 86 bc 65 1d
+          06 b0 cc 53 b0 f6 3b ce 3c 3e 27 d2 60 4b 00 41 04 6b 17 d1 f2 e1 2c 42
+          47 f8 bc e6 e5 63 a4 40 f2 77 03 7d 81 2d eb 33 a0 f4 a1 39 45 d8 98 c2
+          96 4f e3 42 e2 fe 1a 7f 9b 8e e7 eb 4a 7c 0f 9e 16 2b ce 33 57 6b 31 5e
+          ce cb b6 40 68 37 bf 51 f5 00 20 ff ff ff ff 00 00 00 00 ff ff ff ff ff
+          ff ff ff bc e6 fa ad a7 17 9e 84 f3 b9 ca c2 fc 63 25 51 00 02 00 01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 977097892
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 1501896524
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 41 04 ae e1 29 19 c5 5c c6 ba 28 d4 cb c0 5b 34 35 5c 70 66
+          7f 11 28 d9 5a 51 67 03 d2 4e 66 8a 7e 9a c4 72 34 42 a8 86 46 05 ed 8f
+          24 02 36 e8 ea 49 cd 6b be db 77 68 87 fd 11 c2 06 05 d2 bb 6a 7c 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 36100286
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 20 dd 35 e0 3c b6 86 55 6f 07 5c de 9a 02 90 d0 64 c1 72 ef
+          ca 5d de dd 17 50 cf 62 eb c8 f5 2c b7 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 30053623
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 a4 eb df 86 bc 5b 32 e6 31 6f 98 8a ed 3e a6 74 71 81
+            8a 58 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 170033449
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 47 30 45 02 20 1d 99 c9 35 a8 78 27 f2 28 35 d5 d5 c7 cf
+            40 96 3e 7c 67 28 de 6b 39 06 5d 8c 47 dd ae c2 dd 51 02 21 00 8c 0b aa
+            85 3f c4 9a 58 76 02 b6 d8 c2 54 c6 be f1 0f 7b 60 b6 24 5a f0 f9 4c 5b
+            65 bd dc 38 f6 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 148079355
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Signature verified.
+      type: compound
+      desc: ''
+    index: 32
+    type: compound
+    desc: Validation test on secp256r1.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 01 80 05
+        desc: Allocate both keypairs 384b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 96005856
+        desc: Allocate both keypairs 384b ALG_EC_FP
+      desc: Allocate both keypairs 384b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 33
+    type: compound
+    desc: No support for 384b ALG_EC_FP.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 02 09 05
+        desc: Allocate both keypairs 521b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 90365079
+        desc: Allocate both keypairs 521b ALG_EC_FP
+      desc: Allocate both keypairs 521b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 34
+    type: compound
+    desc: No support for 521b ALG_EC_FP.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 a0 05
+        desc: Allocate both keypairs 160b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 518435336
+        desc: Allocate both keypairs 160b ALG_EC_FP
+      desc: Allocate both keypairs 160b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff 89 00 7d 00 14 e9 5e 4a 5f 73 70 59 dc 60 df c7 ad 95 b3
+          d8 13 95 15 62 0f 00 14 34 0e 7b e2 a2 80 eb 74 e2 be 61 ba da 74 5d 97
+          e8 f7 c3 00 00 14 1e 58 9a 85 95 42 34 12 13 4f aa 2d bd ec 95 c8 d8 67
+          5e 58 00 29 04 be d5 af 16 ea 3f 6a 4f 62 93 8c 46 31 eb 5a f7 bd bc db
+          c3 16 67 cb 47 7a 1a 8e c3 38 f9 47 41 66 9c 97 63 16 da 63 21 00 14 e9
+          5e 4a 5f 73 70 59 dc 60 df 59 91 d4 50 29 40 9e 60 fc 09 00 02 00 01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 926095583
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 860218998
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 29 04 88 6c 69 b1 6a 9d 0c 75 98 31 9d 70 85 0d b0 92 8f 3b
+          2c 3f 1b 3b 25 ec 34 00 2c 9a e3 97 83 4c be f8 aa f4 0f bc c6 92 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 28780113
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 14 8b c8 04 30 2b 3d 83 4d f3 8d 31 4a db d3 a1 95 11 23 ee
+          cf 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 26787692
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 4c 4f d7 fd be fd da 2e 79 bd 25 c5 39 b9 f1 1a 77 14
+            23 04 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 112133182
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 30 30 2e 02 15 00 cd ce 90 75 fb 06 0e 97 51 7c 7f 66 8a
+            60 0f 41 dc b9 ac 6f 02 15 00 d7 4e 56 ba 4a 0e 9d 23 de ec 89 bf ce 05
+            73 58 a9 50 78 f9 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 104200726
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Signature verified.
+      type: compound
+      desc: ''
+    index: 35
+    type: compound
+    desc: Validation test on brainpoolP160r1.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 a0 05
+        desc: Allocate both keypairs 160b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 514027118
+        desc: Allocate both keypairs 160b ALG_EC_FP
+      desc: Allocate both keypairs 160b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff 89 00 7d 00 14 e9 5e 4a 5f 73 70 59 dc 60 df c7 ad 95 b3
+          d8 13 95 15 62 0f 00 14 e9 5e 4a 5f 73 70 59 dc 60 df c7 ad 95 b3 d8 13
+          95 15 62 0c 00 14 7a 55 6b 6d ae 53 5b 7b 51 ed 2c 4d 7d aa 7a 0b 5c 55
+          f3 80 00 29 04 b1 99 b1 3b 9b 34 ef c1 39 7e 64 ba eb 05 ac c2 65 ff 23
+          78 ad d6 71 8b 7c 7c 19 61 f0 99 1b 84 24 43 77 21 52 c9 e0 ad 00 14 e9
+          5e 4a 5f 73 70 59 dc 60 df 59 91 d4 50 29 40 9e 60 fc 09 00 02 00 01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 924155118
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 864794618
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 29 04 db a6 d0 12 f2 c1 f9 98 a5 7d 08 88 b3 63 a9 8b b9 3b
+          e1 26 3c 81 f1 de 80 48 b3 f4 ca b4 65 de 39 b9 83 52 93 d6 92 c5 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 28759426
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 14 7e 22 3e 1a 0a fe c5 f4 bc e8 cd 60 7e df ff a9 4a 83 0f
+          30 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 26727577
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 77 1b fc 51 8a fc 43 9c a7 34 93 8a 31 df 1c 75 f9 38
+            5b 6a 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 112608046
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 2e 30 2c 02 14 1a 5a 3b d3 a5 5b d0 43 05 e8 b3 72 74 bd
+            f4 09 6e e3 1c a4 02 14 34 b1 36 f4 54 4f bf 46 2e 4c de 0a 8d ba f8 bf
+            37 3c 9a 70 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 103548558
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Signature verified.
+      type: compound
+      desc: ''
+    index: 36
+    type: compound
+    desc: Validation test on brainpoolP160t1.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 c0 05
+        desc: Allocate both keypairs 192b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 516421411
+        desc: Allocate both keypairs 192b ALG_EC_FP
+      desc: Allocate both keypairs 192b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff a1 00 7d 00 18 c3 02 f4 1d 93 2a 36 cd a7 a3 46 30 93 d1
+          8d b7 8f ce 47 6d e1 a8 62 97 00 18 6a 91 17 40 76 b1 e0 e1 9c 39 c0 31
+          fe 86 85 c1 ca e0 40 e5 c6 9a 28 ef 00 18 46 9a 28 ef 7c 28 cc a3 dc 72
+          1d 04 4f 44 96 bc ca 7e f4 14 6f bf 25 c9 00 31 04 c0 a0 64 7e aa b6 a4
+          87 53 b0 33 c5 6c b0 f0 90 0a 2f 5c 48 53 37 5f d6 14 b6 90 86 6a bd 5b
+          b8 8b 5f 48 28 c1 49 00 02 e6 77 3f a2 fa 29 9b 8f 00 18 c3 02 f4 1d 93
+          2a 36 cd a7 a3 46 2f 9e 9e 91 6b 5b e8 f1 02 9a c4 ac c1 00 02 00 01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 933527072
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 1045598616
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 31 04 68 c0 cf ef 21 cd e2 f0 f7 a0 57 2e 1b cc 50 bb bd 84
+          a7 b2 65 a0 ef 07 27 61 8a 8b 27 d1 07 40 af 9b 60 89 f4 b4 51 52 df f4
+          ac c3 7a cf b0 20 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 31243943
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 18 48 b5 06 83 e0 02 be 03 92 65 3f 7b 64 82 87 35 ee 8d a0
+          60 fc fd 7f 95 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 27964362
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 2f f0 fa 9b 06 9f fb 69 35 60 f5 88 cd 3f 73 d1 aa 4c
+            b5 4e 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 129512467
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 36 30 34 02 18 2a a9 ad 10 40 ab d7 8e ae a6 46 8a 09 4d
+            42 b6 74 f0 e0 1b 2a 03 8f c2 02 18 28 0d 06 24 cf 6f e9 9b 52 67 d9 cc
+            39 92 b3 73 f4 8d c5 f4 1e bf ce d3 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 116685188
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Signature verified.
+      type: compound
+      desc: ''
+    index: 37
+    type: compound
+    desc: Validation test on brainpoolP192r1.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 c0 05
+        desc: Allocate both keypairs 192b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 516136655
+        desc: Allocate both keypairs 192b ALG_EC_FP
+      desc: Allocate both keypairs 192b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff a1 00 7d 00 18 c3 02 f4 1d 93 2a 36 cd a7 a3 46 30 93 d1
+          8d b7 8f ce 47 6d e1 a8 62 97 00 18 c3 02 f4 1d 93 2a 36 cd a7 a3 46 30
+          93 d1 8d b7 8f ce 47 6d e1 a8 62 94 00 18 13 d5 6f fa ec 78 68 1e 68 f9
+          de b4 3b 35 be c2 fb 68 54 2e 27 89 7b 79 00 31 04 3a e9 e5 8c 82 f6 3c
+          30 28 2e 1f e7 bb f4 3f a7 2c 44 6a f6 f4 61 81 29 09 7e 2c 56 67 c2 22
+          3a 90 2a b5 ca 44 9d 00 84 b7 e5 b3 de 7c cc 01 c9 00 18 c3 02 f4 1d 93
+          2a 36 cd a7 a3 46 2f 9e 9e 91 6b 5b e8 f1 02 9a c4 ac c1 00 02 00 01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 932037940
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 1043417571
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 31 04 58 f6 94 51 ed 15 dd 79 c1 9f a9 b3 6f e9 cb 42 e7 3e
+          e8 c2 c9 2c ec 1e 8d 94 04 04 f3 24 5e cb 66 65 0a 32 a2 29 d6 25 75 f2
+          36 a2 34 b0 84 58 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 31326814
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 18 69 6f b2 88 2c 79 8e 2a db b9 11 54 db 07 d8 4d e9 59 fa
+          46 da 8a 5b d1 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 28020679
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 61 a4 41 6f de 60 80 fb 7e e3 dc fa 19 c2 0c af bb ac
+            f2 92 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 129203952
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 37 30 35 02 19 00 98 56 96 fa d3 bc fd bb d6 33 4c 3a 96
+            6b 90 e0 85 7a 9f 3e 15 7b f6 c7 02 18 66 1c 88 2d a9 10 42 fd 6f b7 f6
+            4b 32 05 5a 7c 9f 34 a4 16 b4 c8 23 86 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 116133752
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Signature verified.
+      type: compound
+      desc: ''
+    index: 38
+    type: compound
+    desc: Validation test on brainpoolP192t1.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 e0 05
+        desc: Allocate both keypairs 224b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 519556589
+        desc: Allocate both keypairs 224b ALG_EC_FP
+      desc: Allocate both keypairs 224b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff b9 00 7d 00 1c d7 c1 34 aa 26 43 66 86 2a 18 30 25 75 d1
+          d7 87 b0 9f 07 57 97 da 89 f5 7e c8 c0 ff 00 1c 68 a5 e6 2c a9 ce 6c 1c
+          29 98 03 a6 c1 53 0b 51 4e 18 2a d8 b0 04 2a 59 ca d2 9f 43 00 1c 25 80
+          f6 3c cf e4 41 38 87 07 13 b1 a9 23 69 e3 3e 21 35 d2 66 db b3 72 38 6c
+          40 0b 00 39 04 0d 90 29 ad 2c 7e 5c f4 34 08 23 b2 a8 7d c6 8c 9e 4c e3
+          17 4c 1e 6e fd ee 12 c0 7d 58 aa 56 f7 72 c0 72 6f 24 c6 b8 9e 4e cd ac
+          24 35 4b 9e 99 ca a3 f6 d3 76 14 02 cd 00 1c d7 c1 34 aa 26 43 66 86 2a
+          18 30 25 75 d0 fb 98 d1 16 bc 4b 6d de bc a3 a5 a7 93 9f 00 02 00 01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 971308312
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 1246748668
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 39 04 7e 18 fd 6c 97 f0 e9 ed 1b 5f 7b 8c 78 39 ce 9f 15 6f
+          87 da 4d d6 b9 10 ed c7 84 8c a0 b5 fb d9 03 bc a5 02 47 83 32 ed be 5d
+          6b e6 78 2d 75 42 11 4d ba 4a a2 92 04 8f 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 33515312
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 1c 6d 83 e9 99 00 b1 a8 bc 29 eb e2 be 5b 36 fd a5 6c 39 5b
+          ab fe 97 a5 bd e5 1c 24 37 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 28930996
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 a9 9e f7 69 cf a2 46 15 7c 9c 4e 3a cc a5 db 65 64 78
+            ec f1 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 149107702
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 3e 30 3c 02 1c 1b cd bc 27 ee 47 3c c0 d9 36 4d 59 ad b5
+            cb 08 58 15 91 5b ae 9f c6 d6 52 26 76 9d 02 1c 6a e4 8f 88 8a e0 8b a5
+            80 8d 3d e6 95 9d 4c 32 65 a5 0d a4 c0 f1 80 22 64 8b a1 33 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 130874183
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Signature verified.
+      type: compound
+      desc: ''
+    index: 39
+    type: compound
+    desc: Validation test on brainpoolP224r1.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 00 e0 05
+        desc: Allocate both keypairs 224b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 520252104
+        desc: Allocate both keypairs 224b ALG_EC_FP
+      desc: Allocate both keypairs 224b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff b9 00 7d 00 1c d7 c1 34 aa 26 43 66 86 2a 18 30 25 75 d1
+          d7 87 b0 9f 07 57 97 da 89 f5 7e c8 c0 ff 00 1c d7 c1 34 aa 26 43 66 86
+          2a 18 30 25 75 d1 d7 87 b0 9f 07 57 97 da 89 f5 7e c8 c0 fc 00 1c 4b 33
+          7d 93 41 04 cd 7b ef 27 1b f6 0c ed 1e d2 0d a1 4c 08 b3 bb 64 f1 8a 60
+          88 8d 00 39 04 6a b1 e3 44 ce 25 ff 38 96 42 4e 7f fe 14 76 2e cb 49 f8
+          92 8a c0 c7 60 29 b4 d5 80 03 74 e9 f5 14 3e 56 8c d2 3f 3f 4d 7c 0d 4b
+          1e 41 c8 cc 0d 1c 6a bd 5f 1a 46 db 4c 00 1c d7 c1 34 aa 26 43 66 86 2a
+          18 30 25 75 d0 fb 98 d1 16 bc 4b 6d de bc a3 a5 a7 93 9f 00 02 00 01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 970240249
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 1248914518
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 39 04 18 6c 14 4f b6 6b ca ea 5a 2e 6c 93 cf 3e f8 3d c0 f8
+          06 15 1e f2 da 8a c7 08 8d 20 68 31 fb b8 b9 04 72 c2 0f 0d d8 3b e5 9e
+          f2 98 fc 0f 07 63 f0 f8 c2 23 06 a7 1c b4 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 33765303
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 1c 07 a1 b7 56 b2 ee 1d 23 6e 8f 9f 8c ab c1 87 28 3c b9 43
+          fe 16 50 db 86 1d 9a 03 c6 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 29443670
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 56 8a f7 2c e6 cb 61 e6 c6 09 85 38 5d d9 72 9b 2a b7
+            c2 e0 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 149337653
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 3f 30 3d 02 1c 25 86 a5 5d 59 f2 40 23 c0 25 c3 90 62 40
+            fd da b0 bc 87 bf e1 08 c8 9b f1 8f 4c ff 02 1d 00 c4 a6 7f 73 24 bb 17
+            ce 2c 94 ac 0f f3 f7 34 b2 50 ff 69 01 aa 12 c9 4e e2 33 9f ce 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 131437583
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Signature verified.
+      type: compound
+      desc: ''
+    index: 40
+    type: compound
+    desc: Validation test on brainpoolP224t1.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 01 00 05
+        desc: Allocate both keypairs 256b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 522212549
+        desc: Allocate both keypairs 256b ALG_EC_FP
+      desc: Allocate both keypairs 256b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff d1 00 7d 00 20 a9 fb 57 db a1 ee a9 bc 3e 66 0a 90 9d 83
+          8d 72 6e 3b f6 23 d5 26 20 28 20 13 48 1d 1f 6e 53 77 00 20 7d 5a 09 75
+          fc 2c 30 57 ee f6 75 30 41 7a ff e7 fb 80 55 c1 26 dc 5c 6c e9 4a 4b 44
+          f3 30 b5 d9 00 20 26 dc 5c 6c e9 4a 4b 44 f3 30 b5 d9 bb d7 7c bf 95 84
+          16 29 5c f7 e1 ce 6b cc dc 18 ff 8c 07 b6 00 41 04 8b d2 ae b9 cb 7e 57
+          cb 2c 4b 48 2f fc 81 b7 af b9 de 27 e1 e3 bd 23 c2 3a 44 53 bd 9a ce 32
+          62 54 7e f8 35 c3 da c4 fd 97 f8 46 1a 14 61 1d c9 c2 77 45 13 2d ed 8e
+          54 5c 1d 54 c7 2f 04 69 97 00 20 a9 fb 57 db a1 ee a9 bc 3e 66 0a 90 9d
+          83 8d 71 8c 39 7a a3 b5 61 a6 f7 90 1e 0e 82 97 48 56 a7 00 02 00 01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 979386274
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 1507001467
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 41 04 77 b5 ec 36 dc e2 cb c9 c4 4f d0 1e b1 10 b0 2b 85 c6
+          fa 5b 9e c8 1b cd 1a d0 72 fe 8b cc d7 07 15 d1 7e 0b dd 34 4b 39 c4 69
+          c4 25 6f 6e 03 21 0c f4 65 f6 7a 6d ed 1c 18 59 2f 37 37 b9 50 92 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 36126799
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 20 0f a1 22 0f c4 2b f6 bf 57 95 8b af b5 f0 2f 15 79 ff f5
+          a7 8e 48 aa ae 3d af b4 43 ac ee 69 2f 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 30273991
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 8e 3c 15 e1 1e cb 9b 0a 02 4d 0a b8 98 f2 a9 ca 70 12
+            59 4f 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 170871332
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 47 30 45 02 20 78 25 29 3d 6f 15 a8 46 ea 1d 34 25 b4 c4
+            08 a8 8c 0e af fe cf ce 15 1e 52 96 b0 53 4f e0 3b 80 02 21 00 82 e6 83
+            7f 94 99 2c 78 94 b7 e6 1d 76 d3 c7 6a ed 11 fb 0f 93 41 78 ea 14 61 1a
+            cb 8e 1b 57 b0 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 148144013
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Signature verified.
+      type: compound
+      desc: ''
+    index: 41
+    type: compound
+    desc: Validation test on brainpoolP256r1.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 01 00 05
+        desc: Allocate both keypairs 256b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 523259449
+        desc: Allocate both keypairs 256b ALG_EC_FP
+      desc: Allocate both keypairs 256b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff d1 00 7d 00 20 a9 fb 57 db a1 ee a9 bc 3e 66 0a 90 9d 83
+          8d 72 6e 3b f6 23 d5 26 20 28 20 13 48 1d 1f 6e 53 77 00 20 a9 fb 57 db
+          a1 ee a9 bc 3e 66 0a 90 9d 83 8d 72 6e 3b f6 23 d5 26 20 28 20 13 48 1d
+          1f 6e 53 74 00 20 66 2c 61 c4 30 d8 4e a4 fe 66 a7 73 3d 0b 76 b7 bf 93
+          eb c4 af 2f 49 25 6a e5 81 01 fe e9 2b 04 00 41 04 a3 e8 eb 3c c1 cf e7
+          b7 73 22 13 b2 3a 65 61 49 af a1 42 c4 7a af bc 2b 79 a1 91 56 2e 13 05
+          f4 2d 99 6c 82 34 39 c5 6d 7f 7b 22 e1 46 44 41 7e 69 bc b6 de 39 d0 27
+          00 1d ab e8 f3 5b 25 c9 be 00 20 a9 fb 57 db a1 ee a9 bc 3e 66 0a 90 9d
+          83 8d 71 8c 39 7a a3 b5 61 a6 f7 90 1e 0e 82 97 48 56 a7 00 02 00 01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 977305908
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 1503389154
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 41 04 91 cb 59 0e 60 97 7a 97 17 6b a8 1e 61 42 80 dc 8f 01
+          19 27 35 21 40 f7 9c 5a 59 85 72 6a 50 63 1f 2c f4 63 1a 52 4f ed 27 21
+          b6 72 59 a3 2f 03 8c 2a 99 69 f6 6b a3 0f 28 ee e0 8c 70 70 7e 6c 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 35957515
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 20 1b 64 e0 5d 08 81 e1 11 72 d7 59 2c c4 49 df 04 04 ca c3
+          43 d5 1a 2b 13 7e 5a e6 b4 aa f2 08 28 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 30079078
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 07 14 5a 80 3c c3 84 fd 47 6e ec fc e8 f1 0b 93 25 4a
+            ef bc 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 170890858
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 46 30 44 02 20 34 ef 9a df 67 ad e2 99 87 43 bf e9 67 4f
+            c5 1c c9 35 ba 2e b7 fa e7 a5 6e 35 b5 ba 66 5f 5e 34 02 20 2e d6 a1 2c
+            42 ca 99 de 28 d8 a6 bd 37 78 d3 21 73 c2 f8 a1 b0 94 d6 1b ca a2 83 35
+            f1 4d 53 fe 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 147073521
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Signature verified.
+      type: compound
+      desc: ''
+    index: 42
+    type: compound
+    desc: Validation test on brainpoolP256t1.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 01 40 05
+        desc: Allocate both keypairs 320b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 526414909
+        desc: Allocate both keypairs 320b ALG_EC_FP
+      desc: Allocate both keypairs 320b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff 00 01 01 00 7d 00 28 d3 5e 47 20 36 bc 4f b7 e1 3c 78 5e
+          d2 01 e0 65 f9 8f cf a6 f6 f4 0d ef 4f 92 b9 ec 78 93 ec 28 fc d4 12 b1
+          f1 b3 2e 27 00 28 3e e3 0b 56 8f ba b0 f8 83 cc eb d4 6d 3f 3b b8 a2 a7
+          35 13 f5 eb 79 da 66 19 0e b0 85 ff a9 f4 92 f3 75 a9 7d 86 0e b4 00 28
+          52 08 83 94 9d fd bc 42 d3 ad 19 86 40 68 8a 6f e1 3f 41 34 95 54 b4 9a
+          cc 31 dc cd 88 45 39 81 6f 5e b4 ac 8f b1 f1 a6 00 51 04 43 bd 7e 9a fb
+          53 d8 b8 52 89 bc c4 8e e5 bf e6 f2 01 37 d1 0a 08 7e b6 e7 87 1e 2a 10
+          a5 99 c7 10 af 8d 0d 39 e2 06 11 14 fd d0 55 45 ec 1c c8 ab 40 93 24 7f
+          77 27 5e 07 43 ff ed 11 71 82 ea a9 c7 78 77 aa ac 6a c7 d3 52 45 d1 69
+          2e 8e e1 00 28 d3 5e 47 20 36 bc 4f b7 e1 3c 78 5e d2 01 e0 65 f9 8f cf
+          a5 b6 8f 12 a3 2d 48 2e c7 ee 86 58 e9 86 91 55 5b 44 c5 93 11 00 02 00
+          01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 1022664391
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 2108546859
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 51 04 93 a0 0f ef 80 2b 2d 11 98 f7 bf 41 d0 30 6b 31 c8 b8
+          7e 74 b0 18 b8 a4 1f ce c2 c1 48 dd b9 7e 50 56 85 db fc 79 3e 5e 9b 94
+          40 51 d5 bb f5 ea 91 6c 7a 79 b8 3f 35 80 a2 e2 06 87 dd 0b b7 78 ba 71
+          e8 a0 cd 86 09 d6 e1 3d 67 6d 4a 05 aa 50 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 40769759
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 28 25 96 c0 7a 4e 03 1f 06 f9 8d b2 db 13 ec 13 d5 a5 63 f6
+          17 24 63 eb 1e a1 03 45 bd 41 9b 4e 8c 29 90 a0 d3 53 86 0f 8a 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 32869829
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 28 a1 aa 84 2e c2 08 4f 9c 70 d5 1e 45 bc 17 48 99 80
+            70 ef 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 225640441
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 57 30 55 02 29 00 80 c0 9e 95 e9 79 b4 50 6b bb 2e 14 b5
+            e1 32 1d f1 f0 68 61 f4 31 01 58 4f 1d 3e fb a8 3d 1d c2 80 55 57 77 4e
+            8a b2 21 02 28 50 7b 3d ca 36 e4 d6 25 7d 58 bb 16 cb 53 4b 84 7a 6f d4
+            3d cb 00 8a 4a 94 c8 9a ec cf f9 88 cc 21 50 f0 e4 9e f7 68 7e 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 187655485
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Signature verified.
+      type: compound
+      desc: ''
+    index: 43
+    type: compound
+    desc: Validation test on brainpoolP320r1.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests had the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 01 40 05
+        desc: Allocate both keypairs 320b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 527632845
+        desc: Allocate both keypairs 320b ALG_EC_FP
+      desc: Allocate both keypairs 320b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 ff 00 01 01 00 7d 00 28 d3 5e 47 20 36 bc 4f b7 e1 3c 78 5e
+          d2 01 e0 65 f9 8f cf a6 f6 f4 0d ef 4f 92 b9 ec 78 93 ec 28 fc d4 12 b1
+          f1 b3 2e 27 00 28 d3 5e 47 20 36 bc 4f b7 e1 3c 78 5e d2 01 e0 65 f9 8f
+          cf a6 f6 f4 0d ef 4f 92 b9 ec 78 93 ec 28 fc d4 12 b1 f1 b3 2e 24 00 28
+          a7 f5 61 e0 38 eb 1e d5 60 b3 d1 47 db 78 20 13 06 4c 19 f2 7e d2 7c 67
+          80 aa f7 7f b8 a5 47 ce b5 b4 fe f4 22 34 03 53 00 51 04 92 5b e9 fb 01
+          af c6 fb 4d 3e 7d 49 90 01 0f 81 34 08 ab 10 6c 4f 09 cb 7e e0 78 68 cc
+          13 6f ff 33 57 f6 24 a2 1b ed 52 63 ba 3a 7a 27 48 3e bf 66 71 db ef 7a
+          bb 30 eb ee 08 4e 58 a0 b0 77 ad 42 a5 a0 98 9d 1e e7 1b 1b 9b c0 45 5f
+          b0 d2 c3 00 28 d3 5e 47 20 36 bc 4f b7 e1 3c 78 5e d2 01 e0 65 f9 8f cf
+          a5 b6 8f 12 a3 2d 48 2e c7 ee 86 58 e9 86 91 55 5b 44 c5 93 11 00 02 00
+          01
+        desc: Set external curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 1023100633
+        desc: Set external curve parameters on both keypairs
+      desc: Set external curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 2103271443
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 01 01 02 00 80
+        desc: Export pubkey params from public key of local keypair
+      response:
+        successful: true
+        apdu: 90 00 00 51 04 8e 0d 1d 12 bd d8 58 9b e5 b7 68 e7 04 e9 c5 0c 29 0e
+          2e 7d 9e 35 0e e3 99 8a f5 d6 87 ba 9c 0a 6e ae f0 5a a1 b6 b3 df 98 e1
+          8e da a2 d8 61 42 30 31 a3 48 1d 29 47 c7 5c a3 48 d2 2e 84 45 c2 d5 c6
+          57 ec d6 96 e5 b6 9d c1 1b 0b 1b a4 fa 6e 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 40771811
+        desc: Export pubkey params from public key of local keypair
+      desc: Export pubkey params from public key of local keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5f 02 02 02 01 00
+        desc: Export privkey params from private key of remote keypair
+      response:
+        successful: true
+        apdu: 90 00 00 28 1d 3f a4 f4 b2 f5 ed 5a f0 81 77 7f 20 bd 7f 76 cf 91 b2
+          69 4a e7 8c da 19 e5 93 30 f9 44 01 df af 3b d0 1b 58 c9 68 85 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        duration: 32739626
+        desc: Export privkey params from private key of remote keypair
+      desc: Export privkey params from private key of remote keypair
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: All sub-tests had the expected result.
+      tests:
+      - type: command
+        command:
+          apdu: b0 70 01 02 04 ff 00 00 01
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        response:
+          successful: true
+          apdu: 90 00 00 14 15 ad 75 03 48 13 68 98 92 05 2a 8a 67 a5 77 86 4e 5a
+            e9 a5 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 224880151
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Derived secret matched expected value.
+      - type: command
+        command:
+          apdu: b0 73 01 ff 23 11 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        response:
+          successful: true
+          apdu: 90 00 00 57 30 55 02 29 00 97 ee ce 83 6b 87 e2 c3 0c 25 78 b1 2f
+            5d 83 03 cf fa f2 ad 51 91 30 15 5d 0d 14 7f 87 f9 f4 1f 6b 97 c3 78 ce
+            f2 e1 a0 02 28 15 6f 11 a8 1c 49 d5 c9 d6 e2 34 50 e5 d7 6a 93 2a 7f 9a
+            30 aa 5b 70 39 b0 a8 7f 2b 84 83 dd ef c9 29 ad 0e ec c5 83 ed 90 00
+          natural_sw: 36864
+          sws:
+          - 36864
+          duration: 188846069
+          desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+        result:
+          ok: true
+          value: SUCCESS
+          cause: Signature verified.
+      type: compound
+      desc: ''
+    index: 44
+    type: compound
+    desc: Validation test on brainpoolP320t1.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 01 80 05
+        desc: Allocate both keypairs 384b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 98261885
+        desc: Allocate both keypairs 384b ALG_EC_FP
+      desc: Allocate both keypairs 384b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 45
+    type: compound
+    desc: No support for 384b ALG_EC_FP.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 01 80 05
+        desc: Allocate both keypairs 384b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 92192444
+        desc: Allocate both keypairs 384b ALG_EC_FP
+      desc: Allocate both keypairs 384b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 46
+    type: compound
+    desc: No support for 384b ALG_EC_FP.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 02 00 05
+        desc: Allocate both keypairs 512b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 91305041
+        desc: Allocate both keypairs 512b ALG_EC_FP
+      desc: Allocate both keypairs 512b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 47
+    type: compound
+    desc: No support for 512b ALG_EC_FP.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 00 03 02 00 05
+        desc: Allocate both keypairs 512b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 92552477
+        desc: Allocate both keypairs 512b ALG_EC_FP
+      desc: Allocate both keypairs 512b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 48
+    type: compound
+    desc: No support for 512b ALG_EC_FP.
 
 ---
