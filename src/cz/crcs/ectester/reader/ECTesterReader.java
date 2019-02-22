@@ -26,10 +26,12 @@ import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.cli.CLITools;
 import cz.crcs.ectester.common.cli.Colors;
+import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.common.output.OutputLogger;
 import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.common.util.CardUtil;
+import cz.crcs.ectester.common.util.ECUtil;
 import cz.crcs.ectester.common.util.FileUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.command.Command;
@@ -46,14 +48,13 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.ResponseAPDU;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
+import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.security.Security;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.security.spec.ECParameterSpec;
+import java.util.*;
 import java.util.jar.Manifest;
 
 import static cz.crcs.ectester.applet.EC_Consts.KeyAgreement_ALG_EC_SVDP_DH;
@@ -331,10 +332,15 @@ public class ECTesterReader {
         opts.addOption(Option.builder("v").longOpt("verbose").desc("Turn on verbose logging.").build());
         opts.addOption(Option.builder().longOpt("format").desc("Output format to use. One of: text,yml,xml.").hasArg().argName("format").build());
 
+        opts.addOption(Option.builder().longOpt("fixed").desc("Generate key(s) only once, keep them for later operations.").build());
+        opts.addOption(Option.builder().longOpt("fixed-private").desc("Generate private key only once, keep it for later ECDH.").build());
+        opts.addOption(Option.builder().longOpt("fixed-public").desc("Generate public key only once, keep it for later ECDH.").build());
         opts.addOption(Option.builder("f").longOpt("fresh").desc("Generate fresh keys (set domain parameters before every generation).").build());
+        opts.addOption(Option.builder().longOpt("time").desc("Output better timing values, by running command in dry run mode and normal mode, and subtracting the two.").build());
         opts.addOption(Option.builder().longOpt("cleanup").desc("Send the cleanup command trigerring JCSystem.requestObjectDeletion() after some operations.").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
         opts.addOption(Option.builder("y").longOpt("yes").desc("Accept all warnings and prompts.").build());
+        opts.addOption(Option.builder("to").longOpt("test-options").desc("Test options to use.").hasArg().argName("options").build());
 
         opts.addOption(Option.builder("ka").longOpt("ka-type").desc("Set KeyAgreement object [type], corresponds to JC.KeyAgreement constants.").hasArg().argName("type").optionalArg(true).build());
         opts.addOption(Option.builder("sig").longOpt("sig-type").desc("Set Signature object [type], corresponds to JC.Signature constants.").hasArg().argName("type").optionalArg(true).build());
@@ -364,6 +370,8 @@ public class ECTesterReader {
                 System.out.println("\t" + line);
             }
         }
+        System.out.println();
+        System.out.println("For more information, look at the documentation at https://github.com/crocs-muni/ECTester.");
     }
 
     private void info() throws CardException {
@@ -439,7 +447,7 @@ public class ECTesterReader {
         respWriter.outputResponse(allocate);
 
         OutputStreamWriter keysFile = FileUtil.openFiles(cfg.outputs);
-        keysFile.write("index;genTime;exportTime;pubW;privS\n");
+        keysFile.write("index;genTime[milli];exportTime[milli];pubW;privS\n");
 
         int generated = 0;
         int retry = 0;
@@ -450,7 +458,12 @@ public class ECTesterReader {
             }
 
             Command.Generate generate = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL);
+            long time = 0;
+            if (cfg.time) {
+                time = -Command.dryRunTime(cardManager, generate, 2, respWriter);
+            }
             Response.Generate response = generate.send();
+            time += response.getDuration();
             respWriter.outputResponse(response);
 
             Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR).send();
@@ -468,7 +481,7 @@ public class ECTesterReader {
 
             String pub = ByteUtil.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_W), false);
             String priv = ByteUtil.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S), false);
-            String line = String.format("%d;%d;%d;%s;%s\n", generated, response.getDuration() / 1000000, export.getDuration() / 1000000, pub, priv);
+            String line = String.format("%d;%d;%d;%s;%s\n", generated, time / 1000000, export.getDuration() / 1000000, pub, priv);
             keysFile.write(line);
             keysFile.flush();
             generated++;
@@ -572,38 +585,63 @@ public class ECTesterReader {
             respWriter.outputResponse(r);
         }
 
-        byte pubkey = (cfg.anyPublicKey || cfg.anyKey) ? ECTesterApplet.KEYPAIR_REMOTE : ECTesterApplet.KEYPAIR_LOCAL;
-        byte privkey = (cfg.anyPrivateKey || cfg.anyKey) ? ECTesterApplet.KEYPAIR_REMOTE : ECTesterApplet.KEYPAIR_LOCAL;
-
-        List<Command> generate = new LinkedList<>();
-        generate.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH));
-        if (cfg.anyPublicKey || cfg.anyPrivateKey || cfg.anyKey) {
-            generate.add(Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_REMOTE));
-        }
-
         OutputStreamWriter out = null;
         if (cfg.outputs != null) {
             out = FileUtil.openFiles(cfg.outputs);
-            out.write("index;time;pubW;privS;secret\n");
+            out.write("index;time[milli];pubW;privS;secret\n");
+        }
+
+        Response gen = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH).send();
+        respWriter.outputResponse(gen);
+        if (cfg.anyPublicKey || cfg.anyKey) {
+            Response prep = Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_REMOTE).send();
+            respWriter.outputResponse(prep);
+        }
+        if (cfg.anyPrivateKey || cfg.anyKey) {
+            Response prep = Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL).send();
+            respWriter.outputResponse(prep);
+        }
+
+        byte kp = ECTesterApplet.KEYPAIR_BOTH;
+        if (cfg.fixedPrivate || cfg.anyPrivateKey) {
+            kp ^= ECTesterApplet.KEYPAIR_LOCAL;
+        }
+        if (cfg.fixedPublic || cfg.anyPublicKey) {
+            kp ^= ECTesterApplet.KEYPAIR_REMOTE;
+        }
+        if (cfg.fixedKey || cfg.anyKey) {
+            kp = 0;
+        }
+
+        Command generate = null;
+        if (kp != 0) {
+            generate = new Command.Generate(cardManager, kp);
         }
 
         int retry = 0;
         int done = 0;
         while (done < cfg.ECKACount) {
-            List<Response> ecdh = Command.sendAll(generate);
-            for (Response r : ecdh) {
-                respWriter.outputResponse(r);
+            if (generate != null) {
+                Response regen = generate.send();
+                respWriter.outputResponse(regen);
             }
 
             Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR).send();
             respWriter.outputResponse(export);
-            byte pubkey_bytes[] = export.getParameter(pubkey, EC_Consts.PARAMETER_W);
-            byte privkey_bytes[] = export.getParameter(privkey, EC_Consts.PARAMETER_S);
+            byte[] pubkey_bytes = export.getParameter(ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.PARAMETER_W);
+            byte[] privkey_bytes = export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S);
 
-            Response.ECDH perform = new Command.ECDH(cardManager, pubkey, privkey, ECTesterApplet.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, cfg.ECKAType).send();
-            respWriter.outputResponse(perform);
+            Command.ECDH perform = new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, cfg.ECKAType);
 
-            if (!perform.successful() || !perform.hasSecret()) {
+            long time = 0;
+            if (cfg.time) {
+                time = -Command.dryRunTime(cardManager, perform, 2, respWriter);
+            }
+
+            Response.ECDH result = perform.send();
+            respWriter.outputResponse(result);
+
+            if (!result.successful() || !result.hasSecret()) {
                 if (retry < 10) {
                     ++retry;
                     continue;
@@ -614,7 +652,9 @@ public class ECTesterReader {
             }
 
             if (out != null) {
-                out.write(String.format("%d;%d;%s;%s;%s\n", done, perform.getDuration() / 1000000, ByteUtil.bytesToHex(pubkey_bytes, false), ByteUtil.bytesToHex(privkey_bytes, false), ByteUtil.bytesToHex(perform.getSecret(), false)));
+                time += result.getDuration();
+
+                out.write(String.format("%d;%d;%s;%s;%s\n", done, time / 1000000, ByteUtil.bytesToHex(pubkey_bytes, false), ByteUtil.bytesToHex(privkey_bytes, false), ByteUtil.bytesToHex(result.getSecret(), false)));
             }
 
             ++done;
@@ -636,7 +676,7 @@ public class ECTesterReader {
      */
     private void ecdsa() throws CardException, IOException {
         //read file, if asked to sign
-        byte[] data = null;
+        byte[] data;
         if (cfg.input != null) {
             File in = new File(cfg.input);
             long len = in.length();
@@ -644,6 +684,10 @@ public class ECTesterReader {
                 throw new FileNotFoundException(cfg.input);
             }
             data = Files.readAllBytes(in.toPath());
+        } else {
+            Random rand = new Random();
+            data = new byte[32];
+            rand.nextBytes(data);
         }
 
         Command generate;
@@ -667,18 +711,56 @@ public class ECTesterReader {
 
         OutputStreamWriter out = FileUtil.openFiles(cfg.outputs);
         if (out != null) {
-            out.write("index;time;signature\n");
+            out.write("index;signTime[milli];verifyTime[milli];data;pubW;privS;signature;nonce;valid\n");
+        }
+
+        Command.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR);
+        Response.Export exported = null;
+        if (cfg.fixedKey) {
+            respWriter.outputResponse(generate.send());
+            exported = export.send();
+            respWriter.outputResponse(exported);
         }
 
         int retry = 0;
         int done = 0;
         while (done < cfg.ECDSACount) {
-            respWriter.outputResponse(generate.send());
+            if (!cfg.fixedKey) {
+                respWriter.outputResponse(generate.send());
+                exported = export.send();
+                respWriter.outputResponse(exported);
+            }
 
-            Response.ECDSA perform = new Command.ECDSA(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.ECDSAType, ECTesterApplet.EXPORT_TRUE, data).send();
-            respWriter.outputResponse(perform);
+            Command.ECDSA_sign sign = new Command.ECDSA_sign(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.ECDSAType, ECTesterApplet.EXPORT_TRUE, data);
 
-            if (!perform.successful() || !perform.hasSignature()) {
+            long signTime = 0;
+            if (cfg.time) {
+                signTime = -Command.dryRunTime(cardManager, sign, 2, respWriter);
+            }
+
+            Response.ECDSA signResp = sign.send();
+            signTime += signResp.getDuration();
+            respWriter.outputResponse(signResp);
+            if (!signResp.successful() || !signResp.hasSignature()) {
+                if (retry < 10) {
+                    ++retry;
+                    continue;
+                } else {
+                    System.err.println(Colors.error("Couldn't obtain ECDSA signature from card response."));
+                    break;
+                }
+            }
+            byte[] signature = signResp.getSignature();
+            Command.ECDSA_verify verify = new Command.ECDSA_verify(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.ECDSAType, data, signature);
+            long verifyTime = 0;
+            if (cfg.time) {
+                verifyTime = -Command.dryRunTime(cardManager, verify, 2, respWriter);
+            }
+            Response.ECDSA verifyResp = verify.send();
+            verifyTime += verifyResp.getDuration();
+            respWriter.outputResponse(verifyResp);
+
+            if (verifyResp.error()) {
                 if (retry < 10) {
                     ++retry;
                     continue;
@@ -689,7 +771,20 @@ public class ECTesterReader {
             }
 
             if (out != null) {
-                out.write(String.format("%d;%d;%s\n", done, perform.getDuration() / 1000000, ByteUtil.bytesToHex(perform.getSignature(), false)));
+                String pub = ByteUtil.bytesToHex(exported.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_W), false);
+                String priv = ByteUtil.bytesToHex(exported.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S), false);
+                String dataString = (cfg.input != null) ? "" : ByteUtil.bytesToHex(data, false);
+                BigInteger privkey = new BigInteger(1, exported.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S));
+                EC_Curve actualCurve = Command.findCurve(EC_Store.getInstance(), cfg, cfg.bits, keyClass);
+                String k = "";
+                if (actualCurve != null) {
+                    ECParameterSpec params = actualCurve.toSpec();
+                    BigInteger kValue = ECUtil.recoverSignatureNonce(signature, data, privkey, params, CardUtil.getSigHashAlgo(cfg.ECDSAType));
+                    if (kValue != null) {
+                        k = ByteUtil.bytesToHex(kValue.toByteArray(), false);
+                    }
+                }
+                out.write(String.format("%d;%d;%d;%s;%s;%s;%s;%s;%d\n", done, signTime / 1000000, verifyTime / 1000000, dataString, pub, priv, ByteUtil.bytesToHex(signature, false), k, verifyResp.successful() ? 1 : 0));
             }
 
             ++done;
@@ -733,6 +828,9 @@ public class ECTesterReader {
         public String key;
 
         public boolean anyKeypart = false;
+        public boolean fixedKey = false;
+        public boolean fixedPrivate = false;
+        public boolean fixedPublic = false;
 
         public String log;
 
@@ -740,6 +838,7 @@ public class ECTesterReader {
         public String input;
         public String[] outputs;
         public boolean fresh = false;
+        public boolean time = false;
         public boolean cleanup = false;
         public boolean simulate = false;
         public boolean yes = false;
@@ -756,6 +855,7 @@ public class ECTesterReader {
         public byte ECKAType = KeyAgreement_ALG_EC_SVDP_DH;
         public int ECDSACount;
         public byte ECDSAType = Signature_ALG_ECDSA_SHA;
+        public Set<String> testOptions;
 
         /**
          * Reads and validates options, also sets defaults.
@@ -786,6 +886,9 @@ public class ECTesterReader {
             key = cli.getOptionValue("key");
             anyKey = (key != null) || (namedKey != null);
             anyKeypart = anyKey || anyPublicKey || anyPrivateKey;
+            fixedKey = cli.hasOption("fixed");
+            fixedPrivate = cli.hasOption("fixed-private");
+            fixedPublic = cli.hasOption("fixed-public");
 
             if (cli.hasOption("log")) {
                 log = cli.getOptionValue("log", String.format("ECTESTER_log_%d.log", System.currentTimeMillis() / 1000));
@@ -795,6 +898,7 @@ public class ECTesterReader {
             input = cli.getOptionValue("input");
             outputs = cli.getOptionValues("output");
             fresh = cli.hasOption("fresh");
+            time = cli.hasOption("time");
             cleanup = cli.hasOption("cleanup");
             simulate = cli.hasOption("simulate");
             yes = cli.hasOption("yes");
@@ -807,7 +911,7 @@ public class ECTesterReader {
             }
 
             format = cli.getOptionValue("format");
-            String formats[] = new String[]{"text", "xml", "yaml", "yml"};
+            String[] formats = new String[]{"text", "xml", "yaml", "yml"};
             if (format != null && !Arrays.asList(formats).contains(format)) {
                 System.err.println(Colors.error("Wrong output format " + format + ". Should be one of " + Arrays.toString(formats)));
                 return false;
@@ -905,6 +1009,21 @@ public class ECTesterReader {
                 if (!Arrays.asList(tests).contains(testSuite)) {
                     System.err.println(Colors.error("Unknown test suite " + testSuite + ". Should be one of: " + Arrays.toString(tests)));
                     return false;
+                }
+
+                String[] opts = cli.getOptionValue("test-options", "").split(",");
+                List<String> validOpts = Arrays.asList("preset");
+                testOptions = new HashSet<>();
+                for (String opt : opts) {
+                    if (opt.equals("")) {
+                        continue;
+                    }
+                    if (!validOpts.contains(opt)) {
+                        System.err.println(Colors.error("Unknown test option " + opt + ". Should be one of: " + "preset."));
+                        return false;
+                    } else {
+                        testOptions.add(opt);
+                    }
                 }
             } else if (cli.hasOption("ecdh")) {
                 if (primeField == binaryField) {

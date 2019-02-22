@@ -3,9 +3,18 @@ package cz.crcs.ectester.common.util;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.ec.*;
 import cz.crcs.ectester.data.EC_Store;
+import org.bouncycastle.asn1.ASN1Integer;
+import org.bouncycastle.asn1.ASN1StreamParser;
+import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.DERSequenceParser;
+import org.bouncycastle.crypto.digests.SHA1Digest;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.*;
@@ -183,6 +192,27 @@ public class ECUtil {
         }
     }
 
+    public static byte[] semiRandomKey(EC_Curve curve) {
+        int bytes = (curve.getBits() + 7) / 8;
+        byte[] result = new byte[bytes];
+        SHA1Digest digest = new SHA1Digest();
+        byte[] curveName = curve.getId().getBytes(StandardCharsets.US_ASCII);
+        digest.update(curveName, 0, curveName.length);
+        int written = 0;
+        while (written < bytes) {
+            byte[] dig = new byte[digest.getDigestSize()];
+            digest.doFinal(dig, 0);
+            int toWrite = digest.getDigestSize() > bytes - written ? bytes - written : digest.getDigestSize();
+            System.arraycopy(dig, 0, result, written, toWrite);
+            written += toWrite;
+            digest.update(dig, 0, dig.length);
+        }
+        BigInteger priv = new BigInteger(1, result);
+        BigInteger order = new BigInteger(1, curve.getParam(EC_Consts.PARAMETER_R)[0]);
+        priv = priv.mod(order);
+        return toByteArray(priv, curve.getBits());
+    }
+
     private static ECPoint toPoint(EC_Params params) {
         return new ECPoint(
                 new BigInteger(1, params.getParam(EC_Consts.PARAMETER_W)[0]),
@@ -194,25 +224,34 @@ public class ECUtil {
     }
 
     public static ECPublicKey toPublicKey(EC_Key.Public pubkey) {
+        if (pubkey == null) {
+            return null;
+        }
         EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, pubkey.getCurve());
         if (curve == null) {
-            throw new IllegalArgumentException("pubkey curve nor found: " + pubkey.getCurve());
+            throw new IllegalArgumentException("pubkey curve not found: " + pubkey.getCurve());
         }
         return new RawECPublicKey(toPoint(pubkey), curve.toSpec());
     }
 
     public static ECPrivateKey toPrivateKey(EC_Key.Private privkey) {
+        if (privkey == null) {
+            return null;
+        }
         EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, privkey.getCurve());
         if (curve == null) {
-            throw new IllegalArgumentException("privkey curve nor found: " + privkey.getCurve());
+            throw new IllegalArgumentException("privkey curve not found: " + privkey.getCurve());
         }
         return new RawECPrivateKey(toScalar(privkey), curve.toSpec());
     }
 
     public static KeyPair toKeyPair(EC_Keypair kp) {
+        if (kp == null) {
+            return null;
+        }
         EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, kp.getCurve());
         if (curve == null) {
-            throw new IllegalArgumentException("keypair curve nor found: " + kp.getCurve());
+            throw new IllegalArgumentException("keypair curve not found: " + kp.getCurve());
         }
         ECPublicKey pubkey = new RawECPublicKey(toPoint(kp), curve.toSpec());
         ECPrivateKey privkey = new RawECPrivateKey(toScalar(kp), curve.toSpec());
@@ -221,5 +260,34 @@ public class ECUtil {
 
     public static byte[] toDERSignature(byte[] r, byte[] s) {
         return ByteUtil.concatenate(new byte[]{0x30, (byte) (r.length + s.length + 4), 0x02, (byte) r.length}, r, new byte[]{0x02, (byte) s.length}, s);
+    }
+
+    public static BigInteger[] fromDERSignature(byte[] signature) throws IOException {
+        ASN1StreamParser parser = new ASN1StreamParser(signature);
+        DERSequence sequence = (DERSequence) ((DERSequenceParser) parser.readObject()).getLoadedObject();
+        ASN1Integer r = (ASN1Integer) sequence.getObjectAt(0);
+        ASN1Integer s = (ASN1Integer) sequence.getObjectAt(1);
+        return new BigInteger[]{r.getPositiveValue(), s.getPositiveValue()};
+    }
+
+    public static BigInteger recoverSignatureNonce(byte[] signature, byte[] data, BigInteger privkey, ECParameterSpec params, String hashType) {
+        try {
+            int bitSize = params.getOrder().bitLength();
+            MessageDigest md = MessageDigest.getInstance(hashType);
+            byte[] hash = md.digest(data);
+            BigInteger hashInt = new BigInteger(1, hash);
+            hashInt = hashInt.and(BigInteger.ONE.shiftLeft(bitSize + 1).subtract(BigInteger.ONE));
+
+            BigInteger[] sigPair = fromDERSignature(signature);
+            BigInteger r = sigPair[0];
+            BigInteger s = sigPair[1];
+
+            BigInteger rd = privkey.multiply(r).mod(params.getOrder());
+            BigInteger hrd = hashInt.add(rd).mod(params.getOrder());
+            return s.modInverse(params.getOrder()).multiply(hrd).mod(params.getOrder());
+        } catch (NoSuchAlgorithmException | IOException nsae) {
+            nsae.printStackTrace();
+            return null;
+        }
     }
 }

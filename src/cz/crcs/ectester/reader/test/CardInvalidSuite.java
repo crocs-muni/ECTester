@@ -40,11 +40,15 @@ public class CardInvalidSuite extends CardTestSuite {
             EC_Curve curve = e.getKey();
             List<EC_Key.Public> keys = e.getValue();
 
-            Test allocate = CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS);
+            Test allocate = runTest(CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS));
+            if (!allocate.ok()) {
+                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "No support for " + curve.getId() + ".", allocate));
+                continue;
+            }
             Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.SUCCESS);
             Test generate = CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_LOCAL), ExpectedValue.SUCCESS);
 
-            Test prepare = CompoundTest.all(ExpectedValue.SUCCESS, "Prepare and generate keypair on " + curve.getId(), allocate, set, generate);
+            Test prepare = CompoundTest.all(ExpectedValue.SUCCESS, "Prepare and generate keypair on " + curve.getId() + ".", allocate, set, generate);
 
             List<Test> ecdhTests = new LinkedList<>();
             for (EC_Key.Public pub : keys) {
@@ -55,13 +59,13 @@ public class CardInvalidSuite extends CardTestSuite {
                 Test rawEcdh = CommandTest.expect(ecdhCommand, ExpectedValue.FAILURE, "Card correctly rejected point on invalid curve.", "Card incorrectly accepted point on invalid curve.");
                 ecdhTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " invalid key test.", objectEcdh, rawEcdh));
             }
-            Test ecdh = CompoundTest.all(ExpectedValue.SUCCESS, "Perform ECDH with invalid public points", ecdhTests.toArray(new Test[0]));
+            Test ecdh = CompoundTest.all(ExpectedValue.SUCCESS, "Perform ECDH with invalid public points.", ecdhTests.toArray(new Test[0]));
 
             if (cfg.cleanup) {
                 Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.ANY);
-                doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Invalid curve test of " + curve.getId(), prepare, ecdh, cleanup));
+                doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Invalid curve test of " + curve.getId() + ".", prepare, ecdh, cleanup));
             } else {
-                doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Invalid curve test of " + curve.getId(), prepare, ecdh));
+                doTest(CompoundTest.greedyAllTry(ExpectedValue.SUCCESS, "Invalid curve test of " + curve.getId() + ".", prepare, ecdh));
             }
         }
     }

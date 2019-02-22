@@ -11,6 +11,7 @@ import cz.crcs.ectester.common.util.CardUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
+import cz.crcs.ectester.reader.output.ResponseWriter;
 import cz.crcs.ectester.reader.response.Response;
 import javacard.security.KeyPair;
 
@@ -28,6 +29,11 @@ import java.util.List;
 public abstract class Command implements Cloneable {
     CommandAPDU cmd;
     CardMngr cardManager;
+    // Workaround for a stupid Java bug that went unfixed for !12! years,
+    // and for the even more stupid module system, which cannot properly work
+    // with the fact that JCardSim has some java.* packages...
+    final byte[] GOD_DAMN_JAVA_BUG_6474858_AND_GOD_DAMN_JAVA_12_MODULE_SYSTEM = new byte[]{0};
+
 
     Command(CardMngr cardManager) {
         this.cardManager = cardManager;
@@ -54,23 +60,11 @@ public abstract class Command implements Cloneable {
         return (Command) super.clone();
     }
 
-
-    /**
-     * @param keyPair   which keyPair/s (local/remote) to set curve domain parameters on
-     * @param keyLength key length to choose
-     * @param keyClass  key class to choose
-     * @return a Command to send in order to prepare the curve on the keypairs.
-     * @throws IOException if curve file cannot be found/opened
-     */
-    public static Command prepareCurve(CardMngr cardManager, EC_Store dataStore, ECTesterReader.Config cfg, byte keyPair, short keyLength, byte keyClass) throws IOException {
-
+    public static EC_Curve findCurve(EC_Store dataStore, ECTesterReader.Config cfg, short keyLength, byte keyClass) throws IOException {
         if (cfg.customCurve) {
-            // Set custom curve (one of the SECG curves embedded applet-side)
-            short domainParams = keyClass == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
-            return new Command.Set(cardManager, keyPair, EC_Consts.getCurve(keyLength, keyClass), domainParams, null);
+            byte curveId = EC_Consts.getCurve(keyLength, keyClass);
+            return dataStore.getObject(EC_Curve.class, "secg", CardUtil.getCurveName(curveId));
         } else if (cfg.namedCurve != null) {
-            // Set a named curve.
-            // parse cfg.namedCurve -> cat / id | cat | id
             EC_Curve curve = dataStore.getObject(EC_Curve.class, cfg.namedCurve);
             if (curve == null) {
                 throw new IOException("Curve could no be found.");
@@ -81,34 +75,44 @@ public abstract class Command implements Cloneable {
             if (curve.getField() != keyClass) {
                 throw new IOException("Curve field mismatch.");
             }
-
-            byte[] external = curve.flatten();
-            if (external == null) {
-                throw new IOException("Couldn't read named curve data.");
-            }
-            return new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, curve.getParams(), external);
+            return curve;
         } else if (cfg.curveFile != null) {
-            // Set curve loaded from a file
             EC_Curve curve = new EC_Curve(null, keyLength, keyClass);
 
             FileInputStream in = new FileInputStream(cfg.curveFile);
             curve.readCSV(in);
             in.close();
-
-            byte[] external = curve.flatten();
-            if (external == null) {
-                throw new IOException("Couldn't read the curve file correctly.");
-            }
-            return new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, curve.getParams(), external);
+            return curve;
         } else {
-            // Set default curve
-            /* This command was generally causing problems for simulating on jcardsim.
-             * Since there, .clearKey() resets all the keys values, even the domain.
-             * This might break some other stuff.. But should not.
-             */
-            //commands.add(new Command.Clear(cardManager, keyPair));
             return null;
         }
+    }
+
+
+    /**
+     * @param keyPair   which keyPair/s (local/remote) to set curve domain parameters on
+     * @param keyLength key length to choose
+     * @param keyClass  key class to choose
+     * @return a Command to send in order to prepare the curve on the keypairs.
+     * @throws IOException if curve file cannot be found/opened
+     */
+    public static Command prepareCurve(CardMngr cardManager, EC_Store dataStore, ECTesterReader.Config cfg, byte keyPair, short keyLength, byte keyClass) throws IOException {
+        if (cfg.customCurve) {
+            // Set custom curve (one of the SECG curves embedded applet-side)
+            short domainParams = keyClass == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
+            return new Command.Set(cardManager, keyPair, EC_Consts.getCurve(keyLength, keyClass), domainParams, null);
+        }
+
+        EC_Curve curve = findCurve(dataStore, cfg, keyLength, keyClass);
+        if ((curve == null || curve.flatten() == null) && (cfg.namedCurve != null || cfg.curveFile != null)) {
+            if (cfg.namedCurve != null) {
+                throw new IOException("Couldn't read named curve data.");
+            }
+            throw new IOException("Couldn't read the curve file correctly.");
+        } else if (curve == null) {
+            return null;
+        }
+        return new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, curve.getParams(), curve.flatten());
     }
 
 
@@ -194,6 +198,19 @@ public abstract class Command implements Cloneable {
             data = ByteUtil.concatenate(data, privkey);
         }
         return new Command.Set(cardManager, keyPair, EC_Consts.CURVE_external, params, data);
+    }
+
+    public static long dryRunTime(CardMngr cardManager, Command cmd, int num, ResponseWriter respWriter) throws CardException {
+        long time = 0;
+        respWriter.outputResponse(new Command.SetDryRunMode(cardManager, ECTesterApplet.MODE_DRY_RUN).send());
+        for (int i = 0; i < num; ++i) {
+            Response dry = cmd.send();
+            respWriter.outputResponse(dry);
+            time += dry.getDuration();
+        }
+        time /= num;
+        respWriter.outputResponse(new Command.SetDryRunMode(cardManager, ECTesterApplet.MODE_NORMAL).send());
+        return time;
     }
 
     /**
@@ -324,7 +341,7 @@ public abstract class Command implements Cloneable {
             super(cardManager);
             this.keyPair = keyPair;
 
-            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_CLEAR, keyPair, 0x00);
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_CLEAR, keyPair, 0x00, GOD_DAMN_JAVA_BUG_6474858_AND_GOD_DAMN_JAVA_12_MODULE_SYSTEM);
         }
 
         @Override
@@ -474,7 +491,7 @@ public abstract class Command implements Cloneable {
             super(cardManager);
             this.keyPair = keyPair;
 
-            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_GENERATE, keyPair, 0);
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_GENERATE, keyPair, 0, GOD_DAMN_JAVA_BUG_6474858_AND_GOD_DAMN_JAVA_12_MODULE_SYSTEM);
         }
 
         @Override
@@ -846,7 +863,7 @@ public abstract class Command implements Cloneable {
         public Cleanup(CardMngr cardManager) {
             super(cardManager);
 
-            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_CLEANUP, 0, 0);
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_CLEANUP, 0, 0, GOD_DAMN_JAVA_BUG_6474858_AND_GOD_DAMN_JAVA_12_MODULE_SYSTEM);
         }
 
         @Override
@@ -874,7 +891,7 @@ public abstract class Command implements Cloneable {
         public GetInfo(CardMngr cardManager) {
             super(cardManager);
 
-            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_GET_INFO, 0, 0);
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_GET_INFO, 0, 0, GOD_DAMN_JAVA_BUG_6474858_AND_GOD_DAMN_JAVA_12_MODULE_SYSTEM);
         }
 
         @Override
@@ -888,6 +905,37 @@ public abstract class Command implements Cloneable {
         @Override
         public String getDescription() {
             return "Get applet info";
+        }
+    }
+
+    /**
+     *
+     */
+    public static class SetDryRunMode extends Command {
+        private byte dryRunMode;
+
+        /**
+         * @param cardManager
+         * @param dryRunMode
+         */
+        public SetDryRunMode(CardMngr cardManager, byte dryRunMode) {
+            super(cardManager);
+            this.dryRunMode = dryRunMode;
+
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_SET_DRY_RUN_MODE, dryRunMode, 0, GOD_DAMN_JAVA_BUG_6474858_AND_GOD_DAMN_JAVA_12_MODULE_SYSTEM);
+        }
+
+        @Override
+        public Response.SetDryRunMode send() throws CardException {
+            long elapsed = -System.nanoTime();
+            ResponseAPDU response = cardManager.send(cmd);
+            elapsed += System.nanoTime();
+            return new Response.SetDryRunMode(response, getDescription(), elapsed);
+        }
+
+        @Override
+        public String getDescription() {
+            return (dryRunMode == ECTesterApplet.MODE_NORMAL ? "Disable" : "Enable") + " dry run mode";
         }
     }
 }

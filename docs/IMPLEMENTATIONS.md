@@ -249,7 +249,7 @@ Uses binary addition chain.
     INPUT: k = (k_{t-1}, ..., k_1, k_0)_2, P ∈ E(F_q).
     OUTPUT: [k]P.
     1. Q ← ∞.
-    2. For i from t - 1 downto 0 do
+    2. For i from 0 to t-1 do
     2.1 If k_i = 1 then Q ← Q + P.
     2.2 P ← 2P.
     3. Return(Q).
@@ -432,7 +432,7 @@ The same name, Montgomery ladder, is used both for the general ladder idea of ex
     INPUT: k = (k_{t-1}, ..., k_1, k_0)_2, P ∈ E(F_q).
     OUTPUT: [k]P .
     1. P_1 ← P and P_2 ← [2]P
-    2. For i = t − 2 downto 0 do
+    2. For i = t − 1 downto 0 do
     2.1 If k_i = 0 then
              P_1 ← [2]P_1; P_2 ← P_1 + P_2.
         Else
@@ -443,13 +443,13 @@ The same name, Montgomery ladder, is used both for the general ladder idea of ex
 
     INPUT: G ∈ E(F_q), k = (1, k_{t−2}, ..., k_0)2
     OUTPUT: Y = kG
-    R0 ← G; R1 ← [2]G
-    for j = t − 2 downto 0 do
-        if (k_j = 0) then
-            R1 ← R0 + R1; R0 ← [2]R0
-        else [if (kj = 1)]
-            R0 ← R0 + R1; R1 ← [2]R1
-    return R0
+    1. R0 ← G; R1 ← [2]G
+    2. for j = t − 2 downto 0 do
+    2.1  if (k_j = 0) then
+             R1 ← R0 + R1; R0 ← [2]R0
+         else [if (kj = 1)]
+             R0 ← R0 + R1; R1 ← [2]R1
+    3. return R0
 
 Montgomery addition formulas (Projective coordinates/XZ coordinates):[^2]
 
@@ -536,17 +536,27 @@ y_n &= \frac{(x_n + x_1)((x_n + x_1)(x_{n+1} + x_1) + x_1^2 + y_1)}{x_1} + y_1
 ## References
 
 [^1]: HANKERSON, Darrel; MENEZES, Alfred J.; VANSTONE, Scott. Guide to Elliptic Curve Cryptography. New York, USA: Springer, 2004. ISBN 9780387218465. Available from DOI: [10.1007/b97644](https://dx.doi.org/10.1007/b97644).
-[^2]: COHEN, Henri; FREY, Gerhard; AVANZI, Roberto M.; DOCHE, Christophe; LANGE,
-Tanja; NGUYEN, Kim; VERCAUTEREN, Frederik. Handbook of Elliptic and Hyper-
-elliptic Curve Cryptography. CRC Press, 2005-07-19. Discrete Mathematics and It’s Applications, no. 34. ISBN 9781584885184.
+
+[^2]: COHEN, Henri; FREY, Gerhard; AVANZI, Roberto M.; DOCHE, Christophe; LANGE, Tanja; NGUYEN, Kim; VERCAUTEREN, Frederik. Handbook of Elliptic and Hyper-elliptic Curve Cryptography. CRC Press, 2005-07-19. Discrete Mathematics and It’s Applications, no. 34. ISBN 9781584885184.
+
 [^3]: BERNSTEIN, Daniel J.; LANGE, Tanja. Explicit Formulas Database, <https://www.hyperelliptic.org/EFD/>
+
 [^4]: <http://point-at-infinity.org/ecc/>
+
 [^5]: KNUTH, Donald: The Art of Computer Programming, Volume 2: Seminumerical algorithms
+
 [^6]: GORDON, Daniel M.: A survey of fast exponentiation methods.
+
 [^7]: MORAIN, Francois; OLIVOS, Jorge: Speeding up the computations on an elliptic curve using addition-subtraction chains.
+
 [^8]: JOYE, Marc; YEN, Sung-Ming: The Montgomery Powering Ladder.
+
 [^9]: MOLLER, Bodo: Securing Elliptic Curve Point Multiplication against Side-Channel Attacks.
+
 [^10]: MOLLER, Bodo: Improved Techniques for Fast Exponentiation.
+
 [^11]: MOLLER, Bodo: Fractional Windows Revisited: Improved Signed-Digit Representations for Efficient Exponentiation.
+
 [^12]: KOYAMA, Kenji; TSURUOKA, Yukio: Speeding up Elliptic Cryptosystems by Using a Signed Binary Window Method.
+
 [^13]: GALLANT, Robert P.; LAMBERT, Robert J.; VANSTONE, Scott A.: Faster point multiplication on elliptic curves with efficient endomorphisms.

@@ -114,7 +114,7 @@ public class XMLTestWriter extends BaseXMLTestWriter {
             Response.GetInfo info = new Command.GetInfo(card).send();
             result.setAttribute("version", info.getVersion());
             result.setAttribute("javacard", String.format("%.1f", info.getJavaCardVersion()));
-            result.setAttribute("base", String.format("%#x",info.getBase()));
+            result.setAttribute("base", String.format("%#x", info.getBase()));
             result.setAttribute("cleanup", String.valueOf(info.getCleanupSupport()));
             Element arrays = doc.createElement("arrays");
             Element apduBuf = doc.createElement("length");

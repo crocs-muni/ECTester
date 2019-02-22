@@ -85,7 +85,7 @@
 </pubkey>
 <pubkey>
     <id>secp128r1/14</id>
-    <inline>0x98b36c442de5c741c70fa80a31d72fa,0x251e9a04ffe799cf4776575be582f108</inline>
+    <inline>0x098b36c442de5c741c70fa80a31d72fa,0x251e9a04ffe799cf4776575be582f108</inline>
     <curve>secg/secp128r1</curve>
     <desc>invalid order = 47</desc>
 </pubkey>
@@ -109,7 +109,7 @@
 </pubkey>
 <pubkey>
     <id>secp128r1/18</id>
-    <inline>0x9ce43ec4dcaf95993d8ab00efcc7199a,0x7fb6d895c27bc326a33cb8111e865a9</inline>
+    <inline>0x9ce43ec4dcaf95993d8ab00efcc7199a,0x07fb6d895c27bc326a33cb8111e865a9</inline>
     <curve>secg/secp128r1</curve>
     <desc>invalid order = 67</desc>
 </pubkey>
@@ -139,7 +139,7 @@
 </pubkey>
 <pubkey>
     <id>secp128r1/23</id>
-    <inline>0x6803013e75597fb7f83f1f8681af11d,0x32490d391f8a2b1de83212dd218b3a5a</inline>
+    <inline>0x06803013e75597fb7f83f1f8681af11d,0x32490d391f8a2b1de83212dd218b3a5a</inline>
     <curve>secg/secp128r1</curve>
     <desc>invalid order = 89</desc>
 </pubkey>

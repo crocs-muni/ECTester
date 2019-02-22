@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class CardSignatureSuite extends CardTestSuite {
     public CardSignatureSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "signature", "Test verifying various wrong ECDSA values.");
+        super(writer, cfg, cardManager, "signature", "The signature test suite tests verifying various malformed and well-formed but invalid ECDSA signatures.");
     }
 
     @Override

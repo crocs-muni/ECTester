@@ -18,12 +18,13 @@ from matplotlib import ticker, colors
 from copy import deepcopy
 import argparse
 
-from utils import hw, moving_average, plot_hist
+from utils import hw, moving_average, plot_hist, miller_correction
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Plot results of ECTester key generation timing.")
     parser.add_argument("-o", "--output", dest="output", type=argparse.FileType("wb"), help="Write image to [file], do not display.", metavar="file")
     parser.add_argument("--priv", dest="priv", action="store_true", help="Show private key MSB heatmap plot.")
+    parser.add_argument("--entropy", dest="entropy", action="store_true", help="Show estimated entropy of private key MSB conditioned on time of generation.")
     parser.add_argument("--hist", dest="hist", action="store_true", help="Show keygen time histogram.")
     parser.add_argument("--export-hist", dest="export_hist", action="store_true", help="Show export time histogram.")
     parser.add_argument("--avg", dest="avg", action="store_true", help="Show moving average of keygen time.")
@@ -103,21 +104,6 @@ if __name__ == "__main__":
 
     sorted_data = np.sort(data, order="gen_time")
 
-    i = 0
-    entropies = {}
-    while i < len(data):
-        time_val = sorted_data["gen_time"][i]
-        j = i
-        msbs = [0 for _ in range(256)]
-        while j < len(data) and sorted_data["gen_time"][j] == time_val:
-            msbs[(sorted_data["priv"][j] >> (bit_size - 8)) & 0xff] += 1
-            j += 1
-        if j - 100 > i:
-            entropies[time_val] = entropy(msbs, base=2)
-        i = j
-
-    entropy = sum(entropies.values())/len(entropies)
-
     cmap = deepcopy(plt.cm.plasma)
     cmap.set_bad("black")
 
@@ -174,7 +160,23 @@ if __name__ == "__main__":
         fig.colorbar(im, ax=axe_priv_hist)
 
     fig.text(0.01, 0.02, "Data size: {}".format(len(gen_time_data)), size="small")
-    fig.text(0.01, 0.04, "Entropy of privkey MSB(estimated): {:.2f} b".format(entropy), size="small")
+
+    if opts.entropy:
+        i = 0
+        entropies = {}
+        while i < len(data):
+            time_val = sorted_data["gen_time"][i]
+            j = i
+            msbs = [0 for _ in range(256)]
+            while j < len(data) and sorted_data["gen_time"][j] == time_val:
+                msbs[(sorted_data["priv"][j] >> (bit_size - 8)) & 0xff] += 1
+                j += 1
+            if j - 100 > i:
+                entropies[time_val] = miller_correction(entropy(msbs, base=2), j - i, 256)
+            i = j
+    
+        entropy = sum(entropies.values())/len(entropies)
+        fig.text(0.01, 0.04, "Entropy of privkey MSB(estimated): {:.2f} b".format(entropy), size="small")
 
     if opts.output is None:
         plt.show()

@@ -32,7 +32,7 @@ public class CommandTest extends SimpleTest<CommandTestable> {
             @Override
             public Result apply(CommandTestable commandTestable) {
                 Result.Value resultValue = Result.Value.fromExpected(expected, commandTestable.ok(), commandTestable.error());
-                return new Result(resultValue, resultValue.ok() ? ok : nok);
+                return new Result(resultValue, commandTestable.error() ? commandTestable.errorCause() : (resultValue.ok() ? ok : nok));
             }
         });
     }

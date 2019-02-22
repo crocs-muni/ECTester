@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pubkey>
+    <id>cofactor160p4/0</id>
+    <inline>0x0c43497bdc7c1fddd18368da4894a98a612f09ec,0x0000000000000000000000000000000000000000</inline>
+    <curve>cofactor/cofactor160p4</curve>
+    <desc>twist order = 2</desc>
+</pubkey>
+<pubkey>
+    <id>cofactor160p4/1</id>
+    <inline>0x526ba726c52a6c998994733747dc27db793ce64b,0x3f432767051371f91355e6a14488883bc51c881e</inline>
+    <curve>cofactor/cofactor160p4</curve>
+    <desc>twist order = 4</desc>
+</pubkey>
+<pubkey>
+    <id>cofactor160p4/2</id>
+    <inline>0x380cd2b93ff179b2411c721879d7fbed95ef1d68,0x7b36aafe70fa88d2522931555d91e072a89eaff0</inline>
+    <curve>cofactor/cofactor160p4</curve>
+    <desc>twist order = 8</desc>
+</pubkey>
+<pubkey>
+    <id>cofactor160p4/3</id>
+    <inline>0x640d26a5aa07b529bf39bb4d4ad79346f677e2e9,0x22c90f648dfd349f8ac76c4aa0e4fd7278bc4516</inline>
+    <curve>cofactor/cofactor160p4</curve>
+    <desc>twist order = 16</desc>
+</pubkey>
+<pubkey>
+    <id>cofactor160p4/4</id>
+    <inline>0x8dab044b1a87809667b940b43d913b00fa194c8,0x20652c81133c9e51a16d0ecbcd6f81111afc03c3</inline>
+    <curve>cofactor/cofactor160p4</curve>
+    <desc>twist order = 3</desc>
+</pubkey>
+<pubkey>
+    <id>cofactor160p4/5</id>
+    <inline>0x66e27b0bfaf5269dbca67fa71ea3a117f29f4ef9,0x2b9499a775ae8f7fba1884b3d852429757312c93</inline>
+    <curve>cofactor/cofactor160p4</curve>
+    <desc>twist order = 13</desc>
+</pubkey>
+<pubkey>
+    <id>cofactor160p4/6</id>
+    <inline>0x4758716ac3b6cfb971ea0a673c4eebbad085fbd8,0x6ab9c8044435062299d14bdb6d6a41faf0bb0067</inline>
+    <curve>cofactor/cofactor160p4</curve>
+    <desc>twist order = 169</desc>
+</pubkey>
+<pubkey>
+    <id>cofactor160p4/7</id>
+    <inline>0x76690f13f9fdec12b156a40f5a7c0f25b420e7e0,0x8cab0d69936dcb3b64007f2fd2881f18f627ade5</inline>
+    <curve>cofactor/cofactor160p4</curve>
+    <desc>twist order = 107</desc>
+</pubkey>
+<pubkey>
+    <id>cofactor160p4/8</id>
+    <inline>0x178c6e5bb98247299631a52d32a55e61711a21fb,0x6e9171b2aab5bbbe488d9c3c367cf0536bf19e1a</inline>
+    <curve>cofactor/cofactor160p4</curve>
+    <desc>twist order = 15259</desc>
+</pubkey>
+<pubkey>
+    <id>cofactor160p4/9</id>
+    <inline>0x08e82adfcb0ff539bf58e4f232f4721f3a014904,0x7ba4d134fa420dbf7fdff4986361d625e87ca27d</inline>
+    <curve>cofactor/cofactor160p4</curve>
+    <desc>twist order = 322336986893916431</desc>
+</pubkey>
+<pubkey>
+    <id>cofactor160p4/10</id>
+    <inline>0x1d6ee4ac5b0da602078684f14bab3510915f7fef,0x229903e44fe1dd7e4ef1d3dd4edc0ed05c712bef</inline>
+    <curve>cofactor/cofactor160p4</curve>
+    <desc>twist order = 197469859348064237101</desc>
+</pubkey>
+<pubkey>
+    <id>cofactor160p4/gen</id>
+    <inline>0x5603c1fd03c11eb2ab5f7abb998658a791a71202,0x3151be9d7f447756c8e85f5ac82c1ee410727157</inline>
+    <curve>cofactor/cofactor160p4</curve>
+    <desc>twist generator</desc>
+</pubkey>
+

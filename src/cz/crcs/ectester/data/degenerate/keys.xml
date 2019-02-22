@@ -2,6 +2,7 @@
 <!DOCTYPE keys [
         <!ENTITY secg SYSTEM "degenerate/secg.xml">
         <!ENTITY brainpool SYSTEM "degenerate/brainpool.xml">
+        <!ENTITY cofactor SYSTEM "degenerate/cofactor.xml">
         ]>
 <keys xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="../schema.xsd">
@@ -11,4 +12,5 @@
     -->
     &secg;
     &brainpool;
+    &cofactor;
 </keys>

@@ -24,6 +24,8 @@ package cz.crcs.ectester.standalone;
 
 import cz.crcs.ectester.common.cli.*;
 import cz.crcs.ectester.common.ec.EC_Curve;
+import cz.crcs.ectester.common.ec.EC_Key;
+import cz.crcs.ectester.common.ec.EC_Keypair;
 import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.TestException;
 import cz.crcs.ectester.common.util.ByteUtil;
@@ -51,6 +53,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
@@ -140,7 +143,6 @@ public class ECTesterStandalone {
             System.err.println("Invalid algorithm parameter: " + e.getMessage());
         } catch (NoSuchAlgorithmException nsaex) {
             System.err.println("Algorithm not supported by the selected library: " + nsaex.getMessage());
-            nsaex.printStackTrace();
         } catch (InvalidKeyException | SignatureException e) {
             e.printStackTrace();
         }
@@ -150,6 +152,8 @@ public class ECTesterStandalone {
         Map<String, ParserOptions> actions = new TreeMap<>();
 
         Option namedCurve = Option.builder("nc").longOpt("named-curve").desc("Use a named curve, from CurveDB: <cat/id>").hasArg().argName("cat/id").optionalArg(false).build();
+        Option namedPublic = Option.builder("npub").longOpt("named-public").desc("Use a named public key, from CurveDB: <cat/id>").hasArg().argName("cat/id").optionalArg(false).build();
+        Option namedPrivate = Option.builder("npriv").longOpt("named-private").desc("Use a named private key, from CurveDB: <cat/id>").hasArg().argName("cat/id").optionalArg(false).build();
         Option curveName = Option.builder("cn").longOpt("curve-name").desc("Use a named curve, search from curves supported by the library: <name>").hasArg().argName("name").optionalArg(false).build();
         Option bits = Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").build();
         Option output = Option.builder("o").longOpt("output").desc("Output into file <output_file>.").hasArgs().argName("output_file").optionalArg(false).build();
@@ -176,7 +180,9 @@ public class ECTesterStandalone {
         ecdhOpts.addOption(Option.builder("t").longOpt("type").desc("Set KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdhOpts.addOption(Option.builder().longOpt("key-type").desc("Set the key [algorithm] for which the key should be derived in KeyAgreements with KDF. Default is \"AES\".").hasArg().argName("algorithm").optionalArg(false).build());
         ecdhOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDH [amount] times.").build());
+        ecdhOpts.addOption(namedPrivate);
         ecdhOpts.addOption(Option.builder().longOpt("fixed-private").desc("Perform ECDH with fixed private key.").build());
+        ecdhOpts.addOption(namedPublic);
         ecdhOpts.addOption(Option.builder().longOpt("fixed-public").desc("Perform ECDH with fixed public key.").build());
         ParserOptions ecdh = new ParserOptions(new DefaultParser(), ecdhOpts, "Perform EC based KeyAgreement.");
         actions.put("ecdh", ecdh);
@@ -185,7 +191,9 @@ public class ECTesterStandalone {
         ecdsaOpts.addOption(bits);
         ecdsaOpts.addOption(namedCurve);
         ecdsaOpts.addOption(curveName);
-        ecdhOpts.addOption(output);
+        ecdsaOpts.addOption(output);
+        ecdsaOpts.addOption(namedPrivate);
+        ecdsaOpts.addOption(namedPublic);
         ecdsaOpts.addOption(Option.builder("t").longOpt("type").desc("Set Signature object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdsaOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDSA [amount] times.").build());
         ecdsaOpts.addOption(Option.builder("f").longOpt("file").hasArg().argName("file").optionalArg(false).desc("Input [file] to sign.").build());
@@ -196,7 +204,7 @@ public class ECTesterStandalone {
         generateOpts.addOption(bits);
         generateOpts.addOption(namedCurve);
         generateOpts.addOption(curveName);
-        ecdhOpts.addOption(output);
+        generateOpts.addOption(output);
         generateOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Generate [amount] of EC keys.").build());
         generateOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPairGenerator object [type].").build());
         ParserOptions generate = new ParserOptions(new DefaultParser(), generateOpts, "Generate EC keypairs.");
@@ -204,7 +212,7 @@ public class ECTesterStandalone {
 
         Options exportOpts = new Options();
         exportOpts.addOption(bits);
-        ecdhOpts.addOption(output);
+        exportOpts.addOption(output);
         exportOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPair object [type].").build());
         ParserOptions export = new ParserOptions(new DefaultParser(), exportOpts, "Export default curve parameters.");
         actions.put("export", export);
@@ -345,28 +353,48 @@ public class ECTesterStandalone {
         out.println("index;time[nano];pubW;privS;secret");
 
         KeyPair one = null;
-        if (cli.hasOption("ecdh.fixed-private")) {
+        if (cli.hasOption("ecdh.fixed-private") && !cli.hasOption("ecdh.named-private")) {
             one = kpg.genKeyPair();
         }
         KeyPair other = null;
-        if (cli.hasOption("ecdh.fixed-public")) {
+        if (cli.hasOption("ecdh.fixed-public") && !cli.hasOption("ecdh.named-public")) {
             other = kpg.genKeyPair();
+        }
+
+        ECPrivateKey privkey = null;
+        if (cli.hasOption("ecdh.named-private")) {
+            privkey = ECUtil.toPrivateKey(EC_Store.getInstance().getObject(EC_Key.Private.class, cli.getOptionValue("ecdh.named-private")));
+            if (privkey == null) {
+                privkey = (ECPrivateKey) ECUtil.toKeyPair(EC_Store.getInstance().getObject(EC_Keypair.class, cli.getOptionValue("ecdh.named-private"))).getPrivate();
+            }
+        }
+        ECPublicKey pubkey = null;
+        if (cli.hasOption("ecdh.named-public")) {
+            pubkey = ECUtil.toPublicKey(EC_Store.getInstance().getObject(EC_Key.Public.class, cli.getOptionValue("ecdh.named-public")));
+            if (pubkey == null) {
+                pubkey = (ECPublicKey) ECUtil.toKeyPair(EC_Store.getInstance().getObject(EC_Keypair.class, cli.getOptionValue("ecdh.named-public"))).getPublic();
+            }
         }
 
         int amount = Integer.parseInt(cli.getOptionValue("ecdh.amount", "1"));
         for (int i = 0; i < amount; ++i) {
-            if (!cli.hasOption("ecdh.fixed-private")) {
+            if (!cli.hasOption("ecdh.fixed-private") && !cli.hasOption("ecdh.named-private")) {
                 one = kpg.genKeyPair();
             }
-            if (!cli.hasOption("ecdh.fixed-public")) {
+            if (!cli.hasOption("ecdh.fixed-public") && !cli.hasOption("ecdh.named-public")) {
                 other = kpg.genKeyPair();
             }
 
-            ECPrivateKey privkey = (ECPrivateKey) one.getPrivate();
-            ECPublicKey pubkey = (ECPublicKey) other.getPublic();
+            if (!cli.hasOption("ecdh.named-private")) {
+                privkey = (ECPrivateKey) one.getPrivate();
+            }
+
+            if (!cli.hasOption("ecdh.named-public")) {
+                pubkey = (ECPublicKey) other.getPublic();
+            }
 
             long elapsed = -System.nanoTime();
-            if (spec instanceof ECParameterSpec) {
+            if (spec instanceof ECParameterSpec && lib instanceof NativeECLibrary) {
                 ka.init(privkey, spec);
             } else {
                 ka.init(privkey);
@@ -415,7 +443,7 @@ public class ECTesterStandalone {
             data = Files.readAllBytes(in.toPath());
             dataString = "";
         } else {
-            SecureRandom random = new SecureRandom();
+            Random random = new Random();
             data = new byte[32];
             random.nextBytes(data);
             dataString = ByteUtil.bytesToHex(data, false);
@@ -455,6 +483,7 @@ public class ECTesterStandalone {
         }
         Signature sig = sigIdent.getInstance(lib.getProvider());
         KeyPairGenerator kpg = kpIdent.getInstance(lib.getProvider());
+        ECParameterSpec spec = null;
         if (cli.hasOption("ecdsa.bits")) {
             int bits = Integer.parseInt(cli.getOptionValue("ecdsa.bits"));
             kpg.initialize(bits);
@@ -465,7 +494,8 @@ public class ECTesterStandalone {
                 System.err.println("Curve not found: " + curveName);
                 return;
             }
-            kpg.initialize(curve.toSpec());
+            spec = curve.toSpec();
+            kpg.initialize(spec);
         } else if (cli.hasOption("ecdsa.curve-name")) {
             String curveName = cli.getOptionValue("ecdsa.curve-name");
             kpg.initialize(new ECGenParameterSpec(curveName));
@@ -478,14 +508,35 @@ public class ECTesterStandalone {
             out = System.out;
         }
 
-        out.println("index;data;signTime[nano];verifyTime[nano];pubW;privS;signature;verified");
+        out.println("index;signTime[nano];verifyTime[nano];data;pubW;privS;signature;nonce;verified");
+
+        ECPrivateKey privkey = null;
+        if (cli.hasOption("ecdsa.named-private")) {
+            privkey = ECUtil.toPrivateKey(EC_Store.getInstance().getObject(EC_Key.Private.class, cli.getOptionValue("ecdsa.named-private")));
+            if (privkey == null) {
+                privkey = (ECPrivateKey) ECUtil.toKeyPair(EC_Store.getInstance().getObject(EC_Keypair.class, cli.getOptionValue("ecdsa.named-private"))).getPrivate();
+            }
+        }
+        ECPublicKey pubkey = null;
+        if (cli.hasOption("ecdsa.named-public")) {
+            pubkey = ECUtil.toPublicKey(EC_Store.getInstance().getObject(EC_Key.Public.class, cli.getOptionValue("ecdsa.named-public")));
+            if (pubkey == null) {
+                pubkey = (ECPublicKey) ECUtil.toKeyPair(EC_Store.getInstance().getObject(EC_Keypair.class, cli.getOptionValue("ecdsa.named-public"))).getPublic();
+            }
+        }
 
         int amount = Integer.parseInt(cli.getOptionValue("ecdsa.amount", "1"));
         for (int i = 0; i < amount; ++i) {
-            KeyPair one = kpg.genKeyPair();
+            if (!cli.hasOption("ecdsa.named-private") || !cli.hasOption("ecdsa.named-public")) {
+                KeyPair one = kpg.genKeyPair();
 
-            ECPrivateKey privkey = (ECPrivateKey) one.getPrivate();
-            ECPublicKey pubkey = (ECPublicKey) one.getPublic();
+                if (!cli.hasOption("ecdsa.named-private")) {
+                    privkey = (ECPrivateKey) one.getPrivate();
+                }
+                if (!cli.hasOption("ecdsa.named-public")) {
+                    pubkey = (ECPublicKey) one.getPublic();
+                }
+            }
 
             sig.initSign(privkey);
             sig.update(data);
@@ -510,7 +561,14 @@ public class ECTesterStandalone {
             String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW(), pubkey.getParams()), false);
             String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
             String sign = ByteUtil.bytesToHex(signature, false);
-            out.println(String.format("%d;%s;%d;%d;%s;%s;%s;%d", i, dataString, signTime, verifyTime, pub, priv, sign, verified ? 1 : 0));
+            String k = "";
+            if (spec != null) {
+                BigInteger kValue = ECUtil.recoverSignatureNonce(signature, data, privkey.getS(), spec, sigIdent.getHashAlgo());
+                if (kValue != null) {
+                    k = ByteUtil.bytesToHex(kValue.toByteArray(), false);
+                }
+            }
+            out.println(String.format("%d;%d;%d;%s;%s;%s;%s;%s;%d", i, signTime, verifyTime, dataString, pub, priv, sign, k, verified ? 1 : 0));
         }
 
         if (cli.hasOption("ecdsa.output")) {

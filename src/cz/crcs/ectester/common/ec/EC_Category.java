@@ -92,7 +92,7 @@ public class EC_Category {
         }
 
         String[] headers = new String[]{"Public keys", "Private keys", "KeyPairs", "Results(KA)", "Results(SIG)"};
-        Class[] classes = new Class[]{EC_Key.Public.class, EC_Key.Private.class, EC_Keypair.class, EC_KAResult.class, EC_SigResult.class};
+        Class<EC_Data>[] classes = new Class[]{EC_Key.Public.class, EC_Key.Private.class, EC_Keypair.class, EC_KAResult.class, EC_SigResult.class};
         for (int i = 0; i < headers.length; ++i) {
             Map<String, EC_Data> data = getObjects(classes[i]);
             size = data.size();

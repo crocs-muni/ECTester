@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pubkey>
+	<id>cofactor128p4/0</id>
+	<inline>0x00000000000000000000000000000000,0x94d9020b666fbb599609485472a9246e</inline>
+	<curve>cofactor/cofactor128p4</curve>
+	<desc>degenerate order = 2</desc>
+</pubkey>
+<pubkey>
+	<id>cofactor128p4/1</id>
+	<inline>0x00000000000000000000000000000000,0x2d3a81f8b8d96e6db96a04fb6cf432de</inline>
+	<curve>cofactor/cofactor128p4</curve>
+	<desc>degenerate order = 3</desc>
+</pubkey>
+<pubkey>
+	<id>cofactor128p4/2</id>
+	<inline>0x00000000000000000000000000000000,0x639272497e0865cea0e17677b6bc5575</inline>
+	<curve>cofactor/cofactor128p4</curve>
+	<desc>degenerate order = 7</desc>
+</pubkey>
+<pubkey>
+	<id>cofactor128p4/3</id>
+	<inline>0x00000000000000000000000000000000,0x072aba3ae7aeb770332600a630e503d1</inline>
+	<curve>cofactor/cofactor128p4</curve>
+	<desc>degenerate order = 5297</desc>
+</pubkey>
+<pubkey>
+	<id>cofactor128p4/4</id>
+	<inline>0x00000000000000000000000000000000,0x17b45a35afdff5c5150a7c0a7ee34825</inline>
+	<curve>cofactor/cofactor128p4</curve>
+	<desc>degenerate order = 31134053800693</desc>
+</pubkey>
+<pubkey>
+	<id>cofactor128p4/5</id>
+	<inline>0x00000000000000000000000000000000,0x6fd5d6e491bf5a15eb1d38554caad86c</inline>
+	<curve>cofactor/cofactor128p4</curve>
+	<desc>degenerate order = 28564500657606656383</desc>
+</pubkey>
+<pubkey>
+	<id>cofactor128p4/gen</id>
+	<inline>0x00000000000000000000000000000000,0x00000000000000000000000000000005</inline>
+	<curve>cofactor/cofactor128p4</curve>
+	<desc>generator of Fp^*</desc>
+</pubkey>
+
+<pubkey>
+	<id>cofactor160p4/0</id>
+	<inline>0x0000000000000000000000000000000000000000,0x93ab454ad26dae3b521d5b61a48c94cab3c4aa9c</inline>
+	<curve>cofactor/cofactor160p4</curve>
+	<desc>degenerate order = 2</desc>
+</pubkey>
+<pubkey>
+	<id>cofactor160p4/1</id>
+	<inline>0x0000000000000000000000000000000000000000,0xbad87d0931716ec918e43e76b57971cc613e153</inline>
+	<curve>cofactor/cofactor160p4</curve>
+	<desc>degenerate order = 4</desc>
+</pubkey>
+<pubkey>
+	<id>cofactor160p4/2</id>
+	<inline>0x0000000000000000000000000000000000000000,0x4428069aa7ac1865eb52c5b4c885ec832d89b36d</inline>
+	<curve>cofactor/cofactor160p4</curve>
+	<desc>degenerate order = 3</desc>
+</pubkey>
+<pubkey>
+	<id>cofactor160p4/3</id>
+	<inline>0x0000000000000000000000000000000000000000,0x6eb71aefce923ebf8b07c6f1f59b1c30d43b74ae</inline>
+	<curve>cofactor/cofactor160p4</curve>
+	<desc>degenerate order = 23</desc>
+</pubkey>
+<pubkey>
+	<id>cofactor160p4/4</id>
+	<inline>0x0000000000000000000000000000000000000000,0x3c5ff8c94b31b46f92575e0b77b0366afe24dfc1</inline>
+	<curve>cofactor/cofactor160p4</curve>
+	<desc>degenerate order = 11443</desc>
+</pubkey>
+<pubkey>
+	<id>cofactor160p4/5</id>
+	<inline>0x0000000000000000000000000000000000000000,0xd8e2287382e057de70e1f45f70d8dad85d27025</inline>
+	<curve>cofactor/cofactor160p4</curve>
+	<desc>degenerate order = 352281613501590816479</desc>
+</pubkey>
+<pubkey>
+	<id>cofactor160p4/5</id>
+	<inline>0x0000000000000000000000000000000000000000,0x36911d265f6d795a2efd10c20aae0f3ec5f815f4</inline>
+	<curve>cofactor/cofactor160p4</curve>
+	<desc>degenerate order = 757721821606925858951</desc>
+</pubkey>
+<pubkey>
+	<id>cofactor160p4/gen</id>
+	<inline>0x0000000000000000000000000000000000000000,0x0000000000000000000000000000000000000002</inline>
+	<curve>cofactor/cofactor160p4</curve>
+	<desc>generator of Fp^*</desc>
+</pubkey>
+
+<pubkey>
+	<id>cofactor192p4/0</id>
+	<inline>0x000000000000000000000000000000000000000000000000,0x8cceb84c81521937bef0925a3aaf09195a59c3f99ae06134</inline>
+	<curve>cofactor/cofactor192p4</curve>
+	<desc>degenerate order = 2</desc>
+</pubkey>
+<pubkey>
+	<id>cofactor192p4/1</id>
+	<inline>0x000000000000000000000000000000000000000000000000,0x63ca4f21e0e4f6a833f914468e00e4d817f472d54aca5a64</inline>
+	<curve>cofactor/cofactor192p4</curve>
+	<desc>degenerate order = 4</desc>
+</pubkey>
+<pubkey>
+	<id>cofactor192p4/2</id>
+	<inline>0x000000000000000000000000000000000000000000000000,0x7ce088c401bfc705e70da9928c04ed6e1bf100c26b253028</inline>
+	<curve>cofactor/cofactor192p4</curve>
+	<desc>degenerate order = 5</desc>
+</pubkey>
+<pubkey>
+	<id>cofactor192p4/3</id>
+	<inline>0x000000000000000000000000000000000000000000000000,0x000000000000000000000000000000000000000000100000</inline>
+	<curve>cofactor/cofactor192p4</curve>
+	<desc>degenerate order = 172629492300688965054638881592440218548130640356589228457</desc>
+</pubkey>
+<pubkey>
+	<id>cofactor192p4/gen</id>
+	<inline>0x000000000000000000000000000000000000000000000000,0x000000000000000000000000000000000000000000000002</inline>
+	<curve>cofactor/cofactor192p4</curve>
+	<desc>generator of Fp^*</desc>
+</pubkey>

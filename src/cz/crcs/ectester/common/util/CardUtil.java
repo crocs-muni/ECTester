@@ -31,6 +31,23 @@ public class CardUtil {
         }
     }
 
+    public static String getSigHashAlgo(byte sigType) {
+        switch (sigType) {
+            case EC_Consts.Signature_ALG_ECDSA_SHA:
+                return "SHA-1";
+            case EC_Consts.Signature_ALG_ECDSA_SHA_224:
+                return "SHA-224";
+            case EC_Consts.Signature_ALG_ECDSA_SHA_256:
+                return "SHA-256";
+            case EC_Consts.Signature_ALG_ECDSA_SHA_384:
+                return "SHA-384";
+            case EC_Consts.Signature_ALG_ECDSA_SHA_512:
+                return "SHA-512";
+            default:
+                return null;
+        }
+    }
+
     public static byte getKA(String name) {
         switch (name) {
             case "DH":

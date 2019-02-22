@@ -18,12 +18,15 @@ public class ECKeyTester {
     private short sigType = 0;
 
     private short sw = ISO7816.SW_NO_ERROR;
+    private boolean dryRun = false;
 
     public short allocateKA(byte algorithm) {
         sw = ISO7816.SW_NO_ERROR;
         try {
-            ecKeyAgreement = KeyAgreement.getInstance(algorithm, false);
-            kaType = algorithm;
+            if (!dryRun) {
+                ecKeyAgreement = KeyAgreement.getInstance(algorithm, false);
+                kaType = algorithm;
+            }
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
         }
@@ -33,8 +36,10 @@ public class ECKeyTester {
     public short allocateSig(byte algorithm) {
         sw = ISO7816.SW_NO_ERROR;
         try {
-            ecdsaSignature = Signature.getInstance(algorithm, false);
-            sigType = algorithm;
+            if (!dryRun) {
+                ecdsaSignature = Signature.getInstance(algorithm, false);
+                sigType = algorithm;
+            }
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
         }
@@ -61,11 +66,13 @@ public class ECKeyTester {
             sw = AppletUtil.kaCheck(ecKeyAgreement);
             sw = AppletUtil.keypairCheck(privatePair);
             sw = AppletUtil.keypairCheck(publicPair);
-            short pubkeyLength = ((ECPublicKey) publicPair.getPublic()).getW(pubkeyBuffer, pubkeyOffset);
-            ecKeyAgreement.init(privatePair.getPrivate());
+            if (!dryRun) {
+                short pubkeyLength = ((ECPublicKey) publicPair.getPublic()).getW(pubkeyBuffer, pubkeyOffset);
+                ecKeyAgreement.init(privatePair.getPrivate());
 
-            pubkeyLength = EC_Consts.transformParameter(transformation, pubkeyBuffer, pubkeyOffset, pubkeyLength);
-            length = ecKeyAgreement.generateSecret(pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);
+                pubkeyLength = EC_Consts.transformParameter(transformation, pubkeyBuffer, pubkeyOffset, pubkeyLength);
+                length = ecKeyAgreement.generateSecret(pubkeyBuffer, pubkeyOffset, pubkeyLength, outputBuffer, outputOffset);
+            }
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
         }
@@ -88,9 +95,11 @@ public class ECKeyTester {
             sw = AppletUtil.kaCheck(ecKeyAgreement);
             sw = AppletUtil.keypairCheck(privatePair);
 
-            ecKeyAgreement.init(privatePair.getPrivate());
-            pubkeyLength = EC_Consts.transformParameter(transformation, pubkey, pubkeyOffset, pubkeyLength);
-            length = ecKeyAgreement.generateSecret(pubkey, pubkeyOffset, pubkeyLength, outpuBuffer, outputOffset);
+            if (!dryRun) {
+                ecKeyAgreement.init(privatePair.getPrivate());
+                pubkeyLength = EC_Consts.transformParameter(transformation, pubkey, pubkeyOffset, pubkeyLength);
+                length = ecKeyAgreement.generateSecret(pubkey, pubkeyOffset, pubkeyLength, outpuBuffer, outputOffset);
+            }
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
         }
@@ -116,13 +125,14 @@ public class ECKeyTester {
         try {
             sw = AppletUtil.signCheck(ecdsaSignature);
 
-            ecdsaSignature.init(signKey, Signature.MODE_SIGN);
-            length = ecdsaSignature.sign(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset);
+            if (!dryRun) {
+                ecdsaSignature.init(signKey, Signature.MODE_SIGN);
+                length = ecdsaSignature.sign(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset);
 
-            ecdsaSignature.init(verifyKey, Signature.MODE_VERIFY);
-            boolean correct = ecdsaSignature.verify(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset, length);
-            if (!correct) {
-                sw = AppletBase.SW_SIG_VERIFY_FAIL;
+                ecdsaSignature.init(verifyKey, Signature.MODE_VERIFY);
+                if (!ecdsaSignature.verify(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset, length)) {
+                    sw = AppletBase.SW_SIG_VERIFY_FAIL;
+                }
             }
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
@@ -144,8 +154,10 @@ public class ECKeyTester {
         try {
             sw = AppletUtil.signCheck(ecdsaSignature);
 
-            ecdsaSignature.init(signKey, Signature.MODE_SIGN);
-            length = ecdsaSignature.sign(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset);
+            if (!dryRun) {
+                ecdsaSignature.init(signKey, Signature.MODE_SIGN);
+                length = ecdsaSignature.sign(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset);
+            }
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
         }
@@ -167,10 +179,11 @@ public class ECKeyTester {
         try {
             sw = AppletUtil.signCheck(ecdsaSignature);
 
-            ecdsaSignature.init(verifyKey, Signature.MODE_VERIFY);
-            boolean correct = ecdsaSignature.verify(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset, sigLength);
-            if (!correct) {
-                sw = AppletBase.SW_SIG_VERIFY_FAIL;
+            if (!dryRun) {
+                ecdsaSignature.init(verifyKey, Signature.MODE_VERIFY);
+                if (!ecdsaSignature.verify(inputBuffer, inputOffset, inputLength, sigBuffer, sigOffset, sigLength)) {
+                    sw = AppletBase.SW_SIG_VERIFY_FAIL;
+                }
             }
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
@@ -204,5 +217,9 @@ public class ECKeyTester {
 
     public short getSW() {
         return sw;
+    }
+
+    public void setDryRun(boolean dryRun) {
+        this.dryRun = dryRun;
     }
 }

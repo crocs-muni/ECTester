@@ -21,6 +21,9 @@
         <!ENTITY secp256r1 SYSTEM "twist/secg/secp256r1.xml">
         <!ENTITY secp384r1 SYSTEM "twist/secg/secp384r1.xml">
         <!ENTITY secp521r1 SYSTEM "twist/secg/secp521r1.xml">
+
+        <!ENTITY cofactor128p4 SYSTEM "twist/cofactor/cofactor128p4.xml">
+        <!ENTITY cofactor160p4 SYSTEM "twist/cofactor/cofactor160p4.xml">
         ]>
 <keys xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="../schema.xsd">
@@ -45,4 +48,7 @@
 	&secp256r1;
 	&secp384r1;
 	&secp521r1;
+
+    &cofactor128p4;
+    &cofactor160p4;
 </keys>
