@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public class CardCompressionSuite extends CardTestSuite {
     public CardCompressionSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "compression", "The compression test suite tests cards support for compressed points in ECDH (as per ANSI X9.62).",
+        super(writer, cfg, cardManager, "compression", null, "The compression test suite tests cards support for compressed points in ECDH (as per ANSI X9.62).",
                 "It also tests for handling of bogus input in ECDH by using the point at infinity and a hybrid point with the y coordinate corrupted.",
                 "It also tests handling of compressed point in ECDH, where the x coordinate is invalid and therefore",
                 "a quadratic non-residue will be computed and (square root-ed) during decompression.");

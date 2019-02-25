@@ -26,7 +26,7 @@ import static cz.crcs.ectester.common.test.Result.ExpectedValue;
 public class CardInvalidSuite extends CardTestSuite {
 
     public CardInvalidSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "invalid", "The invalid curve suite tests whether the card rejects points outside of the curve during ECDH.");
+        super(writer, cfg, cardManager, "invalid", null, "The invalid curve suite tests whether the card rejects points outside of the curve during ECDH.");
     }
 
     @Override

@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  */
 public class CardEdgeCasesSuite extends CardTestSuite {
     public CardEdgeCasesSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "edge-cases", "The edge-cases test suite tests various inputs to ECDH which may cause an implementation to achieve a certain edge-case state during it.",
+        super(writer, cfg, cardManager, "edge-cases", null, "The edge-cases test suite tests various inputs to ECDH which may cause an implementation to achieve a certain edge-case state during it.",
                 "Some of the data is from the google/Wycheproof project. Tests include CVE-2017-10176 and CVE-2017-8932.",
                 "Also tests values of the private key and public key that would trigger the OpenSSL modualr multiplication bug on the P-256 curve.",
                 "Various edge private key values are also tested.");
@@ -154,7 +154,7 @@ public class CardEdgeCasesSuite extends CardTestSuite {
                 continue;
             }
             Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.ExpectedValue.SUCCESS);
-            Test generate = genOrPreset(curve, Result.ExpectedValue.SUCCESS);
+            Test generate = CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_LOCAL), Result.ExpectedValue.SUCCESS);
             CommandTest export = CommandTest.expect(new Command.Export(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_PUBLIC, EC_Consts.PARAMETER_W), Result.ExpectedValue.SUCCESS);
             Test setup = runTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "KeyPair setup.", key, set, generate, export));
 

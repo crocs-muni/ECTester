@@ -24,7 +24,7 @@ import java.util.Map;
 public class CardDegenerateSuite extends CardTestSuite {
 
     public CardDegenerateSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "degenerate", "The degenerate suite tests whether the card rejects points outside of the curve during ECDH.",
+        super(writer, cfg, cardManager, "degenerate", null, "The degenerate suite tests whether the card rejects points outside of the curve during ECDH.",
                 "The tested points lie on a part of the plane for which some Edwards, Hessian and Huff form addition formulas degenerate into exponentiation in the base finite field.");
     }
 

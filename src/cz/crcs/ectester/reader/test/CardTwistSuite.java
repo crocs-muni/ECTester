@@ -23,7 +23,7 @@ import java.util.Map;
  */
 public class CardTwistSuite extends CardTestSuite {
     public CardTwistSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "twist", "The twist test suite tests whether the card correctly rejects points on the quadratic twist of the curve during ECDH.");
+        super(writer, cfg, cardManager, "twist", null, "The twist test suite tests whether the card correctly rejects points on the quadratic twist of the curve during ECDH.");
     }
 
     @Override

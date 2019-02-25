@@ -42,7 +42,7 @@ import static cz.crcs.ectester.common.test.Result.Value;
 public class CardTestVectorSuite extends CardTestSuite {
 
     public CardTestVectorSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "test", "The test-vectors suite contains a collection of test vectors which test basic ECDH correctness.");
+        super(writer, cfg, cardManager, "test-vectors", null, "The test-vectors suite contains a collection of test vectors which test basic ECDH correctness.");
     }
 
     @Override

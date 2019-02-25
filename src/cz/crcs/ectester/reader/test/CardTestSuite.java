@@ -13,17 +13,21 @@ import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 
+import java.util.Arrays;
+
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
 public abstract class CardTestSuite extends TestSuite {
     ECTesterReader.Config cfg;
     CardMngr card;
+    String[] options;
 
-    CardTestSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager, String name, String... description) {
+    CardTestSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager, String name, String[] options, String... description) {
         super(writer, name, description);
         this.card = cardManager;
         this.cfg = cfg;
+        this.options = options;
     }
 
     public CardMngr getCard() {
@@ -34,8 +38,16 @@ public abstract class CardTestSuite extends TestSuite {
         return cfg;
     }
 
+    public String[] getOptions() {
+        if (options != null) {
+            return options.clone();
+        } else {
+            return options;
+        }
+    }
+
     public Test genOrPreset(EC_Curve curve, Result.ExpectedValue expected) {
-        if (cfg.testOptions.contains("preset")) {
+        if (Arrays.asList(options).contains("preset") && cfg.testOptions.contains("preset")) {
             byte[] presetPriv = ECUtil.semiRandomKey(curve);
             EC_Params privParms = new EC_Params(EC_Consts.PARAMETER_S, new byte[][]{presetPriv});
             return CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, privParms.getParams(), privParms.flatten()), expected);

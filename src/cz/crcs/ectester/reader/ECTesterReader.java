@@ -285,6 +285,7 @@ public class ECTesterReader {
          * -ka/ --ka-type <type>
          * -sig/--sig-type <type>
          * -C / --color
+         * -to/ --test-options <opts>
          */
         OptionGroup actions = new OptionGroup();
         actions.setRequired(true);
@@ -294,7 +295,7 @@ public class ECTesterReader {
         actions.addOption(Option.builder("ls").longOpt("list-suites").desc("List supported test suites.").build());
         actions.addOption(Option.builder("e").longOpt("export").desc("Export the defaut curve parameters of the card(if any).").build());
         actions.addOption(Option.builder("g").longOpt("generate").desc("Generate <amount> of EC keys.").hasArg().argName("amount").optionalArg(true).build());
-        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. Optionally specify a test number to run only a part of a test suite. <test_suite>:\n- default:\n- compression:\n- invalid:\n- twist:\n- degenerate:\n- cofactor:\n- wrong:\n- signature:\n- composite:\n- test-vectors:\n- edge-cases:\n- miscellaneous:").hasArg().argName("test_suite[:from[:to]]").optionalArg(true).build());
+        actions.addOption(Option.builder("t").longOpt("test").desc("Test ECC support. Optionally specify a test number to run only a part of a test suite. <test_suite>:\n- default\n- compression\n- invalid\n- twist\n- degenerate\n- cofactor\n- wrong\n- signature\n- composite\n- test-vectors\n- edge-cases\n- miscellaneous").hasArg().argName("test_suite[:from[:to]]").optionalArg(true).build());
         actions.addOption(Option.builder("dh").longOpt("ecdh").desc("Do EC KeyAgreement (ECDH...), [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("dsa").longOpt("ecdsa").desc("Sign data with ECDSA, [count] times.").hasArg().argName("count").optionalArg(true).build());
         actions.addOption(Option.builder("nf").longOpt("info").desc("Get applet info.").build());
@@ -340,7 +341,7 @@ public class ECTesterReader {
         opts.addOption(Option.builder().longOpt("cleanup").desc("Send the cleanup command trigerring JCSystem.requestObjectDeletion() after some operations.").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
         opts.addOption(Option.builder("y").longOpt("yes").desc("Accept all warnings and prompts.").build());
-        opts.addOption(Option.builder("to").longOpt("test-options").desc("Test options to use.").hasArg().argName("options").build());
+        opts.addOption(Option.builder("to").longOpt("test-options").desc("Test options to use:\n- preset: Use preset semi-random private keys instead of generating keypairs on the cards when the test needs one.").hasArg().argName("options").build());
 
         opts.addOption(Option.builder("ka").longOpt("ka-type").desc("Set KeyAgreement object [type], corresponds to JC.KeyAgreement constants.").hasArg().argName("type").optionalArg(true).build());
         opts.addOption(Option.builder("sig").longOpt("sig-type").desc("Set Signature object [type], corresponds to JC.Signature constants.").hasArg().argName("type").optionalArg(true).build());
@@ -368,6 +369,9 @@ public class ECTesterReader {
             System.out.println(" - " + Colors.bold(suite.getName()));
             for (String line : suite.getDescription()) {
                 System.out.println("\t" + line);
+            }
+            if (suite.getOptions() != null) {
+                System.out.println("\t" + Colors.underline("Options:") + " " + Arrays.toString(suite.getOptions()));
             }
         }
         System.out.println();
@@ -620,7 +624,7 @@ public class ECTesterReader {
 
         int retry = 0;
         int done = 0;
-        while (done < cfg.ECKACount) {
+        while (done < cfg.ECKACount || cfg.ECKACount == 0) {
             if (generate != null) {
                 Response regen = generate.send();
                 respWriter.outputResponse(regen);
@@ -655,6 +659,7 @@ public class ECTesterReader {
                 time += result.getDuration();
 
                 out.write(String.format("%d;%d;%s;%s;%s\n", done, time / 1000000, ByteUtil.bytesToHex(pubkey_bytes, false), ByteUtil.bytesToHex(privkey_bytes, false), ByteUtil.bytesToHex(result.getSecret(), false)));
+                out.flush();
             }
 
             ++done;
@@ -724,7 +729,7 @@ public class ECTesterReader {
 
         int retry = 0;
         int done = 0;
-        while (done < cfg.ECDSACount) {
+        while (done < cfg.ECDSACount || cfg.ECDSACount == 0) {
             if (!cfg.fixedKey) {
                 respWriter.outputResponse(generate.send());
                 exported = export.send();
@@ -785,6 +790,7 @@ public class ECTesterReader {
                     }
                 }
                 out.write(String.format("%d;%d;%d;%s;%s;%s;%s;%s;%d\n", done, signTime / 1000000, verifyTime / 1000000, dataString, pub, priv, ByteUtil.bytesToHex(signature, false), k, verifyResp.successful() ? 1 : 0));
+                out.flush();
             }
 
             ++done;
@@ -984,14 +990,14 @@ public class ECTesterReader {
                     try {
                         testFrom = Integer.parseInt(parts[1]);
                     } catch (NumberFormatException nfe) {
-                        System.err.println("Invalid test from number: " + parts[1] + ".");
+                        System.err.println("Invalid test_from number: " + parts[1] + ".");
                         return false;
                     }
                     if (parts.length == 3) {
                         try {
                             testTo = Integer.parseInt(parts[2]);
                         } catch (NumberFormatException nfe) {
-                            System.err.println("Invalid test to number: " + parts[2] + ".");
+                            System.err.println("Invalid test_to number: " + parts[2] + ".");
                             return false;
                         }
                     } else if (parts.length != 2) {
@@ -1005,10 +1011,24 @@ public class ECTesterReader {
                     testFrom = 0;
                     testTo = -1;
                 }
+                
                 String[] tests = new String[]{"default", "composite", "compression", "invalid", "degenerate", "test-vectors", "wrong", "twist", "cofactor", "edge-cases", "miscellaneous", "signature"};
-                if (!Arrays.asList(tests).contains(testSuite)) {
+				String selected = null;
+				for (String test : tests) {
+					if (test.startsWith(testSuite)) {
+						if (selected != null) {
+							System.err.println(Colors.error("Test suite ambiguous " + test + " or " + selected + "?"));
+							return false;
+						} else {
+							selected = test;
+						}
+					}
+				}
+				if (selected == null) {
                     System.err.println(Colors.error("Unknown test suite " + testSuite + ". Should be one of: " + Arrays.toString(tests)));
                     return false;
+                } else {
+                	testSuite = selected;
                 }
 
                 String[] opts = cli.getOptionValue("test-options", "").split(",");
@@ -1036,8 +1056,8 @@ public class ECTesterReader {
                 }
 
                 ECKACount = Integer.parseInt(cli.getOptionValue("ecdh", "1"));
-                if (ECKACount <= 0) {
-                    System.err.println(Colors.error("ECDH count cannot be <= 0."));
+                if (ECKACount < 0) {
+                    System.err.println(Colors.error("ECDH count cannot be < 0."));
                     return false;
                 }
 
@@ -1058,8 +1078,8 @@ public class ECTesterReader {
                 }
 
                 ECDSACount = Integer.parseInt(cli.getOptionValue("ecdsa", "1"));
-                if (ECDSACount <= 0) {
-                    System.err.println(Colors.error("ECDSA count cannot be <= 0."));
+                if (ECDSACount < 0) {
+                    System.err.println(Colors.error("ECDSA count cannot be < 0."));
                     return false;
                 }
 
