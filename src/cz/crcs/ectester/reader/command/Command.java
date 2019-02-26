@@ -121,7 +121,7 @@ public abstract class Command implements Cloneable {
      * @return a CommandAPDU setting params loaded on the keyPair/s
      * @throws IOException if any of the key files cannot be found/opened
      */
-    public static Command prepareKey(CardMngr cardManager, EC_Store dataStore, ECTesterReader.Config cfg, byte keyPair) throws IOException {
+    public static Command prepareKey(CardMngr cardManager, EC_Store dataStore, ECTesterReader.Config cfg, byte keyPair, short allowedParams) throws IOException {
         short params = EC_Consts.PARAMETERS_NONE;
         byte[] data = null;
 
@@ -147,7 +147,7 @@ public abstract class Command implements Cloneable {
             }
         }
 
-        if (cfg.publicKey != null || cfg.namedPublicKey != null) {
+        if ((cfg.publicKey != null || cfg.namedPublicKey != null) && ((allowedParams & EC_Consts.PARAMETER_W )!= 0)) {
             params |= EC_Consts.PARAMETER_W;
             EC_Params pub;
             if (cfg.publicKey != null) {
@@ -172,7 +172,7 @@ public abstract class Command implements Cloneable {
             }
             data = pubkey;
         }
-        if (cfg.privateKey != null || cfg.namedPrivateKey != null) {
+        if ((cfg.privateKey != null || cfg.namedPrivateKey != null) && ((allowedParams & EC_Consts.PARAMETER_S )!= 0)) {
             params |= EC_Consts.PARAMETER_S;
             EC_Params priv;
             if (cfg.privateKey != null) {

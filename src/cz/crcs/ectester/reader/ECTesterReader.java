@@ -518,7 +518,6 @@ public class ECTesterReader {
             case "compression":
                 suite = new CardCompressionSuite(writer, cfg, cardManager);
                 break;
-            case "misc":
             case "miscellaneous":
                 suite = new CardMiscSuite(writer, cfg, cardManager);
                 break;
@@ -598,11 +597,11 @@ public class ECTesterReader {
         Response gen = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH).send();
         respWriter.outputResponse(gen);
         if (cfg.anyPublicKey || cfg.anyKey) {
-            Response prep = Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_REMOTE).send();
+            Response prep = Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.PARAMETER_W).send();
             respWriter.outputResponse(prep);
         }
         if (cfg.anyPrivateKey || cfg.anyKey) {
-            Response prep = Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL).send();
+            Response prep = Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S).send();
             respWriter.outputResponse(prep);
         }
 
@@ -630,10 +629,12 @@ public class ECTesterReader {
                 respWriter.outputResponse(regen);
             }
 
-            Response.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR).send();
-            respWriter.outputResponse(export);
-            byte[] pubkey_bytes = export.getParameter(ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.PARAMETER_W);
-            byte[] privkey_bytes = export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S);
+            Response.Export exportRemote = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.KEY_PUBLIC, EC_Consts.PARAMETER_W).send();
+            respWriter.outputResponse(exportRemote);
+            Response.Export exportLocal = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_PRIVATE, EC_Consts.PARAMETER_S).send();
+            respWriter.outputResponse(exportLocal);
+            byte[] pubkey_bytes = exportRemote.getParameter(ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.PARAMETER_W);
+            byte[] privkey_bytes = exportLocal.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S);
 
             Command.ECDH perform = new Command.ECDH(cardManager, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, cfg.ECKAType);
 
@@ -697,7 +698,7 @@ public class ECTesterReader {
 
         Command generate;
         if (cfg.anyKeypart) {
-            generate = Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL);
+            generate = Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETERS_KEYPAIR);
         } else {
             generate = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL);
         }
