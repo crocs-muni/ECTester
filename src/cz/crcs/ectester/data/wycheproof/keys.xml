@@ -3,7 +3,7 @@
       xsi:noNamespaceSchemaLocation="../schema.xsd">
     <privkey>
         <id>addsub/secp224r1/1s</id>
-        <inline>0x0ffffffffffffffffffffffffffff16a2e0b8f03e13dd29455c5c29b7</inline>
+        <inline>0xffffffffffffffffffffffffffff16a2e0b8f03e13dd29455c5c29b7</inline>
         <curve>secg/secp224r1</curve>
         <desc>tcId = 34</desc>
     </privkey>
@@ -16,7 +16,7 @@
     </pubkey>
     <privkey>
         <id>addsub/secp224r1/2s</id>
-        <inline>0x0ffffffffffffffffffffffffffff16a2e0b8f03e13dd29455c5c2a37</inline>
+        <inline>0xffffffffffffffffffffffffffff16a2e0b8f03e13dd29455c5c2a37</inline>
         <curve>secg/secp224r1</curve>
         <desc>tcId = 35</desc>
     </privkey>
@@ -29,7 +29,7 @@
     </pubkey>
     <privkey>
         <id>addsub/secp224r1/3s</id>
-        <inline>0x0ffffffffffffffffffffffffffff16a2e0b8f03e13dd29455c5c2a3b</inline>
+        <inline>0xffffffffffffffffffffffffffff16a2e0b8f03e13dd29455c5c2a3b</inline>
         <curve>secg/secp224r1</curve>
         <desc>tcId = 37</desc>
     </privkey>
@@ -42,7 +42,7 @@
     </pubkey>
     <privkey>
         <id>addsub/secp256r1/1s</id>
-        <inline>0x0ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc6324f3</inline>
+        <inline>0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc6324f3</inline>
         <curve>secg/secp256r1</curve>
         <desc>tcId = 106</desc>
     </privkey>
@@ -55,7 +55,7 @@
     </pubkey>
     <privkey>
         <id>addsub/secp256r1/2s</id>
-        <inline>0x0ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632533</inline>
+        <inline>0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632533</inline>
         <curve>secg/secp256r1</curve>
         <desc>tcId = 107</desc>
     </privkey>
@@ -68,7 +68,7 @@
     </pubkey>
     <privkey>
         <id>addsub/secp256r1/3s</id>
-        <inline>0x0ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632543</inline>
+        <inline>0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632543</inline>
         <curve>secg/secp256r1</curve>
         <desc>tcId = 108</desc>
     </privkey>
@@ -81,7 +81,7 @@
     </pubkey>
     <privkey>
         <id>addsub/secp256r1/4s</id>
-        <inline>0x0ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc63254b</inline>
+        <inline>0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc63254b</inline>
         <curve>secg/secp256r1</curve>
         <desc>tcId = 109</desc>
     </privkey>
@@ -94,7 +94,7 @@
     </pubkey>
     <privkey>
         <id>addsub/secp256r1/5s</id>
-        <inline>0x0ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc63254f</inline>
+        <inline>0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc63254f</inline>
         <curve>secg/secp256r1</curve>
         <desc>tcId = 111</desc>
     </privkey>
@@ -107,7 +107,7 @@
     </pubkey>
     <privkey>
         <id>addsub/secp384r1/1s</id>
-        <inline>0x0ffffffffffffffffffffffffffffffffffffffffffffffffc7634d81f4372ddf581a0db248b0a77aecec196accc52959</inline>
+        <inline>0xffffffffffffffffffffffffffffffffffffffffffffffffc7634d81f4372ddf581a0db248b0a77aecec196accc52959</inline>
         <curve>secg/secp384r1</curve>
         <desc>tcId = 192</desc>
     </privkey>
@@ -120,7 +120,7 @@
     </pubkey>
     <privkey>
         <id>addsub/secp384r1/2s</id>
-        <inline>0x0ffffffffffffffffffffffffffffffffffffffffffffffffc7634d81f4372ddf581a0db248b0a77aecec196accc52969</inline>
+        <inline>0xffffffffffffffffffffffffffffffffffffffffffffffffc7634d81f4372ddf581a0db248b0a77aecec196accc52969</inline>
         <curve>secg/secp384r1</curve>
         <desc>tcId = 193</desc>
     </privkey>
@@ -133,7 +133,7 @@
     </pubkey>
     <privkey>
         <id>addsub/secp384r1/3s</id>
-        <inline>0x0ffffffffffffffffffffffffffffffffffffffffffffffffc7634d81f4372ddf581a0db248b0a77aecec196accc52971</inline>
+        <inline>0xffffffffffffffffffffffffffffffffffffffffffffffffc7634d81f4372ddf581a0db248b0a77aecec196accc52971</inline>
         <curve>secg/secp384r1</curve>
         <desc>tcId = 195</desc>
     </privkey>
@@ -224,7 +224,7 @@
     </pubkey>
     <privkey>
         <id>addsub/secp256k1/1s</id>
-        <inline>0x0fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd03640c3</inline>
+        <inline>0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd03640c3</inline>
         <curve>secg/secp256k1</curve>
         <desc>tcId = 362</desc>
     </privkey>
@@ -237,7 +237,7 @@
     </pubkey>
     <privkey>
         <id>addsub/secp256k1/2s</id>
-        <inline>0x0fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364103</inline>
+        <inline>0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364103</inline>
         <curve>secg/secp256k1</curve>
         <desc>tcId = 363</desc>
     </privkey>
@@ -250,7 +250,7 @@
     </pubkey>
     <privkey>
         <id>addsub/secp256k1/3s</id>
-        <inline>0x0fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364123</inline>
+        <inline>0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364123</inline>
         <curve>secg/secp256k1</curve>
         <desc>tcId = 364</desc>
     </privkey>
@@ -263,7 +263,7 @@
     </pubkey>
     <privkey>
         <id>addsub/secp256k1/4s</id>
-        <inline>0x0fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364133</inline>
+        <inline>0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364133</inline>
         <curve>secg/secp256k1</curve>
         <desc>tcId = 365</desc>
     </privkey>
@@ -276,7 +276,7 @@
     </pubkey>
     <privkey>
         <id>addsub/secp256k1/5s</id>
-        <inline>0x0fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413b</inline>
+        <inline>0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413b</inline>
         <curve>secg/secp256k1</curve>
         <desc>tcId = 366</desc>
     </privkey>
@@ -289,7 +289,7 @@
     </pubkey>
     <privkey>
         <id>addsub/secp256k1/6s</id>
-        <inline>0x0fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f</inline>
+        <inline>0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f</inline>
         <curve>secg/secp256k1</curve>
         <desc>tcId = 368</desc>
     </privkey>

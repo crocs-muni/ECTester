@@ -161,14 +161,15 @@ public class CardEdgeCasesSuite extends CardTestSuite {
             byte[] pParam = curve.getParam(EC_Consts.PARAMETER_FP)[0];
             BigInteger p = new BigInteger(1, pParam);
             byte[] wParam = ((Response.Export) export.getResponse()).getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_W);
+            byte[] xValue = new byte[(wParam.length - 1) / 2];
             byte[] yValue = new byte[(wParam.length - 1) / 2];
+            System.arraycopy(wParam, 1, xValue, 0, xValue.length);
             System.arraycopy(wParam, (wParam.length / 2) + 1, yValue, 0, yValue.length);
             BigInteger y = new BigInteger(1, yValue);
             BigInteger negY = p.subtract(y);
             byte[] newY = ECUtil.toByteArray(negY, curve.getBits());
-            System.arraycopy(newY, 0, wParam, (wParam.length / 2) + 1, newY.length);
 
-            EC_Params negYParams = makeParams(newY);
+            EC_Params negYParams = new EC_Params(EC_Consts.PARAMETER_W, new byte[][]{xValue, newY});
             Test negYTest = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.CURVE_external, negYParams.getParams(), negYParams.flatten()), "ECDH with pubkey negated.", Result.ExpectedValue.FAILURE, Result.ExpectedValue.FAILURE);
 
             Test zeroS = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, EC_Consts.TRANSFORMATION_ZERO), "ECDH with S = 0.", Result.ExpectedValue.FAILURE, Result.ExpectedValue.FAILURE);
