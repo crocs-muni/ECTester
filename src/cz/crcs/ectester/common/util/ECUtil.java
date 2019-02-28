@@ -9,12 +9,14 @@ import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERSequenceParser;
 import org.bouncycastle.crypto.digests.SHA1Digest;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.*;
@@ -213,13 +215,13 @@ public class ECUtil {
         return toByteArray(priv, curve.getBits());
     }
 
-    private static ECPoint toPoint(EC_Params params) {
+    public static ECPoint toPoint(EC_Params params) {
         return new ECPoint(
                 new BigInteger(1, params.getParam(EC_Consts.PARAMETER_W)[0]),
                 new BigInteger(1, params.getParam(EC_Consts.PARAMETER_W)[1]));
     }
 
-    private static BigInteger toScalar(EC_Params params) {
+    public static BigInteger toScalar(EC_Params params) {
         return new BigInteger(1, params.getParam(EC_Consts.PARAMETER_S)[0]);
     }
 
@@ -289,5 +291,42 @@ public class ECUtil {
             nsae.printStackTrace();
             return null;
         }
+    }
+
+    public static EC_Params loadParams(short params, String named, String file) throws IOException {
+        EC_Params result = null;
+        if (file != null) {
+            result = new EC_Params(params);
+
+            FileInputStream in = new FileInputStream(file);
+            result.readCSV(in);
+            in.close();
+        } else {
+            if (params == EC_Consts.PARAMETER_W) {
+                result = EC_Store.getInstance().getObject(EC_Key.Public.class, named);
+            } else if (params == EC_Consts.PARAMETER_S) {
+                result = EC_Store.getInstance().getObject(EC_Key.Private.class, named);
+            }
+
+            if (result == null) {
+                result = EC_Store.getInstance().getObject(EC_Keypair.class, named);
+            }
+        }
+        return result;
+    }
+
+    public static ECKey loadKey(short params, String named, String file, ECParameterSpec spec) throws IOException {
+        if (params == EC_Consts.PARAMETERS_KEYPAIR) {
+            throw new IllegalArgumentException();
+        }
+        EC_Params param = loadParams(params, named, file);
+        if (param != null) {
+            if (params == EC_Consts.PARAMETER_W) {
+                return new RawECPublicKey(toPoint(param), spec);
+            } else if (params == EC_Consts.PARAMETER_S) {
+                return new RawECPrivateKey(toScalar(param), spec);
+            }
+        }
+        return null;
     }
 }

@@ -376,6 +376,14 @@ public abstract class Response {
             parse(1, (export == ECTesterApplet.EXPORT_TRUE) ? 1 : 0);
         }
 
+        public short getTransformation() {
+            return transformation;
+        }
+
+        public byte getType() {
+            return type;
+        }
+
         public boolean hasSecret() {
             return hasParam(0);
         }
