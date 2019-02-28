@@ -402,7 +402,7 @@ public class ECTesterReader {
         sent.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL).send());
 
         // Also support exporting set parameters, to verify they are set correctly.
-        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass);
+        Command curve = Command.prepareCurve(cardManager, cfg, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass);
         if (curve != null) {
             sent.add(curve.send());
         }
@@ -445,7 +445,7 @@ public class ECTesterReader {
      */
     private void generate() throws CardException, IOException {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
-        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass);
+        Command curve = Command.prepareCurve(cardManager, cfg, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass);
 
         Response allocate = new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send();
         respWriter.outputResponse(allocate);
@@ -577,7 +577,7 @@ public class ECTesterReader {
      */
     private void ecdh() throws IOException, CardException {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
-        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_BOTH, cfg.bits, keyClass);
+        Command curve = Command.prepareCurve(cardManager, cfg, ECTesterApplet.KEYPAIR_BOTH, cfg.bits, keyClass);
         List<Response> prepare = new LinkedList<>();
         prepare.add(new Command.AllocateKeyAgreement(cardManager, cfg.ECKAType).send()); // Prepare KeyAgreement or required type
         prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, cfg.bits, keyClass).send());
@@ -707,7 +707,7 @@ public class ECTesterReader {
         List<Response> prepare = new LinkedList<>();
         prepare.add(new Command.AllocateSignature(cardManager, cfg.ECDSAType).send());
         prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send());
-        Command curve = Command.prepareCurve(cardManager, EC_Store.getInstance(), cfg, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass);
+        Command curve = Command.prepareCurve(cardManager, cfg, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass);
         if (curve != null)
             prepare.add(curve.send());
 
@@ -781,7 +781,7 @@ public class ECTesterReader {
                 String priv = ByteUtil.bytesToHex(exported.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S), false);
                 String dataString = (cfg.input != null) ? "" : ByteUtil.bytesToHex(data, false);
                 BigInteger privkey = new BigInteger(1, exported.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S));
-                EC_Curve actualCurve = Command.findCurve(EC_Store.getInstance(), cfg, cfg.bits, keyClass);
+                EC_Curve actualCurve = Command.findCurve(cfg, cfg.bits, keyClass);
                 String k = "";
                 if (actualCurve != null) {
                     ECParameterSpec params = actualCurve.toSpec();
