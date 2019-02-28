@@ -20,6 +20,7 @@ import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.*;
+import java.util.Random;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -97,7 +98,7 @@ public class ECUtil {
     private static boolean isResidue(BigInteger a, BigInteger p) {
         BigInteger exponent = p.subtract(BigInteger.ONE).divide(BigInteger.valueOf(2));
         BigInteger result = a.modPow(exponent, p);
-        return result.intValueExact() == 1;
+        return result.equals(BigInteger.ONE);
     }
 
     private static BigInteger modSqrt(BigInteger a, BigInteger p) {
@@ -328,5 +329,33 @@ public class ECUtil {
             }
         }
         return null;
+    }
+
+    public static EC_Params randomPoint(EllipticCurve curve) {
+        BigInteger x;
+        BigInteger p;
+        if (curve.getField() instanceof ECFieldFp) {
+            ECFieldFp fp = (ECFieldFp) curve.getField();
+            p = fp.getP();
+        } else {
+            //TODO
+            throw new UnsupportedOperationException();
+        }
+        BigInteger rhs;
+        Random rand = new Random();
+        do {
+            x = new BigInteger(curve.getField().getFieldSize(), rand);
+            x = x.mod(p);
+            rhs = x.modPow(BigInteger.valueOf(3), p);
+            rhs = rhs.add(curve.getA().multiply(x)).mod(p);
+            rhs = rhs.add(curve.getB()).mod(p);
+        } while (!isResidue(rhs, p));
+        BigInteger y = modSqrt(rhs, p);
+        if (rand.nextBoolean()) {
+            y = p.subtract(y);
+        }
+        byte[] xArr = toByteArray(x, curve.getField().getFieldSize());
+        byte[] yArr = toByteArray(y, curve.getField().getFieldSize());
+        return new EC_Params(EC_Consts.PARAMETER_W, new byte[][]{xArr, yArr});
     }
 }
