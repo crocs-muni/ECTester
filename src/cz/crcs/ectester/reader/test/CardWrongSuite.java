@@ -50,7 +50,7 @@ public class CardWrongSuite extends CardTestSuite {
             }
             tests.add(key);
             Test set = runTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.FAILURE));
-            Test generate = runTest(CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_BOTH), ExpectedValue.FAILURE));
+            Test generate = runTest(genOrPreset(curve, ExpectedValue.SUCCESS, ECTesterApplet.KEYPAIR_BOTH));
             Test setup = runTest(CompoundTest.any(ExpectedValue.SUCCESS, "Set wrong curve and generate keypairs.", set, generate));
             tests.add(setup);
 

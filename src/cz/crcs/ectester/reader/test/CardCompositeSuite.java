@@ -56,7 +56,7 @@ public class CardCompositeSuite extends CardTestSuite {
             } else {
                 name = "generated key";
             }
-            tests.add(genOrPreset(curve, ExpectedValue.ANY));
+            tests.add(genOrPreset(curve, ExpectedValue.ANY, ECTesterApplet.KEYPAIR_LOCAL));
             for (EC_Key key : curveKeys.getValue()) {
                 Command ecdhCommand = new Command.ECDH_direct(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH, key.flatten());
                 Test ecdh = CommandTest.expect(ecdhCommand, ExpectedValue.FAILURE, "Card correctly rejected to do ECDH over a composite order curve.", "Card incorrectly does ECDH over a composite order curve, leaks bits of private key.");

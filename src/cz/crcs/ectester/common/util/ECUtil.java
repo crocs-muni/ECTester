@@ -20,12 +20,15 @@ import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class ECUtil {
+    private static Random rand = new Random();
 
     public static byte[] toByteArray(BigInteger what, int bits) {
         byte[] raw = what.toByteArray();
@@ -195,7 +198,7 @@ public class ECUtil {
         }
     }
 
-    public static byte[] semiRandomKey(EC_Curve curve) {
+    private static byte[] hashCurve(EC_Curve curve) {
         int bytes = (curve.getBits() + 7) / 8;
         byte[] result = new byte[bytes];
         SHA1Digest digest = new SHA1Digest();
@@ -210,10 +213,87 @@ public class ECUtil {
             written += toWrite;
             digest.update(dig, 0, dig.length);
         }
+        return result;
+    }
+
+    public static EC_Params fullRandomKey(EC_Curve curve) {
+        int bytes = (curve.getBits() + 7) / 8;
+        byte[] result = new byte[bytes];
+        rand.nextBytes(result);
         BigInteger priv = new BigInteger(1, result);
         BigInteger order = new BigInteger(1, curve.getParam(EC_Consts.PARAMETER_R)[0]);
         priv = priv.mod(order);
-        return toByteArray(priv, curve.getBits());
+        return new EC_Params(EC_Consts.PARAMETER_S, new byte[][]{toByteArray(priv, curve.getBits())});
+    }
+
+    public static EC_Params fixedRandomKey(EC_Curve curve) {
+        byte[] hash = hashCurve(curve);
+        BigInteger priv = new BigInteger(1, hash);
+        BigInteger order = new BigInteger(1, curve.getParam(EC_Consts.PARAMETER_R)[0]);
+        priv = priv.mod(order);
+        return new EC_Params(EC_Consts.PARAMETER_S, new byte[][]{toByteArray(priv, curve.getBits())});
+    }
+
+    private static BigInteger computeRHS(BigInteger x, BigInteger a, BigInteger b, BigInteger p) {
+        BigInteger rhs = x.modPow(BigInteger.valueOf(3), p);
+        rhs = rhs.add(a.multiply(x)).mod(p);
+        rhs = rhs.add(b).mod(p);
+        return rhs;
+    }
+
+    public static EC_Params fullRandomPoint(EC_Curve curve) {
+        EllipticCurve ecCurve = curve.toCurve();
+
+        BigInteger p;
+        if (ecCurve.getField() instanceof ECFieldFp) {
+            ECFieldFp fp = (ECFieldFp) ecCurve.getField();
+            p = fp.getP();
+        } else {
+            //TODO
+            return null;
+        }
+        BigInteger x;
+        BigInteger rhs;
+        do {
+            x = new BigInteger(ecCurve.getField().getFieldSize(), rand).mod(p);
+            rhs = computeRHS(x, ecCurve.getA(), ecCurve.getB(), p);
+        } while (!isResidue(rhs, p));
+        BigInteger y = modSqrt(rhs, p);
+        if (rand.nextBoolean()) {
+            y = p.subtract(y);
+        }
+
+        byte[] xArr = toByteArray(x, ecCurve.getField().getFieldSize());
+        byte[] yArr = toByteArray(y, ecCurve.getField().getFieldSize());
+        return new EC_Params(EC_Consts.PARAMETER_W, new byte[][]{xArr, yArr});
+    }
+
+    public static EC_Params fixedRandomPoint(EC_Curve curve) {
+        EllipticCurve ecCurve = curve.toCurve();
+
+        BigInteger p;
+        if (ecCurve.getField() instanceof ECFieldFp) {
+            ECFieldFp fp = (ECFieldFp) ecCurve.getField();
+            p = fp.getP();
+        } else {
+            //TODO
+            return null;
+        }
+
+        BigInteger x = new BigInteger(1, hashCurve(curve)).mod(p);
+        BigInteger rhs = computeRHS(x, ecCurve.getA(), ecCurve.getB(), p);
+        while (!isResidue(rhs, p)) {
+            x = x.add(BigInteger.ONE).mod(p);
+            rhs = computeRHS(x, ecCurve.getA(), ecCurve.getB(), p);
+        }
+        BigInteger y = modSqrt(rhs, p);
+        if (y.bitCount() % 2 == 0) {
+            y = p.subtract(y);
+        }
+
+        byte[] xArr = toByteArray(x, ecCurve.getField().getFieldSize());
+        byte[] yArr = toByteArray(y, ecCurve.getField().getFieldSize());
+        return new EC_Params(EC_Consts.PARAMETER_W, new byte[][]{xArr, yArr});
     }
 
     public static ECPoint toPoint(EC_Params params) {
@@ -294,6 +374,38 @@ public class ECUtil {
         }
     }
 
+    public static EC_Params joinParams(EC_Params... params) {
+        List<EC_Params> paramList = new LinkedList<>();
+        short paramMask = 0;
+        int len = 0;
+        for (EC_Params param : params) {
+            if (param == null) {
+                continue;
+            }
+            int i = 0;
+            for (; i + 1 < paramList.size(); ++i) {
+                if (paramList.get(i + 1).getParams() == param.getParams()) {
+                    throw new IllegalArgumentException();
+                }
+                if (paramList.get(i + 1).getParams() < param.getParams()) {
+                    break;
+                }
+            }
+            paramList.add(i, param);
+            paramMask |= param.getParams();
+            len += param.numParams();
+        }
+
+        byte[][] res = new byte[len][];
+        int i = 0;
+        for (EC_Params param : params) {
+            for (byte[] data : param.getData()) {
+                res[i++] = data.clone();
+            }
+        }
+        return new EC_Params(paramMask, res);
+    }
+
     public static EC_Params loadParams(short params, String named, String file) throws IOException {
         EC_Params result = null;
         if (file != null) {
@@ -331,31 +443,5 @@ public class ECUtil {
         return null;
     }
 
-    public static EC_Params randomPoint(EllipticCurve curve) {
-        BigInteger x;
-        BigInteger p;
-        if (curve.getField() instanceof ECFieldFp) {
-            ECFieldFp fp = (ECFieldFp) curve.getField();
-            p = fp.getP();
-        } else {
-            //TODO
-            throw new UnsupportedOperationException();
-        }
-        BigInteger rhs;
-        Random rand = new Random();
-        do {
-            x = new BigInteger(curve.getField().getFieldSize(), rand);
-            x = x.mod(p);
-            rhs = x.modPow(BigInteger.valueOf(3), p);
-            rhs = rhs.add(curve.getA().multiply(x)).mod(p);
-            rhs = rhs.add(curve.getB()).mod(p);
-        } while (!isResidue(rhs, p));
-        BigInteger y = modSqrt(rhs, p);
-        if (rand.nextBoolean()) {
-            y = p.subtract(y);
-        }
-        byte[] xArr = toByteArray(x, curve.getField().getFieldSize());
-        byte[] yArr = toByteArray(y, curve.getField().getFieldSize());
-        return new EC_Params(EC_Consts.PARAMETER_W, new byte[][]{xArr, yArr});
-    }
+
 }
