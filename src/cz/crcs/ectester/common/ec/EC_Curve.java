@@ -65,7 +65,12 @@ public class EC_Curve extends EC_Params {
             int e1 = ByteUtil.getShort(fieldData[1], 0);
             int e2 = ByteUtil.getShort(fieldData[2], 0);
             int e3 = ByteUtil.getShort(fieldData[3], 0);
-            int[] powers = new int[]{e1, e2, e3};
+            int[] powers;
+            if (e2 == 0 && e3 == 0) {
+                powers = new int[]{e1};
+            } else {
+                powers = new int[]{e1, e2, e3};
+            }
             field = new ECFieldF2m(m, powers);
         }
 

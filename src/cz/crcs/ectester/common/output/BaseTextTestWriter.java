@@ -123,11 +123,12 @@ public abstract class BaseTextTestWriter implements TestWriter {
 
     private String errorString(Throwable error) {
         StringBuilder sb = new StringBuilder();
+        sb.append("═══ Exception: ═══").append(System.lineSeparator());
         for (Throwable t = error; t != null; t = t.getCause()) {
             sb.append("═══ ").append(t.toString()).append(" ═══");
             sb.append(System.lineSeparator());
         }
-        sb.append("═══ ═══").append(System.lineSeparator());
+        sb.append("═══ Stack trace: ═══").append(System.lineSeparator());
         for (StackTraceElement s : error.getStackTrace()) {
             sb.append("═══ ").append(s.toString()).append(" ═══");
             sb.append(System.lineSeparator());

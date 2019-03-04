@@ -31,7 +31,7 @@ import static cz.crcs.ectester.common.test.Result.ExpectedValue;
 public class CardWrongSuite extends CardTestSuite {
 
     public CardWrongSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "wrong", null, "The wrong curve suite tests whether the card rejects domain parameters which are not curves.");
+        super(writer, cfg, cardManager, "wrong", new String[]{"preset"}, "The wrong curve suite tests whether the card rejects domain parameters which are not curves.");
     }
 
     @Override
@@ -117,8 +117,13 @@ public class CardWrongSuite extends CardTestSuite {
             Test zeroG = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_G, EC_Consts.TRANSFORMATION_INFINITY), "Set G = inifnity.", "ECDH with G = infinity.");
             Test wrongG = CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted G parameter.", randomG, fullRandomG, zeroG);
 
-            byte[] originalR = new byte[keyLength];
-            EC_Consts.getCurveParameter(curve, EC_Consts.PARAMETER_R, originalR, (short) 0);
+            byte[] originalR = new byte[((keyLength + 7) / 8) + 1];
+            short origRlen = EC_Consts.getCurveParameter(curve, EC_Consts.PARAMETER_R, originalR, (short) 0);
+            if (origRlen != originalR.length) {
+                byte[] copyR = new byte[origRlen];
+                System.arraycopy(originalR, 0, copyR, 0, origRlen);
+                originalR = copyR;
+            }
             BigInteger originalBigR = new BigInteger(1, originalR);
 
             Test zeroR = ecdhTest(new Command.Transform(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, EC_Consts.PARAMETER_R, EC_Consts.TRANSFORMATION_ZERO), "Set R = 0.", "ECDH with R = 0.");
@@ -138,7 +143,7 @@ public class CardWrongSuite extends CardTestSuite {
             Test nextprimeWrongR = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, nextRData.getParams(), nextRData.flatten()), "Set R = some prime (but [r]G != infinity) larger than original R.", "ECDH with wrong R, nextprime.");
 
             byte[] nonprimeRBytes = nextRBytes.clone();
-            nonprimeRBytes[0] ^= 1;
+            nonprimeRBytes[nonprimeRBytes.length - 1] ^= 1;
             EC_Params nonprimeWrongRData = new EC_Params(EC_Consts.PARAMETER_R, new byte[][]{nonprimeRBytes});
             Test nonprimeWrongR = ecdhTest(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, nonprimeWrongRData.getParams(), nonprimeWrongRData.flatten()), "Set R = some composite (but [r]G != infinity).", "ECDH with wrong R, composite.");
 

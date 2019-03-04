@@ -2,10 +2,8 @@ package cz.crcs.ectester.common.ec;
 
 import cz.crcs.ectester.common.cli.Colors;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A category of EC_Data objects, has a name, description and represents a directory in
@@ -78,28 +76,17 @@ public class EC_Category {
         out.append("\t- ").append(Colors.bold(name)).append((desc == null || desc.equals("")) ? "" : ": " + desc);
         out.append(System.lineSeparator());
 
-        Map<String, EC_Curve> curves = getObjects(EC_Curve.class);
-        int size = curves.size();
-        if (size > 0) {
-            out.append(Colors.bold("\t\tCurves: "));
-            for (Map.Entry<String, EC_Curve> curve : curves.entrySet()) {
-                out.append(curve.getKey());
-                size--;
-                if (size > 0)
-                    out.append(", ");
-            }
-            out.append(System.lineSeparator());
-        }
-
-        String[] headers = new String[]{"Public keys", "Private keys", "KeyPairs", "Results(KA)", "Results(SIG)"};
-        Class<EC_Data>[] classes = new Class[]{EC_Key.Public.class, EC_Key.Private.class, EC_Keypair.class, EC_KAResult.class, EC_SigResult.class};
+        String[] headers = new String[]{"Curves", "Public keys", "Private keys", "KeyPairs", "Results(KA)", "Results(SIG)"};
+        Class<EC_Data>[] classes = new Class[]{EC_Curve.class, EC_Key.Public.class, EC_Key.Private.class, EC_Keypair.class, EC_KAResult.class, EC_SigResult.class};
         for (int i = 0; i < headers.length; ++i) {
             Map<String, EC_Data> data = getObjects(classes[i]);
-            size = data.size();
+            int size = data.size();
             if (size > 0) {
                 out.append(Colors.bold(String.format("\t\t%s: ", headers[i])));
-                for (Map.Entry<String, EC_Data> key : data.entrySet()) {
-                    out.append(key.getKey());
+                List<EC_Data> sorted = new ArrayList<>(data.values());
+                Collections.sort(sorted);
+                for (EC_Data element : sorted) {
+                    out.append(element.getId());
                     size--;
                     if (size > 0)
                         out.append(", ");

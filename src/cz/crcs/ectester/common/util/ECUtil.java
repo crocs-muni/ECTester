@@ -248,6 +248,9 @@ public class ECUtil {
         if (ecCurve.getField() instanceof ECFieldFp) {
             ECFieldFp fp = (ECFieldFp) ecCurve.getField();
             p = fp.getP();
+            if (!p.isProbablePrime(20)) {
+                return null;
+            }
         } else {
             //TODO
             return null;
@@ -275,6 +278,9 @@ public class ECUtil {
         if (ecCurve.getField() instanceof ECFieldFp) {
             ECFieldFp fp = (ECFieldFp) ecCurve.getField();
             p = fp.getP();
+            if (!p.isProbablePrime(20)) {
+                return null;
+            }
         } else {
             //TODO
             return null;

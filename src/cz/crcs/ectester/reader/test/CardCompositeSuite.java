@@ -31,12 +31,6 @@ public class CardCompositeSuite extends CardTestSuite {
 
     @Override
     protected void runTests() throws Exception {
-        /* Do the default run with the public keys set to provided smallorder keys
-         * over composite order curves. Essentially small subgroup attacks.
-         * These should fail, the curves aren't safe so that if the computation with
-         * a small order public key succeeds the private key modulo the public key order
-         * is revealed.
-         */
         Map<String, EC_Key> keys = EC_Store.getInstance().getObjects(EC_Key.class, "composite");
         Map<EC_Curve, List<EC_Key>> mappedKeys = EC_Store.mapKeyToCurve(keys.values());
         for (Map.Entry<EC_Curve, List<EC_Key>> curveKeys : mappedKeys.entrySet()) {
@@ -52,9 +46,9 @@ public class CardCompositeSuite extends CardTestSuite {
 
             String name;
             if (cfg.testOptions.contains("preset")) {
-                name = "preset semi-random key";
+                name = "preset semi-random private key";
             } else {
-                name = "generated key";
+                name = "generated private key";
             }
             tests.add(genOrPreset(curve, ExpectedValue.ANY, ECTesterApplet.KEYPAIR_LOCAL));
             for (EC_Key key : curveKeys.getValue()) {
@@ -103,9 +97,9 @@ public class CardCompositeSuite extends CardTestSuite {
         for (EC_Curve curve : curves) {
             Test allocate = CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS);
             Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.ANY);
-            Test generate = CommandTest.expect(new Command.Generate(this.card, ECTesterApplet.KEYPAIR_BOTH), ExpectedValue.ANY);
-            Test ecdh = CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH), dhValue, ok, nok);
-            Test ecdsa = CommandTest.expect(new Command.ECDSA(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.Signature_ALG_ECDSA_SHA, ECTesterApplet.EXPORT_FALSE, null), dhValue, ok, nok);
+            Test generate = genOrPreset(curve, ExpectedValue.ANY, ECTesterApplet.KEYPAIR_BOTH);
+            Test ecdh = CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH), dhValue, ok, nok);
+            Test ecdsa = CommandTest.expect(new Command.ECDSA_sign(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.Signature_ALG_ECDSA_SHA, ECTesterApplet.EXPORT_FALSE, null), dhValue, ok, nok);
 
             String description;
             if (testName == null) {
