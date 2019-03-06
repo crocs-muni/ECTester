@@ -341,7 +341,7 @@ public class ECTesterReader {
         opts.addOption(Option.builder().longOpt("cleanup").desc("Send the cleanup command trigerring JCSystem.requestObjectDeletion() after some operations.").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
         opts.addOption(Option.builder("y").longOpt("yes").desc("Accept all warnings and prompts.").build());
-        opts.addOption(Option.builder("to").longOpt("test-options").desc("Test options to use:\n- preset: Use preset semi-random private keys instead of generating keypairs on the cards when the test needs one.").hasArg().argName("options").build());
+        opts.addOption(Option.builder("to").longOpt("test-options").desc("Test options to use:\n- preset: Use preset semi-random private keys (derived from curve) instead of generating keypairs on the cards when the test needs one.\n- random: Use fully random private keys instead of generating keypairs.").hasArg().argName("options").build());
 
         opts.addOption(Option.builder("ka").longOpt("ka-type").desc("Set KeyAgreement object [type], corresponds to JC.KeyAgreement constants.").hasArg().argName("type").optionalArg(true).build());
         opts.addOption(Option.builder("sig").longOpt("sig-type").desc("Set Signature object [type], corresponds to JC.Signature constants.").hasArg().argName("type").optionalArg(true).build());
@@ -1012,39 +1012,44 @@ public class ECTesterReader {
                     testFrom = 0;
                     testTo = -1;
                 }
-                
+
                 String[] tests = new String[]{"default", "composite", "compression", "invalid", "degenerate", "test-vectors", "wrong", "twist", "cofactor", "edge-cases", "miscellaneous", "signature"};
-				String selected = null;
-				for (String test : tests) {
-					if (test.startsWith(testSuite)) {
-						if (selected != null) {
-							System.err.println(Colors.error("Test suite ambiguous " + test + " or " + selected + "?"));
-							return false;
-						} else {
-							selected = test;
-						}
-					}
-				}
-				if (selected == null) {
+                String selected = null;
+                for (String test : tests) {
+                    if (test.startsWith(testSuite)) {
+                        if (selected != null) {
+                            System.err.println(Colors.error("Test suite ambiguous " + test + " or " + selected + "?"));
+                            return false;
+                        } else {
+                            selected = test;
+                        }
+                    }
+                }
+                if (selected == null) {
                     System.err.println(Colors.error("Unknown test suite " + testSuite + ". Should be one of: " + Arrays.toString(tests)));
                     return false;
                 } else {
-                	testSuite = selected;
+                    testSuite = selected;
                 }
 
                 String[] opts = cli.getOptionValue("test-options", "").split(",");
-                List<String> validOpts = Arrays.asList("preset");
+                List<String> validOpts = Arrays.asList("preset", "random");
                 testOptions = new HashSet<>();
                 for (String opt : opts) {
                     if (opt.equals("")) {
                         continue;
                     }
                     if (!validOpts.contains(opt)) {
-                        System.err.println(Colors.error("Unknown test option " + opt + ". Should be one of: " + "preset."));
+                        System.err.println(Colors.error("Unknown test option " + opt + ". Should be one of: " + Arrays.toString(validOpts.toArray())));
                         return false;
                     } else {
                         testOptions.add(opt);
                     }
+                }
+
+                if (testOptions.contains("preset") && testOptions.contains("random")) {
+                    System.err.println("Cannot have both preset and random option enabled.");
+                    return false;
                 }
             } else if (cli.hasOption("ecdh")) {
                 if (primeField == binaryField) {

@@ -170,7 +170,7 @@ public class CardTestVectorSuite extends CardTestSuite {
                             System.arraycopy(derived, 0, padded, fieldSize - derived.length, derived.length);
                             derived = padded;
                         }
-                        if (ecdhData.getType() == EC_Consts.KeyAgreement_ALG_EC_SVDP_DH) {
+                        if (ecdhData.getType() == EC_Consts.KeyAgreement_ALG_EC_SVDP_DH || ecdhData.getType() == EC_Consts.KeyAgreement_ALG_EC_SVDP_DHC) {
                             derived = md.digest(derived);
                         }
                         if (secret.length != derived.length) {

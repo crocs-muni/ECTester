@@ -31,7 +31,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP192r1/5</id>
-    <inline>0x91f9ee514f7ba95b02f6a6a421e5c407aa98750f4800c489,0x75bc5be4e76df961ee39cde63e78e49969b2e4e08741a8e</inline>
+    <inline>0x91f9ee514f7ba95b02f6a6a421e5c407aa98750f4800c489,0x075bc5be4e76df961ee39cde63e78e49969b2e4e08741a8e</inline>
     <curve>brainpool/brainpoolP192r1</curve>
     <desc>invalid order = 13</desc>
 </pubkey>
@@ -127,7 +127,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP192r1/21</id>
-    <inline>0xb775ff62b4cfd5938855b327ba4ed92b20102215b80593e7,0x1822fab9134b819adae394b401fdc995080542e1b131aad</inline>
+    <inline>0xb775ff62b4cfd5938855b327ba4ed92b20102215b80593e7,0x01822fab9134b819adae394b401fdc995080542e1b131aad</inline>
     <curve>brainpool/brainpoolP192r1</curve>
     <desc>invalid order = 79</desc>
 </pubkey>
@@ -157,7 +157,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP192r1/26</id>
-    <inline>0x51262d2d0d43887a4913ebde0505c6f945d72588e786493e,0x947b3447c161eeb65c5d2ea0ce25f8538a3be5e9612580c</inline>
+    <inline>0x51262d2d0d43887a4913ebde0505c6f945d72588e786493e,0x0947b3447c161eeb65c5d2ea0ce25f8538a3be5e9612580c</inline>
     <curve>brainpool/brainpoolP192r1</curve>
     <desc>invalid order = 103</desc>
 </pubkey>
@@ -247,7 +247,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP192r1/41</id>
-    <inline>0xbe28f2c028623f3b2cb5f52d796fcbd6de65a8f9428bf7b3,0x6c186203b8cb15ce01d002cf9f47fcce9f67939131ce3dd</inline>
+    <inline>0xbe28f2c028623f3b2cb5f52d796fcbd6de65a8f9428bf7b3,0x06c186203b8cb15ce01d002cf9f47fcce9f67939131ce3dd</inline>
     <curve>brainpool/brainpoolP192r1</curve>
     <desc>invalid order = 181</desc>
 </pubkey>
@@ -337,7 +337,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP192r1/56</id>
-    <inline>0x6152805a62d2ba015dac702fe4688efb34a5ca3c11b88e5b,0x349428b8179e041affa4311ead89de00d508fc7d3c8d9fb</inline>
+    <inline>0x6152805a62d2ba015dac702fe4688efb34a5ca3c11b88e5b,0x0349428b8179e041affa4311ead89de00d508fc7d3c8d9fb</inline>
     <curve>brainpool/brainpoolP192r1</curve>
     <desc>invalid order = 269</desc>
 </pubkey>
@@ -355,13 +355,13 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP192r1/59</id>
-    <inline>0x940d62366df60884cb2d482a00ef24d4195d2242c65e29f,0x90c75f89c3809dd80be41e8c72265d6c8f21db8294cf970b</inline>
+    <inline>0x0940d62366df60884cb2d482a00ef24d4195d2242c65e29f,0x90c75f89c3809dd80be41e8c72265d6c8f21db8294cf970b</inline>
     <curve>brainpool/brainpoolP192r1</curve>
     <desc>invalid order = 281</desc>
 </pubkey>
 <pubkey>
     <id>brainpoolP192r1/60</id>
-    <inline>0x129bca166096f206be151fa2e61dfd89c0da5abb093f373,0x545b00cb1201b786fe6361e1bd606819707b2b929a70c5a5</inline>
+    <inline>0x0129bca166096f206be151fa2e61dfd89c0da5abb093f373,0x545b00cb1201b786fe6361e1bd606819707b2b929a70c5a5</inline>
     <curve>brainpool/brainpoolP192r1</curve>
     <desc>invalid order = 283</desc>
 </pubkey>

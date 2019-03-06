@@ -97,7 +97,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP160r1/16</id>
-    <inline>0x5699ff94f28628b37b35afce2cfbe033946ec7b8,0x63f5d424359563aeb46cee26d8ba5e1bcc1e052</inline>
+    <inline>0x5699ff94f28628b37b35afce2cfbe033946ec7b8,0x063f5d424359563aeb46cee26d8ba5e1bcc1e052</inline>
     <curve>brainpool/brainpoolP160r1</curve>
     <desc>invalid order = 59</desc>
 </pubkey>
@@ -121,13 +121,13 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP160r1/20</id>
-    <inline>0x301528c0245255342671904c643decf32a7a233,0x802721fa4911239d28825fc50d5bd85496d69305</inline>
+    <inline>0x0301528c0245255342671904c643decf32a7a233,0x802721fa4911239d28825fc50d5bd85496d69305</inline>
     <curve>brainpool/brainpoolP160r1</curve>
     <desc>invalid order = 73</desc>
 </pubkey>
 <pubkey>
     <id>brainpoolP160r1/21</id>
-    <inline>0xc4dab799a81f3397c487bafde8133e324244d5c,0x99d70a4f7bb2c62d34dd835f7da5df1ec31058d</inline>
+    <inline>0x0c4dab799a81f3397c487bafde8133e324244d5c,0x099d70a4f7bb2c62d34dd835f7da5df1ec31058d</inline>
     <curve>brainpool/brainpoolP160r1</curve>
     <desc>invalid order = 79</desc>
 </pubkey>
@@ -169,7 +169,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP160r1/28</id>
-    <inline>0x8987c8fdcf194692bba9468ee6153bd561befef,0x76dda0681cf1b07f7cea5a233ff6cda45eaddd42</inline>
+    <inline>0x08987c8fdcf194692bba9468ee6153bd561befef,0x76dda0681cf1b07f7cea5a233ff6cda45eaddd42</inline>
     <curve>brainpool/brainpoolP160r1</curve>
     <desc>invalid order = 109</desc>
 </pubkey>
@@ -181,7 +181,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP160r1/30</id>
-    <inline>0xdf1ffb84e573d940df790fe5f714aae6c7e25c2f,0x8b70760193ea02b29769b31be869fc6a500aeee</inline>
+    <inline>0xdf1ffb84e573d940df790fe5f714aae6c7e25c2f,0x08b70760193ea02b29769b31be869fc6a500aeee</inline>
     <curve>brainpool/brainpoolP160r1</curve>
     <desc>invalid order = 127</desc>
 </pubkey>
@@ -241,7 +241,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP160r1/40</id>
-    <inline>0x4d55a23dd8da29f49de10385e052503223b57b2a,0x5d42f9e7b85df543c1d7583a6712af2d4cde554</inline>
+    <inline>0x4d55a23dd8da29f49de10385e052503223b57b2a,0x05d42f9e7b85df543c1d7583a6712af2d4cde554</inline>
     <curve>brainpool/brainpoolP160r1</curve>
     <desc>invalid order = 179</desc>
 </pubkey>
@@ -259,7 +259,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP160r1/43</id>
-    <inline>0x64977b60eaefabd73d238d0bfe99a6b42aab0029,0x202d8d421cdc97bd18be388c1e4423b92ca5e09</inline>
+    <inline>0x64977b60eaefabd73d238d0bfe99a6b42aab0029,0x0202d8d421cdc97bd18be388c1e4423b92ca5e09</inline>
     <curve>brainpool/brainpoolP160r1</curve>
     <desc>invalid order = 193</desc>
 </pubkey>
@@ -319,7 +319,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP160r1/53</id>
-    <inline>0x40892221b8291a17a70fef729b3d0958db3300,0xe613aa9e4991281f8618ebb73003aff70df87a14</inline>
+    <inline>0x0040892221b8291a17a70fef729b3d0958db3300,0xe613aa9e4991281f8618ebb73003aff70df87a14</inline>
     <curve>brainpool/brainpoolP160r1</curve>
     <desc>invalid order = 251</desc>
 </pubkey>

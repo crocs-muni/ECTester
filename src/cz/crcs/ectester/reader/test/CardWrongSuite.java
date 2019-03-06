@@ -31,7 +31,7 @@ import static cz.crcs.ectester.common.test.Result.ExpectedValue;
 public class CardWrongSuite extends CardTestSuite {
 
     public CardWrongSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "wrong", new String[]{"preset"}, "The wrong curve suite tests whether the card rejects domain parameters which are not curves.");
+        super(writer, cfg, cardManager, "wrong", new String[]{"preset", "random"}, "The wrong curve suite tests whether the card rejects domain parameters which are not curves.");
     }
 
     @Override
@@ -50,7 +50,7 @@ public class CardWrongSuite extends CardTestSuite {
             }
             tests.add(key);
             Test set = runTest(CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.FAILURE));
-            Test generate = runTest(genOrPreset(curve, ExpectedValue.SUCCESS, ECTesterApplet.KEYPAIR_BOTH));
+            Test generate = runTest(setupKeypairs(curve, ExpectedValue.SUCCESS, ECTesterApplet.KEYPAIR_BOTH));
             Test setup = runTest(CompoundTest.any(ExpectedValue.SUCCESS, "Set wrong curve and generate keypairs.", set, generate));
             tests.add(setup);
 

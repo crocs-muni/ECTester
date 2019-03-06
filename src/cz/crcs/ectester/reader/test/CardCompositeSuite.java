@@ -25,8 +25,8 @@ import static cz.crcs.ectester.common.test.Result.ExpectedValue;
 public class CardCompositeSuite extends CardTestSuite {
 
     public CardCompositeSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "composite", new String[]{"preset"}, "The composite suite runs ECDH over curves with composite order.",
-                "Various types of compositeness is tested: smooth numbers, Carmichael pseudoprime, prime square, product of two large primes.");
+        super(writer, cfg, cardManager, "composite", new String[]{"preset", "random"}, "The composite suite runs ECDH over curves with composite order.",
+                "Various types of compositeness is tested: smooth numbers, Carmichael pseudo-prime, prime square, product of two large primes.");
     }
 
     @Override
@@ -50,7 +50,7 @@ public class CardCompositeSuite extends CardTestSuite {
             } else {
                 name = "generated private key";
             }
-            tests.add(genOrPreset(curve, ExpectedValue.ANY, ECTesterApplet.KEYPAIR_LOCAL));
+            tests.add(setupKeypairs(curve, ExpectedValue.ANY, ECTesterApplet.KEYPAIR_LOCAL));
             for (EC_Key key : curveKeys.getValue()) {
                 Command ecdhCommand = new Command.ECDH_direct(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH, key.flatten());
                 Test ecdh = CommandTest.expect(ecdhCommand, ExpectedValue.FAILURE, "Card correctly rejected to do ECDH over a composite order curve.", "Card incorrectly does ECDH over a composite order curve, leaks bits of private key.");
@@ -85,7 +85,7 @@ public class CardCompositeSuite extends CardTestSuite {
         /* Also test having G or large order being a Carmichael pseudoprime, R = p * q * r,
          */
         List<EC_Curve> ppCurves = groups.entrySet().stream().filter((e) -> e.getKey().equals("pp")).findFirst().get().getValue();
-        testGroup(ppCurves, "Generator order = Carmichael pseudoprime", ExpectedValue.ANY, "", "");
+        testGroup(ppCurves, "Generator order = Carmichael pseudo-prime", ExpectedValue.ANY, "", "");
 
         /* Also test rg0 curves.
          */
@@ -97,7 +97,7 @@ public class CardCompositeSuite extends CardTestSuite {
         for (EC_Curve curve : curves) {
             Test allocate = CommandTest.expect(new Command.Allocate(this.card, ECTesterApplet.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS);
             Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.ANY);
-            Test generate = genOrPreset(curve, ExpectedValue.ANY, ECTesterApplet.KEYPAIR_BOTH);
+            Test generate = setupKeypairs(curve, ExpectedValue.ANY, ECTesterApplet.KEYPAIR_BOTH);
             Test ecdh = CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH), dhValue, ok, nok);
             Test ecdsa = CommandTest.expect(new Command.ECDSA_sign(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.Signature_ALG_ECDSA_SHA, ECTesterApplet.EXPORT_FALSE, null), dhValue, ok, nok);
 

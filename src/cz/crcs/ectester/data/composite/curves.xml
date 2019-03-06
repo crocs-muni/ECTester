@@ -524,7 +524,7 @@
         <desc>r = 152 bit prime</desc>
     </curve>
     <curve>
-        <id>varying/160/first/152cofactor</id>
+        <id>varying/160/cofactor/152</id>
         <bits>160</bits>
         <field>prime</field>
         <file>varying/160/first/152_cofactor.csv</file>
