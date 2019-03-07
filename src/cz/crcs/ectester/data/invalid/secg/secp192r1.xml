@@ -31,7 +31,7 @@
 </pubkey>
 <pubkey>
     <id>secp192r1/5</id>
-    <inline>0x7ff851e2e594729c4d826ecd4e5c0a5647151cda6a3498ae,0xfccd1ad5544abe3dbe1ddc50d497e13a5ae5c33e898ae38</inline>
+    <inline>0x7ff851e2e594729c4d826ecd4e5c0a5647151cda6a3498ae,0x0fccd1ad5544abe3dbe1ddc50d497e13a5ae5c33e898ae38</inline>
     <curve>secg/secp192r1</curve>
     <desc>invalid order = 13</desc>
 </pubkey>
@@ -127,7 +127,7 @@
 </pubkey>
 <pubkey>
     <id>secp192r1/21</id>
-    <inline>0x870c9a3146fa0ce54f033214490c0bb5b3d856e719320a3e,0xc444ac22b325d17d52537399257f169d5f157edfb5c9c46</inline>
+    <inline>0x870c9a3146fa0ce54f033214490c0bb5b3d856e719320a3e,0x0c444ac22b325d17d52537399257f169d5f157edfb5c9c46</inline>
     <curve>secg/secp192r1</curve>
     <desc>invalid order = 79</desc>
 </pubkey>
@@ -145,7 +145,7 @@
 </pubkey>
 <pubkey>
     <id>secp192r1/24</id>
-    <inline>0x81c41c99457f44f65913ab53dd2518e082a52d3826d2dda9,0xb54f5a2d43f127ea0ce8824fc0da310f28d2be55b872424</inline>
+    <inline>0x81c41c99457f44f65913ab53dd2518e082a52d3826d2dda9,0x0b54f5a2d43f127ea0ce8824fc0da310f28d2be55b872424</inline>
     <curve>secg/secp192r1</curve>
     <desc>invalid order = 97</desc>
 </pubkey>
@@ -307,7 +307,7 @@
 </pubkey>
 <pubkey>
     <id>secp192r1/51</id>
-    <inline>0xf477da92061d0495d772c5f23710493cc64f26cc1837b218,0xff7dc6300eaaf184d5bb6f41c72f851364f9bac01d60bf9</inline>
+    <inline>0xf477da92061d0495d772c5f23710493cc64f26cc1837b218,0x0ff7dc6300eaaf184d5bb6f41c72f851364f9bac01d60bf9</inline>
     <curve>secg/secp192r1</curve>
     <desc>invalid order = 239</desc>
 </pubkey>
@@ -325,7 +325,7 @@
 </pubkey>
 <pubkey>
     <id>secp192r1/54</id>
-    <inline>0x7f328cb98d777490d0694a4b00fe401c016a92bee0d301d,0x1f9d23be48389e174fbd388e749a53a5d5877ca32818603b</inline>
+    <inline>0x07f328cb98d777490d0694a4b00fe401c016a92bee0d301d,0x1f9d23be48389e174fbd388e749a53a5d5877ca32818603b</inline>
     <curve>secg/secp192r1</curve>
     <desc>invalid order = 257</desc>
 </pubkey>

@@ -73,7 +73,7 @@
 </pubkey>
 <pubkey>
     <id>secp256r1/12</id>
-    <inline>0x4de812700bc95a04975f89bc0f6981e71a003ee72d09aa82a9a5bd8570b02b,0x5b591897cc2c01346d2a3c09214bcb4d10e46dd0fe19eb9dfbc6cb81dd9eb2b7</inline>
+    <inline>0x004de812700bc95a04975f89bc0f6981e71a003ee72d09aa82a9a5bd8570b02b,0x5b591897cc2c01346d2a3c09214bcb4d10e46dd0fe19eb9dfbc6cb81dd9eb2b7</inline>
     <curve>secg/secp256r1</curve>
     <desc>invalid order = 41</desc>
 </pubkey>
@@ -133,7 +133,7 @@
 </pubkey>
 <pubkey>
     <id>secp256r1/22</id>
-    <inline>0x702ef740f465c7e8e2731431ff25787bb70bca7c95b42504978b505f6720eb86,0x873d9ba564e5d3bcdf070718616854b3bfce6aaff50fcdca68f94e5778dc194</inline>
+    <inline>0x702ef740f465c7e8e2731431ff25787bb70bca7c95b42504978b505f6720eb86,0x0873d9ba564e5d3bcdf070718616854b3bfce6aaff50fcdca68f94e5778dc194</inline>
     <curve>secg/secp256r1</curve>
     <desc>invalid order = 83</desc>
 </pubkey>
@@ -229,19 +229,19 @@
 </pubkey>
 <pubkey>
     <id>secp256r1/38</id>
-    <inline>0x3a591ada3f9c7803e6da77cb1b9adfd349d80dfac04829b7ccbd0767b50006e8,0xb5eb79cd757583bb44385e902b9dcf14a321f6cbbccaf83c631abe34f2e996d</inline>
+    <inline>0x3a591ada3f9c7803e6da77cb1b9adfd349d80dfac04829b7ccbd0767b50006e8,0x0b5eb79cd757583bb44385e902b9dcf14a321f6cbbccaf83c631abe34f2e996d</inline>
     <curve>secg/secp256r1</curve>
     <desc>invalid order = 167</desc>
 </pubkey>
 <pubkey>
     <id>secp256r1/39</id>
-    <inline>0x7a277a5debbf3da308d7cf83cb46ecaaa79c1b02bfd40ae3b911e879d576e9aa,0x54946996938f9af0f326e109f44ab5317605cb1a1d59464f3a695c05a4904c9</inline>
+    <inline>0x7a277a5debbf3da308d7cf83cb46ecaaa79c1b02bfd40ae3b911e879d576e9aa,0x054946996938f9af0f326e109f44ab5317605cb1a1d59464f3a695c05a4904c9</inline>
     <curve>secg/secp256r1</curve>
     <desc>invalid order = 173</desc>
 </pubkey>
 <pubkey>
     <id>secp256r1/40</id>
-    <inline>0xc7b3cd34083b9edb2e79b74129d38dba1e287c294fb5eefc5b88d0cdd53ee70c,0xd29c58435ab03277891c7c53f283e7f096a14da33303cfbd4f6934131c6cece</inline>
+    <inline>0xc7b3cd34083b9edb2e79b74129d38dba1e287c294fb5eefc5b88d0cdd53ee70c,0x0d29c58435ab03277891c7c53f283e7f096a14da33303cfbd4f6934131c6cece</inline>
     <curve>secg/secp256r1</curve>
     <desc>invalid order = 179</desc>
 </pubkey>
@@ -331,7 +331,7 @@
 </pubkey>
 <pubkey>
     <id>secp256r1/55</id>
-    <inline>0xe3b247021a52f27f88bd01ea44a018eeafaca6cc6bc05e7951ab3429f79511f,0x28b782453e402d75b1caa5b30f97345649afd010d3e7c4acf96ec9bb3d8833e</inline>
+    <inline>0x0e3b247021a52f27f88bd01ea44a018eeafaca6cc6bc05e7951ab3429f79511f,0x028b782453e402d75b1caa5b30f97345649afd010d3e7c4acf96ec9bb3d8833e</inline>
     <curve>secg/secp256r1</curve>
     <desc>invalid order = 263</desc>
 </pubkey>
@@ -415,7 +415,7 @@
 </pubkey>
 <pubkey>
     <id>secp256r1/69</id>
-    <inline>0xa732788d93a5c81202b3f7bcb74b09fd69345e0345ffc833317c5895ec074de,0xfb9dc56e4cbd7176b4b7023e565d244638fb9e3b8184356850f4da6be9b755d0</inline>
+    <inline>0x0a732788d93a5c81202b3f7bcb74b09fd69345e0345ffc833317c5895ec074de,0xfb9dc56e4cbd7176b4b7023e565d244638fb9e3b8184356850f4da6be9b755d0</inline>
     <curve>secg/secp256r1</curve>
     <desc>invalid order = 349</desc>
 </pubkey>

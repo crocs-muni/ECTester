@@ -31,7 +31,7 @@
 </pubkey>
 <pubkey>
     <id>secp160r1/5</id>
-    <inline>0x92e841552d45365c8105205fe5597874f482d79,0x14c61971092c78ffc9d5e121a495f9d42d52af51</inline>
+    <inline>0x092e841552d45365c8105205fe5597874f482d79,0x14c61971092c78ffc9d5e121a495f9d42d52af51</inline>
     <curve>secg/secp160r1</curve>
     <desc>invalid order = 13</desc>
 </pubkey>
@@ -43,13 +43,13 @@
 </pubkey>
 <pubkey>
     <id>secp160r1/7</id>
-    <inline>0x21bf7455ca142c7c6a59c24cffe65b6aa6dc42cb,0x972dc2bba67209a47ce309c86862688e31bdf5f</inline>
+    <inline>0x21bf7455ca142c7c6a59c24cffe65b6aa6dc42cb,0x0972dc2bba67209a47ce309c86862688e31bdf5f</inline>
     <curve>secg/secp160r1</curve>
     <desc>invalid order = 19</desc>
 </pubkey>
 <pubkey>
     <id>secp160r1/8</id>
-    <inline>0x2d69e72509b72192f75091bd3dcd412713c881a6,0x8d04b92d51d65f1103031fd951ad5f70d8986e0</inline>
+    <inline>0x2d69e72509b72192f75091bd3dcd412713c881a6,0x08d04b92d51d65f1103031fd951ad5f70d8986e0</inline>
     <curve>secg/secp160r1</curve>
     <desc>invalid order = 23</desc>
 </pubkey>
@@ -103,7 +103,7 @@
 </pubkey>
 <pubkey>
     <id>secp160r1/17</id>
-    <inline>0xd0960a7a153fc358e86f6044681a05ba8bc9f431,0x430225547258f8fec4a8b453cfc393e97e70b40</inline>
+    <inline>0xd0960a7a153fc358e86f6044681a05ba8bc9f431,0x0430225547258f8fec4a8b453cfc393e97e70b40</inline>
     <curve>secg/secp160r1</curve>
     <desc>invalid order = 61</desc>
 </pubkey>
@@ -133,7 +133,7 @@
 </pubkey>
 <pubkey>
     <id>secp160r1/22</id>
-    <inline>0xae6ae7fcc5ed7a0fdf86f6bf1e57aa311fd6e3a,0x47fab4fc9498882999fbfc3c5530ddda857878d4</inline>
+    <inline>0x0ae6ae7fcc5ed7a0fdf86f6bf1e57aa311fd6e3a,0x47fab4fc9498882999fbfc3c5530ddda857878d4</inline>
     <curve>secg/secp160r1</curve>
     <desc>invalid order = 83</desc>
 </pubkey>
@@ -181,7 +181,7 @@
 </pubkey>
 <pubkey>
     <id>secp160r1/30</id>
-    <inline>0x8c891d78027199b1c628ba92dae118c48dc2a02e,0xc24f0183bbf72703763b8fbc8e02a93e3ec6643</inline>
+    <inline>0x8c891d78027199b1c628ba92dae118c48dc2a02e,0x0c24f0183bbf72703763b8fbc8e02a93e3ec6643</inline>
     <curve>secg/secp160r1</curve>
     <desc>invalid order = 127</desc>
 </pubkey>
@@ -223,7 +223,7 @@
 </pubkey>
 <pubkey>
     <id>secp160r1/37</id>
-    <inline>0x96c29a0df5b40c161811e4d7daa72e1ea918e2b0,0x155b8b6ec7a647840d02bd45fea9dc765e5b5fe</inline>
+    <inline>0x96c29a0df5b40c161811e4d7daa72e1ea918e2b0,0x0155b8b6ec7a647840d02bd45fea9dc765e5b5fe</inline>
     <curve>secg/secp160r1</curve>
     <desc>invalid order = 163</desc>
 </pubkey>
@@ -235,7 +235,7 @@
 </pubkey>
 <pubkey>
     <id>secp160r1/39</id>
-    <inline>0x2d8edbf75cb446acf73461f4342c598d9f21d7c,0xeda4148d6daae6cebaf4adf03a65eef569a76baa</inline>
+    <inline>0x02d8edbf75cb446acf73461f4342c598d9f21d7c,0xeda4148d6daae6cebaf4adf03a65eef569a76baa</inline>
     <curve>secg/secp160r1</curve>
     <desc>invalid order = 173</desc>
 </pubkey>
@@ -265,7 +265,7 @@
 </pubkey>
 <pubkey>
     <id>secp160r1/44</id>
-    <inline>0x9332eb605bcbfc193da360069c2e4ecb8309008,0xf3a2c4839f590128ef53ef58fb59edfbd823571a</inline>
+    <inline>0x09332eb605bcbfc193da360069c2e4ecb8309008,0xf3a2c4839f590128ef53ef58fb59edfbd823571a</inline>
     <curve>secg/secp160r1</curve>
     <desc>invalid order = 197</desc>
 </pubkey>
@@ -301,7 +301,7 @@
 </pubkey>
 <pubkey>
     <id>secp160r1/50</id>
-    <inline>0x947ede3f9f0a8bc262e5c07e30d65665e5b844b6,0x395d63bb0ff9de9cb0feabc0fe1dd6dca4b8571</inline>
+    <inline>0x947ede3f9f0a8bc262e5c07e30d65665e5b844b6,0x0395d63bb0ff9de9cb0feabc0fe1dd6dca4b8571</inline>
     <curve>secg/secp160r1</curve>
     <desc>invalid order = 233</desc>
 </pubkey>

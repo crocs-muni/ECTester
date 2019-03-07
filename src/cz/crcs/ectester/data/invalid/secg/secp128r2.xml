@@ -37,7 +37,7 @@
 </pubkey>
 <pubkey>
     <id>secp128r2/6</id>
-    <inline>0x31122c136cdb52adb5d38ca620a6d1a,0x49a0430f0c465c8cca890f1cb3d57c40</inline>
+    <inline>0x031122c136cdb52adb5d38ca620a6d1a,0x49a0430f0c465c8cca890f1cb3d57c40</inline>
     <curve>secg/secp128r2</curve>
     <desc>invalid order = 17</desc>
 </pubkey>
@@ -103,7 +103,7 @@
 </pubkey>
 <pubkey>
     <id>secp128r2/17</id>
-    <inline>0xf8d91c30849157dd24629c59c6912e2,0x9ffa7b719eea1b279dd5681fe454eb05</inline>
+    <inline>0x0f8d91c30849157dd24629c59c6912e2,0x9ffa7b719eea1b279dd5681fe454eb05</inline>
     <curve>secg/secp128r2</curve>
     <desc>invalid order = 61</desc>
 </pubkey>

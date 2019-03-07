@@ -57,7 +57,7 @@ public class CardWrongSuite extends CardTestSuite {
             for (byte kaType : EC_Consts.KA_TYPES) {
                 Test allocate = runTest(CommandTest.expect(new Command.AllocateKeyAgreement(this.card, kaType), ExpectedValue.SUCCESS));
                 if (allocate.ok()) {
-                    Test ka = runTest(CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, kaType), ExpectedValue.FAILURE));
+                    Test ka = runTest(CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, kaType), ExpectedValue.FAILURE));
                     Test kaTest = runTest(CompoundTest.all(ExpectedValue.SUCCESS, "Allocate and perform KA.", allocate, ka));
                     tests.add(kaTest);
                 }
