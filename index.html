@@ -223,6 +223,7 @@ This page contains results for the following cards:<br/>
 	<li>NXP JCOP CJ2A081</li>
 	<li>NXP JCOP v2.4.2 R2</li>
 	<li>NXP JCOP v2.4.2 R3</li>
+	<li>TaiSYS SIMoME VAULT</li>
 </ul>
 
 <h3>$ \mathbb{F}_p $ support</h3>
@@ -365,6 +366,17 @@ This page contains results for the following cards:<br/>
         <td class="no">✘</td>
         <td class="no">✘</td>
         <td class="no">✘</td>
+    </tr>
+	<tr>
+        <td><a href="{{ site.baseurl }}/results/default/TaiSYS_SIMoME_VAULT/">TaiSYS SIMoME VAULT</a></td>
+        <td class="yes">1,2,3,4</td>
+        <td class="yes">a,b,c,d,e</td>
+        <td class="yes">1,2,3,4</td>
+        <td class="yes">a,b,c,d,e</td>
+        <td class="yes">1,2,3,4</td>
+        <td class="yes">a,b,c,d,e</td>
+        <td class="yes">1,2,3,4</td>
+        <td class="yes">a,b,c,d,e</td>
     </tr>
 </table>
 
@@ -974,6 +986,69 @@ performance is similar to ECDH performance. ECDSA timings are split for sign+ver
 		<td class="no">✘</td>
 		<td class="none"></td>
 	</tr>
+    <tr>
+    	<td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/TaiSYS_SIMoME_VAULT/">TaiSYS SIMoME VAULT</a></td>   	
+    </tr>
+    <tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">109</td>
+       	<td class="yes">217+288</td>
+       	<td class="yes">132</td>
+       	<td class="yes">267+352</td>
+       	<td class="yes">202</td>
+       	<td class="yes">439+585</td>
+       	<td class="yes">340</td>
+       	<td class="yes">935+1220</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">108</td>
+    	<td class="yes">211+282</td>
+    	<td class="yes">135</td>
+    	<td class="yes">251+340</td>
+    	<td class="yes">201</td>
+    	<td class="yes">443+590</td>
+    	<td class="yes">346</td>
+    	<td class="yes">922+1201</td>
+    </tr>
+	<tr><td>3</td><td>c</td>
+		<td class="yes">105</td>
+		<td class="yes">226+293</td>
+		<td class="yes">130</td>
+		<td class="yes">271+356</td>
+		<td class="yes">198</td>
+		<td class="yes">460+586</td>
+		<td class="yes">341</td>
+		<td class="yes">923+1202</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="yes">106</td>
+		<td class="yes">222+289</td>
+		<td class="yes">125</td>
+		<td class="yes">259+348</td>
+		<td class="yes">198</td>
+		<td class="yes">433+579</td>
+		<td class="yes">341</td>
+		<td class="yes">913+1202</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="yes">221+282</td>
+		<td class="no">✘</td>
+		<td class="yes">261+349</td>
+		<td class="no">✘</td>
+		<td class="yes">447+576</td>
+		<td class="no">✘</td>
+		<td class="yes">912+1200</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
 </table>
 
 <h3>$ \mathbb{F}_p $ default curves</h3>
@@ -1031,6 +1106,9 @@ the keypair, see the <a href="#implementation_guide">implementation guide</a>.
 	</tr>
 	<tr>
 	<td>NXP JCOP v2.4.2 R3 J2E145G</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>TaiSYS SIMoME VAULT</td><td class="yes">secp112r1</td><td class="yes">secp128r1</td><td class="yes">secp160r1</td><td class="yes">secp192r1</td><td class="yes">secp224r1</td><td class="yes">secp256r1</td><td></td><td></td>
 	</tr>
 </table>
 
