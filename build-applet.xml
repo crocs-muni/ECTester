@@ -42,7 +42,7 @@
 	
 	<target name="build-221" description="Builds the CAP file for JavaCard 2.2.1." unless="cap_extended">
 		<javacard jckit="${JC221}">
-			<cap output="applet/ectester221.cap" sources="src/cz/crcs/ectester/applet" aid="${pkg_aid}" excludes="ECTesterAppletExtended.*">
+			<cap verify="false" output="applet/ectester221.cap" sources="src/cz/crcs/ectester/applet" aid="${pkg_aid}" excludes="ECTesterAppletExtended.*">
 				<applet class="cz.crcs.ectester.applet.ECTesterApplet" aid="${applet_aid}"/>
 			</cap>
 		</javacard>

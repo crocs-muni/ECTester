@@ -21,7 +21,7 @@ def plot_hist(axes, data, xlabel=None, log=False):
     time_min = min(data)
     time_avg = np.average(data)
     time_median = np.median(data)
-    axes.hist(data, bins=time_max - time_min, log=log)
+    axes.hist(data, bins=time_max - time_min + 1, log=log, align="mid")
     axes.axvline(x=time_avg, alpha=0.7, linestyle="dotted", color="blue", label="avg = {}".format(time_avg))
     axes.axvline(x=time_median, alpha=0.7, linestyle="dotted", color="green", label="median = {}".format(time_median))
     axes.set_ylabel("count" + ("\n(log)" if log else ""))

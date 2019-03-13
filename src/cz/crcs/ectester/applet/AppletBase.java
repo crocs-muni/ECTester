@@ -3,6 +3,13 @@ package cz.crcs.ectester.applet;
 import javacard.framework.*;
 import javacard.security.*;
 
+/**
+ * Applet base class, that handles instructions, given
+ * either basic or extended length APDUs.
+ *
+ * @author Petr Svenda petr@svenda.com
+ * @author Jan Jancar johny@neuromancer.sk
+ */
 public abstract class AppletBase extends Applet {
 
     // MAIN INSTRUCTION CLASS
@@ -25,6 +32,8 @@ public abstract class AppletBase extends Applet {
     public static final byte INS_ALLOCATE_SIG = (byte) 0x77;
     public static final byte INS_GET_INFO = (byte) 0x78;
     public static final byte INS_SET_DRY_RUN_MODE = (byte) 0x79;
+    public static final byte INS_BUFFER = (byte) 0x7a;
+    public static final byte INS_PERFORM = (byte) 0x7b;
 
     // PARAMETERS for P1 and P2
     public static final byte KEYPAIR_LOCAL = (byte) 0x01;
@@ -68,6 +77,7 @@ public abstract class AppletBase extends Applet {
     byte[] ramArray = null;
     byte[] ramArray2 = null;
     byte[] apduArray = null;
+    short apduEnd = 0;
 
     RandomData randomData = null;
 
@@ -113,7 +123,18 @@ public abstract class AppletBase extends Applet {
 
         if (cla == CLA_ECTESTERAPPLET) {
             try {
-                readAPDU(apdu, apduArray, APDU_MAX_LENGTH);
+                if (ins == INS_BUFFER) {
+                    apduEnd += readAPDU(apdu, true);
+                    apdu.setOutgoingAndSend((short) 0, (short) 0);
+                    return;
+                } else {
+                    apduEnd = 0;
+                    if (ins == INS_PERFORM) {
+                        ins = apduArray[ISO7816.OFFSET_INS];
+                    } else {
+                        readAPDU(apdu, false);
+                    }
+                }
 
                 short length = 0;
                 switch (ins) {
@@ -201,22 +222,34 @@ public abstract class AppletBase extends Applet {
         } else ISOException.throwIt(ISO7816.SW_CLA_NOT_SUPPORTED);
     }
 
-    private void readAPDU(APDU apdu, byte[] buffer, short length) {
+    private short readAPDU(APDU apdu, boolean skipHeader) {
+        byte[] apduBuffer = apdu.getBuffer();
+
+        short cdataOffset = getOffsetCdata(apdu);
+        /* How much stuff is in apduBuffer */
         short read = apdu.setIncomingAndReceive();
-        read += getOffsetCdata(apdu);
-        short total = getIncomingLength(apdu);
-        if (total > length) {
-            return;
+        read += cdataOffset;
+
+        /* Where to start reading from? */
+        short offset = skipHeader ? cdataOffset : 0;
+
+        /* How much stuff was really sent in this APDU? */
+        short total = (short) (getIncomingLength(apdu) + cdataOffset);
+        short todo = (short) (total - offset);
+        /* Can we fit? */
+        if (todo > (short) (apduArray.length - apduEnd)) {
+            return -1;
         }
 
-        byte[] apduBuffer = apdu.getBuffer();
-        short sum = 0;
-
-        do {
-            Util.arrayCopyNonAtomic(apduBuffer, (short) 0, buffer, sum, read);
-            sum += read;
+        /* How much stuff was copied over. */
+        short written = 0;
+        while (written < todo) {
+            Util.arrayCopyNonAtomic(apduBuffer, offset, apduArray, (short) (apduEnd + written), (short) (read - offset));
+            written += (short) (read - offset);
+            offset = 0;
             read = apdu.receiveBytes((short) 0);
-        } while (sum < total);
+        }
+        return written;
     }
 
     abstract short getOffsetCdata(APDU apdu);

@@ -23,6 +23,7 @@ public class CardMngr {
 
     private boolean simulate = false;
     private boolean verbose = true;
+    private boolean extendedLength = false;
 
     private final byte[] selectCM = {
             (byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x07, (byte) 0xa0, (byte) 0x00, (byte) 0x00,
@@ -51,6 +52,16 @@ public class CardMngr {
         this.simulate = simulate;
     }
 
+    private void connectWithHighest() throws CardException {
+        try {
+            card = terminal.connect("T=1");
+        } catch (CardException ex) {
+            if (verbose)
+                System.out.println("T=1 failed, trying protocol '*'");
+            card = terminal.connect("*");
+        }
+    }
+
     public boolean connectToCard() throws CardException {
         if (simulate)
             return true;
@@ -72,13 +83,7 @@ public class CardMngr {
 
             terminal = terminalList.get(i);
             if (terminal.isCardPresent()) {
-                try {
-                    card = terminal.connect("T=1");
-                } catch (CardException ex) {
-                    if (verbose)
-                        System.out.println("T=1 failed, trying protocol '*'");
-                    card = terminal.connect("*");
-                }
+                connectWithHighest();
 
                 if (verbose)
                     System.out.println("card: " + card);
@@ -132,7 +137,7 @@ public class CardMngr {
         }
 
         if (terminal != null) {
-            card = terminal.connect("*");
+            connectWithHighest();
             if (verbose)
                 System.out.println("card: " + card);
             channel = card.getBasicChannel();
@@ -324,7 +329,36 @@ public class CardMngr {
             System.out.println(ByteUtil.bytesToHex(apdu.getBytes()));
         }
 
-        long elapsed = -System.nanoTime();
+        long elapsed;
+        if (card.getProtocol().equals("T=0") && apdu.getNc() >= 0xff) {
+            if (verbose) {
+                System.out.print("Chunking:");
+            }
+            byte[] data = apdu.getBytes();
+            int numChunks = (data.length + 254) / 255;
+            for (int i = 0; i < numChunks; ++i) {
+                int chunkStart = i *255;
+                int chunkLength = 255;
+                if (chunkStart + chunkLength > data.length) {
+                    chunkLength = data.length - chunkStart;
+                }
+                if (verbose) {
+                    System.out.print(" " + chunkLength);
+                }
+                byte[] chunk = new byte[chunkLength];
+                System.arraycopy(data, chunkStart, chunk, 0, chunkLength);
+                CommandAPDU cmd = new CommandAPDU(apdu.getCLA(), 0x7a, 0, 0, chunk);
+                ResponseAPDU resp = channel.transmit(cmd);
+                if ((short) resp.getSW() != ISO7816.SW_NO_ERROR) {
+                    return resp;
+                }
+            }
+            if (verbose)
+                System.out.println();
+            apdu = new CommandAPDU(apdu.getCLA(), 0x7b, 0, 0, 0xff);
+        }
+
+        elapsed = -System.nanoTime();
 
         ResponseAPDU responseAPDU = channel.transmit(apdu);
 
@@ -371,6 +405,28 @@ public class CardMngr {
             System.out.println(apdu);
             System.out.println(ByteUtil.bytesToHex(apdu.getBytes()));
         }
+
+        /*
+        if (apdu.getNc() >= 0xff) {
+            byte[] data = apdu.getBytes();
+            int numChunks = (data.length + 254) / 255;
+            for (int i = 0; i < numChunks; ++i) {
+                int chunkStart = i *255;
+                int chunkLength = 255;
+                if (chunkStart + chunkLength > data.length) {
+                    chunkLength = data.length - chunkStart;
+                }
+                byte[] chunk = new byte[chunkLength];
+                System.arraycopy(data, chunkStart, chunk, 0, chunkLength);
+                CommandAPDU cmd = new CommandAPDU(apdu.getCLA(), 0x7a, 0, 0, chunk);
+                ResponseAPDU resp = simulator.transmitCommand(cmd);
+                if ((short) resp.getSW() != ISO7816.SW_NO_ERROR) {
+                    return resp;
+                }
+            }
+            apdu = new CommandAPDU(apdu.getCLA(), 0x7b, 0, 0);
+        }
+        */
 
         ResponseAPDU response = simulator.transmitCommand(apdu);
         byte[] responseBytes = response.getBytes();

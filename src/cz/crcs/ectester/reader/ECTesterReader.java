@@ -1,6 +1,6 @@
 /*
  * ECTester, tool for testing Elliptic curve cryptography implementations.
- * Copyright (c) 2016-2018 Petr Svenda <petr@svenda.com>
+ * Copyright (c) 2016-2019 Petr Svenda <petr@svenda.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -163,6 +163,9 @@ public class ECTesterReader {
                 Security.addProvider(new BouncyCastleProvider());
             } catch (SecurityException | NoClassDefFoundError ignored) {
             }
+            // Make BouncyCastle more lenient when we work with signatures in ASN.1 DER format,
+            // cards sometimes are not fully compliant.
+            System.setProperty("org.bouncycastle.asn1.allow_unsafe_integer", "true");
 
             //do action
             if (cli.hasOption("export")) {
