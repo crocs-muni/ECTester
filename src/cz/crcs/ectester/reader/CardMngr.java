@@ -23,7 +23,7 @@ public class CardMngr {
 
     private boolean simulate = false;
     private boolean verbose = true;
-    private boolean extendedLength = false;
+    private boolean chunking = false;
 
     private final byte[] selectCM = {
             (byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x07, (byte) 0xa0, (byte) 0x00, (byte) 0x00,
@@ -59,6 +59,9 @@ public class CardMngr {
             if (verbose)
                 System.out.println("T=1 failed, trying protocol '*'");
             card = terminal.connect("*");
+            if (card.getProtocol().equals("T=0")) {
+                chunking = true;
+            }
         }
     }
 
@@ -174,6 +177,10 @@ public class CardMngr {
             card.disconnect(false);
             card = null;
         }
+    }
+
+    public void setChunking(boolean state) {
+        chunking = state;
     }
 
     // Functions for CPLC taken and modified from https://github.com/martinpaljak/GlobalPlatformPro
@@ -330,7 +337,7 @@ public class CardMngr {
         }
 
         long elapsed;
-        if (card.getProtocol().equals("T=0") && apdu.getNc() >= 0xff) {
+        if (chunking && apdu.getNc() >= 0xff) {
             if (verbose) {
                 System.out.print("Chunking:");
             }
@@ -407,7 +414,7 @@ public class CardMngr {
         }
 
         /*
-        if (apdu.getNc() >= 0xff) {
+        if (chunking && apdu.getNc() >= 0xff) {
             byte[] data = apdu.getBytes();
             int numChunks = (data.length + 254) / 255;
             for (int i = 0; i < numChunks; ++i) {

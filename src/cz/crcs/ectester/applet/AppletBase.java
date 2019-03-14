@@ -97,10 +97,13 @@ public abstract class AppletBase extends Applet {
             // go to proprietary data
             dataOffset++;
             */
+            short resetMemory = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET);
+            short deselectMemory = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT);
+            byte memoryType = (resetMemory > deselectMemory) ? JCSystem.CLEAR_ON_RESET : JCSystem.CLEAR_ON_DESELECT;
 
-            ramArray = JCSystem.makeTransientByteArray(ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
-            ramArray2 = JCSystem.makeTransientByteArray(ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
-            apduArray = JCSystem.makeTransientByteArray(APDU_MAX_LENGTH, JCSystem.CLEAR_ON_RESET);
+            ramArray = JCSystem.makeTransientByteArray(ARRAY_LENGTH, memoryType);
+            ramArray2 = JCSystem.makeTransientByteArray(ARRAY_LENGTH, memoryType);
+            apduArray = JCSystem.makeTransientByteArray(APDU_MAX_LENGTH, memoryType);
 
             randomData = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
             EC_Consts.randomData = randomData;
