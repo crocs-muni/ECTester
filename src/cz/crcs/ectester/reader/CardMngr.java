@@ -8,6 +8,7 @@ import javacard.framework.ISO7816;
 
 import javax.smartcardio.*;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * @author Petr Svenda petr@svenda.com
@@ -328,6 +329,39 @@ public class CardMngr {
         }
     }
 
+    private CommandAPDU chunk(CommandAPDU apdu) throws CardException {
+        if (verbose) {
+            System.out.print("Chunking:");
+        }
+        byte[] data = apdu.getBytes();
+        int numChunks = (data.length + 254) / 255;
+        for (int i = 0; i < numChunks; ++i) {
+            int chunkStart = i *255;
+            int chunkLength = 255;
+            if (chunkStart + chunkLength > data.length) {
+                chunkLength = data.length - chunkStart;
+            }
+            if (verbose) {
+                System.out.print(" " + chunkLength);
+            }
+            byte[] chunk = new byte[chunkLength];
+            System.arraycopy(data, chunkStart, chunk, 0, chunkLength);
+            CommandAPDU cmd = new CommandAPDU(apdu.getCLA(), 0x7a, 0, 0, chunk);
+            ResponseAPDU resp;
+            if (simulate) {
+                resp = simulator.transmitCommand(cmd);
+            } else {
+                resp = channel.transmit(cmd);
+            }
+            if ((short) resp.getSW() != ISO7816.SW_NO_ERROR) {
+                throw new CardException("Chunking failed!");
+            }
+        }
+        if (verbose)
+            System.out.println();
+        return new CommandAPDU(apdu.getCLA(), 0x7b, 0, 0, 0xff);
+    }
+
     public ResponseAPDU sendAPDU(CommandAPDU apdu) throws CardException {
         if (verbose) {
             System.out.println(">>>>");
@@ -338,31 +372,7 @@ public class CardMngr {
 
         long elapsed;
         if (chunking && apdu.getNc() >= 0xff) {
-            if (verbose) {
-                System.out.print("Chunking:");
-            }
-            byte[] data = apdu.getBytes();
-            int numChunks = (data.length + 254) / 255;
-            for (int i = 0; i < numChunks; ++i) {
-                int chunkStart = i *255;
-                int chunkLength = 255;
-                if (chunkStart + chunkLength > data.length) {
-                    chunkLength = data.length - chunkStart;
-                }
-                if (verbose) {
-                    System.out.print(" " + chunkLength);
-                }
-                byte[] chunk = new byte[chunkLength];
-                System.arraycopy(data, chunkStart, chunk, 0, chunkLength);
-                CommandAPDU cmd = new CommandAPDU(apdu.getCLA(), 0x7a, 0, 0, chunk);
-                ResponseAPDU resp = channel.transmit(cmd);
-                if ((short) resp.getSW() != ISO7816.SW_NO_ERROR) {
-                    return resp;
-                }
-            }
-            if (verbose)
-                System.out.println();
-            apdu = new CommandAPDU(apdu.getCLA(), 0x7b, 0, 0, 0xff);
+            apdu = chunk(apdu);
         }
 
         elapsed = -System.nanoTime();
@@ -389,6 +399,7 @@ public class CardMngr {
         if (verbose) {
             System.out.println("<<<<");
             System.out.println("Elapsed time (ms): " + elapsed / 1000000);
+            System.out.println("---------------------------------------------------------");
         }
         return responseAPDU;
     }
@@ -406,34 +417,16 @@ public class CardMngr {
         return simulator.selectApplet(appletAID);
     }
 
-    public ResponseAPDU sendAPDUSimulator(CommandAPDU apdu) {
+    public ResponseAPDU sendAPDUSimulator(CommandAPDU apdu) throws CardException {
         if (verbose) {
             System.out.println(">>>>");
             System.out.println(apdu);
             System.out.println(ByteUtil.bytesToHex(apdu.getBytes()));
         }
 
-        /*
         if (chunking && apdu.getNc() >= 0xff) {
-            byte[] data = apdu.getBytes();
-            int numChunks = (data.length + 254) / 255;
-            for (int i = 0; i < numChunks; ++i) {
-                int chunkStart = i *255;
-                int chunkLength = 255;
-                if (chunkStart + chunkLength > data.length) {
-                    chunkLength = data.length - chunkStart;
-                }
-                byte[] chunk = new byte[chunkLength];
-                System.arraycopy(data, chunkStart, chunk, 0, chunkLength);
-                CommandAPDU cmd = new CommandAPDU(apdu.getCLA(), 0x7a, 0, 0, chunk);
-                ResponseAPDU resp = simulator.transmitCommand(cmd);
-                if ((short) resp.getSW() != ISO7816.SW_NO_ERROR) {
-                    return resp;
-                }
-            }
-            apdu = new CommandAPDU(apdu.getCLA(), 0x7b, 0, 0);
+            apdu = chunk(apdu);
         }
-        */
 
         ResponseAPDU response = simulator.transmitCommand(apdu);
         byte[] responseBytes = response.getBytes();
@@ -447,7 +440,7 @@ public class CardMngr {
         return response;
     }
 
-    public ResponseAPDU sendAPDUSimulator(byte[] apdu) {
+    public ResponseAPDU sendAPDUSimulator(byte[] apdu) throws CardException {
         CommandAPDU commandAPDU = new CommandAPDU(apdu);
         return sendAPDUSimulator(commandAPDU);
     }

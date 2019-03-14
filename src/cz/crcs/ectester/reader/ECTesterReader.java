@@ -140,6 +140,8 @@ public class ECTesterReader {
                 if (!cardManager.prepareLocalSimulatorApplet(AID_221, INSTALL_DATA, ECTesterApplet.class)) {
                     System.err.println(Colors.error("Failed to establish a simulator."));
                     System.exit(1);
+                } else {
+                    cardManager.setChunking(true);
                 }
             } else {
                 if (!cardManager.connectToCardSelect()) {

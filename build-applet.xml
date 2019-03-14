@@ -23,7 +23,6 @@
 	<property name="cap" value="${cap_222}"/>
 
 
-
 	<condition property="cap_extended">
 		<equals arg1="${cap}" arg2="${cap_222}"/>
 	</condition>
