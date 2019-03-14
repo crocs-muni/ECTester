@@ -114,6 +114,11 @@ The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API
   margin: 10pt;
 }
 
+.small_atr {
+	font-size: small;
+	color: 	rgba(30, 107, 184, 0.4);
+}
+
 #support_table, #perf_table, #curve_table {
   text-align: center;
 }
@@ -136,6 +141,10 @@ td.bottom, tr.bottom td {
 
 #perf_table tr td:first-child {
   border-left: 2px solid !important;
+}
+
+#perf_table td {
+  padding: 0.4rem 0.7rem;
 }
 
 #curve_table td ~ td {
@@ -211,19 +220,20 @@ td.bottom, tr.bottom td {
 
 <h3>Card list</h3>
 
-This page contains results for the following cards:<br/>
+This page contains results for the following cards:</br>
 <ul>
-	<li>Athena IDProtect</li>
-	<li>Feitian A22CR</li>
-	<li>G&D SmartCafe Expert 6.0</li>
-	<li>G&D SmartCafe Expert 7.0</li>
-	<li>Infineon CJTOP 80K INF SLJ 52GLA080AL M8.4</li>
-	<li>Infineon SLE78 Universal JCard</li>
-	<li>NXP JCOP31 v2.4.1</li>
-	<li>NXP JCOP CJ2A081</li>
-	<li>NXP JCOP v2.4.2 R2</li>
-	<li>NXP JCOP v2.4.2 R3</li>
-	<li>TaiSYS SIMoME VAULT</li>
+	<li>ACS ACOSJ 40K <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3b69000241434f534a76313031">3b69000241434f534a76313031</a></li>
+	<li>Athena IDProtect <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bd518ff8191fe1fc38073c8211309">3bd518ff8191fe1fc38073c8211309</a></li>
+	<li>Feitian A22CR <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3b9c9580811f039067464a01003504f272fe00a1">3b9c9580811f039067464a01003504f272fe00a1</a></li>
+	<li>G&D SmartCafe 6.0 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bfe1800008031fe4553434536302d43443038312d6e46a9">3bfe1800008031fe4553434536302d43443038312d6e46a9</a></li>
+	<li>G&D SmartCafe 7.0 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bf99600008031fe4553434537200000202027">3bf99600008031fe4553434537200000202027</a></li>
+	<li>Infineon CJTOP 80K INF SLJ 52GLA080AL M8.4 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bfe1800008031fe45803180664090a5102e1083019000f2">3bfe1800008031fe45803180664090a5102e1083019000f2</a></li>
+	<li>Infineon SLE78 Universal JCard <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bfd9600008131fe45534c4a353247444c313238435257">3bfd9600008131fe45534c4a353247444c313238435257</a></li>
+	<li>NXP JCOP31 v2.4.1 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bf81300008131fe454a434f5076323431b7">3bf81300008131fe454a434f5076323431b7</a></li>
+	<li>NXP JCOP CJ2A081 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bf81300008131fe454a434f5076323431b7">3bf81300008131fe454a434f5076323431b7</a></li>
+	<li>NXP JCOP v2.4.2 R2 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bf91300008131fe454a434f503234325232a3">3bf91300008131fe454a434f503234325232a3</a></li>
+	<li>NXP JCOP v2.4.2 R3 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bf01300008131fe45e8">3bf01300008131fe45e8</a></li>
+	<li>TaiSYS SIMoME VAULT <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3b9f95803fc7a08031e073fa21106300000083f09000bb">3b9f95803fc7a08031e073fa21106300000083f09000bb</a></li>
 </ul>
 
 <h3>$ \mathbb{F}_p $ support</h3>
@@ -256,6 +266,17 @@ This page contains results for the following cards:<br/>
         <th>ECDSA</th>
         <th>ECDH</th>
         <th>ECDSA</th>
+    </tr>
+    <tr>
+    	<td><a href="{{ site.baseurl }}/results/default/ACS_ACOSJ_40K/">ACS ACOSJ 40K</a></td>
+    	<td class="yes">1,2,3,4</td>
+    	<td class="yes">a,b,c,d,e</td>
+    	<td class="yes">1,2,3,4</td>
+    	<td class="yes">a,b,c,d,e</td>
+    	<td class="yes">1,2,3,4</td>
+    	<td class="yes">a,b,c,d,e</td>
+    	<td class="no">✘</td>
+    	<td class="no">✘</td>
     </tr>
     <tr>
     	<td><a href="{{ site.baseurl }}/results/default/Athena_IDProtect/">Athena IDProtect</a></td>
@@ -346,7 +367,7 @@ This page contains results for the following cards:<br/>
         <td class="no">✘</td>
     </tr>
     <tr>
-        <td><a href="{{ site.baseurl }}/results/default/NXP_JCOP_v2.4.2_R3/">NXP JCOP v2.4.2 R3</a></td>
+        <td><a href="{{ site.baseurl }}/results/default/NXP_JCOP_v2.4.2_R2/">NXP JCOP v2.4.2 R2</a></td>
         <td class="yes">1,3</td>
         <td class="yes">a,b,c</td>
         <td class="yes">1,3</td>
@@ -357,7 +378,7 @@ This page contains results for the following cards:<br/>
         <td class="no">✘</td>
     </tr>
     <tr>
-        <td><a href="{{ site.baseurl }}/results/default/NXP_JCOP_v2.4.2_R2/">NXP JCOP v2.4.2 R2</a></td>
+        <td><a href="{{ site.baseurl }}/results/default/NXP_JCOP_v2.4.2_R3/">NXP JCOP v2.4.2 R3</a></td>
         <td class="yes">1,3</td>
         <td class="yes">a,b,c</td>
         <td class="yes">1,3</td>
@@ -391,13 +412,13 @@ performance is similar to ECDH performance. ECDSA timings are split for sign+ver
         <col span="1" style="width: 2%">
         <col span="1" style="width: 2%">
         <col span="1" style="width: 8%">
-        <col span="1" style="width: 10%">
+        <col span="1" style="width: 9%">
         <col span="1" style="width: 8%">
-        <col span="1" style="width: 10%">
+        <col span="1" style="width: 9%">
         <col span="1" style="width: 8%">
-        <col span="1" style="width: 10%">
+        <col span="1" style="width: 9%">
         <col span="1" style="width: 8%">
-        <col span="1" style="width: 10%">
+        <col span="1" style="width: 9%">
     </colgroup>
     <tr>
         <th rowspan="2">Card<sup><a href="#color_types">‡</a></sup></th>
@@ -419,6 +440,69 @@ performance is similar to ECDH performance. ECDSA timings are split for sign+ver
         <th>ECDH</th>
         <th>ECDSA</th>
     </tr>
+    <tr>
+    	<td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/ACS_ACOSJ_40K/">ACS ACOSJ 40K</a></td>   	
+    </tr>
+    <tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">172</td>
+       	<td class="yes">254+257</td>
+       	<td class="yes">209</td>
+       	<td class="yes">311+315</td>
+       	<td class="yes">360</td>
+       	<td class="yes">503+536</td>
+       	<td class="no">✘</td>
+       	<td class="no">✘</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">172</td>
+    	<td class="yes">255+256</td>
+    	<td class="yes">209</td>
+    	<td class="yes">311+316</td>
+    	<td class="yes">360</td>
+    	<td class="yes">505+535</td>
+    	<td class="no">✘</td>
+    	<td class="no">✘</td>
+    </tr>
+	<tr><td>3</td><td>c</td>
+		<td class="yes">172</td>
+		<td class="yes">254+257</td>
+		<td class="yes">209</td>
+		<td class="yes">311+315</td>
+		<td class="yes">360</td>
+		<td class="yes">505+537</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="yes">172</td>
+		<td class="yes">255+261</td>
+		<td class="yes">210</td>
+		<td class="yes">310+316</td>
+		<td class="yes">360</td>
+		<td class="yes">505+537</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="yes">255+260</td>
+		<td class="no">✘</td>
+		<td class="yes">311+315</td>
+		<td class="no">✘</td>
+		<td class="yes">505+538</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
     <tr>
     	<td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/Athena_IDProtect/">Athena IDProtect</a></td>   	
     </tr>
@@ -924,7 +1008,7 @@ performance is similar to ECDH performance. ECDSA timings are split for sign+ver
 		<td class="none"></td>
 	</tr>
     <tr>
-        <td rowspan="7" class="split bottom"><a href="{{ site.baseurl }}/results/default/NXP_JCOP_v2.4.2_R3/">NXP JCOP v2.4.2 R3</a></td>
+        <td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/NXP_JCOP_v2.4.2_R3/">NXP JCOP v2.4.2 R3</a></td>
     </tr>
 	<tr class="split"><td>1</td><td>a</td>
        	<td class="yes">101</td>
@@ -976,7 +1060,7 @@ performance is similar to ECDH performance. ECDSA timings are split for sign+ver
 		<td class="no">✘</td>
 		<td class="no">✘</td>
 	</tr>
-	<tr class="bottom"><td>6</td><td class="none"></td>
+	<tr><td>6</td><td class="none"></td>
 		<td class="no">✘</td>
 		<td class="none"></td>
 		<td class="no">✘</td>
@@ -987,7 +1071,7 @@ performance is similar to ECDH performance. ECDSA timings are split for sign+ver
 		<td class="none"></td>
 	</tr>
     <tr>
-    	<td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/TaiSYS_SIMoME_VAULT/">TaiSYS SIMoME VAULT</a></td>   	
+    	<td rowspan="7" class="split bottom"><a href="{{ site.baseurl }}/results/default/TaiSYS_SIMoME_VAULT/">TaiSYS SIMoME VAULT</a></td>   	
     </tr>
     <tr class="split"><td>1</td><td>a</td>
        	<td class="yes">109</td>
@@ -1039,7 +1123,7 @@ performance is similar to ECDH performance. ECDSA timings are split for sign+ver
 		<td class="no">✘</td>
 		<td class="yes">912+1200</td>
 	</tr>
-	<tr><td>6</td><td class="none"></td>
+	<tr class="bottom"><td>6</td><td class="none"></td>
 		<td class="no">✘</td>
 		<td class="none"></td>
 		<td class="no">✘</td>
