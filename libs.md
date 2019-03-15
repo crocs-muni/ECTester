@@ -2,7 +2,7 @@
 ---
 # Libraries with ECC support
 
-Popular libraries with at least some ECC support:
+Popular libraries with at least some ECC support, that ECTester does not yet support:
 
  - [NSS](https://hg.mozilla.org/projects/nss)
  - [mbedTLS](https://tls.mbed.org/)
@@ -57,8 +57,11 @@ Libraries that ECTester can test.
         - Uses Lopez-Dahab (Montgomery) ladder, XZ coordinates (ec2_mont.c): Fast multiplication on elliptic curves over GF(2^m) without precomputation (Algorithm 2P)
         - Contains an implementation of IEEE P1363 algorithm A.10.3 using affine coordinates (ec2_aff.c)
     - Has some custom arithmetic for some of the NIST primes.
- - [WolfCrypt](https://www.wolfssl.com)
+ - [WolfCrypt(WolfSSL)](https://www.wolfssl.com)
     - C + Java
+    - Prime field curves only.
+    - Jacobian coordinates:
+        - Uses sliding window scalar multiplication, (discards `b` parameter of curve), but validates points.
  - [OpenSSL](https://www.openssl.org/)
     - C
     - For prime field curves:
