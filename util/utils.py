@@ -16,18 +16,24 @@ def moving_average(a, n) :
     return ret[n - 1:] / n
 
 
-def plot_hist(axes, data, xlabel=None, log=False):
+def plot_hist(axes, data, xlabel=None, log=False, avg=True, median=True, bins=None, **kwargs):
     time_max = max(data)
     time_min = min(data)
     time_avg = np.average(data)
     time_median = np.median(data)
-    axes.hist(data, bins=time_max - time_min + 1, log=log, align="mid")
-    axes.axvline(x=time_avg, alpha=0.7, linestyle="dotted", color="blue", label="avg = {}".format(time_avg))
-    axes.axvline(x=time_median, alpha=0.7, linestyle="dotted", color="green", label="median = {}".format(time_median))
+    if bins is None:
+        bins = time_max - time_min + 1
+    hist = axes.hist(data, bins=bins, log=log, **kwargs)
+    if avg:
+        axes.axvline(x=time_avg, alpha=0.7, linestyle="dotted", color="blue", label="avg = {}".format(time_avg))
+    if median:
+        axes.axvline(x=time_median, alpha=0.7, linestyle="dotted", color="green", label="median = {}".format(time_median))
     axes.set_ylabel("count" + ("\n(log)" if log else ""))
     axes.set_xlabel("time" if xlabel is None else xlabel)
     axes.xaxis.set_major_locator(ticker.MaxNLocator())
-    axes.legend(loc="best")
+    if avg or median:
+        axes.legend(loc="best")
+    return hist
 
 
 def miller_correction(entropy, samples, bins):

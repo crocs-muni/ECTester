@@ -369,7 +369,7 @@ public class ECTesterStandalone {
         ECPublicKey pubkey = (ECPublicKey) ECUtil.loadKey(EC_Consts.PARAMETER_W, cli.getOptionValue("ecdh.named-public"), cli.getOptionValue("ecdh.public"), (ECParameterSpec) spec);
 
         int amount = Integer.parseInt(cli.getOptionValue("ecdh.amount", "1"));
-        for (int i = 0; i < amount; ++i) {
+        for (int i = 0; i < amount || amount == 0; ++i) {
             if (!cli.hasOption("ecdh.fixed-private") && !cli.hasOption("ecdh.named-private") && !cli.hasOption("ecdh.private")) {
                 one = kpg.genKeyPair();
             }
@@ -506,7 +506,7 @@ public class ECTesterStandalone {
         ECPublicKey pubkey = (ECPublicKey) ECUtil.loadKey(EC_Consts.PARAMETER_W, cli.getOptionValue("ecdsa.named-public"), cli.getOptionValue("ecdsa.public"), spec);
 
         int amount = Integer.parseInt(cli.getOptionValue("ecdsa.amount", "1"));
-        for (int i = 0; i < amount; ++i) {
+        for (int i = 0; i < amount || amount == 0; ++i) {
             if (!cli.hasOption("ecdsa.named-private") || !cli.hasOption("ecdsa.named-public")) {
                 KeyPair one = kpg.genKeyPair();
 

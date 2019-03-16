@@ -362,11 +362,22 @@ public class ECUtil {
     public static BigInteger recoverSignatureNonce(byte[] signature, byte[] data, BigInteger privkey, ECParameterSpec params, String hashType) {
         try {
             int bitSize = params.getOrder().bitLength();
-            MessageDigest md = MessageDigest.getInstance(hashType);
-            byte[] hash = md.digest(data);
+            // Hash the data.
+            byte[] hash;
+            if (hashType.equals("NONE")) {
+                hash = data;
+            } else {
+                MessageDigest md = MessageDigest.getInstance(hashType);
+                hash = md.digest(data);
+            }
+            // Trim bitSize of rightmost bits.
             BigInteger hashInt = new BigInteger(1, hash);
-            hashInt = hashInt.and(BigInteger.ONE.shiftLeft(bitSize + 1).subtract(BigInteger.ONE));
+            int hashBits = hashInt.bitLength();
+            if (hashBits > bitSize) {
+                hashInt = hashInt.shiftRight(hashBits - bitSize);
+            }
 
+            // Parse DERSignature
             BigInteger[] sigPair = fromDERSignature(signature);
             BigInteger r = sigPair[0];
             BigInteger s = sigPair[1];
@@ -420,7 +431,7 @@ public class ECUtil {
             FileInputStream in = new FileInputStream(file);
             result.readCSV(in);
             in.close();
-        } else {
+        } else if (named != null) {
             if (params == EC_Consts.PARAMETER_W) {
                 result = EC_Store.getInstance().getObject(EC_Key.Public.class, named);
             } else if (params == EC_Consts.PARAMETER_S) {
