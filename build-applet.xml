@@ -16,8 +16,8 @@
 
 	<!-- applet properties -->
 	<property name="pkg_aid" value="4543546573746572"/>
-	<property name="applet_aid_221" value="454354657374657230333262"/> <!--// VERSION v0.3.2 -->
-	<property name="applet_aid_222" value="454354657374657230333278"/> <!--// VERSION v0.3.2 -->
+	<property name="applet_aid_221" value="454354657374657230333362"/> <!--// VERSION v0.3.3 -->
+	<property name="applet_aid_222" value="454354657374657230333378"/> <!--// VERSION v0.3.3 -->
 	<property name="cap_221" value="ectester221.cap"/>
 	<property name="cap_222" value="ectester222.cap"/>
 	<property name="cap" value="${cap_222}"/>

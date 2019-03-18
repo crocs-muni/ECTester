@@ -64,7 +64,7 @@ import static cz.crcs.ectester.applet.EC_Consts.Signature_ALG_ECDSA_SHA;
  *
  * @author Petr Svenda petr@svenda.com
  * @author Jan Jancar johny@neuromancer.sk
- * @version v0.3.2
+ * @version v0.3.3
  */
 public class ECTesterReader {
     private CardMngr cardManager;
@@ -73,7 +73,7 @@ public class ECTesterReader {
     private Config cfg;
 
     private Options opts = new Options();
-    public static final String VERSION = "v0.3.2";
+    public static final String VERSION = "v0.3.3";
     public static String GIT_COMMIT = "";
     private static String DESCRIPTION;
     private static String LICENSE = "MIT Licensed\nCopyright © 2016-2019 Petr Svenda <petr@svenda.com>\nCopyright © 2016-2019 Jan Jancar  <johny@neuromancer.sk>";
@@ -81,8 +81,8 @@ public class ECTesterReader {
     private static String CLI_FOOTER = "\n" + LICENSE;
 
     private static final byte[] SELECT_PREFIX = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x0c};
-    private static final byte[] AID_221 = {(byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x65, (byte) 0x72, (byte) 0x30, (byte) 0x33, (byte) 0x32, (byte) 0x62}; // VERSION v0.3.2
-    private static final byte[] AID_222 = {(byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x65, (byte) 0x72, (byte) 0x30, (byte) 0x33, (byte) 0x32, (byte) 0x78}; // VERSION v0.3.2
+    private static final byte[] AID_221 = {(byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x65, (byte) 0x72, (byte) 0x30, (byte) 0x33, (byte) 0x33, (byte) 0x62}; // VERSION v0.3.3
+    private static final byte[] AID_222 = {(byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x65, (byte) 0x72, (byte) 0x30, (byte) 0x33, (byte) 0x33, (byte) 0x78}; // VERSION v0.3.3
     private static final byte[] INSTALL_DATA = new byte[10];
 
     static {
