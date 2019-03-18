@@ -16,6 +16,21 @@ def moving_average(a, n) :
     return ret[n - 1:] / n
 
 
+def time_scale(data, orig_unit, target_unit, scaling_factor):
+    units = {
+        "milli": ("ms", 1000000),
+        "micro": (r"$\mu s$", 1000),
+        "nano":  ("ns", 1)
+    }
+    upper = units[orig_unit][1]
+    lower = units[target_unit][1] * scaling_factor
+    if upper > lower:
+        data *= upper // lower
+    elif lower > upper:
+        np.floor_divide(data, lower // upper, data)
+    return (r"$\frac{1}{" + str(scaling_factor) + "}$" if scaling_factor != 1 else "") + units[target_unit][0]
+
+
 def plot_hist(axes, data, xlabel=None, log=False, avg=True, median=True, bins=None, **kwargs):
     time_max = max(data)
     time_min = min(data)
