@@ -53,18 +53,18 @@ See `java -jar ECTesterReader.jar -h`, `java -jar ECTesterReader.jar -ls` and [D
  -t,--test <test_suite[:from[:to]]>   Test ECC support. Optionally specify
                                       a test number to run only a part of
                                       a test suite. <test_suite>:
-                                      - default:
-                                      - compression:
-                                      - invalid:
-                                      - twist:
-                                      - degenerate:
-                                      - cofactor:
-                                      - wrong:
-                                      - signature:
-                                      - composite:
-                                      - test-vectors:
-                                      - edge-cases:
-                                      - miscellaneous:
+                                      - default
+                                      - compression
+                                      - invalid
+                                      - twist
+                                      - degenerate
+                                      - cofactor
+                                      - wrong
+                                      - signature
+                                      - composite
+                                      - test-vectors
+                                      - edge-cases
+                                      - miscellaneous
  -dh,--ecdh <count>                   Do EC KeyAgreement (ECDH...),
                                       [count] times.
  -dsa,--ecdsa <count>                 Sign data with ECDSA, [count] times.
@@ -109,12 +109,21 @@ See `java -jar ECTesterReader.jar -h`, `java -jar ECTesterReader.jar -ls` and [D
                                       running command in dry run mode and
                                       normal mode, and subtracting the
                                       two.
+    --time-unit <unit>                Use given time unit in measurement,
+                                      one of: milli, micro, nano.
     --cleanup                         Send the cleanup command trigerring
                                       JCSystem.requestObjectDeletion()
                                       after some operations.
  -s,--simulate                        Simulate a card with jcardsim
                                       instead of using a terminal.
  -y,--yes                             Accept all warnings and prompts.
+ -to,--test-options <options>         Test options to use:
+                                      - preset: Use preset semi-random
+                                      private keys (derived from curve)
+                                      instead of generating keypairs on
+                                      the cards when the test needs one.
+                                      - random: Use fully random private
+                                      keys instead of generating keypairs.
  -ka,--ka-type <type>                 Set KeyAgreement object [type],
                                       corresponds to JC.KeyAgreement
                                       constants.
@@ -198,7 +207,8 @@ Lists the implemented test suites and gives their short description.
 Get and print ECTester applet info from an applet installed on a card.
 
 Outputs:
-
+ - Card ATR
+ - Negotiated protocol (T=0/T=1)
  - ECTester applet version
  - ECTester APDU support (basic/extended APDU)
  - JavaCard API version

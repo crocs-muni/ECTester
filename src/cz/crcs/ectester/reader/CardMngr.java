@@ -8,7 +8,6 @@ import javacard.framework.ISO7816;
 
 import javax.smartcardio.*;
 import java.util.*;
-import java.util.function.Function;
 
 /**
  * @author Petr Svenda petr@svenda.com
@@ -184,6 +183,18 @@ public class CardMngr {
         chunking = state;
     }
 
+    public String getProtocol() {
+        if (simulate) {
+            return simulator.getProtocol();
+        } else {
+            if (card != null) {
+                return card.getProtocol();
+            } else {
+                return null;
+            }
+        }
+    }
+
     // Functions for CPLC taken and modified from https://github.com/martinpaljak/GlobalPlatformPro
     private static final byte CLA_GP = (byte) 0x80;
     private static final byte ISO7816_INS_GET_DATA = (byte) 0xCA;
@@ -280,6 +291,18 @@ public class CardMngr {
         }
     }
 
+    public ATR getATR() {
+        if (simulate) {
+            return new ATR(simulator.getATR());
+        } else {
+            if (card != null) {
+                return card.getATR();
+            } else {
+                return null;
+            }
+        }
+    }
+
     public CPLC getCPLC() throws CardException {
         byte[] data = fetchCPLC();
         return new CPLC(data);
@@ -311,13 +334,6 @@ public class CardMngr {
         }
     }
 
-    public ATR getATR() {
-        if (simulate) {
-            return new ATR(simulator.getATR());
-        } else {
-            return card.getATR();
-        }
-    }
 
     public static List<CardTerminal> getReaderList() {
         try {
@@ -336,7 +352,7 @@ public class CardMngr {
         byte[] data = apdu.getBytes();
         int numChunks = (data.length + 254) / 255;
         for (int i = 0; i < numChunks; ++i) {
-            int chunkStart = i *255;
+            int chunkStart = i * 255;
             int chunkLength = 255;
             if (chunkStart + chunkLength > data.length) {
                 chunkLength = data.length - chunkStart;

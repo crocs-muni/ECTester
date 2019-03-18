@@ -1,6 +1,7 @@
 /*
  * ECTester, tool for testing Elliptic curve cryptography implementations.
  * Copyright (c) 2016-2019 Petr Svenda <petr@svenda.com>
+ * Copyright (c) 2016-2019 Jan Jancar  <johny@neuromancer.sk>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,10 +30,8 @@ import cz.crcs.ectester.common.cli.Colors;
 import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.common.output.OutputLogger;
 import cz.crcs.ectester.common.output.TestWriter;
-import cz.crcs.ectester.common.util.ByteUtil;
-import cz.crcs.ectester.common.util.CardUtil;
-import cz.crcs.ectester.common.util.ECUtil;
-import cz.crcs.ectester.common.util.FileUtil;
+import cz.crcs.ectester.common.util.Util;
+import cz.crcs.ectester.common.util.*;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.output.FileTestWriter;
@@ -77,7 +76,7 @@ public class ECTesterReader {
     public static final String VERSION = "v0.3.2";
     public static String GIT_COMMIT = "";
     private static String DESCRIPTION;
-    private static String LICENSE = "MIT Licensed\nCopyright (c) 2016-2018 Petr Svenda <petr@svenda.com>";
+    private static String LICENSE = "MIT Licensed\nCopyright © 2016-2019 Petr Svenda <petr@svenda.com>\nCopyright © 2016-2019 Jan Jancar  <johny@neuromancer.sk>";
     private static String CLI_HEADER;
     private static String CLI_FOOTER = "\n" + LICENSE;
 
@@ -249,54 +248,6 @@ public class ECTesterReader {
      * @throws ParseException if there are any problems encountered while parsing the command line tokens
      */
     private CommandLine parseArgs(String[] args) throws ParseException {
-        /*
-         * Actions:
-         * -V / --version
-         * -h / --help
-         * -e / --export
-         * -g / --generate [amount]
-         * -t / --test [test_suite]
-         * -dh / --ecdh [count]]
-         * -dsa / --ecdsa [count]
-         * -ln / --list-named [obj]
-         * -ls / --list-suites
-         * -nfo / --info
-         *
-         * Options:
-         * -b / --bit-size <b> // -a / --all
-         *
-         * -fp / --prime-field
-         * -f2m / --binary-field
-         *
-         * -u / --custom
-         * -nc / --named-curve <cat/id>
-         * -c / --curve <curve_file> field,a,b,gx,gy,r,k
-         *
-         * -pub / --public <pubkey_file> wx,wy
-         * -npub / --named-public <cat/id>
-         *
-         * -priv / --private <privkey_file> s
-         * -npriv / --named-private <cat/id>
-         *
-         * -k / --key <key_file> wx,wy,s
-         * -nk / --named-key <cat/id>
-         *
-         * -v / --verbose
-         *
-         * -i / --input <input_file>
-         * -o / --output <output_file>
-         *      --format <format>
-         * -l / --log [log_file]
-         *
-         * -f / --fresh
-         * --cleanup
-         * -s / --simulate
-         * -y / --yes
-         * -ka/ --ka-type <type>
-         * -sig/--sig-type <type>
-         * -C / --color
-         * -to/ --test-options <opts>
-         */
         OptionGroup actions = new OptionGroup();
         actions.setRequired(true);
         actions.addOption(Option.builder("V").longOpt("version").desc("Print version info.").build());
@@ -348,6 +299,7 @@ public class ECTesterReader {
         opts.addOption(Option.builder().longOpt("fixed-public").desc("Generate public key only once, keep it for later ECDH.").build());
         opts.addOption(Option.builder("f").longOpt("fresh").desc("Generate fresh keys (set domain parameters before every generation).").build());
         opts.addOption(Option.builder().longOpt("time").desc("Output better timing values, by running command in dry run mode and normal mode, and subtracting the two.").build());
+        opts.addOption(Option.builder().longOpt("time-unit").desc("Use given time unit in measurement, one of: milli, micro, nano.").hasArg().argName("unit").build());
         opts.addOption(Option.builder().longOpt("cleanup").desc("Send the cleanup command trigerring JCSystem.requestObjectDeletion() after some operations.").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
         opts.addOption(Option.builder("y").longOpt("yes").desc("Accept all warnings and prompts.").build());
@@ -390,11 +342,13 @@ public class ECTesterReader {
 
     private void info() throws CardException {
         Response.GetInfo info = new Command.GetInfo(cardManager).send();
-        System.out.println(String.format("ECTester applet version: %s", info.getVersion()));
-        System.out.println(String.format("ECTester applet APDU support: %s", (info.getBase() == ECTesterApplet.BASE_221) ? "basic" : "extended length"));
-        System.out.println(String.format("JavaCard API version: %.1f", info.getJavaCardVersion()));
-        System.out.println(String.format("JavaCard supports system cleanup: %s", info.getCleanupSupport()));
-        System.out.println(String.format("Array sizes (apduBuf, ram, ram2, apduArr): %d %d %d %d", info.getApduBufferLength(), info.getRamArrayLength(), info.getRamArray2Length(), info.getApduArrayLength()));
+        System.out.println(String.format("Card ATR:\t\t\t\t%s", ByteUtil.bytesToHex(cardManager.getATR().getBytes(), false)));
+        System.out.println(String.format("Card protocol:\t\t\t\t%s", cardManager.getProtocol()));
+        System.out.println(String.format("ECTester applet version:\t\t%s", info.getVersion()));
+        System.out.println(String.format("ECTester applet APDU support:\t\t%s", (info.getBase() == ECTesterApplet.BASE_221) ? "basic" : "extended length"));
+        System.out.println(String.format("JavaCard API version:\t\t\t%.1f", info.getJavaCardVersion()));
+        System.out.println(String.format("JavaCard supports system cleanup:\t%s", info.getCleanupSupport()));
+        System.out.println(String.format("Array sizes (apduBuf,ram,ram2,apduArr):\t%d %d %d %d", info.getApduBufferLength(), info.getRamArrayLength(), info.getRamArray2Length(), info.getApduArrayLength()));
     }
 
     /**
@@ -461,7 +415,7 @@ public class ECTesterReader {
         respWriter.outputResponse(allocate);
 
         OutputStreamWriter keysFile = FileUtil.openFiles(cfg.outputs);
-        keysFile.write("index;genTime[milli];exportTime[milli];pubW;privS\n");
+        keysFile.write(String.format("index;genTime[%s];exportTime[%s];pubW;privS\n", cfg.timeUnit, cfg.timeUnit));
 
         int generated = 0;
         int retry = 0;
@@ -495,7 +449,7 @@ public class ECTesterReader {
 
             String pub = ByteUtil.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_W), false);
             String priv = ByteUtil.bytesToHex(export.getParameter(ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S), false);
-            String line = String.format("%d;%d;%d;%s;%s\n", generated, time / 1000000, export.getDuration() / 1000000, pub, priv);
+            String line = String.format("%d;%d;%d;%s;%s\n", generated, Util.convertTime(time, cfg.timeUnit), Util.convertTime(export.getDuration(), cfg.timeUnit), pub, priv);
             keysFile.write(line);
             keysFile.flush();
             generated++;
@@ -601,7 +555,7 @@ public class ECTesterReader {
         OutputStreamWriter out = null;
         if (cfg.outputs != null) {
             out = FileUtil.openFiles(cfg.outputs);
-            out.write("index;time[milli];pubW;privS;secret\n");
+            out.write(String.format("index;time[%s];pubW;privS;secret\n", cfg.timeUnit));
         }
 
         Response gen = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH).send();
@@ -669,7 +623,7 @@ public class ECTesterReader {
             if (out != null) {
                 time += result.getDuration();
 
-                out.write(String.format("%d;%d;%s;%s;%s\n", done, time / 1000000, ByteUtil.bytesToHex(pubkey_bytes, false), ByteUtil.bytesToHex(privkey_bytes, false), ByteUtil.bytesToHex(result.getSecret(), false)));
+                out.write(String.format("%d;%d;%s;%s;%s\n", done, Util.convertTime(time, cfg.timeUnit), ByteUtil.bytesToHex(pubkey_bytes, false), ByteUtil.bytesToHex(privkey_bytes, false), ByteUtil.bytesToHex(result.getSecret(), false)));
                 out.flush();
             }
 
@@ -727,7 +681,7 @@ public class ECTesterReader {
 
         OutputStreamWriter out = FileUtil.openFiles(cfg.outputs);
         if (out != null) {
-            out.write("index;signTime[milli];verifyTime[milli];data;pubW;privS;signature;nonce;valid\n");
+            out.write(String.format("index;signTime[%s];verifyTime[%s];data;pubW;privS;signature;nonce;valid\n", cfg.timeUnit, cfg.timeUnit));
         }
 
         Command.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR);
@@ -800,7 +754,7 @@ public class ECTesterReader {
                         k = ByteUtil.bytesToHex(kValue.toByteArray(), false);
                     }
                 }
-                out.write(String.format("%d;%d;%d;%s;%s;%s;%s;%s;%d\n", done, signTime / 1000000, verifyTime / 1000000, dataString, pub, priv, ByteUtil.bytesToHex(signature, false), k, verifyResp.successful() ? 1 : 0));
+                out.write(String.format("%d;%d;%d;%s;%s;%s;%s;%s;%d\n", done, Util.convertTime(signTime, cfg.timeUnit), Util.convertTime(verifyTime, cfg.timeUnit), dataString, pub, priv, ByteUtil.bytesToHex(signature, false), k, verifyResp.successful() ? 1 : 0));
                 out.flush();
             }
 
@@ -856,6 +810,7 @@ public class ECTesterReader {
         public String[] outputs;
         public boolean fresh = false;
         public boolean time = false;
+        public String timeUnit;
         public boolean cleanup = false;
         public boolean simulate = false;
         public boolean yes = false;
@@ -921,6 +876,13 @@ public class ECTesterReader {
             yes = cli.hasOption("yes");
             color = cli.hasOption("color");
             Colors.enabled = color;
+
+            timeUnit = cli.getOptionValue("time-unit", "micro");
+            String[] times = new String[]{"milli", "micro", "nano"};
+            if (!Arrays.asList(times).contains(timeUnit)) {
+                System.err.println(Colors.error("Wrong time unit " + timeUnit + ". Should be one of " + Arrays.toString(times)));
+                return false;
+            }
 
             if (cli.hasOption("list-named")) {
                 listNamed = cli.getOptionValue("list-named");

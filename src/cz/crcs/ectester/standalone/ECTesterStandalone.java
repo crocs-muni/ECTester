@@ -1,6 +1,7 @@
 /*
  * ECTester, tool for testing Elliptic curve cryptography implementations.
  * Copyright (c) 2016-2018 Petr Svenda <petr@svenda.com>
+ * Copyright (c) 2016-2019 Jan Jancar  <johny@neuromancer.sk>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -85,7 +86,7 @@ public class ECTesterStandalone {
     private TreeCommandLine cli;
     public static final String VERSION = "v0.3.2";
     private static final String DESCRIPTION = "ECTesterStandalone " + VERSION + ", an Elliptic Curve Cryptography support tester/utility.";
-    private static final String LICENSE = "MIT Licensed\nCopyright (c) 2016-2018 Petr Svenda <petr@svenda.com>";
+    private static final String LICENSE = "MIT Licensed\nCopyright © 2016-2019 Petr Svenda <petr@svenda.com>\nCopyright © 2016-2019 Jan Jancar  <johny@neuromancer.sk>";
     private static final String CLI_HEADER = "\n" + DESCRIPTION + "\n\n";
     private static final String CLI_FOOTER = "\n" + LICENSE;
 
