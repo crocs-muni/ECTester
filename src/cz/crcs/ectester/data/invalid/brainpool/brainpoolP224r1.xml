@@ -313,7 +313,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP224r1/52</id>
-    <inline>0x89b90b886ed09591c182478b66a3b1cb19ae01fe529897a2a2d5c8,0xc4650cc96a78639f5f33b7b05f48a72e5c49e7cccf916ed5638f22bc</inline>
+    <inline>0x0089b90b886ed09591c182478b66a3b1cb19ae01fe529897a2a2d5c8,0xc4650cc96a78639f5f33b7b05f48a72e5c49e7cccf916ed5638f22bc</inline>
     <curve>brainpool/brainpoolP224r1</curve>
     <desc>invalid order = 241</desc>
 </pubkey>

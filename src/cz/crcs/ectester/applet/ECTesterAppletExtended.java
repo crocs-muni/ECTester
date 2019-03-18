@@ -1,6 +1,7 @@
 /*
  * ECTester, tool for testing Elliptic curve cryptography implementations.
- * Copyright (c) 2016-2018 Petr Svenda <petr@svenda.com>
+ * Copyright (c) 2016-2019 Petr Svenda <petr@svenda.com>
+ * Copyright (c) 2016-2019 Jan Jancar  <johny@neuromancer.sk>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,11 +23,13 @@
  */
 /*
  * PACKAGEID: 4543546573746572
- * APPLETID: 45435465737465723031
+ * APPLETID: 454354657374657230333278 // VERSION v0.3.2
  */
 package cz.crcs.ectester.applet;
 
 import javacard.framework.APDU;
+import javacard.framework.CardRuntimeException;
+import javacard.framework.ISO7816;
 import javacard.framework.ISOException;
 import javacardx.apdu.ExtendedLength;
 

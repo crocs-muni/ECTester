@@ -24,6 +24,7 @@
 /dist/*.degenerate
 /dist/*.edge-cases
 /dist/*.xml
+/dist/*.yml
 
 # Built binaries in /src.
 /src/**/*.a
@@ -34,3 +35,6 @@
 /src/**/*.exp
 /src/**/*.lib
 /src/**/*.pdb
+
+# Python stuff
+/util/__pycache__/

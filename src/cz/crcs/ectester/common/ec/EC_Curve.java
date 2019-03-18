@@ -3,6 +3,7 @@ package cz.crcs.ectester.common.ec;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.util.ByteUtil;
 import javacard.security.KeyPair;
+import org.bouncycastle.math.ec.ECCurve;
 
 import java.math.BigInteger;
 import java.security.spec.*;
@@ -64,7 +65,12 @@ public class EC_Curve extends EC_Params {
             int e1 = ByteUtil.getShort(fieldData[1], 0);
             int e2 = ByteUtil.getShort(fieldData[2], 0);
             int e3 = ByteUtil.getShort(fieldData[3], 0);
-            int[] powers = new int[]{e1, e2, e3};
+            int[] powers;
+            if (e2 == 0 && e3 == 0) {
+                powers = new int[]{e1};
+            } else {
+                powers = new int[]{e1, e2, e3};
+            }
             field = new ECFieldF2m(m, powers);
         }
 
@@ -72,6 +78,28 @@ public class EC_Curve extends EC_Params {
         BigInteger b = new BigInteger(1, getParam(EC_Consts.PARAMETER_B)[0]);
 
         return new EllipticCurve(field, a, b);
+    }
+
+    public ECCurve toBCCurve() {
+        if (this.field == KeyPair.ALG_EC_FP) {
+            BigInteger p = new BigInteger(1, getParam(EC_Consts.PARAMETER_FP)[0]);
+            BigInteger a = new BigInteger(1, getParam(EC_Consts.PARAMETER_A)[0]);
+            BigInteger b = new BigInteger(1, getParam(EC_Consts.PARAMETER_B)[0]);
+            BigInteger r = new BigInteger(1, getParam(EC_Consts.PARAMETER_R)[0]);
+            BigInteger k = new BigInteger(1, getParam(EC_Consts.PARAMETER_K)[0]);
+            return new ECCurve.Fp(p, a, b, r, k);
+        } else {
+            byte[][] fieldData = getParam(EC_Consts.PARAMETER_F2M);
+            int m = ByteUtil.getShort(fieldData[0], 0);
+            int e1 = ByteUtil.getShort(fieldData[1], 0);
+            int e2 = ByteUtil.getShort(fieldData[2], 0);
+            int e3 = ByteUtil.getShort(fieldData[3], 0);
+            BigInteger a = new BigInteger(1, getParam(EC_Consts.PARAMETER_A)[0]);
+            BigInteger b = new BigInteger(1, getParam(EC_Consts.PARAMETER_B)[0]);
+            BigInteger r = new BigInteger(1, getParam(EC_Consts.PARAMETER_R)[0]);
+            BigInteger k = new BigInteger(1, getParam(EC_Consts.PARAMETER_K)[0]);
+            return new ECCurve.F2m(m, e1, e2, e3, a, b, r, k);
+        }
     }
 
     public ECParameterSpec toSpec() {

@@ -23,6 +23,7 @@ public class CardMngr {
 
     private boolean simulate = false;
     private boolean verbose = true;
+    private boolean chunking = false;
 
     private final byte[] selectCM = {
             (byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x07, (byte) 0xa0, (byte) 0x00, (byte) 0x00,
@@ -51,6 +52,19 @@ public class CardMngr {
         this.simulate = simulate;
     }
 
+    private void connectWithHighest() throws CardException {
+        try {
+            card = terminal.connect("T=1");
+        } catch (CardException ex) {
+            if (verbose)
+                System.out.println("T=1 failed, trying protocol '*'");
+            card = terminal.connect("*");
+            if (card.getProtocol().equals("T=0")) {
+                chunking = true;
+            }
+        }
+    }
+
     public boolean connectToCard() throws CardException {
         if (simulate)
             return true;
@@ -72,13 +86,7 @@ public class CardMngr {
 
             terminal = terminalList.get(i);
             if (terminal.isCardPresent()) {
-                try {
-                    card = terminal.connect("T=1");
-                } catch (CardException ex) {
-                    if (verbose)
-                        System.out.println("T=1 failed, trying protocol '*'");
-                    card = terminal.connect("*");
-                }
+                connectWithHighest();
 
                 if (verbose)
                     System.out.println("card: " + card);
@@ -132,7 +140,7 @@ public class CardMngr {
         }
 
         if (terminal != null) {
-            card = terminal.connect("*");
+            connectWithHighest();
             if (verbose)
                 System.out.println("card: " + card);
             channel = card.getBasicChannel();
@@ -168,6 +176,22 @@ public class CardMngr {
         if (card != null) {
             card.disconnect(false);
             card = null;
+        }
+    }
+
+    public void setChunking(boolean state) {
+        chunking = state;
+    }
+
+    public String getProtocol() {
+        if (simulate) {
+            return simulator.getProtocol();
+        } else {
+            if (card != null) {
+                return card.getProtocol();
+            } else {
+                return null;
+            }
         }
     }
 
@@ -267,6 +291,18 @@ public class CardMngr {
         }
     }
 
+    public ATR getATR() {
+        if (simulate) {
+            return new ATR(simulator.getATR());
+        } else {
+            if (card != null) {
+                return card.getATR();
+            } else {
+                return null;
+            }
+        }
+    }
+
     public CPLC getCPLC() throws CardException {
         byte[] data = fetchCPLC();
         return new CPLC(data);
@@ -298,13 +334,6 @@ public class CardMngr {
         }
     }
 
-    public ATR getATR() {
-        if (simulate) {
-            return new ATR(simulator.getATR());
-        } else {
-            return card.getATR();
-        }
-    }
 
     public static List<CardTerminal> getReaderList() {
         try {
@@ -316,6 +345,39 @@ public class CardMngr {
         }
     }
 
+    private CommandAPDU chunk(CommandAPDU apdu) throws CardException {
+        if (verbose) {
+            System.out.print("Chunking:");
+        }
+        byte[] data = apdu.getBytes();
+        int numChunks = (data.length + 254) / 255;
+        for (int i = 0; i < numChunks; ++i) {
+            int chunkStart = i * 255;
+            int chunkLength = 255;
+            if (chunkStart + chunkLength > data.length) {
+                chunkLength = data.length - chunkStart;
+            }
+            if (verbose) {
+                System.out.print(" " + chunkLength);
+            }
+            byte[] chunk = new byte[chunkLength];
+            System.arraycopy(data, chunkStart, chunk, 0, chunkLength);
+            CommandAPDU cmd = new CommandAPDU(apdu.getCLA(), 0x7a, 0, 0, chunk);
+            ResponseAPDU resp;
+            if (simulate) {
+                resp = simulator.transmitCommand(cmd);
+            } else {
+                resp = channel.transmit(cmd);
+            }
+            if ((short) resp.getSW() != ISO7816.SW_NO_ERROR) {
+                throw new CardException("Chunking failed!");
+            }
+        }
+        if (verbose)
+            System.out.println();
+        return new CommandAPDU(apdu.getCLA(), 0x7b, 0, 0, 0xff);
+    }
+
     public ResponseAPDU sendAPDU(CommandAPDU apdu) throws CardException {
         if (verbose) {
             System.out.println(">>>>");
@@ -324,7 +386,12 @@ public class CardMngr {
             System.out.println(ByteUtil.bytesToHex(apdu.getBytes()));
         }
 
-        long elapsed = -System.nanoTime();
+        long elapsed;
+        if (chunking && apdu.getNc() >= 0xff) {
+            apdu = chunk(apdu);
+        }
+
+        elapsed = -System.nanoTime();
 
         ResponseAPDU responseAPDU = channel.transmit(apdu);
 
@@ -348,6 +415,7 @@ public class CardMngr {
         if (verbose) {
             System.out.println("<<<<");
             System.out.println("Elapsed time (ms): " + elapsed / 1000000);
+            System.out.println("---------------------------------------------------------");
         }
         return responseAPDU;
     }
@@ -365,11 +433,15 @@ public class CardMngr {
         return simulator.selectApplet(appletAID);
     }
 
-    public ResponseAPDU sendAPDUSimulator(CommandAPDU apdu) {
+    public ResponseAPDU sendAPDUSimulator(CommandAPDU apdu) throws CardException {
         if (verbose) {
             System.out.println(">>>>");
             System.out.println(apdu);
             System.out.println(ByteUtil.bytesToHex(apdu.getBytes()));
+        }
+
+        if (chunking && apdu.getNc() >= 0xff) {
+            apdu = chunk(apdu);
         }
 
         ResponseAPDU response = simulator.transmitCommand(apdu);
@@ -384,7 +456,7 @@ public class CardMngr {
         return response;
     }
 
-    public ResponseAPDU sendAPDUSimulator(byte[] apdu) {
+    public ResponseAPDU sendAPDUSimulator(byte[] apdu) throws CardException {
         CommandAPDU commandAPDU = new CommandAPDU(apdu);
         return sendAPDUSimulator(commandAPDU);
     }

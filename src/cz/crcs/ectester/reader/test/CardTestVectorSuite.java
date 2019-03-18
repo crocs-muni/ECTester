@@ -163,14 +163,16 @@ public class CardTestVectorSuite extends CardTestSuite {
                     try {
                         ka.init(privKey);
                         ka.doPhase(pubKey, true);
-                        byte[] rawDerived = ka.generateSecret();
+                        byte[] derived = ka.generateSecret();
                         int fieldSize = (curve.getBits() + 7) / 8;
-                        if (rawDerived.length < fieldSize) {
+                        if (derived.length < fieldSize) {
                             byte[] padded = new byte[fieldSize];
-                            System.arraycopy(rawDerived, 0, padded, fieldSize - rawDerived.length, rawDerived.length);
-                            rawDerived = padded;
+                            System.arraycopy(derived, 0, padded, fieldSize - derived.length, derived.length);
+                            derived = padded;
                         }
-                        byte[] derived = md.digest(rawDerived);
+                        if (ecdhData.getType() == EC_Consts.KeyAgreement_ALG_EC_SVDP_DH || ecdhData.getType() == EC_Consts.KeyAgreement_ALG_EC_SVDP_DHC) {
+                            derived = md.digest(derived);
+                        }
                         if (secret.length != derived.length) {
                             if (secret.length < derived.length) {
                                 return new Result(Value.FAILURE, String.format("Derived secret was shorter than expected: %d vs %d (expected).", secret.length, derived.length));
@@ -190,6 +192,7 @@ public class CardTestVectorSuite extends CardTestSuite {
                 }
             };
             Test ecdhTest = CommandTest.function(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH), kaCallback);
+            Test ecdhRawTest = CommandTest.function(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH_PLAIN), kaCallback);
             byte[] data = new byte[32];
             TestCallback<CommandTestable> sigCallback = new TestCallback<CommandTestable>() {
                 @Override
@@ -222,7 +225,7 @@ public class CardTestVectorSuite extends CardTestSuite {
                 }
             };
             Test ecdsaTest = CommandTest.function(new Command.ECDSA_sign(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.Signature_ALG_ECDSA_SHA, ECTesterApplet.EXPORT_TRUE, data), sigCallback);
-            testVector.add(CompoundTest.all(ExpectedValue.SUCCESS, "", ecdhTest, ecdsaTest));
+            testVector.add(CompoundTest.all(ExpectedValue.SUCCESS, "Test.", ecdhTest, ecdhRawTest, ecdsaTest));
             if (cfg.cleanup) {
                 testVector.add(CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.ANY));
             }

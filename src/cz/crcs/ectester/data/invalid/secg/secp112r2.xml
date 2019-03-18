@@ -19,7 +19,7 @@
 </pubkey>
 <pubkey>
     <id>secp112r2/3</id>
-    <inline>0x4d927ecb2f7087ea26fa0e59ccc,0xb1dec25114c1755c063c03dbe1cc</inline>
+    <inline>0x04d927ecb2f7087ea26fa0e59ccc,0xb1dec25114c1755c063c03dbe1cc</inline>
     <curve>secg/secp112r2</curve>
     <desc>invalid order = 7</desc>
 </pubkey>
@@ -37,13 +37,13 @@
 </pubkey>
 <pubkey>
     <id>secp112r2/6</id>
-    <inline>0x3b7c03b728345d173f6c865c7c2,0x3243914c4944301261ae61b17801</inline>
+    <inline>0x03b7c03b728345d173f6c865c7c2,0x3243914c4944301261ae61b17801</inline>
     <curve>secg/secp112r2</curve>
     <desc>invalid order = 17</desc>
 </pubkey>
 <pubkey>
     <id>secp112r2/7</id>
-    <inline>0xd857dd6ac32e4249d082c706a95,0x482c8af26f0ede2b945f24787152</inline>
+    <inline>0x0d857dd6ac32e4249d082c706a95,0x482c8af26f0ede2b945f24787152</inline>
     <curve>secg/secp112r2</curve>
     <desc>invalid order = 19</desc>
 </pubkey>
@@ -229,7 +229,7 @@
 </pubkey>
 <pubkey>
     <id>secp112r2/38</id>
-    <inline>0x79352d8c9aaca8602bdc2bcdd784,0xb3f20709e4f2953af0b9e86a94f</inline>
+    <inline>0x79352d8c9aaca8602bdc2bcdd784,0x0b3f20709e4f2953af0b9e86a94f</inline>
     <curve>secg/secp112r2</curve>
     <desc>invalid order = 167</desc>
 </pubkey>
@@ -241,7 +241,7 @@
 </pubkey>
 <pubkey>
     <id>secp112r2/40</id>
-    <inline>0x9910c45778f1efa1c9f3154d44a,0xc5393764eb6184d869ad9677fb1d</inline>
+    <inline>0x09910c45778f1efa1c9f3154d44a,0xc5393764eb6184d869ad9677fb1d</inline>
     <curve>secg/secp112r2</curve>
     <desc>invalid order = 179</desc>
 </pubkey>

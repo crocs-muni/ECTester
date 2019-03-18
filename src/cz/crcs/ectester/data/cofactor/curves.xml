@@ -62,6 +62,24 @@
         <field>prime</field>
         <file>cofactor128p65535.csv</file>
     </curve>
+    <curve>
+        <id>large/cofactor160p56467</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>cofactor160p56467.csv</file>
+    </curve>
+    <curve>
+        <id>large/cofactor160p65521</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>cofactor160p65521.csv</file>
+    </curve>
+    <curve>
+        <id>large/cofactor160p65535</id>
+        <bits>160</bits>
+        <field>prime</field>
+        <file>cofactor160p65535.csv</file>
+    </curve>
 
     <curve>
         <id>cofactor160p2</id>

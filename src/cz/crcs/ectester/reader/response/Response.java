@@ -26,7 +26,7 @@ public abstract class Response {
         this.time = time;
     }
 
-    void parse(int numSW, int numParams) {
+    boolean parse(int numSW, int numParams) {
         this.numSW = numSW;
         this.sws = new short[numSW];
 
@@ -73,6 +73,7 @@ public abstract class Response {
             System.arraycopy(data, offset, params[i], 0, paramLength);
             offset += paramLength;
         }
+        return success;
     }
 
     public ResponseAPDU getAPDU() {
@@ -374,6 +375,14 @@ public abstract class Response {
             this.type = type;
 
             parse(1, (export == ECTesterApplet.EXPORT_TRUE) ? 1 : 0);
+        }
+
+        public short getTransformation() {
+            return transformation;
+        }
+
+        public byte getType() {
+            return type;
         }
 
         public boolean hasSecret() {

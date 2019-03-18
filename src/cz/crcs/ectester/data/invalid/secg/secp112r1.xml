@@ -67,7 +67,7 @@
 </pubkey>
 <pubkey>
     <id>secp112r1/11</id>
-    <inline>0x8b3adbcdcdb18c2cbf0cf9c6b781,0xe60359cd04af6683496efada8dc</inline>
+    <inline>0x8b3adbcdcdb18c2cbf0cf9c6b781,0x0e60359cd04af6683496efada8dc</inline>
     <curve>secg/secp112r1</curve>
     <desc>invalid order = 37</desc>
 </pubkey>
@@ -91,7 +91,7 @@
 </pubkey>
 <pubkey>
     <id>secp112r1/15</id>
-    <inline>0x3f5b2a97e4f7d4f73b5771e9d72,0x7be7bdfe3e6d7de20145e0fab394</inline>
+    <inline>0x03f5b2a97e4f7d4f73b5771e9d72,0x7be7bdfe3e6d7de20145e0fab394</inline>
     <curve>secg/secp112r1</curve>
     <desc>invalid order = 53</desc>
 </pubkey>
@@ -121,7 +121,7 @@
 </pubkey>
 <pubkey>
     <id>secp112r1/20</id>
-    <inline>0x1723919870a0d80077d9a1e450cb,0x428173a0d15ea25f5a6cfdfc97b</inline>
+    <inline>0x1723919870a0d80077d9a1e450cb,0x0428173a0d15ea25f5a6cfdfc97b</inline>
     <curve>secg/secp112r1</curve>
     <desc>invalid order = 73</desc>
 </pubkey>
@@ -151,7 +151,7 @@
 </pubkey>
 <pubkey>
     <id>secp112r1/25</id>
-    <inline>0x34c5f199ba83347d9a8b10f59bf3,0x964245d35298161bd23ff7d6446</inline>
+    <inline>0x34c5f199ba83347d9a8b10f59bf3,0x0964245d35298161bd23ff7d6446</inline>
     <curve>secg/secp112r1</curve>
     <desc>invalid order = 101</desc>
 </pubkey>
@@ -175,7 +175,7 @@
 </pubkey>
 <pubkey>
     <id>secp112r1/29</id>
-    <inline>0x566dc7a41511b7c2d47d7ec8f7e6,0xe7ab43ef12082342a02a78555cd</inline>
+    <inline>0x566dc7a41511b7c2d47d7ec8f7e6,0x0e7ab43ef12082342a02a78555cd</inline>
     <curve>secg/secp112r1</curve>
     <desc>invalid order = 113</desc>
 </pubkey>
@@ -187,7 +187,7 @@
 </pubkey>
 <pubkey>
     <id>secp112r1/31</id>
-    <inline>0xf821a24ffb775fafc53bbd61542,0x198812c3fb415ada5310065b2741</inline>
+    <inline>0x0f821a24ffb775fafc53bbd61542,0x198812c3fb415ada5310065b2741</inline>
     <curve>secg/secp112r1</curve>
     <desc>invalid order = 131</desc>
 </pubkey>
@@ -223,7 +223,7 @@
 </pubkey>
 <pubkey>
     <id>secp112r1/37</id>
-    <inline>0x1d7750f2e60a9a24916bd0c4334,0x11c38ae3984a3a1188f2b84ff483</inline>
+    <inline>0x01d7750f2e60a9a24916bd0c4334,0x11c38ae3984a3a1188f2b84ff483</inline>
     <curve>secg/secp112r1</curve>
     <desc>invalid order = 163</desc>
 </pubkey>

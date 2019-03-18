@@ -3,11 +3,10 @@ package cz.crcs.ectester.reader.command;
 import cz.crcs.ectester.applet.ECTesterApplet;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.ec.EC_Curve;
-import cz.crcs.ectester.common.ec.EC_Key;
-import cz.crcs.ectester.common.ec.EC_Keypair;
 import cz.crcs.ectester.common.ec.EC_Params;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.common.util.CardUtil;
+import cz.crcs.ectester.common.util.ECUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
@@ -60,12 +59,12 @@ public abstract class Command implements Cloneable {
         return (Command) super.clone();
     }
 
-    public static EC_Curve findCurve(EC_Store dataStore, ECTesterReader.Config cfg, short keyLength, byte keyClass) throws IOException {
+    public static EC_Curve findCurve(ECTesterReader.Config cfg, short keyLength, byte keyClass) throws IOException {
         if (cfg.customCurve) {
             byte curveId = EC_Consts.getCurve(keyLength, keyClass);
-            return dataStore.getObject(EC_Curve.class, "secg", CardUtil.getCurveName(curveId));
+            return EC_Store.getInstance().getObject(EC_Curve.class, "secg", CardUtil.getCurveName(curveId));
         } else if (cfg.namedCurve != null) {
-            EC_Curve curve = dataStore.getObject(EC_Curve.class, cfg.namedCurve);
+            EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, cfg.namedCurve);
             if (curve == null) {
                 throw new IOException("Curve could no be found.");
             }
@@ -96,14 +95,14 @@ public abstract class Command implements Cloneable {
      * @return a Command to send in order to prepare the curve on the keypairs.
      * @throws IOException if curve file cannot be found/opened
      */
-    public static Command prepareCurve(CardMngr cardManager, EC_Store dataStore, ECTesterReader.Config cfg, byte keyPair, short keyLength, byte keyClass) throws IOException {
+    public static Command prepareCurve(CardMngr cardManager, ECTesterReader.Config cfg, byte keyPair, short keyLength, byte keyClass) throws IOException {
         if (cfg.customCurve) {
             // Set custom curve (one of the SECG curves embedded applet-side)
             short domainParams = keyClass == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
             return new Command.Set(cardManager, keyPair, EC_Consts.getCurve(keyLength, keyClass), domainParams, null);
         }
 
-        EC_Curve curve = findCurve(dataStore, cfg, keyLength, keyClass);
+        EC_Curve curve = findCurve(cfg, keyLength, keyClass);
         if ((curve == null || curve.flatten() == null) && (cfg.namedCurve != null || cfg.curveFile != null)) {
             if (cfg.namedCurve != null) {
                 throw new IOException("Couldn't read named curve data.");
@@ -117,26 +116,21 @@ public abstract class Command implements Cloneable {
 
 
     /**
-     * @param keyPair which keyPair/s to set the key params on
+     * @param cardManager
+     * @param dataStore
+     * @param cfg
+     * @param keyPair       which keyPair/s to set the key params on
+     * @param allowedParams
      * @return a CommandAPDU setting params loaded on the keyPair/s
      * @throws IOException if any of the key files cannot be found/opened
      */
-    public static Command prepareKey(CardMngr cardManager, EC_Store dataStore, ECTesterReader.Config cfg, byte keyPair) throws IOException {
+    public static Command prepareKey(CardMngr cardManager, EC_Store dataStore, ECTesterReader.Config cfg, byte keyPair, short allowedParams) throws IOException {
         short params = EC_Consts.PARAMETERS_NONE;
         byte[] data = null;
 
         if (cfg.key != null || cfg.namedKey != null) {
             params |= EC_Consts.PARAMETERS_KEYPAIR;
-            EC_Params keypair;
-            if (cfg.key != null) {
-                keypair = new EC_Params(EC_Consts.PARAMETERS_KEYPAIR);
-
-                FileInputStream in = new FileInputStream(cfg.key);
-                keypair.readCSV(in);
-                in.close();
-            } else {
-                keypair = dataStore.getObject(EC_Keypair.class, cfg.namedKey);
-            }
+            EC_Params keypair = ECUtil.loadParams(EC_Consts.PARAMETERS_KEYPAIR, cfg.namedKey, cfg.key);
             if (keypair == null) {
                 throw new IOException("KeyPair not found.");
             }
@@ -147,21 +141,9 @@ public abstract class Command implements Cloneable {
             }
         }
 
-        if (cfg.publicKey != null || cfg.namedPublicKey != null) {
+        if ((cfg.publicKey != null || cfg.namedPublicKey != null) && ((allowedParams & EC_Consts.PARAMETER_W) != 0)) {
             params |= EC_Consts.PARAMETER_W;
-            EC_Params pub;
-            if (cfg.publicKey != null) {
-                pub = new EC_Params(EC_Consts.PARAMETER_W);
-
-                FileInputStream in = new FileInputStream(cfg.publicKey);
-                pub.readCSV(in);
-                in.close();
-            } else {
-                pub = dataStore.getObject(EC_Key.Public.class, cfg.namedPublicKey);
-                if (pub == null) {
-                    pub = dataStore.getObject(EC_Keypair.class, cfg.namedPublicKey);
-                }
-            }
+            EC_Params pub = ECUtil.loadParams(EC_Consts.PARAMETER_W, cfg.namedPublicKey, cfg.publicKey);
             if (pub == null) {
                 throw new IOException("Public key not found.");
             }
@@ -172,21 +154,10 @@ public abstract class Command implements Cloneable {
             }
             data = pubkey;
         }
-        if (cfg.privateKey != null || cfg.namedPrivateKey != null) {
-            params |= EC_Consts.PARAMETER_S;
-            EC_Params priv;
-            if (cfg.privateKey != null) {
-                priv = new EC_Params(EC_Consts.PARAMETER_S);
 
-                FileInputStream in = new FileInputStream(cfg.privateKey);
-                priv.readCSV(in);
-                in.close();
-            } else {
-                priv = dataStore.getObject(EC_Key.Private.class, cfg.namedPrivateKey);
-                if (priv == null) {
-                    priv = dataStore.getObject(EC_Keypair.class, cfg.namedPrivateKey);
-                }
-            }
+        if ((cfg.privateKey != null || cfg.namedPrivateKey != null) && ((allowedParams & EC_Consts.PARAMETER_S) != 0)) {
+            params |= EC_Consts.PARAMETER_S;
+            EC_Params priv = ECUtil.loadParams(EC_Consts.PARAMETER_S, cfg.namedPrivateKey, cfg.privateKey);
             if (priv == null) {
                 throw new IOException("Private key not found.");
             }

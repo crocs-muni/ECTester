@@ -37,13 +37,13 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP256r1/6</id>
-    <inline>0xb9f03197a680d49ad3e7b4d40d95340d5e1a46e57e2f961703137eea8e61653,0x681b44c0540f64f8fa77166a1c95002a7a7ae4f53a4317d57800cb3c8146310a</inline>
+    <inline>0x0b9f03197a680d49ad3e7b4d40d95340d5e1a46e57e2f961703137eea8e61653,0x681b44c0540f64f8fa77166a1c95002a7a7ae4f53a4317d57800cb3c8146310a</inline>
     <curve>brainpool/brainpoolP256r1</curve>
     <desc>invalid order = 17</desc>
 </pubkey>
 <pubkey>
     <id>brainpoolP256r1/7</id>
-    <inline>0x2d4b3dc4f3d3a9f4f4843637eb1ad271ffcf49bf6a2a837bb89b81920022899d,0x9ec63d7131dad83633aac03d648fc8b9c5016a403a3e4266a7b859337d00c31</inline>
+    <inline>0x2d4b3dc4f3d3a9f4f4843637eb1ad271ffcf49bf6a2a837bb89b81920022899d,0x09ec63d7131dad83633aac03d648fc8b9c5016a403a3e4266a7b859337d00c31</inline>
     <curve>brainpool/brainpoolP256r1</curve>
     <desc>invalid order = 19</desc>
 </pubkey>
@@ -79,7 +79,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP256r1/13</id>
-    <inline>0xabbdab45a30470fe34f79aa752b068daa8356a198fb171293109ee87fc5b9e4,0x6daf3a42a1c7f7e3fe75649caf1bbc7e36260a4bcdef5b900fca1b7795a35a87</inline>
+    <inline>0x0abbdab45a30470fe34f79aa752b068daa8356a198fb171293109ee87fc5b9e4,0x6daf3a42a1c7f7e3fe75649caf1bbc7e36260a4bcdef5b900fca1b7795a35a87</inline>
     <curve>brainpool/brainpoolP256r1</curve>
     <desc>invalid order = 43</desc>
 </pubkey>
@@ -97,7 +97,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP256r1/16</id>
-    <inline>0x80070fcc7e01481ac8f408d3fffd8bbb3abb719868ead0629115698dafbb073d,0x4015e9e8842bf388a967129a4a8a203840e96297cc2bac91828e35ae6b6bafc</inline>
+    <inline>0x80070fcc7e01481ac8f408d3fffd8bbb3abb719868ead0629115698dafbb073d,0x04015e9e8842bf388a967129a4a8a203840e96297cc2bac91828e35ae6b6bafc</inline>
     <curve>brainpool/brainpoolP256r1</curve>
     <desc>invalid order = 59</desc>
 </pubkey>
@@ -181,7 +181,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP256r1/30</id>
-    <inline>0xa3084e293cbc36389c7641dbd1b9fe978e0d4bf80b0c76e0c1c621c2f759ce1,0x77109db8c35585c9717cf8678663b32a11c9e0ec37ed665a777ec74ed69330ff</inline>
+    <inline>0x0a3084e293cbc36389c7641dbd1b9fe978e0d4bf80b0c76e0c1c621c2f759ce1,0x77109db8c35585c9717cf8678663b32a11c9e0ec37ed665a777ec74ed69330ff</inline>
     <curve>brainpool/brainpoolP256r1</curve>
     <desc>invalid order = 127</desc>
 </pubkey>
@@ -199,13 +199,13 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP256r1/33</id>
-    <inline>0x907d254851cdceba689917f23e95d0f97ec4cb1a70e00f61dc0a21f14dda70f1,0xc51bbdc4ef9b0b10c385d1fa1583c2756960d640190e3b06891c4643ded97dc</inline>
+    <inline>0x907d254851cdceba689917f23e95d0f97ec4cb1a70e00f61dc0a21f14dda70f1,0x0c51bbdc4ef9b0b10c385d1fa1583c2756960d640190e3b06891c4643ded97dc</inline>
     <curve>brainpool/brainpoolP256r1</curve>
     <desc>invalid order = 139</desc>
 </pubkey>
 <pubkey>
     <id>brainpoolP256r1/34</id>
-    <inline>0xb3ca29e79bf55c9f4f902d8e6ef976cfd91a4c11d2cebe829507d9703280cf3,0x41bcaaf1f9e02d469f2ece950730d01f842c00270e489299c4d12af9b257b2f6</inline>
+    <inline>0x0b3ca29e79bf55c9f4f902d8e6ef976cfd91a4c11d2cebe829507d9703280cf3,0x41bcaaf1f9e02d469f2ece950730d01f842c00270e489299c4d12af9b257b2f6</inline>
     <curve>brainpool/brainpoolP256r1</curve>
     <desc>invalid order = 149</desc>
 </pubkey>
@@ -259,13 +259,13 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP256r1/43</id>
-    <inline>0x92bc20e7aee1d18d017916336ba8c5d0366a429d31033c2801c0f295b93acda1,0xbc03be75c78342563a9667e000744fb8895724d013f08caddcadd8576326cba</inline>
+    <inline>0x92bc20e7aee1d18d017916336ba8c5d0366a429d31033c2801c0f295b93acda1,0x0bc03be75c78342563a9667e000744fb8895724d013f08caddcadd8576326cba</inline>
     <curve>brainpool/brainpoolP256r1</curve>
     <desc>invalid order = 193</desc>
 </pubkey>
 <pubkey>
     <id>brainpoolP256r1/44</id>
-    <inline>0x188c91fe6a08837cad3c31eef72411cf16277dba8062d16cff1fd01fd8a43d98,0x8e5102f93db66e44867626315f98e488bef161c25d979388b9d6cdf5c64dc94</inline>
+    <inline>0x188c91fe6a08837cad3c31eef72411cf16277dba8062d16cff1fd01fd8a43d98,0x08e5102f93db66e44867626315f98e488bef161c25d979388b9d6cdf5c64dc94</inline>
     <curve>brainpool/brainpoolP256r1</curve>
     <desc>invalid order = 197</desc>
 </pubkey>
@@ -283,7 +283,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP256r1/47</id>
-    <inline>0xa86083f363bb7aabb79b0757d52a77f3ef17975e7e8e1ac7e19ac3382750a769,0x74372f3343c2fa6011fbde39cdb23e2d253a7d9102e4d52e5769687abda1432</inline>
+    <inline>0xa86083f363bb7aabb79b0757d52a77f3ef17975e7e8e1ac7e19ac3382750a769,0x074372f3343c2fa6011fbde39cdb23e2d253a7d9102e4d52e5769687abda1432</inline>
     <curve>brainpool/brainpoolP256r1</curve>
     <desc>invalid order = 223</desc>
 </pubkey>
@@ -295,13 +295,13 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP256r1/49</id>
-    <inline>0x5317d56926ab92ae38597afcf2ba6bf20c4fe981421c87de2f50d4d2356b8ff,0x8ad21c1c871e2b68948971039ea6095fe368572180ef360103c6fa5d9230c164</inline>
+    <inline>0x05317d56926ab92ae38597afcf2ba6bf20c4fe981421c87de2f50d4d2356b8ff,0x8ad21c1c871e2b68948971039ea6095fe368572180ef360103c6fa5d9230c164</inline>
     <curve>brainpool/brainpoolP256r1</curve>
     <desc>invalid order = 229</desc>
 </pubkey>
 <pubkey>
     <id>brainpoolP256r1/50</id>
-    <inline>0x33d7fffa35bbfd951ba1a3a974b962f3f8acb0f4b2bfe72f5cc6cc2054b23e36,0x84503cb28c332e2ecd08304f8f09d5f6409dc67d7737991ddea997449c55728</inline>
+    <inline>0x33d7fffa35bbfd951ba1a3a974b962f3f8acb0f4b2bfe72f5cc6cc2054b23e36,0x084503cb28c332e2ecd08304f8f09d5f6409dc67d7737991ddea997449c55728</inline>
     <curve>brainpool/brainpoolP256r1</curve>
     <desc>invalid order = 233</desc>
 </pubkey>
@@ -313,7 +313,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP256r1/52</id>
-    <inline>0x5d2ff3680dfeef97a037e99ec79afd4cac7861fa441c2fe756d8f6494213bc,0x3ba863cd56155d7dd20d37f38e6d977a76eed84233b1240ae2c8fdf210529442</inline>
+    <inline>0x005d2ff3680dfeef97a037e99ec79afd4cac7861fa441c2fe756d8f6494213bc,0x3ba863cd56155d7dd20d37f38e6d977a76eed84233b1240ae2c8fdf210529442</inline>
     <curve>brainpool/brainpoolP256r1</curve>
     <desc>invalid order = 241</desc>
 </pubkey>
@@ -325,7 +325,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP256r1/54</id>
-    <inline>0x5e1648b24e5ea32a9a32b51bf3b1bb6b13db50b435c4893c3683f07fb467e9e7,0xef62afba115ce527c39ea43c8d6873f37610878937781549adb9b79efd635b1</inline>
+    <inline>0x5e1648b24e5ea32a9a32b51bf3b1bb6b13db50b435c4893c3683f07fb467e9e7,0x0ef62afba115ce527c39ea43c8d6873f37610878937781549adb9b79efd635b1</inline>
     <curve>brainpool/brainpoolP256r1</curve>
     <desc>invalid order = 257</desc>
 </pubkey>
@@ -355,7 +355,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP256r1/59</id>
-    <inline>0x6d3eb141c8057de9e03e8b6b0bf6f6151f1cf493c45ab7d417f09e66cd1c6fcc,0xd9304a6fff3410873d18e43f44bf4a68740542bb1f936fb6df723b0ada2bc5f</inline>
+    <inline>0x6d3eb141c8057de9e03e8b6b0bf6f6151f1cf493c45ab7d417f09e66cd1c6fcc,0x0d9304a6fff3410873d18e43f44bf4a68740542bb1f936fb6df723b0ada2bc5f</inline>
     <curve>brainpool/brainpoolP256r1</curve>
     <desc>invalid order = 281</desc>
 </pubkey>
@@ -445,7 +445,7 @@
 </pubkey>
 <pubkey>
     <id>brainpoolP256r1/74</id>
-    <inline>0x55d7cd53bd7775a0cb719e75741efc69d207b7ded1b1a6a74285ecbfd14dd555,0xfdd325700cbecf7d4323bd7cf8d5894f1ca4d80a85523dbd4982f55638fce12</inline>
+    <inline>0x55d7cd53bd7775a0cb719e75741efc69d207b7ded1b1a6a74285ecbfd14dd555,0x0fdd325700cbecf7d4323bd7cf8d5894f1ca4d80a85523dbd4982f55638fce12</inline>
     <curve>brainpool/brainpoolP256r1</curve>
     <desc>invalid order = 379</desc>
 </pubkey>

@@ -10,6 +10,9 @@
         <ant antfile="build-reader.xml" target="package"/>
         <ant antfile="build-standalone.xml" target="package"/>
     </target>
+    <target name="upload">
+    	<ant antfile="build-applet.xml" target="upload"/>
+    </target>
     <target name="clean">
         <ant antfile="build-applet.xml" target="clean"/>
         <ant antfile="build-reader.xml" target="clean"/>

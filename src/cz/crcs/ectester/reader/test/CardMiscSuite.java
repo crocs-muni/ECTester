@@ -23,7 +23,7 @@ import java.util.Map;
 public class CardMiscSuite extends CardTestSuite {
 
     public CardMiscSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "miscellaneous",new String[]{"preset"},  "Some miscellaneous tests, tries ECDH and ECDSA over supersingular curves, anomalous curves,",
+        super(writer, cfg, cardManager, "miscellaneous", new String[]{"preset", "random"}, "Some miscellaneous tests, tries ECDH and ECDSA over supersingular curves, anomalous curves,",
                 "Barreto-Naehrig curves with small embedding degree and CM discriminant, MNT curves,",
                 "some Montgomery curves transformed to short Weierstrass form and Curve25519 transformed to short Weierstrass form.");
     }
@@ -56,16 +56,16 @@ public class CardMiscSuite extends CardTestSuite {
         }
 
         Test set = CommandTest.expect(new Command.Set(this.card, ECTesterApplet.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.ExpectedValue.SUCCESS);
-        Test generate = genOrPreset(curve, Result.ExpectedValue.ANY);
-        Test ka = CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH), expected);
-        Test sig = CommandTest.expect(new Command.ECDSA(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.Signature_ALG_ECDSA_SHA, ECTesterApplet.EXPORT_FALSE, null), expected);
+        Test generate = setupKeypairs(curve, Result.ExpectedValue.ANY, ECTesterApplet.KEYPAIR_BOTH);
+        Test ka = CommandTest.expect(new Command.ECDH(this.card, ECTesterApplet.KEYPAIR_REMOTE, ECTesterApplet.KEYPAIR_LOCAL, ECTesterApplet.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH), expected);
+        Test sig = CommandTest.expect(new Command.ECDSA_sign(this.card, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.Signature_ALG_ECDSA_SHA, ECTesterApplet.EXPORT_FALSE, null), expected);
         Test perform = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform ECDH and ECDSA.", ka, sig);
 
         if (cfg.cleanup) {
             Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY);
             doTest(CompoundTest.greedyAll(Result.ExpectedValue.SUCCESS, "Tests over " + curve.getBits() + "b " + catName + " curve: " + curve.getId() + ".", allocateFirst, set, generate, perform, cleanup));
         } else {
-            doTest(CompoundTest.greedyAll(Result.ExpectedValue.SUCCESS, "Tests over " + curve.getBits() + "b " + catName + " curve: " + curve.getId() + ".", allocateFirst, set, generate, perform));
+            doTest(CompoundTest.greedyAll(Result.ExpectedValue.SUCCESS, "Tests over " + curve.getBits() + "b " + catName + " curve: " + curve.getId() + ".", allocateFirst, set, generate,  perform));
         }
     }
 

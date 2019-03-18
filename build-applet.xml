@@ -16,11 +16,11 @@
 
 	<!-- applet properties -->
 	<property name="pkg_aid" value="4543546573746572"/>
-	<property name="applet_aid" value="45435465737465723031"/>
+	<property name="applet_aid_221" value="454354657374657230333262"/> <!--// VERSION v0.3.2 -->
+	<property name="applet_aid_222" value="454354657374657230333278"/> <!--// VERSION v0.3.2 -->
 	<property name="cap_221" value="ectester221.cap"/>
 	<property name="cap_222" value="ectester222.cap"/>
 	<property name="cap" value="${cap_222}"/>
-
 
 
 	<condition property="cap_extended">
@@ -42,8 +42,8 @@
 	
 	<target name="build-221" description="Builds the CAP file for JavaCard 2.2.1." unless="cap_extended">
 		<javacard jckit="${JC221}">
-			<cap output="applet/ectester221.cap" sources="src/cz/crcs/ectester/applet" aid="${pkg_aid}" excludes="ECTesterAppletExtended.*">
-				<applet class="cz.crcs.ectester.applet.ECTesterApplet" aid="${applet_aid}"/>
+			<cap verify="false" output="applet/ectester221.cap" sources="src/cz/crcs/ectester/applet" aid="${pkg_aid}" excludes="ECTesterAppletExtended.*">
+				<applet class="cz.crcs.ectester.applet.ECTesterApplet" aid="${applet_aid_221}"/>
 			</cap>
 		</javacard>
 	</target>
@@ -51,7 +51,7 @@
 	<target name="build-222" description="Builds the CAP file for JavaCard 2.2.2." if="cap_extended">
 		<javacard jckit="${JC222}">
 			<cap output="applet/ectester222.cap" sources="src/cz/crcs/ectester/applet" aid="${pkg_aid}" excludes="ECTesterApplet.*">
-				<applet class="cz.crcs.ectester.applet.ECTesterAppletExtended" aid="${applet_aid}"/>
+				<applet class="cz.crcs.ectester.applet.ECTesterAppletExtended" aid="${applet_aid_222}"/>
 			</cap>
 		</javacard>
 	</target>

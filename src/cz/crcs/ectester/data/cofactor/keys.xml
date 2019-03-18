@@ -721,4 +721,22 @@
         <curve>cofactor/large/cofactor128p65535</curve>
         <desc>cofactor order = 0xffff</desc>
     </pubkey>
+    <pubkey>
+        <id>large/cofactor160p56467/0</id>
+        <inline>0x574d8a01e5ce61862b1f9504f81abe454ae30cf3,0x5c099446c1d7c24df133f85ecc0baa27a687c8e5</inline>
+        <curve>cofactor/large/cofactor160p56467</curve>
+        <desc>cofactor order = 0xdc93</desc>
+    </pubkey>
+    <pubkey>
+        <id>large/cofactor160p65521/0</id>
+        <inline>0x2567137bf265849618b13057f22ead81753bb39d,0x746c2fc9f040cf8ceeac2015f07522e9616bd094</inline>
+        <curve>cofactor/large/cofactor160p65521</curve>
+        <desc>cofactor order = 0xfff1</desc>
+    </pubkey>
+    <pubkey>
+        <id>large/cofactor160p65535/0</id>
+        <inline>0x0b16071db6d90823611ad35ed728b4f9a9abff9e,0x852a227d06c50d603cc4d8592770f535766927a2</inline>
+        <curve>cofactor/large/cofactor160p65535</curve>
+        <desc>cofactor order = 0xffff</desc>
+    </pubkey>
 </keys>

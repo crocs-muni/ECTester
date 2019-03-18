@@ -3,6 +3,13 @@ package cz.crcs.ectester.applet;
 import javacard.framework.*;
 import javacard.security.*;
 
+/**
+ * Applet base class, that handles instructions, given
+ * either basic or extended length APDUs.
+ *
+ * @author Petr Svenda petr@svenda.com
+ * @author Jan Jancar johny@neuromancer.sk
+ */
 public abstract class AppletBase extends Applet {
 
     // MAIN INSTRUCTION CLASS
@@ -25,6 +32,8 @@ public abstract class AppletBase extends Applet {
     public static final byte INS_ALLOCATE_SIG = (byte) 0x77;
     public static final byte INS_GET_INFO = (byte) 0x78;
     public static final byte INS_SET_DRY_RUN_MODE = (byte) 0x79;
+    public static final byte INS_BUFFER = (byte) 0x7a;
+    public static final byte INS_PERFORM = (byte) 0x7b;
 
     // PARAMETERS for P1 and P2
     public static final byte KEYPAIR_LOCAL = (byte) 0x01;
@@ -42,6 +51,7 @@ public abstract class AppletBase extends Applet {
     public static final short SW_KA_NULL = (short) 0x0ee4;
     public static final short SW_SIGNATURE_NULL = (short) 0x0ee5;
     public static final short SW_OBJECT_NULL = (short) 0x0ee6;
+    public static final short SW_CANNOT_FIT = (short) 0x0ee7;
     public static final short SW_Exception = (short) 0xff01;
     public static final short SW_ArrayIndexOutOfBoundsException = (short) 0xff02;
     public static final short SW_ArithmeticException = (short) 0xff03;
@@ -59,6 +69,10 @@ public abstract class AppletBase extends Applet {
     public static final short BASE_222 = (short) 0x0222;
 
     //
+    public static final short CDATA_BASIC = (short) 5;
+    public static final short CDATA_EXTENDED = (short) 7;
+
+    //
     public static final byte[] VERSION = {'v', '0', '.', '3', '.', '2'};
 
     public static final short ARRAY_LENGTH = 0x100;
@@ -68,6 +82,8 @@ public abstract class AppletBase extends Applet {
     byte[] ramArray = null;
     byte[] ramArray2 = null;
     byte[] apduArray = null;
+    short apduEnd = 0;
+    short cdata = 0;
 
     RandomData randomData = null;
 
@@ -87,10 +103,13 @@ public abstract class AppletBase extends Applet {
             // go to proprietary data
             dataOffset++;
             */
+            short resetMemory = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET);
+            short deselectMemory = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT);
+            byte memoryType = (resetMemory >= deselectMemory) ? JCSystem.CLEAR_ON_RESET : JCSystem.CLEAR_ON_DESELECT;
 
-            ramArray = JCSystem.makeTransientByteArray(ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
-            ramArray2 = JCSystem.makeTransientByteArray(ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
-            apduArray = JCSystem.makeTransientByteArray(APDU_MAX_LENGTH, JCSystem.CLEAR_ON_RESET);
+            ramArray = JCSystem.makeTransientByteArray(ARRAY_LENGTH, memoryType);
+            ramArray2 = JCSystem.makeTransientByteArray(ARRAY_LENGTH, memoryType);
+            apduArray = JCSystem.makeTransientByteArray(APDU_MAX_LENGTH, memoryType);
 
             randomData = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
             EC_Consts.randomData = randomData;
@@ -113,7 +132,27 @@ public abstract class AppletBase extends Applet {
 
         if (cla == CLA_ECTESTERAPPLET) {
             try {
-                readAPDU(apdu, apduArray, APDU_MAX_LENGTH);
+                if (ins == INS_BUFFER) {
+                    short read = readAPDU(apdu, true);
+                    if (read == -1) {
+                        ISOException.throwIt(SW_CANNOT_FIT);
+                        return;
+                    }
+                    apduEnd += read;
+                    apdu.setOutgoingAndSend((short) 0, (short) 0);
+                    return;
+                } else {
+                    apduEnd = 0;
+                    if (ins == INS_PERFORM) {
+                        ins = apduArray[ISO7816.OFFSET_INS];
+                        apdu.setIncomingAndReceive();
+                    } else {
+                        if (readAPDU(apdu, false) == -1) {
+                            ISOException.throwIt(SW_CANNOT_FIT);
+                            return;
+                        }
+                    }
+                }
 
                 short length = 0;
                 switch (ins) {
@@ -201,22 +240,40 @@ public abstract class AppletBase extends Applet {
         } else ISOException.throwIt(ISO7816.SW_CLA_NOT_SUPPORTED);
     }
 
-    private void readAPDU(APDU apdu, byte[] buffer, short length) {
+    private short readAPDU(APDU apdu, boolean skipHeader) {
+        byte[] apduBuffer = apdu.getBuffer();
+
+        /* How much stuff is in apduBuffer */
         short read = apdu.setIncomingAndReceive();
-        read += getOffsetCdata(apdu);
-        short total = getIncomingLength(apdu);
-        if (total > length) {
-            return;
+        short cdataOffset = getOffsetCdata(apdu);
+        read += cdataOffset;
+
+        /* Where to start reading from? */
+        short offset = 0;
+        if (skipHeader) {
+            offset = cdataOffset;
+            cdata = CDATA_EXTENDED;
+        } else {
+            cdata = CDATA_BASIC;
         }
 
-        byte[] apduBuffer = apdu.getBuffer();
-        short sum = 0;
+        /* How much stuff was really sent in this APDU? */
+        short total = (short) (getIncomingLength(apdu) + cdataOffset);
+        short todo = (short) (total - offset);
+        /* Can we fit? */
+        if (todo > (short) (apduArray.length - apduEnd)) {
+            return -1;
+        }
 
-        do {
-            Util.arrayCopyNonAtomic(apduBuffer, (short) 0, buffer, sum, read);
-            sum += read;
+        /* How much stuff was copied over. */
+        short written = 0;
+        while (written < todo) {
+            Util.arrayCopyNonAtomic(apduBuffer, offset, apduArray, (short) (apduEnd + written), (short) (read - offset));
+            written += (short) (read - offset);
+            offset = 0;
             read = apdu.receiveBytes((short) 0);
-        } while (sum < total);
+        }
+        return written;
     }
 
     abstract short getOffsetCdata(APDU apdu);
@@ -232,7 +289,6 @@ public abstract class AppletBase extends Applet {
      * @return length of response
      */
     private short insAllocateKA(APDU apdu) {
-        short cdata = getOffsetCdata(apdu);
         byte kaType = apduArray[cdata];
         short sw = keyTester.allocateKA(kaType);
         Util.setShort(apdu.getBuffer(), (short) 0, sw);
@@ -246,7 +302,6 @@ public abstract class AppletBase extends Applet {
      * @return length of response
      */
     private short insAllocateSig(APDU apdu) {
-        short cdata = getOffsetCdata(apdu);
         byte sigType = apduArray[cdata];
         short sw = keyTester.allocateSig(sigType);
         Util.setShort(apdu.getBuffer(), (short) 0, sw);
@@ -265,7 +320,6 @@ public abstract class AppletBase extends Applet {
      */
     private short insAllocate(APDU apdu) {
         byte keyPair = apduArray[ISO7816.OFFSET_P1];
-        short cdata = getOffsetCdata(apdu);
         short keyLength = Util.getShort(apduArray, cdata);
         byte keyClass = apduArray[(short) (cdata + 2)];
 
@@ -311,7 +365,6 @@ public abstract class AppletBase extends Applet {
     private short insSet(APDU apdu) {
         byte keyPair = apduArray[ISO7816.OFFSET_P1];
         byte curve = apduArray[ISO7816.OFFSET_P2];
-        short cdata = getOffsetCdata(apdu);
         short params = Util.getShort(apduArray, cdata);
 
         short len = 0;
@@ -339,7 +392,6 @@ public abstract class AppletBase extends Applet {
     private short insTransform(APDU apdu) {
         byte keyPair = apduArray[ISO7816.OFFSET_P1];
         byte key = apduArray[ISO7816.OFFSET_P2];
-        short cdata = getOffsetCdata(apdu);
         short params = Util.getShort(apduArray, cdata);
         short transformation = Util.getShort(apduArray, (short) (cdata + 2));
 
@@ -388,7 +440,6 @@ public abstract class AppletBase extends Applet {
     private short insExport(APDU apdu) {
         byte keyPair = apduArray[ISO7816.OFFSET_P1];
         byte key = apduArray[ISO7816.OFFSET_P2];
-        short cdata = getOffsetCdata(apdu);
         short params = Util.getShort(apduArray, cdata);
 
         short swOffset = 0;
@@ -419,7 +470,6 @@ public abstract class AppletBase extends Applet {
     private short insECDH(APDU apdu) {
         byte pubkey = apduArray[ISO7816.OFFSET_P1];
         byte privkey = apduArray[ISO7816.OFFSET_P2];
-        short cdata = getOffsetCdata(apdu);
         byte export = apduArray[cdata];
         short transformation = Util.getShort(apduArray, (short) (cdata + 1));
         byte type = apduArray[(short) (cdata + 3)];
@@ -441,7 +491,6 @@ public abstract class AppletBase extends Applet {
     private short insECDH_direct(APDU apdu) {
         byte privkey = apduArray[ISO7816.OFFSET_P1];
         byte export = apduArray[ISO7816.OFFSET_P2];
-        short cdata = getOffsetCdata(apdu);
         short transformation = Util.getShort(apduArray, cdata);
         byte type = apduArray[(short) (cdata + 2)];
         short length = Util.getShort(apduArray, (short) (cdata + 3));
@@ -463,7 +512,6 @@ public abstract class AppletBase extends Applet {
     private short insECDSA(APDU apdu) {
         byte keyPair = apduArray[ISO7816.OFFSET_P1];
         byte export = apduArray[ISO7816.OFFSET_P2];
-        short cdata = getOffsetCdata(apdu);
         byte sigType = apduArray[cdata];
 
         short len = 0;
@@ -488,7 +536,6 @@ public abstract class AppletBase extends Applet {
     private short insECDSA_sign(APDU apdu) {
         byte keyPair = apduArray[ISO7816.OFFSET_P1];
         byte export = apduArray[ISO7816.OFFSET_P2];
-        short cdata = getOffsetCdata(apdu);
         byte sigType = apduArray[cdata];
 
         short len = 0;
@@ -513,7 +560,6 @@ public abstract class AppletBase extends Applet {
     private short insECDSA_verify(APDU apdu) {
         byte keyPair = apduArray[ISO7816.OFFSET_P1];
         byte sigType = apduArray[ISO7816.OFFSET_P2];
-        short cdata = getOffsetCdata(apdu);
 
         short len = 0;
         if ((keyPair & KEYPAIR_LOCAL) != 0) {
