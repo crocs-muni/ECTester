@@ -81,9 +81,12 @@ public class ECTesterReader {
     private static String CLI_FOOTER = "\n" + LICENSE;
 
     private static final byte[] SELECT_PREFIX = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x0c};
-    private static final byte[] AID_221 = {(byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x65, (byte) 0x72, (byte) 0x30, (byte) 0x33, (byte) 0x33, (byte) 0x62}; // VERSION v0.3.3
-    private static final byte[] AID_222 = {(byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x65, (byte) 0x72, (byte) 0x30, (byte) 0x33, (byte) 0x33, (byte) 0x78}; // VERSION v0.3.3
+    private static final byte[] AID_PREFIX = {(byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x65, (byte) 0x72};
+    private static final byte[] AID_CURRENT_VERSION = {(byte) 0x30, (byte) 0x33, (byte) 0x33}; // VERSION v0.3.3
+    private static final byte[] AID_SUFFIX_221 = {(byte) 0x62};
+    private static final byte[] AID_SUFFIX_222 = {(byte) 0x78};
     private static final byte[] INSTALL_DATA = new byte[10];
+    private static final int TRY_VERSIONS = 10;
 
     static {
         URLClassLoader cl = (URLClassLoader) ECTesterReader.class.getClassLoader();
@@ -136,7 +139,7 @@ public class ECTesterReader {
 
             //connect or simulate connection
             if (cfg.simulate) {
-                if (!cardManager.prepareLocalSimulatorApplet(AID_221, INSTALL_DATA, ECTesterApplet.class)) {
+                if (!cardManager.prepareLocalSimulatorApplet(ByteUtil.concatenate(AID_PREFIX, AID_CURRENT_VERSION, AID_SUFFIX_221), INSTALL_DATA, ECTesterApplet.class)) {
                     System.err.println(Colors.error("Failed to establish a simulator."));
                     System.exit(1);
                 } else {
@@ -147,16 +150,46 @@ public class ECTesterReader {
                     System.err.println(Colors.error("Failed to connect to card."));
                     System.exit(1);
                 }
-                ResponseAPDU selectResp = cardManager.send(ByteUtil.concatenate(SELECT_PREFIX, AID_222));
-                if ((short) selectResp.getSW() != ISO7816.SW_NO_ERROR) {
-                    selectResp = cardManager.send(ByteUtil.concatenate(SELECT_PREFIX, AID_221));
+                //Try the highest known version first
+                byte[] versionByte = AID_CURRENT_VERSION.clone();
+                boolean selected = false;
+                for (int i = 0; i < TRY_VERSIONS; ++i) {
+                    byte[] select222 = ByteUtil.concatenate(SELECT_PREFIX, AID_PREFIX, versionByte, AID_SUFFIX_222);
+                    ResponseAPDU selectResp = cardManager.send(select222);
                     if ((short) selectResp.getSW() != ISO7816.SW_NO_ERROR) {
-                        System.err.println(Colors.error("Failed to select ECTester applet, is it installed?"));
-                        cardManager.disconnectFromCard();
-                        System.exit(1);
+                        byte[] select221 = ByteUtil.concatenate(SELECT_PREFIX, AID_PREFIX, versionByte, AID_SUFFIX_221);
+                        selectResp = cardManager.send(select221);
+                        if ((short) selectResp.getSW() == ISO7816.SW_NO_ERROR) {
+                            cardManager.setChunking(true);
+                            selected = true;
+                            break;
+                        }
                     } else {
-                        cardManager.setChunking(true);
+                        selected = true;
+                        break;
                     }
+                    // Count down by versions
+                    if (versionByte[2] == 0x30) {
+                        if (versionByte[1] == 0x30) {
+                            if (versionByte[0] == 0x30) {
+                                break;
+                            } else {
+                                versionByte[0]--;
+                                versionByte[1] = 0x39;
+                                versionByte[2] = 0x39;
+                            }
+                        } else {
+                            versionByte[1]--;
+                            versionByte[2] = 0x39;
+                        }
+                    } else {
+                        versionByte[2]--;
+                    }
+                }
+                if (!selected) {
+                    System.err.println(Colors.error("Failed to select ECTester applet, is it installed?"));
+                    cardManager.disconnectFromCard();
+                    System.exit(1);
                 }
             }
 
