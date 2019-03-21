@@ -73,7 +73,7 @@ public abstract class AppletBase extends Applet {
     public static final short CDATA_EXTENDED = (short) 7;
 
     //
-    public static final byte[] VERSION = {'v', '0', '.', '3', '.', '2'};
+    public static final byte[] VERSION = {'v', '0', '.', '3', '.', '3'};
 
     public static final short ARRAY_LENGTH = 0x100;
     public static final short APDU_MAX_LENGTH = 1024;

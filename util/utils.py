@@ -1,5 +1,6 @@
 import numpy as np
 from matplotlib import ticker
+from math import sqrt, log
 
 
 def hw(i):
@@ -29,6 +30,21 @@ def time_scale(data, orig_unit, target_unit, scaling_factor):
     elif lower > upper:
         np.floor_divide(data, lower // upper, data)
     return (r"$\frac{1}{" + str(scaling_factor) + "}$" if scaling_factor != 1 else "") + units[target_unit][0]
+
+
+def hist_size_func(choice):
+    if choice == "sqrt":
+        return lambda n, xmin, xmax, var, xlower, xupper: int(sqrt(n)) + 1
+    elif choice == "sturges":
+        return lambda n, xmin, xmax, var, xlower, xupper: int(log(n, 2)) + 1
+    elif choice == "rice":
+        return lambda n, xmin, xmax, var, xlower, xupper: int(2 * n**(1/3))
+    elif choice == "scott":
+        return lambda n, xmin, xmax, var, xlower, xupper: (xmax - xmin) // int((3.5 * sqrt(var)) / (n**(1/3)))
+    elif choice == "fd":
+        return lambda n, xmin, xmax, var, xlower, xupper: (xmax - xmin) // int(2 * (xupper - xlower) / (n**(1/3)))
+    else:
+        return lambda n, xmin, xmax, var, xlower, xupper: hist_size
 
 
 def plot_hist(axes, data, xlabel=None, log=False, avg=True, median=True, bins=None, **kwargs):
