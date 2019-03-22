@@ -76,7 +76,7 @@ public abstract class AppletBase extends Applet {
     public static final byte[] VERSION = {'v', '0', '.', '3', '.', '3'};
 
     public static final short ARRAY_LENGTH = 0x100;
-    public static final short APDU_MAX_LENGTH = 1024;
+    public static final short APDU_MAX_LENGTH = 1024;//512
 
     // TEMPORARRY ARRAY IN RAM
     byte[] ramArray = null;
@@ -105,11 +105,50 @@ public abstract class AppletBase extends Applet {
             */
             short resetMemory = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET);
             short deselectMemory = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT);
-            byte memoryType = (resetMemory >= deselectMemory) ? JCSystem.CLEAR_ON_RESET : JCSystem.CLEAR_ON_DESELECT;
-
-            ramArray = JCSystem.makeTransientByteArray(ARRAY_LENGTH, memoryType);
-            ramArray2 = JCSystem.makeTransientByteArray(ARRAY_LENGTH, memoryType);
-            apduArray = JCSystem.makeTransientByteArray(APDU_MAX_LENGTH, memoryType);
+            short bigMem;
+            short smallMem;
+            byte bigMemType;
+            byte smallMemType;
+            if (resetMemory >= deselectMemory) {
+                bigMem = resetMemory;
+                smallMem = deselectMemory;
+                bigMemType = JCSystem.CLEAR_ON_RESET;
+                smallMemType = JCSystem.CLEAR_ON_DESELECT;
+            } else {
+                bigMem = deselectMemory;
+                smallMem = resetMemory;
+                bigMemType = JCSystem.CLEAR_ON_DESELECT;
+                smallMemType = JCSystem.CLEAR_ON_RESET;
+            }
+            short[] lensBig = new short[]{APDU_MAX_LENGTH + 2 * ARRAY_LENGTH, APDU_MAX_LENGTH + ARRAY_LENGTH, APDU_MAX_LENGTH,};
+            short[] lensSmall = new short[]{0, ARRAY_LENGTH, 2 * ARRAY_LENGTH};
+            byte[] allocsBig = new byte[]{0x07, 0x03, 0x01};
+            boolean done = false;
+            for (short i = 0; i < 3; ++i) {
+                if (lensBig[i] <= bigMem && lensSmall[i] <= smallMem) {
+                    byte allocI = 1;
+                    while (allocI < 0x08) {
+                        byte type = ((allocI & allocsBig[i]) != 0) ? bigMemType : smallMemType;
+                        switch (allocI) {
+                            case 0x01:
+                                apduArray = JCSystem.makeTransientByteArray(APDU_MAX_LENGTH, type);
+                                break;
+                            case 0x02:
+                                ramArray = JCSystem.makeTransientByteArray(ARRAY_LENGTH, type);
+                                break;
+                            case 0x04:
+                                ramArray2 = JCSystem.makeTransientByteArray(ARRAY_LENGTH, type);
+                                break;
+                        }
+                        allocI = (byte) (allocI << 1);
+                    }
+                    done = true;
+                    break;
+                }
+            }
+            if (!done) {
+                ISOException.throwIt((short) 0x6a84);
+            }
 
             randomData = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
             EC_Consts.randomData = randomData;
