@@ -3,12 +3,10 @@ package cz.crcs.ectester.common.util;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.ec.*;
 import cz.crcs.ectester.data.EC_Store;
-import org.bouncycastle.asn1.ASN1Integer;
-import org.bouncycastle.asn1.ASN1StreamParser;
-import org.bouncycastle.asn1.DERSequence;
-import org.bouncycastle.asn1.DERSequenceParser;
+import org.bouncycastle.asn1.*;
 import org.bouncycastle.crypto.digests.SHA1Digest;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -347,8 +345,11 @@ public class ECUtil {
         return new KeyPair(pubkey, privkey);
     }
 
-    public static byte[] toDERSignature(byte[] r, byte[] s) {
-        return ByteUtil.concatenate(new byte[]{0x30, (byte) (r.length + s.length + 4), 0x02, (byte) r.length}, r, new byte[]{0x02, (byte) s.length}, s);
+    public static byte[] toDERSignature(byte[] r, byte[] s) throws IOException {
+        ASN1Integer rInt = new ASN1Integer(r);
+        ASN1Integer sInt = new ASN1Integer(s);
+        DERSequence seq = new DERSequence(new ASN1Encodable[]{rInt, sInt});
+        return seq.getEncoded();
     }
 
     public static BigInteger[] fromDERSignature(byte[] signature) throws IOException {
@@ -385,8 +386,8 @@ public class ECUtil {
             BigInteger rd = privkey.multiply(r).mod(params.getOrder());
             BigInteger hrd = hashInt.add(rd).mod(params.getOrder());
             return s.modInverse(params.getOrder()).multiply(hrd).mod(params.getOrder());
-        } catch (NoSuchAlgorithmException | IOException nsae) {
-            nsae.printStackTrace();
+        } catch (NoSuchAlgorithmException | IOException | ArithmeticException ex) {
+            ex.printStackTrace();
             return null;
         }
     }
