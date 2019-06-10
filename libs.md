@@ -10,6 +10,8 @@ Popular libraries with at least some ECC support, that ECTester does not yet sup
  - [Nettle](http://www.lysator.liu.se/~nisse/nettle/)
  - [OpenSSL (FIPS mode)](https://www.openssl.org/docs/fipsnotes.html)
  - [Microsoft .NET crypto](https://docs.microsoft.com/en-us/dotnet/standard/security/cryptography-model)
+ - [Intel Performance Primitives](https://software.intel.com/en-us/ipp-crypto-reference-2019)
+ - [Linux kernel](https://kernel.org), test via [libkcapi](http://chronox.de/libkcapi.html)
 
 # Supported libraries
 
@@ -106,7 +108,7 @@ ninja
     - ECTester supports v2.4.0 and up.
  - [Microsoft CNG](https://msdn.microsoft.com/en-us/library/windows/desktop/aa376210(v=vs.85).aspx)
     - C API.
-    - Closed source.
+    - <del>Closed source.</del> Not any more: <https://github.com/Microsoft/SymCrypt>.
 	- For prime field curves(only supports):
 	   - Uses Short Weierstrass model.
 	   - Uses Twisted Edwards model.
