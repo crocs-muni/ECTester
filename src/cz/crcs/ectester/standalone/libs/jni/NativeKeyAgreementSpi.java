@@ -312,4 +312,25 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
             super("ECDHwithSHA512KDF(CNG)");
         }
     }
+
+    public abstract static class MbedTLS extends SimpleKeyAgreementSpi {
+        private String type;
+
+        public MbedTLS(String type) {
+            this.type = type;
+        }
+
+        @Override
+        native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native SecretKey generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params, String algorithm);
+    }
+
+    public static class MbedTLSECDH extends MbedTLS {
+        public MbedTLSECDH() {
+            super("ECDH");
+        }
+    }
+
 }

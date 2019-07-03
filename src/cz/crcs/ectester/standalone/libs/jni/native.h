@@ -1435,3 +1435,208 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 }
 #endif
 #endif
+/* Header for class cz_crcs_ectester_standalone_libs_MbedTLSLib */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_MbedTLSLib
+#define _Included_cz_crcs_ectester_standalone_libs_MbedTLSLib
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_MbedTLSLib
+ * Method:    supportsNativeTiming
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_supportsNativeTiming
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_MbedTLSLib
+ * Method:    getNativeTimingResolution
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_getNativeTimingResolution
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_MbedTLSLib
+ * Method:    getLastNativeTiming
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_getLastNativeTiming
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_MbedTLSLib
+ * Method:    createProvider
+ * Signature: ()Ljava/security/Provider;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_createProvider
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_MbedTLSLib
+ * Method:    getCurves
+ * Signature: ()Ljava/util/Set;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_getCurves
+  (JNIEnv *, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeProvider_MbedTLS */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeProvider_MbedTLS
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeProvider_MbedTLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_MbedTLS_serialVersionUID
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_MbedTLS_serialVersionUID 1421746759512286392LL
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_MbedTLS_MAX_ARRAY_SIZE
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_MbedTLS_MAX_ARRAY_SIZE 2147483639L
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_MbedTLS_KEYS
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_MbedTLS_KEYS 0L
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_MbedTLS_VALUES
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_MbedTLS_VALUES 1L
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_MbedTLS_ENTRIES
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_MbedTLS_ENTRIES 2L
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_MbedTLS_serialVersionUID
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_MbedTLS_serialVersionUID 4112578634029874840LL
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_MbedTLS_serialVersionUID
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_MbedTLS_serialVersionUID -4298000515446427739LL
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeProvider_MbedTLS
+ * Method:    setup
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_00024MbedTLS_setup
+  (JNIEnv *, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_MbedTLS */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_MbedTLS
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_MbedTLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+#undef cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_MbedTLS_DEFAULT_KEYSIZE
+#define cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_MbedTLS_DEFAULT_KEYSIZE 256L
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_MbedTLS
+ * Method:    keysizeSupported
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024MbedTLS_keysizeSupported
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_MbedTLS
+ * Method:    paramsSupported
+ * Signature: (Ljava/security/spec/AlgorithmParameterSpec;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024MbedTLS_paramsSupported
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_MbedTLS
+ * Method:    generate
+ * Signature: (ILjava/security/SecureRandom;)Ljava/security/KeyPair;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024MbedTLS_generate__ILjava_security_SecureRandom_2
+  (JNIEnv *, jobject, jint, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_MbedTLS
+ * Method:    generate
+ * Signature: (Ljava/security/spec/AlgorithmParameterSpec;Ljava/security/SecureRandom;)Ljava/security/KeyPair;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024MbedTLS_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2
+  (JNIEnv *, jobject, jobject, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeECPublicKey_MbedTLS */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPublicKey_MbedTLS
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPublicKey_MbedTLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeECPrivateKey_MbedTLS */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPrivateKey_MbedTLS
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPrivateKey_MbedTLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_MbedTLS */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_MbedTLS
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_MbedTLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_MbedTLS
+ * Method:    generateSecret
+ * Signature: ([B[BLjava/security/spec/ECParameterSpec;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024MbedTLS_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_MbedTLS
+ * Method:    generateSecret
+ * Signature: ([B[BLjava/security/spec/ECParameterSpec;Ljava/lang/String;)Ljavax/crypto/SecretKey;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024MbedTLS_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2Ljava_lang_String_2
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject, jstring);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_MbedTLS */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_MbedTLS
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_MbedTLS
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_MbedTLS
+ * Method:    sign
+ * Signature: ([B[BLjava/security/spec/ECParameterSpec;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024MbedTLS_sign
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_MbedTLS
+ * Method:    verify
+ * Signature: ([B[B[BLjava/security/spec/ECParameterSpec;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024MbedTLS_verify
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jbyteArray, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif

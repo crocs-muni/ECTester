@@ -3,8 +3,9 @@
 
 #if _POSIX_TIMERS > 0
 
-struct timespec start = {0};
-struct timespec end = {0};
+static struct timespec start = {0};
+static struct timespec end = {0};
+static jlong partial = 0;
 
 jboolean native_timing_supported() {
     return JNI_TRUE;
@@ -16,19 +17,26 @@ jlong native_timing_resolution() {
     return timeval.tv_nsec;
 }
 
-
 void native_timing_start() {
+    partial = 0;
     clock_gettime(CLOCK_MONOTONIC, &start);
 }
 
+void native_timing_pause() {
+    clock_gettime(CLOCK_MONOTONIC, &end);
+    partial += (end.tv_sec - start.tv_sec) * 1000000000 + (end.tv_nsec - start.tv_nsec);
+}
+
+void native_timing_restart() {
+    clock_gettime(CLOCK_MONOTONIC, &start);
+}
 
 void native_timing_stop() {
     clock_gettime(CLOCK_MONOTONIC, &end);
 }
 
-
 jlong native_timing_last() {
-    jlong res = (end.tv_sec - start.tv_sec) * 1000000000 + (end.tv_nsec - start.tv_nsec);
+    jlong res = (end.tv_sec - start.tv_sec) * 1000000000 + (end.tv_nsec - start.tv_nsec) + partial;
     if (res < 0) {
         return 0;
     } else {
@@ -47,6 +55,10 @@ jlong native_timing_resolution() {
 }
 
 void native_timing_start() {}
+
+void native_timing_pause() {}
+
+void native_timing_restart() {}
 
 void native_timing_stop() {}
 

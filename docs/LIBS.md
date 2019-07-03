@@ -3,7 +3,6 @@
 Popular libraries with at least some ECC support, that ECTester does not yet support:
 
  - [NSS](https://hg.mozilla.org/projects/nss)
- - [mbedTLS](https://tls.mbed.org/)
  - [LibreSSL](https://www.libressl.org/)
  - [Nettle](http://www.lysator.liu.se/~nisse/nettle/)
  - [OpenSSL (FIPS mode)](https://www.openssl.org/docs/fipsnotes.html)
@@ -114,3 +113,10 @@ ninja
 	   - Uses fixed window scalar multiplication.
 	   - Uses Wnaf multi-scalar multiplication with interleaving.
 	   - Uses Montgomery ladder.
+ - [mbedTLS](https://tls.mbed.org/)
+    - C
+    - Only supports prime field curves.
+    - Uses short Weierstrass and Montgomery models.
+    - Uses comb method for short Weierstrass curves, using (randomized) Jacobian coordinates.
+    - <http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#doubling-dbl-1998-cmo-2>
+    - Uses Montgomery ladder with xz coordinates for Montgomery curves.

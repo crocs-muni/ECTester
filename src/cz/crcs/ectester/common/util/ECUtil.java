@@ -446,16 +446,16 @@ public class ECUtil {
         return result;
     }
 
-    public static ECKey loadKey(short params, String named, String file, ECParameterSpec spec) throws IOException {
+    public static ECKey loadKey(short params, String named, String file, AlgorithmParameterSpec spec) throws IOException {
         if (params == EC_Consts.PARAMETERS_KEYPAIR) {
             throw new IllegalArgumentException();
         }
         EC_Params param = loadParams(params, named, file);
         if (param != null) {
             if (params == EC_Consts.PARAMETER_W) {
-                return new RawECPublicKey(toPoint(param), spec);
+                return new RawECPublicKey(toPoint(param), (ECParameterSpec) spec);
             } else if (params == EC_Consts.PARAMETER_S) {
-                return new RawECPrivateKey(toScalar(param), spec);
+                return new RawECPrivateKey(toScalar(param), (ECParameterSpec) spec);
             }
         }
         return null;

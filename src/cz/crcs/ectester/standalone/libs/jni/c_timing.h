@@ -26,6 +26,16 @@ void native_timing_start();
 /**
  *
  */
+void native_timing_pause();
+
+/**
+ *
+ */
+void native_timing_restart();
+
+/**
+ *
+ */
 void native_timing_stop();
 
 /**

@@ -38,3 +38,4 @@
 
 # Python stuff
 /util/__pycache__/
+/util/.ipynb_checkpoints/

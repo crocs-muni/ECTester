@@ -570,14 +570,13 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     native_timing_start();
     int result = ECDSA_do_verify((unsigned char *) data_data, data_size, sig_obj, pub);
     native_timing_stop();
+    (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
 
     if (result < 0) {
         throw_new(env, "java/security/GeneralSecurityException", "Error verifying, ECDSA_do_verify.");
         EC_KEY_free(pub); EC_GROUP_free(curve); ECDSA_SIG_free(sig_obj);
-        (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
         return JNI_FALSE;
     }
-    (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
 
     ECDSA_SIG_free(sig_obj);
     EC_KEY_free(pub);

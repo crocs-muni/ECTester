@@ -58,7 +58,7 @@ JNI_PLATFORMINCLUDEDIR ?= $(JNI_INCLUDEDIR)/$(JNI_PLATFORM)
 ###############################################################################
 ## Targets.
 
-all: tomcrypt_provider.so botan_provider.so cryptopp_provider.so openssl_provider.so boringssl_provider.so gcrypt_provider.so
+all: tomcrypt_provider.so botan_provider.so cryptopp_provider.so openssl_provider.so boringssl_provider.so gcrypt_provider.so mbedtls_provider.so
 
 # Common utils
 c_utils.o: c_utils.c
@@ -119,6 +119,14 @@ cryptopp_provider.so: cryptopp.o cpp_utils.o c_timing.o
 cryptopp.o: cryptopp.cpp
 	$(CXX) $(shell pkg-config --cflags libcrypto++) $(CXXFLAGS) -c $<
 
+
+# mbedTLS shim
+mbedtls_provider.so: mbedtls.o c_utils.o c_timing.o
+	$(CC) $(LFLAGS) -o $@ $^ -L. -lmbedcrypto
+
+mbedtls.o: mbedtls.c
+	$(CC) $(CFLAGS) -c $<
+
 help:
 	@echo "# This makefile builds the JNI shims necessary to test native libraries."
 	@echo "# Targets:"
@@ -128,6 +136,7 @@ help:
 	@echo "    - tomcrypt_provider.so"
 	@echo "    - botan_provider.so"
 	@echo "    - cryptopp_provider.so"
+	@echo "    - mbedtls_provider.so"
 
 clean:
 	rm -rf *.o

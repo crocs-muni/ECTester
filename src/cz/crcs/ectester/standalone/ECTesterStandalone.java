@@ -78,7 +78,8 @@ public class ECTesterStandalone {
             new BoringsslLib(),
             new GcryptLib(),
             new MscngLib(),
-            new WolfCryptLib()};
+            new WolfCryptLib(),
+            new MbedTLSLib()};
     private Config cfg;
 
     private Options opts = new Options();
@@ -148,20 +149,20 @@ public class ECTesterStandalone {
     private TreeCommandLine parseArgs(String[] args) throws ParseException {
         Map<String, ParserOptions> actions = new TreeMap<>();
 
-        Option namedCurve = Option.builder("nc").longOpt("named-curve").desc("Use a named curve, from CurveDB: <cat/id>").hasArg().argName("cat/id").optionalArg(false).build();
-        Option namedPublic = Option.builder("npub").longOpt("named-public").desc("Use a named public key, from CurveDB: <cat/id>").hasArg().argName("cat/id").optionalArg(false).build();
-        Option filePublic = Option.builder("pub").longOpt("public").desc("Use a given public key from file.").hasArg().argName("pubkey").optionalArg(false).build();
+        Option namedCurve = Option.builder("nc").longOpt("named-curve").desc("Use a named curve, from CurveDB: <cat/id>").hasArg().argName("cat/id").optionalArg(false).numberOfArgs(1).build();
+        Option namedPublic = Option.builder("npub").longOpt("named-public").desc("Use a named public key, from CurveDB: <cat/id>").hasArg().argName("cat/id").optionalArg(false).numberOfArgs(1).build();
+        Option filePublic = Option.builder("pub").longOpt("public").desc("Use a given public key from file.").hasArg().argName("pubkey").optionalArg(false).numberOfArgs(1).build();
         OptionGroup publicKey = new OptionGroup();
         publicKey.addOption(namedPublic);
         publicKey.addOption(filePublic);
-        Option namedPrivate = Option.builder("npriv").longOpt("named-private").desc("Use a named private key, from CurveDB: <cat/id>").hasArg().argName("cat/id").optionalArg(false).build();
-        Option filePrivate = Option.builder("priv").longOpt("private").desc("Use a given private key from file.").hasArg().argName("privkey").optionalArg(false).build();
+        Option namedPrivate = Option.builder("npriv").longOpt("named-private").desc("Use a named private key, from CurveDB: <cat/id>").hasArg().argName("cat/id").optionalArg(false).numberOfArgs(1).build();
+        Option filePrivate = Option.builder("priv").longOpt("private").desc("Use a given private key from file.").hasArg().argName("privkey").optionalArg(false).numberOfArgs(1).build();
         OptionGroup privateKey = new OptionGroup();
         privateKey.addOption(namedPrivate);
         privateKey.addOption(filePrivate);
-        Option curveName = Option.builder("cn").longOpt("curve-name").desc("Use a named curve, search from curves supported by the library: <name>").hasArg().argName("name").optionalArg(false).build();
-        Option bits = Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").build();
-        Option output = Option.builder("o").longOpt("output").desc("Output into file <output_file>.").hasArgs().argName("output_file").optionalArg(false).build();
+        Option curveName = Option.builder("cn").longOpt("curve-name").desc("Use a named curve, search from curves supported by the library: <name>").hasArg().argName("name").optionalArg(false).numberOfArgs(1).build();
+        Option bits = Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").numberOfArgs(1).build();
+        Option output = Option.builder("o").longOpt("output").desc("Output into file <output_file>.").hasArgs().argName("output_file").optionalArg(false).numberOfArgs(1).build();
 
         Options testOpts = new Options();
         testOpts.addOption(bits);
@@ -366,8 +367,8 @@ public class ECTesterStandalone {
             other = kpg.genKeyPair();
         }
 
-        ECPrivateKey privkey = (ECPrivateKey) ECUtil.loadKey(EC_Consts.PARAMETER_S, cli.getOptionValue("ecdh.named-private"), cli.getOptionValue("ecdh.private"), (ECParameterSpec) spec);
-        ECPublicKey pubkey = (ECPublicKey) ECUtil.loadKey(EC_Consts.PARAMETER_W, cli.getOptionValue("ecdh.named-public"), cli.getOptionValue("ecdh.public"), (ECParameterSpec) spec);
+        ECPrivateKey privkey = (ECPrivateKey) ECUtil.loadKey(EC_Consts.PARAMETER_S, cli.getOptionValue("ecdh.named-private"), cli.getOptionValue("ecdh.private"), spec);
+        ECPublicKey pubkey = (ECPublicKey) ECUtil.loadKey(EC_Consts.PARAMETER_W, cli.getOptionValue("ecdh.named-public"), cli.getOptionValue("ecdh.public"), spec);
 
         int amount = Integer.parseInt(cli.getOptionValue("ecdh.amount", "1"));
         for (int i = 0; i < amount || amount == 0; ++i) {
@@ -496,7 +497,7 @@ public class ECTesterStandalone {
 
         PrintStream out;
         if (cli.hasOption("ecdsa.output")) {
-            out = new PrintStream(FileUtil.openStream(cli.getOptionValues("ecdh.output")));
+            out = new PrintStream(FileUtil.openStream(cli.getOptionValues("ecdsa.output")));
         } else {
             out = System.out;
         }
@@ -708,6 +709,11 @@ public class ECTesterStandalone {
                 boolean hasCurveName = cli.hasOption(next + ".curve-name");
                 if (hasBits ^ hasNamedCurve ? hasCurveName : hasBits) {
                     System.err.println("You can only specify bitsize or a named curve/curve name, nor both.");
+                    return false;
+                }
+
+                if (hasCurveName && (cli.hasOption(next + ".named-public") || cli.hasOption(next + ".named-private") || cli.hasOption(next + ".public") || cli.hasOption(next + ".private"))) {
+                    System.err.println("Cannot specify key with a curve name switch, needs explicit parameteres.");
                     return false;
                 }
             }

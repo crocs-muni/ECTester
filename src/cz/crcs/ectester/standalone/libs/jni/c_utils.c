@@ -108,6 +108,17 @@ jint get_kdf_bits(JNIEnv *env, jstring algorithm) {
 }
 
 jbyteArray asn1_der_encode(JNIEnv *env, const jbyte *r, size_t r_len, const jbyte *s, size_t s_len) {
+    const jbyte *rtmp = r;
+    while (*rtmp++ == 0) {
+        r++;
+        r_len--;
+    }
+    const jbyte *stmp = s;
+    while (*stmp++ == 0) {
+        s++;
+        s_len--;
+    }
+
     jbyte r_length = (jbyte) r_len + (r[0] & 0x80 ? 1 : 0);
     jbyte s_length = (jbyte) s_len + (s[0] & 0x80 ? 1 : 0);
 
@@ -119,9 +130,9 @@ jbyteArray asn1_der_encode(JNIEnv *env, const jbyte *r, size_t r_len, const jbyt
     size_t seq_len_len = 0;
     if (seq_value_len >= 128) {
         size_t s = seq_value_len;
-        while ((s = s >> 8)) {
+        do {
             seq_len_len++;
-        }
+        } while ((s = s >> 8));
     }
     // seq_len_len bytes for length and one for length of length
     whole_len += seq_len_len + 1;
@@ -138,7 +149,7 @@ jbyteArray asn1_der_encode(JNIEnv *env, const jbyte *r, size_t r_len, const jbyt
     } else {
         data[i++] = (jbyte) (seq_len_len | (1 << 7));
         for (size_t j = 0; j < seq_len_len; ++j) {
-            data[i++] = (jbyte) (seq_value_len & (0xff << (seq_len_len - j)));
+            data[i++] = (jbyte) (seq_value_len & (0xff << (8 * (seq_len_len - j - 1))));
         }
     }
     data[i++] = 0x02; //INTEGER
