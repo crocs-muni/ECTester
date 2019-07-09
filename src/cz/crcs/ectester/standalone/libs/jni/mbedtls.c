@@ -52,7 +52,6 @@ static int dev_urandom(void *data, unsigned char *output, size_t len, size_t *ol
 
        p += ret;
        left -= ret;
-       sleep(1);
     }
     fclose(file);
     *olen = len;
@@ -202,18 +201,6 @@ static void mpi_from_biginteger(JNIEnv* env, jobject biginteger, mbedtls_mpi *mp
     jbyte *byte_data = (*env)->GetByteArrayElements(env, byte_array, NULL);
     mbedtls_mpi_read_binary(mpi, byte_data, byte_length);
     (*env)->ReleaseByteArrayElements(env, byte_array, byte_data, JNI_ABORT);
-}
-
-static void biginteger_print(JNIEnv *env, jobject bigint) {
-    jmethodID to_string = (*env)->GetMethodID(env, biginteger_class, "toString", "(I)Ljava/lang/String;");
-    jstring big_string = (*env)->CallObjectMethod(env, bigint, to_string, (jint) 16);
-
-    jsize len = (*env)->GetStringUTFLength(env, big_string);
-    char raw_string[len + 1];
-    raw_string[len] = 0;
-    (*env)->GetStringUTFRegion(env, big_string, 0, len, raw_string);
-    printf("%s\n", raw_string);
-    fflush(stdout);
 }
 
 static jobject create_ec_param_spec(JNIEnv *env, const mbedtls_ecp_group *group) {

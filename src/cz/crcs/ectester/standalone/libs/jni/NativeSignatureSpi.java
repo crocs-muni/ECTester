@@ -461,6 +461,27 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         }
     }
 
+    public abstract static class Ippcp extends SimpleSignatureSpi {
+        private String type;
+
+        public Ippcp(String type) {
+            this.type = type;
+        }
+
+        @Override
+        native byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
+    }
+
+    public static class IppcpECDSAwithNONE extends Ippcp {
+
+        public IppcpECDSAwithNONE() {
+            super("NONEwithECDSA");
+        }
+    }
+
     public abstract static class Mscng extends ExtendedSignatureSpi {
         private String type;
 

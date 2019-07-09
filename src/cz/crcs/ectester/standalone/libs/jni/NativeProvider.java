@@ -103,4 +103,14 @@ public abstract class NativeProvider extends Provider {
         @Override
         native void setup();
     }
+
+    public static class Ippcp extends NativeProvider {
+
+        public Ippcp(String name, double version, String info) {
+            super(name, version, info);
+        }
+
+        @Override
+        native void setup();
+    }
 }
