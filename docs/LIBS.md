@@ -7,7 +7,6 @@ Popular libraries with at least some ECC support, that ECTester does not yet sup
  - [Nettle](http://www.lysator.liu.se/~nisse/nettle/)
  - [OpenSSL (FIPS mode)](https://www.openssl.org/docs/fipsnotes.html)
  - [Microsoft .NET crypto](https://docs.microsoft.com/en-us/dotnet/standard/security/cryptography-model)
- - [Intel Performance Primitives](https://software.intel.com/en-us/ipp-crypto-reference-2019)
  - [Linux kernel](https://kernel.org), test via [libkcapi](http://chronox.de/libkcapi.html)
 
 # Supported libraries
@@ -120,3 +119,9 @@ ninja
     - Uses comb method for short Weierstrass curves, using (randomized) Jacobian coordinates.
     - <http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#doubling-dbl-1998-cmo-2>
     - Uses Montgomery ladder with xz coordinates for Montgomery curves.
+ - [Intel Performance Primitives](https://software.intel.com/en-us/ipp-crypto-reference-2019)
+    - C
+    - Only supports prime field curves.
+    - Uses 5-bit window NAF.
+    - Uses Jacobian coordinates.
+    - <https://github.com/intel/ipp-crypto>
