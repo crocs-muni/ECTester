@@ -79,7 +79,8 @@ public class ECTesterStandalone {
             new GcryptLib(),
             new MscngLib(),
             new WolfCryptLib(),
-            new MbedTLSLib()};
+            new MbedTLSLib(),
+            new IppcpLib()};
     private Config cfg;
 
     private Options opts = new Options();
