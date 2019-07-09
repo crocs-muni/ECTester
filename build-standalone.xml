@@ -194,6 +194,8 @@
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Ippcp"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$Ippcp"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Ippcp"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Ippcp"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Ippcp"/>
         </javah>
     </target>
 </project>

@@ -14,6 +14,8 @@
 #include <time.h>
 
 #define USE_SPEEDUP 1
+#define VALIDATE_CURVE 1
+#define VALIDATE_POINT 1
 
 static IppsPRNGState *prng_state;
 static jclass provider_class;
@@ -66,8 +68,8 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
 	INIT_PROVIDER(env, provider_class);
 
 	ADD_KPG(env, this, "EC", "Ippcp");
-	// ADD_KA(env, self, "ECDH", "IppcplECDH");
-	// ADD_SIG(env, self, "NONEwithECDSA", "IppcpECDSAwithNONE");
+	ADD_KA(env, this, "ECDH", "IppcpECDH");
+	ADD_SIG(env, this, "NONEwithECDSA", "IppcpECDSAwithNONE");
 
 	/* Init the PRNG. */
 	int prng_size;
@@ -283,7 +285,9 @@ static IppsECCPState *create_curve(JNIEnv *env, jobject params, int *keysize) {
 
 	jmethodID get_bitlength = (*env)->GetMethodID(env, biginteger_class, "bitLength", "()I");
 	jint prime_bits = (*env)->CallIntMethod(env, p, get_bitlength);
-	*keysize = prime_bits;
+	if (keysize) {
+		*keysize = prime_bits;
+	}
 
 	int size;
 	ippsECCPGetSize(prime_bits, &size);
@@ -335,6 +339,15 @@ static jobject create_ec_param_spec(JNIEnv *env, int keysize, IppsECCPState *cur
 }
 
 static jobject generate_from_curve(JNIEnv *env, int keysize, IppsECCPState *curve) {
+	if (VALIDATE_CURVE) {
+		IppECResult validation;
+		ippsECCPValidate(50, &validation, curve, ippsPRNGen, prng_state);
+		if (validation != ippECValid) {
+			throw_new(env, "java/security/GeneralSecurityException", ippsECCGetResultString(validation));
+			return NULL;
+		}
+	}
+
 	IppsECCPPointState *point = new_point(keysize);
 
 	int ord_bits;
@@ -454,6 +467,231 @@ Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Ippcp_g
 	} else {
 		return NULL;
 	}
+}
+
+static IppsECCPPointState *bytearray_to_pubkey(JNIEnv *env, jbyteArray pubkey, jint keysize, IppsECCPState *curve) {
+	IppsBigNumState *x_bn = new_bn(keysize);
+	IppsBigNumState *y_bn = new_bn(keysize);
+
+	jint coord_size = (keysize + 7) / 8;
+	jbyte *pub_data = (*env)->GetByteArrayElements(env, pubkey, NULL);
+	ippsSetOctString_BN(pub_data + 1, coord_size, x_bn);
+	ippsSetOctString_BN(pub_data + 1 + coord_size, coord_size, y_bn);
+	(*env)->ReleaseByteArrayElements(env, pubkey, pub_data, JNI_ABORT);
+
+	IppsECCPPointState *pub = new_point(keysize);
+	ippsECCPSetPoint(x_bn, y_bn, pub, curve);
+	free(x_bn);
+	free(y_bn);
+	return pub;
+}
+
+static IppsBigNumState *bytearray_to_privkey(JNIEnv *env, jbyteArray privkey, IppsECCPState *curve) {
+	int ord_bits;
+	ippsECCPGetOrderBitSize(&ord_bits, curve);
+	IppsBigNumState *priv_bn = new_bn(ord_bits);
+	jbyte *priv_data = (*env)->GetByteArrayElements(env, privkey, NULL);
+	ippsSetOctString_BN(priv_data, (*env)->GetArrayLength(env, privkey), priv_bn);
+	(*env)->ReleaseByteArrayElements(env, privkey, priv_data, JNI_ABORT);
+	return priv_bn;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Ippcp_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2(JNIEnv *env, jobject this, jbyteArray pubkey, jbyteArray privkey, jobject params) {
+	jint coord_size = ((*env)->GetArrayLength(env, pubkey) - 1) / 2;
+	jint keysize;
+	IppsECCPState *curve = create_curve(env, params, &keysize);
+
+	if (VALIDATE_CURVE) {
+		IppECResult validation;
+		ippsECCPValidate(50, &validation, curve, ippsPRNGen, prng_state);
+		if (validation != ippECValid) {
+			throw_new(env, "java/security/GeneralSecurityException", ippsECCGetResultString(validation));
+			free(curve);
+			return NULL;
+		}
+	}
+	IppsECCPPointState *pub = bytearray_to_pubkey(env, pubkey, keysize, curve);
+
+	if (VALIDATE_POINT) {
+		IppECResult validation;
+		ippsECCPCheckPoint(pub, &validation, curve);
+		if (validation != ippECValid) {
+			throw_new(env, "java/security/GeneralSecurityException", ippsECCGetResultString(validation));
+			free(curve);
+			free(pub);
+			return NULL;
+		}
+	}
+
+	IppsBigNumState *priv_bn = bytearray_to_privkey(env, privkey, curve);
+
+	IppsBigNumState *share = new_bn(keysize);
+
+	native_timing_start();
+	IppStatus err = ippsECCPSharedSecretDH(priv_bn, pub, share, curve);
+	native_timing_stop();
+
+	free(priv_bn);
+	free(pub);
+	free(curve);
+
+	if (err != ippStsNoErr) {
+		throw_new(env, "java/security/GeneralSecurityException", ippcpGetStatusString(err));
+		return NULL;
+	}
+
+	jbyteArray result = (*env)->NewByteArray(env, coord_size);
+	jbyte *data = (*env)->GetByteArrayElements(env, result, NULL);
+	bn_get(share, data, coord_size);
+	(*env)->ReleaseBooleanArrayElements(env, result, data, 0);
+	free(share);
+	return result;
+}
+
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Ippcp_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2Ljava_lang_String_2(JNIEnv *env, jobject this, jbyteArray pubkey, jbyteArray privkey, jobject params, jstring algorithm) {
+    throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
+    return NULL;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Ippcp_sign(JNIEnv *env, jobject this, jbyteArray data, jbyteArray privkey, jobject params) {
+	jint keysize;
+	IppsECCPState *curve = create_curve(env, params, &keysize);
+
+	if (VALIDATE_CURVE) {
+		IppECResult validation;
+		ippsECCPValidate(50, &validation, curve, ippsPRNGen, prng_state);
+		if (validation != ippECValid) {
+			throw_new(env, "java/security/GeneralSecurityException", ippsECCGetResultString(validation));
+			free(curve);
+			return NULL;
+		}
+	}
+	IppsBigNumState *priv_bn = bytearray_to_privkey(env, privkey, curve);
+
+	IppsECCPPointState *ephemeral_point = new_point(keysize);
+	int ord_bits;
+	ippsECCPGetOrderBitSize(&ord_bits, curve);
+	int ord_bytes = (ord_bits + 7) / 8;
+	IppsBigNumState *ephemeral_secret = new_bn(ord_bits);
+	IppsBigNumState *r = new_bn(ord_bits);
+	IppsBigNumState *s = new_bn(ord_bits);
+
+	jint data_size = (*env)->GetArrayLength(env, data);
+	IppsBigNumState *data_bn = new_bn(data_size * 8);
+	jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
+	ippsSetOctString_BN(data_data, data_size, data_bn);
+	(*env)->ReleaseBooleanArrayElements(env, data, data_data, JNI_ABORT);
+
+	jbyteArray result = NULL;
+	jbyte r_buf[ord_bytes];
+	jbyte s_buf[ord_bytes];
+
+	native_timing_start();
+	IppStatus err = ippsECCPGenKeyPair(ephemeral_secret, ephemeral_point, curve, prng_wrapper, prng_state);
+	if (err != ippStsNoErr) {
+		throw_new(env, "java/security/GeneralSecurityException", ippcpGetStatusString(err));
+		goto error;
+	}
+	err = ippsECCPSetKeyPair(ephemeral_secret, ephemeral_point, ippFalse, curve);
+	if (err != ippStsNoErr) {
+		throw_new(env, "java/security/GeneralSecurityException", ippcpGetStatusString(err));
+		goto error;
+	}
+	err = ippsECCPSignDSA(data_bn, priv_bn, r, s, curve);
+	if (err != ippStsNoErr) {
+		throw_new(env, "java/security/GeneralSecurityException", ippcpGetStatusString(err));
+		goto error;
+	}
+	native_timing_stop();
+
+	bn_get(r, r_buf, ord_bytes);
+	bn_get(s, s_buf, ord_bytes);
+
+	result = asn1_der_encode(env, r_buf, ord_bytes, s_buf, ord_bytes);
+
+error:
+	free(curve);
+	free(priv_bn);
+	free(ephemeral_point);
+	free(ephemeral_secret);
+	free(r);
+	free(s);
+	return result;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Ippcp_verify(JNIEnv *env, jobject this, jbyteArray signature, jbyteArray data, jbyteArray pubkey, jobject params) {
+	jint keysize;
+	IppsECCPState *curve = create_curve(env, params, &keysize);
+
+	if (VALIDATE_CURVE) {
+		IppECResult validation;
+		ippsECCPValidate(50, &validation, curve, ippsPRNGen, prng_state);
+		if (validation != ippECValid) {
+			throw_new(env, "java/security/GeneralSecurityException", ippsECCGetResultString(validation));
+			free(curve);
+			return JNI_FALSE;
+		}
+	}
+	IppsECCPPointState *pub = bytearray_to_pubkey(env, pubkey, keysize, curve);
+
+	if (VALIDATE_POINT) {
+		IppECResult validation;
+		ippsECCPCheckPoint(pub, &validation, curve);
+		if (validation != ippECValid) {
+			throw_new(env, "java/security/GeneralSecurityException", ippsECCGetResultString(validation));
+			free(curve);
+			free(pub);
+			return JNI_FALSE;
+		}
+	}
+
+    size_t r_len, s_len;
+    jbyte *r_data, *s_data;
+    bool decode = asn1_der_decode(env, signature, &r_data, &r_len, &s_data, &s_len);
+	if (!decode) {
+		throw_new(env, "java/security/GeneralSecurityException", "Error decoding sig.");
+		free(curve);
+		free(pub);
+		return JNI_FALSE;
+	}
+
+	int ord_bits;
+	ippsECCPGetOrderBitSize(&ord_bits, curve);
+
+	IppsBigNumState *r = new_bn(ord_bits);
+	ippsSetOctString_BN(r_data, r_len, r);
+	free(r_data);
+	IppsBigNumState *s = new_bn(ord_bits);
+	ippsSetOctString_BN(s_data, s_len, s);
+	free(s_data);
+
+	jint data_size = (*env)->GetArrayLength(env, data);
+	IppsBigNumState *data_bn = new_bn(data_size * 8);
+	jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
+	ippsSetOctString_BN(data_data, data_size, data_bn);
+	(*env)->ReleaseBooleanArrayElements(env, data, data_data, JNI_ABORT);
+
+	IppECResult result;
+
+	native_timing_start();
+	ippsECCPSetKeyPair(NULL, pub, ippTrue, curve);
+	IppStatus err = ippsECCPVerifyDSA(data_bn, r, s, &result, curve);
+	native_timing_stop();
+
+	free(curve);
+	free(pub);
+	free(r);
+	free(s);
+
+	if (err == ippStsNoErr && result == ippECValid) {
+		return JNI_TRUE;
+	}
+	if (err != ippStsNoErr) {
+		throw_new(env, "java/security/GeneralSecurityException", ippcpGetStatusString(err));
+		return JNI_FALSE;
+	}
+
+	return JNI_FALSE;
 }
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_IppcpLib_supportsNativeTiming(JNIEnv *env, jobject this) {
