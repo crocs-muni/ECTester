@@ -3,6 +3,7 @@ package cz.crcs.ectester.standalone.consts;
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 import java.security.Signature;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -90,6 +91,10 @@ public class SignatureIdent extends Ident {
             }
         }
         return null;
+    }
+
+    public static List<SignatureIdent> list() {
+        return Collections.unmodifiableList(ALL);
     }
 
     private SignatureIdent(String name, String... aliases) {

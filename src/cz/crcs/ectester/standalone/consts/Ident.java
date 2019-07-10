@@ -77,6 +77,6 @@ public abstract class Ident {
 
     @Override
     public String toString() {
-        return "(" + String.join("|", idents) + ")";
+        return "(" + String.join(" | ", idents) + ")";
     }
 }

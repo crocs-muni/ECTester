@@ -80,7 +80,8 @@ public class ECTesterStandalone {
             new MscngLib(),
             new WolfCryptLib(),
             new MbedTLSLib(),
-            new IppcpLib()};
+            new IppcpLib(),
+            new MatrixsslLib()};
     private Config cfg;
 
     private Options opts = new Options();
@@ -109,6 +110,7 @@ public class ECTesterStandalone {
                 return;
             }
 
+            //TODO: push this further down to only initialize if necessary.
             for (ECLibrary lib : libs) {
                 lib.initialize();
             }
@@ -124,6 +126,8 @@ public class ECTesterStandalone {
                 CLITools.listNamed(EC_Store.getInstance(), cli.getNext().getArg(0));
             } else if (cli.isNext("list-suites")) {
                 listSuites();
+            } else if (cli.isNext("list-types")) {
+                listIdents();
             } else if (cli.isNext("ecdh")) {
                 ecdh();
             } else if (cli.isNext("ecdsa")) {
@@ -238,6 +242,10 @@ public class ECTesterStandalone {
         ParserOptions listSuites = new ParserOptions(new DefaultParser(), listSuitesOpts, "List supported test suites.");
         actions.put("list-suites", listSuites);
 
+        Options listIdentsOpts = new Options();
+        ParserOptions listIdents = new ParserOptions(new DefaultParser(), listIdentsOpts, "List KeyPairGenerator, KeyAgreement and Signature types.");
+        actions.put("list-types", listIdents);
+
         List<Argument> baseArgs = new LinkedList<>();
         baseArgs.add(new Argument("lib", "What library to use.", false));
         optParser = new TreeParser(actions, false, baseArgs);
@@ -256,6 +264,7 @@ public class ECTesterStandalone {
         for (ProviderECLibrary lib : libs) {
             if (lib.isInitialized() && (cfg.selected == null || lib == cfg.selected)) {
                 System.out.println("\t- " + Colors.bold(lib.name()));
+                System.out.println(Colors.bold("\t\t- Version: ") + String.format("%f", lib.getProvider().getVersion()));
                 System.out.println(Colors.bold("\t\t- Supports native timing: ") + lib.supportsNativeTiming());
                 Set<KeyPairGeneratorIdent> kpgs = lib.getKPGs();
                 if (!kpgs.isEmpty()) {
@@ -288,6 +297,24 @@ public class ECTesterStandalone {
             for (String line : suite.getDescription()) {
                 System.out.println("\t" + line);
             }
+        }
+    }
+
+    /**
+     *
+     */
+    private void listIdents() {
+        System.out.println(Colors.bold("\t- KeyPairGenerator"));
+        for (KeyPairGeneratorIdent kpgIdent : KeyPairGeneratorIdent.list()) {
+            System.out.println("\t\t- " + Colors.underline(kpgIdent.getName()) + " " + kpgIdent.toString());
+        }
+        System.out.println(Colors.bold("\t- KeyAgreement"));
+        for (KeyAgreementIdent kaIdent : KeyAgreementIdent.list()) {
+            System.out.println("\t\t- " + Colors.underline(kaIdent.getName()) + " " + kaIdent.toString());
+        }
+        System.out.println(Colors.bold("\t- Signature"));
+        for (SignatureIdent sigIdent : SignatureIdent.list()) {
+            System.out.println("\t\t- " + Colors.underline(sigIdent.getName()) + " " + sigIdent.toString());
         }
     }
 
@@ -357,7 +384,8 @@ public class ECTesterStandalone {
             out = System.out;
         }
 
-        out.println("index;time[nano];pubW;privS;secret");
+        String hashAlgo = kaIdent.getBaseAlgo() != null ? String.format("[%s]", kaIdent.getBaseAlgo()) : "[NONE]";
+        out.println("index;time[nano];pubW;privS;secret" + hashAlgo);
 
         KeyPair one = null;
         if (cli.hasOption("ecdh.fixed-private") && !cli.hasOption("ecdh.named-private") && !cli.hasOption("ecdh.private")) {
@@ -503,7 +531,8 @@ public class ECTesterStandalone {
             out = System.out;
         }
 
-        out.println("index;signTime[nano];verifyTime[nano];data;pubW;privS;signature;nonce;verified");
+        String hashAlgo = sigIdent.getHashAlgo() != null ? String.format("[%s]", sigIdent.getHashAlgo()) : "";
+        out.println("index;signTime[nano];verifyTime[nano];data;pubW;privS;signature" + hashAlgo + ";nonce;verified");
 
         ECPrivateKey privkey = (ECPrivateKey) ECUtil.loadKey(EC_Consts.PARAMETER_S, cli.getOptionValue("ecdsa.named-private"), cli.getOptionValue("ecdsa.private"), spec);
         ECPublicKey pubkey = (ECPublicKey) ECUtil.loadKey(EC_Consts.PARAMETER_W, cli.getOptionValue("ecdsa.named-public"), cli.getOptionValue("ecdsa.public"), spec);
@@ -719,7 +748,7 @@ public class ECTesterStandalone {
                 }
             }
 
-            if (!cli.isNext("list-data") && !cli.isNext("list-suites")) {
+            if (!cli.isNext("list-data") && !cli.isNext("list-suites") && !cli.isNext("list-types")) {
                 String libraryName = cli.getArg(-1);
                 if (libraryName != null) {
                     List<ProviderECLibrary> matchedLibs = new LinkedList<>();

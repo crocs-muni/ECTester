@@ -3,6 +3,7 @@ package cz.crcs.ectester.standalone.consts;
 import javax.crypto.KeyAgreement;
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -71,6 +72,10 @@ public class KeyAgreementIdent extends Ident {
             }
         }
         return null;
+    }
+
+    public static List<KeyAgreementIdent> list() {
+        return Collections.unmodifiableList(ALL);
     }
 
     private KeyAgreementIdent(String name, String... aliases) {

@@ -3,6 +3,7 @@ package cz.crcs.ectester.standalone.consts;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,6 +31,10 @@ public class KeyPairGeneratorIdent extends Ident {
             }
         }
         return null;
+    }
+
+    public static List<KeyPairGeneratorIdent> list() {
+        return Collections.unmodifiableList(ALL);
     }
 
     public KeyPairGeneratorIdent(String name, String... aliases) {
