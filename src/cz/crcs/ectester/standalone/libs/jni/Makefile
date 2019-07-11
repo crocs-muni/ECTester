@@ -58,7 +58,7 @@ JNI_PLATFORMINCLUDEDIR ?= $(JNI_INCLUDEDIR)/$(JNI_PLATFORM)
 ###############################################################################
 ## Targets.
 
-all: tomcrypt_provider.so botan_provider.so cryptopp_provider.so openssl_provider.so boringssl_provider.so gcrypt_provider.so mbedtls_provider.so ippcp_provider.so
+all: tomcrypt_provider.so botan_provider.so cryptopp_provider.so openssl_provider.so boringssl_provider.so gcrypt_provider.so mbedtls_provider.so ippcp_provider.so matrixssl_provider.so
 
 # Common utils
 c_utils.o: c_utils.c
@@ -135,6 +135,15 @@ ippcp_provider.so: ippcp.o c_utils.o c_timing.o
 ippcp.o: ippcp.c
 	$(CC) $(CFLAGS) -c $<
 
+
+# MatrixSSL shim
+matrixssl_provider.so: matrixssl.o c_utils.o c_timing.o
+	$(CC) $(LFLAGS) -o $@ -L. $^ libcrypt_s.a libcore_s.a
+
+matrixssl.o: matrixssl.c
+	$(CC) $(CFLAGS) -Imatrixssl/ -c $<
+
+
 help:
 	@echo "# This makefile builds the JNI shims necessary to test native libraries."
 	@echo "# Targets:"
@@ -146,6 +155,7 @@ help:
 	@echo "    - cryptopp_provider.so"
 	@echo "    - mbedtls_provider.so"
 	@echo "    - ippcp_provider.so"
+	@echo "    - matrixssl_provider.so"
 
 clean:
 	rm -rf *.o

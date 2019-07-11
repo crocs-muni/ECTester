@@ -543,8 +543,6 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     return JNI_TRUE;
 }
 
-
-
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_supportsNativeTiming(JNIEnv *env, jobject this) {
     return native_timing_supported();
 }

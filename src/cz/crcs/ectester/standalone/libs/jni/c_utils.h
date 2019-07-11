@@ -50,6 +50,11 @@ jbyteArray asn1_der_encode(JNIEnv *env, const jbyte *r, size_t r_len, const jbyt
 bool asn1_der_decode(JNIEnv *env, jbyteArray sig, jbyte **r_data, size_t *r_len, jbyte **s_data, size_t *s_len);
 
 /**
+ * Convert a BigInteger to an allocated hex string.
+ */
+char *biginteger_to_hex(JNIEnv *env, jobject big, jint bytes);
+
+/**
  * Some useful defines to init the provider.
  */
 #define INIT_PROVIDER(env, provider_class) jmethodID provider_put = (*env)->GetMethodID(env, provider_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")

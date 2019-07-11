@@ -196,6 +196,13 @@
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Ippcp"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Ippcp"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Ippcp"/>
+            <class name="cz.crcs.ectester.standalone.libs.MatrixsslLib"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeProvider$Matrixssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Matrixssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$Matrixssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Matrixssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Matrixssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Matrixssl"/>
         </javah>
     </target>
 </project>

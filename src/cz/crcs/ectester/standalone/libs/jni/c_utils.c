@@ -222,3 +222,23 @@ bool asn1_der_decode(JNIEnv *env, jbyteArray sig, jbyte **r_data, size_t *r_len,
     *s_data = s_out;
     return true;
 }
+
+char *biginteger_to_hex(JNIEnv *env, jobject big, jint bytes) {
+    jmethodID to_string = (*env)->GetMethodID(env, biginteger_class, "toString", "(I)Ljava/lang/String;");
+    jstring big_string = (*env)->CallObjectMethod(env, big, to_string, (jint) 16);
+
+    jsize len = (*env)->GetStringUTFLength(env, big_string);
+    char raw_string[len];
+    (*env)->GetStringUTFRegion(env, big_string, 0, len, raw_string);
+
+    char *result = calloc(bytes, 2);
+    if (len >= bytes) {
+        return strncpy(result, raw_string, 2*bytes);
+    } else {
+        jsize diff = bytes - len;
+        for (jint i = 0; i < diff*2; ++i) {
+            result[i] = '0';
+        }
+        return strncpy(result + diff*2, raw_string, 2*bytes);
+    }
+}

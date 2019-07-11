@@ -287,4 +287,23 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
         @Override
         native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
     }
+
+    public static class Matrixssl extends NativeKeyPairGeneratorSpi {
+
+        public Matrixssl() {
+            initialize(256, new SecureRandom());
+        }
+
+        @Override
+        native boolean keysizeSupported(int keysize);
+
+        @Override
+        native boolean paramsSupported(AlgorithmParameterSpec params);
+
+        @Override
+        native KeyPair generate(int keysize, SecureRandom random);
+
+        @Override
+        native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
+    }
 }

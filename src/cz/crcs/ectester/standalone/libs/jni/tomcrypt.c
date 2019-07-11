@@ -169,26 +169,6 @@ static jobject create_ec_param_spec(JNIEnv *env, const ltc_ecc_set_type *curve) 
     return (*env)->NewObject(env, ec_parameter_spec_class, ec_parameter_spec_init, elliptic_curve, g, n, (jint) 1);
 }
 
-static char *biginteger_to_hex(JNIEnv *env, jobject big, jint bytes) {
-    jmethodID to_string = (*env)->GetMethodID(env, biginteger_class, "toString", "(I)Ljava/lang/String;");
-    jstring big_string = (*env)->CallObjectMethod(env, big, to_string, (jint) 16);
-
-    jsize len = (*env)->GetStringUTFLength(env, big_string);
-    char raw_string[len];
-    (*env)->GetStringUTFRegion(env, big_string, 0, len, raw_string);
-
-    char *result = calloc(bytes, 2);
-    if (len >= bytes) {
-        return strncpy(result, raw_string, 2*bytes);
-    } else {
-        jsize diff = bytes - len;
-        for (jint i = 0; i < diff*2; ++i) {
-            result[i] = '0';
-        }
-        return strncpy(result + diff*2, raw_string, 2*bytes);
-    }
-}
-
 static ltc_ecc_set_type* create_curve(JNIEnv *env, jobject params) {
     jmethodID get_curve = (*env)->GetMethodID(env, ec_parameter_spec_class, "getCurve", "()Ljava/security/spec/EllipticCurve;");
     jobject elliptic_curve = (*env)->CallObjectMethod(env, params, get_curve);
@@ -217,13 +197,16 @@ static ltc_ecc_set_type* create_curve(JNIEnv *env, jobject params) {
 
     jmethodID get_n = (*env)->GetMethodID(env, ec_parameter_spec_class, "getOrder", "()Ljava/math/BigInteger;");
     jobject n = (*env)->CallObjectMethod(env, params, get_n);
+	jmethodID get_bitlength = (*env)->GetMethodID(env, biginteger_class, "bitLength", "()I");
+	jint ord_bits = (*env)->CallIntMethod(env, n, get_bitlength);
+	jint ord_bytes = (ord_bits + 7) / 8; 
 
     ltc_ecc_set_type *curve = calloc(sizeof(ltc_ecc_set_type), 1);
     curve->size = bytes;
     curve->name = "";
     curve->prime = biginteger_to_hex(env, p, bytes);
     curve->B = biginteger_to_hex(env, b, bytes);
-    curve->order = biginteger_to_hex(env, n, bytes);
+    curve->order = biginteger_to_hex(env, n, ord_bytes);
     curve->Gx = biginteger_to_hex(env, gx, bytes);
     curve->Gy = biginteger_to_hex(env, gy, bytes);
 

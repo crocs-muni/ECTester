@@ -253,6 +253,10 @@ static IppsECCPState *create_curve(JNIEnv *env, jobject params, int *keysize) {
     jmethodID get_field = (*env)->GetMethodID(env, elliptic_curve_class, "getField", "()Ljava/security/spec/ECField;");
     jobject field = (*env)->CallObjectMethod(env, curve, get_field);
 
+	jmethodID get_bits = (*env)->GetMethodID(env, fp_field_class, "getFieldSize", "()I");
+    jint bits = (*env)->CallIntMethod(env, field, get_bits);
+    jint bytes = (bits + 7) / 8;
+
     jmethodID get_p = (*env)->GetMethodID(env, fp_field_class, "getP", "()Ljava/math/BigInteger;");
     jobject p = (*env)->CallObjectMethod(env, field, get_p);
 	IppsBigNumState *p_bn = biginteger_to_bn(env, p);
@@ -283,16 +287,14 @@ static IppsECCPState *create_curve(JNIEnv *env, jobject params, int *keysize) {
 	jmethodID get_h = (*env)->GetMethodID(env, ec_parameter_spec_class, "getCofactor", "()I");
 	jint h = (*env)->CallIntMethod(env, params, get_h);
 
-	jmethodID get_bitlength = (*env)->GetMethodID(env, biginteger_class, "bitLength", "()I");
-	jint prime_bits = (*env)->CallIntMethod(env, p, get_bitlength);
 	if (keysize) {
-		*keysize = prime_bits;
+		*keysize = bits;
 	}
 
 	int size;
-	ippsECCPGetSize(prime_bits, &size);
+	ippsECCPGetSize(bits, &size);
 	IppsECCPState *result = malloc(size);
-	ippsECCPInit(prime_bits, result);
+	ippsECCPInit(bits, result);
 	ippsECCPSet(p_bn, a_bn, b_bn, gx_bn, gy_bn, n_bn, h, result);
 
 	return result;

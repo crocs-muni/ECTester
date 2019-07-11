@@ -1845,3 +1845,208 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 }
 #endif
 #endif
+/* Header for class cz_crcs_ectester_standalone_libs_MatrixsslLib */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_MatrixsslLib
+#define _Included_cz_crcs_ectester_standalone_libs_MatrixsslLib
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_MatrixsslLib
+ * Method:    supportsNativeTiming
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_MatrixsslLib_supportsNativeTiming
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_MatrixsslLib
+ * Method:    getNativeTimingResolution
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_MatrixsslLib_getNativeTimingResolution
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_MatrixsslLib
+ * Method:    getLastNativeTiming
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_MatrixsslLib_getLastNativeTiming
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_MatrixsslLib
+ * Method:    createProvider
+ * Signature: ()Ljava/security/Provider;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_MatrixsslLib_createProvider
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_MatrixsslLib
+ * Method:    getCurves
+ * Signature: ()Ljava/util/Set;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_MatrixsslLib_getCurves
+  (JNIEnv *, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeProvider_Matrixssl */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeProvider_Matrixssl
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeProvider_Matrixssl
+#ifdef __cplusplus
+extern "C" {
+#endif
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Matrixssl_serialVersionUID
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Matrixssl_serialVersionUID 1421746759512286392LL
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Matrixssl_MAX_ARRAY_SIZE
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Matrixssl_MAX_ARRAY_SIZE 2147483639L
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Matrixssl_KEYS
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Matrixssl_KEYS 0L
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Matrixssl_VALUES
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Matrixssl_VALUES 1L
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Matrixssl_ENTRIES
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Matrixssl_ENTRIES 2L
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Matrixssl_serialVersionUID
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Matrixssl_serialVersionUID 4112578634029874840LL
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Matrixssl_serialVersionUID
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Matrixssl_serialVersionUID -4298000515446427739LL
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeProvider_Matrixssl
+ * Method:    setup
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_00024Matrixssl_setup
+  (JNIEnv *, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Matrixssl */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Matrixssl
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Matrixssl
+#ifdef __cplusplus
+extern "C" {
+#endif
+#undef cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Matrixssl_DEFAULT_KEYSIZE
+#define cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Matrixssl_DEFAULT_KEYSIZE 256L
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Matrixssl
+ * Method:    keysizeSupported
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Matrixssl_keysizeSupported
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Matrixssl
+ * Method:    paramsSupported
+ * Signature: (Ljava/security/spec/AlgorithmParameterSpec;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Matrixssl_paramsSupported
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Matrixssl
+ * Method:    generate
+ * Signature: (ILjava/security/SecureRandom;)Ljava/security/KeyPair;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Matrixssl_generate__ILjava_security_SecureRandom_2
+  (JNIEnv *, jobject, jint, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Matrixssl
+ * Method:    generate
+ * Signature: (Ljava/security/spec/AlgorithmParameterSpec;Ljava/security/SecureRandom;)Ljava/security/KeyPair;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Matrixssl_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2
+  (JNIEnv *, jobject, jobject, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeECPublicKey_Matrixssl */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPublicKey_Matrixssl
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPublicKey_Matrixssl
+#ifdef __cplusplus
+extern "C" {
+#endif
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeECPrivateKey_Matrixssl */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPrivateKey_Matrixssl
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeECPrivateKey_Matrixssl
+#ifdef __cplusplus
+extern "C" {
+#endif
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Matrixssl */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Matrixssl
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Matrixssl
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Matrixssl
+ * Method:    generateSecret
+ * Signature: ([B[BLjava/security/spec/ECParameterSpec;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Matrixssl_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Matrixssl
+ * Method:    generateSecret
+ * Signature: ([B[BLjava/security/spec/ECParameterSpec;Ljava/lang/String;)Ljavax/crypto/SecretKey;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Matrixssl_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2Ljava_lang_String_2
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject, jstring);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Matrixssl */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Matrixssl
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Matrixssl
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Matrixssl
+ * Method:    sign
+ * Signature: ([B[BLjava/security/spec/ECParameterSpec;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Matrixssl_sign
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Matrixssl
+ * Method:    verify
+ * Signature: ([B[B[BLjava/security/spec/ECParameterSpec;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Matrixssl_verify
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jbyteArray, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
