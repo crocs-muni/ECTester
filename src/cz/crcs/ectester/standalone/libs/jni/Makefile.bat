@@ -157,7 +157,7 @@ if defined DEBUG (
 echo ** OTHER_CLI%TAB%%OTHER_CLI%
 echo.
 
-echo ^>^> %CC% /W2 /EHsc %OTHER_CLI% %INCLUDE_CLI% mscng.c c_utils.c bcrypt.lib jvm.lib /Femscng_provider.dll /LD /link %LIBPATH% /nologo
+echo ^>^> %CC% /W2 /EHsc %OTHER_CLI% %INCLUDE_CLI% mscng.c c_utils.c c_timing.c bcrypt.lib jvm.lib kernel32.lib /Femscng_provider.dll /LD /link %LIBPATH% /nologo
 echo.
 
-%CC% /W2 /EHsc %OTHER_CLI% %INCLUDE_CLI% mscng.c c_utils.c bcrypt.lib jvm.lib /Femscng_provider.dll /LD /link %LIBPATH% /nologo
+%CC% /W2 /EHsc %OTHER_CLI% %INCLUDE_CLI% mscng.c c_utils.c c_timing.c bcrypt.lib jvm.lib kernel32.lib /Femscng_provider.dll /LD /link %LIBPATH% /nologo
