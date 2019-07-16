@@ -327,6 +327,7 @@ public class ECTesterReader {
         opts.addOption(Option.builder("v").longOpt("verbose").desc("Turn on verbose logging.").build());
         opts.addOption(Option.builder().longOpt("format").desc("Output format to use. One of: text,yml,xml.").hasArg().argName("format").build());
 
+        opts.addOption(Option.builder("kb").longOpt("key-builder").desc("Allocate KeyPair using KeyBuilder.").build());
         opts.addOption(Option.builder().longOpt("fixed").desc("Generate key(s) only once, keep them for later operations.").build());
         opts.addOption(Option.builder().longOpt("fixed-private").desc("Generate private key only once, keep it for later ECDH.").build());
         opts.addOption(Option.builder().longOpt("fixed-public").desc("Generate public key only once, keep it for later ECDH.").build());
@@ -394,7 +395,7 @@ public class ECTesterReader {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
 
         List<Response> sent = new LinkedList<>();
-        sent.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send());
+        sent.add(new Command.Allocate(cardManager, cfg.keyBuilder, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send());
         //sent.add(new Command.Clear(cardManager, ECTesterApplet.KEYPAIR_LOCAL).send());
         sent.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL).send());
 
@@ -444,7 +445,7 @@ public class ECTesterReader {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
         Command curve = Command.prepareCurve(cardManager, cfg, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass);
 
-        Response allocate = new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send();
+        Response allocate = new Command.Allocate(cardManager, cfg.keyBuilder, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send();
         respWriter.outputResponse(allocate);
 
         OutputStreamWriter keysFile = FileUtil.openFiles(cfg.outputs);
@@ -577,7 +578,7 @@ public class ECTesterReader {
         Command curve = Command.prepareCurve(cardManager, cfg, ECTesterApplet.KEYPAIR_BOTH, cfg.bits, keyClass);
         List<Response> prepare = new LinkedList<>();
         prepare.add(new Command.AllocateKeyAgreement(cardManager, cfg.ECKAType).send()); // Prepare KeyAgreement or required type
-        prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, cfg.bits, keyClass).send());
+        prepare.add(new Command.Allocate(cardManager, cfg.keyBuilder, ECTesterApplet.KEYPAIR_BOTH, cfg.bits, keyClass).send());
         if (curve != null)
             prepare.add(curve.send());
 
@@ -703,7 +704,7 @@ public class ECTesterReader {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
         List<Response> prepare = new LinkedList<>();
         prepare.add(new Command.AllocateSignature(cardManager, cfg.ECDSAType).send());
-        prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send());
+        prepare.add(new Command.Allocate(cardManager, cfg.keyBuilder, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send());
         Command curve = Command.prepareCurve(cardManager, cfg, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass);
         if (curve != null)
             prepare.add(curve.send());
@@ -835,6 +836,7 @@ public class ECTesterReader {
         public boolean fixedKey = false;
         public boolean fixedPrivate = false;
         public boolean fixedPublic = false;
+        public byte keyBuilder;
 
         public String log;
 
@@ -894,6 +896,7 @@ public class ECTesterReader {
             fixedKey = cli.hasOption("fixed");
             fixedPrivate = cli.hasOption("fixed-private");
             fixedPublic = cli.hasOption("fixed-public");
+            keyBuilder = cli.hasOption("key-builder") ? ECTesterApplet.BUILD_KEYBUILDER : ECTesterApplet.BUILD_KEYPAIR;
 
             if (cli.hasOption("log")) {
                 log = cli.getOptionValue("log", String.format("ECTESTER_log_%d.log", System.currentTimeMillis() / 1000));

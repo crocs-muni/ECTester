@@ -255,6 +255,7 @@ public abstract class Command implements Cloneable {
      */
     public static class Allocate extends Command {
         private byte keyPair;
+        private byte build;
         private short keyLength;
         private byte keyClass;
 
@@ -263,18 +264,24 @@ public abstract class Command implements Cloneable {
          *
          * @param cardManager cardManager to send APDU through
          * @param keyPair     which keyPair to use, local/remote (KEYPAIR_* | ...)
+         * @param build       whether to use KeyBuilder or Keypair alloc
          * @param keyLength   key length to set
          * @param keyClass    key class to allocate
          */
-        public Allocate(CardMngr cardManager, byte keyPair, short keyLength, byte keyClass) {
+        public Allocate(CardMngr cardManager, byte keyPair, byte build, short keyLength, byte keyClass) {
             super(cardManager);
             this.keyPair = keyPair;
+            this.build = build;
             this.keyLength = keyLength;
             this.keyClass = keyClass;
 
             byte[] data = new byte[]{0, 0, keyClass};
             ByteUtil.setShort(data, 0, keyLength);
-            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ALLOCATE, keyPair, 0x00, data);
+            this.cmd = new CommandAPDU(ECTesterApplet.CLA_ECTESTERAPPLET, ECTesterApplet.INS_ALLOCATE, keyPair, build, data);
+        }
+
+        public Allocate(CardMngr cardManager, byte keyPair, short keyLength, byte keyClass) {
+            this(cardManager, keyPair, ECTesterApplet.BUILD_KEYPAIR, keyLength, keyClass);
         }
 
         @Override

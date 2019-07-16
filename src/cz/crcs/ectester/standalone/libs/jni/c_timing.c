@@ -1,5 +1,9 @@
 #include "c_timing.h"
 
+#if __linux || __posix
+#include<unistd.h>
+#endif
+
 #if _POSIX_TIMERS > 0
 
 #include <time.h>

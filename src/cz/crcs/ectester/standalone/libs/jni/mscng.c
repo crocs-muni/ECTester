@@ -1,11 +1,9 @@
-#include <bcrypt.h>
 #include <windows.h>
+#include <bcrypt.h>
 #include "native.h"
 
 #include "c_timing.h"
 #include "c_utils.h"
-
-#include <stdio.h>
 
 // BCRYPT and NT things.
 #define NT_SUCCESS(status) (((NTSTATUS)(status)) >= 0)
@@ -17,8 +15,7 @@
 typedef struct {
 	ULONG dwVersion;                  // Version of the structure
 	ECC_CURVE_TYPE_ENUM dwCurveType;  // Supported curve types.
-	ECC_CURVE_ALG_ID_ENUM
-	    dwCurveGenerationAlgId;  // For X.592 verification purposes, if we include Seed we will need to include the algorithm ID.
+	ECC_CURVE_ALG_ID_ENUM dwCurveGenerationAlgId;  // For X.592 verification purposes, if we include Seed we will need to include the algorithm ID.
 	ULONG cbFieldLength;         // Byte length of the fields P, A, B, X, Y.
 	ULONG cbSubgroupOrder;       // Byte length of the subgroup.
 	ULONG cbCofactor;            // Byte length of cofactor of G in E.
@@ -1203,6 +1200,12 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 		return JNI_FALSE;
 	}
 	(*env)->ReleaseByteArrayElements(env, pubkey_barray, pub_data, JNI_ABORT);
+    
+    jmethodID get_n = (*env)->GetMethodID(env, ec_parameter_spec_class, "getOrder", "()Ljava/math/BigInteger;");
+    jobject n = (*env)->CallObjectMethod(env, params, get_n);
+    jmethodID get_bitlength = (*env)->GetMethodID(env, biginteger_class, "bitLength", "()I");
+	jint ord_bits = (*env)->CallIntMethod(env, n, get_bitlength);
+	jint ord_bytes = (ord_bits + 7) / 8;
 
 	jint sig_len = (*env)->GetArrayLength(env, sig);
 	jbyte *sig_data = (*env)->GetByteArrayElements(env, sig, NULL);
@@ -1224,20 +1227,24 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 
 	jbyte *r_cpy = r;
 	jbyte *s_cpy = s;
-	if (rlen > slen) {
-		r_cpy += rlen - slen;
-		rlen = slen;
-	} else if (slen > rlen) {
-		s_cpy += slen - rlen;
-		slen = rlen;
-	} else {
-		if (r[0] == 0 && s[0] == 0) {
-			r_cpy++;
-			s_cpy++;
-			rlen--;
-			slen--;
-		}
-	}
+    if (rlen > ord_bytes) {
+        r_cpy += ord_bytes - rlen;
+    }
+    if (slen > ord_bytes) {
+        s_cpy += ord_bytes - slen;
+    }
+    if (rlen < ord_bytes) {
+        r_cpy = _alloca(ord_bytes);
+        memset(r_cpy, 0, ord_bytes);
+        memcpy(r_cpy, r + (ord_bytes - rlen), ord_bytes);
+    }
+    if (slen < ord_bytes) {
+        s_cpy = _alloca(ord_bytes);
+        memset(s_cpy, 0, ord_bytes);
+        memcpy(s_cpy, s + (ord_bytes - slen), ord_bytes);
+    }
+    rlen = ord_bytes;
+    slen = ord_bytes;
 
 	UCHAR *sig_full = calloc(rlen + slen, 1);
 	memcpy(sig_full, r_cpy, rlen);

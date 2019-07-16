@@ -3,6 +3,10 @@
 #include <string.h>
 #include <stdlib.h>
 
+#if defined(__WIN32__) || defined(_MSC_VER)
+#include <windows.h>
+#endif
+
 jclass ec_parameter_spec_class;
 jclass ecgen_parameter_spec_class;
 jclass secret_key_spec_class;
@@ -228,7 +232,11 @@ char *biginteger_to_hex(JNIEnv *env, jobject big, jint bytes) {
     jstring big_string = (*env)->CallObjectMethod(env, big, to_string, (jint) 16);
 
     jsize len = (*env)->GetStringUTFLength(env, big_string);
+#if defined(__WIN32__) || defined(_MSC_VER)
+    char *raw_string = _alloca(len);
+#else
     char raw_string[len];
+#endif
     (*env)->GetStringUTFRegion(env, big_string, 0, len, raw_string);
 
     char *result = calloc(bytes, 2);

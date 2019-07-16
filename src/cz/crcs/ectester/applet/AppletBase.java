@@ -39,6 +39,8 @@ public abstract class AppletBase extends Applet {
     public static final byte KEYPAIR_LOCAL = (byte) 0x01;
     public static final byte KEYPAIR_REMOTE = (byte) 0x02;
     public static final byte KEYPAIR_BOTH = KEYPAIR_LOCAL | KEYPAIR_REMOTE;
+    public static final byte BUILD_KEYPAIR = (byte) 0x00;
+    public static final byte BUILD_KEYBUILDER = (byte) 0x01;
     public static final byte EXPORT_TRUE = (byte) 0xff;
     public static final byte EXPORT_FALSE = (byte) 0x00;
     public static final byte MODE_NORMAL = (byte) 0xaa;
@@ -352,17 +354,18 @@ public abstract class AppletBase extends Applet {
      * returns allocate SWs
      *
      * @param apdu P1   = byte keyPair (KEYPAIR_* | ...)
-     *             P2   =
+     *             P2   = byte build
      *             DATA = short keyLength
      *             byte keyClass
      * @return length of response
      */
     private short insAllocate(APDU apdu) {
         byte keyPair = apduArray[ISO7816.OFFSET_P1];
+        byte build = apduArray[ISO7816.OFFSET_P2];
         short keyLength = Util.getShort(apduArray, cdata);
         byte keyClass = apduArray[(short) (cdata + 2)];
 
-        return allocate(keyPair, keyLength, keyClass, apdu.getBuffer(), (short) 0);
+        return allocate(keyPair, build, keyLength, keyClass, apdu.getBuffer(), (short) 0);
     }
 
     /**
@@ -657,22 +660,31 @@ public abstract class AppletBase extends Applet {
 
     /**
      * @param keyPair   which keyPair to use, local/remote (KEYPAIR_* | ...)
+     * @param build     whether to use KeyBuilder or Keypair alloc
      * @param keyLength key length to set
      * @param keyClass  key class to allocate
      * @param outBuffer buffer to write sw to
      * @param outOffset offset into buffer
      * @return length of data written to the buffer
      */
-    private short allocate(byte keyPair, short keyLength, byte keyClass, byte[] outBuffer, short outOffset) {
+    private short allocate(byte keyPair, byte build, short keyLength, byte keyClass, byte[] outBuffer, short outOffset) {
         short length = 0;
         if ((keyPair & KEYPAIR_LOCAL) != 0) {
-            localKeypair = keyGenerator.allocatePair(keyClass, keyLength);
+            if (build == BUILD_KEYPAIR) {
+                localKeypair = keyGenerator.allocatePair(keyClass, keyLength);
+            } else {
+                localKeypair = keyGenerator.constructPair(keyClass, keyLength);
+            }
             Util.setShort(outBuffer, outOffset, keyGenerator.getSW());
             length += 2;
         }
 
         if ((keyPair & KEYPAIR_REMOTE) != 0) {
-            remoteKeypair = keyGenerator.allocatePair(keyClass, keyLength);
+            if (build == BUILD_KEYPAIR) {
+                remoteKeypair = keyGenerator.allocatePair(keyClass, keyLength);
+            } else {
+                remoteKeypair = keyGenerator.constructPair(keyClass, keyLength);
+            }
             Util.setShort(outBuffer, (short) (outOffset + length), keyGenerator.getSW());
             length += 2;
         }

@@ -4,9 +4,7 @@ import javacard.framework.CardRuntimeException;
 import javacard.framework.ISO7816;
 import javacard.framework.ISOException;
 import javacard.framework.Util;
-import javacard.security.ECPrivateKey;
-import javacard.security.ECPublicKey;
-import javacard.security.KeyPair;
+import javacard.security.*;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -34,6 +32,36 @@ public class ECKeyGenerator {
                     } catch (Exception ignored) {
                     }
                 }
+            }
+        } catch (CardRuntimeException ce) {
+            sw = ce.getReason();
+        }
+        return ecKeyPair;
+    }
+
+    /**
+     * @param keyClass
+     * @param keyLength
+     * @return
+     */
+    public KeyPair constructPair(byte keyClass, short keyLength) {
+        sw = ISO7816.SW_NO_ERROR;
+        KeyPair ecKeyPair = null;
+        byte privKeyType;
+        byte pubKeyType;
+        if (keyClass == KeyPair.ALG_EC_FP) {
+            privKeyType = KeyBuilder.TYPE_EC_FP_PRIVATE;
+            pubKeyType = KeyBuilder.TYPE_EC_FP_PUBLIC;
+        } else {
+            privKeyType = KeyBuilder.TYPE_EC_F2M_PRIVATE;
+            pubKeyType = KeyBuilder.TYPE_EC_F2M_PUBLIC;
+        }
+        try {
+            if (!dryRun) {
+                ECPrivateKey privateKey = (ECPrivateKey) KeyBuilder.buildKey(privKeyType, keyLength, false);
+                ECPublicKey publicKey = (ECPublicKey) KeyBuilder.buildKey(pubKeyType, keyLength, false);
+
+                ecKeyPair = new KeyPair(publicKey, privateKey);
             }
         } catch (CardRuntimeException ce) {
             sw = ce.getReason();
