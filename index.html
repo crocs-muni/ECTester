@@ -12,10 +12,12 @@
 }
 
 #sticky-bar.js-is-stuck a {
-  font-size: 0.9em;
+  font-size: 1em;
   transition: transform 0.2s, background-color 0.1s;
   background-color: white;
   width: 100%;
+  padding: 1em;
+  margin-left: 1em;
 }
 #sticky-bar.js-is-stuck a:hover {
   background-color: rgba(0,0,0,0.1);
@@ -30,29 +32,27 @@
 }
 
 @media screen and (min-width: 64em) {
-
-#sticky-bar.js-is-stuck {
-  transform: translateX(-190px);
-  width: 18%;
-  height: 50px;
-}
-
-#sticky-bar.js-is-stuck a:nth-child(1) {
-  transform: none;
-}
-
-#sticky-bar.js-is-stuck a:nth-child(2) {
-  transform: translateY(1.2em);
-}
-
-#sticky-bar.js-is-stuck a:nth-child(3) {
-  transform: translateY(2.4em);
-}
-
-#sticky-bar.js-is-stuck a:nth-child(4) {
-  transform: translateY(3.6em);
-}
-
+	#sticky-bar.js-is-stuck {
+	  transform: translateX(-340px);
+	  width: 30%;
+	  height: 50px;
+	}
+	
+	#sticky-bar.js-is-stuck a:nth-child(1) {
+	  transform: none;
+	}
+	
+	#sticky-bar.js-is-stuck a:nth-child(2) {
+	  transform: translateY(1.2em);
+	}
+	
+	#sticky-bar.js-is-stuck a:nth-child(3) {
+	  transform: translateY(2.4em);
+	}
+	
+	#sticky-bar.js-is-stuck a:nth-child(4) {
+	  transform: translateY(3.6em);
+	}
 }
 
 #sticky-bar .btn {
@@ -233,6 +233,7 @@ This page contains results for the following cards:</br>
 	<li>NXP JCOP CJ2A081 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bf81300008131fe454a434f5076323431b7">3bf81300008131fe454a434f5076323431b7</a></li>
 	<li>NXP JCOP v2.4.2 R2 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bf91300008131fe454a434f503234325232a3">3bf91300008131fe454a434f503234325232a3</a></li>
 	<li>NXP JCOP v2.4.2 R3 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bf01300008131fe45e8">3bf01300008131fe45e8</a></li>
+	<li>Oberthur Cosmo v7 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bdb960080b1fe451f830031c064c308010001900095">3bdb960080b1fe451f830031c064c308010001900095</a></li>
 	<li>TaiSYS SIMoME VAULT <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3b9f95803fc7a08031e073fa21106300000083f09000bb">3b9f95803fc7a08031e073fa21106300000083f09000bb</a></li>
 </ul>
 
@@ -387,6 +388,17 @@ This page contains results for the following cards:</br>
         <td class="no">✘</td>
         <td class="no">✘</td>
         <td class="no">✘</td>
+    </tr>
+	<tr>
+        <td><a href="{{ site.baseurl }}/results/default/Oberthur_Cosmo_v7/">Oberthur Cosmo v7</a></td>
+        <td class="yes">1,2</td>
+        <td class="yes">a</td>
+        <td class="yes">1,2</td>
+        <td class="yes">a</td>
+        <td class="yes">1,2</td>
+        <td class="yes">a</td>
+        <td class="yes">1,2</td>
+        <td class="yes">a</td>
     </tr>
 	<tr>
         <td><a href="{{ site.baseurl }}/results/default/TaiSYS_SIMoME_VAULT/">TaiSYS SIMoME VAULT</a></td>
@@ -1035,6 +1047,69 @@ performance is similar to ECDH performance. ECDSA timings are split for sign+ver
 		<td class="yes">114+114</td>
 		<td class="no">✘</td>
 		<td class="yes">154+176</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
+    <tr>
+    	<td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/Oberthur_Cosmo_v7/">Oberthur Cosmo v7</a></td>   	
+    </tr>
+    <tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">881</td>
+       	<td class="yes">806+925</td>
+       	<td class="yes">1183</td>
+       	<td class="yes">1067+1256</td>
+       	<td class="yes">2190</td>
+       	<td class="yes">1907+2399</td>
+       	<td class="yes">4246</td>
+       	<td class="yes">3612+4790</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">793</td>
+    	<td class="no">✘</td>
+       	<td class="yes">1051</td>
+       	<td class="no">✘</td>
+       	<td class="yes">1889</td>
+       	<td class="no">✘</td>
+       	<td class="yes">3593</td>
+       	<td class="no">✘</td>
+    </tr>
+	<tr><td>3</td><td>c</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
 		<td class="no">✘</td>
 		<td class="no">✘</td>
 		<td class="no">✘</td>

@@ -1,0 +1,3131 @@
+---
+testRun:
+  date: 2019.07.18 16:54:22
+  suite:
+    name: default
+    desc: The default test suite tests basic support and performance of ECDH and ECDSA.
+  device:
+    type: card
+    ectester: v0.3.3
+    cplc: {
+      }
+    applet:
+      version: v0.3.3
+      javacard: 2.2
+      base: 546
+      cleanup: true
+      arrays:
+        apduBuf: 635
+        ramArray: 256
+        ramArray2: 256
+        apduArray: 512
+    ATR: 3bdb960080b1fe451f830031c064c308010001900095
+  tests:
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 00 70 05
+        desc: Allocate both keypairs 112b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 79198095
+        desc: Allocate both keypairs 112b ALG_EC_FP
+      desc: Allocate both keypairs 112b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 0
+    type: compound
+    desc: No support for 112b ALG_EC_FP.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 00 80 05
+        desc: Allocate both keypairs 128b ALG_EC_FP
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 87028138
+        desc: Allocate both keypairs 128b ALG_EC_FP
+      desc: Allocate both keypairs 128b ALG_EC_FP
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 1
+    type: compound
+    desc: No support for 128b ALG_EC_FP.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests matched the expected mask.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 00 a0 05
+        desc: Allocate both keypairs 160b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 676488073
+        desc: Allocate both keypairs 160b ALG_EC_FP
+      desc: Allocate both keypairs 160b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: false
+        apdu: 00 01 00 01 90 00
+        natural_sw: 36864
+        sws:
+        - 1
+        - 1
+        duration: 29891730
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 00 a0 05
+        desc: Allocate both keypairs 160b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 697533891
+        desc: Allocate both keypairs 160b ALG_EC_FP
+      desc: Allocate both keypairs 160b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 03 02 00 7d
+        desc: Set secp160r1 curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 298119298
+        desc: Set secp160r1 curve parameters on both keypairs
+      desc: Set secp160r1 curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 1378047138
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: Some sub-tests did have the expected result.
+      tests:
+      - result:
+          ok: true
+          value: SUCCESS
+          cause: Some ECDH is supported.
+        tests:
+        - type: command
+          command:
+            apdu: b0 76 00 00 01 01
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DH) object
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 29024721
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DH) object
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH) object
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 01
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 761088998
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 01 00 01
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+          response:
+            successful: false
+            apdu: 00 01 90 00
+            natural_sw: 36864
+            sws:
+            - 1
+            duration: 547702864
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+          result:
+            ok: false
+            value: FAILURE
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 01
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 750857431
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          desc: Mean = 739464609 ns, Median = 739786526 ns, Mode = 735392953 ns
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        type: compound
+        desc: Test of the ALG_EC_SVDP_DH KeyAgreement.
+      - result:
+          ok: true
+          value: SUCCESS
+          cause: Some ECDH is supported.
+        tests:
+        - type: command
+          command:
+            apdu: b0 76 00 00 01 02
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC) object
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 30771179
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC) object
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC) object
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 02
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 686389680
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 01 00 02
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+          response:
+            successful: false
+            apdu: 00 01 90 00
+            natural_sw: 36864
+            sws:
+            - 1
+            duration: 549697749
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+          desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+          result:
+            ok: false
+            value: FAILURE
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 02
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 680339656
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          desc: Mean = 669710665 ns, Median = 670309666 ns, Mode = 667515707 ns
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        type: compound
+        desc: Test of the ALG_EC_SVDP_DHC KeyAgreement.
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 03
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 13613769
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+        desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 04
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 21028749
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+        desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 05
+          desc: Allocate KeyAgreement(ALG_EC_PACE_GM) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 21107345
+          desc: Allocate KeyAgreement(ALG_EC_PACE_GM) object
+        desc: Allocate KeyAgreement(ALG_EC_PACE_GM) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 06
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20946541
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+        desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      type: compound
+      desc: KeyAgreement tests.
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: Some sub-tests did have the expected result.
+      tests:
+      - result:
+          ok: true
+          value: SUCCESS
+          cause: All sub-tests had the expected result.
+        tests:
+        - type: command
+          command:
+            apdu: b0 77 00 00 01 11
+            desc: Allocate Signature(ALG_ECDSA_SHA) object
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 36315200
+            desc: Allocate Signature(ALG_ECDSA_SHA) object
+          desc: Allocate Signature(ALG_ECDSA_SHA) object
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 72 01 00 03 11 00 00
+            desc: ALG_ECDSA_SHA with local keypair(random data)
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 1856561869
+            desc: ALG_ECDSA_SHA with local keypair(random data)
+          desc: ALG_ECDSA_SHA with local keypair(random data)
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 73 01 ff 43 11 00 40 5e fe 3d 42 a6 86 65 f3 e5 84 f0 19 03 45
+              32 9d 87 e7 e4 a6 a6 1a 54 94 39 ff 9a 33 b1 df 6e 6a a6 39 83 99 a1
+              a8 3b 53 86 be bb 14 d5 7f 98 8b 56 ee 35 e3 c1 86 26 97 21 a7 86 c0
+              64 b2 3d 36
+            desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+          response:
+            successful: true
+            apdu: 90 00 00 2e 30 2c 02 14 3b cf 69 71 1e 9f 42 ac 02 12 f8 d3 af fd
+              4f 50 34 ec 7e 72 02 14 5c 06 b9 8f e3 97 60 05 e0 7e a3 12 7f bb fc
+              de 08 47 c1 48 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 694859682
+            desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+          desc: Sign (Mean = 683377367 ns, Median = 682555464 ns, Mode = 680665550
+            ns)
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 74 01 11 72 00 40 5e fe 3d 42 a6 86 65 f3 e5 84 f0 19 03 45 32
+              9d 87 e7 e4 a6 a6 1a 54 94 39 ff 9a 33 b1 df 6e 6a a6 39 83 99 a1 a8
+              3b 53 86 be bb 14 d5 7f 98 8b 56 ee 35 e3 c1 86 26 97 21 a7 86 c0 64
+              b2 3d 36 00 2e 30 2c 02 14 7e f4 a6 a8 35 bd 12 94 ed 27 cb 67 5c 98
+              d5 fa 25 fc 51 30 02 14 06 20 02 37 e3 db 79 f0 f3 fa 82 5e 00 c8 19
+              de c4 73 34 fb
+            desc: ALG_ECDSA_SHA verification with local keypair(provided data)
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 789838283
+            desc: ALG_ECDSA_SHA verification with local keypair(provided data)
+          desc: Verify (Mean = 777834067 ns, Median = 776459592 ns, Mode = 776200686
+            ns)
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        type: compound
+        desc: Test of the ALG_ECDSA_SHA signature.
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 25
+          desc: Allocate Signature(ALG_ECDSA_SHA_224) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 13438462
+          desc: Allocate Signature(ALG_ECDSA_SHA_224) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_224) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 21
+          desc: Allocate Signature(ALG_ECDSA_SHA_256) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20738787
+          desc: Allocate Signature(ALG_ECDSA_SHA_256) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_256) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 22
+          desc: Allocate Signature(ALG_ECDSA_SHA_384) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20443983
+          desc: Allocate Signature(ALG_ECDSA_SHA_384) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_384) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 26
+          desc: Allocate Signature(ALG_ECDSA_SHA_512) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20594668
+          desc: Allocate Signature(ALG_ECDSA_SHA_512) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_512) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      type: compound
+      desc: Signature tests.
+    index: 2
+    type: compound
+    desc: Tests of 160b ALG_EC_FP support.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests matched the expected mask.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 00 c0 05
+        desc: Allocate both keypairs 192b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 695372652
+        desc: Allocate both keypairs 192b ALG_EC_FP
+      desc: Allocate both keypairs 192b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: false
+        apdu: 00 01 00 01 90 00
+        natural_sw: 36864
+        sws:
+        - 1
+        - 1
+        duration: 29641205
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 00 c0 05
+        desc: Allocate both keypairs 192b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 708001747
+        desc: Allocate both keypairs 192b ALG_EC_FP
+      desc: Allocate both keypairs 192b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 04 02 00 7d
+        desc: Set secp192r1 curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 304298698
+        desc: Set secp192r1 curve parameters on both keypairs
+      desc: Set secp192r1 curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 1623715988
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: Some sub-tests did have the expected result.
+      tests:
+      - result:
+          ok: true
+          value: SUCCESS
+          cause: Some ECDH is supported.
+        tests:
+        - type: command
+          command:
+            apdu: b0 76 00 00 01 01
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DH) object
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 37995597
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DH) object
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH) object
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 01
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 896720973
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 01 00 01
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+          response:
+            successful: false
+            apdu: 00 01 90 00
+            natural_sw: 36864
+            sws:
+            - 1
+            duration: 639707625
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+          result:
+            ok: false
+            value: FAILURE
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 01
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 892762342
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          desc: Mean = 881414915 ns, Median = 881840422 ns, Mode = 878002889 ns
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        type: compound
+        desc: Test of the ALG_EC_SVDP_DH KeyAgreement.
+      - result:
+          ok: true
+          value: SUCCESS
+          cause: Some ECDH is supported.
+        tests:
+        - type: command
+          command:
+            apdu: b0 76 00 00 01 02
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC) object
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 31126417
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC) object
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC) object
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 02
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 810740445
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 01 00 02
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+          response:
+            successful: false
+            apdu: 00 01 90 00
+            natural_sw: 36864
+            sws:
+            - 1
+            duration: 641387718
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+          desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+          result:
+            ok: false
+            value: FAILURE
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 02
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 805250970
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          desc: Mean = 793815866 ns, Median = 793668342 ns, Mode = 791505961 ns
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        type: compound
+        desc: Test of the ALG_EC_SVDP_DHC KeyAgreement.
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 03
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 13541223
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+        desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 04
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20967433
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+        desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 05
+          desc: Allocate KeyAgreement(ALG_EC_PACE_GM) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 21358598
+          desc: Allocate KeyAgreement(ALG_EC_PACE_GM) object
+        desc: Allocate KeyAgreement(ALG_EC_PACE_GM) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 06
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 21134750
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+        desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      type: compound
+      desc: KeyAgreement tests.
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: Some sub-tests did have the expected result.
+      tests:
+      - result:
+          ok: true
+          value: SUCCESS
+          cause: All sub-tests had the expected result.
+        tests:
+        - type: command
+          command:
+            apdu: b0 77 00 00 01 11
+            desc: Allocate Signature(ALG_ECDSA_SHA) object
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 31080181
+            desc: Allocate Signature(ALG_ECDSA_SHA) object
+          desc: Allocate Signature(ALG_ECDSA_SHA) object
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 72 01 00 03 11 00 00
+            desc: ALG_ECDSA_SHA with local keypair(random data)
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 1758439189
+            desc: ALG_ECDSA_SHA with local keypair(random data)
+          desc: ALG_ECDSA_SHA with local keypair(random data)
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 73 01 ff 43 11 00 40 83 b9 8c 25 63 5d 8a d8 a8 c9 42 16 ce f4
+              56 0c 56 b5 7b 2c ef 29 66 03 24 a5 07 a6 42 07 0c a8 53 fe ad aa 2b
+              e8 bf 7e e4 5a 3e f7 80 d4 81 58 68 cf d2 4a ab 90 6c 03 4d f2 b4 e6
+              ee 90 8b 76
+            desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+          response:
+            successful: true
+            apdu: 90 00 00 38 30 36 02 19 00 bc e6 30 12 9d 16 43 83 3f 89 55 a8 9a
+              4c 31 7a 3d 79 c6 db 6c 50 50 7f 02 19 00 d7 a2 79 e1 6c c5 54 9f 0b
+              50 9e 1b 8c 10 97 c6 38 66 dd 84 f7 a1 b5 c7 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 815394534
+            desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+          desc: Sign (Mean = 806043439 ns, Median = 804635244 ns, Mode = 803760609
+            ns)
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 74 01 11 7c 00 40 83 b9 8c 25 63 5d 8a d8 a8 c9 42 16 ce f4 56
+              0c 56 b5 7b 2c ef 29 66 03 24 a5 07 a6 42 07 0c a8 53 fe ad aa 2b e8
+              bf 7e e4 5a 3e f7 80 d4 81 58 68 cf d2 4a ab 90 6c 03 4d f2 b4 e6 ee
+              90 8b 76 00 38 30 36 02 19 00 f8 a9 d2 22 48 a4 4f f1 3a 46 41 ac 3f
+              d9 00 ed 95 5b e0 ea f6 d4 78 c3 02 19 00 b3 6d e9 c9 7e 65 fd c2 d5
+              78 3e ac 5d 7b c0 23 54 b9 19 9c fa 76 58 ee
+            desc: ALG_ECDSA_SHA verification with local keypair(provided data)
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 937597623
+            desc: ALG_ECDSA_SHA verification with local keypair(provided data)
+          desc: Verify (Mean = 925924166 ns, Median = 924706129 ns, Mode = 924154800
+            ns)
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        type: compound
+        desc: Test of the ALG_ECDSA_SHA signature.
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 25
+          desc: Allocate Signature(ALG_ECDSA_SHA_224) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 13653340
+          desc: Allocate Signature(ALG_ECDSA_SHA_224) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_224) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 21
+          desc: Allocate Signature(ALG_ECDSA_SHA_256) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 21272801
+          desc: Allocate Signature(ALG_ECDSA_SHA_256) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_256) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 22
+          desc: Allocate Signature(ALG_ECDSA_SHA_384) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20602601
+          desc: Allocate Signature(ALG_ECDSA_SHA_384) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_384) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 26
+          desc: Allocate Signature(ALG_ECDSA_SHA_512) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20486422
+          desc: Allocate Signature(ALG_ECDSA_SHA_512) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_512) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      type: compound
+      desc: Signature tests.
+    index: 3
+    type: compound
+    desc: Tests of 192b ALG_EC_FP support.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests matched the expected mask.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 00 e0 05
+        desc: Allocate both keypairs 224b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 705527078
+        desc: Allocate both keypairs 224b ALG_EC_FP
+      desc: Allocate both keypairs 224b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: false
+        apdu: 00 01 00 01 90 00
+        natural_sw: 36864
+        sws:
+        - 1
+        - 1
+        duration: 30100393
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 00 e0 05
+        desc: Allocate both keypairs 224b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 718368936
+        desc: Allocate both keypairs 224b ALG_EC_FP
+      desc: Allocate both keypairs 224b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 05 02 00 7d
+        desc: Set secp224r1 curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 304731776
+        desc: Set secp224r1 curve parameters on both keypairs
+      desc: Set secp224r1 curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 2056401350
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: Some sub-tests did have the expected result.
+      tests:
+      - result:
+          ok: true
+          value: SUCCESS
+          cause: Some ECDH is supported.
+        tests:
+        - type: command
+          command:
+            apdu: b0 76 00 00 01 01
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DH) object
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 38451138
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DH) object
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH) object
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 01
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 1130494070
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 01 00 01
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+          response:
+            successful: false
+            apdu: 00 01 90 00
+            natural_sw: 36864
+            sws:
+            - 1
+            duration: 830980694
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+          result:
+            ok: false
+            value: FAILURE
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 01
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 1125844676
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          desc: Mean = 1114010686 ns, Median = 1114120313 ns, Mode = 1113098729 ns
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        type: compound
+        desc: Test of the ALG_EC_SVDP_DH KeyAgreement.
+      - result:
+          ok: true
+          value: SUCCESS
+          cause: Some ECDH is supported.
+        tests:
+        - type: command
+          command:
+            apdu: b0 76 00 00 01 02
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC) object
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 31297605
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC) object
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC) object
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 02
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 1025697212
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 01 00 02
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+          response:
+            successful: false
+            apdu: 00 01 90 00
+            natural_sw: 36864
+            sws:
+            - 1
+            duration: 830861605
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+          desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+          result:
+            ok: false
+            value: FAILURE
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 02
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 1018514007
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          desc: Mean = 1007336413 ns, Median = 1007506913 ns, Mode = 1004359344 ns
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        type: compound
+        desc: Test of the ALG_EC_SVDP_DHC KeyAgreement.
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 03
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 13609625
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+        desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 04
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20758024
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+        desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 05
+          desc: Allocate KeyAgreement(ALG_EC_PACE_GM) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20525864
+          desc: Allocate KeyAgreement(ALG_EC_PACE_GM) object
+        desc: Allocate KeyAgreement(ALG_EC_PACE_GM) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 06
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20775439
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+        desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      type: compound
+      desc: KeyAgreement tests.
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: Some sub-tests did have the expected result.
+      tests:
+      - result:
+          ok: true
+          value: SUCCESS
+          cause: All sub-tests had the expected result.
+        tests:
+        - type: command
+          command:
+            apdu: b0 77 00 00 01 11
+            desc: Allocate Signature(ALG_ECDSA_SHA) object
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 31243711
+            desc: Allocate Signature(ALG_ECDSA_SHA) object
+          desc: Allocate Signature(ALG_ECDSA_SHA) object
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 72 01 00 03 11 00 00
+            desc: ALG_ECDSA_SHA with local keypair(random data)
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 2220552037
+            desc: ALG_ECDSA_SHA with local keypair(random data)
+          desc: ALG_ECDSA_SHA with local keypair(random data)
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 73 01 ff 43 11 00 40 59 20 71 bc 8e ca 17 89 a1 28 65 07 46 cc
+              31 c2 fd 6a a4 e0 a1 aa cb e6 58 0d c7 27 98 76 1b cf d1 d7 9a b9 30
+              23 a0 8e 60 78 14 7b 70 3a c5 78 a8 e3 04 e7 d1 d2 05 75 9c 45 c2 aa
+              a7 86 a5 56
+            desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+          response:
+            successful: true
+            apdu: 90 00 00 3e 30 3c 02 1c 4a 3b 40 88 f6 57 f8 02 57 b8 00 fb a2 1d
+              4b 56 d1 a8 a4 bc e9 26 5c 6c e5 b5 16 14 02 1c 63 ad 9c 0f fa e3 4e
+              c2 78 c7 4f 5b e2 70 ce 01 17 8e b7 e8 39 bd fc 3b aa 7b 15 63 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 1031613435
+            desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+          desc: Sign (Mean = 1021713890 ns, Median = 1020621392 ns, Mode = 1019346149
+            ns)
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 74 01 11 82 00 40 59 20 71 bc 8e ca 17 89 a1 28 65 07 46 cc 31
+              c2 fd 6a a4 e0 a1 aa cb e6 58 0d c7 27 98 76 1b cf d1 d7 9a b9 30 23
+              a0 8e 60 78 14 7b 70 3a c5 78 a8 e3 04 e7 d1 d2 05 75 9c 45 c2 aa a7
+              86 a5 56 00 3e 30 3c 02 1c 08 ac 4e ab 0e 92 9b 1e 01 5f 7d 09 eb 64
+              81 df cc 4b 22 d0 07 49 ee 9a c1 5e f8 71 02 1c 68 bd 9f 9d cb 20 ee
+              7d 2d 3b a9 51 8c 49 1c ba 9a 18 bb 00 e1 26 66 6f 55 a9 36 1e
+            desc: ALG_ECDSA_SHA verification with local keypair(provided data)
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 1184166646
+            desc: ALG_ECDSA_SHA verification with local keypair(provided data)
+          desc: Verify (Mean = 1171411412 ns, Median = 1170387344 ns, Mode = 1168159704
+            ns)
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        type: compound
+        desc: Test of the ALG_ECDSA_SHA signature.
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 25
+          desc: Allocate Signature(ALG_ECDSA_SHA_224) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 13561920
+          desc: Allocate Signature(ALG_ECDSA_SHA_224) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_224) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 21
+          desc: Allocate Signature(ALG_ECDSA_SHA_256) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 21178734
+          desc: Allocate Signature(ALG_ECDSA_SHA_256) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_256) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 22
+          desc: Allocate Signature(ALG_ECDSA_SHA_384) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 21028446
+          desc: Allocate Signature(ALG_ECDSA_SHA_384) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_384) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 26
+          desc: Allocate Signature(ALG_ECDSA_SHA_512) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20487833
+          desc: Allocate Signature(ALG_ECDSA_SHA_512) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_512) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      type: compound
+      desc: Signature tests.
+    index: 4
+    type: compound
+    desc: Tests of 224b ALG_EC_FP support.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests matched the expected mask.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 01 00 05
+        desc: Allocate both keypairs 256b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 716832637
+        desc: Allocate both keypairs 256b ALG_EC_FP
+      desc: Allocate both keypairs 256b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: false
+        apdu: 00 01 00 01 90 00
+        natural_sw: 36864
+        sws:
+        - 1
+        - 1
+        duration: 30050660
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 01 00 05
+        desc: Allocate both keypairs 256b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 728561300
+        desc: Allocate both keypairs 256b ALG_EC_FP
+      desc: Allocate both keypairs 256b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 06 02 00 7d
+        desc: Set secp256r1 curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 306340452
+        desc: Set secp256r1 curve parameters on both keypairs
+      desc: Set secp256r1 curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 2141778076
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: Some sub-tests did have the expected result.
+      tests:
+      - result:
+          ok: true
+          value: SUCCESS
+          cause: Some ECDH is supported.
+        tests:
+        - type: command
+          command:
+            apdu: b0 76 00 00 01 01
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DH) object
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 38769881
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DH) object
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH) object
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 01
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 1200553508
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 01 00 01
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+          response:
+            successful: false
+            apdu: 00 01 90 00
+            natural_sw: 36864
+            sws:
+            - 1
+            duration: 826950109
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+          result:
+            ok: false
+            value: FAILURE
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 01
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 1195894664
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          desc: Mean = 1183681830 ns, Median = 1183887707 ns, Mode = 1180557719 ns
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        type: compound
+        desc: Test of the ALG_EC_SVDP_DH KeyAgreement.
+      - result:
+          ok: true
+          value: SUCCESS
+          cause: Some ECDH is supported.
+        tests:
+        - type: command
+          command:
+            apdu: b0 76 00 00 01 02
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC) object
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 31457206
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC) object
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC) object
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 02
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 1067340630
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 01 00 02
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+          response:
+            successful: false
+            apdu: 00 01 90 00
+            natural_sw: 36864
+            sws:
+            - 1
+            duration: 828901491
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+          desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+          result:
+            ok: false
+            value: FAILURE
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 02
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 1065525175
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          desc: Mean = 1051845886 ns, Median = 1052468059 ns, Mode = 1042062963 ns
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        type: compound
+        desc: Test of the ALG_EC_SVDP_DHC KeyAgreement.
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 03
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 13518783
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+        desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 04
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20992306
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+        desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 05
+          desc: Allocate KeyAgreement(ALG_EC_PACE_GM) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 21031357
+          desc: Allocate KeyAgreement(ALG_EC_PACE_GM) object
+        desc: Allocate KeyAgreement(ALG_EC_PACE_GM) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 06
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 21156321
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+        desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      type: compound
+      desc: KeyAgreement tests.
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: Some sub-tests did have the expected result.
+      tests:
+      - result:
+          ok: true
+          value: SUCCESS
+          cause: All sub-tests had the expected result.
+        tests:
+        - type: command
+          command:
+            apdu: b0 77 00 00 01 11
+            desc: Allocate Signature(ALG_ECDSA_SHA) object
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 31711625
+            desc: Allocate Signature(ALG_ECDSA_SHA) object
+          desc: Allocate Signature(ALG_ECDSA_SHA) object
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 72 01 00 03 11 00 00
+            desc: ALG_ECDSA_SHA with local keypair(random data)
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 2349029051
+            desc: ALG_ECDSA_SHA with local keypair(random data)
+          desc: ALG_ECDSA_SHA with local keypair(random data)
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 73 01 ff 43 11 00 40 78 9d 52 e2 15 7d 7f c9 b5 b6 79 a6 b1 8b
+              37 69 25 ac e1 2f 13 b2 fc b8 a4 e8 a6 7f 88 1a 83 05 ca bd dd 00 ac
+              42 30 6d 18 15 a5 6d 0d 83 81 01 76 a5 18 ca ae e6 91 39 33 eb 7b 48
+              77 b9 76 dd
+            desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+          response:
+            successful: true
+            apdu: 90 00 00 47 30 45 02 20 67 9d 77 5c 92 3f 28 7f 38 a0 60 49 9b 83
+              d2 42 c9 f7 9f 8f 32 d2 c1 af 3a 5c c4 c0 df 11 bc c5 02 21 00 b6 43
+              89 95 79 7e 5b 7f ef 99 49 c7 ee 54 ae 4a 8f dd 11 d9 1b f8 37 72 fc
+              67 1b 05 98 4b 11 74 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 1077909140
+            desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+          desc: Sign (Mean = 1067528755 ns, Median = 1066314168 ns, Mode = 1065213509
+            ns)
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 74 01 11 8c 00 40 78 9d 52 e2 15 7d 7f c9 b5 b6 79 a6 b1 8b 37
+              69 25 ac e1 2f 13 b2 fc b8 a4 e8 a6 7f 88 1a 83 05 ca bd dd 00 ac 42
+              30 6d 18 15 a5 6d 0d 83 81 01 76 a5 18 ca ae e6 91 39 33 eb 7b 48 77
+              b9 76 dd 00 48 30 46 02 21 00 cc d1 15 78 cf ee 11 7f 69 eb ad 45 2e
+              33 73 9a 7f 87 6f 8a fe 2f 57 8b 6d f7 85 1c ba 8d ca cd 02 21 00 f6
+              11 c3 ea e5 62 7d 48 ee 50 73 a0 fe 9f e8 7e 71 59 ff 73 d5 ac 3d 08
+              27 5d e6 69 b9 43 54 4e
+            desc: ALG_ECDSA_SHA verification with local keypair(provided data)
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 1270181952
+            desc: ALG_ECDSA_SHA verification with local keypair(provided data)
+          desc: Verify (Mean = 1256440459 ns, Median = 1255338985 ns, Mode = 1254628247
+            ns)
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        type: compound
+        desc: Test of the ALG_ECDSA_SHA signature.
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 25
+          desc: Allocate Signature(ALG_ECDSA_SHA_224) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 13539628
+          desc: Allocate Signature(ALG_ECDSA_SHA_224) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_224) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 21
+          desc: Allocate Signature(ALG_ECDSA_SHA_256) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20853183
+          desc: Allocate Signature(ALG_ECDSA_SHA_256) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_256) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 22
+          desc: Allocate Signature(ALG_ECDSA_SHA_384) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20908003
+          desc: Allocate Signature(ALG_ECDSA_SHA_384) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_384) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 26
+          desc: Allocate Signature(ALG_ECDSA_SHA_512) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 21165004
+          desc: Allocate Signature(ALG_ECDSA_SHA_512) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_512) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      type: compound
+      desc: Signature tests.
+    index: 5
+    type: compound
+    desc: Tests of 256b ALG_EC_FP support.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests matched the expected mask.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 01 80 05
+        desc: Allocate both keypairs 384b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 726600317
+        desc: Allocate both keypairs 384b ALG_EC_FP
+      desc: Allocate both keypairs 384b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: false
+        apdu: 00 01 00 01 90 00
+        natural_sw: 36864
+        sws:
+        - 1
+        - 1
+        duration: 29837685
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 01 80 05
+        desc: Allocate both keypairs 384b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 739642740
+        desc: Allocate both keypairs 384b ALG_EC_FP
+      desc: Allocate both keypairs 384b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 07 02 00 7d
+        desc: Set secp384r1 curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 311647131
+        desc: Set secp384r1 curve parameters on both keypairs
+      desc: Set secp384r1 curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 3809570099
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: Some sub-tests did have the expected result.
+      tests:
+      - result:
+          ok: true
+          value: SUCCESS
+          cause: Some ECDH is supported.
+        tests:
+        - type: command
+          command:
+            apdu: b0 76 00 00 01 01
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DH) object
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 39337533
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DH) object
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH) object
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 01
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 2206743307
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 01 00 01
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+          response:
+            successful: false
+            apdu: 00 01 90 00
+            natural_sw: 36864
+            sws:
+            - 1
+            duration: 1442152304
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+          result:
+            ok: false
+            value: FAILURE
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 01
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 2201387379
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          desc: Mean = 2190466089 ns, Median = 2191007869 ns, Mode = 2185784099 ns
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        type: compound
+        desc: Test of the ALG_EC_SVDP_DH KeyAgreement.
+      - result:
+          ok: true
+          value: SUCCESS
+          cause: Some ECDH is supported.
+        tests:
+        - type: command
+          command:
+            apdu: b0 76 00 00 01 02
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC) object
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 31971975
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC) object
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC) object
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 02
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 1905600189
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 01 00 02
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+          response:
+            successful: false
+            apdu: 00 01 90 00
+            natural_sw: 36864
+            sws:
+            - 1
+            duration: 1443498638
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+          desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+          result:
+            ok: false
+            value: FAILURE
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 02
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 1900049462
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          desc: Mean = 1888783833 ns, Median = 1888971241 ns, Mode = 1884648471 ns
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        type: compound
+        desc: Test of the ALG_EC_SVDP_DHC KeyAgreement.
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 03
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 13539056
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+        desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 04
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20845675
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+        desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 05
+          desc: Allocate KeyAgreement(ALG_EC_PACE_GM) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 21099456
+          desc: Allocate KeyAgreement(ALG_EC_PACE_GM) object
+        desc: Allocate KeyAgreement(ALG_EC_PACE_GM) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 06
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 21066940
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+        desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      type: compound
+      desc: KeyAgreement tests.
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: Some sub-tests did have the expected result.
+      tests:
+      - result:
+          ok: true
+          value: SUCCESS
+          cause: All sub-tests had the expected result.
+        tests:
+        - type: command
+          command:
+            apdu: b0 77 00 00 01 11
+            desc: Allocate Signature(ALG_ECDSA_SHA) object
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 32196754
+            desc: Allocate Signature(ALG_ECDSA_SHA) object
+          desc: Allocate Signature(ALG_ECDSA_SHA) object
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 72 01 00 03 11 00 00
+            desc: ALG_ECDSA_SHA with local keypair(random data)
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 4331645504
+            desc: ALG_ECDSA_SHA with local keypair(random data)
+          desc: ALG_ECDSA_SHA with local keypair(random data)
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 73 01 ff 43 11 00 40 89 7d 41 38 d2 0f f9 eb 3a 22 f4 a3 f1 6b
+              a2 8e f6 cc b0 55 77 a6 48 5d f1 8b 4a db c8 51 be 22 ca a9 0b c6 36
+              0c 38 3d 75 db 87 57 81 25 f0 b1 8a 54 d8 32 a3 81 48 c6 5c 23 a7 98
+              35 a2 f8 68
+            desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+          response:
+            successful: true
+            apdu: 90 00 00 67 30 65 02 30 25 9e b3 b9 d9 b3 55 36 92 a7 4b 9f f5 cf
+              9b c5 5d 1a df 75 c8 1c 8e 79 f0 27 7f 8d bb 80 58 6d 42 46 fa ec d4
+              be 49 ed c3 9f a9 08 50 4a 52 67 02 31 00 d6 b7 5a 65 53 77 8c f1 7c
+              e7 b1 ca 95 34 57 c2 5f be 4d b8 7d 30 fc 30 e9 95 ed f0 9a 74 96 ed
+              e0 03 3b 71 75 81 fe 8f cc ba cb 2c 20 26 1c d3 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 1918143842
+            desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+          desc: Sign (Mean = 1907081743 ns, Median = 1906483488 ns, Mode = 1902505700
+            ns)
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 74 01 11 ac 00 40 89 7d 41 38 d2 0f f9 eb 3a 22 f4 a3 f1 6b a2
+              8e f6 cc b0 55 77 a6 48 5d f1 8b 4a db c8 51 be 22 ca a9 0b c6 36 0c
+              38 3d 75 db 87 57 81 25 f0 b1 8a 54 d8 32 a3 81 48 c6 5c 23 a7 98 35
+              a2 f8 68 00 68 30 66 02 31 00 bc a4 cd c9 01 92 35 6d 62 a6 6b 12 19
+              07 67 5d be b9 e6 30 59 85 96 5a a3 89 80 32 a8 af b7 aa 9d 8a f6 21
+              2c 5a c9 16 76 e7 58 0f 92 a9 fc a2 02 31 00 fb c3 d5 31 9d cf e0 f7
+              aa b5 7b 10 2b 23 ff d9 01 fb c0 7e fa f3 98 e5 67 fe 03 74 a1 0c a4
+              59 78 8f fe 43 9b 1a f7 c8 5b ca 46 66 d3 ae 22 ae
+            desc: ALG_ECDSA_SHA verification with local keypair(provided data)
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 2413500185
+            desc: ALG_ECDSA_SHA verification with local keypair(provided data)
+          desc: Verify (Mean = 2398914471 ns, Median = 2397814360 ns, Mode = 2397122646
+            ns)
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        type: compound
+        desc: Test of the ALG_ECDSA_SHA signature.
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 25
+          desc: Allocate Signature(ALG_ECDSA_SHA_224) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 13538512
+          desc: Allocate Signature(ALG_ECDSA_SHA_224) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_224) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 21
+          desc: Allocate Signature(ALG_ECDSA_SHA_256) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 21392531
+          desc: Allocate Signature(ALG_ECDSA_SHA_256) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_256) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 22
+          desc: Allocate Signature(ALG_ECDSA_SHA_384) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20575629
+          desc: Allocate Signature(ALG_ECDSA_SHA_384) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_384) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 26
+          desc: Allocate Signature(ALG_ECDSA_SHA_512) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20617501
+          desc: Allocate Signature(ALG_ECDSA_SHA_512) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_512) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      type: compound
+      desc: Signature tests.
+    index: 6
+    type: compound
+    desc: Tests of 384b ALG_EC_FP support.
+  - result:
+      ok: true
+      value: SUCCESS
+      cause: All sub-tests matched the expected mask.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 02 09 05
+        desc: Allocate both keypairs 521b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 740674623
+        desc: Allocate both keypairs 521b ALG_EC_FP
+      desc: Allocate both keypairs 521b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: false
+        apdu: 00 01 00 01 90 00
+        natural_sw: 36864
+        sws:
+        - 1
+        - 1
+        duration: 29755775
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 02 09 05
+        desc: Allocate both keypairs 521b ALG_EC_FP
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 755496346
+        desc: Allocate both keypairs 521b ALG_EC_FP
+      desc: Allocate both keypairs 521b ALG_EC_FP
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5c 03 08 02 00 7d
+        desc: Set secp521r1 curve parameters on both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 319610818
+        desc: Set secp521r1 curve parameters on both keypairs
+      desc: Set secp521r1 curve parameters on both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - type: command
+      command:
+        apdu: b0 5e 03 00 01 00
+        desc: Generate both keypairs
+      response:
+        successful: true
+        apdu: 90 00 90 00 90 00
+        natural_sw: 36864
+        sws:
+        - 36864
+        - 36864
+        duration: 7204991206
+        desc: Generate both keypairs
+      desc: Generate both keypairs
+      result:
+        ok: true
+        value: SUCCESS
+        cause: null
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: Some sub-tests did have the expected result.
+      tests:
+      - result:
+          ok: true
+          value: SUCCESS
+          cause: Some ECDH is supported.
+        tests:
+        - type: command
+          command:
+            apdu: b0 76 00 00 01 01
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DH) object
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 39826552
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DH) object
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH) object
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 01
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 4260515055
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 01 00 01
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+          response:
+            successful: false
+            apdu: 00 01 90 00
+            natural_sw: 36864
+            sws:
+            - 1
+            duration: 2753898920
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+          desc: ALG_EC_SVDP_DH of local pubkey and remote privkey(COMPRESSED point)
+          result:
+            ok: false
+            value: FAILURE
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 01
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 4259657589
+            desc: ALG_EC_SVDP_DH of local pubkey and remote privkey
+          desc: Mean = 4245992380 ns, Median = 4246553312 ns, Mode = 4240357968 ns
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        type: compound
+        desc: Test of the ALG_EC_SVDP_DH KeyAgreement.
+      - result:
+          ok: true
+          value: SUCCESS
+          cause: Some ECDH is supported.
+        tests:
+        - type: command
+          command:
+            apdu: b0 76 00 00 01 02
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC) object
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 32683899
+            desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC) object
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC) object
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 02
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 3615802583
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 01 00 02
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+          response:
+            successful: false
+            apdu: 00 01 90 00
+            natural_sw: 36864
+            sws:
+            - 1
+            duration: 2756823864
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+          desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey(COMPRESSED point)
+          result:
+            ok: false
+            value: FAILURE
+            cause: null
+        - type: command
+          command:
+            apdu: b0 70 01 02 04 00 00 00 02
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 3605319087
+            desc: ALG_EC_SVDP_DHC of local pubkey and remote privkey
+          desc: Mean = 3592986110 ns, Median = 3594488778 ns, Mode = 3585674837 ns
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        type: compound
+        desc: Test of the ALG_EC_SVDP_DHC KeyAgreement.
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 03
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 13040657
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+        desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 04
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20873014
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+        desc: Allocate KeyAgreement(ALG_EC_SVDP_DHC_PLAIN) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 05
+          desc: Allocate KeyAgreement(ALG_EC_PACE_GM) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 21054829
+          desc: Allocate KeyAgreement(ALG_EC_PACE_GM) object
+        desc: Allocate KeyAgreement(ALG_EC_PACE_GM) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 76 00 00 01 06
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 20754854
+          desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+        desc: Allocate KeyAgreement(ALG_EC_SVDP_DH_PLAIN_XY) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      type: compound
+      desc: KeyAgreement tests.
+    - result:
+        ok: true
+        value: SUCCESS
+        cause: Some sub-tests did have the expected result.
+      tests:
+      - result:
+          ok: true
+          value: SUCCESS
+          cause: All sub-tests had the expected result.
+        tests:
+        - type: command
+          command:
+            apdu: b0 77 00 00 01 11
+            desc: Allocate Signature(ALG_ECDSA_SHA) object
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 32148879
+            desc: Allocate Signature(ALG_ECDSA_SHA) object
+          desc: Allocate Signature(ALG_ECDSA_SHA) object
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 72 01 00 03 11 00 00
+            desc: ALG_ECDSA_SHA with local keypair(random data)
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 8422033969
+            desc: ALG_ECDSA_SHA with local keypair(random data)
+          desc: ALG_ECDSA_SHA with local keypair(random data)
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 73 01 ff 43 11 00 40 b7 00 82 b0 13 34 c0 cb fa 26 dc 61 11 b0
+              b7 fa 10 e5 2b f6 2b 92 e5 ed 56 30 bf c2 38 66 8c 62 90 f9 46 fb 5e
+              d5 e5 73 01 ed 6e be 8d 36 c5 b6 14 ef e7 f2 ce 7b 45 32 74 17 c0 3d
+              92 ae 20 d9
+            desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+          response:
+            successful: true
+            apdu: 90 00 00 8a 30 88 02 42 00 3c 3a 3b 69 38 46 eb ba 2f 06 17 e8 08
+              f3 6b 73 0a 35 1f 6f fc 06 6d 82 00 11 eb 99 d2 5b 4d 71 ee 91 07 32
+              c8 a8 75 d6 ea 71 73 83 5c 07 7e aa a0 ae 7d d2 62 bf 94 ff 26 d5 a7
+              aa ee 57 27 ab 6b 02 42 01 ed d0 c5 40 5a c1 39 45 f1 b5 2d 02 ec 06
+              1e 7c 1e 2d 00 2a 79 1e a9 f1 22 21 38 34 36 31 97 35 bd 5e 9c 9c f2
+              3f 37 16 98 53 f3 c9 25 11 fa 59 75 2f f4 24 b2 6a 31 f5 48 24 1d 7e
+              4b 83 5c c7 f6 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 3623754778
+            desc: ALG_ECDSA_SHA signature with local keypair(provided data)
+          desc: Sign (Mean = 3611828271 ns, Median = 3611135473 ns, Mode = 3607758297
+            ns)
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        - type: command
+          command:
+            apdu: b0 74 01 11 ce 00 40 b7 00 82 b0 13 34 c0 cb fa 26 dc 61 11 b0 b7
+              fa 10 e5 2b f6 2b 92 e5 ed 56 30 bf c2 38 66 8c 62 90 f9 46 fb 5e d5
+              e5 73 01 ed 6e be 8d 36 c5 b6 14 ef e7 f2 ce 7b 45 32 74 17 c0 3d 92
+              ae 20 d9 00 8a 30 88 02 42 00 a8 5b 70 77 2e 8c 6e 95 5f db 12 16 ec
+              75 dd 53 8b 4c 94 31 dc f7 78 81 f7 ee b8 7b ad a4 7b 70 1d 0f bf bb
+              3f 6e 33 d3 64 a5 b1 75 16 8f 0a fd c6 96 7d 17 15 19 c4 8a b7 cb b2
+              db f1 d7 38 68 e6 02 42 01 04 06 fb 48 43 3a 0d 43 69 e1 47 f7 06 41
+              d8 9b c0 0e 48 6d fd 24 2a 51 a8 8a 45 ee 0e 67 ba 2b 12 53 d8 56 5e
+              a5 9e 28 0e a6 24 d3 a4 54 72 d4 26 07 aa bf 61 73 17 2f 36 af b7 9b
+              f3 bc 71 29 38
+            desc: ALG_ECDSA_SHA verification with local keypair(provided data)
+          response:
+            successful: true
+            apdu: 90 00 90 00
+            natural_sw: 36864
+            sws:
+            - 36864
+            duration: 4808273413
+            desc: ALG_ECDSA_SHA verification with local keypair(provided data)
+          desc: Verify (Mean = 4789889800 ns, Median = 4789237058 ns, Mode = 4787804709
+            ns)
+          result:
+            ok: true
+            value: SUCCESS
+            cause: null
+        type: compound
+        desc: Test of the ALG_ECDSA_SHA signature.
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 25
+          desc: Allocate Signature(ALG_ECDSA_SHA_224) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 13605512
+          desc: Allocate Signature(ALG_ECDSA_SHA_224) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_224) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 21
+          desc: Allocate Signature(ALG_ECDSA_SHA_256) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 21111650
+          desc: Allocate Signature(ALG_ECDSA_SHA_256) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_256) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 22
+          desc: Allocate Signature(ALG_ECDSA_SHA_384) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 21082735
+          desc: Allocate Signature(ALG_ECDSA_SHA_384) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_384) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      - type: command
+        command:
+          apdu: b0 77 00 00 01 26
+          desc: Allocate Signature(ALG_ECDSA_SHA_512) object
+        response:
+          successful: false
+          apdu: 00 03 90 00
+          natural_sw: 36864
+          sws:
+          - 3
+          duration: 21024055
+          desc: Allocate Signature(ALG_ECDSA_SHA_512) object
+        desc: Allocate Signature(ALG_ECDSA_SHA_512) object
+        result:
+          ok: false
+          value: FAILURE
+          cause: null
+      type: compound
+      desc: Signature tests.
+    index: 7
+    type: compound
+    desc: Tests of 521b ALG_EC_FP support.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 00 a3 04
+        desc: Allocate both keypairs 163b ALG_EC_F2M
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 98103516
+        desc: Allocate both keypairs 163b ALG_EC_F2M
+      desc: Allocate both keypairs 163b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 8
+    type: compound
+    desc: No support for 163b ALG_EC_F2M.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 00 e9 04
+        desc: Allocate both keypairs 233b ALG_EC_F2M
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 91057585
+        desc: Allocate both keypairs 233b ALG_EC_F2M
+      desc: Allocate both keypairs 233b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 9
+    type: compound
+    desc: No support for 233b ALG_EC_F2M.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 01 1b 04
+        desc: Allocate both keypairs 283b ALG_EC_F2M
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 91371305
+        desc: Allocate both keypairs 283b ALG_EC_F2M
+      desc: Allocate both keypairs 283b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 10
+    type: compound
+    desc: No support for 283b ALG_EC_F2M.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 01 99 04
+        desc: Allocate both keypairs 409b ALG_EC_F2M
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 91199868
+        desc: Allocate both keypairs 409b ALG_EC_F2M
+      desc: Allocate both keypairs 409b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 11
+    type: compound
+    desc: No support for 409b ALG_EC_F2M.
+  - result:
+      ok: false
+      value: FAILURE
+      cause: Some sub-tests did not have the expected result.
+    tests:
+    - type: command
+      command:
+        apdu: b0 5a 03 03 03 02 3b 04
+        desc: Allocate both keypairs 571b ALG_EC_F2M
+      response:
+        successful: false
+        apdu: 00 03 00 03 90 00
+        natural_sw: 36864
+        sws:
+        - 3
+        - 3
+        duration: 91360417
+        desc: Allocate both keypairs 571b ALG_EC_F2M
+      desc: Allocate both keypairs 571b ALG_EC_F2M
+      result:
+        ok: false
+        value: FAILURE
+        cause: null
+    index: 12
+    type: compound
+    desc: No support for 571b ALG_EC_F2M.
+
+---
