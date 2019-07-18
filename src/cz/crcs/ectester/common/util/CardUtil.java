@@ -34,6 +34,23 @@ public class CardUtil {
     public static String getSigHashAlgo(byte sigType) {
         switch (sigType) {
             case EC_Consts.Signature_ALG_ECDSA_SHA:
+                return "SHA1";
+            case EC_Consts.Signature_ALG_ECDSA_SHA_224:
+                return "SHA224";
+            case EC_Consts.Signature_ALG_ECDSA_SHA_256:
+                return "SHA256";
+            case EC_Consts.Signature_ALG_ECDSA_SHA_384:
+                return "SHA384";
+            case EC_Consts.Signature_ALG_ECDSA_SHA_512:
+                return "SHA512";
+            default:
+                return null;
+        }
+    }
+
+    public static String getSigHashName(byte sigType) {
+        switch (sigType) {
+            case EC_Consts.Signature_ALG_ECDSA_SHA:
                 return "SHA-1";
             case EC_Consts.Signature_ALG_ECDSA_SHA_224:
                 return "SHA-224";
@@ -64,6 +81,16 @@ public class CardUtil {
                 return EC_Consts.KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY;
             default:
                 return EC_Consts.KeyAgreement_ALG_EC_SVDP_DH;
+        }
+    }
+
+    public static String getKexHashName(byte kexType) {
+        switch (kexType) {
+            case EC_Consts.KeyAgreement_ALG_EC_SVDP_DH:
+            case EC_Consts.KeyAgreement_ALG_EC_SVDP_DHC:
+                return "SHA1";
+            default:
+                return "NONE";
         }
     }
 

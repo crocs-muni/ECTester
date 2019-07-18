@@ -365,7 +365,7 @@ public class ECUtil {
             int bitSize = params.getOrder().bitLength();
             // Hash the data.
             byte[] hash;
-            if (hashType.equals("NONE")) {
+            if (hashType == null || hashType.equals("NONE")) {
                 hash = data;
             } else {
                 MessageDigest md = MessageDigest.getInstance(hashType);

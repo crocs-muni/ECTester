@@ -39,8 +39,8 @@ public abstract class AppletBase extends Applet {
     public static final byte KEYPAIR_LOCAL = (byte) 0x01;
     public static final byte KEYPAIR_REMOTE = (byte) 0x02;
     public static final byte KEYPAIR_BOTH = KEYPAIR_LOCAL | KEYPAIR_REMOTE;
-    public static final byte BUILD_KEYPAIR = (byte) 0x00;
-    public static final byte BUILD_KEYBUILDER = (byte) 0x01;
+    public static final byte BUILD_KEYPAIR = (byte) 0x01;
+    public static final byte BUILD_KEYBUILDER = (byte) 0x02;
     public static final byte EXPORT_TRUE = (byte) 0xff;
     public static final byte EXPORT_FALSE = (byte) 0x00;
     public static final byte MODE_NORMAL = (byte) 0xaa;
@@ -670,9 +670,12 @@ public abstract class AppletBase extends Applet {
     private short allocate(byte keyPair, byte build, short keyLength, byte keyClass, byte[] outBuffer, short outOffset) {
         short length = 0;
         if ((keyPair & KEYPAIR_LOCAL) != 0) {
-            if (build == BUILD_KEYPAIR) {
+            if ((build & BUILD_KEYPAIR) != 0) {
                 localKeypair = keyGenerator.allocatePair(keyClass, keyLength);
-            } else {
+                if (keyGenerator.getSW() != ISO7816.SW_NO_ERROR  && (build & BUILD_KEYBUILDER) != 0) {
+                    localKeypair = keyGenerator.constructPair(keyClass, keyLength);
+                }
+            } else if ((build & BUILD_KEYBUILDER) != 0) {
                 localKeypair = keyGenerator.constructPair(keyClass, keyLength);
             }
             Util.setShort(outBuffer, outOffset, keyGenerator.getSW());
@@ -680,9 +683,12 @@ public abstract class AppletBase extends Applet {
         }
 
         if ((keyPair & KEYPAIR_REMOTE) != 0) {
-            if (build == BUILD_KEYPAIR) {
+            if ((build & BUILD_KEYPAIR) != 0) {
                 remoteKeypair = keyGenerator.allocatePair(keyClass, keyLength);
-            } else {
+                if (keyGenerator.getSW() != ISO7816.SW_NO_ERROR  && (build & BUILD_KEYBUILDER) != 0) {
+                    remoteKeypair = keyGenerator.constructPair(keyClass, keyLength);
+                }
+            } else if ((build & BUILD_KEYBUILDER) != 0) {
                 remoteKeypair = keyGenerator.constructPair(keyClass, keyLength);
             }
             Util.setShort(outBuffer, (short) (outOffset + length), keyGenerator.getSW());

@@ -281,7 +281,7 @@ public abstract class Command implements Cloneable {
         }
 
         public Allocate(CardMngr cardManager, byte keyPair, short keyLength, byte keyClass) {
-            this(cardManager, keyPair, ECTesterApplet.BUILD_KEYPAIR, keyLength, keyClass);
+            this(cardManager, keyPair, (byte) (ECTesterApplet.BUILD_KEYPAIR | ECTesterApplet.BUILD_KEYBUILDER), keyLength, keyClass);
         }
 
         @Override

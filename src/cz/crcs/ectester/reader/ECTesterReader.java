@@ -589,7 +589,7 @@ public class ECTesterReader {
         OutputStreamWriter out = null;
         if (cfg.outputs != null) {
             out = FileUtil.openFiles(cfg.outputs);
-            out.write(String.format("index;time[%s];pubW;privS;secret\n", cfg.timeUnit));
+            out.write(String.format("index;time[%s];pubW;privS;secret[%s]\n", cfg.timeUnit, CardUtil.getKexHashName(cfg.ECKAType)));
         }
 
         Response gen = new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_BOTH).send();
@@ -715,7 +715,7 @@ public class ECTesterReader {
 
         OutputStreamWriter out = FileUtil.openFiles(cfg.outputs);
         if (out != null) {
-            out.write(String.format("index;signTime[%s];verifyTime[%s];data;pubW;privS;signature;nonce;valid\n", cfg.timeUnit, cfg.timeUnit));
+            out.write(String.format("index;signTime[%s];verifyTime[%s];data;pubW;privS;signature[%s];nonce;valid\n", cfg.timeUnit, cfg.timeUnit, CardUtil.getSigHashAlgo(cfg.ECDSAType)));
         }
 
         Command.Export export = new Command.Export(cardManager, ECTesterApplet.KEYPAIR_LOCAL, EC_Consts.KEY_BOTH, EC_Consts.PARAMETERS_KEYPAIR);
@@ -783,7 +783,7 @@ public class ECTesterReader {
                 String k = "";
                 if (actualCurve != null) {
                     ECParameterSpec params = actualCurve.toSpec();
-                    BigInteger kValue = ECUtil.recoverSignatureNonce(signature, data, privkey, params, CardUtil.getSigHashAlgo(cfg.ECDSAType));
+                    BigInteger kValue = ECUtil.recoverSignatureNonce(signature, data, privkey, params, CardUtil.getSigHashName(cfg.ECDSAType));
                     if (kValue != null) {
                         k = ByteUtil.bytesToHex(kValue.toByteArray(), false);
                     }
