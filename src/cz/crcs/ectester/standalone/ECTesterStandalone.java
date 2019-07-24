@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.math.BigInteger;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
@@ -93,6 +94,8 @@ public class ECTesterStandalone {
     private static final String CLI_HEADER = "\n" + DESCRIPTION + "\n\n";
     private static final String CLI_FOOTER = "\n" + LICENSE;
 
+    public static String LIB_RESOURCE_DIR = "/cz/crcs/ectester/standalone/libs/jni/";
+
     private void run(String[] args) {
         try {
             cli = parseArgs(args);
@@ -110,7 +113,17 @@ public class ECTesterStandalone {
                 return;
             }
 
+            Path reqs = FileUtil.getRequirementsDir();
+            reqs.toFile().mkdirs();
+
+            if (!System.getProperty("os.name").startsWith("Windows")) {
+                FileUtil.writeNewer(LIB_RESOURCE_DIR + "lib_timing.so", reqs.resolve("lib_timing.so"));
+                System.load(reqs.resolve("lib_timing.so").toString());
+            }
+
+
             //TODO: push this further down to only initialize if necessary.
+            //      and only initialize the chosen lib (so give libs a name in Java only)
             for (ECLibrary lib : libs) {
                 lib.initialize();
             }
@@ -168,6 +181,7 @@ public class ECTesterStandalone {
         Option curveName = Option.builder("cn").longOpt("curve-name").desc("Use a named curve, search from curves supported by the library: <name>").hasArg().argName("name").optionalArg(false).numberOfArgs(1).build();
         Option bits = Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").numberOfArgs(1).build();
         Option output = Option.builder("o").longOpt("output").desc("Output into file <output_file>.").hasArgs().argName("output_file").optionalArg(false).numberOfArgs(1).build();
+        Option timeSource = Option.builder("ts").longOpt("time-source").desc("Use a given native timing source: {rdtsc, monotonic, monotonic-raw, cputime-process, cputime-thread, perfcount}").hasArgs().argName("source").optionalArg(false).numberOfArgs(1).build();
 
         Options testOpts = new Options();
         testOpts.addOption(bits);
@@ -188,6 +202,7 @@ public class ECTesterStandalone {
         ecdhOpts.addOption(namedCurve);
         ecdhOpts.addOption(curveName);
         ecdhOpts.addOption(output);
+        ecdhOpts.addOption(timeSource);
         ecdhOpts.addOption(Option.builder("t").longOpt("type").desc("Set KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdhOpts.addOption(Option.builder().longOpt("key-type").desc("Set the key [algorithm] for which the key should be derived in KeyAgreements with KDF. Default is \"AES\".").hasArg().argName("algorithm").optionalArg(false).build());
         ecdhOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDH [amount] times.").build());
@@ -203,6 +218,7 @@ public class ECTesterStandalone {
         ecdsaOpts.addOption(namedCurve);
         ecdsaOpts.addOption(curveName);
         ecdsaOpts.addOption(output);
+        ecdsaOpts.addOption(timeSource);
         ecdsaOpts.addOptionGroup(privateKey);
         ecdsaOpts.addOptionGroup(publicKey);
         ecdsaOpts.addOption(Option.builder("t").longOpt("type").desc("Set Signature object [type].").hasArg().argName("type").optionalArg(false).build());
@@ -216,6 +232,7 @@ public class ECTesterStandalone {
         generateOpts.addOption(namedCurve);
         generateOpts.addOption(curveName);
         generateOpts.addOption(output);
+        generateOpts.addOption(timeSource);
         generateOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Generate [amount] of EC keys.").build());
         generateOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPairGenerator object [type].").build());
         ParserOptions generate = new ParserOptions(new DefaultParser(), generateOpts, "Generate EC keypairs.");
@@ -265,7 +282,7 @@ public class ECTesterStandalone {
             if (lib.isInitialized() && (cfg.selected == null || lib == cfg.selected)) {
                 System.out.println("\t- " + Colors.bold(lib.name()));
                 System.out.println(Colors.bold("\t\t- Version: ") + String.format("%f", lib.getProvider().getVersion()));
-                System.out.println(Colors.bold("\t\t- Supports native timing: ") + lib.supportsNativeTiming());
+                System.out.println(Colors.bold("\t\t- Supports native timing: ") + lib.getNativeTimingSupport().toString());
                 Set<KeyPairGeneratorIdent> kpgs = lib.getKPGs();
                 if (!kpgs.isEmpty()) {
                     System.out.println(Colors.bold("\t\t- KeyPairGenerators: ") + String.join(", ", kpgs.stream().map(KeyPairGeneratorIdent::getName).collect(Collectors.toList())));
@@ -377,6 +394,13 @@ public class ECTesterStandalone {
             kpg.initialize(spec);
         }
 
+        if (cli.hasOption("ecdh.time-source")) {
+            if (!lib.setNativeTimingType(cli.getOptionValue("ecdh.time-source"))) {
+                System.err.println("Couldn't set native time source.");
+                return;
+            }
+        }
+
         PrintStream out;
         if (cli.hasOption("ecdh.output")) {
             out = new PrintStream(FileUtil.openStream(cli.getOptionValues("ecdh.output")));
@@ -384,8 +408,13 @@ public class ECTesterStandalone {
             out = System.out;
         }
 
+        String timeUnit = "nano";
+        if (!lib.getNativeTimingSupport().isEmpty()) {
+            timeUnit = lib.getNativeTimingUnit();
+        }
+
         String hashAlgo = kaIdent.getBaseAlgo() != null ? String.format("[%s]", kaIdent.getBaseAlgo()) : "[NONE]";
-        out.println("index;time[nano];pubW;privS;secret" + hashAlgo);
+        out.println(String.format("index;time[%s];pubW;privS;secret%s", timeUnit, hashAlgo));
 
         KeyPair one = null;
         if (cli.hasOption("ecdh.fixed-private") && !cli.hasOption("ecdh.named-private") && !cli.hasOption("ecdh.private")) {
@@ -434,7 +463,7 @@ public class ECTesterStandalone {
                 result = ka.generateSecret();
             }
             elapsed += System.nanoTime();
-            if (lib.supportsNativeTiming()) {
+            if (!lib.getNativeTimingSupport().isEmpty()) {
                 elapsed = lib.getLastNativeTiming();
             }
             ka = kaIdent.getInstance(lib.getProvider());
@@ -524,6 +553,13 @@ public class ECTesterStandalone {
             kpg.initialize(new ECGenParameterSpec(curveName));
         }
 
+        if (cli.hasOption("ecdsa.time-source")) {
+            if (!lib.setNativeTimingType(cli.getOptionValue("ecdsa.time-source"))) {
+                System.err.println("Couldn't set native time source.");
+                return;
+            }
+        }
+
         PrintStream out;
         if (cli.hasOption("ecdsa.output")) {
             out = new PrintStream(FileUtil.openStream(cli.getOptionValues("ecdsa.output")));
@@ -531,8 +567,13 @@ public class ECTesterStandalone {
             out = System.out;
         }
 
+        String timeUnit = "nano";
+        if (!lib.getNativeTimingSupport().isEmpty()) {
+            timeUnit = lib.getNativeTimingUnit();
+        }
+
         String hashAlgo = sigIdent.getHashAlgo() != null ? String.format("[%s]", sigIdent.getHashAlgo()) : "";
-        out.println("index;signTime[nano];verifyTime[nano];data;pubW;privS;signature" + hashAlgo + ";nonce;verified");
+        out.println(String.format("index;signTime[%s];verifyTime[%s];data;pubW;privS;signature%s;nonce;verified", timeUnit, timeUnit, hashAlgo));
 
         ECPrivateKey privkey = (ECPrivateKey) ECUtil.loadKey(EC_Consts.PARAMETER_S, cli.getOptionValue("ecdsa.named-private"), cli.getOptionValue("ecdsa.private"), spec);
         ECPublicKey pubkey = (ECPublicKey) ECUtil.loadKey(EC_Consts.PARAMETER_W, cli.getOptionValue("ecdsa.named-public"), cli.getOptionValue("ecdsa.public"), spec);
@@ -556,7 +597,7 @@ public class ECTesterStandalone {
             long signTime = -System.nanoTime();
             byte[] signature = sig.sign();
             signTime += System.nanoTime();
-            if (lib.supportsNativeTiming()) {
+            if (!lib.getNativeTimingSupport().isEmpty()) {
                 signTime = lib.getLastNativeTiming();
             }
 
@@ -566,7 +607,7 @@ public class ECTesterStandalone {
             long verifyTime = -System.nanoTime();
             boolean verified = sig.verify(signature);
             verifyTime += System.nanoTime();
-            if (lib.supportsNativeTiming()) {
+            if (!lib.getNativeTimingSupport().isEmpty()) {
                 verifyTime = lib.getLastNativeTiming();
             }
 
@@ -621,21 +662,33 @@ public class ECTesterStandalone {
             kpg.initialize(new ECGenParameterSpec(curveName));
         }
 
+        if (cli.hasOption("generate.time-source")) {
+            if (!lib.setNativeTimingType(cli.getOptionValue("generate.time-source"))) {
+                System.err.println("Couldn't set native time source.");
+                return;
+            }
+        }
+
+        String timeUnit = "nano";
+        if (!lib.getNativeTimingSupport().isEmpty()) {
+            timeUnit = lib.getNativeTimingUnit();
+        }
+
         PrintStream out;
         if (cli.hasOption("generate.output")) {
-            out = new PrintStream(FileUtil.openStream(cli.getOptionValues("ecdh.output")));
+            out = new PrintStream(FileUtil.openStream(cli.getOptionValues("generate.output")));
         } else {
             out = System.out;
         }
 
-        out.println("index;time[nano];pubW;privS");
+        out.println(String.format("index;time[%s];pubW;privS", timeUnit));
 
         int amount = Integer.parseInt(cli.getOptionValue("generate.amount", "1"));
         for (int i = 0; i < amount || amount == 0; ++i) {
             long elapsed = -System.nanoTime();
             KeyPair kp = kpg.genKeyPair();
             elapsed += System.nanoTime();
-            if (lib.supportsNativeTiming()) {
+            if (!lib.getNativeTimingSupport().isEmpty()) {
                 elapsed = lib.getLastNativeTiming();
             }
             ECPublicKey publicKey = (ECPublicKey) kp.getPublic();
@@ -727,13 +780,14 @@ public class ECTesterStandalone {
             color = cli.hasOption("color");
             Colors.enabled = color;
 
+            String next = cli.getNextName();
+
             if (cli.isNext("generate") || cli.isNext("export") || cli.isNext("ecdh") || cli.isNext("ecdsa") || cli.isNext("test")) {
                 if (!cli.hasArg(-1)) {
                     System.err.println("Missing library name argument.");
                     return false;
                 }
 
-                String next = cli.getNextName();
                 boolean hasBits = cli.hasOption(next + ".bits");
                 boolean hasNamedCurve = cli.hasOption(next + ".named-curve");
                 boolean hasCurveName = cli.hasOption(next + ".curve-name");
@@ -789,6 +843,16 @@ public class ECTesterStandalone {
                 if ((cli.hasOption("ecdsa.public") || cli.hasOption("ecdsa.private")) && !cli.hasOption("ecdsa.named-curve")) {
                     System.err.println("Need to specify a named curve when specifying public/private key in file.");
                     return false;
+                }
+            }
+
+            if (cli.isNext("generate") || cli.isNext("ecdh") || cli.isNext("ecdsa")) {
+                if (cli.hasOption(next + ".time-source")) {
+                    String source = cli.getOptionValue(next + ".time-source");
+                    if (!selected.getNativeTimingSupport().contains(source)) {
+                        System.err.println(String.format("Time source %s unavailable for library %s.", source, selected.name()));
+                        return false;
+                    }
                 }
             }
 

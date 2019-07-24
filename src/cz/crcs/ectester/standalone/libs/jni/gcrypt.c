@@ -621,15 +621,3 @@ release_init:
     gcry_sexp_release(data_sexp);
     return result;
 }
-
-JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_GcryptLib_supportsNativeTiming(JNIEnv *env, jobject this) {
-    return native_timing_supported();
-}
-
-JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_GcryptLib_getNativeTimingResolution(JNIEnv *env, jobject this) {
-    return native_timing_resolution();
-}
-
-JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_GcryptLib_getLastNativeTiming(JNIEnv *env, jobject this) {
-    return native_timing_last();
-}

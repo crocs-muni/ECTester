@@ -62,13 +62,21 @@ public abstract class ProviderECLibrary implements ECLibrary {
         return results;
     }
 
-    public boolean supportsNativeTiming() {
-        return false;
+    public Set<String> getNativeTimingSupport() {
+        return new HashSet<>();
+    }
+
+    public boolean setNativeTimingType(String type) {
+    	return false;
     }
 
     public long getNativeTimingResolution() {
         return 0;
     }
+
+	public String getNativeTimingUnit() {
+		return null;
+	}
 
     public long getLastNativeTiming() {
         return 0;

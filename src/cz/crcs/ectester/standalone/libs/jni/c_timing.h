@@ -10,37 +10,34 @@ extern "C"
 /**
  *
  */
-jboolean native_timing_supported();
+__attribute__((visibility("default"))) jlong native_timing_resolution();
 
 /**
  *
  */
-jlong native_timing_resolution();
+__attribute__((visibility("default"))) void native_timing_start();
 
 /**
  *
  */
-void native_timing_start();
+__attribute__((visibility("default"))) void native_timing_pause();
 
 /**
  *
  */
-void native_timing_pause();
+__attribute__((visibility("default"))) void native_timing_restart();
 
 /**
  *
  */
-void native_timing_restart();
+__attribute__((visibility("default"))) void native_timing_stop();
 
 /**
  *
  */
-void native_timing_stop();
+__attribute__((visibility("default"))) jlong native_timing_last();
 
-/**
- *
- */
-jlong native_timing_last();
+
 
 #ifdef __cplusplus
 }

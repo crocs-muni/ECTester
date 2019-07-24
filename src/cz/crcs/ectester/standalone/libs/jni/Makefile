@@ -58,87 +58,108 @@ JNI_PLATFORMINCLUDEDIR ?= $(JNI_INCLUDEDIR)/$(JNI_PLATFORM)
 ###############################################################################
 ## Targets.
 
-all: tomcrypt_provider.so botan_provider.so cryptopp_provider.so openssl_provider.so boringssl_provider.so gcrypt_provider.so mbedtls_provider.so ippcp_provider.so matrixssl_provider.so
+all: tomcrypt botan cryptopp openssl boringssl gcrypt mbedtls ippcp matrixssl
 
 # Common utils
 c_utils.o: c_utils.c
 	$(CC) $(CFLAGS) -c $<
 
-c_timing.o: c_timing.c
-	$(CC) $(CFLAGS) -c $<
+lib_timing.so: c_timing.c
+	$(CC) -o $@ -shared $(CFLAGS) -Wl,-soname,lib_timing.so $<
 
 cpp_utils.o: cpp_utils.cpp
 	$(CXX) $(CXXFLAGS) -c $<
 
 
 # OpenSSL shim
-openssl_provider.so: openssl.o c_utils.o c_timing.o
-	$(CC) $(LFLAGS) -o $@ $^ -L. $(shell pkg-config --libs openssl)
+openssl: openssl_provider.so
+
+openssl_provider.so: openssl.o c_utils.o | lib_timing.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs openssl) -l:lib_timing.so
 
 openssl.o: openssl.c
 	$(CC) $(shell pkg-config --cflags openssl) $(CFLAGS) -c $<
 
 
 # BoringSSL shim
-boringssl_provider.so: boringssl.o c_utils.o c_timing.o
-	$(CC) $(LFLAGS) -o $@ $^ -L. ../../../../../../../ext/boringssl/build/crypto/libcrypto.so
+boringssl: boringssl_provider.so
+
+lib_boringssl.so:
 	cp ../../../../../../../ext/boringssl/build/crypto/libcrypto.so lib_boringssl.so
+
+boringssl_provider.so: boringssl.o c_utils.o | lib_timing.so lib_boringssl.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_boringssl.so -l:lib_timing.so
+
 
 boringssl.o: boringssl.c
 	$(CC) -I../../../../../../../ext/boringssl/include/ $(CFLAGS) -c $<
 
 
 # libgcrypt shim
-gcrypt_provider.so: gcrypt.o c_utils.o c_timing.o
-	$(CC) $(LFLAGS) -o $@ $^ -L. $(shell libgcrypt-config --libs)
+gcrypt: gcrypt_provider.so
+
+gcrypt_provider.so: gcrypt.o c_utils.o | lib_timing.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell libgcrypt-config --libs) -l:lib_timing.so
 
 gcrypt.o: gcrypt.c
 	$(CC) $(shell libgcrypt-config --cflags) $(CFLAGS) -c $<
 
 
 # Libtomcrypt shim
-tomcrypt_provider.so: tomcrypt.o c_utils.o c_timing.o
-	$(CC) $(LFLAGS) -o $@ $^ -L. -ltommath $(shell pkg-config --libs libtomcrypt)
+tomcrypt: tomcrypt_provider.so
+
+tomcrypt_provider.so: tomcrypt.o c_utils.o | lib_timing.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -ltommath $(shell pkg-config --libs libtomcrypt) -l:lib_timing.so
 
 tomcrypt.o: tomcrypt.c
 	$(CC) -DLTM_DESC $(shell pkg-config --cflags libtomcrypt) $(CFLAGS) -c $<
 
 
 # Botan-2 shim
-botan_provider.so: botan.o cpp_utils.o c_timing.o
-	$(CXX) $(LFLAGS) -o $@ $^ -L. $(shell pkg-config --libs botan-2)
+botan: botan_provider.so
+
+botan_provider.so: botan.o cpp_utils.o | lib_timing.so
+	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs botan-2) -l:lib_timing.so
 
 botan.o: botan.cpp
 	$(CXX) $(shell pkg-config --cflags botan-2) $(CXXFLAGS) -c $<
 
 
 # Crypto++ shim
-cryptopp_provider.so: cryptopp.o cpp_utils.o c_timing.o
-	$(CXX) $(LFLAGS) -o $@ $^ -L. $(shell pkg-config --libs libcrypto++)
+cryptopp: cryptopp_provider.so
+
+cryptopp_provider.so: cryptopp.o cpp_utils.o | lib_timing.so
+	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs libcrypto++) -l:lib_timing.so
 
 cryptopp.o: cryptopp.cpp
 	$(CXX) $(shell pkg-config --cflags libcrypto++) $(CXXFLAGS) -c $<
 
 
 # mbedTLS shim
-mbedtls_provider.so: mbedtls.o c_utils.o c_timing.o
-	$(CC) $(LFLAGS) -o $@ $^ -L. -lmbedcrypto
+mbedtls: mbedtls_provider.so
+
+mbedtls_provider.so: mbedtls.o c_utils.o | lib_timing.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -lmbedcrypto -l:lib_timing.so
 
 mbedtls.o: mbedtls.c
 	$(CC) $(CFLAGS) -c $<
 
 
 # Intel Performance Primitives crypto shim
-ippcp_provider.so: ippcp.o c_utils.o c_timing.o
-	$(CC) $(LFLAGS) -o $@ $^ -L. -lippcp
+ippcp: ippcp_provider.so
+
+ippcp_provider.so: ippcp.o c_utils.o
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -lippcp -l:lib_timing.so
 
 ippcp.o: ippcp.c
 	$(CC) $(CFLAGS) -c $<
 
 
 # MatrixSSL shim
-matrixssl_provider.so: matrixssl.o c_utils.o c_timing.o
-	$(CC) $(LFLAGS) -o $@ -L. $^ libcrypt_s.a libcore_s.a
+matrixssl: matrixssl_provider.so
+
+matrixssl_provider.so: matrixssl.o c_utils.o | lib_timing.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' -L. $^ libcrypt_s.a libcore_s.a -l:lib_timing.so
 
 matrixssl.o: matrixssl.c
 	$(CC) $(CFLAGS) -Imatrixssl/ -c $<
@@ -147,18 +168,18 @@ matrixssl.o: matrixssl.c
 help:
 	@echo "# This makefile builds the JNI shims necessary to test native libraries."
 	@echo "# Targets:"
-	@echo "    - openssl_provider.so"
-	@echo "    - boringssl_provider.so"
-	@echo "    - gcrypt_provider.so"
-	@echo "    - tomcrypt_provider.so"
-	@echo "    - botan_provider.so"
-	@echo "    - cryptopp_provider.so"
-	@echo "    - mbedtls_provider.so"
-	@echo "    - ippcp_provider.so"
-	@echo "    - matrixssl_provider.so"
+	@echo "    - openssl"
+	@echo "    - boringssl"
+	@echo "    - gcrypt"
+	@echo "    - tomcrypt"
+	@echo "    - botan"
+	@echo "    - cryptopp"
+	@echo "    - mbedtls"
+	@echo "    - ippcp"
+	@echo "    - matrixssl"
 
 clean:
 	rm -rf *.o
 	rm -rf *.so
 
-.PHONY: all help clean
+.PHONY: all help clean openssl boringssl gcrypt tomcrypt botan cryptopp mbedtls ippcp matrixssl

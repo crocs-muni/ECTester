@@ -395,16 +395,3 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 
 	return result < 0 ? JNI_FALSE : JNI_TRUE;
 }
-
-
-JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_MatrixsslLib_supportsNativeTiming(JNIEnv *env, jobject this) {
-    return native_timing_supported();
-}
-
-JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_MatrixsslLib_getNativeTimingResolution(JNIEnv *env, jobject this) {
-    return native_timing_resolution();
-}
-
-JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_MatrixsslLib_getLastNativeTiming(JNIEnv *env, jobject this) {
-    return native_timing_last();
-}

@@ -583,15 +583,3 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     EC_GROUP_free(curve);
     return (result == 1) ? JNI_TRUE : JNI_FALSE;
 }
-
-JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_supportsNativeTiming(JNIEnv *env, jobject this) {
-    return native_timing_supported();
-}
-
-JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_getNativeTimingResolution(JNIEnv *env, jobject this) {
-    return native_timing_resolution();
-}
-
-JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_getLastNativeTiming(JNIEnv *env, jobject this) {
-    return native_timing_last();
-}

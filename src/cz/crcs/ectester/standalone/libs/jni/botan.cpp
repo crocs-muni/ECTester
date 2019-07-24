@@ -1,10 +1,8 @@
 #include "native.h"
 #include <string>
 
-#include <botan/lookup.h>
 #include <botan/version.h>
 #include <botan/parsing.h>
-#include <botan/init.h>
 #include <botan/rng.h>
 #include <botan/secmem.h>
 #include <botan/auto_rng.h>
@@ -528,16 +526,4 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
         return JNI_TRUE;
     }
     return JNI_FALSE;
-}
-
-JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_supportsNativeTiming(JNIEnv *env, jobject self) {
-    return native_timing_supported();
-}
-
-JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_getNativeTimingResolution(JNIEnv *env, jobject self) {
-    return native_timing_resolution();
-}
-
-JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_getLastNativeTiming(JNIEnv *env, jobject self) {
-    return native_timing_last();
 }
