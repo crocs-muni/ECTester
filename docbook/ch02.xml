@@ -5,12 +5,12 @@
   <para>This chapter discusses system requirements and ECTester setup on Linux. Windows Setup will be similar to Linux.</para>
   <section id="setup_reqs">
     <title>Requirements</title>
-    <para>ECTester is a Java based application. Java 8 is required to build and run the program. You should install the Java 8 SDK to install the Java compiler and other SDK tools. On Debian and derivatives install package XXX. On Red Hat and derivatives, Like Fedora, install <code>java-1.8.0-openjdk</code> and <code>java-1.8.0-openjdk-devel</code> packages.</para>
-    <para>In addition you should install <code>ant</code> package.</para>
+    <para>ECTester is a Java based application. Java 8 is required to build and run the program. You should install the Java 8 JDK to install the Java compiler and other JDK tools. On Debian and derivatives install package <code>openjdk-8-jdk</code>. On Red Hat and derivatives, like Fedora, install <code>java-1.8.0-openjdk</code> and <code>java-1.8.0-openjdk-devel</code> packages.</para>
+    <para>In addition to the JDK you should install <code>ant</code> package.</para>
     <para>Java SmartCard testing requires XXX.</para>
     <para>Java Libraries testing requires XXX.</para>
-    <para>Native Libraries testing requires common build tools, like make, a C or C++ compiler, an assembler, and a linker. You may also need Autotools like autoconf and automake, depending on the library.</para>
-    <para>On Debian and derivatives you can install the <code>build-essentials</code> package. On Red Hat systems, like CentOS and Fedora, you should install the <code>gcc</code>, <code>gcc-c++</code>, <code>make</code>, <code>autoconf</code> and <code>automake</code> packages.</para>
+    <para>Native Libraries testing requires common build tools, like cmake, make, a C or C++ compiler, an assembler, and a linker. You may also need Autotools like autoconf and automake, depending on the library.</para>
+    <para>On Debian and derivatives you can install the <code>build-essentials</code> package. On Red Hat systems, like CentOS and Fedora, you should install the <code>gcc</code>, <code>gcc-c++</code>, <code>make</code>, <code>cmake</code>, <code>autoconf</code> and <code>automake</code> packages.</para>
   </section>
   <section>
     <title>ECTester Setup</title>
