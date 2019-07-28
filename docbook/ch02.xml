@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="ch02">
+  <title>ECTester Setup</title>
+  <para>This chapter discusses system requirements and ECTester setup on Linux. Windows Setup will be similar to Linux.</para>
+  <section id="setup_reqs">
+    <title>Requirements</title>
+    <para>ECTester is a Java based application. Java NNN is required to build and run the program. You should install the Java NNN SDK to install the Java compiler and other SDK tools. In addition you should install <code>ant</code> package.</para>
+    <para>Java SmartCard testing requires XXX.</para>
+    <para>Java Libraries testing requires XXX.</para>
+    <para>Native Libraries testing requires common build tools, like make, a C or C++ compiler, an assembler, and a linker. You may also need Autotools like autoconf and automake, depending on the library.</para>
+    <para>On Debian and derivatives you can install the <code>build-essentials</code> package. On Red Hat systems, like CentOS and Fedora, you should install the <code>gcc</code>, <code>gcc-c++</code>, <code>make</code>, <code>autoconf</code> and <code>automake</code> packages.</para>
+  </section>
+  <section>
+    <title>Section title</title>
+    <para>TODO: discuss the details of ECTester setup.</para>
+  </section>
+</chapter>

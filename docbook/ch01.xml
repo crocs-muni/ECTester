@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="ch01">
+  <title>Introduction</title>
+  <para>ECTester is a Java based elliptic curve cryptography security testing and evaluation tool (ST&amp;E) written by Ján Jančár. The tool tests behavior of elliptic curve cryptography implementations on JavaCards (<code>TYPE_EC_FP</code> and <code>TYPE_EC_F2M</code>) and selected software libraries.</para>
+  <para>ECTester also produces heat maps to display the leaks as a dot density graph.</para>
+  <section id="intro_about">
+    <title>About this Manual</title>
+    <para>The ECTester book has five chapters. The first chapter details ECTester setup. The chapter discusses how to setup a rig to test Java and native libraries. The second chapter is Java SmartCards. The chapter discusses how to test Java SmartCards. The third chapter is Java libraries. The chapter discusses how to test Java libraries. The fourth chapter is Native libraries. The chapter discusses how to test native libraries like Botan, Crypto++ and OpenSSL. The final chapter is an appendix. The appendix provides CVE findings discovered in Java SmartCards, Java Libraries, and Native Libraries.</para>
+  </section>
+  <section id="intro_arch">
+    <title>Architectures</title>
+    <para>The examples in the book use i686 and x86_64 for testing. ECTester will work equally well on other architectures, like ARM, Aarch64 and PowerPC.</para>
+  </section>
+</chapter>

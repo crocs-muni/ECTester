@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="ch05">
+  <title>Native Libraries</title>
+  <para>Many popular elliptic curve libraries are written in C, C++ and other languages. This chapter discusses how to test native libraries like Botan, Crypto++ and OpenSSL.</para>
+  <para>There are fours steps to test a native library using ECTester. The first step is build the library. The second step is build <code>ECTesterStandalone.jar</code>. The third step is running the collection to collect data. The fourth step is plot the graphs to visualize the data.</para>
+  <para>The steps below use Crypto++ as an example. You should use the appropriate library name when testing other libraries, such as Botan, Crypto++ or OpenSSL.</para>
+  <section>
+    <title>Build library shim(s)</title>
+    <para>Either go to <code>src/cz/crcs/ectester/standalone/libs/jni</code> and make that. Or do <code>ant -f build-standalone.xml libs</code>.</para>
+    <para>This will compile the shared libraries which ECTester uses via the Java Native Interface to work with native libraries. That makefile uses <code>pkg-config</code> to find Crypto++, so all of that should apply.</para>
+  </section>
+  <section>
+    <title>Build ECTesterStandalone.jar</title>
+    <para>Build <code>ECTesterStandalone.jar</code> with <code>ant -f build-standalone.xml jar</code>, possibly run this twice.</para>
+  </section>
+  <section>
+    <title>Run the collection</title>
+    <para>Go to <code>dist/</code> and run the collection.</para>
+    <programlisting>java -jar ECTesterStandalone.jar list-libs</programlisting>
+    <para>It should list Crypto++ as available, together with other libraries that
+ECTester was able to compile the shims for (they were available in the system)
+and with pure Java libraries. If it doesn't list Crypto++, something went wrong
+with the above steps.</para>
+    <para>Then do something like the following.</para>
+    <programlisting>java -jar ECTesterStandalone.jar ecdsa \
+  -n 500000 -nc secg/sect233r1 \
+  -o out.csv Crypto++</programlisting>
+    <para>That should perform 500k signatures over the sect233r1 curve and output the data
+into out.csv.</para>
+  </section>
+  <section>
+    <title>Plot the graphs</title>
+    <para>Go to <code>util/</code>, run the <code>plot_dsa.ipynb</code> Jupyter notebook and follow the instructions there to plot the ECDSA data from out.csv.</para>
+  </section>
+</chapter>

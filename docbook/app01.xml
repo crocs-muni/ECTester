@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE appendix PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<appendix id="app01">
+  <title>CVE Findings</title>
+  <para>The tables below presents Common Vulnerabilities and Exposures (CVE) found by ECTester.</para>
+  <section id="app01_smartcard">
+    <title>Java SmartCards</title>
+    <para>The table below shows vulnerabilities discovered in Java SmartCards.</para>
+    <informaltable frame="all">
+      <tgroup align="center" cols="3">
+        <colspec colname="c1" colwidth="1.5in"/>
+        <colspec colname="c1" colwidth="1.5in"/>
+        <colspec colname="c2" colwidth="3.5in"/>
+        <thead>
+          <row>
+            <entry>SmartCard</entry>
+            <entry>CVE</entry>
+            <entry>Comment</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>Unknown</entry>
+            <entry>CVE-2019-NNNN</entry>
+            <entry>Unknown</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+  </section>
+  <section id="app01_javalib">
+    <title>Java Libraries</title>
+    <para>The table below shows vulnerabilities discovered in Java libraries.</para>
+    <informaltable frame="all">
+      <tgroup align="center" cols="3">
+        <colspec colname="c1" colwidth="1.5in"/>
+        <colspec colname="c1" colwidth="1.5in"/>
+        <colspec colname="c2" colwidth="3.5in"/>
+        <thead>
+          <row>
+            <entry>Library</entry>
+            <entry>CVE</entry>
+            <entry>Comment</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>BouncyCastle</entry>
+            <entry>CVE-2019-NNNN</entry>
+            <entry>Unknown</entry>
+          </row>
+          <row>
+            <entry>Sun EC</entry>
+            <entry>CVE-2019-NNNN</entry>
+            <entry>Unknown</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+  </section>
+  <section id="app01_nativelib">
+    <title>Native Libraries</title>
+    <para>The table below shows vulnerabilities discovered in native libraries.</para>
+    <informaltable frame="all">
+      <tgroup align="center" cols="3">
+        <colspec colname="c1" colwidth="1.5in"/>
+        <colspec colname="c1" colwidth="1.5in"/>
+        <colspec colname="c2" colwidth="3.5in"/>
+        <thead>
+          <row>
+            <entry>Library</entry>
+            <entry>CVE</entry>
+            <entry>Comment</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>BoringSSL</entry>
+            <entry>CVE-2019-NNNN</entry>
+            <entry>Unknown</entry>
+          </row>
+          <row>
+            <entry>Botan</entry>
+            <entry>CVE-2019-NNNN</entry>
+            <entry>Unknown</entry>
+          </row>
+          <row>
+            <entry>Crypto++</entry>
+            <entry>CVE-2019-14318</entry>
+            <entry>Information leaks in prime fields and binary curves.</entry>
+          </row>
+          <row>
+            <entry>Intel PPC</entry>
+            <entry>CVE-2019-NNNN</entry>
+            <entry>Unknown</entry>
+          </row>
+          <row>
+            <entry>libgcrypt</entry>
+            <entry>CVE-2019-NNNN</entry>
+            <entry>Unknown</entry>
+          </row>
+          <row>
+            <entry>libtomcrypt</entry>
+            <entry>CVE-2019-NNNN</entry>
+            <entry>Unknown</entry>
+          </row>
+          <row>
+            <entry>MatrixSSL</entry>
+            <entry>CVE-2019-NNNN</entry>
+            <entry>Unknown</entry>
+          </row>
+          <row>
+            <entry>MbedTLS</entry>
+            <entry>CVE-2019-NNNN</entry>
+            <entry>Unknown</entry>
+          </row>
+          <row>
+            <entry>Microsoft CNG</entry>
+            <entry>CVE-2019-NNNN</entry>
+            <entry>Unknown</entry>
+          </row>
+          <row>
+            <entry>OpenSSL</entry>
+            <entry>CVE-2019-NNNN</entry>
+            <entry>Unknown</entry>
+          </row>
+          <row>
+            <entry>wolfSSL</entry>
+            <entry>CVE-2019-NNNN</entry>
+            <entry>Unknown</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+  </section>
+</appendix>

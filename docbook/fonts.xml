@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<fop version="1.0">
+  <!-- https://xmlgraphics.apache.org/fop/2.2/configuration.html -->
+  <base>./</base>
+  <font-base>fonts/</font-base>
+  <!-- https://xmlgraphics.apache.org/fop/2.2/fonts.html -->
+  <renderers>
+    <renderer mime="application/pdf">
+      <fonts>
+        <!-- automatically detect operating system installed fonts -->
+        <auto-detect/>
+        <!-- manually register all fonts because things are still broke -->
+        <font embed-url="arial.ttf" embedding-mode="subset">
+          <font-triplet name="arial" style="normal" weight="normal"/>
+        </font>
+        <font embed-url="ariali.ttf" embedding-mode="subset">
+          <font-triplet name="arial" style="italic" weight="normal"/>
+        </font>
+        <font embed-url="arialbd.ttf" embedding-mode="subset">
+          <font-triplet name="arial" style="normal" weight="bold"/>
+        </font>
+        <font embed-url="arialbi.ttf" embedding-mode="subset">
+          <font-triplet name="arial" style="italic" weight="bold"/>
+        </font>
+      </fonts>
+    </renderer>
+  </renderers>
+</fop>

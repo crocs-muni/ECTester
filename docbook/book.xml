@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<book>
+  <title>ECTester</title>
+  <subtitle>The Unofficial Guide</subtitle>
+  <bookinfo>
+    <edition>1</edition>
+    <authorgroup>
+      <author>
+        <honorific>Dr</honorific>
+        <firstname>Ján</firstname>
+        <surname>Jančár</surname>
+      </author>
+    </authorgroup>
+    <!--
+    <othercredit>
+      <firstname>John</firstname>
+      <surname>Doe</surname>
+      <contrib>Extensive review and rough drafts</contrib>
+    </othercredit>
+-->
+    <edition>Version 1.0 built using DocBook v4.5</edition>
+    <pubdate>1 August 2019</pubdate>
+  </bookinfo>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch01.xml"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch02.xml"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch03.xml"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch04.xml"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch05.xml"/>
+  <!--
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch05.xml"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch06.xml"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch07.xml"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch08.xml"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch09.xml"/>
+-->
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="app01.xml"/>
+  <index/>
+</book>
