@@ -6,10 +6,35 @@
   <para>There are fours steps to test a native library using ECTester. The first step is build the ECTester shim library. The second step is build <code>ECTesterStandalone.jar</code>. The third step is running the collection to collect data. The fourth step is plot the graphs to visualize the data.</para>
   <para>The steps below use Crypto++ as an example. You should use the appropriate library name when testing other libraries, such as BoringSSL, Botan, or OpenSSL.</para>
   <section>
+    <title>Environmental variables</title>
+    <para>There are two important environmental variables that should be set. Firs, you should set <code>JAVA_HOME</code>. The tooling uses <code>JAVA_HOME</code> to locate native Java library headers, like <code>jni.h</code>. Second, you should set <code>PKG_CONFIG_PATH</code>. The makefile uses <code>PKG_CONFIG_PATH</code> to locate a library's <code>*.pc</code> file.</para>
+  </section>
+  <section>
     <title>Build library shims</title>
     <para>There are two ways to build the shared libraries. First, from the ECTester and <code>jni/</code> directory, make using the <code>Makefile</code>.</para>
     <programlisting>cd src/cz/crcs/ectester/standalone/libs/jni
-make</programlisting>
+PKG_CONFIG_PATH=/usr/lib64/pkgconfig/ make cryptopp</programlisting>
+    <para>Note the use of <code>make cryptopp</code> to build just the Crypto++ library. If all goes well then you should see output similar to the following.</para>
+    <programlisting>g++ -I/usr/local/include  -fPIC -I"/usr/lib/jvm/java-1.8.0-o
+penjdk-1.8.0.212.b04-0.fc30.x86_64/include" -I"/usr/lib/jvm/
+java-1.8.0-openjdk-1.8.0.212.b04-0.fc30.x86_64/include/linux
+" -I. -O2 -c cryptopp.cpp
+g++ -fPIC -I"/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.212.b04-0
+.fc30.x86_64/include" -I"/usr/lib/jvm/java-1.8.0-openjdk-1.8
+.0.212.b04-0.fc30.x86_64/include/linux" -I. -O2 -c cpp_utils
+.cpp
+cc -o lib_timing.so -shared -fPIC -I"/usr/lib/jvm/java-1.8.0
+-openjdk-1.8.0.212.b04-0.fc30.x86_64/include" -I"/usr/lib/jv
+m/java-1.8.0-openjdk-1.8.0.212.b04-0.fc30.x86_64/include/lin
+ux" -I. -O2 -Wl,-soname,lib_timing.so c_timing.c
+g++ -fPIC -shared -O2 -o cryptopp_provider.so -Wl,-rpath,/li
+b cryptopp.o cpp_utils.o -L. -L/usr/local/lib -lcryptopp  -l
+:lib_timing.so</programlisting>
+    <tip>
+      <para>Crypto++ is unique among packages because it has different names depending on the distro. On Debian and derivatives, like Ubuntu, the library name is <code>libcrypto++</code>, and the development package with header files is <code>crypto++-dev</code>. On Red Hat and derivatives, like Fedora, the library name is <code>cryptopp</code>, and the development package with header files is <code>cryptopp-devel</code>.</para>
+      <para>If you need to change the library name then use <code>sed</code> on the file. For example, to change the makefile, run the command</para>
+      <programlisting>sed -i 's/libcrypto++/libcryptopp/g' Makefile</programlisting>
+    </tip>
     <para>Second, from the ECTester source code directory, use <code>ant</code> to build the source code.</para>
     <programlisting>ant -f build-standalone.xml libs</programlisting>
     <para>This will compile the shared libraries which ECTester uses via the Java Native Interface to work with native libraries. That makefile uses <code>pkg-config</code> to find Crypto++, so all of that should apply.</para>
