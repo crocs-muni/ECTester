@@ -25,7 +25,6 @@ NDK
 CVE
 TODO
 
-distro
 Debian
 Ubuntu
 CentOS
@@ -34,6 +33,11 @@ Red Hat
 FreeBSD
 OpenBSD
 NetBSD
+OS X
+MacOS
+Solaris
+distro
+distros
 
 gcc
 g++
@@ -46,6 +50,11 @@ autotools
 openjdk
 java
 jni
+
+awk
+sed
+grep
+xml
 
 Python
 Jupyter
@@ -67,10 +76,15 @@ ECP
 EC2N
 F2M
 
+botan
 Botan
+boringssl
 BoringSSL
+cryptlib
 Cryptlib
+crypto++
 Crypto++
+openssl
 OpenSSL
 
 crypto

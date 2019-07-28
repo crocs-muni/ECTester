@@ -2,17 +2,20 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="ch05">
   <title>Native Libraries</title>
-  <para>Many popular elliptic curve libraries are written in C, C++ and other languages. This chapter discusses how to test native libraries like Botan, Crypto++ and OpenSSL.</para>
-  <para>There are fours steps to test a native library using ECTester. The first step is build the ECTester shim library. The second step is build <code>ECTesterStandalone.jar</code>. The third step is running the collection to collect data. The fourth step is plot the graphs to visualize the data.</para>
+  <para>Many popular elliptic curve libraries are written in C, C++ and other languages. This chapter discusses how to test native libraries like BoringSSL, Botan, Crypto++ and OpenSSL.</para>
+  <para>Each native library you want to test will need a shim library for use in the ECTester program. The shim library will depend on the native library, and have a name like <code>boringssl_provider.so</code>, <code>botan_provider.so</code>, <code>cryptopp_provider.so</code> and <code>openssl_provider.so</code>.</para>
+  <para>There are fours steps to test a native library using ECTester. The first step is build the shim library. The second step is build <code>ECTesterStandalone.jar</code>. The third step is running the collection to collect data. The fourth step is plot the graphs to visualize the data.</para>
   <para>The steps below use Crypto++ as an example. You should use the appropriate library name when testing other libraries, such as BoringSSL, Botan, or OpenSSL.</para>
   <section>
-    <title>Environmental variables</title>
+    <title>Build Environment</title>
     <para>There are two important environmental variables that should be set. First, you should set <code>JAVA_HOME</code>. The tooling uses <code>JAVA_HOME</code> to locate native Java library headers, like <code>jni.h</code>. Second, you should set <code>PKG_CONFIG_PATH</code>. The makefile uses <code>PKG_CONFIG_PATH</code> to locate a library's <code>*.pc</code> file.</para>
+    <para>Linux distributions uses different paths for libraries. <code>PKG_CONFIG_PATH</code> attempts to abstract away the path differences but it needs help at times. On Debian and derivatives, like Ubuntu, the library path is <code>/lib</code> and <code>/usr/lib</code>. On Red Hat and derivatives, like Fedora, the library path is <code>/lib64</code> and <code>/usr/lib64</code> on 64-bit machines. You may need to tweak the makefile and other configuration files for distros like Fedora.</para>
   </section>
   <section>
     <title>Build library shims</title>
-    <para>There are two ways to build the shared libraries. First, from the ECTester and <code>jni/</code> directory, make using the <code>Makefile</code>.</para>
-    <programlisting>cd src/cz/crcs/ectester/standalone/libs/jni
+    <para>There are two ways to build the shared libraries. First, from the ECTester and <code>jni/</code> directory, build the shim using the <code>Makefile</code>.</para>
+    <programlisting>cd ECTester
+cd src/cz/crcs/ectester/standalone/libs/jni
 PKG_CONFIG_PATH=/usr/lib64/pkgconfig/ make cryptopp</programlisting>
     <para>Note the use of <code>make cryptopp</code> to build just the Crypto++ library. If all goes well then you should see output similar to the following.</para>
     <programlisting>g++ -I/usr/local/include  -fPIC -I"/usr/lib/jvm/java-1.8.0-o
@@ -32,11 +35,12 @@ b cryptopp.o cpp_utils.o -L. -L/usr/local/lib -lcryptopp  -l
 :lib_timing.so</programlisting>
     <tip>
       <para>Crypto++ is unique among packages because it has different names depending on the distro. On Debian and derivatives, like Ubuntu, the library name is <code>libcrypto++</code>, and the development package with header files is <code>crypto++-dev</code>. On Red Hat and derivatives, like Fedora, the library name is <code>cryptopp</code>, and the development package with header files is <code>cryptopp-devel</code>.</para>
-      <para>If you need to change the library name then use <code>sed</code> on the file. For example, to change the makefile, run the command</para>
+      <para>If you need to change the library name then use <code>sed</code> on the file. For example, to change the library name in the makefile, run the command</para>
       <programlisting>sed -i 's/libcrypto++/libcryptopp/g' Makefile</programlisting>
     </tip>
     <para>Second, from the ECTester source code directory, use <code>ant</code> to build the source code.</para>
-    <programlisting>ant -f build-standalone.xml libs</programlisting>
+    <programlisting>cd ECTester
+ant -f build-standalone.xml libs</programlisting>
     <para>This will compile the shared libraries which ECTester uses via the Java Native Interface to work with native libraries. That makefile uses <code>pkg-config</code> to find Crypto++, so all of that should apply.</para>
   </section>
   <section>
