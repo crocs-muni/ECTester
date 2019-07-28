@@ -3,6 +3,7 @@
 <chapter id="ch01">
   <title>Introduction</title>
   <para>ECTester is a Java based elliptic curve cryptography security testing and evaluation tool (ST&amp;E) written by Ján Jančár. The tool tests behavior of elliptic curve cryptography implementations on JavaCards (<code>TYPE_EC_FP</code> and <code>TYPE_EC_F2M</code>) and selected software libraries.</para>
+  <para>ECTester has successfully tested a number of SmartCards and libraries, including XXX, YYY, ZZZ, Botan, Crypto++ and OpenSSL.</para>
   <para>ECTester also produces heat maps to display the leaks as a dot density graph.</para>
   <section id="intro_about">
     <title>About this Manual</title>
