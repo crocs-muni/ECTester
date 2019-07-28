@@ -7,8 +7,8 @@
   <para>There are fours steps to test a native library using ECTester. The first step is build the shim library. The second step is build <code>ECTesterStandalone.jar</code>. The third step is running the collection to collect data. The fourth step is plot the graphs to visualize the data.</para>
   <para>The steps below use Crypto++ as an example. You should use the appropriate library name when testing other libraries, such as BoringSSL, Botan, or OpenSSL.</para>
   <section>
-    <title>Build Environment</title>
-    <para>There are two important environmental variables that should be set. First, you should set <code>JAVA_HOME</code>. The tooling uses <code>JAVA_HOME</code> to locate native Java library headers, like <code>jni.h</code>. Second, you should set <code>PKG_CONFIG_PATH</code>. The makefile uses <code>PKG_CONFIG_PATH</code> to locate a library's <code>*.pc</code> file.</para>
+    <title>Build environment</title>
+    <para>There are two important environmental variables that should be set in your environment. First, you should set <code>JAVA_HOME</code>. The tooling uses <code>JAVA_HOME</code> to locate native Java library headers, like <code>jni.h</code>. Second, you should set <code>PKG_CONFIG_PATH</code>. The makefile uses <code>PKG_CONFIG_PATH</code> to locate a library's <code>*.pc</code> file.</para>
     <para>Linux distributions uses different paths for libraries. <code>PKG_CONFIG_PATH</code> attempts to abstract away the path differences but it needs help at times. On Debian and derivatives, like Ubuntu, the library path is <code>/lib</code> and <code>/usr/lib</code>. On Red Hat and derivatives, like Fedora, the library path is <code>/lib64</code> and <code>/usr/lib64</code> on 64-bit machines. You may need to tweak the makefile and other configuration files for distros like Fedora.</para>
   </section>
   <section>
