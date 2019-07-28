@@ -1,5 +1,9 @@
+Ján Jančár
 Ján
 Jančár
+crocs
+muni
+crocs-muni
 
 ECTester
 JavaCard
@@ -8,11 +12,15 @@ SmartCard
 SmartCards
 TYPE_EC_FP
 TYPE_EC_F2M
+ECTesterStandalone
 
 API
 APIs
 ABI
 ABIs
+SDK
+JDK
+NDK
 
 CVE
 TODO
@@ -22,6 +30,9 @@ Ubuntu
 CentOS
 Fedora
 Red Hat
+FreeBSD
+OpenBSD
+NetBSD
 
 gcc
 g++
@@ -29,18 +40,33 @@ make
 autoconf
 automake
 autotools
+openjdk
+java
+
+Python
+Jupyter
 
 ARM
 Aarch32
 Aarch64
+x86
 i686
 amd64
 x86_64
 PowerPC
 
+DSA
+ECDSA
+ECIES
+ECDH
+ECP
+EC2N
+F2M
+
 Botan
 BoringSSL
 Cryptlib
+Crypto
 Crypto++
 OpenSSL
 
