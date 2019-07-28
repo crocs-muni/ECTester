@@ -8,6 +8,8 @@ LFLAGS+=-fPIC -shared
 CFLAGS+=-fPIC -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
 CXXFLAGS+=-fPIC -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
 
+RUNPATH=-Wl,-rpath,'$$ORIGIN/lib' -Wl,--enable-new-dtags
+
 DEBUG ?= 0
 
 ifeq ($(DEBUG), 1)
@@ -75,7 +77,7 @@ cpp_utils.o: cpp_utils.cpp
 openssl: openssl_provider.so
 
 openssl_provider.so: openssl.o c_utils.o | lib_timing.so
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs openssl) -l:lib_timing.so
+	$(CC) $(LFLAGS) -o $@ $(RUNPATH) $^ -L. $(shell pkg-config --libs openssl) -l:lib_timing.so
 
 openssl.o: openssl.c
 	$(CC) $(shell pkg-config --cflags openssl) $(CFLAGS) -c $<
@@ -88,7 +90,7 @@ lib_boringssl.so:
 	cp ../../../../../../../ext/boringssl/build/crypto/libcrypto.so lib_boringssl.so
 
 boringssl_provider.so: boringssl.o c_utils.o | lib_timing.so lib_boringssl.so
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_boringssl.so -l:lib_timing.so
+	$(CC) $(LFLAGS) -o $@ $(RUNPATH) $^ -L. lib_boringssl.so -l:lib_timing.so
 
 
 boringssl.o: boringssl.c
@@ -99,7 +101,7 @@ boringssl.o: boringssl.c
 gcrypt: gcrypt_provider.so
 
 gcrypt_provider.so: gcrypt.o c_utils.o | lib_timing.so
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell libgcrypt-config --libs) -l:lib_timing.so
+	$(CC) $(LFLAGS) -o $@ $(RUNPATH) $^ -L. $(shell libgcrypt-config --libs) -l:lib_timing.so
 
 gcrypt.o: gcrypt.c
 	$(CC) $(shell libgcrypt-config --cflags) $(CFLAGS) -c $<
@@ -109,7 +111,7 @@ gcrypt.o: gcrypt.c
 tomcrypt: tomcrypt_provider.so
 
 tomcrypt_provider.so: tomcrypt.o c_utils.o | lib_timing.so
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -ltommath $(shell pkg-config --libs libtomcrypt) -l:lib_timing.so
+	$(CC) $(LFLAGS) -o $@ $(RUNPATH) $^ -L. -ltommath $(shell pkg-config --libs libtomcrypt) -l:lib_timing.so
 
 tomcrypt.o: tomcrypt.c
 	$(CC) -DLTM_DESC $(shell pkg-config --cflags libtomcrypt) $(CFLAGS) -c $<
@@ -119,7 +121,7 @@ tomcrypt.o: tomcrypt.c
 botan: botan_provider.so
 
 botan_provider.so: botan.o cpp_utils.o | lib_timing.so
-	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs botan-2) -l:lib_timing.so
+	$(CXX) $(LFLAGS) -o $@ $(RUNPATH) $^ -L. $(shell pkg-config --libs botan-2) -l:lib_timing.so
 
 botan.o: botan.cpp
 	$(CXX) $(shell pkg-config --cflags botan-2) $(CXXFLAGS) -c $<
@@ -129,17 +131,17 @@ botan.o: botan.cpp
 cryptopp: cryptopp_provider.so
 
 cryptopp_provider.so: cryptopp.o cpp_utils.o | lib_timing.so
-	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs libcrypto++) -l:lib_timing.so
+	$(CXX) $(LFLAGS) -o $@ $(RUNPATH) $^ -L. $(shell pkg-config --libs libcryptopp) -l:lib_timing.so
 
 cryptopp.o: cryptopp.cpp
-	$(CXX) $(shell pkg-config --cflags libcrypto++) $(CXXFLAGS) -c $<
+	$(CXX) $(shell pkg-config --cflags libcryptopp) $(CXXFLAGS) -c $<
 
 
 # mbedTLS shim
 mbedtls: mbedtls_provider.so
 
 mbedtls_provider.so: mbedtls.o c_utils.o | lib_timing.so
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -lmbedcrypto -l:lib_timing.so
+	$(CC) $(LFLAGS) -o $@ $(RUNPATH) $^ -L. -lmbedcrypto -l:lib_timing.so
 
 mbedtls.o: mbedtls.c
 	$(CC) $(CFLAGS) -c $<
@@ -149,7 +151,7 @@ mbedtls.o: mbedtls.c
 ippcp: ippcp_provider.so
 
 ippcp_provider.so: ippcp.o c_utils.o
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -lippcp -l:lib_timing.so
+	$(CC) $(LFLAGS) -o $@ $(RUNPATH) $^ -L. -lippcp -l:lib_timing.so
 
 ippcp.o: ippcp.c
 	$(CC) $(CFLAGS) -c $<
@@ -159,7 +161,7 @@ ippcp.o: ippcp.c
 matrixssl: matrixssl_provider.so
 
 matrixssl_provider.so: matrixssl.o c_utils.o | lib_timing.so
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' -L. $^ libcrypt_s.a libcore_s.a -l:lib_timing.so
+	$(CC) $(LFLAGS) -o $@ $(RUNPATH) -L. $^ libcrypt_s.a libcore_s.a -l:lib_timing.so
 
 matrixssl.o: matrixssl.c
 	$(CC) $(CFLAGS) -Imatrixssl/ -c $<
