@@ -25,6 +25,7 @@ NDK
 CVE
 TODO
 
+distro
 Debian
 Ubuntu
 CentOS
@@ -36,12 +37,15 @@ NetBSD
 
 gcc
 g++
+dev
+devel
 make
 autoconf
 automake
 autotools
 openjdk
 java
+jni
 
 Python
 Jupyter
@@ -66,9 +70,14 @@ F2M
 Botan
 BoringSSL
 Cryptlib
-Crypto
 Crypto++
 OpenSSL
+
+crypto
+crypto++
+cryptopp
+libcrypto
+libcryptopp
 
 DocBook
 GitHub

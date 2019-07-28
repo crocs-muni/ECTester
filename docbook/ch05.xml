@@ -7,7 +7,7 @@
   <para>The steps below use Crypto++ as an example. You should use the appropriate library name when testing other libraries, such as BoringSSL, Botan, or OpenSSL.</para>
   <section>
     <title>Environmental variables</title>
-    <para>There are two important environmental variables that should be set. Firs, you should set <code>JAVA_HOME</code>. The tooling uses <code>JAVA_HOME</code> to locate native Java library headers, like <code>jni.h</code>. Second, you should set <code>PKG_CONFIG_PATH</code>. The makefile uses <code>PKG_CONFIG_PATH</code> to locate a library's <code>*.pc</code> file.</para>
+    <para>There are two important environmental variables that should be set. First, you should set <code>JAVA_HOME</code>. The tooling uses <code>JAVA_HOME</code> to locate native Java library headers, like <code>jni.h</code>. Second, you should set <code>PKG_CONFIG_PATH</code>. The makefile uses <code>PKG_CONFIG_PATH</code> to locate a library's <code>*.pc</code> file.</para>
   </section>
   <section>
     <title>Build library shims</title>
@@ -41,12 +41,33 @@ b cryptopp.o cpp_utils.o -L. -L/usr/local/lib -lcryptopp  -l
   </section>
   <section>
     <title>Build ECTesterStandalone.jar</title>
-    <para>Build <code>ECTesterStandalone.jar</code> with <code>ant -f build-standalone.xml jar</code>, possibly run this twice.</para>
+    <para>Build <code>ECTesterStandalone.jar</code> with <code>ant -f build-standalone.xml jar</code>, possibly run this twice. If all goes well then the build should finish with the message <emphasis>BUILD SUCCESSFUL</emphasis>.</para>
+    <programlisting>Buildfile: /home/test/ECTester/build-standalone.xml
+-pre-init:
+-init-private:
+-init-user:
+...
+
+-do-jar-copylibs:
+ [copylibs] Copy libraries to /home/test/ECTester/dist/lib.
+ [copylibs] Building jar: /home/test/ECTester/dist/ECTesterS
+tandalone.jar
+     [echo] To run this application from the command line wi
+thout Ant, try:
+     [echo] java -jar "/home/test/ECTester/dist/ECTesterStan
+dalone.jar"
+...
+
+jar:
+
+BUILD SUCCESSFUL
+Total time: 11 seconds</programlisting>
   </section>
   <section>
     <title>Run the collection</title>
     <para>Go to <code>dist/</code> and run the collection.</para>
-    <programlisting>java -jar ECTesterStandalone.jar list-libs</programlisting>
+    <programlisting>cd dist/
+java -jar ECTesterStandalone.jar list-libs</programlisting>
     <para>It should list Crypto++ as available, together with other libraries that
 ECTester was able to compile the shims for (they were available in the system)
 and with pure Java libraries. If it doesn't list Crypto++, something went wrong
