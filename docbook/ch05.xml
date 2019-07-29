@@ -34,7 +34,7 @@ g++ -fPIC -shared -O2 -o cryptopp_provider.so -Wl,-rpath,/li
 b cryptopp.o cpp_utils.o -L. -L/usr/local/lib -lcryptopp  -l
 :lib_timing.so</programlisting>
     <tip>
-      <para>Crypto++ is unique among packages because it has different names depending on the distro. On Debian and derivatives, like Ubuntu, the library name is <code>libcrypto++</code>, and the development package with header files is <code>crypto++-dev</code>. On Red Hat and derivatives, like Fedora, the library name is <code>cryptopp</code>, and the development package with header files is <code>cryptopp-devel</code>.</para>
+      <para>Crypto++ is unique among packages because it has different names depending on the distro. On Debian and derivatives, like Ubuntu, the library name is <code>libcrypto++</code>, and the development package with header files is <code>libcrypto++-dev</code>. On Red Hat and derivatives, like Fedora, the library name is <code>cryptopp</code>, and the development package with header files is <code>cryptopp-devel</code>.</para>
       <para>If you need to change the library name then use <code>sed</code> on the file. For example, to change the library name in the makefile, run the command</para>
       <programlisting>sed -i 's/libcrypto++/libcryptopp/g' Makefile</programlisting>
     </tip>

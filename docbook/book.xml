@@ -27,9 +27,8 @@
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch03.xml"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch04.xml"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch05.xml"/>
-  <!--
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch05.xml"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch06.xml"/>
+  <!--
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch07.xml"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch08.xml"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch09.xml"/>

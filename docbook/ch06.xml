@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="ch06">
+  <title>Heatmaps</title>
+  <para>This chapter discusses interpreting the heatmaps produced by ECTester.</para>
+  <section id="maps_intro">
+    <title>Introduction</title>
+    <para>Interpreting the heatmaps produced by ECTester is one of the keys to understanding and fixing timing leaks in programs and libraries.</para>
+  </section>
+  <section>
+    <title>Good heatmap</title>
+    <para>The image below shows the heatmap of a well performing algorithm.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/good-map.png" width="5.75in" scalefit="1" format="PNG"/>
+      </imageobject>
+      <textobject>
+        <phrase>Good Heatmap</phrase>
+      </textobject>
+      <caption>
+        <para>Image of a good heatmap. The algorithm has little to no leakage.</para>
+      </caption>
+    </mediaobject>
+    <para>TODO: explain why this is a good heatmap.</para>
+  </section>
+  <section>
+    <title>Bad heatmap</title>
+    <para>The image below shows the heatmap of an algorithm leaking information.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/bad-map.png" width="5.75in" scalefit="1" format="PNG"/>
+      </imageobject>
+      <textobject>
+        <phrase>Bad Heatmap</phrase>
+      </textobject>
+      <caption>
+        <para>Image of a bad heatmap. The algorithm is leaking information.</para>
+      </caption>
+    </mediaobject>
+    <para>TODO: explain why this is a bad heatmap.</para>
+  </section>
+</chapter>
