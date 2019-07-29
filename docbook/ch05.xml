@@ -13,7 +13,8 @@
   </section>
   <section>
     <title>Build library shims</title>
-    <para>There are two ways to build the shared libraries. First, from the ECTester and <code>jni/</code> directory, build the shim using the <code>Makefile</code>.</para>
+    <para>There are two ways to build the shim libraries. First, is using the makefile, and second is using Ant. The makefile allows you to build one or more shim libraries. Ant unconditionally builds all the shim libraries.</para>
+    <para>First, to build one or more shims, use the makefile. From the ECTester and <code>jni/</code> directory, use <code>make &lt;library&gt;</code> as shown below.</para>
     <programlisting>cd ECTester
 cd src/cz/crcs/ectester/standalone/libs/jni
 PKG_CONFIG_PATH=/usr/lib64/pkgconfig/ make cryptopp</programlisting>
@@ -39,7 +40,7 @@ b cryptopp.o cpp_utils.o -L. -L/usr/local/lib -lcryptopp  -l
       <para>If you need to change the library name then use <code>sed</code> on the file. For example, to change the library name in the makefile, run the command</para>
       <programlisting>sed -i 's/libcrypto++/libcryptopp/g' Makefile</programlisting>
     </tip>
-    <para>Second, from the ECTester source code directory, use <code>ant</code> to build the source code. Note that using <code>ant</code> with the recipe below means you will build all of the libraries testable by ECTester, and not just the ones you are interested in.</para>
+    <para>Second, use Ant to build all the shim libraries. From the ECTester source code directory, use <code>ant</code> as shown below. Note that using <code>ant</code> with the recipe below means you will build all of the libraries testable by ECTester, and not just the ones you are interested in.</para>
     <programlisting>cd ECTester
 ant -f build-standalone.xml libs</programlisting>
     <para>This will compile the shared libraries which ECTester uses via the Java Native Interface to work with native libraries. That makefile uses <code>pkg-config</code> to find Crypto++, so all of that should apply.</para>
