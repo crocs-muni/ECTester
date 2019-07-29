@@ -3,6 +3,8 @@
    <!-- TODO: figure out how to avoid hard-coding the path -->
    <xsl:import href="/usr/share/xml/docbook/stylesheet/docbook-xsl/fo/docbook.xsl"/>
 
+   <xsl:param name="title.font.family" select="'arial'"/>
+
    <xsl:param name="body.font.family" select="'arial'"/>
    <xsl:param name="body.font.size" select="11"/>
 
