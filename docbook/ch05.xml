@@ -17,7 +17,8 @@
     <programlisting>cd ECTester
 cd src/cz/crcs/ectester/standalone/libs/jni
 PKG_CONFIG_PATH=/usr/lib64/pkgconfig/ make cryptopp</programlisting>
-    <para>Note the use of <code>make cryptopp</code> to build just the Crypto++ library. If all goes well then you should see output similar to the following.</para>
+    <para>Note the use of <code>make cryptopp</code> to build just the Crypto++ library. You can use <code>make all</code> or <code>make</code> to build all libraries testable by ECTester.</para>
+    <para>If all goes well then you should see output similar to the following.</para>
     <programlisting>g++ -I/usr/local/include  -fPIC -I"/usr/lib/jvm/java-1.8.0-o
 penjdk-1.8.0.212.b04-0.fc30.x86_64/include" -I"/usr/lib/jvm/
 java-1.8.0-openjdk-1.8.0.212.b04-0.fc30.x86_64/include/linux
