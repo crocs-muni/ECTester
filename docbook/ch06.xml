@@ -12,7 +12,7 @@
     <para>The image below shows the heatmap of a well performing algorithm.</para>
     <mediaobject>
       <imageobject>
-        <imagedata fileref="images/good-map.png" width="5.75in" scalefit="1" format="PNG"/>
+        <imagedata fileref="images/good-map.png" width="5.0in" scalefit="1" format="PNG"/>
       </imageobject>
       <textobject>
         <phrase>Good Heatmap</phrase>
@@ -28,7 +28,7 @@
     <para>The image below shows the heatmap of an algorithm leaking information.</para>
     <mediaobject>
       <imageobject>
-        <imagedata fileref="images/bad-map.png" width="5.75in" scalefit="1" format="PNG"/>
+        <imagedata fileref="images/bad-map.png" width="5.0in" scalefit="1" format="PNG"/>
       </imageobject>
       <textobject>
         <phrase>Bad Heatmap</phrase>
