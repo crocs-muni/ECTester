@@ -38,7 +38,7 @@ b cryptopp.o cpp_utils.o -L. -L/usr/local/lib -lcryptopp  -l
       <para>If you need to change the library name then use <code>sed</code> on the file. For example, to change the library name in the makefile, run the command</para>
       <programlisting>sed -i 's/libcrypto++/libcryptopp/g' Makefile</programlisting>
     </tip>
-    <para>Second, from the ECTester source code directory, use <code>ant</code> to build the source code.</para>
+    <para>Second, from the ECTester source code directory, use <code>ant</code> to build the source code. Note that using <code>ant</code> with the recipe below means you will build all of the libraries testable by ECTester, and not just the ones you are interested in.</para>
     <programlisting>cd ECTester
 ant -f build-standalone.xml libs</programlisting>
     <para>This will compile the shared libraries which ECTester uses via the Java Native Interface to work with native libraries. That makefile uses <code>pkg-config</code> to find Crypto++, so all of that should apply.</para>
