@@ -2,11 +2,7 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="ch06">
   <title>Heatmaps</title>
-  <para>This chapter discusses interpreting the heatmaps produced by ECTester.</para>
-  <section id="maps_intro">
-    <title>Introduction</title>
-    <para>Interpreting the heatmaps produced by ECTester is one of the keys to understanding and fixing timing leaks in programs and libraries.</para>
-  </section>
+  <para>This chapter discusses interpreting the heatmaps produced by ECTester. Interpreting the heatmaps produced by ECTester is one of the keys to understanding and fixing timing leaks in programs and libraries.</para>
   <section>
     <title>Good heatmap</title>
     <para>The image below shows the heatmap of a well performing algorithm.</para>
