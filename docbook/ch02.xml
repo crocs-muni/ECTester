@@ -9,8 +9,8 @@
     <para>In addition to the JDK you should install <code>ant</code> package.</para>
     <para>Java SmartCard testing requires XXX.</para>
     <para>Java Libraries testing requires XXX.</para>
-    <para>Native Libraries testing requires common build tools, like cmake, make, a C or C++ compiler, an assembler, and a linker. You may also need Autotools like autoconf and automake, depending on the library.</para>
-    <para>On Debian and derivatives you can install the <code>build-essentials</code> package. On Red Hat systems, like CentOS and Fedora, you should install the <code>gcc</code>, <code>gcc-c++</code>, <code>make</code>, <code>cmake</code>, <code>autoconf</code> and <code>automake</code> packages.</para>
+    <para>Native Libraries testing requires common build tools, like cmake, make, a C or C++ compiler, an assembler, and a linker. You may also need Autotools like autoconf, automake, and libtool, depending on the library.</para>
+    <para>On Debian and derivatives you can install the <code>build-essentials</code> package. On Red Hat systems, like CentOS and Fedora, you should install the <code>gcc</code>, <code>gcc-c++</code>, <code>make</code>, <code>cmake</code>, <code>autoconf</code>, <code>automake</code> and <code>libtool</code> packages.</para>
   </section>
   <section>
     <title>ECTester Setup</title>
