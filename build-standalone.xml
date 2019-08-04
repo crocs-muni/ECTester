@@ -91,6 +91,7 @@
     <target name="libs-try">
         <exec dir="src/cz/crcs/ectester/standalone/libs/jni" executable="make" osfamily="unix">
             <arg value="-k"/>
+            <arg value="-B"/>
         </exec>
         <exec dir="src/cz/crcs/ectester/standalone/libs/jni" executable="cmd" osfamily="windows">
           <arg value="/c"/>
@@ -100,6 +101,7 @@
     <target name="libs">
         <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="make" osfamily="unix">
             <arg value="-k"/>
+            <arg value="-B"/>
         </exec>
         <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="cmd" osfamily="windows">
           <arg value="/c"/>
@@ -118,7 +120,7 @@
         </exec>
     </target>
 
-    <target name="-post-compile" depends="libs-try"/>
+    <target name="-pre-compile" depends="libs-try"/>
 
     <target name="-post-clean">
         <exec dir="src/cz/crcs/ectester/standalone/libs/jni" failonerror="true" executable="make" osfamily="unix">
