@@ -3,6 +3,7 @@ addons:
     sources:
     - ubuntu-toolchain-r-test
     packages:
+    - libmbedtls-dev
     - libtomcrypt-dev
     - libtommath-dev
     - libssl-dev
@@ -12,7 +13,7 @@ addons:
     - g++-6
 language: java
 jdk:
-  - oraclejdk8
+  - openjdk8
 env:
   - CC=gcc-6 CXX=g++-6
 
@@ -23,7 +24,7 @@ script:
   - ./util/test.sh
 
 before_deploy:
-  - zip "dist/ECTester.zip" "dist/ECTesterReader-dist.jar" "dist/ECTesterReader.jar" "applet/ectester.cap" "dist/ECTesterStandalone-dist.jar" "dist/ECTesterStandalone.jar"
+  - zip "dist/ECTester.zip" "dist/ECTesterReader-dist.jar" "dist/ECTesterReader.jar" "applet/ectester221.cap" "applet/ectester222.cap" "dist/ECTesterStandalone-dist.jar" "dist/ECTesterStandalone.jar"
 
 deploy:
   provider: releases
