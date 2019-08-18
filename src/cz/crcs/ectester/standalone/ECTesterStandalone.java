@@ -221,6 +221,7 @@ public class ECTesterStandalone {
         ecdsaOpts.addOption(timeSource);
         ecdsaOpts.addOptionGroup(privateKey);
         ecdsaOpts.addOptionGroup(publicKey);
+        ecdsaOpts.addOption(Option.builder().longOpt("fixed").desc("Perform all ECDSA with fixed keypair.").build());
         ecdsaOpts.addOption(Option.builder("t").longOpt("type").desc("Set Signature object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdsaOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDSA [amount] times.").build());
         ecdsaOpts.addOption(Option.builder("f").longOpt("file").hasArg().argName("file").optionalArg(false).desc("Input [file] to sign.").build());
@@ -578,10 +579,22 @@ public class ECTesterStandalone {
         ECPrivateKey privkey = (ECPrivateKey) ECUtil.loadKey(EC_Consts.PARAMETER_S, cli.getOptionValue("ecdsa.named-private"), cli.getOptionValue("ecdsa.private"), spec);
         ECPublicKey pubkey = (ECPublicKey) ECUtil.loadKey(EC_Consts.PARAMETER_W, cli.getOptionValue("ecdsa.named-public"), cli.getOptionValue("ecdsa.public"), spec);
 
+		KeyPair one;
+        if (cli.hasOption("ecdsa.fixed")) {
+        	one = kpg.genKeyPair();
+            if (!cli.hasOption("ecdsa.named-private")) {
+                privkey = (ECPrivateKey) one.getPrivate();
+            }
+            if (!cli.hasOption("ecdsa.named-public")) {
+                pubkey = (ECPublicKey) one.getPublic();
+            }
+        }
+
+
         int amount = Integer.parseInt(cli.getOptionValue("ecdsa.amount", "1"));
         for (int i = 0; i < amount || amount == 0; ++i) {
-            if (!cli.hasOption("ecdsa.named-private") || !cli.hasOption("ecdsa.named-public")) {
-                KeyPair one = kpg.genKeyPair();
+            if ((!cli.hasOption("ecdsa.named-private") || !cli.hasOption("ecdsa.named-public")) && !cli.hasOption("ecdsa.fixed")) {
+                one = kpg.genKeyPair();
 
                 if (!cli.hasOption("ecdsa.named-private")) {
                     privkey = (ECPrivateKey) one.getPrivate();
