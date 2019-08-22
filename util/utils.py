@@ -1,7 +1,9 @@
+import hashlib
 import numpy as np
 from matplotlib import ticker
 from math import sqrt, log
-
+import ec
+from asn1crypto.core import Sequence
 
 def hw(i):
     res = 0
@@ -18,19 +20,55 @@ def moving_average(a, n) :
 
 
 def time_scale(data, orig_unit, target_unit, scaling_factor):
+    if orig_unit == "instr":
+        return orig_unit
     units = {
         "milli": ("ms", 1000000),
         "micro": (r"$\mu s$", 1000),
         "nano":  ("ns", 1)
     }
-    upper = units[orig_unit][1]
-    lower = units[target_unit][1] * scaling_factor
+    upper = units[orig_unit][1] * scaling_factor
+    lower = units[target_unit][1]
     if upper > lower:
         data *= upper // lower
     elif lower > upper:
         np.floor_divide(data, lower // upper, data)
     return (r"$\frac{1}{" + str(scaling_factor) + "}$" if scaling_factor != 1 else "") + units[target_unit][0]
 
+def recompute_nonces(data, curve_name, hash_algo):
+    try:
+        curve = ec.get_curve(curve_name)
+    except:
+        curve = ec.load_curve(curve_name)
+    verified = False
+    for elem in data:
+        if elem["nonce"] is not None:
+            continue
+        if elem["index"] % (len(data)//10) == 0:
+            print(".", end="")
+        if hash_algo is None:
+            hm = int.from_bytes(elem["data"], byteorder="big") % curve.group.n
+        else:
+            h = hashlib.new(hash_algo, elem["data"])
+            hm = int(h.hexdigest(), 16)
+            if h.digest_size * 8 > curve.group.n.bit_length():
+                hm >> h.digest_size * 8 - curve.group.n.bit_length()
+            hm = hm % curve.group.n
+        r, s = Sequence.load(elem["signature"]).native.values()
+        r = ec.Mod(r, curve.group.n)
+        s = ec.Mod(s, curve.group.n)
+        rx = r * elem["priv"]
+        hmrx = hm + rx
+        nonce = s.inverse() * hmrx
+        if not verified:
+            res = int(nonce) * curve.g
+            if int(res.x) % curve.group.n != int(r):
+                print("Nonce recomputation couldnt verify!")
+                raise ValueError
+            else:
+                print("Nonce recomputation works")
+                verified = True
+        elem["nonce"] = int(nonce)
 
 def hist_size_func(choice):
     if choice == "sqrt":
@@ -71,19 +109,3 @@ def miller_correction(entropy, samples, bins):
     return entropy + (bins - 1)/(2*samples)
 
 
-def egcd(a, b):
-    if a == 0:
-        return b, 0, 1
-    else:
-        g, y, x = egcd(b % a, a)
-        return g, x - (b // a) * y, y
-
-
-def mod_inv(a, p):
-    if a < 0:
-        return p - mod_inv(-a, p)
-    g, x, y = egcd(a, p)
-    if g != 1:
-        raise ArithmeticError("Modular inverse does not exist")
-    else:
-        return x % p
