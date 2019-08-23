@@ -1,16 +1,3 @@
-# Libraries with ECC support
-
-Popular libraries with at least some ECC support, that ECTester does not yet support:
-
- - [NSS](https://hg.mozilla.org/projects/nss)
- - [LibreSSL](https://www.libressl.org/)
- - [Nettle](http://www.lysator.liu.se/~nisse/nettle/)
- - [BearSSL](https://bearssl.org/)
- - [cryptlib](https://www.cryptlib.com/)
- - [OpenSSL (FIPS mode)](https://www.openssl.org/docs/fipsnotes.html)
- - [Microsoft .NET crypto](https://docs.microsoft.com/en-us/dotnet/standard/security/cryptography-model)
- - [Linux kernel](https://kernel.org), test via [libkcapi](http://chronox.de/libkcapi.html)
-
 # Supported libraries
 
 Libraries that ECTester can test.
@@ -125,10 +112,24 @@ ninja
     - C
     - Only supports prime field curves.
     - Uses 4 bit sliding window.
-    - Uses projective coordinates. 
+    - Uses projective coordinates.
  - [Intel Performance Primitives](https://software.intel.com/en-us/ipp-crypto-reference-2019)
     - C
     - Only supports prime field curves.
     - Uses 5-bit window NAF.
     - Uses Jacobian coordinates.
     - <https://github.com/intel/ipp-crypto>
+
+
+# Libraries with ECC support
+
+Popular libraries with at least some ECC support, that ECTester does not yet support:
+
+ - [NSS](https://hg.mozilla.org/projects/nss)
+ - [LibreSSL](https://www.libressl.org/)
+ - [Nettle](http://www.lysator.liu.se/~nisse/nettle/)
+ - [BearSSL](https://bearssl.org/)
+ - [cryptlib](https://www.cryptlib.com/)
+ - [OpenSSL (FIPS mode)](https://www.openssl.org/docs/fipsnotes.html)
+ - [Microsoft .NET crypto](https://docs.microsoft.com/en-us/dotnet/standard/security/cryptography-model)
+ - [Linux kernel](https://kernel.org), test via [libkcapi](http://chronox.de/libkcapi.html)
