@@ -155,4 +155,11 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
             return getBlob();
         }
     }
+
+    public static class Nettle extends Raw {
+        public Nettle(byte[] keyData, ECParameterSpec params) {
+            super(keyData, params);
+        }
+    }
+
 }

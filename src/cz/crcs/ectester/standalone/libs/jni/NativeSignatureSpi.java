@@ -544,4 +544,18 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
             super("SHA512withECDSA");
         }
     }
+
+    public abstract static class Nettle extends ExtendedSignatureSpi {
+        private String type;
+
+        public Nettle(String type) {
+            this.type = type;
+        }
+
+        @Override
+        native byte[] sign(byte[] data, ECPrivateKey privkey, ECParameterSpec params);
+
+        @Override
+        native boolean verify(byte[] signature, byte[] data, ECPublicKey pubkey, ECParameterSpec params);
+    }
 }

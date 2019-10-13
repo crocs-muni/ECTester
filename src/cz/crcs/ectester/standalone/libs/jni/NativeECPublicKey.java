@@ -156,4 +156,10 @@ public abstract class NativeECPublicKey implements ECPublicKey {
             return getBlob();
         }
     }
+
+    public static class Nettle extends ANSIX962 {
+        public Nettle(byte[] keyData, ECParameterSpec params) {
+            super(keyData, params);
+        }
+    }
 }
