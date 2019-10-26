@@ -164,7 +164,14 @@ matrixssl_provider.so: matrixssl.o c_utils.o | lib_timing.so
 matrixssl.o: matrixssl.c
 	$(CC) $(CFLAGS) -Imatrixssl/ -c $<
 
+# Nettle shim
+nettle: nettle_provider.so
 
+nettle_provider.so: openssl.o c_utils.o | lib_timing.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs nettle) -l:lib_timing.so
+
+nettle.o: nettle.c
+	$(CC) $(shell pkg-config --cflags nettle) $(CFLAGS) -c $<
 help:
 	@echo "# This makefile builds the JNI shims necessary to test native libraries."
 	@echo "# Targets:"
@@ -177,9 +184,9 @@ help:
 	@echo "    - mbedtls"
 	@echo "    - ippcp"
 	@echo "    - matrixssl"
-
+	@echo "    - nettle"
 clean:
 	rm -rf *.o
 	rm -rf *.so
 
-.PHONY: all help clean openssl boringssl gcrypt tomcrypt botan cryptopp mbedtls ippcp matrixssl
+.PHONY: all help clean openssl boringssl gcrypt tomcrypt botan cryptopp mbedtls ippcp matrixssl nettle
