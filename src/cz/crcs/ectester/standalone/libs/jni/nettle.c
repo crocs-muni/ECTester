@@ -2,13 +2,17 @@
 #include <string.h>
 
 #include <nettle/version.h>
+#include <nettle/ecc.h>
+#include <nettle/ecc-curve.h>
+#include <nettle/ecdsa.h>
+
+
 #include <openssl/opensslv.h>
 #include <openssl/objects.h>
 #include <openssl/obj_mac.h>
 #include <openssl/bn.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
-#include <openssl/ec.h>
 #include <openssl/ecdsa.h>
 
 #include "c_utils.h"
@@ -49,24 +53,19 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_getCur
     jmethodID hash_set_add = (*env)->GetMethodID(env, hash_set_class, "add", "(Ljava/lang/Object;)Z");
 
     jobject result = (*env)->NewObject(env, hash_set_class, hash_set_ctr);
-
-    jstring curve_name = (*env)->NewStringUTF(env, 'secp_256r1');
-    (*env)->CallBooleanMethod(env, result, hash_set_add, curve_name);
+    char *curve_names[] = {'secp192r1', 'secp224r1', 'secp256r1', 'secp384r1', 'secp521r1'};
+    for (int i = 0; i < 5; i++) {
+        jstring curve_name = (*env)->NewStringUTF(env, curve_names[i]);
+        (*env)->CallBooleanMethod(env, result, hash_set_add, curve_name);
+    }
     return result;
 }
 
-JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Openssl_keysizeSupported(JNIEnv *env, jobject self, jint keysize) {
-    size_t ncurves = EC_get_builtin_curves(NULL, 0);
-    EC_builtin_curve curves[ncurves];
-    EC_get_builtin_curves(curves, ncurves);
-
-    for (size_t i = 0; i < ncurves; ++i) {
-        EC_GROUP *curve = EC_GROUP_new_by_curve_name(curves[i].nid);
-        if (EC_GROUP_get_degree(curve) == keysize) {
-            EC_GROUP_clear_free(curve);
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Nettle_keysizeSupported(JNIEnv *env, jobject self, jint keysize) {
+    int supported[] = {24, 28, 32, 48, 66};
+    for (int i = 0; i < 5; i++) {
+        if (keysize == supported[i])
             return JNI_TRUE;
-        }
-        EC_GROUP_free(curve);
     }
     return JNI_FALSE;
 }
@@ -191,7 +190,7 @@ static EC_GROUP *create_curve(JNIEnv *env, jobject params) {
     return result;
 }
 
-JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Openssl_paramsSupported(JNIEnv *env, jobject self, jobject params){
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Nettle_paramsSupported(JNIEnv *env, jobject self, jobject params){
     if (params == NULL) {
         return JNI_FALSE;
     }
