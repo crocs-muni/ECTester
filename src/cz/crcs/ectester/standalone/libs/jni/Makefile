@@ -58,7 +58,7 @@ JNI_PLATFORMINCLUDEDIR ?= $(JNI_INCLUDEDIR)/$(JNI_PLATFORM)
 ###############################################################################
 ## Targets.
 
-all: tomcrypt botan cryptopp openssl boringssl gcrypt mbedtls ippcp matrixssl
+all: tomcrypt botan cryptopp openssl boringssl gcrypt mbedtls ippcp matrixssl nettle
 
 # Common utils
 c_utils.o: c_utils.c
