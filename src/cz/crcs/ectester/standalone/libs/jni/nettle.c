@@ -70,24 +70,27 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
     return JNI_FALSE;
 }
 
-static jobject bignum_to_biginteger(JNIEnv *env, const BIGNUM *bn) {
+static jobject mpz_to_biginteger(JNIEnv *env, const mpz_t mp) {
     jmethodID biginteger_init = (*env)->GetMethodID(env, biginteger_class, "<init>", "(I[B)V");
-    int size = BN_num_bytes(bn);
+    size_t size;
+    mpz_export(NULL, size, 1, sizeof(unsigned char), 0, 0, mp); 
     jbyteArray bytes = (*env)->NewByteArray(env, size);
-    jbyte *data = (*env)->GetByteArrayElements(env, bytes, NULL);
-    BN_bn2bin(bn, (unsigned char *) data);
+    jbyte *data = (*env)->GetByteArrayElements(env, bytes, NULL); 
+    mpz_export(data, size, 1, sizeof(unsigned char), 0, 0, mp); 
     (*env)->ReleaseByteArrayElements(env, bytes, data, 0);
     jobject result = (*env)->NewObject(env, biginteger_class, biginteger_init, 1, bytes);
     return result;
 }
 
-static BIGNUM *biginteger_to_bignum(JNIEnv *env, jobject bigint) {
+static mpz_t biginteger_to_mpz(JNIEnv *env, jobject bigint) {
     jmethodID to_byte_array = (*env)->GetMethodID(env, biginteger_class, "toByteArray", "()[B");
 
     jbyteArray byte_array = (jbyteArray) (*env)->CallObjectMethod(env, bigint, to_byte_array);
     jsize byte_length = (*env)->GetArrayLength(env, byte_array);
     jbyte *byte_data = (*env)->GetByteArrayElements(env, byte_array, NULL);
-    BIGNUM *result = BN_bin2bn((unsigned char *) byte_data, byte_length, NULL);
+    mpz_t result;
+    mpz_init(result);
+    mpz_import(result, byte_length, 1, sizeof(unsigned char), 0, 0, byte_data);
     (*env)->ReleaseByteArrayElements(env, byte_array, byte_data, JNI_ABORT);
     return result;
 }
