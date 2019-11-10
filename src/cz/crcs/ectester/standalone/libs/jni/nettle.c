@@ -53,7 +53,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_getCur
     jmethodID hash_set_add = (*env)->GetMethodID(env, hash_set_class, "add", "(Ljava/lang/Object;)Z");
 
     jobject result = (*env)->NewObject(env, hash_set_class, hash_set_ctr);
-    char *curve_names[] = {'secp192r1', 'secp224r1', 'secp256r1', 'secp384r1', 'secp521r1'};
+    char *curve_names[] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1"};
     for (int i = 0; i < 5; i++) {
         jstring curve_name = (*env)->NewStringUTF(env, curve_names[i]);
         (*env)->CallBooleanMethod(env, result, hash_set_add, curve_name);
@@ -73,26 +73,23 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
 static jobject mpz_to_biginteger(JNIEnv *env, const mpz_t mp) {
     jmethodID biginteger_init = (*env)->GetMethodID(env, biginteger_class, "<init>", "(I[B)V");
     size_t size;
-    mpz_export(NULL, size, 1, sizeof(unsigned char), 0, 0, mp); 
+    mpz_export(NULL, &size, 1, sizeof(unsigned char), 0, 0, mp); 
     jbyteArray bytes = (*env)->NewByteArray(env, size);
     jbyte *data = (*env)->GetByteArrayElements(env, bytes, NULL); 
-    mpz_export(data, size, 1, sizeof(unsigned char), 0, 0, mp); 
+    mpz_export(data, &size, 1, sizeof(unsigned char), 0, 0, mp); 
     (*env)->ReleaseByteArrayElements(env, bytes, data, 0);
     jobject result = (*env)->NewObject(env, biginteger_class, biginteger_init, 1, bytes);
     return result;
 }
 
-static mpz_t biginteger_to_mpz(JNIEnv *env, jobject bigint) {
+static void biginteger_to_mpz(JNIEnv *env, jobject bigint, mpz_t mp) {
     jmethodID to_byte_array = (*env)->GetMethodID(env, biginteger_class, "toByteArray", "()[B");
 
     jbyteArray byte_array = (jbyteArray) (*env)->CallObjectMethod(env, bigint, to_byte_array);
     jsize byte_length = (*env)->GetArrayLength(env, byte_array);
     jbyte *byte_data = (*env)->GetByteArrayElements(env, byte_array, NULL);
-    mpz_t result;
-    mpz_init(result);
-    mpz_import(result, byte_length, 1, sizeof(unsigned char), 0, 0, byte_data);
+    mpz_import(mp, byte_length, 1, sizeof(unsigned char), 0, 0, byte_data);
     (*env)->ReleaseByteArrayElements(env, byte_array, byte_data, JNI_ABORT);
-    return result;
 }
 
 static EC_GROUP *create_curve(JNIEnv *env, jobject params) {
@@ -104,25 +101,27 @@ static EC_GROUP *create_curve(JNIEnv *env, jobject params) {
 
     jmethodID get_a = (*env)->GetMethodID(env, elliptic_curve_class, "getA", "()Ljava/math/BigInteger;");
     jobject a = (*env)->CallObjectMethod(env, elliptic_curve, get_a);
-    BIGNUM *a_bn = biginteger_to_bignum(env, a);
 
     jmethodID get_b = (*env)->GetMethodID(env, elliptic_curve_class, "getB", "()Ljava/math/BigInteger;");
     jobject b = (*env)->CallObjectMethod(env, elliptic_curve, get_b);
-    BIGNUM *b_bn = biginteger_to_bignum(env, b);
 
     jmethodID get_g = (*env)->GetMethodID(env, ec_parameter_spec_class, "getGenerator", "()Ljava/security/spec/ECPoint;");
     jobject g = (*env)->CallObjectMethod(env, params, get_g);
 
     jmethodID get_x = (*env)->GetMethodID(env, point_class, "getAffineX", "()Ljava/math/BigInteger;");
     jobject gx = (*env)->CallObjectMethod(env, g, get_x);
-    BIGNUM *gx_bn = biginteger_to_bignum(env, gx);
+    mpz_t x;
+    mpz_init(x);
+    biginteger_to_mpz(env, gx, x);
 
     jmethodID get_y = (*env)->GetMethodID(env, point_class, "getAffineY", "()Ljava/math/BigInteger;");
     jobject gy = (*env)->CallObjectMethod(env, g, get_y);
-    BIGNUM *gy_bn = biginteger_to_bignum(env, gy);
+    mpz_t y;
+    mpz_init(y);
+    biginteger_to_mpz(env, gy, y);
 
+    struct ecc_point *g_point;
     EC_GROUP *result;
-    EC_POINT *g_point;
 
     if ((*env)->IsInstanceOf(env, field, fp_field_class)) {
         jmethodID get_p = (*env)->GetMethodID(env, fp_field_class, "getP", "()Ljava/math/BigInteger;");
@@ -166,12 +165,12 @@ static EC_GROUP *create_curve(JNIEnv *env, jobject params) {
         return NULL;
     }
 
-    BN_free(a_bn);
-    BN_free(b_bn);
 
     jmethodID get_n = (*env)->GetMethodID(env, ec_parameter_spec_class, "getOrder", "()Ljava/math/BigInteger;");
     jobject n = (*env)->CallObjectMethod(env, params, get_n);
-    BIGNUM *n_bn = biginteger_to_bignum(env, n);
+    mpz_t n_bn;
+    mpz_init(n_bn);
+    biginteger_to_mpz(env, n , n_bn);
 
     jmethodID get_h = (*env)->GetMethodID(env, ec_parameter_spec_class, "getCofactor", "()I");
     jint h = (*env)->CallIntMethod(env, params, get_h);
@@ -183,12 +182,6 @@ static EC_GROUP *create_curve(JNIEnv *env, jobject params) {
         BN_free(n_bn); BN_free(h_bn); BN_free(gx_bn); BN_free(gy_bn); EC_POINT_free(g_point); EC_GROUP_free(result);
         return NULL;
     }
-
-    EC_POINT_free(g_point);
-    BN_free(gx_bn);
-    BN_free(gy_bn);
-    BN_free(n_bn);
-    BN_free(h_bn);
 
     return result;
 }
