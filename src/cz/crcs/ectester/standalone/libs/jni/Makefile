@@ -167,7 +167,7 @@ matrixssl.o: matrixssl.c
 # Nettle shim
 nettle: nettle_provider.so
 
-nettle_provider.so: openssl.o c_utils.o | lib_timing.so
+nettle_provider.so: nettle.o c_utils.o | lib_timing.so
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs nettle) -l:lib_timing.so $(shell pkg-config --libs hogweed) -lgmp
 
 nettle.o: nettle.c
