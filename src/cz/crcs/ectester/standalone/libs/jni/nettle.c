@@ -5,6 +5,9 @@
 #include <nettle/ecc.h>
 #include <nettle/ecc-curve.h>
 #include <nettle/ecdsa.h>
+#include <nettle/yarrow.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include "c_utils.h"
 #include "c_timing.h"
@@ -55,11 +58,12 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_getCur
 }
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Nettle_keysizeSupported(JNIEnv *env, jobject self, jint keysize) {
-    int supported[] = {24, 28, 32, 48, 66};
+/*    int supported[] = {24, 28, 32, 48, 66};
     for (int i = 0; i < 5; i++) {
         if (keysize == supported[i])
             return JNI_TRUE;
     }
+    */
     return JNI_FALSE;
 }
 
@@ -85,7 +89,14 @@ static void biginteger_to_mpz(JNIEnv *env, jobject bigint, mpz_t* mp) {
     (*env)->ReleaseByteArrayElements(env, byte_array, byte_data, JNI_ABORT);
 }
 
-static struct ecc_point *create_curve(JNIEnv *env, jobject params) {
+static const struct ecc_curve* create_curve(JNIEnv *env, jobject params, const char* curve_name) {
+    const struct ecc_curve* curve = NULL;
+    if (curve_name) {
+        if (strcasecmp("secp256r1", curve_name) == 0) {
+            curve = nettle_get_secp_256r1();
+        }
+        return curve;
+    }
 
     jmethodID get_curve = (*env)->GetMethodID(env, ec_parameter_spec_class, "getCurve", "()Ljava/security/spec/EllipticCurve;");
     jobject elliptic_curve = (*env)->CallObjectMethod(env, params, get_curve);
@@ -111,6 +122,7 @@ static struct ecc_point *create_curve(JNIEnv *env, jobject params) {
 
     jmethodID get_y = (*env)->GetMethodID(env, point_class, "getAffineY", "()Ljava/math/BigInteger;");
     jobject gy = (*env)->CallObjectMethod(env, g, get_y);
+
     mpz_t y;
     mpz_init(y);
     biginteger_to_mpz(env, gy, &y);
@@ -178,8 +190,57 @@ static jobject create_ec_param_spec(JNIEnv *env) {
     return NULL;
 }
 
-static jobject generate_from_curve(JNIEnv *env) {
-    return NULL;
+static jobject generate_from_curve(JNIEnv *env, const struct ecc_curve* curve) {
+    struct ecc_point pub;
+    struct ecc_scalar priv;
+    struct yarrow256_ctx yarrow;
+
+    yarrow256_init(&yarrow, 0, NULL);
+     uint8_t  file = open("/dev/urandom", O_RDONLY);
+     yarrow256_seed(&yarrow, YARROW256_SEED_FILE_SIZE, &file);
+     close(file);
+
+    ecc_point_init(&pub, curve);
+    ecc_scalar_init(&priv, curve);
+
+    native_timing_start();
+    ecdsa_generate_keypair(&pub, &priv, (void *) &yarrow, (nettle_random_func *) yarrow256_random);
+    native_timing_stop();
+/*
+    if (!result) {
+        throw_new(env, "java/security/GeneralSecurityException", "Error generating key, EC_KEY_generate_key.");
+        ecc_point_clear(&pub);
+        ecc_scalar_clear(&priv);
+        return NULL;
+    }
+*/
+
+    jbyteArray priv_bytes = (*env)->NewByteArray(env, key_bytes);
+    jbyte *key_priv = (*env)->GetByteArrayElements(env, priv_bytes, NULL);
+    BN_bn2binpad(EC_KEY_get0_private_key(key), (unsigned char *) key_priv, key_bytes);
+    (*env)->ReleaseByteArrayElements(env, priv_bytes, key_priv, 0);
+
+    unsigned long key_len = 2*key_bytes + 1;
+    jbyteArray pub_bytes = (*env)->NewByteArray(env, key_len);
+    jbyte *key_pub = (*env)->GetByteArrayElements(env, pub_bytes, NULL);
+    EC_POINT_point2oct(curve, EC_KEY_get0_public_key(key), POINT_CONVERSION_UNCOMPRESSED, (unsigned char *) key_pub, key_len, NULL);
+    (*env)->ReleaseByteArrayElements(env, pub_bytes, key_pub, 0);
+
+    EC_KEY_free(key);
+
+    jobject ec_param_spec = create_ec_param_spec(env, curve);
+
+    jobject ec_pub_param_spec = (*env)->NewLocalRef(env, ec_param_spec);
+    jmethodID ec_pub_init = (*env)->GetMethodID(env, pubkey_class, "<init>", "([BLjava/security/spec/ECParameterSpec;)V");
+    jobject pubkey = (*env)->NewObject(env, pubkey_class, ec_pub_init, pub_bytes, ec_pub_param_spec);
+
+    jobject ec_priv_param_spec = (*env)->NewLocalRef(env, ec_param_spec);
+    jmethodID ec_priv_init = (*env)->GetMethodID(env, privkey_class, "<init>", "([BLjava/security/spec/ECParameterSpec;)V");
+    jobject privkey = (*env)->NewObject(env, privkey_class, ec_priv_init, priv_bytes, ec_priv_param_spec);
+
+    jmethodID keypair_init = (*env)->GetMethodID(env, keypair_class, "<init>", "(Ljava/security/PublicKey;Ljava/security/PrivateKey;)V");
+    return (*env)->NewObject(env, keypair_class, keypair_init, pubkey, privkey);
+
 }
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Nettle_generate__ILjava_security_SecureRandom_2(JNIEnv *env, jobject self, jint keysize, jobject random) {
@@ -188,7 +249,33 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
 }
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Nettle_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2(JNIEnv *env, jobject self, jobject params, jobject random) {
-    throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
+    if ((*env)->IsInstanceOf(env, params, ec_parameter_spec_class)) {
+        return NULL;
+    } else if ((*env)->IsInstanceOf(env, params, ecgen_parameter_spec_class)) {
+        jmethodID get_name = (*env)->GetMethodID(env, ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
+        jstring name = (*env)->CallObjectMethod(env, params, get_name);
+        const char* utf_name = (*env)->GetStringUTFChars(env, name, NULL);
+        const struct ecc_curve* curve;
+        int rc;
+        char *curve_name[] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1", "Curve25519"};
+        for (int i = 0; i < 6; i++) {
+            if (strcasecmp(utf_name, curve_name[i]) == 0) {
+                (*env)->ReleaseStringUTFChars(env, name, utf_name);
+                 curve = create_curve(env, params, curve_name[i]);
+                 break;
+            }
+         }
+        (*env)->ReleaseStringUTFChars(env, name, utf_name);
+        if (!curve) {
+            throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve for given bitsize not found.");
+            return NULL;
+        }
+        jobject result = generate_from_curve(env, curve);
+        return result;
+    } else {
+        throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
+        return NULL;
+    }
     return NULL;
 }
 
