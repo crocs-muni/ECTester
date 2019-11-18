@@ -211,7 +211,6 @@
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Nettle"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$Nettle"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Nettle"/>
-            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Nettle"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Nettle"/>
 
         </javah>
