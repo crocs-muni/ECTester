@@ -82,7 +82,8 @@ public class ECTesterStandalone {
             new WolfCryptLib(),
             new MbedTLSLib(),
             new IppcpLib(),
-            new MatrixsslLib()};
+            new MatrixsslLib(),
+            new LibresslLib()};
     private Config cfg;
 
     private Options opts = new Options();
@@ -735,8 +736,6 @@ public class ECTesterStandalone {
                 writer = new TextTestWriter(System.out);
                 break;
         }
-
-        String suiteName = cli.getArg(0);
 
         StandaloneTestSuite suite = new StandaloneDefaultSuite(writer, cfg, cli);
         suite.run();

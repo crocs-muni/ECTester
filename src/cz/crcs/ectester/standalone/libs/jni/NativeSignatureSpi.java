@@ -482,6 +482,27 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         }
     }
 
+    public abstract static class Libressl extends SimpleSignatureSpi {
+        private String type;
+
+        public Libressl(String type) {
+            this.type = type;
+        }
+
+        @Override
+        native byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
+    }
+
+    public static class LibresslECDSAwithNONE extends Libressl {
+
+        public LibresslECDSAwithNONE() {
+            super("NONEwithECDSA");
+        }
+    }
+
     public abstract static class Matrixssl extends SimpleSignatureSpi {
         private String type;
 
