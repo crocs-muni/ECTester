@@ -326,6 +326,7 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
         @Override
         KeyPair generate(AlgorithmParameterSpec params, SecureRandom random) {
             if (params instanceof ECGenParameterSpec) {
+                // this might work? https://stackoverflow.com/questions/22646792/how-does-one-convert-a-public-ec-code-point-and-curve-name-into-a-publickey
                 ECParameterSpec spec = (ECGenParameterSpec) params.getParameterSpec(ECParameterSpec.class);
                 return this.generate(params, random, spec);
             }
