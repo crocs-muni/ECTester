@@ -545,12 +545,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         }
     }
 
-    public abstract static class Nettle extends ExtendedSignatureSpi {
-        private String type;
-
-        public Nettle(String type) {
-            this.type = type;
-        }
+    public static class Nettle extends SimpleSignatureSpi {
 
         @Override
         native byte[] sign(byte[] data, ECPrivateKey privkey, ECParameterSpec params);

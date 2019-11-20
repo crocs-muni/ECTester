@@ -2,6 +2,8 @@ package cz.crcs.ectester.standalone.libs.jni;
 
 import java.security.*;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.ECGenParameterSpec;
+import java.security.spec.ECParameterSpec;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -322,6 +324,12 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
         native KeyPair generate(int keysize, SecureRandom random);
 
         @Override
-        native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
+        KeyPair generate(AlgorithmParameterSpec params, SecureRandom random) {
+            if (params instanceof ECGenParameterSpec) {
+                ECParameterSpec spec = (ECGenParameterSpec) params.getParameterSpec(ECParameterSpec.class);
+                return this.generate(params, random, spec);
+            }
+        }
+        native KeyPair generate(AlgorithmParameterPsec params, SecureRandom random, ECParameterSpec spec);
     }
 }
