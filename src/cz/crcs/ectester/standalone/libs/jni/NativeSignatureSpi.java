@@ -546,11 +546,10 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
     }
 
     public static class Nettle extends SimpleSignatureSpi {
+        @Override
+        native byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
 
         @Override
-        native byte[] sign(byte[] data, ECPrivateKey privkey, ECParameterSpec params);
-
-        @Override
-        native boolean verify(byte[] signature, byte[] data, ECPublicKey pubkey, ECParameterSpec params);
+        native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
     }
 }

@@ -2,8 +2,10 @@ package cz.crcs.ectester.standalone.libs.jni;
 
 import java.security.*;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.AlgorithmParameters;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -312,6 +314,7 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
     public static class Nettle extends NativeKeyPairGeneratorSpi {
         public Nettle() {
             initialize(256, new SecureRandom());
+            System.out.println("Init");
         }
 
         @Override
@@ -326,11 +329,21 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
         @Override
         KeyPair generate(AlgorithmParameterSpec params, SecureRandom random) {
             if (params instanceof ECGenParameterSpec) {
+                System.out.println("Test");
                 // this might work? https://stackoverflow.com/questions/22646792/how-does-one-convert-a-public-ec-code-point-and-curve-name-into-a-publickey
-                ECParameterSpec spec = (ECGenParameterSpec) params.getParameterSpec(ECParameterSpec.class);
-                return this.generate(params, random, spec);
+                try {
+                    AlgorithmParameters tmp = AlgorithmParameters.getInstance("EC");
+                    tmp.init(params);
+                    ECParameterSpec spec = tmp.getParameterSpec(ECParameterSpec.class);
+                    return generate(params, random, spec);
+
+                } catch (NoSuchAlgorithmException | InvalidParameterSpecException e) {
+                    e.printStackTrace();
+                    return null;
+                }
             }
+            return null;
         }
-        native KeyPair generate(AlgorithmParameterPsec params, SecureRandom random, ECParameterSpec spec);
+        native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random, ECParameterSpec spec);
     }
 }
