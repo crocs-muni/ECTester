@@ -659,7 +659,9 @@ public class ECTesterStandalone {
         if (ident == null) {
             throw new NoSuchAlgorithmException(algo);
         }
+        System.out.println("Here");
         KeyPairGenerator kpg = ident.getInstance(lib.getProvider());
+        System.out.println("also");
         if (cli.hasOption("generate.bits")) {
             int bits = Integer.parseInt(cli.getOptionValue("generate.bits"));
             kpg.initialize(bits);

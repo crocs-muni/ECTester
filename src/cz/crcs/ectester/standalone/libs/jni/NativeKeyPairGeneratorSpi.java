@@ -66,6 +66,7 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
 
     abstract KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
 
+
     public static class TomCrypt extends NativeKeyPairGeneratorSpi {
 
         public TomCrypt() {
@@ -314,7 +315,6 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
     public static class Nettle extends NativeKeyPairGeneratorSpi {
         public Nettle() {
             initialize(256, new SecureRandom());
-            System.out.println("Init");
         }
 
         @Override
@@ -325,7 +325,7 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
 
         @Override
         native KeyPair generate(int keysize, SecureRandom random);
-
+/*
         @Override
         KeyPair generate(AlgorithmParameterSpec params, SecureRandom random) {
             if (params instanceof ECGenParameterSpec) {
@@ -335,6 +335,7 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
                     AlgorithmParameters tmp = AlgorithmParameters.getInstance("EC");
                     tmp.init(params);
                     ECParameterSpec spec = tmp.getParameterSpec(ECParameterSpec.class);
+                    System.out.println("Does it work?");
                     return generate(params, random, spec);
 
                 } catch (NoSuchAlgorithmException | InvalidParameterSpecException e) {
@@ -344,6 +345,11 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
             }
             return null;
         }
-        native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random, ECParameterSpec spec);
+
+        native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random, AlgorithmParameterSpec spec);
+*/
+        @Override
+        native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
+
     }
 }
