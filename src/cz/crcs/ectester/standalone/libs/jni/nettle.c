@@ -13,6 +13,7 @@
 #include "c_utils.h"
 #include "c_timing.h"
 
+static struct yarrow256_ctx yarrow;
 
 
 static jclass provider_class;
@@ -39,6 +40,11 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
     ADD_SIG(env, self, "ECDSA", "NettleECDSA");
 
     init_classes(env, "Nettle");
+
+    yarrow256_init(&yarrow, 0, NULL);
+    uint8_t  file = open("/dev/random", O_RDONLY);
+    yarrow256_seed(&yarrow, YARROW256_SEED_FILE_SIZE, &file);
+    close(file);
 
 }
 
@@ -91,9 +97,7 @@ static void biginteger_to_mpz(JNIEnv *env, jobject bigint, mpz_t* mp) {
 }
 
 static const struct ecc_curve* create_curve(JNIEnv *env, jobject params, const char* curve_name) {
-    printf("AND NOW THIS \n");
     const struct ecc_curve* curve = NULL;
-    printf("AND NOW THIS \n");
     if (curve_name) {
         if (strcasecmp("secp256r1", curve_name) == 0) {
             curve = nettle_get_secp_256r1();
@@ -163,7 +167,6 @@ static const struct ecc_curve* create_curve(JNIEnv *env, jobject params, const c
 }
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Nettle_paramsSupported(JNIEnv *env, jobject self, jobject params){
-    printf("Hereeee\n");
     if (params == NULL) {
         return JNI_FALSE;
     }
@@ -190,11 +193,12 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
     
 }
 
-static jobject create_ec_param_spec(JNIEnv *env) {
+static jobject create_ec_param_spec(JNIEnv *env, jobject spec) {
+
     return NULL;
 }
 /*
-static jobject create_ec_param_spec(JNIEnv *env, const EC_GROUP *curve) {
+static jobject create_ec_param_spec(JNIEnv *env, jobject gen) {
     int field_type = EC_METHOD_get_field_type(EC_GROUP_method_of(curve));
     BIGNUM *a;
     BIGNUM *b;
@@ -304,25 +308,16 @@ static jobject create_ec_param_spec(JNIEnv *env, const EC_GROUP *curve) {
     return (*env)->NewObject(env, ec_parameter_spec_class, ec_parameter_spec_init, elliptic_curve, g, order, cofactor);
 }
 */
-static jobject generate_from_curve(JNIEnv *env, const struct ecc_curve* curve) {
-    printf("Hereeee I am\n");
+static jobject generate_from_curve(JNIEnv *env, const struct ecc_curve* curve, jobject spec) {
+
     struct ecc_point pub;
     struct ecc_scalar priv;
-    struct yarrow256_ctx yarrow;
-    printf("Variables\n");
-    yarrow256_init(&yarrow, 0, NULL);
-    uint8_t  file = open("/dev/urandom", O_RDONLY);
-    yarrow256_seed(&yarrow, YARROW256_SEED_FILE_SIZE, &file);
-    close(file);
-    printf("Generator\n");
 
     ecc_point_init(&pub, curve);
     ecc_scalar_init(&priv, curve);
-    printf("Prepared\n");
     native_timing_start();
     ecdsa_generate_keypair(&pub, &priv, (void *) &yarrow, (nettle_random_func *) yarrow256_random);
     native_timing_stop();
-    printf("Generated\n");
 /*
     if (!result) {
         throw_new(env, "java/security/GeneralSecurityException", "Error generating key, EC_KEY_generate_key.");
@@ -356,16 +351,18 @@ static jobject generate_from_curve(JNIEnv *env, const struct ecc_curve* curve) {
     (*env)->ReleaseByteArrayElements(env, pub_bytes, key_pub, 0);
 
 
-    int ec_param_spec;
-    jobject ec_pub_param_spec = (*env)->NewLocalRef(env, ec_param_spec);
+    jobject ec_pub_param_spec = (*env)->NewLocalRef(env, spec);
     jmethodID ec_pub_init = (*env)->GetMethodID(env, pubkey_class, "<init>", "([BLjava/security/spec/ECParameterSpec;)V");
     jobject pubkey = (*env)->NewObject(env, pubkey_class, ec_pub_init, pub_bytes, ec_pub_param_spec);
 
-    jobject ec_priv_param_spec = (*env)->NewLocalRef(env, ec_param_spec);
+    jobject ec_priv_param_spec = (*env)->NewLocalRef(env, spec);
     jmethodID ec_priv_init = (*env)->GetMethodID(env, privkey_class, "<init>", "([BLjava/security/spec/ECParameterSpec;)V");
     jobject privkey = (*env)->NewObject(env, privkey_class, ec_priv_init, priv_bytes, ec_priv_param_spec);
 
     jmethodID keypair_init = (*env)->GetMethodID(env, keypair_class, "<init>", "(Ljava/security/PublicKey;Ljava/security/PrivateKey;)V");
+    mpz_clears(private_value, pub_value_x, pub_value_y);
+    ecc_point_clear(&pub);
+    ecc_scalar_clear(&priv);
     return (*env)->NewObject(env, keypair_class, keypair_init, pubkey, privkey);
 
 
@@ -378,10 +375,9 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
 
 
 
-JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Nettle_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2(JNIEnv *env, jobject self, jobject params, jobject random) {
-    printf("Starting to degenerate\n");
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Nettle_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2Ljava_security_spec_AlgorithmParameterSpec_2(JNIEnv *env, jobject self, jobject params, jobject random, jobject spec) {
+
     if ((*env)->IsInstanceOf(env, params, ec_parameter_spec_class)) {
-        printf("This\n");
         return NULL;
     } else if ((*env)->IsInstanceOf(env, params, ecgen_parameter_spec_class)) {
         jmethodID get_name = (*env)->GetMethodID(env, ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
@@ -391,11 +387,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
         int rc;
         char *curve_name[] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1", "Curve25519"};
         for (int i = 0; i < 6; i++) {
-            printf("%s", curve_name[i]);
             if (strcasecmp(utf_name, curve_name[i]) == 0) {
-                 printf("found it????");
-                //(*env)->ReleaseStringUTFChars(env, name, utf_name);
-                printf("gimme those curves\n");
                  curve = create_curve(env, params, curve_name[i]);
                  break;
             }
@@ -405,7 +397,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
             throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve for given bitsize not found.");
             return NULL;
         }
-        jobject result = generate_from_curve(env, curve);
+        jobject result = generate_from_curve(env, curve, spec);
         return result;
     } else {
         throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");

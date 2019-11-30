@@ -325,17 +325,15 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
 
         @Override
         native KeyPair generate(int keysize, SecureRandom random);
-/*
+
         @Override
         KeyPair generate(AlgorithmParameterSpec params, SecureRandom random) {
             if (params instanceof ECGenParameterSpec) {
-                System.out.println("Test");
                 // this might work? https://stackoverflow.com/questions/22646792/how-does-one-convert-a-public-ec-code-point-and-curve-name-into-a-publickey
                 try {
                     AlgorithmParameters tmp = AlgorithmParameters.getInstance("EC");
                     tmp.init(params);
                     ECParameterSpec spec = tmp.getParameterSpec(ECParameterSpec.class);
-                    System.out.println("Does it work?");
                     return generate(params, random, spec);
 
                 } catch (NoSuchAlgorithmException | InvalidParameterSpecException e) {
@@ -347,9 +345,12 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
         }
 
         native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random, AlgorithmParameterSpec spec);
-*/
+/*
         @Override
         native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
 
+
+ */
     }
+
 }
