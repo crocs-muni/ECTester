@@ -36,8 +36,7 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
 
     INIT_PROVIDER(env, provider_class);
     ADD_KPG(env, self, "EC", "Nettle");
-    ADD_KPG(env, self, "ECDSA", "Openssl");
-    ADD_SIG(env, self, "ECDSA", "NettleECDSA");
+    ADD_SIG(env, self, "NONEwithECDSA", "NettleECDSAwithNONE");
 
     init_classes(env, "Nettle");
 
@@ -96,74 +95,27 @@ static void biginteger_to_mpz(JNIEnv *env, jobject bigint, mpz_t* mp) {
     (*env)->ReleaseByteArrayElements(env, byte_array, byte_data, JNI_ABORT);
 }
 
-static const struct ecc_curve* create_curve(JNIEnv *env, jobject params, const char* curve_name) {
+static const struct ecc_curve* create_curve(JNIEnv *env, const char* curve_name) {
     const struct ecc_curve* curve = NULL;
     if (curve_name) {
+        if (strcasecmp("secp192r1", curve_name) == 0) {
+            curve = nettle_get_secp_192r1();
+        }
+        if (strcasecmp("secp224r1", curve_name) == 0) {
+            curve = nettle_get_secp_224r1();
+        }
         if (strcasecmp("secp256r1", curve_name) == 0) {
             curve = nettle_get_secp_256r1();
         }
+        if (strcasecmp("secp384r1", curve_name) == 0) {
+            curve = nettle_get_secp_384r1();
+        }
+        if (strcasecmp("secp521r1", curve_name) == 0) {
+            curve = nettle_get_secp_521r1();
+        }
         return curve;
     }
-
-    jmethodID get_curve = (*env)->GetMethodID(env, ec_parameter_spec_class, "getCurve", "()Ljava/security/spec/EllipticCurve;");
-    jobject elliptic_curve = (*env)->CallObjectMethod(env, params, get_curve);
-
-
-    jmethodID get_field = (*env)->GetMethodID(env, elliptic_curve_class, "getField", "()Ljava/security/spec/ECField;");
-    jobject field = (*env)->CallObjectMethod(env, elliptic_curve, get_field);
-
-    jmethodID get_a = (*env)->GetMethodID(env, elliptic_curve_class, "getA", "()Ljava/math/BigInteger;");
-    jobject a = (*env)->CallObjectMethod(env, elliptic_curve, get_a);
-
-    jmethodID get_b = (*env)->GetMethodID(env, elliptic_curve_class, "getB", "()Ljava/math/BigInteger;");
-    jobject b = (*env)->CallObjectMethod(env, elliptic_curve, get_b);
-
-    jmethodID get_g = (*env)->GetMethodID(env, ec_parameter_spec_class, "getGenerator", "()Ljava/security/spec/ECPoint;");
-    jobject g = (*env)->CallObjectMethod(env, params, get_g);
-
-    jmethodID get_x = (*env)->GetMethodID(env, point_class, "getAffineX", "()Ljava/math/BigInteger;");
-    jobject gx = (*env)->CallObjectMethod(env, g, get_x);
-    mpz_t x;
-    mpz_init(x);
-    biginteger_to_mpz(env, gx, &x);
-
-    jmethodID get_y = (*env)->GetMethodID(env, point_class, "getAffineY", "()Ljava/math/BigInteger;");
-    jobject gy = (*env)->CallObjectMethod(env, g, get_y);
-
-    mpz_t y;
-    mpz_init(y);
-    biginteger_to_mpz(env, gy, &y);
-
-    struct ecc_point *g_point;
-    struct ecc_curve *result;
-
-    if ((*env)->IsInstanceOf(env, field, fp_field_class)) {
-
-        struct ecc_point *g_point;
-        struct ecc_curve *result;
-        jmethodID get_p = (*env)->GetMethodID(env, fp_field_class, "getP", "()Ljava/math/BigInteger;");
-        jobject p = (*env)->CallObjectMethod(env, field, get_p);
-        mpz_t cp;
-        mpz_init(cp);
-        biginteger_to_mpz(env, p, &cp);
-
-        if (!result) {
-            throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating EC_GROUP, EC_GROUP_new_curve_GFp.");
-            return NULL;
-        }
-        return NULL;
-/*
-        g_point = EC_POINT_new(result);
-        if(!EC_POINT_set_affine_coordinates_GFp(result, g_point, gx_bn, gy_bn, NULL)) {
-            throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating EC_GROUP, EC_POINT_set_affine_coordinates_GFp.");
-            return NULL;
-        }
-*/
-    } else if ((*env)->IsInstanceOf(env, field, f2m_field_class)) {
-        return NULL;
-    } else {
-        return NULL;
-    }
+    return NULL;
 }
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Nettle_paramsSupported(JNIEnv *env, jobject self, jobject params){
@@ -278,7 +230,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
         char *curve_name[] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1", "Curve25519"};
         for (int i = 0; i < 6; i++) {
             if (strcasecmp(utf_name, curve_name[i]) == 0) {
-                 curve = create_curve(env, params, curve_name[i]);
+                 curve = create_curve(env, curve_name[i]);
                  break;
             }
          }
@@ -296,6 +248,30 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
     return NULL;
 }
 
+EC_KEY *barray_to_pubkey(JNIEnv *env, const EC_GROUP *curve, jbyteArray pub) {
+    EC_KEY *result = EC_KEY_new();
+    EC_KEY_set_group(result, curve);
+    jsize pub_len = (*env)->GetArrayLength(env, pub);
+    jbyte *pub_data = (*env)->GetByteArrayElements(env, pub, NULL);
+    EC_POINT *pub_point = EC_POINT_new(curve);
+    EC_POINT_oct2point(curve, pub_point, (unsigned char *) pub_data, pub_len, NULL);
+    (*env)->ReleaseByteArrayElements(env, pub, pub_data, JNI_ABORT);
+    EC_KEY_set_public_key(result, pub_point);
+    EC_POINT_free(pub_point);
+    return result;
+}
+
+EC_KEY *barray_to_privkey(JNIEnv *env,  const EC_GROUP *curve, jbyteArray priv) {
+    EC_KEY *result = EC_KEY_new();
+    EC_KEY_set_group(result, curve);
+    jsize priv_len = (*env)->GetArrayLength(env, priv);
+    jbyte *priv_data = (*env)->GetByteArrayElements(env, priv, NULL);
+    BIGNUM *s = BN_bin2bn((unsigned char *) priv_data, priv_len, NULL);
+    (*env)->ReleaseByteArrayElements(env, priv, priv_data, JNI_ABORT);
+    EC_KEY_set_private_key(result, s);
+    BN_free(s);
+    return result;
+}
 
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Nettle_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params) {
     throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
@@ -308,11 +284,53 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgr
 }
 
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Nettle_sign(JNIEnv *env, jobject self, jbyteArray data, jbyteArray privkey, jobject params) {
-    throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
-    return NULL;
+    jmethodID get_name = (*env)->GetMethodID(env, ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
+    jstring name = (*env)->CallObjectMethod(env, params, get_name);
+    const char* utf_name = (*env)->GetStringUTFChars(env, name, NULL);
+    const struct ecc_curve* curve;
+    int rc;
+    char *curve_name[] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1", "Curve25519"};
+    for (int i = 0; i < 6; i++) {
+        if (strcasecmp(utf_name, curve_name[i]) == 0) {
+             curve = create_curve(env, curve_name[i]);
+             break;
+        }
+    }
+    (*env)->ReleaseStringUTFChars(env, name, utf_name);
+     if (!curve) {
+         throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve for given bitsize not found.");
+         return NULL;
+     }
+    EC_KEY *priv = barray_to_privkey(env, curve, privkey);
+
+    jsize data_size = (*env)->GetArrayLength(env, data);
+    jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
+
+    native_timing_start();
+    ECDSA_SIG *signature = ECDSA_do_sign((unsigned char *) data_data, data_size, priv);
+    native_timing_stop();
+
+    (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
+    if (!signature) {
+        throw_new(env, "java/security/GeneralSecurityException", "Error signing, ECDSA_do_sign.");
+        EC_KEY_free(priv); EC_GROUP_free(curve);
+        return NULL;
+    }
+
+    jsize sig_len = i2d_ECDSA_SIG(signature, NULL);
+    jbyteArray result = (*env)->NewByteArray(env, sig_len);
+    jbyte *result_data = (*env)->GetByteArrayElements(env, result, NULL);
+    jbyte *result_data_ptr = result_data;
+    i2d_ECDSA_SIG(signature, (unsigned char **)&result_data_ptr);
+    (*env)->ReleaseByteArrayElements(env, result, result_data, 0);
+
+    ECDSA_SIG_free(signature);
+    EC_KEY_free(priv);
+    EC_GROUP_free(curve);
+    return result;
 }
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Nettle_verify(JNIEnv *env, jobject self, jbyteArray signature, jbyteArray data, jbyteArray pubkey, jobject params) {
-    throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
+    //throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
     return 0;
 }

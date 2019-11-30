@@ -502,9 +502,7 @@ public class ECTesterStandalone {
             random.nextBytes(data);
             dataString = ByteUtil.bytesToHex(data, false);
         }
-
         ProviderECLibrary lib = cfg.selected;
-
         String algo = cli.getOptionValue("ecdsa.type", "ECDSA");
         SignatureIdent sigIdent = lib.getSigs().stream()
                 .filter((ident) -> ident.contains(algo))
@@ -517,7 +515,6 @@ public class ECTesterStandalone {
         } else {
             baseAlgo = algo;
         }
-
         KeyPairGeneratorIdent kpIdent = lib.getKPGs().stream()
                 .filter((ident) -> ident.contains(algo))
                 .findFirst()
@@ -535,6 +532,7 @@ public class ECTesterStandalone {
         if (sigIdent == null || kpIdent == null) {
             throw new NoSuchAlgorithmException(algo);
         }
+        System.out.println("ecdsa");
         Signature sig = sigIdent.getInstance(lib.getProvider());
         KeyPairGenerator kpg = kpIdent.getInstance(lib.getProvider());
         ECParameterSpec spec = null;
