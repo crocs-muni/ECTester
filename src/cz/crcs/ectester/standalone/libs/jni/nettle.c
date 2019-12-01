@@ -6,6 +6,7 @@
 #include <nettle/ecc-curve.h>
 #include <nettle/ecdsa.h>
 #include <nettle/yarrow.h>
+#include <nettle/dsa.h>
 #include <gmp.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -248,29 +249,30 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
     return NULL;
 }
 
-EC_KEY *barray_to_pubkey(JNIEnv *env, const EC_GROUP *curve, jbyteArray pub) {
-    EC_KEY *result = EC_KEY_new();
-    EC_KEY_set_group(result, curve);
+int barray_to_pubkey(JNIEnv *env, struct ecc_point* pubKey , jbyteArray pub) {
     jsize pub_len = (*env)->GetArrayLength(env, pub);
     jbyte *pub_data = (*env)->GetByteArrayElements(env, pub, NULL);
-    EC_POINT *pub_point = EC_POINT_new(curve);
-    EC_POINT_oct2point(curve, pub_point, (unsigned char *) pub_data, pub_len, NULL);
+    int pointLength = (pub_len - 1) / 2;
+    mpz_t x;
+    mpz_t y;
+    mpz_init(x);
+    mpz_init(y);
+    mpz_import(x, pointLength, 1, sizeof(unsigned char), 0, 0, pub_data+1);
+    mpz_import(y, pointLength, 1, sizeof(unsigned char), 0, 0, pub_data+1+pointLength);
     (*env)->ReleaseByteArrayElements(env, pub, pub_data, JNI_ABORT);
-    EC_KEY_set_public_key(result, pub_point);
-    EC_POINT_free(pub_point);
-    return result;
+    ecc_point_set(pubKey, x, y);
+    return pointLength;
 }
 
-EC_KEY *barray_to_privkey(JNIEnv *env,  const EC_GROUP *curve, jbyteArray priv) {
-    EC_KEY *result = EC_KEY_new();
-    EC_KEY_set_group(result, curve);
+int barray_to_privkey(JNIEnv *env, struct ecc_scalar* privKey, jbyteArray priv) {
     jsize priv_len = (*env)->GetArrayLength(env, priv);
     jbyte *priv_data = (*env)->GetByteArrayElements(env, priv, NULL);
-    BIGNUM *s = BN_bin2bn((unsigned char *) priv_data, priv_len, NULL);
+    mpz_t mp;
+    mpz_init(mp);
+    mpz_import(mp, priv_len, 1, sizeof(unsigned char), 0, 0, priv_data);
     (*env)->ReleaseByteArrayElements(env, priv, priv_data, JNI_ABORT);
-    EC_KEY_set_private_key(result, s);
-    BN_free(s);
-    return result;
+    ecc_scalar_set(privKey, mp);
+    return priv_len;
 }
 
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Nettle_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params) {
@@ -281,6 +283,10 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Nettle_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2Ljava_lang_String_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params, jstring algorithm) {
     throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
     return NULL;
+}
+
+void signature_to_der(JNIEnv *env, struct dsa_signature* ignature, jbyteArray result) {
+    
 }
 
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Nettle_sign(JNIEnv *env, jobject self, jbyteArray data, jbyteArray privkey, jobject params) {
@@ -297,37 +303,38 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
         }
     }
     (*env)->ReleaseStringUTFChars(env, name, utf_name);
-     if (!curve) {
-         throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve for given bitsize not found.");
-         return NULL;
-     }
-    EC_KEY *priv = barray_to_privkey(env, curve, privkey);
+    if (!curve) {
+        throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve for given bitsize not found.");
+        return NULL;
+    }
+    struct ecc_scalar privScalar;
+    ecc_scalar_init(&privScalar, curve);
+    int privKeySize = barray_to_privkey(env, &privScalar, privkey);
 
     jsize data_size = (*env)->GetArrayLength(env, data);
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
 
+    struct dsa_signature signature;
+    dsa_signature_init(&signature);
     native_timing_start();
-    ECDSA_SIG *signature = ECDSA_do_sign((unsigned char *) data_data, data_size, priv);
+    ecdsa_sign(&privScalar, (void *) &yarrow, (nettle_random_func *) yarrow256_random, data_size, data_data, &signature);
     native_timing_stop();
 
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
-    if (!signature) {
-        throw_new(env, "java/security/GeneralSecurityException", "Error signing, ECDSA_do_sign.");
-        EC_KEY_free(priv); EC_GROUP_free(curve);
-        return NULL;
-    }
 
-    jsize sig_len = i2d_ECDSA_SIG(signature, NULL);
+/*
+    jsize sig_len = 2*privKeySize;
     jbyteArray result = (*env)->NewByteArray(env, sig_len);
     jbyte *result_data = (*env)->GetByteArrayElements(env, result, NULL);
     jbyte *result_data_ptr = result_data;
     i2d_ECDSA_SIG(signature, (unsigned char **)&result_data_ptr);
     (*env)->ReleaseByteArrayElements(env, result, result_data, 0);
 
-    ECDSA_SIG_free(signature);
-    EC_KEY_free(priv);
-    EC_GROUP_free(curve);
+    ecc_scalar_clear(&privScalar);
+    dsa_signature_clear(&signature);
     return result;
+    */
+    return NULL;
 }
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Nettle_verify(JNIEnv *env, jobject self, jbyteArray signature, jbyteArray data, jbyteArray pubkey, jobject params) {
