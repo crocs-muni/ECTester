@@ -285,8 +285,28 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgr
     return NULL;
 }
 
-void signature_to_der(JNIEnv *env, struct dsa_signature* ignature, jbyteArray result) {
-    
+int signature_to_der(struct dsa_signature* signature, unsigned char *result) {
+    size_t rSize;
+    size_t sSize;
+    int wholeSize;
+
+    mpz_export(NULL, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
+    mpz_export(NULL, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
+    wholeSize = 2 + rSize + 2 + sSize;
+    if (!result) {
+        return wholeSize + 2;
+    }
+
+    result[0] = 0x30;
+    result[1] = wholeSize;
+    result[2] = 0x02;
+    result[3] = rSize;
+    mpz_export(result + 4, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
+    result[4 + rSize] = 0x02;
+    result[4 + rSize + 1] = sSize;
+    mpz_export(result + 4 + rSize + 2, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
+    return wholeSize;
+
 }
 
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Nettle_sign(JNIEnv *env, jobject self, jbyteArray data, jbyteArray privkey, jobject params) {
@@ -309,7 +329,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     }
     struct ecc_scalar privScalar;
     ecc_scalar_init(&privScalar, curve);
-    int privKeySize = barray_to_privkey(env, &privScalar, privkey);
+    barray_to_privkey(env, &privScalar, privkey);
 
     jsize data_size = (*env)->GetArrayLength(env, data);
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
@@ -322,19 +342,16 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
 
-/*
-    jsize sig_len = 2*privKeySize;
+
+    jsize sig_len = signature_to_der(&signature, NULL);
     jbyteArray result = (*env)->NewByteArray(env, sig_len);
     jbyte *result_data = (*env)->GetByteArrayElements(env, result, NULL);
-    jbyte *result_data_ptr = result_data;
-    i2d_ECDSA_SIG(signature, (unsigned char **)&result_data_ptr);
+    signature_to_der(&signature, (unsigned char *)result_data);
     (*env)->ReleaseByteArrayElements(env, result, result_data, 0);
 
     ecc_scalar_clear(&privScalar);
     dsa_signature_clear(&signature);
     return result;
-    */
-    return NULL;
 }
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Nettle_verify(JNIEnv *env, jobject self, jbyteArray signature, jbyteArray data, jbyteArray pubkey, jobject params) {
