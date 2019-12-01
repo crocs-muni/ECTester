@@ -567,6 +567,18 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
                     case "1.2.840.10045.3.1.1":
                         spec = new ECGenParameterSpec("secp192r1");
                         break;
+                    case "1.3.132.0.33":
+                        spec = new ECGenParameterSpec("secp224r1");
+                        break;
+                    case "1.3.132.0.34":
+                        spec = new ECGenParameterSpec("secp384r1");
+                        break;
+                    case "1.3.132.0.35":
+                        spec = new ECGenParameterSpec("secp521r1");
+                        break;
+                    default:
+                        return null;
+
                 }
                 return sign(data, privKey, spec);
 
@@ -591,6 +603,17 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
                     case "1.2.840.10045.3.1.1":
                         spec = new ECGenParameterSpec("secp192r1");
                         break;
+                    case "1.3.132.0.33":
+                        spec = new ECGenParameterSpec("secp224r1");
+                        break;
+                    case "1.3.132.0.34":
+                        spec = new ECGenParameterSpec("secp384r1");
+                        break;
+                    case "1.3.132.0.35":
+                        spec = new ECGenParameterSpec("secp521r1");
+                        break;
+                    default:
+                        return false;
                 }
                 return verify(signature, data, pubkey, spec);
 

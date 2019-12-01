@@ -65,13 +65,13 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_getCur
 }
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Nettle_keysizeSupported(JNIEnv *env, jobject self, jint keysize) {
-    int supported[] = {24, 28, 32, 48, 66};
+    int supported[] = {192, 224, 256, 384, 521};
     for (int i = 0; i < 5; i++) {
-        if (keysize == supported[i])
+        if (keysize == supported[i]) {
             return JNI_TRUE;
+        }
     }
-
-    return JNI_TRUE;
+    return JNI_FALSE;
 }
 
 static jobject mpz_to_biginteger(JNIEnv *env, const mpz_t* mp) {
@@ -130,6 +130,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
         jmethodID get_name = (*env)->GetMethodID(env, ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
         jstring name = (*env)->CallObjectMethod(env, params, get_name);
         const char *utf_name = (*env)->GetStringUTFChars(env, name, NULL);
+
         char *curve_name[] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1", "Curve25519"};
         for (int i = 0; i < 6; i++) {
             if (strcasecmp(utf_name, curve_name[i]) == 0) {
