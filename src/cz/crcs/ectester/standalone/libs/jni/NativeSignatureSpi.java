@@ -579,7 +579,28 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         native byte[] sign(byte[] data, byte[] privKey, ECGenParameterSpec params);
 
         @Override
-        native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
+        boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params) {
+            try {
+                AlgorithmParameters tmp = AlgorithmParameters.getInstance("EC");
+                tmp.init(params);
+                ECGenParameterSpec spec = tmp.getParameterSpec(ECGenParameterSpec.class);
+                switch (spec.getName()) {
+                    case "1.2.840.10045.3.1.7":
+                        spec = new ECGenParameterSpec("secp256r1");
+                        break;
+                    case "1.2.840.10045.3.1.1":
+                        spec = new ECGenParameterSpec("secp192r1");
+                        break;
+                }
+                return verify(signature, data, pubkey, spec);
+
+            } catch (NoSuchAlgorithmException | InvalidParameterSpecException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECGenParameterSpec params);
     }
 
     public static class NettleECDSAwithNONE extends Nettle {

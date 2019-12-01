@@ -309,6 +309,19 @@ int signature_to_der(struct dsa_signature* signature, unsigned char *result) {
 
 }
 
+int der_to_signature(struct dsa_signature* signature, unsigned char* der) {
+    if (der[0] != 0x30) {
+        return 0;
+    }
+    int rLength = der[3];
+    int sLength = der[4 + rLength + 1];
+    mpz_import(signature->r, rLength, 1, sizeof(unsigned char), 0, 0, der+4);
+    mpz_import(signature->s, sLength, 1, sizeof(unsigned char), 0, 0, der + 4 + rLength + 2);
+
+    return 1;
+
+}
+
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Nettle_sign(JNIEnv *env, jobject self, jbyteArray data, jbyteArray privkey, jobject params) {
     jmethodID get_name = (*env)->GetMethodID(env, ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
     jstring name = (*env)->CallObjectMethod(env, params, get_name);
@@ -355,6 +368,47 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 }
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Nettle_verify(JNIEnv *env, jobject self, jbyteArray signature, jbyteArray data, jbyteArray pubkey, jobject params) {
-    //throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
-    return 0;
+    jmethodID get_name = (*env)->GetMethodID(env, ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
+    jstring name = (*env)->CallObjectMethod(env, params, get_name);
+    const char* utf_name = (*env)->GetStringUTFChars(env, name, NULL);
+    const struct ecc_curve* curve;
+    int rc;
+    char *curve_name[] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1", "Curve25519"};
+    for (int i = 0; i < 6; i++) {
+        if (strcasecmp(utf_name, curve_name[i]) == 0) {
+             curve = create_curve(env, curve_name[i]);
+             break;
+        }
+    }
+    (*env)->ReleaseStringUTFChars(env, name, utf_name);
+    if (!curve) {
+        throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve for given bitsize not found.");
+        return false;
+    }
+
+    struct ecc_point eccPubPoint;
+    ecc_point_init(&eccPubPoint, curve);
+    barray_to_pubkey(env, &eccPubPoint, pubkey);
+
+    jsize sig_len = (*env)->GetArrayLength(env, signature);
+    jbyte *sig_data = (*env)->GetByteArrayElements(env, signature, NULL);
+
+    struct dsa_signature eccSignature;
+    dsa_signature_init(&eccSignature);
+
+    der_to_signature(&eccSignature, (unsigned char*) sig_data);
+
+    (*env)->ReleaseByteArrayElements(env, signature, sig_data, JNI_ABORT);
+
+    jsize data_size = (*env)->GetArrayLength(env, data);
+    jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
+
+    native_timing_start();
+    int result = ecdsa_verify(&eccPubPoint, data_size, data_data, &eccSignature);
+    native_timing_stop();
+    (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
+
+    ecc_point_clear(&eccPubPoint);
+    dsa_signature_clear(&eccSignature);
+    return (result == 1) ? JNI_TRUE : JNI_FALSE;
 }
