@@ -163,7 +163,6 @@ static jobject generate_from_curve(JNIEnv *env, const struct ecc_curve* curve, j
 
 
     unsigned long key_len = 2*byte_size + 1;
-    printf("priv_len %lu\n", size);
     jbyteArray pub_bytes = (*env)->NewByteArray(env, key_len);
     mpz_t pub_value_x;
     mpz_init(pub_value_x);
@@ -176,19 +175,15 @@ static jobject generate_from_curve(JNIEnv *env, const struct ecc_curve* curve, j
     mpz_export(NULL, &xLen, 1, sizeof(unsigned char), 0, 0, pub_value_x);
     diff = byte_size - xLen;
     for (int i = 0; i < diff; i++) {
-        printf("doplnuju x\n");
         key_pub[1 + i] = 0x00;
     }
-    printf("x_len %lu\n", xLen);
     mpz_export((unsigned char*) key_pub + 1+diff, &xLen, 1, sizeof(unsigned char), 0, 0, pub_value_x);
 
     mpz_export(NULL, &yLen, 1, sizeof(unsigned char), 0, 0, pub_value_y);
     diff = byte_size - yLen;
     for (int i = 0; i < diff; i++) {
-       printf("doplnuju y\n");
        key_pub[1 + byte_size + i] = 0x00;
     }
-    printf("ylen %lu\n", yLen);
     mpz_export((unsigned char*) key_pub + 1 + byte_size + diff, &yLen, 1, sizeof(unsigned char), 0, 0, pub_value_y);
     (*env)->ReleaseByteArrayElements(env, pub_bytes, key_pub, 0);
 
