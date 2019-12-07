@@ -74,28 +74,6 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
     return JNI_FALSE;
 }
 
-static jobject mpz_to_biginteger(JNIEnv *env, const mpz_t* mp) {
-    jmethodID biginteger_init = (*env)->GetMethodID(env, biginteger_class, "<init>", "(I[B)V");
-    size_t size;
-    mpz_export(NULL, &size, 1, sizeof(unsigned char), 0, 0, *mp);
-    jbyteArray bytes = (*env)->NewByteArray(env, size);
-    jbyte *data = (*env)->GetByteArrayElements(env, bytes, NULL); 
-    mpz_export(data, &size, 1, sizeof(unsigned char), 0, 0, *mp);
-    (*env)->ReleaseByteArrayElements(env, bytes, data, 0);
-    jobject result = (*env)->NewObject(env, biginteger_class, biginteger_init, 1, bytes);
-    return result;
-}
-
-static void biginteger_to_mpz(JNIEnv *env, jobject bigint, mpz_t* mp) {
-    jmethodID to_byte_array = (*env)->GetMethodID(env, biginteger_class, "toByteArray", "()[B");
-
-    jbyteArray byte_array = (jbyteArray) (*env)->CallObjectMethod(env, bigint, to_byte_array);
-    jsize byte_length = (*env)->GetArrayLength(env, byte_array);
-    jbyte *byte_data = (*env)->GetByteArrayElements(env, byte_array, NULL);
-    mpz_import(*mp, byte_length, 1, sizeof(unsigned char), 0, 0, byte_data);
-    (*env)->ReleaseByteArrayElements(env, byte_array, byte_data, JNI_ABORT);
-}
-
 static const struct ecc_curve* create_curve(JNIEnv *env, const char* curve_name) {
     const struct ecc_curve* curve = NULL;
     if (curve_name) {
@@ -147,12 +125,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
     
 }
 
-static jobject create_ec_param_spec(JNIEnv *env, jobject spec) {
-
-    return NULL;
-}
-
-static jobject generate_from_curve(JNIEnv *env, const struct ecc_curve* curve, jobject spec) {
+static jobject generate_from_curve(JNIEnv *env, const struct ecc_curve* curve, jobject spec, int byte_size) {
 
     struct ecc_point pub;
     struct ecc_scalar priv;
@@ -173,15 +146,24 @@ static jobject generate_from_curve(JNIEnv *env, const struct ecc_curve* curve, j
     mpz_t private_value;
     mpz_init(private_value);
     ecc_scalar_get(&priv, private_value);
-    size_t size;
+    size_t size = 0;
+    size_t xLen = 0;
+    size_t yLen = 0;
     mpz_export(NULL, &size, 1, sizeof(unsigned char), 0, 0, private_value);
-    jbyteArray priv_bytes = (*env)->NewByteArray(env, size);
+    jbyteArray priv_bytes = (*env)->NewByteArray(env, byte_size);
     jbyte *key_priv = (*env)->GetByteArrayElements(env, priv_bytes, NULL);
-    mpz_export((unsigned char*) key_priv, &size, 1, sizeof(unsigned char), 0, 0, private_value);
+
+    int diff = byte_size - size;
+    for (int i = 0; i < diff; i++) {
+        key_priv[i] = 0x00;
+    }
+
+    mpz_export((unsigned char*) key_priv + diff, &size, 1, sizeof(unsigned char), 0, 0, private_value);
     (*env)->ReleaseByteArrayElements(env, priv_bytes, key_priv, 0);
 
 
-    unsigned long key_len = 2*size + 1;
+    unsigned long key_len = 2*byte_size + 1;
+    printf("priv_len %lu\n", size);
     jbyteArray pub_bytes = (*env)->NewByteArray(env, key_len);
     mpz_t pub_value_x;
     mpz_init(pub_value_x);
@@ -190,8 +172,24 @@ static jobject generate_from_curve(JNIEnv *env, const struct ecc_curve* curve, j
     ecc_point_get(&pub, pub_value_x, pub_value_y);
     jbyte *key_pub = (*env)->GetByteArrayElements(env, pub_bytes, NULL);
     key_pub[0] = 0x04;
-    mpz_export((unsigned char*) key_pub + 1, &size, 1, sizeof(unsigned char), 0, 0, pub_value_x);
-    mpz_export((unsigned char*) key_pub + 1 + size, &size, 1, sizeof(unsigned char), 0, 0, pub_value_y);
+
+    mpz_export(NULL, &xLen, 1, sizeof(unsigned char), 0, 0, pub_value_x);
+    diff = byte_size - xLen;
+    for (int i = 0; i < diff; i++) {
+        printf("doplnuju x\n");
+        key_pub[1 + i] = 0x00;
+    }
+    printf("x_len %lu\n", xLen);
+    mpz_export((unsigned char*) key_pub + 1+diff, &xLen, 1, sizeof(unsigned char), 0, 0, pub_value_x);
+
+    mpz_export(NULL, &yLen, 1, sizeof(unsigned char), 0, 0, pub_value_y);
+    diff = byte_size - yLen;
+    for (int i = 0; i < diff; i++) {
+       printf("doplnuju y\n");
+       key_pub[1 + byte_size + i] = 0x00;
+    }
+    printf("ylen %lu\n", yLen);
+    mpz_export((unsigned char*) key_pub + 1 + byte_size + diff, &yLen, 1, sizeof(unsigned char), 0, 0, pub_value_y);
     (*env)->ReleaseByteArrayElements(env, pub_bytes, key_pub, 0);
 
 
@@ -228,11 +226,14 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
         jstring name = (*env)->CallObjectMethod(env, params, get_name);
         const char* utf_name = (*env)->GetStringUTFChars(env, name, NULL);
         const struct ecc_curve* curve;
+        int byte_size;
         int rc;
         char *curve_name[] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1", "Curve25519"};
+        int byte_sizes[] = {24, 28, 32, 48, 66, 32};
         for (int i = 0; i < 6; i++) {
             if (strcasecmp(utf_name, curve_name[i]) == 0) {
                  curve = create_curve(env, curve_name[i]);
+                 byte_size = byte_sizes[i];
                  break;
             }
          }
@@ -241,7 +242,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
             throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve for given bitsize not found.");
             return NULL;
         }
-        jobject result = generate_from_curve(env, curve, spec);
+        jobject result = generate_from_curve(env, curve, spec, byte_size);
         return result;
     } else {
         throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
@@ -282,7 +283,23 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 }
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Nettle_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2Ljava_lang_String_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params, jstring algorithm) {
-    throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
+    jmethodID get_name = (*env)->GetMethodID(env, ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
+    jstring name = (*env)->CallObjectMethod(env, params, get_name);
+    const char* utf_name = (*env)->GetStringUTFChars(env, name, NULL);
+    const struct ecc_curve* curve;
+    int rc;
+    char *curve_name[] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1", "Curve25519"};
+    for (int i = 0; i < 6; i++) {
+        if (strcasecmp(utf_name, curve_name[i]) == 0) {
+             curve = create_curve(env, curve_name[i]);
+             break;
+        }
+    }
+    (*env)->ReleaseStringUTFChars(env, name, utf_name);
+    if (!curve) {
+        throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve for given bitsize not found.");
+        return NULL;
+    }
     return NULL;
 }
 
@@ -293,20 +310,36 @@ int signature_to_der(struct dsa_signature* signature, unsigned char *result) {
 
     mpz_export(NULL, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
     mpz_export(NULL, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
-    wholeSize = 2 + rSize + 2 + sSize;
+    wholeSize = 2 + 2 + rSize + 2 + sSize;
+    if (wholeSize > 127) {
+        wholeSize +=1;
+    }
     if (!result) {
-        return wholeSize + 2;
+        return wholeSize;
     }
 
+	int size;
+	if (wholeSize < 128) {
+        result[0] = 0x30;
+        result[1] = wholeSize - 2;
+        result[2] = 0x02;
+        result[3] = rSize;
+        mpz_export(result + 4, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
+        result[4 + rSize] = 0x02;
+        result[4 + rSize + 1] = sSize;
+        mpz_export(result + 4 + rSize + 2, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
+        return wholeSize;
+    }
     result[0] = 0x30;
-    result[1] = wholeSize;
-    result[2] = 0x02;
-    result[3] = rSize;
-    mpz_export(result + 4, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
-    result[4 + rSize] = 0x02;
-    result[4 + rSize + 1] = sSize;
-    mpz_export(result + 4 + rSize + 2, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
-    return wholeSize;
+    result[1] = 129;
+    result[2] = wholeSize - 3;
+    result[3] = 0x02;
+    result[4] = rSize;
+    mpz_export(result + 5, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
+    result[5 + rSize] = 0x02;
+    result[5 + rSize + 1] = sSize;
+    mpz_export(result + 5 + rSize + 2, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
+   return wholeSize;
 
 }
 
@@ -314,11 +347,18 @@ int der_to_signature(struct dsa_signature* signature, unsigned char* der) {
     if (der[0] != 0x30) {
         return 0;
     }
-    int rLength = der[3];
-    int sLength = der[4 + rLength + 1];
-    mpz_import(signature->r, rLength, 1, sizeof(unsigned char), 0, 0, der+4);
-    mpz_import(signature->s, sLength, 1, sizeof(unsigned char), 0, 0, der + 4 + rLength + 2);
+    if (der[1] < 128) {
+        int rLength = der[3];
+        int sLength = der[4 + rLength + 1];
+        mpz_import(signature->r, rLength, 1, sizeof(unsigned char), 0, 0, der + 4);
+        mpz_import(signature->s, sLength, 1, sizeof(unsigned char), 0, 0, der + 4 + rLength + 2);
+        return 1;
+    }
+    int rLength = der[4];
+    int sLength = der[5 + rLength + 1];
 
+    mpz_import(signature->r, rLength, 1, sizeof(unsigned char), 0, 0, der + 5);
+    mpz_import(signature->s, sLength, 1, sizeof(unsigned char), 0, 0, der + 5 + rLength + 2);
     return 1;
 
 }
@@ -350,8 +390,9 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 
     struct dsa_signature signature;
     dsa_signature_init(&signature);
+
     native_timing_start();
-    ecdsa_sign(&privScalar, (void *) &yarrow, (nettle_random_func *) yarrow256_random, data_size, data_data, &signature);
+    ecdsa_sign(&privScalar, (void *) &yarrow, (nettle_random_func *) yarrow256_random, data_size, (unsigned char*)data_data, &signature);
     native_timing_stop();
 
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
@@ -405,7 +446,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
 
     native_timing_start();
-    int result = ecdsa_verify(&eccPubPoint, data_size, data_data, &eccSignature);
+    int result = ecdsa_verify(&eccPubPoint, data_size, (unsigned char*)data_data, &eccSignature);
     native_timing_stop();
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
 

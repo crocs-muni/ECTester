@@ -11,6 +11,7 @@ import java.security.interfaces.ECPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -369,6 +370,59 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
 
     public static class MatrixsslECDH extends Matrixssl {
         public MatrixsslECDH() {
+            super("ECDH");
+        }
+    }
+
+    public abstract static class Nettle extends SimpleKeyAgreementSpi {
+        private String type;
+
+        public Nettle(String type) {
+            this.type = type;
+        }
+
+        @Override
+        byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params) {
+            try {
+                AlgorithmParameters tmp = AlgorithmParameters.getInstance("EC");
+                tmp.init(params);
+                ECGenParameterSpec spec = tmp.getParameterSpec(ECGenParameterSpec.class);
+                switch (spec.getName()) {
+                    case "1.2.840.10045.3.1.7":
+                        spec = new ECGenParameterSpec("secp256r1");
+                        break;
+                    case "1.2.840.10045.3.1.1":
+                        spec = new ECGenParameterSpec("secp192r1");
+                        break;
+                    case "1.3.132.0.33":
+                        spec = new ECGenParameterSpec("secp224r1");
+                        break;
+                    case "1.3.132.0.34":
+                        spec = new ECGenParameterSpec("secp384r1");
+                        break;
+                    case "1.3.132.0.35":
+                        spec = new ECGenParameterSpec("secp521r1");
+                        break;
+                    default:
+                        return null;
+
+                }
+                return generateSecret(pubkey, privkey, spec);
+
+            } catch (NoSuchAlgorithmException | InvalidParameterSpecException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECGenParameterSpec params);
+
+        @Override
+        native SecretKey generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params, String algorithm);
+    }
+
+    public static class NettleECDH extends Nettle {
+        public NettleECDH() {
             super("ECDH");
         }
     }
