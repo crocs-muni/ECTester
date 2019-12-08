@@ -37,6 +37,7 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
 
     INIT_PROVIDER(env, provider_class);
     ADD_KPG(env, self, "EC", "Nettle");
+    ADD_KA(env, self, "ECDH", "NettleECDH");
     ADD_SIG(env, self, "NONEwithECDSA", "NettleECDSAwithNONE");
 
     init_classes(env, "Nettle");
@@ -55,8 +56,8 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_getCur
     jmethodID hash_set_add = (*env)->GetMethodID(env, hash_set_class, "add", "(Ljava/lang/Object;)Z");
 
     jobject result = (*env)->NewObject(env, hash_set_class, hash_set_ctr);
-    char *curve_names[] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1", "Curve25519"};
-    for (int i = 0; i < 6; i++) {
+    char *curve_names[] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1"};
+    for (int i = 0; i < 5; i++) {
         jstring curve_name = (*env)->NewStringUTF(env, curve_names[i]);
         (*env)->CallBooleanMethod(env, result, hash_set_add, curve_name);
     }
@@ -109,8 +110,8 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
         jstring name = (*env)->CallObjectMethod(env, params, get_name);
         const char *utf_name = (*env)->GetStringUTFChars(env, name, NULL);
 
-        char *curve_name[] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1", "Curve25519"};
-        for (int i = 0; i < 6; i++) {
+        char *curve_name[5] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1"};
+        for (int i = 0; i < sizeof(curve_name); i++) {
             if (strcasecmp(utf_name, curve_name[i]) == 0) {
                 (*env)->ReleaseStringUTFChars(env, name, utf_name);
                 return JNI_TRUE;
@@ -223,9 +224,9 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
         const struct ecc_curve* curve;
         int byte_size;
         int rc;
-        char *curve_name[] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1", "Curve25519"};
-        int byte_sizes[] = {24, 28, 32, 48, 66, 32};
-        for (int i = 0; i < 6; i++) {
+        char *curve_name[5] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1"};
+        int byte_sizes[] = {24, 28, 32, 48, 66};
+        for (int i = 0; i < sizeof(curve_name); i++) {
             if (strcasecmp(utf_name, curve_name[i]) == 0) {
                  curve = create_curve(env, curve_name[i]);
                  byte_size = byte_sizes[i];
@@ -272,16 +273,19 @@ int barray_to_privkey(JNIEnv *env, struct ecc_scalar* privKey, jbyteArray priv) 
     return priv_len;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Nettle_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params) {
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Nettle_generateSecret___3B_3BLjava_security_spec_ECGenParameterSpec_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params) {
     jmethodID get_name = (*env)->GetMethodID(env, ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
     jstring name = (*env)->CallObjectMethod(env, params, get_name);
     const char* utf_name = (*env)->GetStringUTFChars(env, name, NULL);
     const struct ecc_curve* curve;
     int rc;
-    char *curve_name[] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1", "Curve25519"};
-    for (int i = 0; i < 6; i++) {
+    char *curve_name[5] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1"};
+    int byte_sizes[] = {24, 28, 32, 48, 66};
+    int byte_size;
+    for (int i = 0; i < sizeof(curve_name); i++) {
         if (strcasecmp(utf_name, curve_name[i]) == 0) {
              curve = create_curve(env, curve_name[i]);
+             byte_size = byte_sizes[i];
              break;
         }
     }
@@ -299,14 +303,30 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     ecc_point_init(&eccPubPoint, curve);
     barray_to_pubkey(env, &eccPubPoint, pubkey);
 
-    jbyteArray result = (*env)->NewByteArray(env, secret_len);
+    struct ecc_point resultPoint;
+    ecc_point_init(&resultPoint, curve);
+
+    jbyteArray result = (*env)->NewByteArray(env, byte_size);
     jbyte *result_data = (*env)->GetByteArrayElements(env, result, NULL);
 
     native_timing_start();
-    int err = ECDH_compute_key(result_data, secret_len, EC_KEY_get0_public_key(pub), priv, NULL);
+    ecc_point_mul(&resultPoint, &privScalar, &eccPubPoint);
     native_timing_stop();
 
-    return NULL;
+    mpz_t x;
+    mpz_init(x);
+    ecc_point_get(&resultPoint, x, NULL);
+
+    size_t size;
+
+    mpz_export(NULL, &size, 1, sizeof(unsigned char), 0, 0, x);
+    int diff = byte_size - size;
+    for (int i = 0; i < diff; i++) {
+       result_data[i] = 0x00;
+    }
+    mpz_export((unsigned char*) result_data + diff, &size, 1, sizeof(unsigned char), 0, 0, x);
+    (*env)->ReleaseByteArrayElements(env, result, result_data, 0);
+    return result;
 }
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Nettle_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2Ljava_lang_String_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params, jstring algorithm) {
@@ -380,8 +400,8 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     const char* utf_name = (*env)->GetStringUTFChars(env, name, NULL);
     const struct ecc_curve* curve;
     int rc;
-    char *curve_name[] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1", "Curve25519"};
-    for (int i = 0; i < 6; i++) {
+    char *curve_name[5] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1"};
+    for (int i = 0; i < sizeof(curve_name); i++) {
         if (strcasecmp(utf_name, curve_name[i]) == 0) {
              curve = create_curve(env, curve_name[i]);
              break;
@@ -426,8 +446,8 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     const char* utf_name = (*env)->GetStringUTFChars(env, name, NULL);
     const struct ecc_curve* curve;
     int rc;
-    char *curve_name[] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1", "Curve25519"};
-    for (int i = 0; i < 6; i++) {
+    char *curve_name[5] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1"};
+    for (int i = 0; i < sizeof(curve_name); i++) {
         if (strcasecmp(utf_name, curve_name[i]) == 0) {
              curve = create_curve(env, curve_name[i]);
              break;
