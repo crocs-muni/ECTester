@@ -345,12 +345,6 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
         }
 
         native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random, AlgorithmParameterSpec spec);
-/*
-        @Override
-        native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
-
-
- */
     }
 
 }

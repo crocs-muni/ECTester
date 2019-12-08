@@ -44,8 +44,6 @@ public class KeyPairGeneratorIdent extends Ident {
     public KeyPairGenerator getInstance(Provider provider) throws NoSuchAlgorithmException {
         KeyPairGenerator instance = getInstance((algorithm, provider1) -> {
             try {
-                System.out.println(provider1);
-                System.out.println(algorithm);
                 return KeyPairGenerator.getInstance(algorithm, provider1);
             } catch (NoSuchAlgorithmException e) {
                 System.out.println("Exception");

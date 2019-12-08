@@ -273,11 +273,6 @@ int barray_to_privkey(JNIEnv *env, struct ecc_scalar* privKey, jbyteArray priv) 
 }
 
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Nettle_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params) {
-    throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
-    return NULL;
-}
-
-JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Nettle_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2Ljava_lang_String_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params, jstring algorithm) {
     jmethodID get_name = (*env)->GetMethodID(env, ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
     jstring name = (*env)->CallObjectMethod(env, params, get_name);
     const char* utf_name = (*env)->GetStringUTFChars(env, name, NULL);
@@ -295,6 +290,27 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgr
         throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve for given bitsize not found.");
         return NULL;
     }
+
+    struct ecc_scalar privScalar;
+    ecc_scalar_init(&privScalar, curve);
+    barray_to_privkey(env, &privScalar, privkey);
+
+    struct ecc_point eccPubPoint;
+    ecc_point_init(&eccPubPoint, curve);
+    barray_to_pubkey(env, &eccPubPoint, pubkey);
+
+    jbyteArray result = (*env)->NewByteArray(env, secret_len);
+    jbyte *result_data = (*env)->GetByteArrayElements(env, result, NULL);
+
+    native_timing_start();
+    int err = ECDH_compute_key(result_data, secret_len, EC_KEY_get0_public_key(pub), priv, NULL);
+    native_timing_stop();
+
+    return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Nettle_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2Ljava_lang_String_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params, jstring algorithm) {
+    throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
     return NULL;
 }
 

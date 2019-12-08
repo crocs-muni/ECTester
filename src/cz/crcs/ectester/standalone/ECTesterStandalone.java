@@ -532,7 +532,6 @@ public class ECTesterStandalone {
         if (sigIdent == null || kpIdent == null) {
             throw new NoSuchAlgorithmException(algo);
         }
-        System.out.println("ecdsa");
         Signature sig = sigIdent.getInstance(lib.getProvider());
         KeyPairGenerator kpg = kpIdent.getInstance(lib.getProvider());
         ECParameterSpec spec = null;
