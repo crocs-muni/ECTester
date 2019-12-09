@@ -136,14 +136,7 @@ static jobject generate_from_curve(JNIEnv *env, const struct ecc_curve* curve, j
     native_timing_start();
     ecdsa_generate_keypair(&pub, &priv, (void *) &yarrow, (nettle_random_func *) yarrow256_random);
     native_timing_stop();
-/*
-    if (!result) {
-        throw_new(env, "java/security/GeneralSecurityException", "Error generating key, EC_KEY_generate_key.");
-        ecc_point_clear(&pub);
-        ecc_scalar_clear(&priv);
-        return NULL;
-    }
-*/
+
     mpz_t private_value;
     mpz_init(private_value);
     ecc_scalar_get(&priv, private_value);
@@ -326,6 +319,10 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     }
     mpz_export((unsigned char*) result_data + diff, &size, 1, sizeof(unsigned char), 0, 0, x);
     (*env)->ReleaseByteArrayElements(env, result, result_data, 0);
+    ecc_scalar_clear(&privScalar);
+    ecc_point_clear(&eccPubPoint);
+    ecc_point_clear(&resultPoint);
+    mpz_clear(x);
     return result;
 }
 
