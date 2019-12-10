@@ -340,7 +340,8 @@ int signature_to_der(struct dsa_signature* signature, unsigned char *result, int
     mpz_export(NULL, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
     wholeSize = 2 + 2 + byte_size + 2 + byte_size;
     if (wholeSize > 127) {
-        wholeSize +=1;
+        wholeSize -=1;
+        byte_size -=1;
     }
     if (!result) {
         return wholeSize;
@@ -373,12 +374,25 @@ int signature_to_der(struct dsa_signature* signature, unsigned char *result, int
     result[1] = 129;
     result[2] = wholeSize - 3;
     result[3] = 0x02;
-    result[4] = rSize;
-    mpz_export(result + 5, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
-    result[5 + rSize] = 0x02;
-    result[5 + rSize + 1] = sSize;
-    mpz_export(result + 5 + rSize + 2, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
-   return wholeSize;
+    result[4] = byte_size;
+    mpz_export(NULL, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
+    diff = byte_size - rSize;
+    for (int i = 0; i < diff; i++) {
+        result[5 + i] = 0x00;
+    }
+    mpz_export(result + 5 + diff, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
+
+    result[5 + byte_size] = 0x02;
+    result[5 + byte_size + 1] = byte_size;
+
+
+    mpz_export(NULL, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
+    diff = byte_size - sSize;
+    for (int i = 0; i < diff; i++) {
+       result[5 + i + byte_size + 2 + i] = 0x00;
+    }
+    mpz_export(result + 5 + byte_size + 2 + diff, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
+    return wholeSize;
 
 }
 
