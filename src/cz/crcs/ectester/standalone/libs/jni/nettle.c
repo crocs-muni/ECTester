@@ -331,14 +331,14 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgr
     return NULL;
 }
 
-int signature_to_der(struct dsa_signature* signature, unsigned char *result) {
+int signature_to_der(struct dsa_signature* signature, unsigned char *result, int byte_size) {
     size_t rSize;
     size_t sSize;
     int wholeSize;
 
     mpz_export(NULL, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
     mpz_export(NULL, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
-    wholeSize = 2 + 2 + rSize + 2 + sSize;
+    wholeSize = 2 + 2 + byte_size + 2 + byte_size;
     if (wholeSize > 127) {
         wholeSize +=1;
     }
@@ -346,16 +346,27 @@ int signature_to_der(struct dsa_signature* signature, unsigned char *result) {
         return wholeSize;
     }
 
-	int size;
+	int diff = 0;
 	if (wholeSize < 128) {
         result[0] = 0x30;
         result[1] = wholeSize - 2;
         result[2] = 0x02;
-        result[3] = rSize;
-        mpz_export(result + 4, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
-        result[4 + rSize] = 0x02;
-        result[4 + rSize + 1] = sSize;
-        mpz_export(result + 4 + rSize + 2, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
+        result[3] = byte_size;
+        mpz_export(NULL, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
+        diff = byte_size - rSize;
+        for (int i = 0; i < diff; i++) {
+            result[4 + i] = 0x00;
+        }
+        mpz_export(result + 4 + diff, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
+
+        result[4 + byte_size] = 0x02;
+        result[4 + byte_size + 1] = byte_size;
+        mpz_export(NULL, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
+        diff = byte_size - sSize;
+        for (int i = 0; i < diff; i++) {
+            result[4 + i + byte_size + 2 + i] = 0x00;
+        }
+        mpz_export(result + 4 + byte_size + 2 + diff, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
         return wholeSize;
     }
     result[0] = 0x30;
@@ -397,10 +408,13 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     const char* utf_name = (*env)->GetStringUTFChars(env, name, NULL);
     const struct ecc_curve* curve;
     int rc;
+    int byte_size;
     char *curve_name[5] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1"};
+    int byte_sizes[] = {24, 28, 32, 48, 66};
     for (int i = 0; i < sizeof(curve_name); i++) {
         if (strcasecmp(utf_name, curve_name[i]) == 0) {
              curve = create_curve(env, curve_name[i]);
+             byte_size = byte_sizes[i] + 1;
              break;
         }
     }
@@ -426,10 +440,10 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
 
 
-    jsize sig_len = signature_to_der(&signature, NULL);
+    jsize sig_len = signature_to_der(&signature, NULL, byte_size);
     jbyteArray result = (*env)->NewByteArray(env, sig_len);
     jbyte *result_data = (*env)->GetByteArrayElements(env, result, NULL);
-    signature_to_der(&signature, (unsigned char *)result_data);
+    signature_to_der(&signature, (unsigned char *)result_data, byte_size);
     (*env)->ReleaseByteArrayElements(env, result, result_data, 0);
 
     ecc_scalar_clear(&privScalar);

@@ -62,6 +62,7 @@ def recompute_nonces(data, curve_name, hash_algo):
         nonce = s.inverse() * hmrx
         if not verified:
             res = int(nonce) * curve.g
+            print (res)
             if int(res.x) % curve.group.n != int(r):
                 print("Nonce recomputation couldnt verify!")
                 raise ValueError
