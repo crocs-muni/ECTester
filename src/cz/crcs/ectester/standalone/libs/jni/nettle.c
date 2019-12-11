@@ -148,9 +148,7 @@ static jobject generate_from_curve(JNIEnv *env, const struct ecc_curve* curve, j
     jbyte *key_priv = (*env)->GetByteArrayElements(env, priv_bytes, NULL);
 
     int diff = byte_size - size;
-    for (int i = 0; i < diff; i++) {
-        key_priv[i] = 0x00;
-    }
+    memset(key_priv, 0x00, diff);
 
     mpz_export((unsigned char*) key_priv + diff, &size, 1, sizeof(unsigned char), 0, 0, private_value);
     (*env)->ReleaseByteArrayElements(env, priv_bytes, key_priv, 0);
@@ -168,16 +166,12 @@ static jobject generate_from_curve(JNIEnv *env, const struct ecc_curve* curve, j
 
     mpz_export(NULL, &xLen, 1, sizeof(unsigned char), 0, 0, pub_value_x);
     diff = byte_size - xLen;
-    for (int i = 0; i < diff; i++) {
-        key_pub[1 + i] = 0x00;
-    }
+    memset(key_pub + 1, 0x00, diff);
     mpz_export((unsigned char*) key_pub + 1+diff, &xLen, 1, sizeof(unsigned char), 0, 0, pub_value_x);
 
     mpz_export(NULL, &yLen, 1, sizeof(unsigned char), 0, 0, pub_value_y);
     diff = byte_size - yLen;
-    for (int i = 0; i < diff; i++) {
-       key_pub[1 + byte_size + i] = 0x00;
-    }
+    memset(key_pub + 1 + byte_size, 0x00, diff);
     mpz_export((unsigned char*) key_pub + 1 + byte_size + diff, &yLen, 1, sizeof(unsigned char), 0, 0, pub_value_y);
     (*env)->ReleaseByteArrayElements(env, pub_bytes, key_pub, 0);
 
@@ -314,9 +308,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 
     mpz_export(NULL, &size, 1, sizeof(unsigned char), 0, 0, x);
     int diff = byte_size - size;
-    for (int i = 0; i < diff; i++) {
-       result_data[i] = 0x00;
-    }
+    memset(result_data, 0x00, diff);
     mpz_export((unsigned char*) result_data + diff, &size, 1, sizeof(unsigned char), 0, 0, x);
     (*env)->ReleaseByteArrayElements(env, result, result_data, 0);
     ecc_scalar_clear(&privScalar);
@@ -355,18 +347,14 @@ int signature_to_der(struct dsa_signature* signature, unsigned char *result, int
         result[3] = byte_size;
         mpz_export(NULL, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
         diff = byte_size - rSize;
-        for (int i = 0; i < diff; i++) {
-            result[4 + i] = 0x00;
-        }
+        memset(result + 4, 0x00, diff);
         mpz_export(result + 4 + diff, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
 
         result[4 + byte_size] = 0x02;
         result[4 + byte_size + 1] = byte_size;
         mpz_export(NULL, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
         diff = byte_size - sSize;
-        for (int i = 0; i < diff; i++) {
-            result[4 + i + byte_size + 2 + i] = 0x00;
-        }
+        memset(result + 4 + byte_size + 2, 0x00, diff);
         mpz_export(result + 4 + byte_size + 2 + diff, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
         return wholeSize;
     }
@@ -377,9 +365,7 @@ int signature_to_der(struct dsa_signature* signature, unsigned char *result, int
     result[4] = byte_size;
     mpz_export(NULL, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
     diff = byte_size - rSize;
-    for (int i = 0; i < diff; i++) {
-        result[5 + i] = 0x00;
-    }
+    memset(result + 5, 0x00, diff);
     mpz_export(result + 5 + diff, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
 
     result[5 + byte_size] = 0x02;
@@ -388,9 +374,7 @@ int signature_to_der(struct dsa_signature* signature, unsigned char *result, int
 
     mpz_export(NULL, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
     diff = byte_size - sSize;
-    for (int i = 0; i < diff; i++) {
-       result[5 + i + byte_size + 2 + i] = 0x00;
-    }
+    memset(result + 5 + byte_size + 2, 0x00, diff);
     mpz_export(result + 5 + byte_size + 2 + diff, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
     return wholeSize;
 
