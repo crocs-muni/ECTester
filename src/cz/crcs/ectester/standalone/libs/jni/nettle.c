@@ -323,79 +323,95 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgr
     return NULL;
 }
 
-int signature_to_der(struct dsa_signature* signature, unsigned char *result, int byte_size) {
-    size_t rSize;
-    size_t sSize;
-    int wholeSize;
+// credit to https://github.com/crocs-muni/ECTester/blob/master/src/cz/crcs/ectester/standalone/libs/jni/c_utils.c
+size_t signature_to_der(struct dsa_signature* signature, unsigned char *result, int byte_size) {
+    size_t r_tmpSize;
+    size_t s_tmpSize;
+    size_t sequenceSize;
+    size_t sequenceSizeSize = 0;
+    size_t wholeSize;
 
-    mpz_export(NULL, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
-    mpz_export(NULL, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
-    wholeSize = 2 + 2 + byte_size + 2 + byte_size;
-    if (wholeSize > 127) {
-        wholeSize -=1;
-        byte_size -=1;
+    mpz_export(NULL, &r_tmpSize, 1, sizeof(unsigned char), 0, 0, signature->r);
+    mpz_export(NULL, &s_tmpSize, 1, sizeof(unsigned char), 0, 0, signature->s);
+
+    unsigned char r_tmp[r_tmpSize];
+    unsigned char s_tmp[s_tmpSize];
+    mpz_export(r_tmp, &r_tmpSize, 1, sizeof(unsigned char), 0, 0, signature->r);
+    mpz_export(s_tmp, &s_tmpSize, 1, sizeof(unsigned char), 0, 0, signature->s);
+
+    size_t rSize = r_tmpSize + (r_tmp[0] & 0x80 ? 1 : 0);
+    size_t sSize = s_tmpSize + (s_tmp[0] & 0x80 ? 1 : 0);
+
+    sequenceSize = 2 + rSize + 2 + sSize;
+
+    if (sequenceSize > 127) {
+        size_t s = sequenceSize;
+        do {
+            sequenceSizeSize++;
+        } while ((s = s >> 8));
     }
+
+    wholeSize = sequenceSize + sequenceSizeSize + 2;
     if (!result) {
         return wholeSize;
     }
 
-	int diff = 0;
-	if (wholeSize < 128) {
-        result[0] = 0x30;
-        result[1] = wholeSize - 2;
-        result[2] = 0x02;
-        result[3] = byte_size;
-        mpz_export(NULL, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
-        diff = byte_size - rSize;
-        memset(result + 4, 0x00, diff);
-        mpz_export(result + 4 + diff, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
-
-        result[4 + byte_size] = 0x02;
-        result[4 + byte_size + 1] = byte_size;
-        mpz_export(NULL, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
-        diff = byte_size - sSize;
-        memset(result + 4 + byte_size + 2, 0x00, diff);
-        mpz_export(result + 4 + byte_size + 2 + diff, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
-        return wholeSize;
+    int index = 0;
+    result[index++] = 0x30;
+    if (sequenceSize < 128) {
+        result[index++] = sequenceSize;
+    } else {
+        result[index++] = sequenceSizeSize | 0x80;
+        for (size_t i = 0; i < sequenceSizeSize; i++) {
+            result[index++] = sequenceSize & (0xff << (8 * (sequenceSizeSize - i - 1)));
+        }
     }
-    result[0] = 0x30;
-    result[1] = 129;
-    result[2] = wholeSize - 3;
-    result[3] = 0x02;
-    result[4] = byte_size;
-    mpz_export(NULL, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
-    diff = byte_size - rSize;
-    memset(result + 5, 0x00, diff);
-    mpz_export(result + 5 + diff, &rSize, 1, sizeof(unsigned char), 0, 0, signature->r);
-
-    result[5 + byte_size] = 0x02;
-    result[5 + byte_size + 1] = byte_size;
-
-
-    mpz_export(NULL, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
-    diff = byte_size - sSize;
-    memset(result + 5 + byte_size + 2, 0x00, diff);
-    mpz_export(result + 5 + byte_size + 2 + diff, &sSize, 1, sizeof(unsigned char), 0, 0, signature->s);
+    result[index++] = 0x02;
+    result[index++] = rSize;
+    if (r_tmp[0] & 0x80) {
+        result[index++] = 0x00;
+    }
+    memcpy(result + index, r_tmp, r_tmpSize);
+    index += r_tmpSize;
+    result[index++] = 0x02;
+    result[index++] = sSize;
+    if (s_tmp[0] & 0x80) {
+        result[index++] = 0x00;
+    }
+    memcpy(result + index, s_tmp, s_tmpSize);
     return wholeSize;
-
 }
-
+// credit to https://github.com/crocs-muni/ECTester/blob/master/src/cz/crcs/ectester/standalone/libs/jni/c_utils.cs
 int der_to_signature(struct dsa_signature* signature, unsigned char* der) {
-    if (der[0] != 0x30) {
+    int index = 0;
+    size_t sequenceSize;
+    size_t sequenceSizeSize;
+    if (der[index++] != 0x30) {
         return 0;
     }
-    if (der[1] < 128) {
-        int rLength = der[3];
-        int sLength = der[4 + rLength + 1];
-        mpz_import(signature->r, rLength, 1, sizeof(unsigned char), 0, 0, der + 4);
-        mpz_import(signature->s, sLength, 1, sizeof(unsigned char), 0, 0, der + 4 + rLength + 2);
-        return 1;
-    }
-    int rLength = der[4];
-    int sLength = der[5 + rLength + 1];
 
-    mpz_import(signature->r, rLength, 1, sizeof(unsigned char), 0, 0, der + 5);
-    mpz_import(signature->s, sLength, 1, sizeof(unsigned char), 0, 0, der + 5 + rLength + 2);
+    if (!(der[index] & 0x80)) {
+        sequenceSize = der[index++];
+    } else {
+        sequenceSizeSize = der[index++] & 0x7f;
+        while(sequenceSizeSize > 0) {
+       	    sequenceSizeSize--;
+            sequenceSize |= der[index++] << (sequenceSizeSize);
+        }
+    }
+
+    if (der[index++] != 0x02) {
+        return 0;
+    }
+
+    size_t rLength = der[index++];
+    mpz_import(signature->r, rLength, 1, sizeof(unsigned char), 0, 0, der + index);
+	index += rLength;
+    if (der[index++] != 0x02) {
+        return 0;
+    }
+    size_t sLength = der[index++];
+    mpz_import(signature->s, sLength, 1, sizeof(unsigned char), 0, 0, der + index);
     return 1;
 
 }
@@ -478,7 +494,10 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     struct dsa_signature eccSignature;
     dsa_signature_init(&eccSignature);
 
-    der_to_signature(&eccSignature, (unsigned char*) sig_data);
+    if (!der_to_signature(&eccSignature, (unsigned char*) sig_data)) {
+        throw_new(env, "java/security/InvalidAlgorithmParameterException", "Invalid DER encoding of the signature.");
+        return false;
+    }
 
     (*env)->ReleaseByteArrayElements(env, signature, sig_data, JNI_ABORT);
 
