@@ -46,7 +46,6 @@ public class KeyPairGeneratorIdent extends Ident {
             try {
                 return KeyPairGenerator.getInstance(algorithm, provider1);
             } catch (NoSuchAlgorithmException e) {
-                System.out.println("Exception");
                 return null;
             }
         }, provider);
