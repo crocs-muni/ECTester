@@ -1,5 +1,8 @@
 package cz.crcs.ectester.standalone.libs.jni;
 
+import cz.crcs.ectester.common.ec.EC_Curve;
+import cz.crcs.ectester.data.EC_Store;
+
 import java.security.*;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.AlgorithmParameters;
@@ -329,17 +332,13 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
         @Override
         KeyPair generate(AlgorithmParameterSpec params, SecureRandom random) {
             if (params instanceof ECGenParameterSpec) {
-                // this might work? https://stackoverflow.com/questions/22646792/how-does-one-convert-a-public-ec-code-point-and-curve-name-into-a-publickey
-                try {
-                    AlgorithmParameters tmp = AlgorithmParameters.getInstance("EC");
-                    tmp.init(params);
-                    ECParameterSpec spec = tmp.getParameterSpec(ECParameterSpec.class);
+                    String curveName = ((ECGenParameterSpec) params).getName();
+                    if (curveName.contains("secp")) {
+                        curveName = "secg/" + curveName;
+                    }
+                    EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
+                    ECParameterSpec spec = curve.toSpec();
                     return generate(params, random, spec);
-
-                } catch (NoSuchAlgorithmException | InvalidParameterSpecException e) {
-                    e.printStackTrace();
-                    return null;
-                }
             }
             return null;
         }
