@@ -90,7 +90,6 @@ lib_boringssl.so:
 boringssl_provider.so: boringssl.o c_utils.o | lib_timing.so lib_boringssl.so
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_boringssl.so -l:lib_timing.so
 
-
 boringssl.o: boringssl.c
 	$(CC) -I../../../../../../../ext/boringssl/include/ $(CFLAGS) -c $<
 

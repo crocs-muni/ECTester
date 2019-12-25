@@ -1,21 +1,38 @@
+dist: xenial
 addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
     packages:
+    - cmake
     - libmbedtls-dev
     - libtomcrypt-dev
     - libtommath-dev
     - libssl-dev
     - libcrypto++-dev
-    - libgcrypt11-dev
-    - gcc-6
-    - g++-6
+    - libgcrypt20-dev
+    - nettle-dev
+    - gcc-8
+    - g++-8
 language: java
-jdk:
-  - openjdk8
+jdk: openjdk8
 env:
-  - CC=gcc-6 CXX=g++-6
+  - CC=gcc-8 CXX=g++-8
+
+install:
+  - cd ext/boringssl
+  - mkdir build
+  - cd build
+  - cmake -DBUILD_SHARED_LIBS=1 ..
+  - make crypto
+  - cd ../../..
+  - cd ext/libressl
+  - ./autogen.sh
+  - mkdir build
+  - cd build
+  - cmake -DBUILD_SHARED_LIBS=ON ..
+  - make crypto
+  - cd ../../..
 
 script:
   - ant -f build-applet.xml build

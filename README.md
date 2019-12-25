@@ -297,6 +297,8 @@ Currently supported libraries include:
  - [Intel Performance Primitives Crypto](https://github.com/intel/ipp-crypto)
  - [MatrixSSL](https://github.com/matrixssl/matrixssl)
  - [MbedTLS](https://github.com/ARMmbed/mbedtls)
+ - [Nettle](https://www.lysator.liu.se/~nisse/nettle/)
+ - [LibreSSL](https://www.libressl.org/)
 
 For more information on ECC libraries see [LIBS](docs/LIBS.md).
 

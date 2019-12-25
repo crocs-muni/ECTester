@@ -119,17 +119,27 @@ ninja
     - Uses 5-bit window NAF.
     - Uses Jacobian coordinates.
     - <https://github.com/intel/ipp-crypto>
-
+ - [Nettle](http://www.lysator.liu.se/~nisse/nettle/)
+    - C
+    - No support for explicit parameters, only SECG named curves.
+    - Uses Jacobian coordinates.
+    - <https://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-3.html#doubling-dbl-2001-b>
+    - <https://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-3.html#addition-add-2007-bl>
+    - <https://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-3.html#addition-madd-2007-bl>
+    - Uses double-and-add always or windowing algorithm.
+    - Uses Pippenger scalar mult for Twisted Edwards curves.
+ - [LibreSSL](https://www.libressl.org/)
+    - C
 
 # Libraries with ECC support
 
 Popular libraries with at least some ECC support, that ECTester does not yet support:
 
  - [NSS](https://hg.mozilla.org/projects/nss)
- - [LibreSSL](https://www.libressl.org/)
- - [Nettle](http://www.lysator.liu.se/~nisse/nettle/)
- - [BearSSL](https://bearssl.org/)
- - [cryptlib](https://www.cryptlib.com/)
+ - [BearSSL](https://bearssl.org/)*
+ - [cryptlib](https://www.cryptlib.com/)*
  - [OpenSSL (FIPS mode)](https://www.openssl.org/docs/fipsnotes.html)
  - [Microsoft .NET crypto](https://docs.microsoft.com/en-us/dotnet/standard/security/cryptography-model)
  - [Linux kernel](https://kernel.org), test via [libkcapi](http://chronox.de/libkcapi.html)
+
+* Signifies libraries for which adding support would be very much appreciated.
