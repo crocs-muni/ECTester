@@ -206,6 +206,12 @@
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Matrixssl"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$Matrixssl"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Matrixssl"/>
+            <class name="cz.crcs.ectester.standalone.libs.NettleLib"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeProvider$Nettle"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Nettle"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPublicKey$Nettle"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeECPrivateKey$Nettle"/>
+            <class name="cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$Nettle"/>
             <class name="cz.crcs.ectester.standalone.libs.LibresslLib"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeProvider$Libressl"/>
             <class name="cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Libressl"/>

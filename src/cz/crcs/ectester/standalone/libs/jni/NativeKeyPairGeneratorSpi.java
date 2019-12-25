@@ -1,7 +1,14 @@
 package cz.crcs.ectester.standalone.libs.jni;
 
+import cz.crcs.ectester.common.ec.EC_Curve;
+import cz.crcs.ectester.data.EC_Store;
+
 import java.security.*;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.AlgorithmParameters;
+import java.security.spec.ECGenParameterSpec;
+import java.security.spec.ECParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -61,6 +68,7 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
     abstract KeyPair generate(int keysize, SecureRandom random);
 
     abstract KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
+
 
     public static class TomCrypt extends NativeKeyPairGeneratorSpi {
 
@@ -306,8 +314,9 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
         @Override
         native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
     }
-
+  
     public static class Libressl extends NativeKeyPairGeneratorSpi {
+
         public Libressl() {
             initialize(256, new SecureRandom());
         }
@@ -323,5 +332,36 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
 
         @Override
         native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
+    }
+
+    public static class Nettle extends NativeKeyPairGeneratorSpi {
+        public Nettle() {
+            initialize(256, new SecureRandom());
+        }
+
+        @Override
+        native boolean keysizeSupported(int keysize);
+
+        @Override
+        native boolean paramsSupported(AlgorithmParameterSpec params);
+
+        @Override
+        native KeyPair generate(int keysize, SecureRandom random);
+
+        @Override
+        KeyPair generate(AlgorithmParameterSpec params, SecureRandom random) {
+            if (params instanceof ECGenParameterSpec) {
+                    String curveName = ((ECGenParameterSpec) params).getName();
+                    if (curveName.contains("secp")) {
+                        curveName = "secg/" + curveName;
+                    }
+                    EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
+                    ECParameterSpec spec = curve.toSpec();
+                    return generate(params, random, spec);
+            }
+            return null;
+        }
+
+        native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random, AlgorithmParameterSpec spec);
     }
 }

@@ -83,6 +83,7 @@ public class ECTesterStandalone {
             new MbedTLSLib(),
             new IppcpLib(),
             new MatrixsslLib(),
+            new NettleLib(),
             new LibresslLib()};
     private Config cfg;
 
@@ -502,9 +503,7 @@ public class ECTesterStandalone {
             random.nextBytes(data);
             dataString = ByteUtil.bytesToHex(data, false);
         }
-
         ProviderECLibrary lib = cfg.selected;
-
         String algo = cli.getOptionValue("ecdsa.type", "ECDSA");
         SignatureIdent sigIdent = lib.getSigs().stream()
                 .filter((ident) -> ident.contains(algo))
@@ -517,7 +516,6 @@ public class ECTesterStandalone {
         } else {
             baseAlgo = algo;
         }
-
         KeyPairGeneratorIdent kpIdent = lib.getKPGs().stream()
                 .filter((ident) -> ident.contains(algo))
                 .findFirst()
