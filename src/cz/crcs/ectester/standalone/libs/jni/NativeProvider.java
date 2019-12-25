@@ -123,6 +123,16 @@ public abstract class NativeProvider extends Provider {
         @Override
         native void setup();
     }
+  
+    public static class Libressl extends NativeProvider {
+
+        public Libressl(String name, double version, String info) {
+            super(name, version, info);
+        }
+
+        @Override
+        native void setup();
+    }
 
     public static class Nettle extends NativeProvider {
 

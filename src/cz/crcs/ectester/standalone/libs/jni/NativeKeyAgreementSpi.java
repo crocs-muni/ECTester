@@ -374,6 +374,20 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         }
     }
 
+    public abstract static class Libressl extends SimpleKeyAgreementSpi {
+        private String type;
+
+        public Libressl(String type) {
+              this.type = type;
+        }
+        
+        @Override
+        native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native SecretKey generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params, String algorithm);
+    }
+
     public abstract static class Nettle extends SimpleKeyAgreementSpi {
         private String type;
 
@@ -426,4 +440,10 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
             super("ECDH");
         }
     }
+    public static class LibresslECDH extends Libressl {
+        public LibresslECDH() {
+            super("ECDH");
+        }
+    }
+
 }
