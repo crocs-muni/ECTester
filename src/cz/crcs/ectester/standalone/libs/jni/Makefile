@@ -58,7 +58,7 @@ JNI_PLATFORMINCLUDEDIR ?= $(JNI_INCLUDEDIR)/$(JNI_PLATFORM)
 ###############################################################################
 ## Targets.
 
-all: tomcrypt botan cryptopp openssl boringssl gcrypt mbedtls ippcp matrixssl
+all: tomcrypt botan cryptopp openssl boringssl gcrypt mbedtls ippcp matrixssl libressl
 
 # Common utils
 c_utils.o: c_utils.c
@@ -165,6 +165,19 @@ matrixssl.o: matrixssl.c
 	$(CC) $(CFLAGS) -Imatrixssl/ -c $<
 
 
+# LibreSSL shim
+libressl: libressl_provider.so
+
+lib_libressl.so:
+	cp ../../../../../../../ext/libressl/build/crypto/libcrypto.so lib_libressl.so
+
+libressl_provider.so: libressl.o c_utils.o | lib_timing.so lib_libressl.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_libressl.so -l:lib_timing.so
+
+libressl.o: libressl.c
+	$(CC) -I../../../../../../../ext/libressl/include/ $(CFLAGS) -c $<
+
+
 help:
 	@echo "# This makefile builds the JNI shims necessary to test native libraries."
 	@echo "# Targets:"
@@ -177,9 +190,10 @@ help:
 	@echo "    - mbedtls"
 	@echo "    - ippcp"
 	@echo "    - matrixssl"
+	@echo "    - libressl"
 
 clean:
 	rm -rf *.o
 	rm -rf *.so
 
-.PHONY: all help clean openssl boringssl gcrypt tomcrypt botan cryptopp mbedtls ippcp matrixssl
+.PHONY: all help clean openssl boringssl gcrypt tomcrypt botan cryptopp mbedtls ippcp matrixssl libressl

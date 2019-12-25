@@ -10,3 +10,6 @@
 [submodule "ext/boringssl"]
 	path = ext/boringssl
 	url = https://boringssl.googlesource.com/boringssl
+[submodule "ext/libressl"]
+	path = ext/libressl
+	url = https://github.com/libressl-portable/portable
