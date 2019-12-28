@@ -138,7 +138,8 @@ public class EC_Curve extends EC_Params {
             int[] powers = binaryField.getMidTermsOfReductionPolynomial();
             for (int i = 0; i < 3; ++i) {
                 params[paramIndex] = new byte[2];
-                ByteUtil.setShort(params[paramIndex++], 0, (short) powers[i]);
+                short power = (i < powers.length) ? (short) powers[i] : 0;
+                ByteUtil.setShort(params[paramIndex++], 0, power);
             }
             fieldType = KeyPair.ALG_EC_F2M;
         } else {

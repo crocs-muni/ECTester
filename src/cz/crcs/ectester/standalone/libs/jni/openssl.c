@@ -243,10 +243,11 @@ static jobject create_ec_param_spec(JNIEnv *env, const EC_GROUP *curve) {
     BIGNUM *gy;
     jobject field;
 
+    a = BN_new();
+	b = BN_new();
+
     if (field_type == NID_X9_62_prime_field) {
         BIGNUM *p = BN_new();
-        a = BN_new();
-        b = BN_new();
         if (!EC_GROUP_get_curve_GFp(curve, p, a, b, NULL)) {
             throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating ECParameterSpec, EC_GROUP_get_curve_GFp.");
             BN_free(p); BN_free(a); BN_free(b);
@@ -269,8 +270,6 @@ static jobject create_ec_param_spec(JNIEnv *env, const EC_GROUP *curve) {
         }
 
     } else if (field_type == NID_X9_62_characteristic_two_field) {
-        a = BN_new();
-        b = BN_new();
         if (!EC_GROUP_get_curve_GF2m(curve, NULL, a, b, NULL)) {
             throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating ECParameterSpec, EC_GROUP_get_curve_GF2m.");
             BN_free(a); BN_free(b);

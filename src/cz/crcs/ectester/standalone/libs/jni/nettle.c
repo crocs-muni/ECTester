@@ -185,7 +185,7 @@ static jobject generate_from_curve(JNIEnv *env, const struct ecc_curve* curve, j
     jobject privkey = (*env)->NewObject(env, privkey_class, ec_priv_init, priv_bytes, ec_priv_param_spec);
 
     jmethodID keypair_init = (*env)->GetMethodID(env, keypair_class, "<init>", "(Ljava/security/PublicKey;Ljava/security/PrivateKey;)V");
-    mpz_clears(private_value, pub_value_x, pub_value_y);
+    mpz_clears(private_value, pub_value_x, pub_value_y, NULL);
     ecc_point_clear(&pub);
     ecc_scalar_clear(&priv);
     return (*env)->NewObject(env, keypair_class, keypair_init, pubkey, privkey);

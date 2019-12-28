@@ -627,8 +627,12 @@ public class ECTesterStandalone {
             String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
             String sign = ByteUtil.bytesToHex(signature, false);
             String k = "";
-            if (spec != null) {
-                BigInteger kValue = ECUtil.recoverSignatureNonce(signature, data, privkey.getS(), spec, sigIdent.getHashAlgo());
+            ECParameterSpec kSpec = spec;
+            if (kSpec == null) {
+                kSpec = privkey.getParams();
+            }
+            if (kSpec != null) {
+                BigInteger kValue = ECUtil.recoverSignatureNonce(signature, data, privkey.getS(), kSpec, sigIdent.getHashAlgo());
                 if (kValue != null) {
                     k = ByteUtil.bytesToHex(kValue.toByteArray(), false);
                 }
