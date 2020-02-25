@@ -82,6 +82,7 @@ public class ECTesterStandalone {
             new WolfCryptLib(),
             new MbedTLSLib(),
             new IppcpLib(),
+            new ECCelerateLib(),
             new MatrixsslLib()};
     private Config cfg;
 
