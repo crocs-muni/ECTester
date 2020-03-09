@@ -82,8 +82,11 @@ public class ECTesterStandalone {
             new WolfCryptLib(),
             new MbedTLSLib(),
             new IppcpLib(),
+            new MatrixsslLib(),
+            new NettleLib(),
             new ECCelerateLib(),
-            new MatrixsslLib()};
+            new LibresslLib()};
+
     private Config cfg;
 
     private Options opts = new Options();
@@ -502,9 +505,7 @@ public class ECTesterStandalone {
             random.nextBytes(data);
             dataString = ByteUtil.bytesToHex(data, false);
         }
-
         ProviderECLibrary lib = cfg.selected;
-
         String algo = cli.getOptionValue("ecdsa.type", "ECDSA");
         SignatureIdent sigIdent = lib.getSigs().stream()
                 .filter((ident) -> ident.contains(algo))
@@ -517,7 +518,6 @@ public class ECTesterStandalone {
         } else {
             baseAlgo = algo;
         }
-
         KeyPairGeneratorIdent kpIdent = lib.getKPGs().stream()
                 .filter((ident) -> ident.contains(algo))
                 .findFirst()
@@ -629,8 +629,12 @@ public class ECTesterStandalone {
             String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
             String sign = ByteUtil.bytesToHex(signature, false);
             String k = "";
-            if (spec != null) {
-                BigInteger kValue = ECUtil.recoverSignatureNonce(signature, data, privkey.getS(), spec, sigIdent.getHashAlgo());
+            ECParameterSpec kSpec = spec;
+            if (kSpec == null) {
+                kSpec = privkey.getParams();
+            }
+            if (kSpec != null) {
+                BigInteger kValue = ECUtil.recoverSignatureNonce(signature, data, privkey.getS(), kSpec, sigIdent.getHashAlgo());
                 if (kValue != null) {
                     k = ByteUtil.bytesToHex(kValue.toByteArray(), false);
                 }
@@ -736,8 +740,6 @@ public class ECTesterStandalone {
                 writer = new TextTestWriter(System.out);
                 break;
         }
-
-        String suiteName = cli.getArg(0);
 
         StandaloneTestSuite suite = new StandaloneDefaultSuite(writer, cfg, cli);
         suite.run();

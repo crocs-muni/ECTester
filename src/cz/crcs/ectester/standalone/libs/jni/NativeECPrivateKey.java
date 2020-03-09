@@ -115,6 +115,12 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
         }
     }
 
+    public static class Libressl extends Raw {
+        public Libressl(byte[] keyData, ECParameterSpec params) {
+            super(keyData, params);
+        }
+    }
+
     public static class Mscng extends Raw {
         // 0 -> implicit (meta = curveName UTF16, header = full);
         // 1 -> explicit (meta = null, header = full);
@@ -155,4 +161,11 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
             return getBlob();
         }
     }
+
+    public static class Nettle extends Raw {
+        public Nettle(byte[] keyData, ECParameterSpec params) {
+            super(keyData, params);
+        }
+    }
+
 }

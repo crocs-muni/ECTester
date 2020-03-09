@@ -116,6 +116,12 @@ public abstract class NativeECPublicKey implements ECPublicKey {
         }
     }
 
+    public static class Libressl extends ANSIX962 {
+        public Libressl(byte[] keyData, ECParameterSpec params) {
+            super(keyData, params);
+        }
+    }
+
     public static class Mscng extends ANSIX962 {
         // 0 -> implicit (meta = curveName UTF16, header = full);
         // 1 -> explicit (meta = null, header = full);
@@ -154,6 +160,12 @@ public abstract class NativeECPublicKey implements ECPublicKey {
         @Override
         public byte[] getData() {
             return getBlob();
+        }
+    }
+
+    public static class Nettle extends ANSIX962 {
+        public Nettle(byte[] keyData, ECParameterSpec params) {
+            super(keyData, params);
         }
     }
 }

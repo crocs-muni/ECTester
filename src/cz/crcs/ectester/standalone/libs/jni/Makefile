@@ -58,7 +58,7 @@ JNI_PLATFORMINCLUDEDIR ?= $(JNI_INCLUDEDIR)/$(JNI_PLATFORM)
 ###############################################################################
 ## Targets.
 
-all: tomcrypt botan cryptopp openssl boringssl gcrypt mbedtls ippcp matrixssl
+all: tomcrypt botan cryptopp openssl boringssl gcrypt mbedtls ippcp matrixssl nettle libressl
 
 # Common utils
 c_utils.o: c_utils.c
@@ -89,7 +89,6 @@ lib_boringssl.so:
 
 boringssl_provider.so: boringssl.o c_utils.o | lib_timing.so lib_boringssl.so
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_boringssl.so -l:lib_timing.so
-
 
 boringssl.o: boringssl.c
 	$(CC) -I../../../../../../../ext/boringssl/include/ $(CFLAGS) -c $<
@@ -165,6 +164,29 @@ matrixssl.o: matrixssl.c
 	$(CC) $(CFLAGS) -Imatrixssl/ -c $<
 
 
+# Nettle shim
+nettle: nettle_provider.so
+
+nettle_provider.so: nettle.o c_utils.o | lib_timing.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs nettle) -l:lib_timing.so $(shell pkg-config --libs hogweed) -lgmp
+
+nettle.o: nettle.c
+	$(CC) $(shell pkg-config --cflags nettle) $(shell pkg-config --libs hogweed) -lgmp $(CFLAGS) -c $<
+
+
+# LibreSSL shim
+libressl: libressl_provider.so
+
+lib_libressl.so:
+	cp ../../../../../../../ext/libressl/build/crypto/libcrypto.so lib_libressl.so
+
+libressl_provider.so: libressl.o c_utils.o | lib_timing.so lib_libressl.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_libressl.so -l:lib_timing.so
+
+libressl.o: libressl.c
+	$(CC) -I../../../../../../../ext/libressl/include/ $(CFLAGS) -c $<
+
+
 help:
 	@echo "# This makefile builds the JNI shims necessary to test native libraries."
 	@echo "# Targets:"
@@ -177,9 +199,12 @@ help:
 	@echo "    - mbedtls"
 	@echo "    - ippcp"
 	@echo "    - matrixssl"
+	@echo "    - nettle"
+	@echo "    - libressl"
+
 
 clean:
 	rm -rf *.o
 	rm -rf *.so
 
-.PHONY: all help clean openssl boringssl gcrypt tomcrypt botan cryptopp mbedtls ippcp matrixssl
+.PHONY: all help clean openssl boringssl gcrypt tomcrypt botan cryptopp mbedtls ippcp matrixssl nettle libressl

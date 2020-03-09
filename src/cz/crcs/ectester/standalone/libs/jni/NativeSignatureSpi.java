@@ -6,7 +6,9 @@ import java.io.ByteArrayOutputStream;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
+import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -482,6 +484,27 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         }
     }
 
+    public abstract static class Libressl extends SimpleSignatureSpi {
+        private String type;
+
+        public Libressl(String type) {
+            this.type = type;
+        }
+
+        @Override
+        native byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
+
+        @Override
+        native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
+    }
+
+    public static class LibresslECDSAwithNONE extends Libressl {
+
+        public LibresslECDSAwithNONE() {
+            super("NONEwithECDSA");
+        }
+    }
+
     public abstract static class Matrixssl extends SimpleSignatureSpi {
         private String type;
 
@@ -544,4 +567,91 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
             super("SHA512withECDSA");
         }
     }
+
+    public abstract static class Nettle extends SimpleSignatureSpi {
+        private String type;
+
+        public Nettle(String type) {
+            this.type = type;
+        }
+
+        @Override
+        byte[] sign(byte[] data, byte[] privKey, ECParameterSpec params) {
+            try {
+                AlgorithmParameters tmp = AlgorithmParameters.getInstance("EC");
+                tmp.init(params);
+                ECGenParameterSpec spec = tmp.getParameterSpec(ECGenParameterSpec.class);
+                switch (spec.getName()) {
+                    case "1.2.840.10045.3.1.7":
+                        spec = new ECGenParameterSpec("secp256r1");
+                        break;
+                    case "1.2.840.10045.3.1.1":
+                        spec = new ECGenParameterSpec("secp192r1");
+                        break;
+                    case "1.3.132.0.33":
+                        spec = new ECGenParameterSpec("secp224r1");
+                        break;
+                    case "1.3.132.0.34":
+                        spec = new ECGenParameterSpec("secp384r1");
+                        break;
+                    case "1.3.132.0.35":
+                        spec = new ECGenParameterSpec("secp521r1");
+                        break;
+                    default:
+                        return null;
+
+                }
+                return sign(data, privKey, spec);
+
+            } catch (NoSuchAlgorithmException | InvalidParameterSpecException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        native byte[] sign(byte[] data, byte[] privKey, ECGenParameterSpec params);
+
+        @Override
+        boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params) {
+            try {
+                AlgorithmParameters tmp = AlgorithmParameters.getInstance("EC");
+                tmp.init(params);
+                ECGenParameterSpec spec = tmp.getParameterSpec(ECGenParameterSpec.class);
+                switch (spec.getName()) {
+                    case "1.2.840.10045.3.1.7":
+                        spec = new ECGenParameterSpec("secp256r1");
+                        break;
+                    case "1.2.840.10045.3.1.1":
+                        spec = new ECGenParameterSpec("secp192r1");
+                        break;
+                    case "1.3.132.0.33":
+                        spec = new ECGenParameterSpec("secp224r1");
+                        break;
+                    case "1.3.132.0.34":
+                        spec = new ECGenParameterSpec("secp384r1");
+                        break;
+                    case "1.3.132.0.35":
+                        spec = new ECGenParameterSpec("secp521r1");
+                        break;
+                    default:
+                        return false;
+                }
+                return verify(signature, data, pubkey, spec);
+
+            } catch (NoSuchAlgorithmException | InvalidParameterSpecException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECGenParameterSpec params);
+    }
+
+    public static class NettleECDSAwithNONE extends Nettle {
+
+        public NettleECDSAwithNONE() {
+            super("NONEwithECDSA");
+        }
+    }
+
 }
