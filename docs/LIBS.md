@@ -4,7 +4,7 @@ Libraries that ECTester can test.
 
  - [BouncyCastle](https://bouncycastle.org/java.html)
     - Java
-    - Works with the short Weierstrass curve model.
+    - Works with the short Weierstrass curve model for ECDSA and ECDH.
     - Works with coordinates:
         - Affine
         - Projective(Homogenous)

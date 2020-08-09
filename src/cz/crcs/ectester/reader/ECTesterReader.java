@@ -395,7 +395,7 @@ public class ECTesterReader {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
 
         List<Response> sent = new LinkedList<>();
-        sent.add(new Command.Allocate(cardManager, cfg.keyBuilder, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send());
+        sent.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.keyBuilder, cfg.bits, keyClass).send());
         //sent.add(new Command.Clear(cardManager, ECTesterApplet.KEYPAIR_LOCAL).send());
         sent.add(new Command.Generate(cardManager, ECTesterApplet.KEYPAIR_LOCAL).send());
 
@@ -445,7 +445,7 @@ public class ECTesterReader {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
         Command curve = Command.prepareCurve(cardManager, cfg, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass);
 
-        Response allocate = new Command.Allocate(cardManager, cfg.keyBuilder, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send();
+        Response allocate = new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.keyBuilder, cfg.bits, keyClass).send();
         respWriter.outputResponse(allocate);
 
         OutputStreamWriter keysFile = FileUtil.openFiles(cfg.outputs);
@@ -578,7 +578,7 @@ public class ECTesterReader {
         Command curve = Command.prepareCurve(cardManager, cfg, ECTesterApplet.KEYPAIR_BOTH, cfg.bits, keyClass);
         List<Response> prepare = new LinkedList<>();
         prepare.add(new Command.AllocateKeyAgreement(cardManager, cfg.ECKAType).send()); // Prepare KeyAgreement or required type
-        prepare.add(new Command.Allocate(cardManager, cfg.keyBuilder, ECTesterApplet.KEYPAIR_BOTH, cfg.bits, keyClass).send());
+        prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_BOTH, cfg.keyBuilder, cfg.bits, keyClass).send());
         if (curve != null)
             prepare.add(curve.send());
 
@@ -704,7 +704,7 @@ public class ECTesterReader {
         byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
         List<Response> prepare = new LinkedList<>();
         prepare.add(new Command.AllocateSignature(cardManager, cfg.ECDSAType).send());
-        prepare.add(new Command.Allocate(cardManager, cfg.keyBuilder, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass).send());
+        prepare.add(new Command.Allocate(cardManager, ECTesterApplet.KEYPAIR_LOCAL, cfg.keyBuilder, cfg.bits, keyClass).send());
         Command curve = Command.prepareCurve(cardManager, cfg, ECTesterApplet.KEYPAIR_LOCAL, cfg.bits, keyClass);
         if (curve != null)
             prepare.add(curve.send());
