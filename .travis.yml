@@ -1,5 +1,5 @@
 os: linux
-dist: xenial
+dist: bionic
 addons:
   apt:
     sources:
@@ -21,6 +21,7 @@ env:
   - CC=gcc-8 CXX=g++-8
 
 install:
+  - eval "$(gimme 1.13)"
   - cd ext/boringssl
   - mkdir build
   - cd build
