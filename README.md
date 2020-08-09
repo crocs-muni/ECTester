@@ -1,4 +1,5 @@
-# ![](docs/card.png) ECTester
+# ![](docs/full.png)
+
 [![Build status](https://api.travis-ci.org/crocs-muni/ECTester.svg?branch=master)](https://travis-ci.org/crocs-muni/ECTester) [![Build status](https://ci.appveyor.com/api/projects/status/02kcaf52op89910u?svg=true)](https://ci.appveyor.com/project/J08nY/ectester-cm6ng) [![GitHub release](https://img.shields.io/github/release/crocs-muni/ECTEster.svg)](https://github.com/crocs-muni/ECTester/releases)  [![license](https://img.shields.io/github/license/crocs-muni/ECTester.svg)](https://github.com/crocs-muni/ECTester/blob/master/LICENSE) [![docs](https://img.shields.io/badge/docs-github.io-brightgreen.svg)](https://crocs-muni.github.io/ECTester/)
 
 ECTester is a tool for testing and analysis of elliptic curve cryptography implementations on JavaCards and in cryptographic libraries. It consists of four separate parts:
