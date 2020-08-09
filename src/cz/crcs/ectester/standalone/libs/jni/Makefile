@@ -125,13 +125,17 @@ botan.o: botan.cpp
 
 
 # Crypto++ shim
+CRYPTOPP_NAME := "libcrypto++"
+ifeq ($(shell pkg-config --exists $(CRYPTOPP_NAME); echo $$?),1)
+	CRYPTOPP_NAME := "libcryptopp"
+endif
 cryptopp: cryptopp_provider.so
 
 cryptopp_provider.so: cryptopp.o cpp_utils.o | lib_timing.so
-	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs libcrypto++) -l:lib_timing.so
+	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs $(CRYPTOPP_NAME)) -l:lib_timing.so
 
 cryptopp.o: cryptopp.cpp
-	$(CXX) $(shell pkg-config --cflags libcrypto++) $(CXXFLAGS) -c $<
+	$(CXX) $(shell pkg-config --cflags $(CRYPTOPP_NAME)) $(CXXFLAGS) -c $<
 
 
 # mbedTLS shim

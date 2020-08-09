@@ -1,7 +1,6 @@
 #include "native.h"
 #include <string>
 
-#include <botan/botan.h>
 #include <botan/version.h>
 #include <botan/rng.h>
 #include <botan/secmem.h>

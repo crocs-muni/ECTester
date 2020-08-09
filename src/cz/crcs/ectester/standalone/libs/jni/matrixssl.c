@@ -167,8 +167,8 @@ static psEccCurve_t *create_curve(JNIEnv *env, jobject params) {
     jmethodID get_n = (*env)->GetMethodID(env, ec_parameter_spec_class, "getOrder", "()Ljava/math/BigInteger;");
     jobject n = (*env)->CallObjectMethod(env, params, get_n);
 
-	jmethodID get_h = (*env)->GetMethodID(env, ec_parameter_spec_class, "getCofactor", "()I");
-	jint h = (*env)->CallIntMethod(env, params, get_h);
+	//jmethodID get_h = (*env)->GetMethodID(env, ec_parameter_spec_class, "getCofactor", "()I");
+	//jint h = (*env)->CallIntMethod(env, params, get_h);
 
 	jmethodID get_bitlength = (*env)->GetMethodID(env, biginteger_class, "bitLength", "()I");
 	jint ord_bits = (*env)->CallIntMethod(env, n, get_bitlength);
@@ -210,7 +210,7 @@ static jobject generate_from_curve(JNIEnv *env, const psEccCurve_t *curve) {
 
 	jbyteArray priv = (*env)->NewByteArray(env, pstm_unsigned_bin_size(&key->k));
 	jbyte *priv_data = (*env)->GetByteArrayElements(env, priv, NULL);
-	pstm_to_unsigned_bin(NULL, &key->k, priv_data);
+	pstm_to_unsigned_bin(NULL, &key->k, (unsigned char *) priv_data);
 	(*env)->ReleaseByteArrayElements(env, priv, priv_data, 0);
 
 	jint xlen = pstm_unsigned_bin_size(&key->pubkey.x);
@@ -218,8 +218,8 @@ static jobject generate_from_curve(JNIEnv *env, const psEccCurve_t *curve) {
 	jbyteArray pub = (*env)->NewByteArray(env, 1 + xlen + ylen);
 	jbyte *pub_data = (*env)->GetByteArrayElements(env, pub, NULL);
 	pub_data[0] = 0x04;
-	pstm_to_unsigned_bin(NULL, &key->pubkey.x, pub_data + 1);
-	pstm_to_unsigned_bin(NULL, &key->pubkey.y, pub_data + 1 + xlen);
+	pstm_to_unsigned_bin(NULL, &key->pubkey.x, (unsigned char *) (pub_data + 1));
+	pstm_to_unsigned_bin(NULL, &key->pubkey.y, (unsigned char *) (pub_data + 1 + xlen));
 	(*env)->ReleaseByteArrayElements(env, pub, pub_data, 0);
 	
 	jobject ec_param_spec = create_ec_param_spec(env, curve);
@@ -282,7 +282,7 @@ static psEccKey_t *bytearray_to_privkey(JNIEnv *env, jbyteArray privkey, const p
 	pstm_init_for_read_unsigned_bin(NULL, &result->k, curve->size);
 	jint len = (*env)->GetArrayLength(env, privkey);
 	jbyte *priv_data = (*env)->GetByteArrayElements(env, privkey, NULL);
-	pstm_read_unsigned_bin(&result->k, priv_data, len);
+	pstm_read_unsigned_bin(&result->k, (unsigned char *) priv_data, len);
 	(*env)->ReleaseByteArrayElements(env, privkey, priv_data, JNI_ABORT);
 	result->type = PS_PRIVKEY;
 
@@ -298,8 +298,8 @@ static psEccKey_t *bytearray_to_pubkey(JNIEnv *env, jbyteArray pubkey, const psE
 	pstm_init_for_read_unsigned_bin(NULL, &result->pubkey.y, curve->size);
 	pstm_init_for_read_unsigned_bin(NULL, &result->pubkey.z, curve->size);
 	jbyte *pubkey_data = (*env)->GetByteArrayElements(env, pubkey, NULL);
-	pstm_read_unsigned_bin(&result->pubkey.x, pubkey_data + 1, curve->size);
-	pstm_read_unsigned_bin(&result->pubkey.y, pubkey_data + 1 + curve->size, curve->size);
+	pstm_read_unsigned_bin(&result->pubkey.x, (unsigned char *) (pubkey_data + 1), curve->size);
+	pstm_read_unsigned_bin(&result->pubkey.y, (unsigned char *) (pubkey_data + 1 + curve->size), curve->size);
 	(*env)->ReleaseByteArrayElements(env, pubkey, pubkey_data, JNI_ABORT);
 	pstm_set(&result->pubkey.z, 1);
 	result->type = PS_PUBKEY;
@@ -318,7 +318,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 	psSize_t outlen = curve->size;
 
 	native_timing_start();
-	int32_t err = psEccGenSharedSecret(NULL, priv, pub, result_data, &outlen, NULL);
+	int32_t err = psEccGenSharedSecret(NULL, priv, pub, (unsigned char *) result_data, &outlen, NULL);
 	native_timing_stop();
 	(*env)->ReleaseByteArrayElements(env, result, result_data, 0);
 
@@ -350,7 +350,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 	jint data_len = (*env)->GetArrayLength(env, data);
 	jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
 	native_timing_start();
-	int32_t err = psEccDsaSign(NULL, priv, data_data, data_len, sig, &siglen, 0, NULL);
+	int32_t err = psEccDsaSign(NULL, priv, (unsigned char *) data_data, data_len, sig, &siglen, 0, NULL);
 	native_timing_stop();
 
 	psEccDeleteKey(&priv);
@@ -380,7 +380,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 
 	int32_t result;
 	native_timing_start();
-	int32_t err = psEccDsaVerify(NULL, pub, data_data, data_len, sig_data, sig_len, &result, NULL);
+	int32_t err = psEccDsaVerify(NULL, pub, (unsigned char *) data_data, data_len, (unsigned char *) sig_data, sig_len, &result, NULL);
 	native_timing_stop();
 	(*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
 	(*env)->ReleaseByteArrayElements(env, signature, sig_data, JNI_ABORT);

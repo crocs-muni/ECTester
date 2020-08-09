@@ -216,7 +216,7 @@ static jobject bn_to_biginteger(JNIEnv *env, const IppsBigNumState *bn) {
 	bn_size *= sizeof(Ipp32u);
 	jbyteArray bytes = (*env)->NewByteArray(env, bn_size);
 	jbyte *data = (*env)->GetByteArrayElements(env, bytes, NULL);
-	ippsGetOctString_BN(data, bn_size, bn);
+	ippsGetOctString_BN((Ipp8u *) data, bn_size, bn);
 	(*env)->ReleaseByteArrayElements(env, bytes, data, 0);
 	jobject result = (*env)->NewObject(env, biginteger_class, biginteger_init, 1, bytes);
 	return result;
@@ -229,11 +229,12 @@ static IppsBigNumState *biginteger_to_bn(JNIEnv *env, jobject bigint) {
     jsize byte_length = (*env)->GetArrayLength(env, byte_array);
     jbyte *byte_data = (*env)->GetByteArrayElements(env, byte_array, NULL);
 	IppsBigNumState *result = new_bn(byte_length * 8);
-	ippsSetOctString_BN(byte_data, byte_length, result);
+	ippsSetOctString_BN((Ipp8u *) byte_data, byte_length, result);
 	(*env)->ReleaseByteArrayElements(env, byte_array, byte_data, JNI_ABORT);
 	return result;
 }
 
+/*
 static void biginteger_print(JNIEnv *env, jobject bigint) {
     jmethodID to_string = (*env)->GetMethodID(env, biginteger_class, "toString", "(I)Ljava/lang/String;");
     jstring big_string = (*env)->CallObjectMethod(env, bigint, to_string, (jint) 16);
@@ -245,6 +246,7 @@ static void biginteger_print(JNIEnv *env, jobject bigint) {
     printf("%s\n", raw_string);
     fflush(stdout);
 }
+*/
 
 static IppsECCPState *create_curve(JNIEnv *env, jobject params, int *keysize) {
 	jmethodID get_curve = (*env)->GetMethodID(env, ec_parameter_spec_class, "getCurve", "()Ljava/security/spec/EllipticCurve;");
@@ -255,7 +257,6 @@ static IppsECCPState *create_curve(JNIEnv *env, jobject params, int *keysize) {
 
 	jmethodID get_bits = (*env)->GetMethodID(env, fp_field_class, "getFieldSize", "()I");
     jint bits = (*env)->CallIntMethod(env, field, get_bits);
-    jint bytes = (bits + 7) / 8;
 
     jmethodID get_p = (*env)->GetMethodID(env, fp_field_class, "getP", "()Ljava/math/BigInteger;");
     jobject p = (*env)->CallObjectMethod(env, field, get_p);
@@ -311,7 +312,7 @@ static jobject create_ec_param_spec(JNIEnv *env, int keysize, IppsECCPState *cur
 	IppsBigNumState *order_bn = new_bn(ord_bits);
 	int cofactor;
 
-	IppStatus err = ippsECCPGet(p_bn, a_bn, b_bn, gx_bn, gy_bn, order_bn, &cofactor, curve);
+	ippsECCPGet(p_bn, a_bn, b_bn, gx_bn, gy_bn, order_bn, &cofactor, curve);
 	
 	jobject p = bn_to_biginteger(env, p_bn);
     jmethodID fp_field_init = (*env)->GetMethodID(env, fp_field_class, "<init>", "(Ljava/math/BigInteger;)V");
@@ -377,13 +378,13 @@ static jobject generate_from_curve(JNIEnv *env, int keysize, IppsECCPState *curv
 	jbyteArray pub_bytes = (*env)->NewByteArray(env, 2 * coord_bytes + 1);
 	jbyte *pub_data = (*env)->GetByteArrayElements(env, pub_bytes, NULL);
 	pub_data[0] = 0x04;
-	bn_get(x, pub_data + 1, coord_bytes);
-	bn_get(y, pub_data + 1 + coord_bytes, coord_bytes);
+	bn_get(x, (uint8_t *) (pub_data + 1), coord_bytes);
+	bn_get(y, (uint8_t *) (pub_data + 1 + coord_bytes), coord_bytes);
 	(*env)->ReleaseByteArrayElements(env, pub_bytes, pub_data, 0);
 
 	jbyteArray priv_bytes = (*env)->NewByteArray(env, ord_bytes);
 	jbyte *priv_data = (*env)->GetByteArrayElements(env, priv_bytes, NULL);
-	bn_get(secret, priv_data, ord_bytes);
+	bn_get(secret, (uint8_t *) priv_data, ord_bytes);
 	(*env)->ReleaseByteArrayElements(env, priv_bytes, priv_data, 0);
 
 	free(point);
@@ -477,8 +478,8 @@ static IppsECCPPointState *bytearray_to_pubkey(JNIEnv *env, jbyteArray pubkey, j
 
 	jint coord_size = (keysize + 7) / 8;
 	jbyte *pub_data = (*env)->GetByteArrayElements(env, pubkey, NULL);
-	ippsSetOctString_BN(pub_data + 1, coord_size, x_bn);
-	ippsSetOctString_BN(pub_data + 1 + coord_size, coord_size, y_bn);
+	ippsSetOctString_BN((Ipp8u *) (pub_data + 1), coord_size, x_bn);
+	ippsSetOctString_BN((Ipp8u *) (pub_data + 1 + coord_size), coord_size, y_bn);
 	(*env)->ReleaseByteArrayElements(env, pubkey, pub_data, JNI_ABORT);
 
 	IppsECCPPointState *pub = new_point(keysize);
@@ -493,7 +494,7 @@ static IppsBigNumState *bytearray_to_privkey(JNIEnv *env, jbyteArray privkey, Ip
 	ippsECCPGetOrderBitSize(&ord_bits, curve);
 	IppsBigNumState *priv_bn = new_bn(ord_bits);
 	jbyte *priv_data = (*env)->GetByteArrayElements(env, privkey, NULL);
-	ippsSetOctString_BN(priv_data, (*env)->GetArrayLength(env, privkey), priv_bn);
+	ippsSetOctString_BN((Ipp8u *) priv_data, (*env)->GetArrayLength(env, privkey), priv_bn);
 	(*env)->ReleaseByteArrayElements(env, privkey, priv_data, JNI_ABORT);
 	return priv_bn;
 }
@@ -544,8 +545,8 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 
 	jbyteArray result = (*env)->NewByteArray(env, coord_size);
 	jbyte *data = (*env)->GetByteArrayElements(env, result, NULL);
-	bn_get(share, data, coord_size);
-	(*env)->ReleaseBooleanArrayElements(env, result, data, 0);
+	bn_get(share, (uint8_t *) data, coord_size);
+	(*env)->ReleaseByteArrayElements(env, result, data, 0);
 	free(share);
 	return result;
 }
@@ -581,8 +582,8 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 	jint data_size = (*env)->GetArrayLength(env, data);
 	IppsBigNumState *data_bn = new_bn(data_size * 8);
 	jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
-	ippsSetOctString_BN(data_data, data_size, data_bn);
-	(*env)->ReleaseBooleanArrayElements(env, data, data_data, JNI_ABORT);
+	ippsSetOctString_BN((Ipp8u *) data_data, data_size, data_bn);
+	(*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
 
 	jbyteArray result = NULL;
 	jbyte r_buf[ord_bytes];
@@ -606,8 +607,8 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 	}
 	native_timing_stop();
 
-	bn_get(r, r_buf, ord_bytes);
-	bn_get(s, s_buf, ord_bytes);
+	bn_get(r, (uint8_t *) r_buf, ord_bytes);
+	bn_get(s, (uint8_t *) s_buf, ord_bytes);
 
 	result = asn1_der_encode(env, r_buf, ord_bytes, s_buf, ord_bytes);
 
@@ -661,17 +662,17 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 	ippsECCPGetOrderBitSize(&ord_bits, curve);
 
 	IppsBigNumState *r = new_bn(ord_bits);
-	ippsSetOctString_BN(r_data, r_len, r);
+	ippsSetOctString_BN((Ipp8u *) r_data, r_len, r);
 	free(r_data);
 	IppsBigNumState *s = new_bn(ord_bits);
-	ippsSetOctString_BN(s_data, s_len, s);
+	ippsSetOctString_BN((Ipp8u *) s_data, s_len, s);
 	free(s_data);
 
 	jint data_size = (*env)->GetArrayLength(env, data);
 	IppsBigNumState *data_bn = new_bn(data_size * 8);
 	jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
-	ippsSetOctString_BN(data_data, data_size, data_bn);
-	(*env)->ReleaseBooleanArrayElements(env, data, data_data, JNI_ABORT);
+	ippsSetOctString_BN((Ipp8u *) data_data, data_size, data_bn);
+	(*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
 
 	IppECResult result;
 

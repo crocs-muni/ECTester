@@ -210,7 +210,6 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
         const char* utf_name = (*env)->GetStringUTFChars(env, name, NULL);
         const struct ecc_curve* curve;
         int byte_size;
-        int rc;
         char *curve_name[5] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1"};
         int byte_sizes[] = {24, 28, 32, 48, 66};
         for (int i = 0; i < sizeof(curve_name); i++) {
@@ -265,7 +264,6 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     jstring name = (*env)->CallObjectMethod(env, params, get_name);
     const char* utf_name = (*env)->GetStringUTFChars(env, name, NULL);
     const struct ecc_curve* curve;
-    int rc;
     char *curve_name[5] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1"};
     int byte_sizes[] = {24, 28, 32, 48, 66};
     int byte_size;
@@ -381,6 +379,7 @@ size_t signature_to_der(struct dsa_signature* signature, unsigned char *result, 
     memcpy(result + index, s_tmp, s_tmpSize);
     return wholeSize;
 }
+
 // credit to https://github.com/crocs-muni/ECTester/blob/master/src/cz/crcs/ectester/standalone/libs/jni/c_utils.cs
 int der_to_signature(struct dsa_signature* signature, unsigned char* der) {
     int index = 0;
@@ -421,7 +420,6 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     jstring name = (*env)->CallObjectMethod(env, params, get_name);
     const char* utf_name = (*env)->GetStringUTFChars(env, name, NULL);
     const struct ecc_curve* curve;
-    int rc;
     int byte_size;
     char *curve_name[5] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1"};
     int byte_sizes[] = {24, 28, 32, 48, 66};
@@ -470,7 +468,6 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     jstring name = (*env)->CallObjectMethod(env, params, get_name);
     const char* utf_name = (*env)->GetStringUTFChars(env, name, NULL);
     const struct ecc_curve* curve;
-    int rc;
     char *curve_name[5] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1"};
     for (int i = 0; i < sizeof(curve_name); i++) {
         if (strcasecmp(utf_name, curve_name[i]) == 0) {
@@ -488,7 +485,6 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     ecc_point_init(&eccPubPoint, curve);
     barray_to_pubkey(env, &eccPubPoint, pubkey);
 
-    jsize sig_len = (*env)->GetArrayLength(env, signature);
     jbyte *sig_data = (*env)->GetByteArrayElements(env, signature, NULL);
 
     struct dsa_signature eccSignature;

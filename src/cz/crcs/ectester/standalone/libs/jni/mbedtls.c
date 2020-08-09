@@ -187,7 +187,7 @@ static jobject biginteger_from_mpi(JNIEnv *env, const mbedtls_mpi *mpi) {
     size_t size = mbedtls_mpi_size(mpi);
     jbyteArray bytes = (*env)->NewByteArray(env, size);
     jbyte *data = (*env)->GetByteArrayElements(env, bytes, NULL);
-    mbedtls_mpi_write_binary(mpi, data, size);
+    mbedtls_mpi_write_binary(mpi, (unsigned char *) data, size);
     (*env)->ReleaseByteArrayElements(env, bytes, data, 0);
     jobject result = (*env)->NewObject(env, biginteger_class, biginteger_init, 1, bytes);
     return result;
@@ -199,7 +199,7 @@ static void mpi_from_biginteger(JNIEnv* env, jobject biginteger, mbedtls_mpi *mp
     jbyteArray byte_array = (jbyteArray) (*env)->CallObjectMethod(env, biginteger, to_byte_array);
     jsize byte_length = (*env)->GetArrayLength(env, byte_array);
     jbyte *byte_data = (*env)->GetByteArrayElements(env, byte_array, NULL);
-    mbedtls_mpi_read_binary(mpi, byte_data, byte_length);
+    mbedtls_mpi_read_binary(mpi, (unsigned char *) byte_data, byte_length);
     (*env)->ReleaseByteArrayElements(env, byte_array, byte_data, JNI_ABORT);
 }
 
@@ -305,14 +305,14 @@ static jobject generate_from_curve(JNIEnv *env, mbedtls_ecp_group *group) {
     unsigned long key_bytes = (keysize + 7) / 8;
     jbyteArray priv_bytes = (*env)->NewByteArray(env, key_bytes);
     jbyte *key_priv = (*env)->GetByteArrayElements(env, priv_bytes, NULL);
-    mbedtls_mpi_write_binary(&d, key_priv, key_bytes);
+    mbedtls_mpi_write_binary(&d, (unsigned char *) key_priv, key_bytes);
     (*env)->ReleaseByteArrayElements(env, priv_bytes, key_priv, 0);
 
     unsigned long key_len = 2*key_bytes + 1;
     jbyteArray pub_bytes = (*env)->NewByteArray(env, key_len);
     jbyte *key_pub = (*env)->GetByteArrayElements(env, pub_bytes, NULL);
     size_t out_key_len = 0;
-    mbedtls_ecp_point_write_binary(group, &Q, MBEDTLS_ECP_PF_UNCOMPRESSED, &out_key_len, key_pub, key_len);
+    mbedtls_ecp_point_write_binary(group, &Q, MBEDTLS_ECP_PF_UNCOMPRESSED, &out_key_len, (unsigned char *) key_pub, key_len);
     (*env)->ReleaseByteArrayElements(env, pub_bytes, key_pub, 0);
 
     jobject ec_param_spec = create_ec_param_spec(env, group);
@@ -397,7 +397,7 @@ static void create_pubkey(JNIEnv *env, jbyteArray pubkey, mbedtls_ecp_group *cur
     mbedtls_ecp_point_init(pub);
     jsize pub_size = (*env)->GetArrayLength(env, pubkey);
     jbyte *key_pub = (*env)->GetByteArrayElements(env, pubkey, NULL);
-    mbedtls_ecp_point_read_binary(curve, pub, key_pub, pub_size);
+    mbedtls_ecp_point_read_binary(curve, pub, (unsigned char *) key_pub, pub_size);
     (*env)->ReleaseByteArrayElements(env, pubkey, key_pub, JNI_ABORT);
 }
 
@@ -405,7 +405,7 @@ static void create_privkey(JNIEnv *env, jbyteArray privkey, mbedtls_mpi *priv) {
     mbedtls_mpi_init(priv);
     jsize priv_size = (*env)->GetArrayLength(env, privkey);
     jbyte *key_priv = (*env)->GetByteArrayElements(env, privkey, NULL);
-    mbedtls_mpi_read_binary(priv, key_priv, priv_size);
+    mbedtls_mpi_read_binary(priv, (unsigned char *) key_priv, priv_size);
     (*env)->ReleaseByteArrayElements(env, privkey, key_priv, JNI_ABORT);
 }
 
@@ -439,7 +439,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     unsigned long key_bytes = (keysize + 7) / 8;
     jbyteArray result_bytes = (*env)->NewByteArray(env, key_bytes);
     jbyte *result_data = (*env)->GetByteArrayElements(env, result_bytes, NULL);
-    mbedtls_mpi_write_binary(&result, result_data, key_bytes);
+    mbedtls_mpi_write_binary(&result, (unsigned char *) result_data, key_bytes);
     (*env)->ReleaseByteArrayElements(env, result_bytes, result_data, 0);
 
     mbedtls_mpi_free(&result);
@@ -471,7 +471,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
 
     native_timing_start();
-    int error = mbedtls_ecdsa_sign(&curve, &r, &s, &priv, data_data, data_size, ctr_drbg_wrapper, &ctr_drbg);
+    int error = mbedtls_ecdsa_sign(&curve, &r, &s, &priv, (unsigned char *) data_data, data_size, ctr_drbg_wrapper, &ctr_drbg);
     native_timing_stop();
 
     mbedtls_mpi_free(&priv);
@@ -486,10 +486,10 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 
     jsize rlen = (mbedtls_mpi_bitlen(&r) + 7) / 8;
     jbyte r_bytes[rlen];
-    mbedtls_mpi_write_binary(&r, r_bytes, rlen);
+    mbedtls_mpi_write_binary(&r, (unsigned char *) r_bytes, rlen);
     jsize slen = (mbedtls_mpi_bitlen(&s) + 7) / 8;
     jbyte s_bytes[slen];
-    mbedtls_mpi_write_binary(&s, s_bytes, slen);
+    mbedtls_mpi_write_binary(&s, (unsigned char *) s_bytes, slen);
 
     mbedtls_mpi_free(&r);
     mbedtls_mpi_free(&s);
@@ -516,10 +516,10 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 
     mbedtls_mpi r;
     mbedtls_mpi_init(&r);
-    mbedtls_mpi_read_binary(&r, r_bytes, rlen);
+    mbedtls_mpi_read_binary(&r, (unsigned char *) r_bytes, rlen);
     mbedtls_mpi s;
     mbedtls_mpi_init(&s);
-    mbedtls_mpi_read_binary(&s, s_bytes, slen);
+    mbedtls_mpi_read_binary(&s, (unsigned char *) s_bytes, slen);
     free(r_bytes);
     free(s_bytes);
 
@@ -527,7 +527,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
 
     native_timing_start();
-    int error = mbedtls_ecdsa_verify(&curve, data_data, data_size, &pub, &r, &s);
+    int error = mbedtls_ecdsa_verify(&curve, (unsigned char *) data_data, data_size, &pub, &r, &s);
     native_timing_stop();
 
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
