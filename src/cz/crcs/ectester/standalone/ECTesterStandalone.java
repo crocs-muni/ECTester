@@ -41,6 +41,7 @@ import cz.crcs.ectester.standalone.output.XMLTestWriter;
 import cz.crcs.ectester.standalone.output.YAMLTestWriter;
 import cz.crcs.ectester.standalone.test.suites.StandaloneDefaultSuite;
 import cz.crcs.ectester.standalone.test.suites.StandaloneTestSuite;
+import cz.crcs.ectester.standalone.test.suites.StandaloneTestVectorSuite;
 import org.apache.commons.cli.*;
 
 import javax.crypto.KeyAgreement;
@@ -194,6 +195,7 @@ public class ECTesterStandalone {
         testOpts.addOption(Option.builder("st").longOpt("sig-type").desc("Set the Signature object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("f").longOpt("format").desc("Set the output format, one of text,yaml,xml.").hasArg().argName("format").optionalArg(false).build());
         testOpts.addOption(Option.builder().longOpt("key-type").desc("Set the key [algorithm] for which the key should be derived in KeyAgreements with KDF. Default is \"AES\".").hasArg().argName("algorithm").optionalArg(false).build());
+        testOpts.addOption(Option.builder("s").longOpt("suite").desc("Set the test suite.").hasArg().argName("suite").optionalArg(false).build());
         List<Argument> testArgs = new LinkedList<>();
         testArgs.add(new Argument("test-suite", "The test suite to run.", true));
         ParserOptions test = new ParserOptions(new TreeParser(Collections.emptyMap(), true, testArgs), testOpts, "Test a library.");
@@ -311,7 +313,9 @@ public class ECTesterStandalone {
      *
      */
     private void listSuites() {
-        StandaloneTestSuite[] suites = new StandaloneTestSuite[]{new StandaloneDefaultSuite(null, null, null)};
+        StandaloneTestSuite[] suites = new StandaloneTestSuite[]{
+                new StandaloneDefaultSuite(null, null, null),
+                new StandaloneTestVectorSuite(null, null, null)};
         for (StandaloneTestSuite suite : suites) {
             System.out.println(" - " + suite.getName());
             for (String line : suite.getDescription()) {
@@ -739,7 +743,17 @@ public class ECTesterStandalone {
                 break;
         }
 
-        StandaloneTestSuite suite = new StandaloneDefaultSuite(writer, cfg, cli);
+        StandaloneTestSuite suite;
+
+        switch(cli.getOptionValue("test.suite", "default").toLowerCase()) {
+            case "test-vectors":
+                suite = new StandaloneTestVectorSuite(writer, cfg, cli);
+                break;
+            case "default":
+            default:
+                suite = new StandaloneDefaultSuite(writer, cfg, cli);
+        }
+
         suite.run();
     }
 
