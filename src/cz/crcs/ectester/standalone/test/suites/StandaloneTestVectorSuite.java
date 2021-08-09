@@ -1,8 +1,19 @@
 package cz.crcs.ectester.standalone.test.suites;
 
 import cz.crcs.ectester.common.cli.TreeCommandLine;
+import cz.crcs.ectester.common.ec.*;
 import cz.crcs.ectester.common.output.TestWriter;
+import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.standalone.ECTesterStandalone;
+import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
+import cz.crcs.ectester.standalone.test.base.KeyAgreementTest;
+import cz.crcs.ectester.standalone.test.base.KeyAgreementTestable;
+
+import javax.crypto.KeyAgreement;
+import java.io.IOException;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
+import java.util.Map;
 
 public class StandaloneTestVectorSuite extends StandaloneTestSuite {
 
@@ -12,6 +23,34 @@ public class StandaloneTestVectorSuite extends StandaloneTestSuite {
 
     @Override
     protected void runTests() throws Exception {
-        System.out.println("<test output goes here>");
+        System.out.println("This test suite isn't fully implemented, yet.");
+        Map<String, EC_KAResult> results = EC_Store.getInstance().getObjects(EC_KAResult.class, "test");
+
+        for (EC_KAResult result : results.values()) {
+            EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, result.getCurve());
+            EC_Params onekey = EC_Store.getInstance().getObject(EC_Keypair.class, result.getOneKey());
+            String kaAlgo = result.getKA();
+            if (onekey == null) {
+                onekey = EC_Store.getInstance().getObject(EC_Key.Private.class, result.getOneKey());
+            }
+            EC_Params otherkey = EC_Store.getInstance().getObject(EC_Keypair.class, result.getOtherKey());
+            if (otherkey == null) {
+                otherkey = EC_Store.getInstance().getObject(EC_Key.Public.class, result.getOtherKey());
+            }
+            if (onekey == null || otherkey == null) {
+                throw new IOException("Test vector keys couldn't be located.");
+            }
+            //if kaAlgo is ANY, use ECDH algorithm
+            KeyAgreementIdent kaIdent = kaAlgo.equals("DHC") ?
+                    KeyAgreementIdent.get("ECDHC") : KeyAgreementIdent.get("ECDH");
+
+            KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
+            /*
+            ECPrivateKey privkey =
+            ECPublicKey pubkey =
+            KeyAgreementTestable testable = new KeyAgreementTestable(ka, privkey, pubkey, curve.toSpec());
+            doTest(KeyAgreementTest.match(testable, result.flatten()));
+            */
+        }
     }
 }
