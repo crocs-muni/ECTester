@@ -3,6 +3,7 @@ package cz.crcs.ectester.standalone.test.suites;
 import cz.crcs.ectester.common.cli.TreeCommandLine;
 import cz.crcs.ectester.common.ec.*;
 import cz.crcs.ectester.common.output.TestWriter;
+import cz.crcs.ectester.common.util.ECUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.standalone.ECTesterStandalone;
 import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
@@ -28,8 +29,8 @@ public class StandaloneTestVectorSuite extends StandaloneTestSuite {
 
         for (EC_KAResult result : results.values()) {
             EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, result.getCurve());
-            EC_Params onekey = EC_Store.getInstance().getObject(EC_Keypair.class, result.getOneKey());
             String kaAlgo = result.getKA();
+            EC_Params onekey = EC_Store.getInstance().getObject(EC_Keypair.class, result.getOneKey());
             if (onekey == null) {
                 onekey = EC_Store.getInstance().getObject(EC_Key.Private.class, result.getOneKey());
             }
@@ -40,17 +41,21 @@ public class StandaloneTestVectorSuite extends StandaloneTestSuite {
             if (onekey == null || otherkey == null) {
                 throw new IOException("Test vector keys couldn't be located.");
             }
+
+            ECPrivateKey privkey = onekey instanceof EC_Keypair ?
+                    (ECPrivateKey) ECUtil.toKeyPair((EC_Keypair) onekey).getPrivate() :
+                    ECUtil.toPrivateKey((EC_Key.Private) onekey);
+            ECPublicKey pubkey = otherkey instanceof EC_Keypair ?
+                    (ECPublicKey) ECUtil.toKeyPair((EC_Keypair) otherkey).getPublic() :
+                    ECUtil.toPublicKey((EC_Key.Public) otherkey);
+
             //if kaAlgo is ANY, use ECDH algorithm
             KeyAgreementIdent kaIdent = kaAlgo.equals("DHC") ?
                     KeyAgreementIdent.get("ECDHC") : KeyAgreementIdent.get("ECDH");
 
             KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-            /*
-            ECPrivateKey privkey =
-            ECPublicKey pubkey =
-            KeyAgreementTestable testable = new KeyAgreementTestable(ka, privkey, pubkey, curve.toSpec());
-            doTest(KeyAgreementTest.match(testable, result.flatten()));
-            */
+            KeyAgreementTestable testable = new KeyAgreementTestable(ka, privkey, pubkey);
+            doTest(KeyAgreementTest.match(testable, result.getData(0)));
         }
     }
 }
