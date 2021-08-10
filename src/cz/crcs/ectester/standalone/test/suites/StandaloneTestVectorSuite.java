@@ -28,7 +28,6 @@ public class StandaloneTestVectorSuite extends StandaloneTestSuite {
         Map<String, EC_KAResult> results = EC_Store.getInstance().getObjects(EC_KAResult.class, "test");
 
         for (EC_KAResult result : results.values()) {
-            EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, result.getCurve());
             String kaAlgo = result.getKA();
             EC_Params onekey = EC_Store.getInstance().getObject(EC_Keypair.class, result.getOneKey());
             if (onekey == null) {
