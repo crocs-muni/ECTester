@@ -28,7 +28,10 @@ public class StandaloneTestVectorSuite extends StandaloneTestSuite {
         Map<String, EC_KAResult> results = EC_Store.getInstance().getObjects(EC_KAResult.class, "test");
 
         for (EC_KAResult result : results.values()) {
-            String kaAlgo = result.getKA();
+            if(!"DH_RAW".equals(result.getKA())) {
+                continue;
+            }
+
             EC_Params onekey = EC_Store.getInstance().getObject(EC_Keypair.class, result.getOneKey());
             if (onekey == null) {
                 onekey = EC_Store.getInstance().getObject(EC_Key.Private.class, result.getOneKey());
@@ -48,10 +51,7 @@ public class StandaloneTestVectorSuite extends StandaloneTestSuite {
                     (ECPublicKey) ECUtil.toKeyPair((EC_Keypair) otherkey).getPublic() :
                     ECUtil.toPublicKey((EC_Key.Public) otherkey);
 
-            //if kaAlgo is ANY, use ECDH algorithm
-            KeyAgreementIdent kaIdent = kaAlgo.equals("DHC") ?
-                    KeyAgreementIdent.get("ECDHC") : KeyAgreementIdent.get("ECDH");
-
+            KeyAgreementIdent kaIdent = KeyAgreementIdent.get("ECDH");
             KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
             KeyAgreementTestable testable = new KeyAgreementTestable(ka, privkey, pubkey);
             doTest(KeyAgreementTest.match(testable, result.getData(0)));
