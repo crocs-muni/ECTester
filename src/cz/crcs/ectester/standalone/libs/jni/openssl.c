@@ -493,7 +493,9 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     native_timing_stop();
 
     if (err <= 0) {
-        throw_new(env, "java/security/GeneralSecurityException", "Error computing ECDH, ECDH_compute_key.");
+    	char errorMessage[100];
+        snprintf(errorMessage,100, "Error computing ECDH, ECDH_compute_key. ERR_get_error: 0x%lx", ERR_get_error());
+        throw_new(env, "java/security/GeneralSecurityException", errorMessage);
         EC_KEY_free(pub); EC_KEY_free(priv); EC_GROUP_free(curve);
         (*env)->ReleaseByteArrayElements(env, result, result_data, JNI_ABORT);
         return NULL;
