@@ -52,7 +52,7 @@ public class CardTestVectorSuite extends CardTestSuite {
          */
         Map<String, EC_KAResult> results = EC_Store.getInstance().getObjects(EC_KAResult.class, "test");
         for (EC_KAResult result : results.values()) {
-            if("DH_RAW".equals(result.getKA())) {
+            if("DH_PLAIN".equals(result.getKA())) {
                 continue;
             }
             EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, result.getCurve());

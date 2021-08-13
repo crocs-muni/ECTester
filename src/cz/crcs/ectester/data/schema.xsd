@@ -65,7 +65,6 @@
             <xs:enumeration value="PACE_GM"/>
             <xs:enumeration value="DH_PLAIN_XY"/>
             <xs:enumeration value="ANY"/>
-            <xs:enumeration value="DH_RAW"/>
         </xs:restriction>
     </xs:simpleType>
 

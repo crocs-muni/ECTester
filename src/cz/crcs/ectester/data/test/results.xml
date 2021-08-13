@@ -172,16 +172,16 @@
         <otherkey>test/p521-B</otherkey>
     </kaResult>
     <kaResult>
-        <id>secp160r1-dh-raw</id>
-        <ka>DH_RAW</ka>
+        <id>secp160r1-dh-plain</id>
+        <ka>DH_PLAIN</ka>
         <file>secg/secp160r1-dh-raw.csv</file>
         <curve>secg/secp160r1</curve>
         <onekey>test/secp160r1-U</onekey>
         <otherkey>test/secp160r1-V</otherkey>
     </kaResult>
     <kaResult>
-        <id>sect163k1-dh-raw</id>
-        <ka>DH_RAW</ka>
+        <id>sect163k1-dh-plain</id>
+        <ka>DH_PLAIN</ka>
         <file>secg/sect163k1-dh-raw.csv</file>
         <curve>secg/sect163k1</curve>
         <onekey>test/sect163k1-U</onekey>
@@ -189,72 +189,72 @@
     </kaResult>
 
     <kaResult>
-        <id>brainpoolP224r1-dh-raw</id>
-        <ka>DH_RAW</ka>
+        <id>brainpoolP224r1-dh-plain</id>
+        <ka>DH_PLAIN</ka>
         <file>brainpool/brainpoolP224r1-dh-raw.csv</file>
         <curve>brainpool/brainpoolP224r1</curve>
         <onekey>test/brainpoolP224r1-A</onekey>
         <otherkey>test/brainpoolP224r1-B</otherkey>
     </kaResult>
     <kaResult>
-        <id>brainpoolP256r1-dh-raw</id>
-        <ka>DH_RAW</ka>
+        <id>brainpoolP256r1-dh-plain</id>
+        <ka>DH_PLAIN</ka>
         <file>brainpool/brainpoolP256r1-dh-raw.csv</file>
         <curve>brainpool/brainpoolP256r1</curve>
         <onekey>test/brainpoolP256r1-A</onekey>
         <otherkey>test/brainpoolP256r1-B</otherkey>
     </kaResult>
     <kaResult>
-        <id>brainpoolP384r1-dh-raw</id>
-        <ka>DH_RAW</ka>
+        <id>brainpoolP384r1-dh-plain</id>
+        <ka>DH_PLAIN</ka>
         <file>brainpool/brainpoolP384r1-dh-raw.csv</file>
         <curve>brainpool/brainpoolP384r1</curve>
         <onekey>test/brainpoolP384r1-A</onekey>
         <otherkey>test/brainpoolP384r1-B</otherkey>
     </kaResult>
     <kaResult>
-        <id>brainpoolP512r1-dh-raw</id>
-        <ka>DH_RAW</ka>
+        <id>brainpoolP512r1-dh-plain</id>
+        <ka>DH_PLAIN</ka>
         <file>brainpool/brainpoolP512r1-dh-raw.csv</file>
         <curve>brainpool/brainpoolP512r1</curve>
         <onekey>test/brainpoolP512r1-A</onekey>
         <otherkey>test/brainpoolP512r1-B</otherkey>
     </kaResult>
     <kaResult>
-        <id>p192-dhc-raw</id>
-        <ka>DH_RAW</ka>
+        <id>p192-dhc-plain</id>
+        <ka>DH_PLAIN</ka>
         <file>nist/p192-dhc-raw.csv</file>
         <curve>nist/P-192</curve>
         <onekey>test/p192-A</onekey>
         <otherkey>test/p192-B</otherkey>
     </kaResult>
     <kaResult>
-        <id>p224-dhc-raw</id>
-        <ka>DH_RAW</ka>
+        <id>p224-dhc-plain</id>
+        <ka>DH_PLAIN</ka>
         <file>nist/p224-dhc-raw.csv</file>
         <curve>nist/P-224</curve>
         <onekey>test/p224-A</onekey>
         <otherkey>test/p224-B</otherkey>
     </kaResult>
     <kaResult>
-        <id>p256-dhc-raw</id>
-        <ka>DH_RAW</ka>
+        <id>p256-dhc-plain</id>
+        <ka>DH_PLAIN</ka>
         <file>nist/p256-dhc-raw.csv</file>
         <curve>nist/P-256</curve>
         <onekey>test/p256-A</onekey>
         <otherkey>test/p256-B</otherkey>
     </kaResult>
     <kaResult>
-        <id>p384-dhc-raw</id>
-        <ka>DH_RAW</ka>
+        <id>p384-dhc-plain</id>
+        <ka>DH_PLAIN</ka>
         <file>nist/p384-dhc-raw.csv</file>
         <curve>nist/P-384</curve>
         <onekey>test/p384-A</onekey>
         <otherkey>test/p384-B</otherkey>
     </kaResult>
     <kaResult>
-        <id>p521-dhc-raw</id>
-        <ka>DH_RAW</ka>
+        <id>p521-dhc-plain</id>
+        <ka>DH_PLAIN</ka>
         <file>nist/p521-dhc-raw.csv</file>
         <curve>nist/P-521</curve>
         <onekey>test/p521-A</onekey>
