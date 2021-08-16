@@ -195,9 +195,8 @@ public class ECTesterStandalone {
         testOpts.addOption(Option.builder("st").longOpt("sig-type").desc("Set the Signature object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("f").longOpt("format").desc("Set the output format, one of text,yaml,xml.").hasArg().argName("format").optionalArg(false).build());
         testOpts.addOption(Option.builder().longOpt("key-type").desc("Set the key [algorithm] for which the key should be derived in KeyAgreements with KDF. Default is \"AES\".").hasArg().argName("algorithm").optionalArg(false).build());
-        testOpts.addOption(Option.builder("s").longOpt("suite").desc("Set the test suite.").hasArg().argName("suite").optionalArg(false).build());
+        testOpts.addOption(Option.builder("s").longOpt("suite").desc("Set the test suite: <suite>").hasArg().argName("suite").optionalArg(false).build());
         List<Argument> testArgs = new LinkedList<>();
-        testArgs.add(new Argument("test-suite", "The test suite to run.", true));
         ParserOptions test = new ParserOptions(new TreeParser(Collections.emptyMap(), true, testArgs), testOpts, "Test a library.");
         actions.put("test", test);
 
