@@ -27,7 +27,7 @@ import java.util.*;
 
 public class StandaloneTwistSuite extends StandaloneTestSuite {
     public StandaloneTwistSuite(TestWriter writer, ECTesterStandalone.Config cfg, TreeCommandLine cli) {
-        super(writer, cfg, cli, "twist", "The twist test suite tests whether the library correctly rejects points on the quadratic twist of the curve during ECDH.", "Supports options:", "\t - gt/kpg-type", "\t - kt/ka-type (select multiple types by separating them with commas)");
+        super(writer, cfg, cli, "twist", "The twist test suite tests whether the library correctly rejects points on the quadratic twist of the curve during KeyAgreement.", "Supports options:", "\t - gt/kpg-type", "\t - kt/ka-type (select multiple types by separating them with commas)");
     }
 
     @Override
@@ -77,15 +77,15 @@ public class StandaloneTwistSuite extends StandaloneTestSuite {
             ECParameterSpec spec = curve.toSpec();
             KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
 
-            Test generate = CompoundTest.all(Result.ExpectedValue.SUCCESS,"Generate keypair.", KeyGeneratorTest.expect(kgt, Result.ExpectedValue.SUCCESS));
-            runTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair on " + curve.getId() + ".", generate));
-
+            Test generate =  KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
+            runTest(generate);
             KeyPair kp = kgt.getKeyPair();
             if(kp == null) {
-                Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating keypair has failed on " + curve.getId() + ".", generate);
-                doTest(doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Twist test of " + curve.getId() + ".", generateFail)));
+                Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() + ". " + "KeyAgreement tests will be skipped.", generate);
+                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Twist test of " + curve.getId() + ".", generateFail));
                 continue;
             }
+            Test generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair.", generate);
             ECPrivateKey ecpriv = (ECPrivateKey) kp.getPrivate();
 
             List<Test> allKaTests = new LinkedList<>();
@@ -97,14 +97,17 @@ public class StandaloneTwistSuite extends StandaloneTestSuite {
                     for (EC_Key.Public pub : keys) {
                         ECPublicKey ecpub = ECUtil.toPublicKey(pub);
                         KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpriv, ecpub);
-                        Test keyAgreement = KeyAgreementTest.expect(testable, Result.ExpectedValue.FAILURE);
+                        Test keyAgreement = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
                         specificKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " twist key test.", keyAgreement));
                     }
                     allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform " + kaIdent.getName() + " with public points on twist.", specificKaTests.toArray(new Test[0])));
                 }
             }
+            if(allKaTests.isEmpty()) {
+                allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified key agreement types is supported by the library."));
+            }
             Test tests = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Do tests.", allKaTests.toArray(new Test[0]));
-            doTest(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Twist test of " + curve.getId() + ".", generate, tests));
+            doTest(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Twist test of " + curve.getId() + ".", generateSuccess, tests));
         }
     }
 }
