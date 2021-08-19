@@ -22,6 +22,16 @@ public class KeyGeneratorTest extends SimpleTest<KeyGeneratorTestable> {
         });
     }
 
+    public static KeyGeneratorTest expectError(KeyGeneratorTestable kg, Result.ExpectedValue expected) {
+        return new KeyGeneratorTest(kg, new TestCallback<KeyGeneratorTestable>() {
+            @Override
+            public Result apply(KeyGeneratorTestable keyGenerationTestable) {
+                Result.Value value = Result.Value.fromExpected(expected, keyGenerationTestable.ok(), false);
+                return new Result(value, value.description());
+            }
+        });
+    }
+
     public static KeyGeneratorTest function(KeyGeneratorTestable ka, TestCallback<KeyGeneratorTestable> callback) {
         return new KeyGeneratorTest(ka, callback);
     }
