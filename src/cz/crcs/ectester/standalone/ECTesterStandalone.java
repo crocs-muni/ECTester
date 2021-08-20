@@ -39,10 +39,7 @@ import cz.crcs.ectester.standalone.libs.*;
 import cz.crcs.ectester.standalone.output.TextTestWriter;
 import cz.crcs.ectester.standalone.output.XMLTestWriter;
 import cz.crcs.ectester.standalone.output.YAMLTestWriter;
-import cz.crcs.ectester.standalone.test.suites.StandaloneDefaultSuite;
-import cz.crcs.ectester.standalone.test.suites.StandaloneTestSuite;
-import cz.crcs.ectester.standalone.test.suites.StandaloneTestVectorSuite;
-import cz.crcs.ectester.standalone.test.suites.StandaloneTwistSuite;
+import cz.crcs.ectester.standalone.test.suites.*;
 import org.apache.commons.cli.*;
 
 import javax.crypto.KeyAgreement;
@@ -316,7 +313,8 @@ public class ECTesterStandalone {
         StandaloneTestSuite[] suites = new StandaloneTestSuite[]{
                 new StandaloneDefaultSuite(null, null, null),
                 new StandaloneTwistSuite(null, null, null),
-                new StandaloneTestVectorSuite(null, null, null)};
+                new StandaloneTestVectorSuite(null, null, null),
+                new StandaloneCofactorSuite(null, null, null)};
         for (StandaloneTestSuite suite : suites) {
             System.out.println(" - " + suite.getName());
             for (String line : suite.getDescription()) {
@@ -747,6 +745,9 @@ public class ECTesterStandalone {
         StandaloneTestSuite suite;
 
         switch(cli.getArg(0).toLowerCase()) {
+            case "cofactor":
+                suite = new StandaloneCofactorSuite(writer, cfg, cli);
+                break;
             case "test-vectors":
                 suite = new StandaloneTestVectorSuite(writer, cfg, cli);
                 break;
