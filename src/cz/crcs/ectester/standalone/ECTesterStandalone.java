@@ -39,10 +39,7 @@ import cz.crcs.ectester.standalone.libs.*;
 import cz.crcs.ectester.standalone.output.TextTestWriter;
 import cz.crcs.ectester.standalone.output.XMLTestWriter;
 import cz.crcs.ectester.standalone.output.YAMLTestWriter;
-import cz.crcs.ectester.standalone.test.suites.StandaloneDefaultSuite;
-import cz.crcs.ectester.standalone.test.suites.StandaloneTestSuite;
-import cz.crcs.ectester.standalone.test.suites.StandaloneTestVectorSuite;
-import cz.crcs.ectester.standalone.test.suites.StandaloneTwistSuite;
+import cz.crcs.ectester.standalone.test.suites.*;
 import org.apache.commons.cli.*;
 
 import javax.crypto.KeyAgreement;
@@ -315,6 +312,7 @@ public class ECTesterStandalone {
     private void listSuites() {
         StandaloneTestSuite[] suites = new StandaloneTestSuite[]{
                 new StandaloneDefaultSuite(null, null, null),
+                new StandaloneDegenerateSuite(null, null, null),
                 new StandaloneTwistSuite(null, null, null),
                 new StandaloneTestVectorSuite(null, null, null)};
         for (StandaloneTestSuite suite : suites) {
@@ -747,6 +745,9 @@ public class ECTesterStandalone {
         StandaloneTestSuite suite;
 
         switch(cli.getArg(0).toLowerCase()) {
+            case "degenerate":
+                suite = new StandaloneDegenerateSuite(writer, cfg, cli);
+                break;
             case "test-vectors":
                 suite = new StandaloneTestVectorSuite(writer, cfg, cli);
                 break;
