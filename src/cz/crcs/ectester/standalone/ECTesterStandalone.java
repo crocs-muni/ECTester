@@ -314,6 +314,7 @@ public class ECTesterStandalone {
                 new StandaloneDefaultSuite(null, null, null),
                 new StandaloneTestVectorSuite(null, null, null),
                 new StandaloneInvalidSuite(null, null, null),
+                new StandaloneDegenerateSuite(null, null, null),
                 new StandaloneCofactorSuite(null, null, null),
                 new StandaloneTwistSuite(null, null, null)};
         for (StandaloneTestSuite suite : suites) {
@@ -748,6 +749,9 @@ public class ECTesterStandalone {
         switch(cli.getArg(0).toLowerCase()) {
             case "test-vectors":
                 suite = new StandaloneTestVectorSuite(writer, cfg, cli);
+                break;
+            case "degenerate":
+                suite = new StandaloneDegenerateSuite(writer, cfg, cli);
                 break;
             case "cofactor":
                 suite = new StandaloneCofactorSuite(writer, cfg, cli);
