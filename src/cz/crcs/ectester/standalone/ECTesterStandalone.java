@@ -316,7 +316,8 @@ public class ECTesterStandalone {
                 new StandaloneInvalidSuite(null, null, null),
                 new StandaloneDegenerateSuite(null, null, null),
                 new StandaloneCofactorSuite(null, null, null),
-                new StandaloneTwistSuite(null, null, null)};
+                new StandaloneTwistSuite(null, null, null),
+                new StandaloneMiscSuite(null, null, null)};
         for (StandaloneTestSuite suite : suites) {
             System.out.println(" - " + suite.getName());
             for (String line : suite.getDescription()) {
@@ -761,6 +762,9 @@ public class ECTesterStandalone {
                 break;
             case "twist":
                 suite = new StandaloneTwistSuite(writer, cfg, cli);
+                break;
+            case "miscellaneous":
+                suite = new StandaloneMiscSuite(writer, cfg, cli);
                 break;
             case "default":
             default:
