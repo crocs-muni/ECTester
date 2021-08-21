@@ -312,9 +312,10 @@ public class ECTesterStandalone {
     private void listSuites() {
         StandaloneTestSuite[] suites = new StandaloneTestSuite[]{
                 new StandaloneDefaultSuite(null, null, null),
-                new StandaloneTwistSuite(null, null, null),
+                new StandaloneTestVectorSuite(null, null, null),
                 new StandaloneInvalidSuite(null, null, null),
-                new StandaloneTestVectorSuite(null, null, null)};
+                new StandaloneCofactorSuite(null, null, null),
+                new StandaloneTwistSuite(null, null, null)};
         for (StandaloneTestSuite suite : suites) {
             System.out.println(" - " + suite.getName());
             for (String line : suite.getDescription()) {
@@ -745,11 +746,14 @@ public class ECTesterStandalone {
         StandaloneTestSuite suite;
 
         switch(cli.getArg(0).toLowerCase()) {
-            case "invalid":
-                suite = new StandaloneInvalidSuite(writer, cfg, cli);
-                break;
             case "test-vectors":
                 suite = new StandaloneTestVectorSuite(writer, cfg, cli);
+                break;
+            case "cofactor":
+                suite = new StandaloneCofactorSuite(writer, cfg, cli);
+                break;
+            case "invalid":
+                suite = new StandaloneInvalidSuite(writer, cfg, cli);
                 break;
             case "twist":
                 suite = new StandaloneTwistSuite(writer, cfg, cli);
