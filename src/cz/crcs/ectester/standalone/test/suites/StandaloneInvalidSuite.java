@@ -27,7 +27,8 @@ import java.util.*;
 
 public class StandaloneInvalidSuite extends StandaloneTestSuite {
     public StandaloneInvalidSuite(TestWriter writer, ECTesterStandalone.Config cfg, TreeCommandLine cli) {
-        super(writer, cfg, cli, "invalid", "The invalid curve suite tests whether the library rejects points outside of the curve during ECDH.", "Supports options:", "\t - gt/kpg-type", "\t - kt/ka-type (select multiple types by separating them with commas)");
+        super(writer, cfg, cli, "invalid", "The invalid curve suite tests whether the library rejects points outside of the curve during ECDH.",
+                "Supports options:", "\t - gt/kpg-type", "\t - kt/ka-type (select multiple types by separating them with commas)");
     }
 
     @Override
