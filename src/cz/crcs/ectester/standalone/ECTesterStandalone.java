@@ -747,6 +747,7 @@ public class ECTesterStandalone {
         switch(cli.getArg(0).toLowerCase()) {
             case "invalid":
                 suite = new StandaloneInvalidSuite(writer, cfg, cli);
+                break;
             case "test-vectors":
                 suite = new StandaloneTestVectorSuite(writer, cfg, cli);
                 break;
