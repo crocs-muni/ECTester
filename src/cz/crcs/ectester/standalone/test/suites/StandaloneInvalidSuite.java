@@ -35,13 +35,7 @@ public class StandaloneInvalidSuite extends StandaloneTestSuite {
     protected void runTests() throws Exception {
         String kpgAlgo = cli.getOptionValue("test.kpg-type");
         String kaAlgo = cli.getOptionValue("test.ka-type");
-
-        List<String> kaTypes;
-        if(kaAlgo != null) {
-            kaTypes = Arrays.asList(kaAlgo.split(","));
-        } else {
-            kaTypes = new ArrayList<>();
-        }
+        List<String> kaTypes = kaAlgo != null ? Arrays.asList(kaAlgo.split(",")) : new ArrayList<>();
 
         KeyPairGeneratorIdent kpgIdent;
         if (kpgAlgo == null) {
