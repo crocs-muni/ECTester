@@ -2,10 +2,7 @@ package cz.crcs.ectester.standalone.consts;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.BiFunction;
 
 public abstract class Ident {
@@ -29,6 +26,15 @@ public abstract class Ident {
 
     public boolean contains(String other) {
         return name.equals(other) || idents.contains(other);
+    }
+
+    public boolean containsAny(List<String> others) {
+        for(String other : others) {
+            if(name.equals(other) || idents.contains(other)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     <T> T getInstance(BiFunction<String, Provider, T> getter, Provider provider) throws NoSuchAlgorithmException {

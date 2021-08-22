@@ -37,6 +37,16 @@ public class KeyAgreementTest extends SimpleTest<KeyAgreementTestable> {
         });
     }
 
+    public static KeyAgreementTest expectError(KeyAgreementTestable ka, Result.ExpectedValue expected) {
+        return new KeyAgreementTest(ka, new TestCallback<KeyAgreementTestable>() {
+            @Override
+            public Result apply(KeyAgreementTestable keyAgreementTestable) {
+                Result.Value value = Result.Value.fromExpected(expected, keyAgreementTestable.ok(), false);
+                return new Result(value, value.description());
+            }
+        });
+    }
+
     public static KeyAgreementTest function(KeyAgreementTestable ka, TestCallback<KeyAgreementTestable> callback) {
         return new KeyAgreementTest(ka, callback);
     }
