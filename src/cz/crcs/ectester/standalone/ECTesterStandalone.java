@@ -316,6 +316,7 @@ public class ECTesterStandalone {
                 new StandaloneInvalidSuite(null, null, null),
                 new StandaloneDegenerateSuite(null, null, null),
                 new StandaloneCofactorSuite(null, null, null),
+                new StandaloneCompositeSuite(null, null, null),
                 new StandaloneTwistSuite(null, null, null),
                 new StandaloneMiscSuite(null, null, null)};
         for (StandaloneTestSuite suite : suites) {
@@ -756,6 +757,9 @@ public class ECTesterStandalone {
                 break;
             case "cofactor":
                 suite = new StandaloneCofactorSuite(writer, cfg, cli);
+                break;
+            case "composite":
+                suite = new StandaloneCompositeSuite(writer, cfg, cli);
                 break;
             case "invalid":
                 suite = new StandaloneInvalidSuite(writer, cfg, cli);
