@@ -38,16 +38,15 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
                 "\t - gt/kpg-type",
                 "\t - kt/ka-type (select multiple types by separating them with commas)",
                 "\t - st/sig-type (select multiple types by separating them with commas)");
-        kpgAlgo = cli.getOptionValue("test.kpg-type");
-        kaAlgo = cli.getOptionValue("test.ka-type");
-        sigAlgo = cli.getOptionValue("test.sig-type");
-
-        kaTypes = kaAlgo != null ? Arrays.asList(kaAlgo.split(",")) : new ArrayList<>();
-        sigTypes = sigAlgo != null ? Arrays.asList(sigAlgo.split(",")) : new ArrayList<>();
     }
 
     @Override
     protected void runTests() throws Exception {
+        kpgAlgo = cli.getOptionValue("test.kpg-type");
+        kaAlgo = cli.getOptionValue("test.ka-type");
+        sigAlgo = cli.getOptionValue("test.sig-type");
+        kaTypes = kaAlgo != null ? Arrays.asList(kaAlgo.split(",")) : new ArrayList<>();
+        sigTypes = sigAlgo != null ? Arrays.asList(sigAlgo.split(",")) : new ArrayList<>();
 
         KeyPairGeneratorIdent kpgIdent;
         if (kpgAlgo == null) {
