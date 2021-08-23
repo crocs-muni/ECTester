@@ -31,6 +31,13 @@ public class SignatureTestable extends StandaloneTestable<SignatureTestable.Sign
         }
     }
 
+    public SignatureTestable(Signature sig, ECPublicKey verifyKey, byte[] data, byte[] signature, boolean verify) {
+        this.sig = sig;
+        this.verifyKey = verifyKey;
+        this.data = data;
+        this.signature = signature;
+    }
+
     public SignatureTestable(Signature sig, KeyGeneratorTestable kgt, byte[] data) {
         this(sig, null, null, data);
         this.kgt = kgt;
@@ -61,28 +68,30 @@ public class SignatureTestable extends StandaloneTestable<SignatureTestable.Sign
                 verifyKey = (ECPublicKey) kgt.getKeyPair().getPublic();
             }
 
-            stage = SignatureStage.InitSign;
-            try {
-                sig.initSign(signKey);
-            } catch (InvalidKeyException e) {
-                failOnException(e);
-                return;
-            }
+            if(signKey != null) {
+                stage = SignatureStage.InitSign;
+                try {
+                    sig.initSign(signKey);
+                } catch (InvalidKeyException e) {
+                    failOnException(e);
+                    return;
+                }
 
-            stage = SignatureStage.UpdateSign;
-            try {
-                sig.update(data);
-            } catch (SignatureException e) {
-                failOnException(e);
-                return;
-            }
+                stage = SignatureStage.UpdateSign;
+                try {
+                    sig.update(data);
+                } catch (SignatureException e) {
+                    failOnException(e);
+                    return;
+                }
 
-            stage = SignatureStage.Sign;
-            try {
-                signature = sig.sign();
-            } catch (SignatureException e) {
-                failOnException(e);
-                return;
+                stage = SignatureStage.Sign;
+                try {
+                    signature = sig.sign();
+                } catch (SignatureException e) {
+                    failOnException(e);
+                    return;
+                }
             }
 
             stage = SignatureStage.InitVerify;
