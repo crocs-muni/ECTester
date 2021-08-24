@@ -13,6 +13,7 @@ import java.util.function.BiFunction;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
+@SuppressWarnings("serial")
 public class TreeCommandLine extends CommandLine {
     private String name = "";
     private TreeCommandLine next;

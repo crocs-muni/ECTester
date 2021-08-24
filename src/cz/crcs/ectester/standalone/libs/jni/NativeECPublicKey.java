@@ -11,6 +11,7 @@ import java.security.spec.ECPoint;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
+@SuppressWarnings("serial")
 public abstract class NativeECPublicKey implements ECPublicKey {
     private String algorithm;
     private String format;
@@ -39,6 +40,7 @@ public abstract class NativeECPublicKey implements ECPublicKey {
 
     public abstract byte[] getData();
 
+    @SuppressWarnings("serial")
     private static class ANSIX962 extends NativeECPublicKey {
         byte[] keyData;
 
@@ -62,66 +64,77 @@ public abstract class NativeECPublicKey implements ECPublicKey {
         }
     }
 
+    @SuppressWarnings("serial")
     public static class TomCrypt extends ANSIX962 {
         public TomCrypt(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Botan extends ANSIX962 {
         public Botan(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Cryptopp extends ANSIX962 {
         public Cryptopp(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Openssl extends ANSIX962 {
         public Openssl(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Boringssl extends ANSIX962 {
         public Boringssl(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Gcrypt extends ANSIX962 {
         public Gcrypt(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class MbedTLS extends ANSIX962 {
         public MbedTLS(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Ippcp extends ANSIX962 {
         public Ippcp(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Matrixssl extends ANSIX962 {
         public Matrixssl(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Libressl extends ANSIX962 {
         public Libressl(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Mscng extends ANSIX962 {
         // 0 -> implicit (meta = curveName UTF16, header = full);
         // 1 -> explicit (meta = null, header = full);
@@ -163,6 +176,7 @@ public abstract class NativeECPublicKey implements ECPublicKey {
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Nettle extends ANSIX962 {
         public Nettle(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);

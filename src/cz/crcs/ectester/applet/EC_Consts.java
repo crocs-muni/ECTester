@@ -1472,6 +1472,7 @@ public class EC_Consts {
         return curve <= FP_CURVES ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
     }
 
+    @SuppressWarnings("fallthrough")
     public static short toX962(byte form, byte[] outputBuffer, short outputOffset, byte[] xBuffer, short xOffset, short xLength, byte[] yBuffer, short yOffset, short yLength) {
         short size = 1;
         size += xLength;

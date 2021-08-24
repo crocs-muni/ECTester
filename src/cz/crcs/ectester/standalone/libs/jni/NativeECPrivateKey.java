@@ -10,6 +10,7 @@ import java.security.spec.ECParameterSpec;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
+@SuppressWarnings("serial")
 public abstract class NativeECPrivateKey implements ECPrivateKey {
     private String algorithm;
     private String format;
@@ -38,6 +39,7 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
 
     public abstract byte[] getData();
 
+    @SuppressWarnings("serial")
     private static class Raw extends NativeECPrivateKey {
         byte[] keyData;
 
@@ -61,66 +63,77 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
         }
     }
 
+    @SuppressWarnings("serial")
     public static class TomCrypt extends Raw {
         public TomCrypt(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Botan extends Raw {
         public Botan(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Cryptopp extends Raw {
         public Cryptopp(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Openssl extends Raw {
         public Openssl(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Boringssl extends Raw {
         public Boringssl(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Gcrypt extends Raw {
         public Gcrypt(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class MbedTLS extends Raw {
         public MbedTLS(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Ippcp extends Raw {
         public Ippcp(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Matrixssl extends Raw {
         public Matrixssl(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Libressl extends Raw {
         public Libressl(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Mscng extends Raw {
         // 0 -> implicit (meta = curveName UTF16, header = full);
         // 1 -> explicit (meta = null, header = full);
@@ -162,10 +175,10 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
         }
     }
 
+    @SuppressWarnings("serial")
     public static class Nettle extends Raw {
         public Nettle(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);
         }
     }
-
 }

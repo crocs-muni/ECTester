@@ -9,6 +9,7 @@ import java.security.spec.ECPoint;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
+@SuppressWarnings("serial")
 public class RawECPublicKey implements ECPublicKey {
     private ECPoint point;
     private ECParameterSpec params;
