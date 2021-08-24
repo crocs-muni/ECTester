@@ -127,7 +127,7 @@ public class StandaloneMiscSuite extends StandaloneTestSuite {
         //perform Signature tests
         List<Test> sigTests = new LinkedList<>();
         for (SignatureIdent sigIdent : cfg.selected.getSigs()) {
-            if (kaAlgo == null || sigIdent.containsAny(sigTypes)) {
+            if (sigAlgo == null || sigIdent.containsAny(sigTypes)) {
                 Signature sig = sigIdent.getInstance(cfg.selected.getProvider());
                 SignatureTestable testable = new SignatureTestable(sig, ecpriv, ecpub, null);
                 sigTests.add(SignatureTest.expectError(testable, expected));
