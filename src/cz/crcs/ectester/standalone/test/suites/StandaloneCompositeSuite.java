@@ -24,6 +24,9 @@ import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECParameterSpec;
 import java.util.*;
 
+/**
+ * @author David Hofman
+ */
 public class StandaloneCompositeSuite extends StandaloneTestSuite {
     private String kpgAlgo;
     private String kaAlgo;
