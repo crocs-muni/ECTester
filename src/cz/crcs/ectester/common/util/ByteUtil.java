@@ -9,12 +9,21 @@ package cz.crcs.ectester.common.util;
 public class ByteUtil {
 
     /**
-     * Gen a short from a byte array at <code>offset</code>, big-endian.
+     * Get a short from a byte array at <code>offset</code>, big-endian.
      *
      * @return the short value
      */
     public static short getShort(byte[] array, int offset) {
         return (short) (((array[offset] & 0xFF) << 8) | (array[offset + 1] & 0xFF));
+    }
+
+    /**
+     * Get a short from a byte array at <code>offset</code>, return it as an int, big-endian.
+     *
+     * @return the short value (as an int)
+     */
+    public static int getShortInt(byte[] array, int offset) {
+        return (((array[offset] & 0xFF) << 8) | (array[offset + 1] & 0xFF));
     }
 
     /**

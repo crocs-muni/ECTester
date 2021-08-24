@@ -112,8 +112,7 @@ public class EC_Curve extends EC_Params {
 
         BigInteger n = new BigInteger(1, getParam(EC_Consts.PARAMETER_R)[0]);
 
-        int h = ByteUtil.getShort(getParam(EC_Consts.PARAMETER_K)[0], 0);
-
+        int h = ByteUtil.getShortInt(getParam(EC_Consts.PARAMETER_K)[0], 0);
         return new ECParameterSpec(curve, generator, n, h);
     }
 
