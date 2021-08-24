@@ -31,7 +31,7 @@ public class SignatureTestable extends StandaloneTestable<SignatureTestable.Sign
         }
     }
 
-    public SignatureTestable(Signature sig, ECPublicKey verifyKey, byte[] data, byte[] signature, boolean verify) {
+    public SignatureTestable(byte[] signature, Signature sig, ECPublicKey verifyKey, byte[] data) {
         this.sig = sig;
         this.verifyKey = verifyKey;
         this.data = data;
