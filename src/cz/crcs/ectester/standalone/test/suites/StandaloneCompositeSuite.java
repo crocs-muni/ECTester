@@ -122,35 +122,35 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
         /* Test the whole curves with both keypairs generated on card(no small-order public points provided).
          */
         List<EC_Curve> wholeCurves = groups.entrySet().stream().filter((e) -> e.getKey().equals("whole")).findFirst().get().getValue();
-        testGroup(wholeCurves, kpg, "Composite generator order", Result.ExpectedValue.FAILURE, "Card rejected to do ECDH with composite order generator.", "Card did not reject to do ECDH with composite order generator.");
+        testGroup(wholeCurves, kpg, "Composite generator order", Result.ExpectedValue.FAILURE);
 
         /* Also test having a G of small order, so small R.
          */
         List<EC_Curve> smallRCurves = groups.entrySet().stream().filter((e) -> e.getKey().equals("small")).findFirst().get().getValue();
-        testGroup(smallRCurves, kpg, "Small generator order", Result.ExpectedValue.FAILURE, "Card correctly rejected to do ECDH over a small order generator.", "Card incorrectly does ECDH over a small order generator.");
+        testGroup(smallRCurves, kpg, "Small generator order", Result.ExpectedValue.FAILURE);
 
         /* Test increasingly larger prime R, to determine where/if card behavior changes.
          */
         List<EC_Curve> varyingCurves = groups.entrySet().stream().filter((e) -> e.getKey().equals("varying")).findFirst().get().getValue();
-        testGroup(varyingCurves, kpg, null, Result.ExpectedValue.ANY, "", "");
+        testGroup(varyingCurves, kpg, null, Result.ExpectedValue.ANY);
 
         /* Also test having a G of large but composite order, R = p * q,
          */
         List<EC_Curve> pqCurves = groups.entrySet().stream().filter((e) -> e.getKey().equals("pq")).findFirst().get().getValue();
-        testGroup(pqCurves, kpg, null, Result.ExpectedValue.ANY, "", "");
+        testGroup(pqCurves, kpg, null, Result.ExpectedValue.ANY);
 
         /* Also test having G or large order being a Carmichael pseudoprime, R = p * q * r,
          */
         List<EC_Curve> ppCurves = groups.entrySet().stream().filter((e) -> e.getKey().equals("pp")).findFirst().get().getValue();
-        testGroup(ppCurves, kpg, "Generator order = Carmichael pseudo-prime", Result.ExpectedValue.ANY, "", "");
+        testGroup(ppCurves, kpg, "Generator order = Carmichael pseudo-prime", Result.ExpectedValue.ANY);
 
         /* Also test rg0 curves.
          */
         List<EC_Curve> rg0Curves = groups.entrySet().stream().filter((e) -> e.getKey().equals("rg0")).findFirst().get().getValue();
-        testGroup(rg0Curves, kpg, null, Result.ExpectedValue.ANY, "", "");
+        testGroup(rg0Curves, kpg, null, Result.ExpectedValue.ANY);
     }
 
-    private void testGroup(List<EC_Curve> curves, KeyPairGenerator kpg, String testName, Result.ExpectedValue dhValue, String ok, String nok) throws Exception {
+    private void testGroup(List<EC_Curve> curves, KeyPairGenerator kpg, String testName, Result.ExpectedValue dhValue) throws Exception {
          for (EC_Curve curve : curves) {
             String description;
             if (testName == null) {
@@ -159,23 +159,20 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
                 description = testName + " test of " + curve.getId() + ".";
             }
 
-            //generate KeyPairs
-            KeyGeneratorTestable kgtA = new KeyGeneratorTestable(kpg, curve.toSpec());
-            KeyGeneratorTestable kgtB = new KeyGeneratorTestable(kpg, curve.toSpec());
-            Test generateA = KeyGeneratorTest.expectError(kgtA, Result.ExpectedValue.ANY);
-            Test generateB = KeyGeneratorTest.expectError(kgtB, Result.ExpectedValue.ANY);
-            runTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, generateA, generateB));
-            KeyPair kpA = kgtA.getKeyPair();
-            KeyPair kpB = kgtB.getKeyPair();
-            if(kpA == null || kpB == null) {
-                Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPairs has failed on " + curve.getId() +
-                        ". " + " Other tests will be skipped.", generateA, generateB);
-                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, description, generateFail));
-                continue;
-            }
-            Test generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypairs.", generateA, generateB);
-            ECPrivateKey ecpriv = (ECPrivateKey) kpA.getPrivate();
-            ECPublicKey ecpub = (ECPublicKey) kpB.getPublic();
+            //generate KeyPair
+             KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, curve.toSpec());
+             Test generate =  KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
+             runTest(generate);
+             KeyPair kp = kgt.getKeyPair();
+             if(kp == null) {
+                 Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() +
+                         ". " + " Other tests will be skipped.", generate);
+                 doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, description, generateFail));
+                 continue;
+             }
+             Test generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair.", generate);
+             ECPrivateKey ecpriv = (ECPrivateKey) kp.getPrivate();
+             ECPublicKey ecpub = (ECPublicKey) kp.getPublic();
 
             //perform KeyAgreement tests
             List<Test> kaTests = new LinkedList<>();
