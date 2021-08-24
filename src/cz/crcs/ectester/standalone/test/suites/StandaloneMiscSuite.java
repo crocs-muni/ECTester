@@ -22,6 +22,9 @@ import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.util.*;
 
+/**
+ * @author David Hofman
+ */
 public class StandaloneMiscSuite extends StandaloneTestSuite {
     private String kpgAlgo;
     private String kaAlgo;

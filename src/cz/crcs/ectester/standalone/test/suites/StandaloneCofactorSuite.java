@@ -25,6 +25,9 @@ import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECParameterSpec;
 import java.util.*;
 
+/**
+ * @author David Hofman
+ */
 public class StandaloneCofactorSuite extends StandaloneTestSuite {
     public StandaloneCofactorSuite(TestWriter writer, ECTesterStandalone.Config cfg, TreeCommandLine cli) {
         super(writer, cfg, cli, "cofactor", "The cofactor test suite tests whether the library correctly rejects points on the curve",

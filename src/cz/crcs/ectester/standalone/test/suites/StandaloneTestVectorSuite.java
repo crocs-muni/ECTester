@@ -16,6 +16,9 @@ import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.util.Map;
 
+/**
+ * @author David Hofman
+ */
 public class StandaloneTestVectorSuite extends StandaloneTestSuite {
 
     public StandaloneTestVectorSuite(TestWriter writer, ECTesterStandalone.Config cfg, TreeCommandLine cli) {
