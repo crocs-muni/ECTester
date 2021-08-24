@@ -18,6 +18,9 @@ import java.security.Signature;
 import java.security.interfaces.ECPublicKey;
 import java.util.*;
 
+/**
+ * @author David Hofman
+ */
 public class StandaloneSignatureSuite extends StandaloneTestSuite {
     public StandaloneSignatureSuite(TestWriter writer, ECTesterStandalone.Config cfg, TreeCommandLine cli) {
         super(writer, cfg, cli, "signature", "The signature test suite tests verifying various malformed and well-formed but invalid ECDSA signatures.",
