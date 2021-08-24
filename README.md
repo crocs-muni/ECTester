@@ -344,6 +344,27 @@ g++ -fPIC -shared -O2 -o botan_provider.so -Wl,-rpath,'$ORIGIN/lib' botan.o cpp_
 g++ -fPIC -shared -O2 -o cryptopp_provider.so -Wl,-rpath,'$ORIGIN/lib' cryptopp.o cpp_utils.o -L. -L/usr/local/lib -lcryptopp  -l:lib_timing.so
 ```
 
+BoringSSL and LibreSSL are included as git submodules. Make sure you run: `git submodule update --init --recursive` 
+after checking out the ECTester repository to initialize them. To build BoringSSL do:
+```
+cd ext/boringssl
+mkdir build
+cd build
+cmake -GNinja -DBUILD_SHARED_LIBS=1 ..
+ninja
+```
+
+To build LibreSSL do:
+```
+cd ext/libressl
+./autogen.sh
+mkdir build
+cd build
+cmake -GNinja -DBUILD_SHARED_LIBS=1 ..
+ninja
+```
+
+
 #### Java
 
 OpenJDK JRE is required to test ECDH on Windows properly, as  Oracle JRE requires the Java Cryptography Providers
