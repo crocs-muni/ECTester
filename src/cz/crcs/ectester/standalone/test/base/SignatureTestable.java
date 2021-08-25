@@ -31,7 +31,7 @@ public class SignatureTestable extends StandaloneTestable<SignatureTestable.Sign
         }
     }
 
-    public SignatureTestable(byte[] signature, Signature sig, ECPublicKey verifyKey, byte[] data) {
+    public SignatureTestable(Signature sig, ECPublicKey verifyKey, byte[] data, byte[] signature) {
         this.sig = sig;
         this.verifyKey = verifyKey;
         this.data = data;
@@ -39,7 +39,7 @@ public class SignatureTestable extends StandaloneTestable<SignatureTestable.Sign
     }
 
     public SignatureTestable(Signature sig, KeyGeneratorTestable kgt, byte[] data) {
-        this(sig, null, null, data);
+        this(sig, (ECPrivateKey) null, null, data);
         this.kgt = kgt;
     }
 
