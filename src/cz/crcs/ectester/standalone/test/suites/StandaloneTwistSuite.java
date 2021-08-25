@@ -25,6 +25,9 @@ import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECParameterSpec;
 import java.util.*;
 
+/**
+ * @author David Hofman
+ */
 public class StandaloneTwistSuite extends StandaloneTestSuite {
     public StandaloneTwistSuite(TestWriter writer, ECTesterStandalone.Config cfg, TreeCommandLine cli) {
         super(writer, cfg, cli, "twist", "The twist test suite tests whether the library correctly rejects points on the quadratic twist of the curve during ECDH.",

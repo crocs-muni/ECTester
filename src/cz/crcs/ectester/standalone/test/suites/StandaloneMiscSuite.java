@@ -22,6 +22,9 @@ import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.util.*;
 
+/**
+ * @author David Hofman
+ */
 public class StandaloneMiscSuite extends StandaloneTestSuite {
     private String kpgAlgo;
     private String kaAlgo;
@@ -37,16 +40,17 @@ public class StandaloneMiscSuite extends StandaloneTestSuite {
                 "\t - gt/kpg-type",
                 "\t - kt/ka-type (select multiple types by separating them with commas)",
                 "\t - st/sig-type (select multiple types by separating them with commas)");
+    }
+
+    @Override
+    protected void runTests() throws Exception {
         kpgAlgo = cli.getOptionValue("test.kpg-type");
         kaAlgo = cli.getOptionValue("test.ka-type");
         sigAlgo = cli.getOptionValue("test.sig-type");
 
         kaTypes = kaAlgo != null ? Arrays.asList(kaAlgo.split(",")) : new ArrayList<>();
         sigTypes = sigAlgo != null ? Arrays.asList(sigAlgo.split(",")) : new ArrayList<>();
-    }
-
-    @Override
-    protected void runTests() throws Exception {
+    
         KeyPairGeneratorIdent kpgIdent;
         if (kpgAlgo == null) {
             // try EC, if not, fail with: need to specify kpg algo.
@@ -123,7 +127,7 @@ public class StandaloneMiscSuite extends StandaloneTestSuite {
         //perform Signature tests
         List<Test> sigTests = new LinkedList<>();
         for (SignatureIdent sigIdent : cfg.selected.getSigs()) {
-            if (kaAlgo == null || sigIdent.containsAny(sigTypes)) {
+            if (sigAlgo == null || sigIdent.containsAny(sigTypes)) {
                 Signature sig = sigIdent.getInstance(cfg.selected.getProvider());
                 SignatureTestable testable = new SignatureTestable(sig, ecpriv, ecpub, null);
                 sigTests.add(SignatureTest.expectError(testable, expected));

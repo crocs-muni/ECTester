@@ -9,6 +9,7 @@ import java.security.spec.ECParameterSpec;
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
+@SuppressWarnings("serial")
 public class RawECPrivateKey implements ECPrivateKey {
     private BigInteger scalar;
     private ECParameterSpec params;

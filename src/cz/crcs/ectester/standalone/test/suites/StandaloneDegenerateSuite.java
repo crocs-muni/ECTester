@@ -25,6 +25,9 @@ import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECParameterSpec;
 import java.util.*;
 
+/**
+ * @author David Hofman
+ */
 public class StandaloneDegenerateSuite extends StandaloneTestSuite {
     public StandaloneDegenerateSuite(TestWriter writer, ECTesterStandalone.Config cfg, TreeCommandLine cli) {
         super(writer, cfg, cli, "degenerate", "The degenerate suite tests whether the library rejects points outside of the curve during ECDH.",

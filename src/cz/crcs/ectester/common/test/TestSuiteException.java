@@ -6,6 +6,7 @@ package cz.crcs.ectester.common.test;
  *
  * @author Jan Jancar johny@neuromancer.sk
  */
+@SuppressWarnings("serial")
 public class TestSuiteException extends RuntimeException {
     public TestSuiteException(Throwable e) {
         super(e);
