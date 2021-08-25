@@ -316,6 +316,7 @@ public class ECTesterStandalone {
                 new StandaloneInvalidSuite(null, null, null),
                 new StandaloneDegenerateSuite(null, null, null),
                 new StandaloneCofactorSuite(null, null, null),
+                new StandaloneSignatureSuite(null, null, null),
                 new StandaloneCompositeSuite(null, null, null),
                 new StandaloneTwistSuite(null, null, null),
                 new StandaloneMiscSuite(null, null, null)};
@@ -763,6 +764,9 @@ public class ECTesterStandalone {
                 break;
             case "invalid":
                 suite = new StandaloneInvalidSuite(writer, cfg, cli);
+                break;
+            case "signature":
+                suite = new StandaloneSignatureSuite(writer, cfg, cli);
                 break;
             case "twist":
                 suite = new StandaloneTwistSuite(writer, cfg, cli);
