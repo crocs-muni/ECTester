@@ -92,33 +92,37 @@ public class SignatureTestable extends StandaloneTestable<SignatureTestable.Sign
                     failOnException(e);
                     return;
                 }
+
+                ok = true;
             }
 
-            stage = SignatureStage.InitVerify;
-            try {
-                sig.initVerify(verifyKey);
-            } catch (InvalidKeyException e) {
-                failOnException(e);
-                return;
-            }
+            if (verifyKey != null) {
+                stage = SignatureStage.InitVerify;
+                try {
+                    sig.initVerify(verifyKey);
+                } catch (InvalidKeyException e) {
+                    failOnException(e);
+                    return;
+                }
 
-            stage = SignatureStage.UpdateVerify;
-            try {
-                sig.update(data);
-            } catch (SignatureException e) {
-                failOnException(e);
-                return;
-            }
+                stage = SignatureStage.UpdateVerify;
+                try {
+                    sig.update(data);
+                } catch (SignatureException e) {
+                    failOnException(e);
+                    return;
+                }
 
-            stage = SignatureStage.Verify;
-            try {
-                verified = sig.verify(signature);
-            } catch (SignatureException e) {
-                failOnException(e);
-                return;
-            }
+                stage = SignatureStage.Verify;
+                try {
+                    verified = sig.verify(signature);
+                } catch (SignatureException e) {
+                    failOnException(e);
+                    return;
+                }
 
-            ok = verified;
+                ok = verified;
+            }
         } catch (Exception ex) {
             ok = false;
             error = true;
