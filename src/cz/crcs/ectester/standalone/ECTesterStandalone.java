@@ -754,7 +754,7 @@ public class ECTesterStandalone {
                 suite = new StandaloneTestVectorSuite(writer, cfg, cli);
                 break;
             case "wrong":
-                suite = new StandaloneDegenerateSuite(writer, cfg, cli);
+                suite = new StandaloneWrongSuite(writer, cfg, cli);
                 break;
             case "degenerate":
                 suite = new StandaloneDegenerateSuite(writer, cfg, cli);
