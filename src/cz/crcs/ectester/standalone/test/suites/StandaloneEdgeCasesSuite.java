@@ -8,6 +8,8 @@ import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.CompoundTest;
 import cz.crcs.ectester.common.test.Result;
 import cz.crcs.ectester.common.test.Test;
+import cz.crcs.ectester.common.test.TestCallback;
+import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.common.util.ECUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.standalone.ECTesterStandalone;
@@ -98,6 +100,27 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
                 groupTests.add(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Tests on " + curve.getId() + ".", curveTests.toArray(new Test[0])));
             }
             doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, description, groupTests.toArray(new Test[0])));
+        }
+
+        {
+            EC_KAResult openssl_bug = EC_Store.getInstance().getObject(EC_KAResult.class, "misc", "openssl-bug");
+            ECPrivateKey ecpriv = ECUtil.toPrivateKey(EC_Store.getInstance().getObject(EC_Key.Private.class, openssl_bug.getOtherKey()));
+            ECPublicKey ecpub = ECUtil.toPublicKey(EC_Store.getInstance().getObject(EC_Key.Public.class, openssl_bug.getOneKey()));
+            KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
+            KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpriv, ecpub);
+            Test ecdh = KeyAgreementTest.function(testable, new TestCallback<KeyAgreementTestable>() {
+                @Override
+                public Result apply(KeyAgreementTestable testable) {
+                    if (!testable.ok())
+                        return new Result(Result.Value.FAILURE, "ECDH was unsuccessful.");
+                    if (ByteUtil.compareBytes(testable.getSecret(), 0, openssl_bug.getData(0), 0, testable.getSecret().length)) {
+                        return new Result(Result.Value.FAILURE, "OpenSSL bug is present, derived secret matches example.");
+                    }
+                    return new Result(Result.Value.SUCCESS);
+                }
+            });
+
+            doTest(CompoundTest.greedyAll(Result.ExpectedValue.SUCCESS, "Test OpenSSL modular reduction bug.", ecdh));
         }
     }
 }
