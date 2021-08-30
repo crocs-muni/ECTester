@@ -30,6 +30,9 @@ import java.security.spec.ECParameterSpec;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * @author David Hofman
+ */
 public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
     KeyAgreement ka;
 
