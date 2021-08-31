@@ -179,7 +179,7 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
             KeyPair kp = kgt.getKeyPair();
             if (kp == null) {
                 Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() +
-                        ". " + " Other tests will be skipped.", generate); //change description here
+                        ". " + " Other tests will be skipped.", generate);
                 doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with edge-case private key values over" + curve.getId() + ".", generateFail));
                 continue;
             }
