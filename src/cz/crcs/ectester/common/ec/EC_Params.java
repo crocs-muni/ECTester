@@ -109,8 +109,8 @@ public class EC_Params extends EC_Data {
                     break;
                 }
                 if (masked == EC_Consts.PARAMETER_G || masked == EC_Consts.PARAMETER_W) {
-                    data[i] = value[1];
-                    data[i + 1] = value[2];
+                    data[i] = value[0];
+                    data[i + 1] = value[1];
                     break;
                 }
                 data[i] = value[0];
