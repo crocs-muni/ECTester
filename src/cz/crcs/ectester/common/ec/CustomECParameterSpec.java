@@ -7,19 +7,19 @@ import java.security.spec.ECPoint;
 import java.security.spec.EllipticCurve;
 
 public class CustomECParameterSpec extends ECParameterSpec {
-    private final EllipticCurve curve;
-    private final ECPoint G;
-    private final BigInteger R;
-    private final int K;
+    private EllipticCurve curve;
+    private ECPoint g;
+    private BigInteger n;
+    private int h;
 
-    public CustomECParameterSpec(EllipticCurve curve, ECPoint G, BigInteger R, int K) {
+    public CustomECParameterSpec(EllipticCurve curve, ECPoint g, BigInteger n, int h) {
         //feed the constructor of the superclass some default, valid data
         //getters will return custom (and possibly invalid) parameters instead
         super(new EllipticCurve(new ECFieldFp(BigInteger.ONE),BigInteger.ZERO,BigInteger.ZERO), new ECPoint(BigInteger.ZERO, BigInteger.ZERO), BigInteger.ONE, 1);
         this.curve = curve;
-        this.G = G;
-        this.R = R;
-        this.K = K;
+        this.g = g;
+        this.n = n;
+        this.h = h;
     }
 
     @Override
@@ -29,16 +29,16 @@ public class CustomECParameterSpec extends ECParameterSpec {
 
     @Override
     public ECPoint getGenerator() {
-        return G;
+        return g;
     }
 
     @Override
     public BigInteger getOrder() {
-        return R;
+        return n;
     }
 
     @Override
     public int getCofactor() {
-        return K;
+        return h;
     }
 }

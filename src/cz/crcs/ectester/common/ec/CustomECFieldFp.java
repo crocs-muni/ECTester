@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.security.spec.ECFieldFp;
 
 public class CustomECFieldFp extends ECFieldFp {
-    private final BigInteger p;
+    private BigInteger p;
 
     public CustomECFieldFp(BigInteger p) {
         //feed the constructor of the superclass some default, valid parameter p

@@ -12,11 +12,11 @@ public class CustomECFieldF2m extends ECFieldF2m {
     public CustomECFieldF2m(int m, int[] ks) {
         //feed the constructor of the superclass some default, valid data
         //getters will return custom parameters instead
-        super(163, new int[] {3,2,1});
+        super(163, new int[] {3, 2, 1});
         this.m = m;
         this.ks = ks.clone();
 
-        //causes arithmetic exception if m < 0 or any element of ks < 0
+        //causes ArithmeticException if m < 0 or any element of ks < 0
         this.rp = BigInteger.ONE;
         this.rp = this.rp.setBit(m);
         for(int i = 0; i < this.ks.length; ++i) {
