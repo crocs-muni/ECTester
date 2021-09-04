@@ -6,32 +6,52 @@ import java.security.spec.ECFieldFp;
 import java.security.spec.EllipticCurve;
 
 public class CustomEllipticCurve extends EllipticCurve {
-    ECField field;
-    BigInteger A;
-    BigInteger B;
+    private ECField field;
+    private BigInteger a;
+    private BigInteger b;
 
-    public CustomEllipticCurve(ECField field, BigInteger A, BigInteger B) {
-        //feed the default constructor some default, valid data
-        //getters will return custom data instead
+    public CustomEllipticCurve(ECField field, BigInteger a, BigInteger b) {
+        //feed the constructor of the superclass some default, valid EC parameters
+        //getters will return custom (and possibly invalid) data instead
         super(new ECFieldFp(BigInteger.ONE), BigInteger.ZERO, BigInteger.ZERO);
         this.field = field;
-        this.A = A;
-        this.B = B;
+        this.a = a;
+        this.b = b;
 
     }
 
     @Override
     public BigInteger getA() {
-        return this.A;
+        return a;
     }
 
     @Override
     public BigInteger getB() {
-        return this.B;
+        return b;
     }
 
     @Override
     public ECField getField() {
-        return this.field;
+        return field;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        } else {
+            if (o instanceof CustomEllipticCurve) {
+                CustomEllipticCurve otherCurve = (CustomEllipticCurve) o;
+                if (field.equals(otherCurve.field) && a.equals(otherCurve.a) && b.equals(otherCurve.b)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return field.hashCode() << 6 + (a.hashCode() << 4) + (b.hashCode() << 2);
     }
 }
