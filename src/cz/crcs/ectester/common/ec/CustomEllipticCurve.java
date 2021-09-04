@@ -5,6 +5,9 @@ import java.security.spec.ECField;
 import java.security.spec.ECFieldFp;
 import java.security.spec.EllipticCurve;
 
+/**
+ * @author David Hofman
+ */
 public class CustomEllipticCurve extends EllipticCurve {
     private ECField field;
     private BigInteger a;

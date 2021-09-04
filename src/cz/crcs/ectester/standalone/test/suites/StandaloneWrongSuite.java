@@ -28,6 +28,9 @@ import java.security.spec.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * @author David Hofman
+ */
 public class StandaloneWrongSuite extends StandaloneTestSuite {
     private String kpgAlgo;
     private String kaAlgo;

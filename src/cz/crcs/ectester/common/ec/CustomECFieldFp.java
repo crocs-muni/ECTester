@@ -3,6 +3,9 @@ package cz.crcs.ectester.common.ec;
 import java.math.BigInteger;
 import java.security.spec.ECFieldFp;
 
+/**
+ * @author David Hofman
+ */
 public class CustomECFieldFp extends ECFieldFp {
     private BigInteger p;
 

@@ -4,6 +4,9 @@ import java.math.BigInteger;
 import java.security.spec.ECFieldF2m;
 import java.util.Arrays;
 
+/**
+ * @author David Hofman
+ */
 public class CustomECFieldF2m extends ECFieldF2m {
     private int m;
     private int[] ks;
