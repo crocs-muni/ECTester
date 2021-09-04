@@ -2,7 +2,7 @@ package cz.crcs.ectester.standalone.test.suites;
 
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.cli.TreeCommandLine;
-import cz.crcs.ectester.common.ec.EC_Curve;
+import cz.crcs.ectester.common.ec.*;
 import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.CompoundTest;
 import cz.crcs.ectester.common.test.Result;
@@ -24,7 +24,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
-import java.security.spec.ECParameterSpec;
+import java.security.spec.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -147,10 +147,10 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
             byte[][] originalp = curve.getParam(EC_Consts.PARAMETER_FP);
 
             curve.setParam(EC_Consts.PARAMETER_FP, new byte[][]{ ByteUtil.hexToBytes("0")});
-            //Test prime0 = ecdhTest(curve.toSpec(),"ECDH with p = 0.");
+            Test prime0 = ecdhTest(toCustomSpec(curve),"ECDH with p = 0.");
 
             curve.setParam(EC_Consts.PARAMETER_FP, new byte[][]{ ByteUtil.hexToBytes("1")});
-            //Test prime1 = ecdhTest(curve.toSpec(),"ECDH with p = 1.");
+            Test prime1 = ecdhTest(toCustomSpec(curve),"ECDH with p = 1.");
 
             short keyHalf = (short) (bits / 2);
             BigInteger prime = new BigInteger(keyHalf, 50, r);
@@ -158,7 +158,7 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
             byte[] primePowBytes = ECUtil.toByteArray(primePow, bits);
             curve.setParam(EC_Consts.PARAMETER_FP, new byte[][]{primePowBytes});
 
-            //Test primePower = ecdhTest(curve.toSpec(), "ECDH with p = q^2.");
+            Test primePower = ecdhTest(toCustomSpec(curve), "ECDH with p = q^2.");
 
             BigInteger q = new BigInteger(keyHalf, r);
             BigInteger s = new BigInteger(keyHalf, r);
@@ -166,9 +166,9 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
             byte[] compositeBytes = ECUtil.toByteArray(compositeValue, bits);
             curve.setParam(EC_Consts.PARAMETER_FP, new byte[][]{compositeBytes});
 
-            //Test composite = ecdhTest(curve.toSpec(), "ECDH with p = q * s.");
+            Test composite = ecdhTest(toCustomSpec(curve), "ECDH with p = q * s.");
 
-            //Test wrongPrime = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with corrupted prime parameter.", /* prime0, */ /* prime1, */ /* primePower, */ /* composite */ );
+            Test wrongPrime = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with corrupted prime parameter.", prime0 , prime1, primePower, composite );
 
             curve.setParam(EC_Consts.PARAMETER_FP, originalp);
             byte[][] originalG = curve.getParam(EC_Consts.PARAMETER_G);
@@ -179,10 +179,10 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
             byte[] Gx = new BigInteger(curve.getBits(), r).toByteArray();
             byte[] Gy = new BigInteger(curve.getBits(), r).toByteArray();
             curve.setParam(EC_Consts.PARAMETER_G, new byte[][] {Gx, Gy});
-            Test fullRandomG = ecdhTest(curve.toSpec(), "ECDH with G = random data.");
+            Test fullRandomG = ecdhTest(toCustomSpec(curve), "ECDH with G = random data.");
 
             curve.setParam(EC_Consts.PARAMETER_G, new byte[][] {ByteUtil.hexToBytes("0"), ByteUtil.hexToBytes("0")});
-            Test zeroG = ecdhTest(curve.toSpec(), "ECDH with G = infinity.");
+            Test zeroG = ecdhTest(toCustomSpec(curve), "ECDH with G = infinity.");
 
             Test wrongG = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with corrupted G parameter.", /* randomG, */ fullRandomG, zeroG);
 
@@ -190,14 +190,16 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
             byte[] originalR = curve.getParam(EC_Consts.PARAMETER_R)[0];
             BigInteger originalBigR = new BigInteger(1, originalR);
 
+            /* These two tests cause a freeze
             byte[] RZero = new byte[]{(byte) 0};
             curve.setParam(EC_Consts.PARAMETER_R, new byte[][] {RZero});
-            //Test zeroR = ecdhTest(curve.toSpec(), "ECDH with R = 0.");
+            Test zeroR = ecdhTest(toCustomSpec(curve), "ECDH with R = 0.");
+
 
             byte[] ROne = new byte[]{(byte) 1};
             curve.setParam(EC_Consts.PARAMETER_R, new byte[][] {ROne});
-            //Test oneR = ecdhTest(curve.toSpec(),  "ECDH with R = 1.");
-
+            Test oneR = ecdhTest(toCustomSpec(curve),  "ECDH with R = 1.");
+            */
 
             BigInteger prevPrimeR;
             do {
@@ -205,18 +207,17 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
             } while (prevPrimeR.compareTo(originalBigR) >= 0);
             byte[] prevRBytes = ECUtil.toByteArray(prevPrimeR, bits);
             curve.setParam(EC_Consts.PARAMETER_R, new byte[][] {prevRBytes});
-            Test prevprimeWrongR = ecdhTest(curve.toSpec(),  "ECDH with R = some prime (but [r]G != infinity) smaller than original R.");
-
+            Test prevprimeWrongR = ecdhTest(toCustomSpec(curve), "ECDH with R = some prime (but [r]G != infinity) smaller than original R.");
 
             BigInteger nextPrimeR = originalBigR.nextProbablePrime();
             byte[] nextRBytes = ECUtil.toByteArray(nextPrimeR, bits);
             curve.setParam(EC_Consts.PARAMETER_R, new byte[][]{nextRBytes});
-            Test nextprimeWrongR = ecdhTest(curve.toSpec(), "ECDH with R = some prime (but [r]G != infinity) larger than original R.");
+            Test nextprimeWrongR = ecdhTest(toCustomSpec(curve), "ECDH with R = some prime (but [r]G != infinity) larger than original R.");
 
             byte[] nonprimeRBytes = nextRBytes.clone();
             nonprimeRBytes[nonprimeRBytes.length - 1] ^= 1;
             curve.setParam(EC_Consts.PARAMETER_R, new byte[][] {nonprimeRBytes} );
-            Test nonprimeWrongR = ecdhTest(curve.toSpec(), "ECDH with R = some composite (but [r]G != infinity).");
+            Test nonprimeWrongR = ecdhTest(toCustomSpec(curve), "ECDH with R = some composite (but [r]G != infinity).");
 
             Test wrongR = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with corrupted R parameter.", /* zeroR, */ /* oneR, */ prevprimeWrongR, nextprimeWrongR, nonprimeWrongR);
 
@@ -224,16 +225,14 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
 
             byte[] kRaw = new byte[]{(byte) 0xff};
             curve.setParam(EC_Consts.PARAMETER_K, new byte[][] {kRaw});
-            //Test bigK = ecdhTest(curve.toSpec(), "ECDH with big K.");
+            Test bigK = ecdhTest(toCustomSpec(curve), "ECDH with big K.");
 
             byte[] kZero = new byte[]{(byte) 0};
             curve.setParam(EC_Consts.PARAMETER_K, new byte[][]{kZero});
-            //Test zeroK = ecdhTest(curve.toSpec(), "ECDH with K = 0.");
+            Test zeroK = ecdhTest(toCustomSpec(curve), "ECDH with K = 0.");
 
-            //Test wrongK = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with corrupted K parameter.", /* bigK, */, /* zeroK */);
-
-            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests of " + bits + "b " + "FP", /* wrongPrime, */ wrongG, wrongR /*, wrongK */));
-
+            Test wrongK = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with corrupted K parameter.", bigK, zeroK);
+            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests of " + bits + "b " + "FP", wrongPrime, wrongG, wrongR , wrongK));
         }
 
 
@@ -256,7 +255,7 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
                     ByteUtil.shortToBytes((short) 0),
                     ByteUtil.shortToBytes((short) 0)};
             curve.setParam(EC_Consts.PARAMETER_F2M, coeffBytes);
-            //Test coeff0 = ecdhTest(curve.toSpec(), "ECDH with wrong field polynomial: x^");
+            Test coeff0 = ecdhTest(toCustomSpec(curve), "ECDH with wrong field polynomial: x^");
 
             short e1 = (short) (2 * bits);
             short e2 = (short) (3 * bits);
@@ -267,9 +266,9 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
                     ByteUtil.shortToBytes(e2),
                     ByteUtil.shortToBytes(e3)};
             curve.setParam(EC_Consts.PARAMETER_F2M, coeffBytes);
-            //Test coeffLarger = ecdhTest(curve.toSpec(), "ECDH with wrong field poly, powers larger than " + bits);
+            Test coeffLarger = ecdhTest(toCustomSpec(curve), "ECDH with wrong field poly, powers larger than " + bits);
 
-            //doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with corrupted field polynomial parameter over " + curve.getBits() + "b F2M",/* coeff0, */ /* coeffLarger */));
+            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with corrupted field polynomial parameter over " + curve.getBits() + "b F2M", coeff0, coeffLarger));
         }
     }
 
@@ -289,5 +288,46 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
         KeyAgreementTestable testable = new KeyAgreementTestable(ka, priv, pub);
         Test ecdh = KeyAgreementTest.expect(testable, Result.ExpectedValue.FAILURE);
         return CompoundTest.all(Result.ExpectedValue.SUCCESS, desc, generate, ecdh);
+    }
+
+    //constructs EllipticCurve from EC_Curve even if the parameters of the curve are wrong
+    private EllipticCurve toCustomCurve(EC_Curve curve) {
+        ECField field;
+        if (curve.getField() == javacard.security.KeyPair.ALG_EC_FP) {
+            field = new CustomECFieldFp(new BigInteger(1, curve.getData(0)));
+        } else {
+            byte[][] fieldData = curve.getParam(EC_Consts.PARAMETER_F2M);
+            int m = ByteUtil.getShort(fieldData[0], 0);
+            int e1 = ByteUtil.getShort(fieldData[1], 0);
+            int e2 = ByteUtil.getShort(fieldData[2], 0);
+            int e3 = ByteUtil.getShort(fieldData[3], 0);
+            int[] powers;
+            if (e2 == 0 && e3 == 0) {
+                powers = new int[]{e1};
+            } else {
+                powers = new int[]{e1, e2, e3};
+            }
+            field = new CustomECFieldF2m(m, powers);
+        }
+
+        BigInteger a = new BigInteger(1, curve.getParam(EC_Consts.PARAMETER_A)[0]);
+        BigInteger b = new BigInteger(1, curve.getParam(EC_Consts.PARAMETER_B)[0]);
+
+        return new CustomEllipticCurve(field, a, b);
+    }
+
+    //constructs ECParameterSpec from EC_Curve even if the parameters of the curve are wrong
+    private ECParameterSpec toCustomSpec(EC_Curve curve) {
+        EllipticCurve customCurve = toCustomCurve(curve);
+
+        byte[][] G = curve.getParam(EC_Consts.PARAMETER_G);
+        BigInteger gx = new BigInteger(1, G[0]);
+        BigInteger gy = new BigInteger(1, G[1]);
+        ECPoint generator = new ECPoint(gx, gy);
+
+        BigInteger n = new BigInteger(1, curve.getParam(EC_Consts.PARAMETER_R)[0]);
+
+        int h = new BigInteger(1, curve.getParam(EC_Consts.PARAMETER_K)[0]).intValue();
+        return new CustomECParameterSpec(customCurve, generator, n, h);
     }
 }
