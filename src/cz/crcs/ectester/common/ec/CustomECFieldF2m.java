@@ -39,7 +39,7 @@ public class CustomECFieldF2m extends ECFieldF2m {
 
     @Override
     public int[] getMidTermsOfReductionPolynomial() {
-        return ks;
+        return ks.clone();
     }
 
     @Override
