@@ -105,9 +105,10 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
         /* Just do the default run on the wrong curves.
          * These should generally fail, the curves aren't curves.
          */
+        /*
         Map<String, EC_Curve> wrongCurves = EC_Store.getInstance().getObjects(EC_Curve.class, "wrong");
         for (Map.Entry<String, EC_Curve> e : wrongCurves.entrySet()) {
-            /*
+
             EC_Curve curve = e.getValue();
             ECParameterSpec spec = curve.toSpec();
 
@@ -129,8 +130,8 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
             KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpriv, ecpub);
             Test ecdh = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
             doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Wrong curve test of " + curve.getBits() + "b " + CardUtil.getKeyTypeString(curve.getField()), generateSuccess, ecdh));
-             */
         }
+        */
 
         /*
          * Do some interesting tests with corrupting the custom curves.
@@ -147,7 +148,7 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
         Random r = new Random();
         for (EC_Curve curve : curves) {
             short bits = curve.getBits();
-            byte[][] originalp = curve.getParam(EC_Consts.PARAMETER_FP);
+            final byte[] originalp = curve.getParam(EC_Consts.PARAMETER_FP)[0];
 
             curve.setParam(EC_Consts.PARAMETER_FP, new byte[][]{ ByteUtil.hexToBytes("0")});
             Test prime0 = ecdhTest(toCustomSpec(curve),"ECDH with p = 0.");
@@ -173,25 +174,28 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
 
             Test wrongPrime = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with corrupted prime parameter.", prime0 , prime1, primePower, composite );
 
-            curve.setParam(EC_Consts.PARAMETER_FP, originalp);
-            byte[][] originalG = curve.getParam(EC_Consts.PARAMETER_G);
-
-            //curve.setParam(EC_Consts.PARAMETER_G, ??);
-            //Test randomG = ecdhTest(curve.toSpec(), "ECDH with non-point G.");
+            curve.setParam(EC_Consts.PARAMETER_FP, new byte[][] {originalp});
+            final byte[][] originalG = curve.getParam(EC_Consts.PARAMETER_G);
 
             byte[] Gx = new BigInteger(curve.getBits(), r).toByteArray();
             byte[] Gy = new BigInteger(curve.getBits(), r).toByteArray();
             curve.setParam(EC_Consts.PARAMETER_G, new byte[][] {Gx, Gy});
             Test fullRandomG = ecdhTest(toCustomSpec(curve), "ECDH with G = random data.");
 
+            final BigInteger originalBigp = new BigInteger(1, originalp);
+            byte[] smallerGx = new BigInteger(curve.getBits(), r).mod(originalBigp).toByteArray();
+            byte[] smallerGy = new BigInteger(curve.getBits(), r).mod(originalBigp).toByteArray();
+            curve.setParam(EC_Consts.PARAMETER_G, new byte[][] {smallerGx, smallerGy});
+            Test randomG = ecdhTest(toCustomSpec(curve), "ECDH with G = random data mod p.");
+
             curve.setParam(EC_Consts.PARAMETER_G, new byte[][] {ByteUtil.hexToBytes("0"), ByteUtil.hexToBytes("0")});
             Test zeroG = ecdhTest(toCustomSpec(curve), "ECDH with G = infinity.");
 
-            Test wrongG = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with corrupted G parameter.", /* randomG, */ fullRandomG, zeroG);
+            Test wrongG = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with corrupted G parameter.", fullRandomG, randomG, zeroG);
 
             curve.setParam(EC_Consts.PARAMETER_G, originalG);
-            byte[] originalR = curve.getParam(EC_Consts.PARAMETER_R)[0];
-            BigInteger originalBigR = new BigInteger(1, originalR);
+            final byte[] originalR = curve.getParam(EC_Consts.PARAMETER_R)[0];
+            final BigInteger originalBigR = new BigInteger(1, originalR);
 
             /* These two tests cause a freeze
             byte[] RZero = new byte[]{(byte) 0};
