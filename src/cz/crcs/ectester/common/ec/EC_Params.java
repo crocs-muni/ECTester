@@ -88,6 +88,45 @@ public class EC_Params extends EC_Data {
         return result;
     }
 
+    public boolean setParam(short param, byte[][] value) {
+        if (!hasParam(param)) {
+            return false;
+        }
+        if (Integer.bitCount(param) != 1) {
+            return false;
+        }
+        short paramMask = EC_Consts.PARAMETER_FP;
+        int i = 0;
+        while (paramMask <= EC_Consts.PARAMETER_S) {
+            short masked = (short) (this.params & param & paramMask);
+            short shallow = (short) (this.params & paramMask);
+            if (masked != 0) {
+                if (masked == EC_Consts.PARAMETER_F2M) {
+                    data[i] = value[0];
+                    data[i + 1] = value[1];
+                    data[i + 2] = value[2];
+                    data[i + 3] = value[3];
+                    break;
+                }
+                if (masked == EC_Consts.PARAMETER_G || masked == EC_Consts.PARAMETER_W) {
+                    data[i] = value[0];
+                    data[i + 1] = value[1];
+                    break;
+                }
+                data[i] = value[0];
+            }
+            if (shallow == EC_Consts.PARAMETER_F2M) {
+                i += 4;
+            } else if (shallow == EC_Consts.PARAMETER_G || shallow == EC_Consts.PARAMETER_W) {
+                i += 2;
+            } else if (shallow != 0) {
+                i++;
+            }
+            paramMask = (short) (paramMask << 1);
+        }
+        return true;
+    }
+
     public boolean hasParam(short param) {
         return (params & param) != 0;
     }
