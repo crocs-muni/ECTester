@@ -32,23 +32,23 @@ import java.util.stream.Collectors;
  * @author David Hofman
  */
 public class StandaloneWrongSuite extends StandaloneTestSuite {
-    private String kpgAlgo;
-    private String kaAlgo;
-    KeyAgreement ka;
-    KeyPairGenerator kpg;
+    private KeyAgreement ka;
+    private KeyPairGenerator kpg;
 
     public StandaloneWrongSuite(TestWriter writer, ECTesterStandalone.Config cfg, TreeCommandLine cli) {
         super(writer, cfg, cli, "wrong", "The wrong curve suite tests whether the library rejects domain parameters which are not curves.",
                 "Supports options:",
                 "\t - gt/kpg-type",
-                "\t - kt/ka-type");
+                "\t - kt/ka-type",
+                "\t - skip (place this option before the library name to skip tests that can potentially cause a freeze)");
     }
 
 
     @Override
     protected void runTests() throws Exception {
-        kpgAlgo = cli.getOptionValue("test.kpg-type");
-        kaAlgo = cli.getOptionValue("test.ka-type");
+        String kpgAlgo = cli.getOptionValue("test.kpg-type");
+        String kaAlgo = cli.getOptionValue("test.ka-type");
+        boolean skip = cli.getArg(1).equalsIgnoreCase("-skip");
 
         KeyPairGeneratorIdent kpgIdent;
         if (kpgAlgo == null) {
@@ -105,33 +105,36 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
         /* Just do the default run on the wrong curves.
          * These should generally fail, the curves aren't curves.
          */
-        /*
-        Map<String, EC_Curve> wrongCurves = EC_Store.getInstance().getObjects(EC_Curve.class, "wrong");
-        for (Map.Entry<String, EC_Curve> e : wrongCurves.entrySet()) {
+        if(!skip) {
+            Map<String, EC_Curve> wrongCurves = EC_Store.getInstance().getObjects(EC_Curve.class, "wrong");
+            for (Map.Entry<String, EC_Curve> e : wrongCurves.entrySet()) {
 
-            EC_Curve curve = e.getValue();
-            ECParameterSpec spec = curve.toSpec();
+                EC_Curve curve = e.getValue();
+                ECParameterSpec spec = curve.toSpec();
+                String type = curve.getField() == javacard.security.KeyPair.ALG_EC_FP ? "FP" : "F2M";
 
-            //try generating a keypair
-            KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
-            Test generate =  KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
-            runTest(generate);
-            KeyPair kp = kgt.getKeyPair();
-            if(kp == null) {
-                Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getBits() + "b " + CardUtil.getKeyTypeString(curve.getField()), generate);
-                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Wrong curve test of " + curve.getBits() + "b " + CardUtil.getKeyTypeString(curve.getField()), generateFail));
-                continue;
+                //try generating a keypair
+                KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
+                Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
+                runTest(generate);
+                KeyPair kp = kgt.getKeyPair();
+                if (kp == null) {
+                    Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() + ".", generate);
+                    doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Wrong curve test of " + curve.getBits()
+                            + "b " + type + ". " + curve.getDesc(), generateFail));
+                    continue;
+                }
+                Test generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair.", generate);
+                ECPrivateKey ecpriv = (ECPrivateKey) kp.getPrivate();
+                ECPublicKey ecpub = (ECPublicKey) kp.getPublic();
+
+                KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
+                KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpriv, ecpub);
+                Test ecdh = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
+                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Wrong curve test of " + curve.getBits()
+                        + "b " + type + ". " + curve.getDesc(), generateSuccess, ecdh));
             }
-            Test generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair.", generate);
-            ECPrivateKey ecpriv = (ECPrivateKey) kp.getPrivate();
-            ECPublicKey ecpub = (ECPublicKey) kp.getPublic();
-
-            KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-            KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpriv, ecpub);
-            Test ecdh = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
-            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Wrong curve test of " + curve.getBits() + "b " + CardUtil.getKeyTypeString(curve.getField()), generateSuccess, ecdh));
         }
-        */
 
         /*
          * Do some interesting tests with corrupting the custom curves.
@@ -197,16 +200,17 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
             final byte[] originalR = curve.getParam(EC_Consts.PARAMETER_R)[0];
             final BigInteger originalBigR = new BigInteger(1, originalR);
 
-            /* These two tests cause a freeze
-            byte[] RZero = new byte[]{(byte) 0};
-            curve.setParam(EC_Consts.PARAMETER_R, new byte[][] {RZero});
-            Test zeroR = ecdhTest(toCustomSpec(curve), "ECDH with R = 0.");
+            List<Test> allRTests = new LinkedList<>();
+            if(!skip) {
+                byte[] RZero = new byte[]{(byte) 0};
+                curve.setParam(EC_Consts.PARAMETER_R, new byte[][]{RZero});
+                allRTests.add(ecdhTest(toCustomSpec(curve), "ECDH with R = 0."));
 
 
-            byte[] ROne = new byte[]{(byte) 1};
-            curve.setParam(EC_Consts.PARAMETER_R, new byte[][] {ROne});
-            Test oneR = ecdhTest(toCustomSpec(curve),  "ECDH with R = 1.");
-            */
+                byte[] ROne = new byte[]{(byte) 1};
+                curve.setParam(EC_Consts.PARAMETER_R, new byte[][]{ROne});
+                allRTests.add(ecdhTest(toCustomSpec(curve), "ECDH with R = 1."));
+            }
 
             BigInteger prevPrimeR;
             do {
@@ -214,19 +218,19 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
             } while (prevPrimeR.compareTo(originalBigR) >= 0);
             byte[] prevRBytes = ECUtil.toByteArray(prevPrimeR, bits);
             curve.setParam(EC_Consts.PARAMETER_R, new byte[][] {prevRBytes});
-            Test prevprimeWrongR = ecdhTest(toCustomSpec(curve), "ECDH with R = some prime (but [r]G != infinity) smaller than original R.");
+            allRTests.add(ecdhTest(toCustomSpec(curve), "ECDH with R = some prime (but [r]G != infinity) smaller than original R."));
 
             BigInteger nextPrimeR = originalBigR.nextProbablePrime();
             byte[] nextRBytes = ECUtil.toByteArray(nextPrimeR, bits);
             curve.setParam(EC_Consts.PARAMETER_R, new byte[][]{nextRBytes});
-            Test nextprimeWrongR = ecdhTest(toCustomSpec(curve), "ECDH with R = some prime (but [r]G != infinity) larger than original R.");
+            allRTests.add(ecdhTest(toCustomSpec(curve), "ECDH with R = some prime (but [r]G != infinity) larger than original R."));
 
             byte[] nonprimeRBytes = nextRBytes.clone();
             nonprimeRBytes[nonprimeRBytes.length - 1] ^= 1;
             curve.setParam(EC_Consts.PARAMETER_R, new byte[][] {nonprimeRBytes} );
-            Test nonprimeWrongR = ecdhTest(toCustomSpec(curve), "ECDH with R = some composite (but [r]G != infinity).");
+            allRTests.add(ecdhTest(toCustomSpec(curve), "ECDH with R = some composite (but [r]G != infinity)."));
 
-            Test wrongR = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with corrupted R parameter.", /* zeroR, */ /* oneR, */ prevprimeWrongR, nextprimeWrongR, nonprimeWrongR);
+            Test wrongR = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with corrupted R parameter.", allRTests.toArray(new Test[0]));
 
             curve.setParam(EC_Consts.PARAMETER_R, new byte[][] {originalR});
 
