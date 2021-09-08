@@ -7,6 +7,9 @@ import cz.crcs.ectester.common.test.TestCallback;
 
 import java.util.Arrays;
 
+/**
+ * @author David Hofman
+ */
 public class PerformanceTest extends SimpleTest<BaseTestable> {
     private long[] times;
     private long mean;

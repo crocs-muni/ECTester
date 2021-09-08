@@ -21,9 +21,14 @@ import java.security.spec.ECParameterSpec;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * @author David Hofman
+ */
 public class StandalonePerformanceSuite extends StandaloneTestSuite {
+    private final int count = 100;
+
     public StandalonePerformanceSuite(TestWriter writer, ECTesterStandalone.Config cfg, TreeCommandLine cli) {
-        super(writer, cfg, cli, "performance", "The performance test suite measures performance.",
+        super(writer, cfg, cli, "performance", "The performance test suite measures performance of KeyPair generation, KeyAgreement and Signature operations.",
                 "Supports options:",
                 "\t - gt/kpg-type (select multiple types by separating them with commas)",
                 "\t - kt/ka-type (select multiple types by separating them with commas)",
@@ -88,7 +93,7 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
                 kgtOne = new KeyGeneratorTestable(kpg);
                 kgtOther = new KeyGeneratorTestable(kpg);
             }
-            kpgTests.add(PerformanceTest.repeat(kgtOne, kpgIdent.getName(), 100));
+            kpgTests.add(PerformanceTest.repeat(kgtOne, kpgIdent.getName(), count));
         }
         runTest(KeyGeneratorTest.expect(kgtOther, Result.ExpectedValue.SUCCESS));
         doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "KeyPairGenerator performance tests", kpgTests.toArray(new Test[0])));
@@ -103,7 +108,7 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
                 } else {
                     testable = new KeyAgreementTestable(ka, kgtOne, kgtOther, spec);
                 }
-                kaTests.add(PerformanceTest.repeat(testable, kaIdent.getName(), 100));
+                kaTests.add(PerformanceTest.repeat(testable, kaIdent.getName(), count));
             }
         }
         if(kaTests.isEmpty()) {
@@ -116,9 +121,9 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
         for (SignatureIdent sigIdent : cfg.selected.getSigs()) {
             if (sigAlgo == null || sigIdent.containsAny(sigTypes)) {
                 Signature sig = sigIdent.getInstance(cfg.selected.getProvider());
-                sigTests.add(PerformanceTest.repeat(new SignatureTestable(sig, kgtOne, null), sigIdent.getName(),100));
+                sigTests.add(PerformanceTest.repeat(new SignatureTestable(sig, kgtOne, null), sigIdent.getName(),count));
                 ECPrivateKey signKey = (ECPrivateKey) kgtOne.getKeyPair().getPrivate();
-                sigTestsNoVerification.add(PerformanceTest.repeat(new SignatureTestable(sig, signKey, null, null), sigIdent.getName(), 10));
+                sigTestsNoVerification.add(PerformanceTest.repeat(new SignatureTestable(sig, signKey, null, null), sigIdent.getName(), count));
             }
         }
         if(sigTests.isEmpty()) {
