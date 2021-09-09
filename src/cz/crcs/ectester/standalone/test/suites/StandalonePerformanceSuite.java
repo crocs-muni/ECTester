@@ -122,9 +122,14 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
             if (sigAlgo == null || sigIdent.containsAny(sigTypes)) {
                 Signature sig = sigIdent.getInstance(cfg.selected.getProvider());
                 sigTests.add(PerformanceTest.repeat(new SignatureTestable(sig, kgtOne, null), sigIdent.getName(),count));
-                ECPrivateKey signKey = (ECPrivateKey) kgtOne.getKeyPair().getPrivate();
-                sigTestsNoVerification.add(PerformanceTest.repeat(new SignatureTestable(sig, signKey, null, null), sigIdent.getName(), count));
+                if(kgtOne.getKeyPair() != null) {
+                    ECPrivateKey signKey = (ECPrivateKey) kgtOne.getKeyPair().getPrivate();
+                    sigTestsNoVerification.add(PerformanceTest.repeat(new SignatureTestable(sig, signKey, null, null), sigIdent.getName(), count));
+                }
             }
+        }
+        if(sigTestsNoVerification.isEmpty() & !sigTests.isEmpty()) {
+            sigTestsNoVerification.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Signature tests with no verification require a successfully generated private key."));
         }
         if(sigTests.isEmpty()) {
             sigTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified Signature types is supported by the library."));
