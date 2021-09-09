@@ -4,6 +4,7 @@ import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
@@ -158,6 +159,14 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
             errorCause = ex;
         }
         hasRun = true;
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        try {
+            ka = KeyAgreement.getInstance(ka.getAlgorithm(), ka.getProvider());
+        } catch (NoSuchAlgorithmException e) { }
     }
 
     public enum KeyAgreementStage {
