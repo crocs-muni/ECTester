@@ -321,7 +321,8 @@ public class ECTesterStandalone {
                 new StandaloneSignatureSuite(null, null, null),
                 new StandaloneCompositeSuite(null, null, null),
                 new StandaloneTwistSuite(null, null, null),
-                new StandaloneMiscSuite(null, null, null)};
+                new StandaloneMiscSuite(null, null, null),
+                new StandalonePerformanceSuite(null, null, null)};
         for (StandaloneTestSuite suite : suites) {
             System.out.println(" - " + suite.getName());
             for (String line : suite.getDescription()) {
@@ -781,6 +782,9 @@ public class ECTesterStandalone {
                 break;
             case "miscellaneous":
                 suite = new StandaloneMiscSuite(writer, cfg, cli);
+                break;
+            case "performance":
+                suite = new StandalonePerformanceSuite(writer, cfg, cli);
                 break;
             case "default":
             default:
