@@ -22,6 +22,7 @@ import javax.crypto.KeyAgreement;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.*;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
  * @author David Hofman
  */
 public class StandaloneWrongSuite extends StandaloneTestSuite {
-    private KeyAgreement ka;
+    private KeyAgreementIdent kaIdent;
     private KeyPairGenerator kpg;
 
     public StandaloneWrongSuite(TestWriter writer, ECTesterStandalone.Config cfg, TreeCommandLine cli) {
@@ -76,7 +77,6 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
         }
         kpg = kpgIdent.getInstance(cfg.selected.getProvider());
 
-        KeyAgreementIdent kaIdent;
         if (kaAlgo == null) {
             // try ECDH, if not, fail with: need to specify ka algo.
             Optional<KeyAgreementIdent> kaIdentOpt = cfg.selected.getKAs().stream()
@@ -100,7 +100,6 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
                 return;
             }
         }
-        ka = kaIdent.getInstance(cfg.selected.getProvider());
 
         /* Just do the default run on the wrong curves.
          * These should generally fail, the curves aren't curves.
@@ -283,7 +282,7 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
         }
     }
 
-    private Test ecdhTest(ECParameterSpec spec, String desc) {
+    private Test ecdhTest(ECParameterSpec spec, String desc) throws NoSuchAlgorithmException {
         //generate KeyPair
         KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
         Test generate =  KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.FAILURE);
@@ -296,6 +295,7 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
         ECPrivateKey priv = (ECPrivateKey) kp.getPrivate();
 
         //perform ECDH
+        KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
         KeyAgreementTestable testable = new KeyAgreementTestable(ka, priv, pub);
         Test ecdh = KeyAgreementTest.expect(testable, Result.ExpectedValue.FAILURE);
         return CompoundTest.all(Result.ExpectedValue.SUCCESS, desc, generate, ecdh);
