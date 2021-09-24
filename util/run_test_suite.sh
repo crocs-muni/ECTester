@@ -50,6 +50,9 @@ while read -r lib; do
                 echo "# NOTE: Tests timeouted at this point after taking longer than ${timeout}s." >> $filename
                 echo "#" >> $filename
         fi
+    #Signature suite requires SHA1withECDSA signature type
+    elif [[ $suite == "signature" ]]; then
+        $run test $args -st SHA1withECDSA $suite "$lib" > $tempfolder/$"${lib// /_}"-${suite}_suite-results.txt 2>&1
     else
         $run test $args $suite "$lib" > $tempfolder/$"${lib// /_}"-${suite}_suite-results.txt 2>&1
     fi
