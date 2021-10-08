@@ -90,11 +90,10 @@ public class StandaloneCofactorSuite extends StandaloneTestSuite {
             List<Test> allKaTests = new LinkedList<>();
             for (KeyAgreementIdent kaIdent : cfg.selected.getKAs()) {
                 if (kaAlgo == null || kaIdent.containsAny(kaTypes)) {
-                    KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-
                     List<Test> specificKaTests = new LinkedList<>();
                     for (EC_Key.Public pub : keys) {
                         ECPublicKey ecpub = ECUtil.toPublicKey(pub);
+                        KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
                         KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpriv, ecpub);
                         Test keyAgreement = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
                         specificKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " cofactor key test.", keyAgreement));

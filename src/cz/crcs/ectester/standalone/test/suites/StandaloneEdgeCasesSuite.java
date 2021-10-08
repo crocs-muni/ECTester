@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECParameterSpec;
@@ -34,7 +35,7 @@ import java.util.stream.Collectors;
  * @author David Hofman
  */
 public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
-    KeyAgreement ka;
+    KeyAgreementIdent kaIdent;
 
     public StandaloneEdgeCasesSuite(TestWriter writer, ECTesterStandalone.Config cfg, TreeCommandLine cli) {
         super(writer, cfg, cli, "edge-cases", "The edge-cases test suite tests various inputs to ECDH which may cause an implementation to achieve a certain edge-case state during it.",
@@ -51,7 +52,6 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
         String kaAlgo = cli.getOptionValue("test.ka-type");
         String kpgAlgo = cli.getOptionValue("test.kpg-type");
 
-        KeyAgreementIdent kaIdent;
         if (kaAlgo == null) {
             // try ECDH, if not, fail with: need to specify ka algo.
             Optional<KeyAgreementIdent> kaIdentOpt = cfg.selected.getKAs().stream()
@@ -75,7 +75,6 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
                 return;
             }
         }
-        ka = kaIdent.getInstance(cfg.selected.getProvider());
 
         KeyPairGeneratorIdent kpgIdent;
         if (kpgAlgo == null) {
@@ -133,6 +132,7 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
                     ECPrivateKey ecpriv = ECUtil.toPrivateKey(EC_Store.getInstance().getObject(EC_Key.Private.class, privkeyId));
                     ECPublicKey ecpub = ECUtil.toPublicKey(EC_Store.getInstance().getObject(EC_Key.Public.class, pubkeyId));
 
+                    KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
                     KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpriv, ecpub);
                     Test ecdh = KeyAgreementTest.match(testable, value.getData(0));
                     Test one = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Test " + id + ".", ecdh);
@@ -147,12 +147,14 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
             EC_KAResult openssl_bug = EC_Store.getInstance().getObject(EC_KAResult.class, "misc", "openssl-bug");
             ECPrivateKey ecpriv = ECUtil.toPrivateKey(EC_Store.getInstance().getObject(EC_Key.Private.class, openssl_bug.getOtherKey()));
             ECPublicKey ecpub = ECUtil.toPublicKey(EC_Store.getInstance().getObject(EC_Key.Public.class, openssl_bug.getOneKey()));
+            KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
             KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpriv, ecpub);
             Test ecdh = KeyAgreementTest.function(testable, new TestCallback<KeyAgreementTestable>() {
                 @Override
                 public Result apply(KeyAgreementTestable testable) {
-                    if (!testable.ok())
+                    if (!testable.ok()) {
                         return new Result(Result.Value.FAILURE, "ECDH was unsuccessful.");
+                    }
                     if (ByteUtil.compareBytes(testable.getSecret(), 0, openssl_bug.getData(0), 0, testable.getSecret().length)) {
                         return new Result(Result.Value.FAILURE, "OpenSSL bug is present, derived secret matches example.");
                     }
@@ -303,8 +305,9 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
         doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Test private key values near zero, near p and near/larger than the order.", generateSuccess, zeroTest, pTest, rTest));
     }
 
-    private Test ecdhTest(ECPublicKey pub, BigInteger SParam, ECParameterSpec spec, String desc, Result.ExpectedValue expect) {
+    private Test ecdhTest(ECPublicKey pub, BigInteger SParam, ECParameterSpec spec, String desc, Result.ExpectedValue expect) throws NoSuchAlgorithmException {
         ECPrivateKey priv = new RawECPrivateKey(SParam, spec);
+        KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
         KeyAgreementTestable testable = new KeyAgreementTestable(ka, priv, pub);
         return CompoundTest.all(Result.ExpectedValue.SUCCESS, desc, KeyAgreementTest.expectError(testable, expect));
     }
