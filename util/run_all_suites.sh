@@ -15,8 +15,7 @@ mkdir $tempfolder
 while read -r suite; do
     echo "**Run $suite suite on all the libraries:"
     bash run_test_suite.sh $suite
-    mkdir $tempfolder/$suite
-    unzip results_$suite.zip -d $tempfolder/$suite
+    unzip results_$suite.zip -d $tempfolder
     rm results_$suite.zip
 done <<< "$suites"
 
