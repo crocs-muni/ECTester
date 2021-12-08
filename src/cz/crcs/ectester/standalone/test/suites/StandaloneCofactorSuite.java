@@ -80,12 +80,6 @@ public class StandaloneCofactorSuite extends StandaloneTestSuite {
             runTest(generate);
             KeyPair kp = kgt.getKeyPair();
             if(kp == null) {
-                kgt = new KeyGeneratorTestable(kpg, curve.getBits());
-                generate =  KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
-                runTest(generate);
-                kp = kgt.getKeyPair();
-            }
-            if(kp == null) {
                 Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() + ". " + "KeyAgreement tests will be skipped.", generate);
                 doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Cofactor test of " + curve.getId() + ".", generateFail));
                 continue;
