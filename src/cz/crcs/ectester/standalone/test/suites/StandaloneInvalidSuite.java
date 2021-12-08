@@ -75,21 +75,25 @@ public class StandaloneInvalidSuite extends StandaloneTestSuite {
             ECParameterSpec spec = curve.toSpec();
             KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
 
+            Test generateSuccess;
             Test generate =  KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
             runTest(generate);
             KeyPair kp = kgt.getKeyPair();
-            if(kp == null) {
-                kgt = new KeyGeneratorTestable(kpg, curve.getBits());
-                generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
-                runTest(generate);
-                kp = kgt.getKeyPair();
+            if(kp != null) {
+                generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair.", generate);
+            } else { //If KeyPair generation fails, try generating it on a default curve instead. Use this key only if it has the same domain parameters as our public key.
+                KeyGeneratorTestable kgtOnDefaultCurve = new KeyGeneratorTestable(kpg, curve.getBits());
+                Test generateOnDefaultCurve = KeyGeneratorTest.expectError(kgtOnDefaultCurve, Result.ExpectedValue.ANY);
+                runTest(generateOnDefaultCurve);
+                kp = kgtOnDefaultCurve.getKeyPair();
+                if(kp != null && ECUtil.equalKeyPairParameters((ECPrivateKey) kp.getPrivate(), ECUtil.toPublicKey(keys.get(0)))) {
+                    generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair.", generateOnDefaultCurve);
+                } else {
+                    Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() + ". " + "KeyAgreement tests will be skipped.", generate);
+                    doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Invalid curve test of " + curve.getId() + ".", generateFail));
+                    continue;
+                }
             }
-            if(kp == null) {
-                Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() + ". " + "KeyAgreement tests will be skipped.", generate);
-                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Invalid curve test of " + curve.getId() + ".", generateFail));
-                continue;
-            }
-            Test generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair.", generate);
             ECPrivateKey ecpriv = (ECPrivateKey) kp.getPrivate();
 
             List<Test> allKaTests = new LinkedList<>();
