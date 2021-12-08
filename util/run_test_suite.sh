@@ -34,8 +34,6 @@ while read -r lib; do
     #Botan and Crypto++ don't recognize default kgt type EC, specify kgt=ECDH instead.
     if [[ $lib == *"Botan"* ]] || [[ $lib == *"Crypto++"* ]]; then
         args="-gt ECDH"
-    elif [[ $lib == *"Wolf"* ]]; then
-        args="-bits 32"
     else
         args=""
     fi
