@@ -271,7 +271,7 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
         if(kp == null) {
             Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on "
                     + secp160r1.getBits() + "b secp160r1." + " Other tests will be skipped.", generate);
-            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Test private key values near zero, near p and near/larger than the order." + secp160r1.getId() + ".", generateFail));
+            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Test private key values near zero, near p and near/larger than the order on" + secp160r1.getId() + ".", generateFail));
             return;
         }
         Test generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate KeyPair.", generate);

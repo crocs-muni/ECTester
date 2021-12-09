@@ -3,6 +3,8 @@ package cz.crcs.ectester.standalone.test.suites;
 import cz.crcs.ectester.common.cli.TreeCommandLine;
 import cz.crcs.ectester.common.ec.*;
 import cz.crcs.ectester.common.output.TestWriter;
+import cz.crcs.ectester.common.test.CompoundTest;
+import cz.crcs.ectester.common.test.Result;
 import cz.crcs.ectester.common.util.ECUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.standalone.ECTesterStandalone;
@@ -29,7 +31,6 @@ public class StandaloneTestVectorSuite extends StandaloneTestSuite {
     protected void runTests() throws Exception {
         Map<String, EC_KAResult> results = EC_Store.getInstance().getObjects(EC_KAResult.class, "test");
         for (EC_KAResult result : results.values()) {
-
             if(!"DH_PLAIN".equals(result.getKA())) {
                 continue;
             }
@@ -56,7 +57,7 @@ public class StandaloneTestVectorSuite extends StandaloneTestSuite {
             KeyAgreementIdent kaIdent = KeyAgreementIdent.get("ECDH");
             KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
             KeyAgreementTestable testable = new KeyAgreementTestable(ka, privkey, pubkey);
-            doTest(KeyAgreementTest.match(testable, result.getData(0)));
+            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Test vector " + result.getId(), KeyAgreementTest.match(testable, result.getData(0))));
         }
     }
 }

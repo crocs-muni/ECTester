@@ -461,5 +461,13 @@ public class ECUtil {
         return null;
     }
 
-
+    public static boolean equalKeyPairParameters(ECPrivateKey priv, ECPublicKey pub) {
+        if(priv == null || pub == null) {
+            return false;
+        }
+        return priv.getParams().getCurve().equals(pub.getParams().getCurve()) &&
+                priv.getParams().getCofactor() == pub.getParams().getCofactor() &&
+                priv.getParams().getGenerator().equals(pub.getParams().getGenerator()) &&
+                priv.getParams().getOrder().equals(pub.getParams().getOrder());
+    }
 }
