@@ -2,3 +2,4 @@ numpy
 scipy
 matplotlib
 asn1crypto
+tabulate
