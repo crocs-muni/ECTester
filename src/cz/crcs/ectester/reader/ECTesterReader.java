@@ -49,7 +49,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.security.Security;
 import java.security.spec.ECParameterSpec;
@@ -89,9 +88,9 @@ public class ECTesterReader {
     private static final int TRY_VERSIONS = 10;
 
     static {
-        URLClassLoader cl = (URLClassLoader) ECTesterReader.class.getClassLoader();
+        ClassLoader cl = ECTesterReader.class.getClassLoader();
         try {
-            URL url = cl.findResource("META-INF/MANIFEST.MF");
+            URL url = cl.getResource("META-INF/MANIFEST.MF");
             Manifest manifest = new Manifest(url.openStream());
             String commit = manifest.getMainAttributes().getValue("Git-Commit");
             GIT_COMMIT = (commit == null) ? "" : "(git " + commit + ")";

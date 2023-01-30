@@ -18,13 +18,21 @@
 	<property name="pkg_aid" value="4543546573746572"/>
 	<property name="applet_aid_221" value="454354657374657230333362"/> <!--// VERSION v0.3.3 -->
 	<property name="applet_aid_222" value="454354657374657230333378"/> <!--// VERSION v0.3.3 -->
+	<property name="applet_aid_304" value="454354657374657230333394"/> <!--// VERSION v0.3.3 -->
 	<property name="cap_221" value="ectester221.cap"/>
 	<property name="cap_222" value="ectester222.cap"/>
-	<property name="cap" value="${cap_222}"/>
+	<property name="cap_304" value="ectester304.cap"/>
+	<property name="cap" value="${cap_304}"/>
 
 
-	<condition property="cap_extended">
+	<condition property="build_221">
+		<equals arg1="${cap}" arg2="${cap_221}"/>
+	</condition>
+	<condition property="build_222">
 		<equals arg1="${cap}" arg2="${cap_222}"/>
+	</condition>
+	<condition property="build_304">
+		<equals arg1="${cap}" arg2="${cap_304}"/>
 	</condition>
 
 	<target name="build-check">
@@ -32,6 +40,7 @@
 			<condition>
 				<not>
 					<or>
+						<equals arg1="${cap}" arg2="${cap_304}"/>
 						<equals arg1="${cap}" arg2="${cap_222}"/>
 						<equals arg1="${cap}" arg2="${cap_221}"/>
 					</or>
@@ -39,24 +48,33 @@
 			</condition>
 		</fail>
 	</target>
-	
-	<target name="build-221" description="Builds the CAP file for JavaCard 2.2.1." unless="cap_extended">
+
+	<!-- TODO: These conditions disallow a manual request to build a concrete version. Fix this. -->
+	<target name="build-221" description="Builds the CAP file for JavaCard 2.2.1." if="build_221">
 		<javacard jckit="${JC221}">
-			<cap verify="false" output="applet/ectester221.cap" sources="src/cz/crcs/ectester/applet" aid="${pkg_aid}" excludes="ECTesterAppletExtended.*">
+			<cap verify="false" output="applet/${cap_221}" sources="src/cz/crcs/ectester/applet" aid="${pkg_aid}" excludes="ECTesterAppletExtended.*">
 				<applet class="cz.crcs.ectester.applet.ECTesterApplet" aid="${applet_aid_221}"/>
 			</cap>
 		</javacard>
 	</target>
 
-	<target name="build-222" description="Builds the CAP file for JavaCard 2.2.2." if="cap_extended">
+	<target name="build-222" description="Builds the CAP file for JavaCard 2.2.2." if="build_222">
 		<javacard jckit="${JC222}">
-			<cap output="applet/ectester222.cap" sources="src/cz/crcs/ectester/applet" aid="${pkg_aid}" excludes="ECTesterApplet.*">
+			<cap output="applet/${cap_222}" sources="src/cz/crcs/ectester/applet" aid="${pkg_aid}" excludes="ECTesterApplet.*">
 				<applet class="cz.crcs.ectester.applet.ECTesterAppletExtended" aid="${applet_aid_222}"/>
 			</cap>
 		</javacard>
 	</target>
 
-	<target name="build" description="Builds the CAP file." depends="build-check,build-221,build-222">
+	<target name="build-304" description="Builds the CAP file for JavaCard 3.0.4." if="build_304">
+		<javacard jckit="${JC304}">
+			<cap output="applet/${cap_304}" sources="src/cz/crcs/ectester/applet" aid="${pkg_aid}" excludes="ECTesterApplet.*">
+				<applet class="cz.crcs.ectester.applet.ECTesterAppletExtended" aid="${applet_aid_304}"/>
+			</cap>
+		</javacard>
+	</target>
+
+	<target name="build" description="Builds the CAP file." depends="build-check,build-221,build-222,build-304">
 	</target>
 
 	<target name="upload" depends="build" description="Uploads the CAP file to the card, using gp.jar.">
@@ -84,5 +102,6 @@
 	<target name="clean" description="Clean the built CAP files.">
 		<delete file="applet/${cap_221}" quiet="true"/>
 		<delete file="applet/${cap_222}" quiet="true"/>
+		<delete file="applet/${cap_304}" quiet="true"/>
 	</target>
 </project>
