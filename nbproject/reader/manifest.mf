@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
-Class-Path: lib/bcprov-jdk15on-1.58.jar lib/jcardsim-3.0.5.11.jar lib/commons-cli-1.4.jar lib/snakeyaml-1.19.jar
+Class-Path: lib/bcprov-jdk18on-172.jar lib/jcardsim-3.0.5.11.jar lib/commons-cli-1.4.jar lib/snakeyaml-1.19.jar
 Main-Class: cz.crcs.ectester.reader.ECTesterReader
 

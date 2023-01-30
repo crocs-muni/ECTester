@@ -1,6 +1,7 @@
 package cz.crcs.ectester.data;
 
 import cz.crcs.ectester.common.ec.*;
+import cz.crcs.ectester.common.util.Util;
 import javacard.security.KeyPair;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -71,7 +72,15 @@ public class EC_Store {
                 public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId) throws SAXException, IOException {
                     InputSource is = new InputSource();
                     is.setSystemId(systemId);
-                    is.setByteStream(getClass().getClass().getResourceAsStream("/cz/crcs/ectester/data/" + systemId));
+
+                    InputStream bs;
+                    // TODO: Figure out if this is correct for the older Java versions or also wrong.
+                    if (Util.getVersion() <= 8) {
+                        bs = getClass().getClass().getResourceAsStream("/cz/crcs/ectester/data/" + systemId);
+                    } else {
+                        bs = getClass().getResourceAsStream("/cz/crcs/ectester/data/" + systemId);
+                    }
+                    is.setByteStream(bs);
                     return is;
                 }
 
