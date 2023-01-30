@@ -9,7 +9,7 @@ import java.util.Set;
 public class IppcpLib extends NativeECLibrary {
 
     public IppcpLib() {
-        super("ippcp_provider", "ippcp");
+        super("ippcp_provider", "lib_ippcp.so");
     }
 
     @Override

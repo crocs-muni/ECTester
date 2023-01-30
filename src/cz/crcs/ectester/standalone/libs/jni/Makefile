@@ -151,11 +151,14 @@ mbedtls.o: mbedtls.c
 # Intel Performance Primitives crypto shim
 ippcp: ippcp_provider.so
 
-ippcp_provider.so: ippcp.o c_utils.o
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -lippcp -l:lib_timing.so
+lib_ippcp.so:
+	cp ../../../../../../../ext/ipp-crypto/build/.build/RELEASE/lib/libippcp.so lib_ippcp.so
+
+ippcp_provider.so: ippcp.o c_utils.o | lib_timing.so lib_ippcp.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_ippcp.so -l:lib_timing.so
 
 ippcp.o: ippcp.c
-	$(CC) $(CFLAGS) -c $<
+	$(CC) -I../../../../../../../ext/ipp-crypto/build/.build/RELEASE/include/ $(CFLAGS) -c $<
 
 
 # MatrixSSL shim

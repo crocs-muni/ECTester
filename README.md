@@ -344,7 +344,7 @@ g++ -fPIC -shared -O2 -o botan_provider.so -Wl,-rpath,'$ORIGIN/lib' botan.o cpp_
 g++ -fPIC -shared -O2 -o cryptopp_provider.so -Wl,-rpath,'$ORIGIN/lib' cryptopp.o cpp_utils.o -L. -L/usr/local/lib -lcryptopp  -l:lib_timing.so
 ```
 
-BoringSSL and LibreSSL are included as git submodules. Make sure you run: `git submodule update --init --recursive` 
+BoringSSL, LibreSSL and ipp-crypto are included as git submodules. Make sure you run: `git submodule update --init --recursive` 
 after checking out the ECTester repository to initialize them. To build BoringSSL do:
 ```
 cd ext/boringssl
@@ -361,6 +361,15 @@ cd ext/libressl
 mkdir build
 cd build
 cmake -GNinja -DBUILD_SHARED_LIBS=1 ..
+ninja
+```
+
+To build ipp-crypto do:
+(Make sure you have the necessary [build requirements](https://github.com/intel/ipp-crypto/blob/develop/BUILD.md))
+```
+cd ext/ipp-crypto
+CC=clang CXX=clang++ cmake CMakeLists.txt -GNinja -Bbuild -DARCH=intel64  # Does not work with GCC 12+
+cd build
 ninja
 ```
 
