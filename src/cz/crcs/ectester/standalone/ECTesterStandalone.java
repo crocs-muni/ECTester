@@ -49,6 +49,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -68,22 +69,7 @@ import java.util.stream.Collectors;
  * @version v0.3.3
  */
 public class ECTesterStandalone {
-    private ProviderECLibrary[] libs = new ProviderECLibrary[]{
-            new SunECLib(),
-            new BouncyCastleLib(),
-            new TomcryptLib(),
-            new BotanLib(),
-            new CryptoppLib(),
-            new OpensslLib(),
-            new BoringsslLib(),
-            new GcryptLib(),
-            new MscngLib(),
-            new WolfCryptLib(),
-            new MbedTLSLib(),
-            new IppcpLib(),
-            new MatrixsslLib(),
-            new NettleLib(),
-            new LibresslLib()};
+    private ProviderECLibrary[] libs;
     private Config cfg;
 
     private Options opts = new Options();
@@ -122,11 +108,40 @@ public class ECTesterStandalone {
                 System.load(reqs.resolve("lib_timing.so").toString());
             }
 
+            List<ProviderECLibrary> libObjects = new LinkedList<>();
+            Class[] libClasses = new Class[]{SunECLib.class,
+                    BouncyCastleLib.class,
+                    TomcryptLib.class,
+                    BotanLib.class,
+                    CryptoppLib.class,
+                    OpensslLib.class,
+                    BoringsslLib.class,
+                    GcryptLib.class,
+                    MscngLib.class,
+                    WolfCryptLib.class,
+                    MbedTLSLib.class,
+                    IppcpLib.class,
+                    MatrixsslLib.class,
+                    NettleLib.class,
+                    LibresslLib.class};
+            for (Class c : libClasses) {
+                try {
+                    libObjects.add((ProviderECLibrary) c.getDeclaredConstructor().newInstance());
+                } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
+                         InvocationTargetException e) {
+
+                }
+            }
+            libs = libObjects.toArray(new ProviderECLibrary[0]);
 
             //TODO: push this further down to only initialize if necessary.
             //      and only initialize the chosen lib (so give libs a name in Java only)
             for (ECLibrary lib : libs) {
-                lib.initialize();
+                try {
+                    lib.initialize();
+                } catch (Exception ex) {
+                    System.err.println(ex.getMessage());
+                }
             }
 
             cfg = new Config(libs);
@@ -589,9 +604,9 @@ public class ECTesterStandalone {
         ECPrivateKey privkey = (ECPrivateKey) ECUtil.loadKey(EC_Consts.PARAMETER_S, cli.getOptionValue("ecdsa.named-private"), cli.getOptionValue("ecdsa.private"), spec);
         ECPublicKey pubkey = (ECPublicKey) ECUtil.loadKey(EC_Consts.PARAMETER_W, cli.getOptionValue("ecdsa.named-public"), cli.getOptionValue("ecdsa.public"), spec);
 
-		KeyPair one;
+        KeyPair one;
         if (cli.hasOption("ecdsa.fixed")) {
-        	one = kpg.genKeyPair();
+            one = kpg.genKeyPair();
             if (!cli.hasOption("ecdsa.named-private")) {
                 privkey = (ECPrivateKey) one.getPrivate();
             }
@@ -752,7 +767,7 @@ public class ECTesterStandalone {
 
         StandaloneTestSuite suite;
 
-        switch(cli.getArg(0).toLowerCase()) {
+        switch (cli.getArg(0).toLowerCase()) {
             case "test-vectors":
                 suite = new StandaloneTestVectorSuite(writer, cfg, cli);
                 break;

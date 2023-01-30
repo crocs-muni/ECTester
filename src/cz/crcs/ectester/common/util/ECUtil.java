@@ -6,7 +6,6 @@ import cz.crcs.ectester.data.EC_Store;
 import org.bouncycastle.asn1.*;
 import org.bouncycastle.crypto.digests.SHA1Digest;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -354,7 +353,7 @@ public class ECUtil {
 
     public static BigInteger[] fromDERSignature(byte[] signature) throws IOException {
         ASN1StreamParser parser = new ASN1StreamParser(signature);
-        DERSequence sequence = (DERSequence) ((DERSequenceParser) parser.readObject()).getLoadedObject();
+        DERSequence sequence = (DERSequence) ((DLSequenceParser) parser.readObject()).getLoadedObject();
         ASN1Integer r = (ASN1Integer) sequence.getObjectAt(0);
         ASN1Integer s = (ASN1Integer) sequence.getObjectAt(1);
         return new BigInteger[]{r.getPositiveValue(), s.getPositiveValue()};
