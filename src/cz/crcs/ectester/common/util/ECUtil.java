@@ -3,6 +3,7 @@ package cz.crcs.ectester.common.util;
 import cz.crcs.ectester.applet.EC_Consts;
 import cz.crcs.ectester.common.ec.*;
 import cz.crcs.ectester.data.EC_Store;
+import cz.crcs.ectester.standalone.consts.SignatureIdent;
 import org.bouncycastle.asn1.*;
 import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.bouncycastle.crypto.signers.PlainDSAEncoding;
@@ -347,15 +348,34 @@ public class ECUtil {
         return new KeyPair(pubkey, privkey);
     }
 
-    public static BigInteger recoverSignatureNonce(byte[] signature, byte[] data, BigInteger privkey, ECParameterSpec params, String hashType, String sigType) {
+    public static BigInteger recoverSignatureNonce(byte[] signature, byte[] data, BigInteger privkey, ECParameterSpec params, String hashAlgo, String sigType) {
+        SignatureIdent sigIdent = SignatureIdent.get(hashAlgo + "with" + sigType);
+        if (sigIdent == null) {
+            return null;
+        }
+        return recoverSignatureNonce(signature, data, privkey, params, sigIdent);
+    }
+
+    public static BigInteger recoverSignatureNonce(byte[] signature, byte[] data, BigInteger privkey, ECParameterSpec params, SignatureIdent sigIdent) {
+        // Parse the types out of SignatureIdent.
+        String hashAlgo = sigIdent.getHashAlgo();
+        String sigType = sigIdent.getSigType();
+        if (sigType == null) {
+            sigType = sigIdent.toString();
+        }
+        // We do not know how to reconstruct those nonces so far.
+        // sigType.contains("ECKCDSA") || sigType.contains("ECNR") || sigType.contains("SM2")
+        if (!sigType.contains("ECDSA")) {
+            return null;
+        }
         try {
             int bitSize = params.getOrder().bitLength();
             // Hash the data.
             byte[] hash;
-            if (hashType == null || hashType.equals("NONE")) {
+            if (hashAlgo == null || hashAlgo.equals("NONE")) {
                 hash = data;
             } else {
-                MessageDigest md = MessageDigest.getInstance(hashType);
+                MessageDigest md = MessageDigest.getInstance(hashAlgo);
                 hash = md.digest(data);
             }
             // Trim bitSize of rightmost bits.

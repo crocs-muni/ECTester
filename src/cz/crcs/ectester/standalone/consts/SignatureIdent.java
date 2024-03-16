@@ -127,6 +127,10 @@ public class SignatureIdent extends Ident {
         return instance;
     }
 
+    public String toString() {
+        return name;
+    }
+
     public String getHashAlgo() {
         return hash;
     }
