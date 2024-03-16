@@ -6,6 +6,7 @@ import cz.crcs.ectester.data.EC_Store;
 import org.bouncycastle.asn1.*;
 import org.bouncycastle.crypto.digests.SHA1Digest;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -205,7 +206,7 @@ public class ECUtil {
         while (written < bytes) {
             byte[] dig = new byte[digest.getDigestSize()];
             digest.doFinal(dig, 0);
-            int toWrite = digest.getDigestSize() > bytes - written ? bytes - written : digest.getDigestSize();
+            int toWrite = Math.min(digest.getDigestSize(), bytes - written);
             System.arraycopy(dig, 0, result, written, toWrite);
             written += toWrite;
             digest.update(dig, 0, dig.length);
@@ -352,10 +353,12 @@ public class ECUtil {
     }
 
     public static BigInteger[] fromDERSignature(byte[] signature) throws IOException {
-        ASN1StreamParser parser = new ASN1StreamParser(signature);
-        DERSequence sequence = (DERSequence) ((DLSequenceParser) parser.readObject()).getLoadedObject();
-        ASN1Integer r = (ASN1Integer) sequence.getObjectAt(0);
-        ASN1Integer s = (ASN1Integer) sequence.getObjectAt(1);
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(signature);
+        ASN1InputStream asn1InputStream = new ASN1InputStream(inputStream);
+        ASN1Sequence asn1Sequence = ASN1Sequence.getInstance(asn1InputStream.readObject());
+
+        ASN1Integer r = (ASN1Integer) asn1Sequence.getObjectAt(0);
+        ASN1Integer s = (ASN1Integer) asn1Sequence.getObjectAt(1);
         return new BigInteger[]{r.getPositiveValue(), s.getPositiveValue()};
     }
 
