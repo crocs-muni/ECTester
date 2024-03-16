@@ -5,6 +5,8 @@ import cz.crcs.ectester.common.ec.*;
 import cz.crcs.ectester.data.EC_Store;
 import org.bouncycastle.asn1.*;
 import org.bouncycastle.crypto.digests.SHA1Digest;
+import org.bouncycastle.crypto.signers.PlainDSAEncoding;
+import org.bouncycastle.crypto.signers.StandardDSAEncoding;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
@@ -345,24 +347,7 @@ public class ECUtil {
         return new KeyPair(pubkey, privkey);
     }
 
-    public static byte[] toDERSignature(byte[] r, byte[] s) throws IOException {
-        ASN1Integer rInt = new ASN1Integer(r);
-        ASN1Integer sInt = new ASN1Integer(s);
-        DERSequence seq = new DERSequence(new ASN1Encodable[]{rInt, sInt});
-        return seq.getEncoded();
-    }
-
-    public static BigInteger[] fromDERSignature(byte[] signature) throws IOException {
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(signature);
-        ASN1InputStream asn1InputStream = new ASN1InputStream(inputStream);
-        ASN1Sequence asn1Sequence = ASN1Sequence.getInstance(asn1InputStream.readObject());
-
-        ASN1Integer r = (ASN1Integer) asn1Sequence.getObjectAt(0);
-        ASN1Integer s = (ASN1Integer) asn1Sequence.getObjectAt(1);
-        return new BigInteger[]{r.getPositiveValue(), s.getPositiveValue()};
-    }
-
-    public static BigInteger recoverSignatureNonce(byte[] signature, byte[] data, BigInteger privkey, ECParameterSpec params, String hashType) {
+    public static BigInteger recoverSignatureNonce(byte[] signature, byte[] data, BigInteger privkey, ECParameterSpec params, String hashType, String sigType) {
         try {
             int bitSize = params.getOrder().bitLength();
             // Hash the data.
@@ -380,8 +365,13 @@ public class ECUtil {
                 hashInt = hashInt.shiftRight(hashBits - bitSize);
             }
 
-            // Parse DERSignature
-            BigInteger[] sigPair = fromDERSignature(signature);
+            // Parse signature
+            BigInteger[] sigPair;
+            if (sigType.contains("CVC") || sigType.contains("PLAIN")) {
+                sigPair = PlainDSAEncoding.INSTANCE.decode(params.getOrder(), signature);
+            } else {
+                sigPair = StandardDSAEncoding.INSTANCE.decode(params.getOrder(), signature);
+            }
             BigInteger r = sigPair[0];
             BigInteger s = sigPair[1];
 

@@ -782,7 +782,7 @@ public class ECTesterReader {
                 String k = "";
                 if (actualCurve != null) {
                     ECParameterSpec params = actualCurve.toSpec();
-                    BigInteger kValue = ECUtil.recoverSignatureNonce(signature, data, privkey, params, CardUtil.getSigHashName(cfg.ECDSAType));
+                    BigInteger kValue = ECUtil.recoverSignatureNonce(signature, data, privkey, params, CardUtil.getSigHashName(cfg.ECDSAType), "ECDSA");
                     if (kValue != null) {
                         k = ByteUtil.bytesToHex(kValue.toByteArray(), false);
                     }
