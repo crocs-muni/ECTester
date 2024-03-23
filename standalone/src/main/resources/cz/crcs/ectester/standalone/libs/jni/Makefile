@@ -9,6 +9,7 @@ CFLAGS+=-fPIC -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
 CXXFLAGS+=-fPIC -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
 
 DEBUG ?= 0
+PROJECT_ROOT_PATH ?= ../../../../../../../../../..
 
 ifeq ($(DEBUG), 1)
   CFLAGS+=-g -Wall
@@ -85,13 +86,13 @@ openssl.o: openssl.c
 boringssl: boringssl_provider.so
 
 lib_boringssl.so:
-	cp ../../../../../../../ext/boringssl/build/crypto/libcrypto.so lib_boringssl.so
+	cp $(PROJECT_ROOT_PATH)/ext/boringssl/build/crypto/libcrypto.so lib_boringssl.so
 
 boringssl_provider.so: boringssl.o c_utils.o | lib_timing.so lib_boringssl.so
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_boringssl.so -l:lib_timing.so
 
 boringssl.o: boringssl.c
-	$(CC) -I../../../../../../../ext/boringssl/include/ $(CFLAGS) -c $<
+	$(CC) -I$(PROJECT_ROOT_PATH)/ext/boringssl/include/ $(CFLAGS) -c $<
 
 
 # libgcrypt shim
@@ -152,13 +153,13 @@ mbedtls.o: mbedtls.c
 ippcp: ippcp_provider.so
 
 lib_ippcp.so:
-	cp ../../../../../../../ext/ipp-crypto/build/.build/RELEASE/lib/libippcp.so lib_ippcp.so
+	cp $(PROJECT_ROOT_PATH)/ext/ipp-crypto/build/.build/RELEASE/lib/libippcp.so lib_ippcp.so
 
 ippcp_provider.so: ippcp.o c_utils.o | lib_timing.so lib_ippcp.so
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_ippcp.so -l:lib_timing.so
 
 ippcp.o: ippcp.c
-	$(CC) -I../../../../../../../ext/ipp-crypto/build/.build/RELEASE/include/ $(CFLAGS) -c $<
+	$(CC) -I$(PROJECT_ROOT_PATH)/ext/ipp-crypto/build/.build/RELEASE/include/ $(CFLAGS) -c $<
 
 
 # MatrixSSL shim
@@ -185,13 +186,13 @@ nettle.o: nettle.c
 libressl: libressl_provider.so
 
 lib_libressl.so:
-	cp ../../../../../../../ext/libressl/build/crypto/libcrypto.so lib_libressl.so
+	cp $(PROJECT_ROOT_PATH)/ext/libressl/build/crypto/libcrypto.so lib_libressl.so
 
 libressl_provider.so: libressl.o c_utils.o | lib_timing.so lib_libressl.so
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_libressl.so -l:lib_timing.so
 
 libressl.o: libressl.c
-	$(CC) -I../../../../../../../ext/libressl/include/ $(CFLAGS) -c $<
+	$(CC) -I$(PROJECT_ROOT_PATH)/ext/libressl/include/ $(CFLAGS) -c $<
 
 
 help:

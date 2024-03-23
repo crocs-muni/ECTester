@@ -1,9 +1,6 @@
 package cz.crcs.ectester.common.util;
 
 import cz.crcs.ectester.common.ec.EC_Consts;
-import javacard.framework.ISO7816;
-import javacard.security.CryptoException;
-import javacard.security.KeyPair;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +10,42 @@ import java.util.List;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class CardUtil {
+    public class ISO7816 {
+        public static final short	SW_APPLET_SELECT_FAILED = 	27033;
+        public static final short	SW_BYTES_REMAINING_00 =	24832;
+        public static final short	SW_CLA_NOT_SUPPORTED =	28160;
+        public static final short	SW_COMMAND_CHAINING_NOT_SUPPORTED =	26756;
+        public static final short	SW_COMMAND_NOT_ALLOWED =	27014;
+        public static final short	SW_CONDITIONS_NOT_SATISFIED =	27013;
+        public static final short	SW_CORRECT_LENGTH_00 =	27648;
+        public static final short	SW_DATA_INVALID =	27012;
+        public static final short	SW_FILE_FULL =	27268;
+        public static final short	SW_FILE_INVALID =	27011;
+        public static final short	SW_FILE_NOT_FOUND =	27266;
+        public static final short	SW_FUNC_NOT_SUPPORTED =	27265;
+        public static final short	SW_INCORRECT_P1P2 =	27270;
+        public static final short	SW_INS_NOT_SUPPORTED =	27904;
+        public static final short	SW_LAST_COMMAND_EXPECTED =	26755;
+        public static final short	SW_LOGICAL_CHANNEL_NOT_SUPPORTED =	26753;
+        public static final short	SW_NO_ERROR =	-28672;
+        public static final short	SW_RECORD_NOT_FOUND =	27267;
+        public static final short	SW_SECURE_MESSAGING_NOT_SUPPORTED =	26754;
+        public static final short	SW_SECURITY_STATUS_NOT_SATISFIED =	27010;
+        public static final short	SW_UNKNOWN =	28416;
+        public static final short	SW_WARNING_STATE_UNCHANGED =	25088;
+        public static final short	SW_WRONG_DATA =	27264;
+        public static final short	SW_WRONG_LENGTH =	26368;
+        public static final short	SW_WRONG_P1P2 =	27392;
+    }
+
+    public class CryptoException {
+        public static final short ILLEGAL_VALUE = 1;
+        public static final short UNINITIALIZED_KEY = 2;
+        public static final short NO_SUCH_ALGORITHM = 3;
+        public static final short INVALID_INIT = 4;
+        public static final short ILLEGAL_USE = 5;
+    }
+
     public static byte getSig(String name) {
         switch (name) {
             case "SHA1":
@@ -100,6 +133,7 @@ public class CardUtil {
             case ISO7816.SW_BYTES_REMAINING_00:
             case ISO7816.SW_CLA_NOT_SUPPORTED:
             case ISO7816.SW_COMMAND_NOT_ALLOWED:
+            case ISO7816.SW_COMMAND_CHAINING_NOT_SUPPORTED:
             case ISO7816.SW_CONDITIONS_NOT_SATISFIED:
             case ISO7816.SW_CORRECT_LENGTH_00:
             case ISO7816.SW_DATA_INVALID:
@@ -131,7 +165,7 @@ public class CardUtil {
             case CardConsts.SW_KA_NULL:
             case CardConsts.SW_SIGNATURE_NULL:
             case CardConsts.SW_OBJECT_NULL:
-                return "CardConsts";
+                return "ECTesterApplet";
             default:
                 return "?";
         }
@@ -161,6 +195,8 @@ public class CardUtil {
                         return "CLA_NOT_SUPPORTED";
                     case ISO7816.SW_COMMAND_NOT_ALLOWED:
                         return "COMMAND_NOT_ALLOWED";
+                    case ISO7816.SW_COMMAND_CHAINING_NOT_SUPPORTED:
+                        return "COMMAND_CHAINING_NOT_SUPPORTED";
                     case ISO7816.SW_CONDITIONS_NOT_SATISFIED:
                         return "CONDITIONS_NOT_SATISFIED";
                     case ISO7816.SW_CORRECT_LENGTH_00:
@@ -454,9 +490,9 @@ public class CardUtil {
 
     public static String getKeyTypeString(byte keyClass) {
         switch (keyClass) {
-            case KeyPair.ALG_EC_FP:
+            case EC_Consts.ALG_EC_FP:
                 return "ALG_EC_FP";
-            case KeyPair.ALG_EC_F2M:
+            case EC_Consts.ALG_EC_F2M:
                 return "ALG_EC_F2M";
             default:
                 return "";

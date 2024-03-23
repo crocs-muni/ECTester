@@ -10,7 +10,6 @@ import cz.crcs.ectester.common.util.CardUtil;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
-import javacard.security.KeyPair;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -34,16 +33,16 @@ public class CardDefaultSuite extends CardTestSuite {
     @Override
     protected void runTests() throws Exception {
         if (cfg.primeField) {
-            runDefault(KeyPair.ALG_EC_FP);
+            runDefault(EC_Consts.ALG_EC_FP);
         }
         if (cfg.binaryField) {
-            runDefault(KeyPair.ALG_EC_F2M);
+            runDefault(EC_Consts.ALG_EC_F2M);
         }
     }
 
     private void runDefault(byte field) throws Exception {
-        short[] keySizes = field == KeyPair.ALG_EC_FP ? EC_Consts.FP_SIZES : EC_Consts.F2M_SIZES;
-        short domain = field == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
+        short[] keySizes = field == EC_Consts.ALG_EC_FP ? EC_Consts.FP_SIZES : EC_Consts.F2M_SIZES;
+        short domain = field == EC_Consts.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
         for (short keyLength : keySizes) {
 
             List<Test> supportTests = new LinkedList<>();

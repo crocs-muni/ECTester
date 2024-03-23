@@ -15,7 +15,6 @@ import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
-import javacard.security.KeyPair;
 
 import javax.crypto.KeyAgreement;
 import java.io.IOException;
@@ -109,8 +108,8 @@ public class CardTestVectorSuite extends CardTestSuite {
         }
 
         List<EC_Curve> testCurves = new ArrayList<>();
-        testCurves.addAll(EC_Store.getInstance().getObjects(EC_Curve.class, "secg").values().stream().filter((curve) -> curve.getField() == KeyPair.ALG_EC_FP).collect(Collectors.toList()));
-        testCurves.addAll(EC_Store.getInstance().getObjects(EC_Curve.class, "brainpool").values().stream().filter((curve) -> curve.getField() == KeyPair.ALG_EC_FP).collect(Collectors.toList()));
+        testCurves.addAll(EC_Store.getInstance().getObjects(EC_Curve.class, "secg").values().stream().filter((curve) -> curve.getField() == EC_Consts.ALG_EC_FP).collect(Collectors.toList()));
+        testCurves.addAll(EC_Store.getInstance().getObjects(EC_Curve.class, "brainpool").values().stream().filter((curve) -> curve.getField() == EC_Consts.ALG_EC_FP).collect(Collectors.toList()));
         for (EC_Curve curve : testCurves) {
             List<Test> testVector = new LinkedList<>();
             Test allocate = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS));

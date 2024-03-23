@@ -3,7 +3,7 @@ package cz.crcs.ectester.reader.response;
 import cz.crcs.ectester.common.ec.EC_Consts;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.common.util.CardConsts;
-import javacard.framework.ISO7816;
+import cz.crcs.ectester.common.util.CardUtil;
 
 import javax.smartcardio.ResponseAPDU;
 
@@ -39,7 +39,7 @@ public abstract class Response {
                 short sw = ByteUtil.getShort(data, offset);
                 offset += 2;
                 sws[i] = sw;
-                if (sw != ISO7816.SW_NO_ERROR) {
+                if (sw != CardUtil.ISO7816.SW_NO_ERROR) {
                     success = false;
                 }
             } else {
@@ -48,7 +48,7 @@ public abstract class Response {
             }
         }
 
-        if ((short) resp.getSW() != ISO7816.SW_NO_ERROR) {
+        if ((short) resp.getSW() != CardUtil.ISO7816.SW_NO_ERROR) {
             success = false;
             error = true;
         }

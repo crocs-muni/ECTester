@@ -1,19 +1,14 @@
 package cz.crcs.ectester.common.ec;
 
-import javacard.framework.ISO7816;
-import javacard.framework.ISOException;
-import javacard.framework.Util;
-import javacard.security.KeyPair;
-import javacard.security.RandomData;
+import cz.crcs.ectester.common.util.ByteUtil;
+
+import java.nio.ByteBuffer;
 
 /**
  * @author Petr Svenda petr@svenda.com
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class EC_Consts {
-
-    public static final byte KeyAgreement_ALG_EC_SVDP_DH_KDF = 1;
-    public static final byte KeyAgreement_ALG_EC_SVDP_DHC_KDF = 2;
     private static byte[] EC_FP_P = null;    //p
     private static byte[] EC_A = null;    //a
     private static byte[] EC_B = null;    //b
@@ -55,13 +50,10 @@ public class EC_Consts {
     public static final short PARAMETERS_KEYPAIR = 0x0180;
     public static final short PARAMETERS_ALL = 0x01ff;
 
-
     // EC key identifiers
     public static final byte KEY_PUBLIC = 0x01;
     public static final byte KEY_PRIVATE = 0x02;
     public static final byte KEY_BOTH = KEY_PUBLIC | KEY_PRIVATE;
-
-    public static RandomData randomData = null;
 
     // secp112r1
     public static final byte[] EC112_FP_P = new byte[]{
@@ -1078,10 +1070,15 @@ public class EC_Consts {
     public static final short[] FP_SIZES = new short[]{112, 128, 160, 192, 224, 256, 384, 521};
     public static final short[] F2M_SIZES = new short[]{163, 233, 283, 409, 571};
 
+    public static final byte ALG_EC_F2M = 4;
+    public static final byte ALG_EC_FP = 5;
+
     // Class javacard.security.KeyAgreement
     // javacard.security.KeyAgreement Fields:
     public static final byte KeyAgreement_ALG_EC_SVDP_DH = 1;
+    public static final byte KeyAgreement_ALG_EC_SVDP_DH_KDF = 1;
     public static final byte KeyAgreement_ALG_EC_SVDP_DHC = 2;
+    public static final byte KeyAgreement_ALG_EC_SVDP_DHC_KDF = 2;
     public static final byte KeyAgreement_ALG_EC_SVDP_DH_PLAIN = 3;
     public static final byte KeyAgreement_ALG_EC_SVDP_DHC_PLAIN = 4;
     public static final byte KeyAgreement_ALG_EC_PACE_GM = 5;
@@ -1115,7 +1112,7 @@ public class EC_Consts {
     };
 
     public static byte getCurve(short keyLength, byte keyClass) {
-        if (keyClass == KeyPair.ALG_EC_FP) {
+        if (keyClass == ALG_EC_FP) {
             switch (keyLength) {
                 case (short) 112:
                     return CURVE_secp112r1;
@@ -1134,9 +1131,9 @@ public class EC_Consts {
                 case (short) 521:
                     return CURVE_secp521r1;
                 default:
-                    ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+                    throw new IllegalArgumentException("Unsupported keyLength and keyClass.");
             }
-        } else if (keyClass == KeyPair.ALG_EC_F2M) {
+        } else if (keyClass == ALG_EC_F2M) {
             switch (keyLength) {
                 case (short) 163:
                     return CURVE_sect163r1;
@@ -1149,15 +1146,14 @@ public class EC_Consts {
                 case (short) 571:
                     return CURVE_sect571r1;
                 default:
-                    ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+                    throw new IllegalArgumentException("Unsupported keyLength and keyClass.");
             }
         } else {
-            ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+            throw new IllegalArgumentException("Unsupported keyClass.");
         }
-        return 0;
     }
 
-    public static short getCurveParameter(byte curve, short param, byte[] outputBuffer, short outputOffset) {
+    public static byte[] getCurveParameter(byte curve, short param) {
         byte alg = getCurveType(curve);
         switch (curve) {
             case CURVE_secp112r1: {
@@ -1328,185 +1324,80 @@ public class EC_Consts {
                 break;
             }
             default:
-                ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+                throw new IllegalArgumentException("Unknown curve.");
         }
-        short length = 0;
         switch (param) {
             case PARAMETER_FP:
-                if (alg == KeyPair.ALG_EC_FP) {
-                    length = Util.arrayCopyNonAtomic(EC_FP_P, (short) 0, outputBuffer, outputOffset, (short) EC_FP_P.length);
+                if (alg == ALG_EC_FP) {
+                    return EC_FP_P.clone();
                 }
                 break;
             case PARAMETER_F2M:
-                if (alg == KeyPair.ALG_EC_F2M) {
-                    length = Util.arrayCopyNonAtomic(EC_F2M_F2M, (short) 0, outputBuffer, outputOffset, (short) EC_F2M_F2M.length);
+                if (alg == ALG_EC_F2M) {
+                    return EC_F2M_F2M.clone();
                 }
                 break;
             case PARAMETER_A:
-                length = Util.arrayCopyNonAtomic(EC_A, (short) 0, outputBuffer, outputOffset, (short) EC_A.length);
-                break;
+                return EC_A.clone();
             case PARAMETER_B:
-                length = Util.arrayCopyNonAtomic(EC_B, (short) 0, outputBuffer, outputOffset, (short) EC_B.length);
-                break;
+                return EC_B.clone();
             case PARAMETER_G:
-                length = toX962(X962_UNCOMPRESSED, outputBuffer, outputOffset, EC_G_X, (short) 0, (short) EC_G_X.length, EC_G_Y, (short) 0, (short) EC_G_Y.length);
-                break;
+                return toX962(X962_UNCOMPRESSED, EC_G_X, EC_G_Y);
             case PARAMETER_R:
-                length = Util.arrayCopyNonAtomic(EC_R, (short) 0, outputBuffer, outputOffset, (short) EC_R.length);
-                break;
+                return EC_R.clone();
             case PARAMETER_K:
-                length = 2;
-                Util.setShort(outputBuffer, outputOffset, EC_K);
-                break;
+                return ByteUtil.shortToBytes(EC_K);
             case PARAMETER_W:
                 if (EC_W_X == null || EC_W_Y == null) {
-                    return 0;
+                    return null;
                 }
-                length = toX962(X962_UNCOMPRESSED, outputBuffer, outputOffset, EC_W_X, (short) 0, (short) EC_W_X.length, EC_W_Y, (short) 0, (short) EC_W_Y.length);
-                break;
+                return toX962(X962_UNCOMPRESSED, EC_W_X, EC_W_Y);
             case PARAMETER_S:
                 if (EC_S == null) {
-                    return 0;
+                    return null;
                 }
-                length = Util.arrayCopyNonAtomic(EC_S, (short) 0, outputBuffer, outputOffset, (short) EC_S.length);
-                break;
+                return EC_S.clone();
             default:
-                ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+                throw new IllegalArgumentException("Unknown parameter");
         }
-        return length;
-    }
-
-    public static short transformParameter(short transformation, byte[] buffer, short offset, short length) {
-        if (transformation == TRANSFORMATION_NONE) {
-            return length;
-        }
-
-        short transformationMask = TRANSFORMATION_FIXED;
-        while (transformationMask <= TRANSFORMATION_04_MASK) {
-            short transformationPart = (short) (transformationMask & transformation);
-            switch (transformationPart) {
-                case (short) 0:
-                    break;
-                case TRANSFORMATION_FIXED:
-                    if (length >= 1) {
-                        buffer[offset] = (byte) 0xcc;
-                        buffer[(short) (offset + length - 1)] = (byte) 0xcc;
-                    }
-                    break;
-                case TRANSFORMATION_FULLRANDOM:
-                    randomData.generateData(buffer, offset, length);
-                    break;
-                case TRANSFORMATION_ONEBYTERANDOM:
-                    short first = Util.getShort(buffer, (short) 0); // save first two bytes
-
-                    randomData.generateData(buffer, (short) 0, (short) 2); // generate position
-                    short rngPos = Util.getShort(buffer, (short) 0); // save generated position
-
-                    Util.setShort(buffer, (short) 0, first); // restore first two bytes
-
-                    if (rngPos < 0) { // make positive
-                        rngPos = (short) -rngPos;
-                    }
-                    rngPos %= length; // make < param length
-
-                    byte original = buffer[rngPos];
-                    do {
-                        randomData.generateData(buffer, rngPos, (short) 1);
-                    } while (original == buffer[rngPos]);
-                    break;
-                case TRANSFORMATION_ZERO:
-                    Util.arrayFillNonAtomic(buffer, offset, length, (byte) 0);
-                    break;
-                case TRANSFORMATION_ONE:
-                    Util.arrayFillNonAtomic(buffer, offset, length, (byte) 0);
-                    buffer[(short) (offset + length)] = (byte) 1;
-                    break;
-                case TRANSFORMATION_MAX:
-                    Util.arrayFillNonAtomic(buffer, offset, length, (byte) 1);
-                    break;
-                case TRANSFORMATION_INCREMENT:
-                    short index = (short) (offset + length - 1);
-                    byte value;
-                    do {
-                        value = buffer[index];
-                        buffer[index--] = ++value;
-                    } while (value == (byte) 0 && index >= offset);
-                    break;
-                case TRANSFORMATION_INFINITY:
-                    Util.arrayFillNonAtomic(buffer, offset, length, (byte) 0);
-                    length = 1;
-                    break;
-                case TRANSFORMATION_COMPRESS_HYBRID:
-                case TRANSFORMATION_COMPRESS:
-                    if ((short) (length % 2) != 1) {
-                        // an uncompressed point should have odd length (since 1 byte type, + 2 * coords)
-                        ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
-                    }
-                    short half = (short) ((short) (length - 1) / 2);
-                    byte yLSB = buffer[(short) (offset + length)];
-                    byte yBit = (byte) (yLSB & 0x01);
-                    if (yBit == 1) {
-                        buffer[offset] = 3;
-                    } else {
-                        buffer[offset] = 2;
-                    }
-
-                    if (transformationPart == TRANSFORMATION_COMPRESS) {
-                        length = (short) (half + 1);
-                    } else {
-                        buffer[offset] += 4;
-                    }
-                    break;
-                case TRANSFORMATION_04_MASK:
-                    buffer[offset] = 4;
-                    break;
-                default:
-                    ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
-            }
-            transformationMask = (short) (transformationMask << 1);
-        }
-        return length;
+        return null;
     }
 
     public static byte getCurveType(byte curve) {
-        return curve <= FP_CURVES ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
+        return curve <= FP_CURVES ? ALG_EC_FP : ALG_EC_F2M;
     }
 
-    @SuppressWarnings("fallthrough")
-    public static short toX962(byte form, byte[] outputBuffer, short outputOffset, byte[] xBuffer, short xOffset, short xLength, byte[] yBuffer, short yOffset, short yLength) {
-        short size = 1;
-        size += xLength;
+    public static byte[] toX962(byte form, byte[] xBuffer, byte[] yBuffer) {
+        ByteBuffer bb = ByteBuffer.allocate(xBuffer.length + yBuffer.length + 1);
+        byte yLSB = yBuffer[yBuffer.length - 1];
+        byte yBit = (byte) (yLSB & 0x01);
 
-        short offset = outputOffset;
-        outputBuffer[offset] = 0;
         switch (form) {
             case X962_UNCOMPRESSED:
-                outputBuffer[offset] = 4;
+                bb.put((byte) 4);
                 break;
             case X962_HYBRID:
-                outputBuffer[offset] = 4;
-            case X962_COMPRESSED: /* fallthrough */
-                byte yLSB = yBuffer[(short) (yOffset + yLength)];
-                byte yBit = (byte) (yLSB & 0x01);
-
                 if (yBit == 1) {
-                    outputBuffer[offset] += 3;
+                    bb.put((byte) 7);
                 } else {
-                    outputBuffer[offset] += 2;
+                    bb.put((byte) 6);
+                }
+                break;
+            case X962_COMPRESSED:
+                if (yBit == 1) {
+                    bb.put((byte) 3);
+                } else {
+                    bb.put((byte) 2);
                 }
                 break;
             default:
-                ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
+                throw new IllegalArgumentException("Unsupported form.");
         }
-        offset += 1;
-
-        offset = Util.arrayCopyNonAtomic(xBuffer, xOffset, outputBuffer, offset, xLength);
+        bb.put(xBuffer);
         if (form == X962_HYBRID || form == X962_UNCOMPRESSED) {
-            Util.arrayCopyNonAtomic(yBuffer, yOffset, outputBuffer, offset, yLength);
-            size += yLength;
+            bb.put(yBuffer);
         }
-
-        return size;
+        return bb.array();
     }
 
 }

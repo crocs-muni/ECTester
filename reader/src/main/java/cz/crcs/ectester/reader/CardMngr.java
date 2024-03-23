@@ -2,6 +2,7 @@ package cz.crcs.ectester.reader;
 
 import com.licel.jcardsim.io.JavaxSmartCardInterface;
 import cz.crcs.ectester.common.util.ByteUtil;
+import cz.crcs.ectester.common.util.CardUtil;
 import javacard.framework.AID;
 import javacard.framework.Applet;
 import javacard.framework.ISO7816;
@@ -206,10 +207,10 @@ public class CardMngr {
         // Try CPLC via GP
         ResponseAPDU resp = send(FETCH_GP_CPLC_APDU);
         // If GP CLA fails, try with ISO
-        if (resp.getSW() == (ISO7816.SW_CLA_NOT_SUPPORTED & 0xffff)) {
+        if (resp.getSW() == (CardUtil.ISO7816.SW_CLA_NOT_SUPPORTED & 0xffff)) {
             resp = send(FETCH_ISO_CPLC_APDU);
         }
-        if (resp.getSW() == (ISO7816.SW_NO_ERROR & 0xffff)) {
+        if (resp.getSW() == (CardUtil.ISO7816.SW_NO_ERROR & 0xffff)) {
             return resp.getData();
         }
         return null;
@@ -369,7 +370,7 @@ public class CardMngr {
             } else {
                 resp = channel.transmit(cmd);
             }
-            if ((short) resp.getSW() != ISO7816.SW_NO_ERROR) {
+            if ((short) resp.getSW() != CardUtil.ISO7816.SW_NO_ERROR) {
                 throw new CardException("Chunking failed!");
             }
         }

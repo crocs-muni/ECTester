@@ -16,7 +16,6 @@ import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
-import javacard.security.KeyPair;
 
 import java.security.spec.ECPoint;
 import java.util.LinkedList;
@@ -45,7 +44,7 @@ public class CardCompressionSuite extends CardTestSuite {
         //   - test local privkey, remote pubkey (hybrid with wrong y)
         //   - test local privkey, remote pubkey (point at infinity)
         if (cfg.primeField) {
-            runCompression(KeyPair.ALG_EC_FP);
+            runCompression(EC_Consts.ALG_EC_FP);
         }
         // for F2m
         //   - allocate, set custom curve, generate keypairs, -> export generated.
@@ -55,7 +54,7 @@ public class CardCompressionSuite extends CardTestSuite {
         //   - test local privkey, remote pubkey (hybrid with wrong y)
         //   - test local privkey, remote pubkey (point at infinity)
         if (cfg.binaryField) {
-            runCompression(KeyPair.ALG_EC_F2M);
+            runCompression(EC_Consts.ALG_EC_F2M);
         }
 
         // Now, do ECDH over SECG curves and give the implementation a compressed key that is not a quadratic residue in
@@ -64,8 +63,8 @@ public class CardCompressionSuite extends CardTestSuite {
     }
 
     private void runCompression(byte field) throws Exception {
-        short[] keySizes = field == KeyPair.ALG_EC_FP ? EC_Consts.FP_SIZES : EC_Consts.F2M_SIZES;
-        short domain = field == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
+        short[] keySizes = field == EC_Consts.ALG_EC_FP ? EC_Consts.FP_SIZES : EC_Consts.F2M_SIZES;
+        short domain = field == EC_Consts.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
 
         for (short keyLength : keySizes) {
             String spec = keyLength + "b " + CardUtil.getKeyTypeString(field);

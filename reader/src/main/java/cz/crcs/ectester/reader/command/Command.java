@@ -12,7 +12,6 @@ import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.output.ResponseWriter;
 import cz.crcs.ectester.reader.response.Response;
-import javacard.security.KeyPair;
 
 import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
@@ -98,7 +97,7 @@ public abstract class Command implements Cloneable {
     public static Command prepareCurve(CardMngr cardManager, ECTesterReader.Config cfg, byte keyPair, short keyLength, byte keyClass) throws IOException {
         if (cfg.customCurve) {
             // Set custom curve (one of the SECG curves embedded applet-side)
-            short domainParams = keyClass == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
+            short domainParams = keyClass == EC_Consts.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
             return new Command.Set(cardManager, keyPair, EC_Consts.getCurve(keyLength, keyClass), domainParams, null);
         }
 
@@ -294,7 +293,7 @@ public abstract class Command implements Cloneable {
 
         @Override
         public String getDescription() {
-            String field = keyClass == KeyPair.ALG_EC_FP ? "ALG_EC_FP" : "ALG_EC_F2M";
+            String field = keyClass == EC_Consts.ALG_EC_FP ? "ALG_EC_FP" : "ALG_EC_F2M";
             String key;
             if (keyPair == CardConsts.KEYPAIR_BOTH) {
                 key = "both keypairs";

@@ -8,14 +8,13 @@ import cz.crcs.ectester.common.test.Test;
 import cz.crcs.ectester.common.test.TestCallback;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.common.util.CardConsts;
+import cz.crcs.ectester.common.util.CardUtil;
 import cz.crcs.ectester.common.util.ECUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
-import javacard.security.CryptoException;
-import javacard.security.KeyPair;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -77,7 +76,7 @@ public class CardEdgeCasesSuite extends CardTestSuite {
                         @Override
                         public Result apply(CommandTestable testable) {
                             Response.ECDH dh = (Response.ECDH) testable.getResponse();
-                            if (dh.getSW(0) == CryptoException.NO_SUCH_ALGORITHM) {
+                            if (dh.getSW(0) == CardUtil.CryptoException.NO_SUCH_ALGORITHM) {
                                 return new Result(Result.Value.SUCCESS, "ECDH algorithm unsupported.");
                             }
                             if (!dh.successful())
@@ -116,7 +115,7 @@ public class CardEdgeCasesSuite extends CardTestSuite {
             EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, openssl_bug.getCurve());
             EC_Key.Private skey = EC_Store.getInstance().getObject(EC_Key.Private.class, openssl_bug.getOtherKey());
             EC_Key.Public pkey = EC_Store.getInstance().getObject(EC_Key.Public.class, openssl_bug.getOneKey());
-            Test key = CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, curve.getBits(), KeyPair.ALG_EC_FP), Result.ExpectedValue.SUCCESS);
+            Test key = CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, curve.getBits(), EC_Consts.ALG_EC_FP), Result.ExpectedValue.SUCCESS);
             Test set = CommandTest.expect(new Command.Set(this.card, CardConsts.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.ExpectedValue.SUCCESS);
             Test setPrivate = CommandTest.expect(new Command.Set(this.card, CardConsts.KEYPAIR_LOCAL, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, skey.flatten(EC_Consts.PARAMETER_S)), Result.ExpectedValue.SUCCESS);
             Test setPublic = CommandTest.expect(new Command.Set(this.card, CardConsts.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_W, pkey.flatten(EC_Consts.PARAMETER_W)), Result.ExpectedValue.SUCCESS);
@@ -139,12 +138,12 @@ public class CardEdgeCasesSuite extends CardTestSuite {
         }
 
         Map<String, EC_Curve> curveMap = EC_Store.getInstance().getObjects(EC_Curve.class, "secg");
-        List<EC_Curve> curves = curveMap.entrySet().stream().filter((e) -> e.getKey().endsWith("r1") && e.getValue().getField() == KeyPair.ALG_EC_FP).map(Map.Entry::getValue).collect(Collectors.toList());
+        List<EC_Curve> curves = curveMap.entrySet().stream().filter((e) -> e.getKey().endsWith("r1") && e.getValue().getField() == EC_Consts.ALG_EC_FP).map(Map.Entry::getValue).collect(Collectors.toList());
         curves.add(EC_Store.getInstance().getObject(EC_Curve.class, "cofactor/cofactor128p2"));
         curves.add(EC_Store.getInstance().getObject(EC_Curve.class, "cofactor/cofactor160p4"));
         Random rand = new Random();
         for (EC_Curve curve : curves) {
-            Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, curve.getBits(), KeyPair.ALG_EC_FP), Result.ExpectedValue.SUCCESS));
+            Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, curve.getBits(), EC_Consts.ALG_EC_FP), Result.ExpectedValue.SUCCESS));
             if (!key.ok()) {
                 doTest(CompoundTest.all(Result.ExpectedValue.FAILURE, "No support for " + curve.getBits() + "b " + curve.getId() + ".", key));
                 continue;
@@ -269,7 +268,7 @@ public class CardEdgeCasesSuite extends CardTestSuite {
         Arrays.sort(ps);
         Arrays.sort(zeros);
 
-        Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, secp160r1.getBits(), KeyPair.ALG_EC_FP), Result.ExpectedValue.SUCCESS));
+        Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, secp160r1.getBits(), EC_Consts.ALG_EC_FP), Result.ExpectedValue.SUCCESS));
         if (!key.ok()) {
             doTest(CompoundTest.all(Result.ExpectedValue.FAILURE, "No support for " + secp160r1.getBits() + "b secp160r1.", key));
             return;

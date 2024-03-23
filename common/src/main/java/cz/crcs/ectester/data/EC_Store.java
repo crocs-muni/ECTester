@@ -2,7 +2,6 @@ package cz.crcs.ectester.data;
 
 import cz.crcs.ectester.common.ec.*;
 import cz.crcs.ectester.common.util.Util;
-import javacard.security.KeyPair;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -152,9 +151,9 @@ public class EC_Store {
 
                     byte alg;
                     if (field.getTextContent().equalsIgnoreCase("prime")) {
-                        alg = KeyPair.ALG_EC_FP;
+                        alg = EC_Consts.ALG_EC_FP;
                     } else {
-                        alg = KeyPair.ALG_EC_F2M;
+                        alg = EC_Consts.ALG_EC_F2M;
                     }
                     short bitsize = Short.parseShort(bits.getTextContent());
 

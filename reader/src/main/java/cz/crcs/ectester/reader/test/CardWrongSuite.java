@@ -15,7 +15,6 @@ import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
-import javacard.security.KeyPair;
 
 import java.math.BigInteger;
 import java.util.LinkedList;
@@ -82,8 +81,8 @@ public class CardWrongSuite extends CardTestSuite {
          */
         Random r = new Random();
         for (short keyLength : EC_Consts.FP_SIZES) {
-            byte curve = EC_Consts.getCurve(keyLength, KeyPair.ALG_EC_FP);
-            Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_FP), ExpectedValue.SUCCESS));
+            byte curve = EC_Consts.getCurve(keyLength, EC_Consts.ALG_EC_FP);
+            Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, keyLength, EC_Consts.ALG_EC_FP), ExpectedValue.SUCCESS));
             if (!key.ok()) {
                 doTest(CompoundTest.all(ExpectedValue.FAILURE, "No support for " + keyLength + "b ALG_EC_FP.", key));
                 continue;
@@ -117,13 +116,7 @@ public class CardWrongSuite extends CardTestSuite {
             Test zeroG = ecdhTest(new Command.Transform(this.card, CardConsts.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_G, EC_Consts.TRANSFORMATION_INFINITY), "Set G = inifnity.", "ECDH with G = infinity.");
             Test wrongG = CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted G parameter.", randomG, fullRandomG, zeroG);
 
-            byte[] originalR = new byte[((keyLength + 7) / 8) + 1];
-            short origRlen = EC_Consts.getCurveParameter(curve, EC_Consts.PARAMETER_R, originalR, (short) 0);
-            if (origRlen != originalR.length) {
-                byte[] copyR = new byte[origRlen];
-                System.arraycopy(originalR, 0, copyR, 0, origRlen);
-                originalR = copyR;
-            }
+            byte[] originalR = EC_Consts.getCurveParameter(curve, EC_Consts.PARAMETER_R);
             BigInteger originalBigR = new BigInteger(1, originalR);
 
             Test zeroR = ecdhTest(new Command.Transform(this.card, CardConsts.KEYPAIR_BOTH, EC_Consts.CURVE_external, EC_Consts.PARAMETER_R, EC_Consts.TRANSFORMATION_ZERO), "Set R = 0.", "ECDH with R = 0.");
@@ -159,7 +152,7 @@ public class CardWrongSuite extends CardTestSuite {
 
             Test wrongK = CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted K parameter.", bigK, zeroK);
 
-            doTest(CompoundTest.all(ExpectedValue.SUCCESS, "Tests of " + keyLength + "b " + CardUtil.getKeyTypeString(KeyPair.ALG_EC_FP), setup, wrongPrime, resetSetup, wrongG, resetSetup.clone(), wrongR, resetSetup.clone(), wrongK, resetSetup.clone()));
+            doTest(CompoundTest.all(ExpectedValue.SUCCESS, "Tests of " + keyLength + "b " + CardUtil.getKeyTypeString(EC_Consts.ALG_EC_FP), setup, wrongPrime, resetSetup, wrongG, resetSetup.clone(), wrongR, resetSetup.clone(), wrongK, resetSetup.clone()));
         }
 
         /*
@@ -168,8 +161,8 @@ public class CardWrongSuite extends CardTestSuite {
          *  - e1 = e2 = e3 = 0
          */
         for (short keyLength : EC_Consts.F2M_SIZES) {
-            byte curve = EC_Consts.getCurve(keyLength, KeyPair.ALG_EC_F2M);
-            Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, keyLength, KeyPair.ALG_EC_F2M), ExpectedValue.SUCCESS));
+            byte curve = EC_Consts.getCurve(keyLength, EC_Consts.ALG_EC_F2M);
+            Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, keyLength, EC_Consts.ALG_EC_F2M), ExpectedValue.SUCCESS));
             if (!key.ok()) {
                 doTest(CompoundTest.all(ExpectedValue.FAILURE, "No support for " + keyLength + "b ALG_EC_F2M.", key));
                 continue;
@@ -191,7 +184,7 @@ public class CardWrongSuite extends CardTestSuite {
             Test coeffLarger = ecdhTest(new Command.Set(this.card, CardConsts.KEYPAIR_BOTH, EC_Consts.CURVE_external, coeffParams.getParams(), coeffParams.flatten()), "Set e1=" + e1 + ", e2=" + e2 + ", e3=" + e3, "ECDH with wrong field poly, powers larger than " + keyLength);
 
             Test wrong = CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted field polynomial parameter.", coeff0, coeffLarger);
-            doTest(CompoundTest.all(ExpectedValue.SUCCESS, "Tests of " + keyLength + "b " + CardUtil.getKeyTypeString(KeyPair.ALG_EC_F2M), setup, wrong));
+            doTest(CompoundTest.all(ExpectedValue.SUCCESS, "Tests of " + keyLength + "b " + CardUtil.getKeyTypeString(EC_Consts.ALG_EC_F2M), setup, wrong));
         }
 
         /*

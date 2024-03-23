@@ -1,7 +1,6 @@
 package cz.crcs.ectester.common.ec;
 
 import cz.crcs.ectester.common.util.ByteUtil;
-import javacard.security.KeyPair;
 import org.bouncycastle.math.ec.ECCurve;
 
 import java.math.BigInteger;
@@ -19,10 +18,10 @@ public class EC_Curve extends EC_Params {
 
     /**
      * @param bits
-     * @param field KeyPair.ALG_EC_FP or KeyPair.ALG_EC_F2M
+     * @param field EC_Consts.ALG_EC_FP or EC_Consts.ALG_EC_F2M
      */
     public EC_Curve(short bits, byte field) {
-        super(field == KeyPair.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M);
+        super(field == EC_Consts.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M);
         this.bits = bits;
         this.field = field;
     }
@@ -51,12 +50,12 @@ public class EC_Curve extends EC_Params {
 
     @Override
     public String toString() {
-        return "<" + getId() + "> " + (field == KeyPair.ALG_EC_FP ? "Prime" : "Binary") + " field Elliptic curve (" + String.valueOf(bits) + "b)" + (desc == null ? "" : ": " + desc) + System.lineSeparator() + super.toString();
+        return "<" + getId() + "> " + (field == EC_Consts.ALG_EC_FP ? "Prime" : "Binary") + " field Elliptic curve (" + String.valueOf(bits) + "b)" + (desc == null ? "" : ": " + desc) + System.lineSeparator() + super.toString();
     }
 
     public EllipticCurve toCurve() {
         ECField field;
-        if (this.field == KeyPair.ALG_EC_FP) {
+        if (this.field == EC_Consts.ALG_EC_FP) {
             field = new ECFieldFp(new BigInteger(1, getData(0)));
         } else {
             byte[][] fieldData = getParam(EC_Consts.PARAMETER_F2M);
@@ -80,7 +79,7 @@ public class EC_Curve extends EC_Params {
     }
 
     public ECCurve toBCCurve() {
-        if (this.field == KeyPair.ALG_EC_FP) {
+        if (this.field == EC_Consts.ALG_EC_FP) {
             BigInteger p = new BigInteger(1, getParam(EC_Consts.PARAMETER_FP)[0]);
             BigInteger a = new BigInteger(1, getParam(EC_Consts.PARAMETER_A)[0]);
             BigInteger b = new BigInteger(1, getParam(EC_Consts.PARAMETER_B)[0]);
@@ -127,7 +126,7 @@ public class EC_Curve extends EC_Params {
             ECFieldFp primeField = (ECFieldFp) field;
             params = new byte[7][];
             params[paramIndex++] = primeField.getP().toByteArray();
-            fieldType = KeyPair.ALG_EC_FP;
+            fieldType = EC_Consts.ALG_EC_FP;
         } else if (field instanceof ECFieldF2m) {
             ECFieldF2m binaryField = (ECFieldF2m) field;
             params = new byte[10][];
@@ -139,7 +138,7 @@ public class EC_Curve extends EC_Params {
                 short power = (i < powers.length) ? (short) powers[i] : 0;
                 ByteUtil.setShort(params[paramIndex++], 0, power);
             }
-            fieldType = KeyPair.ALG_EC_F2M;
+            fieldType = EC_Consts.ALG_EC_F2M;
         } else {
             throw new IllegalArgumentException("ECParameterSpec with an unknown field.");
         }

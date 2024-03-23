@@ -252,7 +252,7 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
          */
         curveMap = EC_Store.getInstance().getObjects(EC_Curve.class, "secg");
         curves = curveMap.entrySet().stream().filter((e) -> e.getKey().endsWith("r1") &&
-                e.getValue().getField() == javacard.security.KeyPair.ALG_EC_F2M).map(Map.Entry::getValue).collect(Collectors.toList());
+                e.getValue().getField() == EC_Consts.ALG_EC_F2M).map(Map.Entry::getValue).collect(Collectors.toList());
         for (EC_Curve curve : curves) {
             short bits = curve.getBits();
             byte[][] coeffBytes;

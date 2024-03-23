@@ -37,8 +37,6 @@ import cz.crcs.ectester.reader.output.FileTestWriter;
 import cz.crcs.ectester.reader.output.ResponseWriter;
 import cz.crcs.ectester.reader.response.Response;
 import cz.crcs.ectester.reader.test.*;
-import javacard.framework.ISO7816;
-import javacard.security.KeyPair;
 import org.apache.commons.cli.*;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
@@ -78,8 +76,9 @@ public class ECTesterReader {
     private static final byte[] SELECT_PREFIX = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x0c};
     private static final byte[] AID_PREFIX = {(byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x65, (byte) 0x72};
     private static final byte[] AID_CURRENT_VERSION = {(byte) 0x30, (byte) 0x33, (byte) 0x33}; // VERSION v0.3.3
-    private static final byte[] AID_SUFFIX_221 = {(byte) 0x62};
-    private static final byte[] AID_SUFFIX_222 = {(byte) 0x78};
+    private static final byte[] AID_SUFFIX_221 = {(byte) 0x20, (byte) 0x32, (byte) 0x32, (byte) 0x31};
+    private static final byte[] AID_SUFFIX_222 = {(byte) 0x20, (byte) 0x32, (byte) 0x32, (byte) 0x32};
+    private static final byte[] AID_SUFFIX_305 = {(byte) 0x20, (byte) 0x33, (byte) 0x30, (byte) 0x35};
     private static final byte[] INSTALL_DATA = new byte[10];
     private static final int TRY_VERSIONS = 10;
 
@@ -149,13 +148,23 @@ public class ECTesterReader {
                 byte[] versionByte = AID_CURRENT_VERSION.clone();
                 boolean selected = false;
                 for (int i = 0; i < TRY_VERSIONS; ++i) {
-                    byte[] select222 = ByteUtil.concatenate(SELECT_PREFIX, AID_PREFIX, versionByte, AID_SUFFIX_222);
-                    ResponseAPDU selectResp = cardManager.send(select222);
-                    if ((short) selectResp.getSW() != ISO7816.SW_NO_ERROR) {
-                        byte[] select221 = ByteUtil.concatenate(SELECT_PREFIX, AID_PREFIX, versionByte, AID_SUFFIX_221);
-                        selectResp = cardManager.send(select221);
-                        if ((short) selectResp.getSW() == ISO7816.SW_NO_ERROR) {
-                            cardManager.setChunking(true);
+                    // Try 301 CAP version
+                    byte[] select301 = ByteUtil.concatenate(SELECT_PREFIX, AID_PREFIX, versionByte, AID_SUFFIX_305);
+                    ResponseAPDU selectResp = cardManager.send(select301);
+                    if ((short) selectResp.getSW() != CardUtil.ISO7816.SW_NO_ERROR) {
+                        // Try 222 CAP version
+                        byte[] select222 = ByteUtil.concatenate(SELECT_PREFIX, AID_PREFIX, versionByte, AID_SUFFIX_222);
+                        selectResp = cardManager.send(select222);
+                        if ((short) selectResp.getSW() != CardUtil.ISO7816.SW_NO_ERROR) {
+                            // Try 221 CAP version
+                            byte[] select221 = ByteUtil.concatenate(SELECT_PREFIX, AID_PREFIX, versionByte, AID_SUFFIX_221);
+                            selectResp = cardManager.send(select221);
+                            if ((short) selectResp.getSW() == CardUtil.ISO7816.SW_NO_ERROR) {
+                                cardManager.setChunking(true);
+                                selected = true;
+                                break;
+                            }
+                        } else {
                             selected = true;
                             break;
                         }
@@ -387,7 +396,7 @@ public class ECTesterReader {
      * @throws IOException   if an IO error occurs when writing to key file.
      */
     private void export() throws CardException, IOException {
-        byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
+        byte keyClass = cfg.primeField ? EC_Consts.ALG_EC_FP : EC_Consts.ALG_EC_F2M;
 
         List<Response> sent = new LinkedList<>();
         sent.add(new Command.Allocate(cardManager, CardConsts.KEYPAIR_LOCAL, cfg.keyBuilder, cfg.bits, keyClass).send());
@@ -437,7 +446,7 @@ public class ECTesterReader {
      * @throws IOException   if an IO error occurs when writing to key file.
      */
     private void generate() throws CardException, IOException {
-        byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
+        byte keyClass = cfg.primeField ? EC_Consts.ALG_EC_FP : EC_Consts.ALG_EC_F2M;
         Command curve = Command.prepareCurve(cardManager, cfg, CardConsts.KEYPAIR_LOCAL, cfg.bits, keyClass);
 
         Response allocate = new Command.Allocate(cardManager, CardConsts.KEYPAIR_LOCAL, cfg.keyBuilder, cfg.bits, keyClass).send();
@@ -569,7 +578,7 @@ public class ECTesterReader {
      * @throws IOException   if an IO error occurs when writing to key file.
      */
     private void ecdh() throws IOException, CardException {
-        byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
+        byte keyClass = cfg.primeField ? EC_Consts.ALG_EC_FP : EC_Consts.ALG_EC_F2M;
         Command curve = Command.prepareCurve(cardManager, cfg, CardConsts.KEYPAIR_BOTH, cfg.bits, keyClass);
         List<Response> prepare = new LinkedList<>();
         prepare.add(new Command.AllocateKeyAgreement(cardManager, cfg.ECKAType).send()); // Prepare KeyAgreement or required type
@@ -696,7 +705,7 @@ public class ECTesterReader {
             generate = new Command.Generate(cardManager, CardConsts.KEYPAIR_LOCAL);
         }
 
-        byte keyClass = cfg.primeField ? KeyPair.ALG_EC_FP : KeyPair.ALG_EC_F2M;
+        byte keyClass = cfg.primeField ? EC_Consts.ALG_EC_FP : EC_Consts.ALG_EC_F2M;
         List<Response> prepare = new LinkedList<>();
         prepare.add(new Command.AllocateSignature(cardManager, cfg.ECDSAType).send());
         prepare.add(new Command.Allocate(cardManager, CardConsts.KEYPAIR_LOCAL, cfg.keyBuilder, cfg.bits, keyClass).send());
