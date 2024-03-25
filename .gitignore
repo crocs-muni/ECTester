@@ -40,3 +40,9 @@
 # Python stuff
 /util/__pycache__/
 /util/.ipynb_checkpoints/
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build

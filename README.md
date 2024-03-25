@@ -1,15 +1,16 @@
 # ![](docs/full.png)
 
-[![Build status](https://api.travis-ci.org/crocs-muni/ECTester.svg?branch=master)](https://travis-ci.org/crocs-muni/ECTester) [![Build status](https://ci.appveyor.com/api/projects/status/02kcaf52op89910u?svg=true)](https://ci.appveyor.com/project/J08nY/ectester-cm6ng) [![GitHub release](https://img.shields.io/github/release/crocs-muni/ECTEster.svg)](https://github.com/crocs-muni/ECTester/releases)  [![license](https://img.shields.io/github/license/crocs-muni/ECTester.svg)](https://github.com/crocs-muni/ECTester/blob/master/LICENSE) [![docs](https://img.shields.io/badge/docs-github.io-brightgreen.svg)](https://crocs-muni.github.io/ECTester/)
+[![Build](https://github.com/crocs-muni/ECTester/actions/workflows/build.yml/badge.svg)](https://github.com/crocs-muni/ECTester/actions/workflows/build.yml) [![GitHub release](https://img.shields.io/github/release/crocs-muni/ECTEster.svg)](https://github.com/crocs-muni/ECTester/releases)  [![license](https://img.shields.io/github/license/crocs-muni/ECTester.svg)](https://github.com/crocs-muni/ECTester/blob/master/LICENSE) [![docs](https://img.shields.io/badge/docs-github.io-brightgreen.svg)](https://crocs-muni.github.io/ECTester/)
 
-ECTester is a tool for testing and analysis of elliptic curve cryptography implementations on JavaCards and in cryptographic libraries. It consists of four separate parts:
+ECTester is a tool for testing and analysis of elliptic curve cryptography implementations on JavaCards and in
+cryptographic libraries. It consists of four separate parts:
 
  - The ECTester applet, a JavaCard applet that provides the testing interface
  - The ECTesterReader app, a reader app that works with the applet
  - The ECTesterStandalone app, which works with software libraries
  - Jupyter notebooks for analysis and visualization of data from the apps
 
-For more information on ECC support on JavaCards see the [github page](https://crocs-muni.github.io/ECTester/), with results, tables and docs.
+For more information on ECC support on JavaCards see the [GitHub page](https://crocs-muni.github.io/ECTester/), with results, tables and docs.
 
 This project is developed by the [Centre for Research On Cryptography and Security](https://crocs.fi.muni.cz) at Faculty of Informatics, Masaryk University.
 
@@ -30,25 +31,26 @@ This project is developed by the [Centre for Research On Cryptography and Securi
 
 ## Setup
 
-ECTester uses Java 8 and ant. There are three parts of ECTester, the JavaCard applet used for testing, the reader app which controls it and the standalone app which tests software libraries. The target platform for ECTester is Linux, but things should work on Windows as well, although testing of standalone libraries will be limited to Java libraries and Microsoft CNG library.
+ECTester uses Gradle (and Gradle wrapper) for its build.
+There are three parts of ECTester, the JavaCard applet used for testing, the reader app which controls it and the
+standalone app which tests software libraries. The target platform for ECTester is Linux, but things should work on
+Windows as well, although testing of standalone libraries will be limited to Java libraries and Microsoft CNG library.
 
 To build ECTester simply do:
 ```bash
 git submodule update --init --recursive       # To initialize submodules (JavaCard SDKs, Microsoft CNG, BoringSSL, ...)
-ant -f build-reader.xml package               # To build the reader tool (jar) -> "dist/ECTesterReader.jar"
-ant -f build-standalone.xml package           # To build the standalone tool (jar) -> "dist/ECTesterStandalone.jar"
-ant -f build-applet.xml build                 # To build the applet (cap) -> "applet/ectester.cap".
+./gradlew :applet:buildJavaCard               # To build the applet (cap) -> "applet/build/javacard/applet[221,222,305].cap".
+./gradlew :reader:uberJar                     # To build the reader tool (jar) -> "reader/build/libs/ECTesterReader.jar"
+./gradlew :standalone:libs                    # To build the native library shims. (Necessary
+./gradlew :standalone:uberJar                 # To build the standalone tool (jar) -> "standalone/build/libs/ECTesterStandalone.jar"
 ```
-Build produces both a lightweight version of the JARs and a full version of the JARs with dependencies included, the latter has the `*-dist.jar` suffix.
+The applet comes in several flavors, targeting JavaCard `2.2.1`, `2.2.2` and `3.0.5`. The `2.2.2` and later flavors
+support extended length APDUs which are necessary for some commands to work properly.
 
-The applet comes in two flavors, targeting JavaCard 2.2.1 and 2.2.2. The 2.2.2 version supports extended length APDUs which are necessary for some commands to work properly. Use the `cap` ant property to specify which CAP file to build, either `ectester221.cap` or `ectester222.cap`.
-
-To build the 221 version do:
-```bash
-ant -f build-applet.xml build -Dcap=ectester221.cap
-```
-
-The `build-standalone.xml` ant build file invokes a Makefile (or a Makefile.bat on Windows) in `src/cz/crcs/ectester/standalone/libs/jni`, which tries to build the C/C++ shim libraries required for ECTester to test the actual native cryptographic libraries from Java. The Makefile uses pkg-config to locate the libraries installed, thus if non-standard location of the tested libraries is used, the Makefile or your pkg-config needs some changes to work.
+The `:standalone:libs` task invokes a Makefile in `src/cz/crcs/ectester/standalone/libs/jni`, which tries to build the
+C/C++ shim libraries required for ECTester to test the actual native cryptographic libraries from Java.
+The Makefile uses pkg-config to locate the libraries installed, thus if non-standard location of the tested libraries is
+used, the Makefile or your pkg-config needs some changes to work.
 
 See the section on [setup](#setup-1) of standalone library testing for more details.
 
@@ -56,8 +58,8 @@ See the section on [setup](#setup-1) of standalone library testing for more deta
 
 The JavaCard part of ECTester targets testing elliptic curve cryptography implementations in programmable smart cards of the JavaCard platform, version 2.2.1 and up. The reader app supports many actions, the main one being [testing](#test): the running of predetermined test suites that test the JavaCard for support, performance and vulnerabilities. The other actions focus on data collection, [generating keys](#generate), [signing data](#ecdsa), [performing key agreement](#ecdh) or [exporting the preset curves](#export), output of the mentioned actions can then be analyzed using the Jupyter notebooks, see [analysis](#analysis).
 
-1. Upload `applet/ectester.cap` using your favorite tool (e.g., [GlobalPlatformPro tool](https://github.com/martinpaljak/GlobalPlatform)) or the `build-applet.xml` ant file (target `upload` or `upload-emv`).
-2. Run `java -jar dist/ECTesterReader.jar -t` or other data collection commands.
+1. Upload `applet/build/applet/ectester[221,222,305].cap` using your favorite tool (e.g., [GlobalPlatformPro tool](https://github.com/martinpaljak/GlobalPlatform)).
+2. Run `java -jar reader/build/libs/ECTesterReader.jar -t` or other data collection commands.
 3. Inspect output log with annotated results.
 
 Following operations are tested in the default test suite, which is just a basic support test suite:
@@ -305,14 +307,24 @@ For more information on ECC libraries see [LIBS](docs/LIBS.md).
 
 ### Setup
 
-Simply doing `ant -f build-standalone.xml package` should build everything necessary to teste libraries via the standalone app, the sections below describe the details of how that works and what needs to be done if it doesn't.
+```shell
+./gradlew :standalone:libs                    # To build the native library shims. (Necessary
+./gradlew :standalone:uberJar                 # To build the standalone tool (jar) -> "standalone/build/libs/ECTesterStandalone.jar"
+```
+Simply doing the above should build everything necessary to test libraries via the standalone app,
+(except the BoringSSL, LibreSSL, ipp-crypto and MatrixSSL libraries)
+the sections below describe the details of how that works and what needs to be done if it doesn't.
 
-To see whether your build was sucessful, go to the `dist` directory, run:
-`java -jar ECTesterStandalone.jar list-libs` and observe if your target libraries are included in the output. If they are not, and they are native libraries, it means that either the shim library was not built successfully or that the actual native library couldn't be found and loaded on runtime. To solve the former, look for build errors during the ant run in the `libs-try` step, for the latter, if the library is in an non-standard location specifying `LD_LIBRARY_PATH` will help load it. Consulting the next sections should help solve both.
+To see whether your build was successful, run:
+`java -jar standalone/build/libs/ECTesterStandalone.jar list-libs` and observe if your target libraries are included in
+the output. If they are not, and they are native libraries, it means that either the shim library was not built
+successfully or that the actual native library couldn't be found and loaded on runtime. To solve the former, look for
+build errors during the ant run in the `libs-try` step, for the latter, if the library is in an non-standard location
+specifying `LD_LIBRARY_PATH` will help load it. Consulting the next sections should help solve both.
 
 #### Native
 
-ECTester interfaces with native libraries by using custom shim libraries that expose the functionality via the [Java Native Interface](https://en.wikipedia.org/wiki/Java_Native_Interface), these can be found in the [src/cz/crcs/ectester/standalone/libs/jni](src/cz/crcs/ectester/standalone/libs/jni) directory along with a Makefile (Makefile.bat for Windows). The shim library will depend on the native library, and have a name like `boringssl_provider.so`, `botan_provider.so`, `cryptopp_provider.so` and `openssl_provider.so`. The Makefile has a target for every library that it supports that builds its shim, see the `help` target for more info. The Makefile is automatically ran when the `build-standalone.xml` ant build is triggered, so if all is setup correctly, you do not need to deal with the Makefile while building.
+ECTester interfaces with native libraries by using custom shim libraries that expose the functionality via the [Java Native Interface](https://en.wikipedia.org/wiki/Java_Native_Interface), these can be found in the [src/cz/crcs/ectester/standalone/libs/jni](src/cz/crcs/ectester/standalone/libs/jni) directory along with a Makefile (Makefile.bat for Windows). The shim library will depend on the native library, and have a name like `boringssl_provider.so`, `botan_provider.so`, `cryptopp_provider.so` and `openssl_provider.so`. The Makefile has a target for every library that it supports that builds its shim, see the `help` target for more info. The Makefile is automatically ran when the `:standalone:libs` gradle task is triggered, so if all is setup correctly, you do not need to deal with the Makefile while building.
 
 There are two important environmental variables that should be set in your environment. First, you should set `JAVA_HOME` which should point to your JDK. The tooling uses `JAVA_HOME` to locate native Java library headers, like `jni.h`. Second, ECTester uses pkg-config to locate the native libraries, if your pkg-config files are in an unusual place the pkg-config command would not find them by default, you should set `PKG_CONFIG_PATH` to the directory containing the `*.pc` files. If pkg-config files are unavailable for the library you are trying to test, you will need to change the Makefile manually to apply the correct options to the commands (CFLAGS, include options, linker options...).
 
@@ -348,9 +360,8 @@ BoringSSL, LibreSSL and ipp-crypto are included as git submodules. Make sure you
 after checking out the ECTester repository to initialize them. To build BoringSSL do:
 ```
 cd ext/boringssl
-mkdir build
+cmake -GNinja -Bbuild -DBUILD_SHARED_LIBS=1
 cd build
-cmake -GNinja -DBUILD_SHARED_LIBS=1 ..
 ninja
 ```
 
@@ -358,9 +369,8 @@ To build LibreSSL do:
 ```
 cd ext/libressl
 ./autogen.sh
-mkdir build
+cmake -GNinja -Bbuild -DBUILD_SHARED_LIBS=1
 cd build
-cmake -GNinja -DBUILD_SHARED_LIBS=1 ..
 ninja
 ```
 
@@ -376,7 +386,7 @@ ninja
 
 #### Java
 
-OpenJDK JRE is required to test ECDH on Windows properly, as  Oracle JRE requires the Java Cryptography Providers
+OpenJDK JRE is required to test ECDH on Windows properly, as Oracle JRE requires the Java Cryptography Providers
 for certain classes (such as a [KeyAgreement](https://docs.oracle.com/javase/8/docs/api/javax/crypto/KeyAgreement.html))
 to be signed by keys that are signed by their JCA Code Signing Authority. ECTester internally uses Java Cryptography Provider
 API to expose and test native libraries. OpenJDK for Windows can be obtained from [ojdkbuild/ojdkbuild](https://github.com/ojdkbuild/ojdkbuild).
@@ -493,7 +503,7 @@ Snippet below shows how the `list-libs` command for well, listing currently supp
 
 Snippet below demonstrates generation of 1000 (`-n`) keys on the named curve `secp256r1` (`-nc`) using the BouncyCastle library.
 ```
-> java -jar ECTesterStandalone.jar gen -n 1000 -nc secg/secp256r1 Bouncy
+> java -jar ECTesterStandalone.jar generate -n 1000 -nc secg/secp256r1 Bouncy
 index;time[nano];pubW;privS
 0;18459241;04886c2d253490d6a80906628aea65dc6763fe53690241d54de1f479f44d120e6349528644b3736eda0a8a0326563c3a846a415e1ff029a22404718c91770349d4;532e9b01e439df0ae63f7ed0a9c5f57f91175fd21d80a1d048c93fda7b704522
 1;1672835;049de329ce6d7d031a693143890ea7a277c0cb400b534b3a075614a1ec7d0b1e1680bd6791bb5027007ea286aa86a3af451e6772440be0adb3b19d249a47f8581e;00d69151b165880f93d18b4870b613e012ff00883192cd405d1fccd23e9001f9cc

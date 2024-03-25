@@ -1,0 +1,8 @@
+libcore_s.a
+libcrypt_s.a
+matrixssl/
+*.o
+*.so
+
+CMakeLists.txt
+cmake-build-debug
