@@ -1,6 +1,6 @@
 # ![](docs/full.png)
 
-[![Build status](https://api.travis-ci.org/crocs-muni/ECTester.svg?branch=master)](https://travis-ci.org/crocs-muni/ECTester) [![Build status](https://ci.appveyor.com/api/projects/status/02kcaf52op89910u?svg=true)](https://ci.appveyor.com/project/J08nY/ectester-cm6ng) [![GitHub release](https://img.shields.io/github/release/crocs-muni/ECTEster.svg)](https://github.com/crocs-muni/ECTester/releases)  [![license](https://img.shields.io/github/license/crocs-muni/ECTester.svg)](https://github.com/crocs-muni/ECTester/blob/master/LICENSE) [![docs](https://img.shields.io/badge/docs-github.io-brightgreen.svg)](https://crocs-muni.github.io/ECTester/)
+[![Build](https://github.com/crocs-muni/ECTester/actions/workflows/build.yml/badge.svg)](https://github.com/crocs-muni/ECTester/actions/workflows/build.yml) [![GitHub release](https://img.shields.io/github/release/crocs-muni/ECTEster.svg)](https://github.com/crocs-muni/ECTester/releases)  [![license](https://img.shields.io/github/license/crocs-muni/ECTester.svg)](https://github.com/crocs-muni/ECTester/blob/master/LICENSE) [![docs](https://img.shields.io/badge/docs-github.io-brightgreen.svg)](https://crocs-muni.github.io/ECTester/)
 
 ECTester is a tool for testing and analysis of elliptic curve cryptography implementations on JavaCards and in
 cryptographic libraries. It consists of four separate parts:
@@ -10,7 +10,7 @@ cryptographic libraries. It consists of four separate parts:
  - The ECTesterStandalone app, which works with software libraries
  - Jupyter notebooks for analysis and visualization of data from the apps
 
-For more information on ECC support on JavaCards see the [github page](https://crocs-muni.github.io/ECTester/), with results, tables and docs.
+For more information on ECC support on JavaCards see the [GitHub page](https://crocs-muni.github.io/ECTester/), with results, tables and docs.
 
 This project is developed by the [Centre for Research On Cryptography and Security](https://crocs.fi.muni.cz) at Faculty of Informatics, Masaryk University.
 
@@ -360,9 +360,8 @@ BoringSSL, LibreSSL and ipp-crypto are included as git submodules. Make sure you
 after checking out the ECTester repository to initialize them. To build BoringSSL do:
 ```
 cd ext/boringssl
-mkdir build
+cmake -GNinja -Bbuild -DBUILD_SHARED_LIBS=1
 cd build
-cmake -GNinja -DBUILD_SHARED_LIBS=1 ..
 ninja
 ```
 
@@ -370,9 +369,8 @@ To build LibreSSL do:
 ```
 cd ext/libressl
 ./autogen.sh
-mkdir build
+cmake -GNinja -Bbuild -DBUILD_SHARED_LIBS=1
 cd build
-cmake -GNinja -DBUILD_SHARED_LIBS=1 ..
 ninja
 ```
 

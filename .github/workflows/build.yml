@@ -1,0 +1,82 @@
+name: Build
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    strategy:
+      matrix:
+        java: [ "8", "11", "17", "21" ]
+    env:
+      JAVA_VERSION: ${{ matrix.java }}
+    name: Build Java ${{ matrix.java }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: "temurin"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Setup libraries
+        run: |
+          sudo apt update
+          sudo apt install libmbedtls-dev libtomcrypt-dev libtommath-dev libssl-dev libcrypto++-dev libgcrypt20-dev nettle-dev libbotan-2-dev nasm
+
+      - name: Build applets
+        run: if [ $JAVA_VERSION != 21 ]; then ./gradlew applet:buildJavaCard; fi
+
+      - name: Build reader
+        run: ./gradlew reader:uberJar
+
+      - name: Build libs
+        run: |
+          cd ext/boringssl
+          cmake -DBUILD_SHARED_LIBS=1 -Bbuild
+          cd build
+          make -j4 crypto
+          cd ../../..
+          cd ext/libressl
+          ./autogen.sh
+          cmake -DBUILD_SHARED_LIBS=ON -Bbuild
+          cd build
+          make -j4 crypto
+          cd ../../..
+          cd ext/ipp-crypto
+          CC=clang CXX=clang++ cmake CMakeLists.txt -Bbuild -DARCH=intel64
+          cd build
+          make -j4
+          cd ../../..
+
+      - name: Build standalone
+        run: |
+          ./gradlew standalone:libs || true
+          ./gradlew standalone:uberJar
+
+      # ffs: https://github.com/adoptium/adoptium-support/issues/485 !!!
+      - name: List libraries
+        run: env LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu/" ./gradlew standalone:run --args="list-libs"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-${{ matrix.java }}
+          path: |
+            applet/build/javacard/*.cap
+            reader/build/libs/ECTesterReader.jar
+            standalone/build/libs/ECTesterStandalone.jar

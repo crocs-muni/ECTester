@@ -20,10 +20,12 @@ application {
 }
 
 tasks.withType<JavaCompile> {
-    options.compilerArgs.addAll(arrayOf(
-            "--add-modules", "jdk.crypto.ec",
-            "--add-exports", "jdk.crypto.ec/sun.security.ec=ALL-UNNAMED"
-    ))
+    if (JavaVersion.current() > JavaVersion.VERSION_1_8) {
+        options.compilerArgs.addAll(arrayOf(
+                "--add-modules", "jdk.crypto.ec",
+                "--add-exports", "jdk.crypto.ec/sun.security.ec=ALL-UNNAMED"
+        ))
+    }
 }
 
 tasks.register<Exec>("libs") {

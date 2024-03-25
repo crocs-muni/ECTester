@@ -34,7 +34,11 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
             Path libPath = libDir.resolve(resource + "." + suffix);
 
             /* Write the shim. */
-            FileUtil.writeNewer(ECTesterStandalone.LIB_RESOURCE_DIR + resource + "." + suffix, libPath);
+            boolean found = FileUtil.writeNewer(ECTesterStandalone.LIB_RESOURCE_DIR + resource + "." + suffix, libPath);
+            if (!found) {
+                //System.err.printf("Resource %s not found.\n", resource);
+                return false;
+            }
 
             /* Load the requirements, if they are bundled, write them in and load them. */
             try {
@@ -42,13 +46,19 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
                     if (requirement.endsWith(suffix)) {
                         /* The requirement is bundled, write it */
                         Path reqPath = libReqDir.resolve(requirement);
-                        FileUtil.writeNewer(ECTesterStandalone.LIB_RESOURCE_DIR + requirement, reqPath);
+                        found = FileUtil.writeNewer(ECTesterStandalone.LIB_RESOURCE_DIR + requirement, reqPath);
+                        if (!found) {
+                            //System.err.printf("Requirement %s not found for %s.\n", requirement, resource);
+                            return false;
+                        }
                         System.load(reqPath.toString());
                     } else {
                         System.loadLibrary(requirement);
                     }
                 }
             } catch (UnsatisfiedLinkError ule) {
+                System.err.println(resource);
+                ule.printStackTrace();
                 return false;
             }
 
@@ -57,6 +67,8 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
             provider = createProvider();
             return super.initialize();
         } catch (IOException | UnsatisfiedLinkError ignored) {
+            System.err.println(resource);
+            ignored.printStackTrace();
         }
         return false;
     }
