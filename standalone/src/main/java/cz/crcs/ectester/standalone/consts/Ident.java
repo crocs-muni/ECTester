@@ -6,8 +6,8 @@ import java.util.*;
 import java.util.function.BiFunction;
 
 public abstract class Ident {
-    Set<String> idents;
-    String name;
+    final Set<String> idents;
+    final String name;
 
     public Ident(String name, String... aliases) {
         this.name = name;

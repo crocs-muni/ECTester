@@ -13,7 +13,7 @@ public class SignatureTest extends SimpleTest<SignatureTestable> {
     }
 
     public static SignatureTest expect(SignatureTestable kg, Result.ExpectedValue expected) {
-        return new SignatureTest(kg, new TestCallback<SignatureTestable>() {
+        return new SignatureTest(kg, new TestCallback<>() {
             @Override
             public Result apply(SignatureTestable signatureTestable) {
                 Result.Value value = Result.Value.fromExpected(expected, signatureTestable.ok(), signatureTestable.error());
@@ -23,7 +23,7 @@ public class SignatureTest extends SimpleTest<SignatureTestable> {
     }
 
     public static SignatureTest expectError(SignatureTestable kg, Result.ExpectedValue expected) {
-        return new SignatureTest(kg, new TestCallback<SignatureTestable>() {
+        return new SignatureTest(kg, new TestCallback<>() {
             @Override
             public Result apply(SignatureTestable signatureTestable) {
                 Result.Value value = Result.Value.fromExpected(expected, signatureTestable.ok(), false);

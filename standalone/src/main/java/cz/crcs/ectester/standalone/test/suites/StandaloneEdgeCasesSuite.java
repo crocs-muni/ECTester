@@ -148,7 +148,7 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
             ECPublicKey ecpub = ECUtil.toPublicKey(EC_Store.getInstance().getObject(EC_Key.Public.class, openssl_bug.getOneKey()));
             KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
             KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpriv, ecpub);
-            Test ecdh = KeyAgreementTest.function(testable, new TestCallback<KeyAgreementTestable>() {
+            Test ecdh = KeyAgreementTest.function(testable, new TestCallback<>() {
                 @Override
                 public Result apply(KeyAgreementTestable testable) {
                     if (!testable.ok()) {

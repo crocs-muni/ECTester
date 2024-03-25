@@ -5,10 +5,8 @@ import cz.crcs.ectester.data.EC_Store;
 
 import java.security.*;
 import java.security.spec.AlgorithmParameterSpec;
-import java.security.AlgorithmParameters;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
-import java.security.spec.InvalidParameterSpecException;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -89,7 +87,7 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
     }
 
     public static abstract class Botan extends NativeKeyPairGeneratorSpi {
-        private String type;
+        private final String type;
 
         public Botan(String type) {
             this.type = type;
@@ -137,7 +135,7 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
     }
 
     public static abstract class Cryptopp extends NativeKeyPairGeneratorSpi {
-        private String type;
+        private final String type;
 
         public Cryptopp(String type) {
             this.type = type;
@@ -225,7 +223,7 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
     }
 
     public static abstract class Mscng extends NativeKeyPairGeneratorSpi {
-        private String type;
+        private final String type;
 
         public Mscng(String type) {
             this.type = type;

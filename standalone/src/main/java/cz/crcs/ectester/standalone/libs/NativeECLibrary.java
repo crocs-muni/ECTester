@@ -3,7 +3,6 @@ package cz.crcs.ectester.standalone.libs;
 import cz.crcs.ectester.common.util.FileUtil;
 import cz.crcs.ectester.standalone.ECTesterStandalone;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.security.Provider;
@@ -13,8 +12,8 @@ import java.util.Set;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public abstract class NativeECLibrary extends ProviderECLibrary {
-    private String resource;
-    private String[] requriements;
+    private final String resource;
+    private final String[] requriements;
 
 
     public NativeECLibrary(String resource, String... requirements) {
@@ -36,7 +35,6 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
             /* Write the shim. */
             boolean found = FileUtil.writeNewer(ECTesterStandalone.LIB_RESOURCE_DIR + resource + "." + suffix, libPath);
             if (!found) {
-                //System.err.printf("Resource %s not found.\n", resource);
                 return false;
             }
 
@@ -48,7 +46,6 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
                         Path reqPath = libReqDir.resolve(requirement);
                         found = FileUtil.writeNewer(ECTesterStandalone.LIB_RESOURCE_DIR + requirement, reqPath);
                         if (!found) {
-                            //System.err.printf("Requirement %s not found for %s.\n", requirement, resource);
                             return false;
                         }
                         System.load(reqPath.toString());

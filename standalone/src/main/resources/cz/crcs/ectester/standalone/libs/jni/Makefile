@@ -39,7 +39,7 @@ ifneq ($(JAVA_HOME),)
 endif
 
 ifeq ($(JNI_INCLUDEDIR),)
-  $(error Could not determine JNI include dir. Try specifying either JAVA_HOME or JNI_INCLUDEDIR.)
+  $(error "Could not determine JNI include dir. Try specifying either JAVA_HOME or JNI_INCLUDEDIR.")
 endif
 
 TARGETTRIPLET := $(shell $(CC) -dumpmachine)

@@ -81,7 +81,7 @@ public class ECTesterStandalone {
     private static final String CLI_HEADER = "\n" + DESCRIPTION + "\n\n";
     private static final String CLI_FOOTER = "\n" + LICENSE;
 
-    public static String LIB_RESOURCE_DIR = "/cz/crcs/ectester/standalone/libs/jni/";
+    public static final String LIB_RESOURCE_DIR = "/cz/crcs/ectester/standalone/libs/jni/";
 
     private void run(String[] args) {
         try {
@@ -109,7 +109,7 @@ public class ECTesterStandalone {
             }
 
             List<ProviderECLibrary> libObjects = new LinkedList<>();
-            Class[] libClasses = new Class[]{SunECLib.class,
+            Class<?>[] libClasses = new Class[]{SunECLib.class,
                     BouncyCastleLib.class,
                     TomcryptLib.class,
                     BotanLib.class,
@@ -124,12 +124,11 @@ public class ECTesterStandalone {
                     MatrixsslLib.class,
                     NettleLib.class,
                     LibresslLib.class};
-            for (Class c : libClasses) {
+            for (Class<?> c : libClasses) {
                 try {
                     libObjects.add((ProviderECLibrary) c.getDeclaredConstructor().newInstance());
                 } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
-                         InvocationTargetException e) {
-
+                         InvocationTargetException ignored) {
                 }
             }
             libs = libObjects.toArray(new ProviderECLibrary[0]);
@@ -302,15 +301,15 @@ public class ECTesterStandalone {
                 System.out.println(Colors.bold("\t\t- Supports native timing: ") + lib.getNativeTimingSupport().toString());
                 Set<KeyPairGeneratorIdent> kpgs = lib.getKPGs();
                 if (!kpgs.isEmpty()) {
-                    System.out.println(Colors.bold("\t\t- KeyPairGenerators: ") + String.join(", ", kpgs.stream().map(KeyPairGeneratorIdent::getName).collect(Collectors.toList())));
+                    System.out.println(Colors.bold("\t\t- KeyPairGenerators: ") + kpgs.stream().map(KeyPairGeneratorIdent::getName).collect(Collectors.joining(", ")));
                 }
                 Set<KeyAgreementIdent> eckas = lib.getKAs();
                 if (!eckas.isEmpty()) {
-                    System.out.println(Colors.bold("\t\t- KeyAgreements: ") + String.join(", ", eckas.stream().map(KeyAgreementIdent::getName).collect(Collectors.toList())));
+                    System.out.println(Colors.bold("\t\t- KeyAgreements: ") + eckas.stream().map(KeyAgreementIdent::getName).collect(Collectors.joining(", ")));
                 }
                 Set<SignatureIdent> sigs = lib.getSigs();
                 if (!sigs.isEmpty()) {
-                    System.out.println(Colors.bold("\t\t- Signatures: ") + String.join(", ", sigs.stream().map(SignatureIdent::getName).collect(Collectors.toList())));
+                    System.out.println(Colors.bold("\t\t- Signatures: ") + sigs.stream().map(SignatureIdent::getName).collect(Collectors.joining(", ")));
                 }
                 Set<String> curves = lib.getCurves();
                 if (!curves.isEmpty()) {
@@ -352,15 +351,15 @@ public class ECTesterStandalone {
     private void listIdents() {
         System.out.println(Colors.bold("\t- KeyPairGenerator"));
         for (KeyPairGeneratorIdent kpgIdent : KeyPairGeneratorIdent.list()) {
-            System.out.println("\t\t- " + Colors.underline(kpgIdent.getName()) + " " + kpgIdent.toString());
+            System.out.println("\t\t- " + Colors.underline(kpgIdent.getName()) + " " + kpgIdent);
         }
         System.out.println(Colors.bold("\t- KeyAgreement"));
         for (KeyAgreementIdent kaIdent : KeyAgreementIdent.list()) {
-            System.out.println("\t\t- " + Colors.underline(kaIdent.getName()) + " " + kaIdent.toString());
+            System.out.println("\t\t- " + Colors.underline(kaIdent.getName()) + " " + kaIdent);
         }
         System.out.println(Colors.bold("\t- Signature"));
         for (SignatureIdent sigIdent : SignatureIdent.list()) {
-            System.out.println("\t\t- " + Colors.underline(sigIdent.getName()) + " " + sigIdent.toString());
+            System.out.println("\t\t- " + Colors.underline(sigIdent.getName()) + " " + sigIdent);
         }
     }
 
@@ -443,7 +442,7 @@ public class ECTesterStandalone {
         }
 
         String hashAlgo = kaIdent.getBaseAlgo() != null ? String.format("[%s]", kaIdent.getBaseAlgo()) : "[NONE]";
-        out.println(String.format("index;time[%s];pubW;privS;secret%s", timeUnit, hashAlgo));
+        out.printf("index;time[%s];pubW;privS;secret%s%n", timeUnit, hashAlgo);
 
         KeyPair one = null;
         if (cli.hasOption("ecdh.fixed-private") && !cli.hasOption("ecdh.named-private") && !cli.hasOption("ecdh.private")) {
@@ -500,7 +499,7 @@ public class ECTesterStandalone {
             String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW(), pubkey.getParams()), false);
             String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
             String dh = ByteUtil.bytesToHex(result, false);
-            out.println(String.format("%d;%d;%s;%s;%s", i, elapsed, pub, priv, dh));
+            out.printf("%d;%d;%s;%s;%s%n", i, elapsed, pub, priv, dh);
         }
 
         if (cli.hasOption("ecdh.output")) {
@@ -599,7 +598,7 @@ public class ECTesterStandalone {
         }
 
         String hashAlgoOut = sigIdent.getHashAlgo() != null ? String.format("[%s]", sigIdent.getHashAlgo()) : "";
-        out.println(String.format("index;signTime[%s];verifyTime[%s];data;pubW;privS;signature%s;nonce;verified", timeUnit, timeUnit, hashAlgoOut));
+        out.printf("index;signTime[%s];verifyTime[%s];data;pubW;privS;signature%s;nonce;verified%n", timeUnit, timeUnit, hashAlgoOut);
 
         ECPrivateKey privkey = (ECPrivateKey) ECUtil.loadKey(EC_Consts.PARAMETER_S, cli.getOptionValue("ecdsa.named-private"), cli.getOptionValue("ecdsa.private"), spec);
         ECPublicKey pubkey = (ECPublicKey) ECUtil.loadKey(EC_Consts.PARAMETER_W, cli.getOptionValue("ecdsa.named-public"), cli.getOptionValue("ecdsa.public"), spec);
@@ -670,7 +669,7 @@ public class ECTesterStandalone {
                     k = ByteUtil.bytesToHex(kValue.toByteArray(), false);
                 }
             }
-            out.println(String.format("%d;%d;%d;%s;%s;%s;%s;%s;%d", i, signTime, verifyTime, dataString, pub, priv, sign, k, verified ? 1 : 0));
+            out.printf("%d;%d;%d;%s;%s;%s;%s;%s;%d%n", i, signTime, verifyTime, dataString, pub, priv, sign, k, verified ? 1 : 0);
         }
 
         if (cli.hasOption("ecdsa.output")) {
@@ -730,7 +729,7 @@ public class ECTesterStandalone {
             out = System.out;
         }
 
-        out.println(String.format("index;time[%s];pubW;privS", timeUnit));
+        out.printf("index;time[%s];pubW;privS%n", timeUnit);
 
         int amount = Integer.parseInt(cli.getOptionValue("generate.amount", "1"));
         for (int i = 0; i < amount || amount == 0; ++i) {
@@ -745,7 +744,7 @@ public class ECTesterStandalone {
 
             String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(publicKey.getW(), publicKey.getParams()), false);
             String priv = ByteUtil.bytesToHex(privateKey.getS().toByteArray(), false);
-            out.println(String.format("%d;%d;%s;%s", i, elapsed, pub, priv));
+            out.printf("%d;%d;%s;%s%n", i, elapsed, pub, priv);
         }
 
         if (cli.hasOption("generate.output")) {
@@ -898,11 +897,11 @@ public class ECTesterStandalone {
                             matchedLibs.add(lib);
                         }
                     }
-                    if (matchedLibs.size() == 0) {
+                    if (matchedLibs.isEmpty()) {
                         System.err.println("No library " + libraryName + " found.");
                         return false;
                     } else if (matchedLibs.size() > 1) {
-                        System.err.println("Multiple matching libraries found: " + String.join(",", matchedLibs.stream().map(ECLibrary::name).collect(Collectors.toList())));
+                        System.err.println("Multiple matching libraries found: " + matchedLibs.stream().map(ECLibrary::name).collect(Collectors.joining(",")));
                         return false;
                     } else {
                         selected = matchedLibs.get(0);
@@ -937,7 +936,7 @@ public class ECTesterStandalone {
                 if (cli.hasOption(next + ".time-source")) {
                     String source = cli.getOptionValue(next + ".time-source");
                     if (!selected.getNativeTimingSupport().contains(source)) {
-                        System.err.println(String.format("Time source %s unavailable for library %s.", source, selected.name()));
+                        System.err.printf("Time source %s unavailable for library %s.%n", source, selected.name());
                         return false;
                     }
                 }

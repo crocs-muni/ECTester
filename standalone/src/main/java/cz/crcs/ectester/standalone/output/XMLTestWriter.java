@@ -119,7 +119,7 @@ public class XMLTestWriter extends BaseXMLTestWriter {
     protected Element testableElement(Testable t) {
         Element result = doc.createElement("test");
         if (t instanceof StandaloneTestable) {
-            StandaloneTestable<?> testable = (StandaloneTestable) t;
+            StandaloneTestable<?> testable = (StandaloneTestable<?>) t;
             if (t instanceof KeyGeneratorTestable) {
                 result.setAttribute("type", "key-pair-generator");
                 result.appendChild(kgtElement((KeyGeneratorTestable) t));

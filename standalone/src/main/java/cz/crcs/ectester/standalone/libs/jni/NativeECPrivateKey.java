@@ -12,9 +12,9 @@ import java.security.spec.ECParameterSpec;
  */
 @SuppressWarnings("serial")
 public abstract class NativeECPrivateKey implements ECPrivateKey {
-    private String algorithm;
-    private String format;
-    ECParameterSpec params;
+    private final String algorithm;
+    private final String format;
+    final ECParameterSpec params;
 
     public NativeECPrivateKey(String algorithm, String format, ECParameterSpec params) {
         this.algorithm = algorithm;
@@ -41,7 +41,7 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
 
     @SuppressWarnings("serial")
     private static class Raw extends NativeECPrivateKey {
-        byte[] keyData;
+        final byte[] keyData;
 
         public Raw(byte[] keyData, ECParameterSpec params) {
             super("EC", "raw", params);
@@ -138,11 +138,11 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
         // 0 -> implicit (meta = curveName UTF16, header = full);
         // 1 -> explicit (meta = null, header = full);
         // 2 -> nist (meta = null, header = full)
-        private int flag;
-        private byte[] meta = null;
-        private byte[] header;
-        private byte[] x;
-        private byte[] y;
+        private final int flag;
+        private final byte[] meta;
+        private final byte[] header;
+        private final byte[] x;
+        private final byte[] y;
 
         public Mscng(int flag, byte[] meta, byte[] header, byte[] x, byte[] y, byte[] keyData, ECParameterSpec params) {
             super(keyData, params);

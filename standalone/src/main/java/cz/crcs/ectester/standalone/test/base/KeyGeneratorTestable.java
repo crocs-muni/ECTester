@@ -10,7 +10,7 @@ import java.security.spec.ECParameterSpec;
  */
 public class KeyGeneratorTestable extends StandaloneTestable<KeyGeneratorTestable.KeyGeneratorStage> {
     private KeyPair kp;
-    private KeyPairGenerator kpg;
+    private final KeyPairGenerator kpg;
     private int keysize = 0;
     private ECParameterSpec spec = null;
 

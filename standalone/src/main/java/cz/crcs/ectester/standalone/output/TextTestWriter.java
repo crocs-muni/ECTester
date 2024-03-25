@@ -32,7 +32,7 @@ public class TextTestWriter extends BaseTextTestWriter {
     @Override
     protected String testableString(Testable t) {
         if (t instanceof StandaloneTestable) {
-            StandaloneTestable<?> testable = (StandaloneTestable) t;
+            StandaloneTestable<?> testable = (StandaloneTestable<?>) t;
             Enum<?> stage = testable.getStage();
             String stageName = stage.name();
             String exception = causeString(testable.getException());

@@ -19,7 +19,7 @@ public class BouncyCastleLib extends ProviderECLibrary {
     @Override
     public Set<String> getCurves() {
         Set<String> result = new TreeSet<>();
-        Enumeration names = ECNamedCurveTable.getNames();
+        Enumeration<?> names = ECNamedCurveTable.getNames();
         while (names.hasMoreElements()) {
             result.add((String) names.nextElement());
         }

@@ -92,7 +92,7 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
     protected Map<String, Object> testableObject(Testable t) {
         Map<String, Object> result = new LinkedHashMap<>();
         if (t instanceof StandaloneTestable) {
-            StandaloneTestable<?> testable = (StandaloneTestable) t;
+            StandaloneTestable<?> testable = (StandaloneTestable<?>) t;
             if (t instanceof KeyGeneratorTestable) {
                 result.put("type", "key-pair-generator");
                 result.put("key-pair-generator", kgtObject((KeyGeneratorTestable) t));

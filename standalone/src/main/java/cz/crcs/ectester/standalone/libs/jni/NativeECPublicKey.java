@@ -13,9 +13,9 @@ import java.security.spec.ECPoint;
  */
 @SuppressWarnings("serial")
 public abstract class NativeECPublicKey implements ECPublicKey {
-    private String algorithm;
-    private String format;
-    ECParameterSpec params;
+    private final String algorithm;
+    private final String format;
+    final ECParameterSpec params;
 
     public NativeECPublicKey(String algorithm, String format, ECParameterSpec params) {
         this.algorithm = algorithm;
@@ -139,11 +139,11 @@ public abstract class NativeECPublicKey implements ECPublicKey {
         // 0 -> implicit (meta = curveName UTF16, header = full);
         // 1 -> explicit (meta = null, header = full);
         // 2 -> nist (meta = null, header = full)
-        private int flag;
-        private byte[] meta = null;
-        private byte[] header;
-        private byte[] x;
-        private byte[] y;
+        private final int flag;
+        private final byte[] meta;
+        private final byte[] header;
+        private final byte[] x;
+        private final byte[] y;
 
         public Mscng(int flag, byte[] meta, byte[] header, byte[] x, byte[] y, ECParameterSpec params) {
             super(ByteUtil.concatenate(new byte[]{0x04}, x, y), params);

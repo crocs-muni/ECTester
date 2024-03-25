@@ -121,7 +121,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
     }
 
     public abstract static class Botan extends SimpleSignatureSpi {
-        private String type;
+        private final String type;
 
         public Botan(String type) {
             this.type = type;
@@ -261,7 +261,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
     }
 
     public abstract static class Cryptopp extends SimpleSignatureSpi {
-        private String type;
+        private final String type;
 
         public Cryptopp(String type) {
             this.type = type;
@@ -310,7 +310,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
     }
 
     public abstract static class Openssl extends SimpleSignatureSpi {
-        private String type;
+        private final String type;
 
         public Openssl(String type) {
             this.type = type;
@@ -331,7 +331,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
     }
 
     public abstract static class Boringssl extends SimpleSignatureSpi {
-        private String type;
+        private final String type;
 
         public Boringssl(String type) {
             this.type = type;
@@ -352,7 +352,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
     }
 
     public abstract static class Gcrypt extends SimpleSignatureSpi {
-        private String type;
+        private final String type;
 
         public Gcrypt(String type) {
             this.type = type;
@@ -443,7 +443,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
     }
 
     public abstract static class MbedTLS extends SimpleSignatureSpi {
-        private String type;
+        private final String type;
 
         public MbedTLS(String type) {
             this.type = type;
@@ -464,7 +464,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
     }
 
     public abstract static class Ippcp extends SimpleSignatureSpi {
-        private String type;
+        private final String type;
 
         public Ippcp(String type) {
             this.type = type;
@@ -485,7 +485,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
     }
 
     public abstract static class Libressl extends SimpleSignatureSpi {
-        private String type;
+        private final String type;
 
         public Libressl(String type) {
             this.type = type;
@@ -506,7 +506,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
     }
 
     public abstract static class Matrixssl extends SimpleSignatureSpi {
-        private String type;
+        private final String type;
 
         public Matrixssl(String type) {
             this.type = type;
@@ -527,7 +527,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
     }
 
     public abstract static class Mscng extends ExtendedSignatureSpi {
-        private String type;
+        private final String type;
 
         public Mscng(String type) {
             this.type = type;
@@ -569,7 +569,7 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
     }
 
     public abstract static class Nettle extends SimpleSignatureSpi {
-        private String type;
+        private final String type;
 
         public Nettle(String type) {
             this.type = type;
