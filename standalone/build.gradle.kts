@@ -11,12 +11,20 @@ repositories {
 dependencies {
     implementation(files("$rootDir/ext/wolfcrypt-jni.jar"))
     implementation(project(":common"))
+
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 application {
     applicationName = "ECTesterStandalone"
     mainClass = "cz.crcs.ectester.standalone.ECTesterStandalone"
     version = "0.3.3"
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
 }
 
 tasks.withType<JavaCompile> {

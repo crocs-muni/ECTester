@@ -90,7 +90,11 @@ public class KeyAgreementIdent extends Ident {
                     int split = alias.indexOf("with");
                     this.algo = alias.substring(0, split);
                     this.kdf = alias.substring(split + 4);
+                    break;
                 }
+            }
+            if (this.algo == null) {
+                this.algo = name;
             }
         }
     }

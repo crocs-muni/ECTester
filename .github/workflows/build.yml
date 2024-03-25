@@ -72,6 +72,9 @@ jobs:
       - name: List libraries
         run: env LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu/" ./gradlew standalone:run --args="list-libs"
 
+      - name: Test
+        run: ./gradlew test
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
