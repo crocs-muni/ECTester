@@ -36,7 +36,10 @@ jobs:
       - name: Setup libraries
         run: |
           sudo apt update
-          sudo apt install libmbedtls-dev libtomcrypt-dev libtommath-dev libssl-dev libcrypto++-dev libgcrypt20-dev nettle-dev libbotan-2-dev nasm
+          sudo apt install libmbedtls-dev libtomcrypt-dev libtommath-dev libssl-dev libcrypto++-dev libgcrypt20-dev nettle-dev libbotan-2-dev libwolfssl-dev nasm
+          echo "BORINGSSL_VERSION=$(git submodule status ext/boringssl | cut -f2 -d' ')" >> $GITHUB_ENV
+          echo "LIBRESSL_VERSION=$(git submodule status ext/libressl | cut -f2 -d' ')" >> $GITHUB_ENV
+          echo "IPPCP_VERSION=$(git submodule status ext/ipp-crypto | cut -f2 -d' ')" >> $GITHUB_ENV
 
       - name: Build applets
         run: if [ $JAVA_VERSION != 21 ]; then ./gradlew applet:buildJavaCard; fi
@@ -44,7 +47,18 @@ jobs:
       - name: Build reader
         run: ./gradlew reader:uberJar
 
+      - name: Cache libs
+        uses: actions/cache@v4
+        id: cache-libs
+        with:
+          key: libs-${{ env.BORINGSSL_VERSION }}-${{ env.LIBRESSL_VERSION }}-${{ env.IPPCP_VERSION }}
+          path: |
+            ext/boringssl/build/crypto/libcrypto.so
+            ext/libressl/build/crypto/libcrypto.so
+            ext/ipp-crypto/build/.build/RELEASE/lib/libippcp.so
+
       - name: Build libs
+        if: steps.cache-libs.outputs.cache-hit != 'true'
         run: |
           cd ext/boringssl
           cmake -DBUILD_SHARED_LIBS=1 -Bbuild
