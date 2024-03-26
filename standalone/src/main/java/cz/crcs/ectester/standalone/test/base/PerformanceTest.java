@@ -19,7 +19,7 @@ public class PerformanceTest extends SimpleTest<BaseTestable> {
     private final String desc;
 
     private PerformanceTest(BaseTestable testable, int count, String desc) {
-        super(testable, new TestCallback<>() {
+        super(testable, new TestCallback<BaseTestable>() {
             @Override
             public Result apply(BaseTestable testable) {
                 return new Result(Result.Value.SUCCESS);

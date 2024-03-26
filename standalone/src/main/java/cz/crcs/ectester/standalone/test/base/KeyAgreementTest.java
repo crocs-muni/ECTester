@@ -15,7 +15,7 @@ public class KeyAgreementTest extends SimpleTest<KeyAgreementTestable> {
     }
 
     public static KeyAgreementTest match(KeyAgreementTestable ka, byte[] expectedSecret) {
-        return new KeyAgreementTest(ka, new TestCallback<>() {
+        return new KeyAgreementTest(ka, new TestCallback<KeyAgreementTestable>() {
             @Override
             public Result apply(KeyAgreementTestable ka) {
                 if (Arrays.equals(ka.getSecret(), expectedSecret)) {
@@ -28,7 +28,7 @@ public class KeyAgreementTest extends SimpleTest<KeyAgreementTestable> {
     }
 
     public static KeyAgreementTest expect(KeyAgreementTestable ka, Result.ExpectedValue expected) {
-        return new KeyAgreementTest(ka, new TestCallback<>() {
+        return new KeyAgreementTest(ka, new TestCallback<KeyAgreementTestable>() {
             @Override
             public Result apply(KeyAgreementTestable keyAgreementTestable) {
                 Result.Value value = Result.Value.fromExpected(expected, keyAgreementTestable.ok(), keyAgreementTestable.error());
@@ -38,7 +38,7 @@ public class KeyAgreementTest extends SimpleTest<KeyAgreementTestable> {
     }
 
     public static KeyAgreementTest expectError(KeyAgreementTestable ka, Result.ExpectedValue expected) {
-        return new KeyAgreementTest(ka, new TestCallback<>() {
+        return new KeyAgreementTest(ka, new TestCallback<KeyAgreementTestable>() {
             @Override
             public Result apply(KeyAgreementTestable keyAgreementTestable) {
                 Result.Value value = Result.Value.fromExpected(expected, keyAgreementTestable.ok(), false);
