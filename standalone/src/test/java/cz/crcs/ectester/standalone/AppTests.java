@@ -52,7 +52,6 @@ public class AppTests {
     }
 
     @SuppressWarnings("JUnitMalformedDeclaration")
-    @ExpectedToFail
     @ParameterizedTest
     // TODO: Add "wolfCrypt" to the list
     @ValueSource(strings = {"Bouncy", "Sun", "libtomcrypt", "Botan", "Crypto++", "OpenSSL 3", "BoringSSL", "libgcrypt", "mbedTLS", "2021" /* IPPCP */, "Nettle", "LibreSSL"})

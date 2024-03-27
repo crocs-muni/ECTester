@@ -15,6 +15,10 @@ dependencies {
     implementation(project(":applet"))
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+}
+
 application {
     applicationName = "ECTesterReader"
     mainClass = "cz.crcs.ectester.reader.ECTesterReader"
