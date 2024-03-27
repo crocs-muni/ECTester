@@ -134,20 +134,20 @@ jobs:
         run: |
           # ------------ Build BoringSSL ------------
           cd ext/boringssl
-          cmake -DBUILD_SHARED_LIBS=1 -Bbuild
+          cmake -DBUILD_SHARED_LIBS=1 -Bbuild -G "Unix Makefiles"
           cd build
           make -j4 crypto
           cd ../../..
           # ------------ Build LibreSSL ------------
           cd ext/libressl
           ./autogen.sh
-          cmake -DBUILD_SHARED_LIBS=ON -Bbuild
+          cmake -DBUILD_SHARED_LIBS=ON -Bbuild -G "Unix Makefiles"
           cd build
           make -j4 crypto
           cd ../../..
           # ------------ Build IPP-crypto ------------
           cd ext/ipp-crypto
-          CC=clang CXX=clang++ cmake CMakeLists.txt -Bbuild -DARCH=intel64
+          CC=clang CXX=clang++ cmake CMakeLists.txt -Bbuild -DARCH=intel64 -G "Unix Makefiles"
           cd build
           make -j4
           cd ../../..

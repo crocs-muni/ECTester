@@ -153,26 +153,7 @@ static EC_GROUP *create_curve(JNIEnv *env, jobject params) {
             BN_free(a_bn); BN_free(b_bn); BN_free(gx_bn); BN_free(gy_bn); EC_POINT_free(g_point); EC_GROUP_free(result);
             return NULL;
         }
-     } else if ((*env)->IsInstanceOf(env, field, f2m_field_class)) {
-		jmethodID get_reduction_poly = (*env)->GetMethodID(env, f2m_field_class, "getReductionPolynomial", "()Ljava/math/BigInteger;");
-		jobject red_poly = (*env)->CallObjectMethod(env, field, get_reduction_poly);
-
-		BIGNUM *p_bn = biginteger_to_bignum(env, red_poly);
-		result = EC_GROUP_new_curve_GF2m(p_bn, a_bn, b_bn, NULL);
-		BN_free(p_bn);
-		if (!result) {
-			throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating EC_GROUP, EC_GROUP_new_curve_GF2m.");
-			BN_free(a_bn); BN_free(b_bn); BN_free(gx_bn); BN_free(gy_bn);
-			return NULL;
-		}
-
-		g_point = EC_POINT_new(result);
-		if(!EC_POINT_set_affine_coordinates_GF2m(result, g_point, gx_bn, gy_bn, NULL)) {
-			throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating EC_GROUP, EC_POINT_set_affine_coordinates_GF2m.");
-			BN_free(a_bn); BN_free(b_bn); BN_free(gx_bn); BN_free(gy_bn); EC_POINT_free(g_point); EC_GROUP_free(result);
-			return NULL;
-		}
-	} else {
+     } else {
 		return NULL;
 	}
 
@@ -210,6 +191,9 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
 
     if ((*env)->IsInstanceOf(env, params, ec_parameter_spec_class)) {
         EC_GROUP *curve = create_curve(env, params);
+        if (!curve) {
+        	return JNI_FALSE;
+        }
         jboolean result = (EC_GROUP_check(curve, NULL) == 1) ? JNI_TRUE : JNI_FALSE;
         EC_GROUP_free(curve);
         return result;
@@ -265,51 +249,6 @@ static jobject create_ec_param_spec(JNIEnv *env, const EC_GROUP *curve) {
 		gy = BN_new();
 		if (!EC_POINT_get_affine_coordinates_GFp(curve, EC_GROUP_get0_generator(curve), gx, gy, NULL)) {
 			throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating ECParameterSpec, EC_POINT_get_affine_coordinates_GFp.");
-			BN_free(a); BN_free(b); BN_free(gx); BN_free(gy);
-			return NULL;
-		}
-	} else if (field_type == NID_X9_62_characteristic_two_field) {
-		if (!EC_GROUP_get_curve_GF2m(curve, NULL, a, b, NULL)) {
-			throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating ECParameterSpec, EC_GROUP_get_curve_GF2m.");
-			BN_free(a); BN_free(b);
-			return NULL;
-		}
-
-		int basis_type = EC_GROUP_get_basis_type(curve);
-		jintArray ks;
-		jint *ks_data;
-		if (basis_type == NID_X9_62_tpBasis) {
-			ks = (*env)->NewIntArray(env, 1);
-			ks_data = (*env)->GetIntArrayElements(env, ks, NULL);
-			if (!EC_GROUP_get_trinomial_basis(curve, (unsigned int *) &ks_data[0])) {
-				throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating ECParameterSpec, EC_GROUP_get_trinomial_basis.");
-				BN_free(a); BN_free(b);
-				(*env)->ReleaseIntArrayElements(env, ks, ks_data, JNI_ABORT);
-				return NULL;
-			}
-		} else if (basis_type == NID_X9_62_ppBasis) {
-			ks = (*env)->NewIntArray(env, 3);
-			ks_data = (*env)->GetIntArrayElements(env, ks, NULL);
-			if (!EC_GROUP_get_pentanomial_basis(curve, (unsigned int *) &ks_data[0], (unsigned int *) &ks_data[1], (unsigned int *) &ks_data[2])) {
-				throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating ECParameterSpec, EC_GROUP_get_pentanomial_basis.");
-				BN_free(a); BN_free(b);
-				(*env)->ReleaseIntArrayElements(env, ks, ks_data, JNI_ABORT);
-				return NULL;
-			}
-		} else {
-			return NULL;
-		}
-		(*env)->ReleaseIntArrayElements(env, ks, ks_data, 0);
-
-		jint m = EC_GROUP_get_degree(curve);
-
-		jmethodID f2m_field_init = (*env)->GetMethodID(env, f2m_field_class, "<init>", "(I[I)V");
-		field = (*env)->NewObject(env, f2m_field_class, f2m_field_init, m, ks);
-
-		gx = BN_new();
-		gy = BN_new();
-		if (!EC_POINT_get_affine_coordinates_GF2m(curve, EC_GROUP_get0_generator(curve), gx, gy, NULL)) {
-			throw_new(env, "java/security/InvalidAlgorithmParameterException", "Error creating ECParameterSpec, EC_POINT_get_affine_coordinates_GF2m.");
 			BN_free(a); BN_free(b); BN_free(gx); BN_free(gy);
 			return NULL;
 		}
