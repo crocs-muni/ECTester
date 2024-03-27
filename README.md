@@ -1,6 +1,6 @@
 # ![](docs/full.png)
 
-[![Build](https://github.com/crocs-muni/ECTester/actions/workflows/build.yml/badge.svg)](https://github.com/crocs-muni/ECTester/actions/workflows/build.yml) [![GitHub release](https://img.shields.io/github/release/crocs-muni/ECTEster.svg)](https://github.com/crocs-muni/ECTester/releases)  [![license](https://img.shields.io/github/license/crocs-muni/ECTester.svg)](https://github.com/crocs-muni/ECTester/blob/master/LICENSE) [![docs](https://img.shields.io/badge/docs-github.io-brightgreen.svg)](https://crocs-muni.github.io/ECTester/)
+[![Build](https://github.com/crocs-muni/ECTester/actions/workflows/build.yml/badge.svg)](https://github.com/crocs-muni/ECTester/actions/workflows/build.yml) [![codecov](https://codecov.io/github/crocs-muni/ECTester/graph/badge.svg?token=ulX0fZQinp)](https://codecov.io/github/crocs-muni/ECTester) [![GitHub release](https://img.shields.io/github/release/crocs-muni/ECTEster.svg)](https://github.com/crocs-muni/ECTester/releases)  [![license](https://img.shields.io/github/license/crocs-muni/ECTester.svg)](https://github.com/crocs-muni/ECTester/blob/master/LICENSE) [![docs](https://img.shields.io/badge/docs-github.io-brightgreen.svg)](https://crocs-muni.github.io/ECTester/)
 
 ECTester is a tool for testing and analysis of elliptic curve cryptography implementations on JavaCards and in
 cryptographic libraries. It consists of four separate parts:
