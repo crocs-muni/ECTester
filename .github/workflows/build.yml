@@ -114,35 +114,50 @@ jobs:
           echo "BORINGSSL_VERSION=$(git submodule status ext/boringssl | cut -f2 -d' ')" >> $GITHUB_ENV
           echo "LIBRESSL_VERSION=$(git submodule status ext/libressl | cut -f2 -d' ')" >> $GITHUB_ENV
           echo "IPPCP_VERSION=$(git submodule status ext/ipp-crypto | cut -f2 -d' ')" >> $GITHUB_ENV
+          echo "WOLFCRYPT_VERSION=$(git submodule status ext/wolfcrypt-jni | cut -f2 -d' ')" >> $GITHUB_ENV
+          echo "WOLFSSL_VERSION=$(dpkg -s libwolfssl-dev | grep 'Version' | cut -f2 -d' ')" >> $GITHUB_ENV
 
       - name: Cache libs
         uses: actions/cache@v4
         id: cache-libs
         with:
-          key: libs-${{ env.BORINGSSL_VERSION }}-${{ env.LIBRESSL_VERSION }}-${{ env.IPPCP_VERSION }}
+          key: libs-${{ env.BORINGSSL_VERSION }}-${{ env.LIBRESSL_VERSION }}-${{ env.IPPCP_VERSION }}-${{ env.WOLFCRYPT_VERSION }}-${{ env.WOLFSSL_VERSION }}
           path: |
             ext/boringssl/build/crypto/libcrypto.so
             ext/libressl/build/crypto/libcrypto.so
             ext/ipp-crypto/build/.build/RELEASE/lib/libippcp.so
+            ext/wolfcrypt-jni/lib/wolfcrypt-jni.jar
+            ext/wolfcrypt-jni/lib/libwolfcryptjni.so
 
       - name: Build libs
         if: steps.cache-libs.outputs.cache-hit != 'true'
         run: |
+          # ------------ Build BoringSSL ------------
           cd ext/boringssl
           cmake -DBUILD_SHARED_LIBS=1 -Bbuild
           cd build
           make -j4 crypto
           cd ../../..
+          # ------------ Build LibreSSL ------------
           cd ext/libressl
           ./autogen.sh
           cmake -DBUILD_SHARED_LIBS=ON -Bbuild
           cd build
           make -j4 crypto
           cd ../../..
+          # ------------ Build IPP-crypto ------------
           cd ext/ipp-crypto
           CC=clang CXX=clang++ cmake CMakeLists.txt -Bbuild -DARCH=intel64
           cd build
           make -j4
+          cd ../../..
+          # ------------ Build wolfcrypt-jni ------------
+          cd ext/wolfcrypt-jni
+          mkdir junit
+          wget -P junit/ https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar 
+          wget -P junit/ https://repo1.maven.org/maven2/org/hamcrest/hamcrest-all/1.3/hamcrest-all-1.3.jar
+          make -j4 -f makefile.linux
+          env JUNIT_HOME=junit/ ant build-jce-release
           cd ../../..
 
       - name: Build standalone

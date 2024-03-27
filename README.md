@@ -308,7 +308,7 @@ For more information on ECC libraries see [LIBS](docs/LIBS.md).
 ### Setup
 
 ```shell
-./gradlew :standalone:libs                    # To build the native library shims. (Necessary
+./gradlew :standalone:libs                    # To build the native library shims.
 ./gradlew :standalone:uberJar                 # To build the standalone tool (jar) -> "standalone/build/libs/ECTesterStandalone.jar"
 ```
 Simply doing the above should build everything necessary to test libraries via the standalone app,
@@ -356,9 +356,9 @@ g++ -fPIC -shared -O2 -o botan_provider.so -Wl,-rpath,'$ORIGIN/lib' botan.o cpp_
 g++ -fPIC -shared -O2 -o cryptopp_provider.so -Wl,-rpath,'$ORIGIN/lib' cryptopp.o cpp_utils.o -L. -L/usr/local/lib -lcryptopp  -l:lib_timing.so
 ```
 
-BoringSSL, LibreSSL and ipp-crypto are included as git submodules. Make sure you run: `git submodule update --init --recursive` 
+BoringSSL, LibreSSL, ipp-crypto and partially wolfCrypt are included as git submodules. Make sure you run: `git submodule update --init --recursive` 
 after checking out the ECTester repository to initialize them. To build BoringSSL do:
-```
+```shell
 cd ext/boringssl
 cmake -GNinja -Bbuild -DBUILD_SHARED_LIBS=1
 cd build
@@ -366,7 +366,7 @@ ninja
 ```
 
 To build LibreSSL do:
-```
+```shell
 cd ext/libressl
 ./autogen.sh
 cmake -GNinja -Bbuild -DBUILD_SHARED_LIBS=1
@@ -376,12 +376,26 @@ ninja
 
 To build ipp-crypto do:
 (Make sure you have the necessary [build requirements](https://github.com/intel/ipp-crypto/blob/develop/BUILD.md))
-```
+```shell
 cd ext/ipp-crypto
 CC=clang CXX=clang++ cmake CMakeLists.txt -GNinja -Bbuild -DARCH=intel64  # Does not work with GCC 12+
 cd build
 ninja
 ```
+
+To build wolfCrypt-JNI do:
+(You need to have wolfSSL installed and ready for development)
+```shell
+cd ext/wolfcrypt-jni
+mkdir junit
+wget -P junit/ https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar 
+wget -P junit/ https://repo1.maven.org/maven2/org/hamcrest/hamcrest-all/1.3/hamcrest-all-1.3.jar
+make -f makefile.linux
+env JUNIT_HOME=junit/ ant build-jce-release
+```
+The produced `lib/wolfcrypt-jni.jar` will be automatically included into the standalone JAR when building `standalone:uberJar`.
+However, the produced `lib/libwolfcryptjni.so` native library will not be automatically loaded. You thus need to include it
+on `LD_LIBRARY_PATH`.
 
 
 #### Java

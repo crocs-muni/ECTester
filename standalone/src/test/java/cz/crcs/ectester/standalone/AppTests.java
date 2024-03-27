@@ -53,8 +53,9 @@ public class AppTests {
 
     @SuppressWarnings("JUnitMalformedDeclaration")
     @ParameterizedTest
-    // TODO: Add "wolfCrypt" to the list
-    @ValueSource(strings = {"Bouncy", "Sun", "libtomcrypt", "Botan", "Crypto++", "OpenSSL 3", "BoringSSL", "libgcrypt", "mbedTLS", "2021" /* IPPCP */, "Nettle", "LibreSSL"})
+    // TODO: @ExpectedToFail does not work with parameterized tests: https://github.com/junit-pioneer/junit-pioneer/issues/762
+    @ExpectedToFail
+    @ValueSource(strings = {"Bouncy", "Sun", "libtomcrypt", "Botan", "Crypto++", "OpenSSL 3", "BoringSSL", "libgcrypt", "mbedTLS", "2021" /* IPPCP */, "Nettle", "LibreSSL", "wolfCrypt"})
     @StdIo()
     public void defaultSuite(String libName, StdOut out, StdErr err) {
         String[] args = new String[]{"test", "default", libName};

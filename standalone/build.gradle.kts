@@ -11,7 +11,12 @@ repositories {
 }
 
 dependencies {
-    implementation(files("$rootDir/ext/wolfcrypt-jni.jar"))
+    // Fallback to bundled wolfcrypt-jni if the submodule one is not built.
+    if (file("$rootDir/ext/wolfcrypt-jni/lib/wolfcrypt-jni.jar").exists()) {
+        implementation(files("$rootDir/ext/wolfcrypt-jni/lib/wolfcrypt-jni.jar"))
+    } else {
+        implementation(files("$rootDir/ext/wolfcrypt-jni.jar"))
+    }
     implementation(project(":common"))
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
@@ -32,10 +37,12 @@ application {
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
-}
-
-tasks.test {
-    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+    // Report is always generated after tests run
+    finalizedBy(tasks.jacocoTestReport)
+    // Add wolfcrypt JNI lib path to LD_LIBRARY_PATH (as our native library loading does not handle it)
+    environment(
+            "LD_LIBRARY_PATH", "$rootDir/ext/wolfcrypt-jni/lib/:" + System.getenv("LD_LIBRARY_PATH")
+    )
 }
 
 tasks.jacocoTestReport {

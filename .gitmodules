@@ -16,3 +16,6 @@
 [submodule "ext/ipp-crypto"]
 	path = ext/ipp-crypto
 	url = https://github.com/intel/ipp-crypto
+[submodule "ext/wolfcrypt-jni"]
+	path = ext/wolfcrypt-jni
+	url = https://github.com/wolfSSL/wolfcrypt-jni
