@@ -1,5 +1,7 @@
 plugins {
     application
+    jacoco
+    id("com.adarshr.test-logger") version "4.0.0"
 }
 
 repositories {
@@ -13,6 +15,11 @@ repositories {
 dependencies {
     implementation(project(":common"))
     implementation(project(":applet"))
+
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit-pioneer:junit-pioneer:2.2.0")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 java {
@@ -23,6 +30,18 @@ application {
     applicationName = "ECTesterReader"
     mainClass = "cz.crcs.ectester.reader.ECTesterReader"
     version = "0.3.3"
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
+    // Report is always generated after tests run
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required = true
+    }
 }
 
 tasks.register<Jar>("uberJar") {

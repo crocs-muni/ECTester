@@ -51,6 +51,10 @@ dependencies {
     runtimeOnly("com.klinec:gradle-javacard:1.8.0")
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+}
+
 tasks.named<Test>("test") {
     useJUnitPlatform()
 }

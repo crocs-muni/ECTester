@@ -72,6 +72,7 @@ tasks.register<Exec>("libs") {
 
 tasks.register<Jar>("uberJar") {
     archiveFileName = "ECTesterStandalone.jar"
+    duplicatesStrategy = DuplicatesStrategy.WARN
 
     from(sourceSets.main.get().output)
 
