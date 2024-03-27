@@ -97,3 +97,6 @@ jobs:
             applet/build/javacard/*.cap
             reader/build/libs/ECTesterReader.jar
             standalone/build/libs/ECTesterStandalone.jar
+
+      - name: Upload code coverage
+        uses: codecov/codecov-action@v4

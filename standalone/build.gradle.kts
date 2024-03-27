@@ -1,6 +1,7 @@
 
 plugins {
     application
+    jacoco
     id("com.google.osdetector") version "1.7.3"
 }
 
@@ -25,6 +26,16 @@ application {
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required = true
+    }
 }
 
 tasks.withType<JavaCompile> {
