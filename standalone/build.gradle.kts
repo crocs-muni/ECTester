@@ -1,4 +1,3 @@
-
 plugins {
     application
     jacoco
@@ -49,6 +48,10 @@ tasks.jacocoTestReport {
     reports {
         xml.required = true
     }
+}
+
+testlogger {
+    theme = com.adarshr.gradle.testlogger.theme.ThemeType.MOCHA
 }
 
 tasks.withType<JavaCompile> {

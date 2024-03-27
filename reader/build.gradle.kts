@@ -44,6 +44,10 @@ tasks.jacocoTestReport {
     }
 }
 
+testlogger {
+    theme = com.adarshr.gradle.testlogger.theme.ThemeType.MOCHA
+}
+
 tasks.register<Jar>("uberJar") {
     archiveFileName = "ECTesterReader.jar"
     duplicatesStrategy = DuplicatesStrategy.WARN
