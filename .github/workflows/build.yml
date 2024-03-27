@@ -121,7 +121,7 @@ jobs:
         uses: actions/cache@v4
         id: cache-libs
         with:
-          key: libs-${{ env.BORINGSSL_VERSION }}-${{ env.LIBRESSL_VERSION }}-${{ env.IPPCP_VERSION }}-${{ env.WOLFCRYPT_VERSION }}-${{ env.WOLFSSL_VERSION }}
+          key: libs-${{ env.BORINGSSL_VERSION }}-${{ env.LIBRESSL_VERSION }}-${{ env.IPPCP_VERSION }}-${{ env.WOLFCRYPT_VERSION }}-${{ env.WOLFSSL_VERSION }}-${{ matrix.java }}
           path: |
             ext/boringssl/build/crypto/libcrypto.so
             ext/libressl/build/crypto/libcrypto.so
