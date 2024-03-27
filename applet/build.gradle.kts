@@ -52,7 +52,7 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = if (JavaVersion.current() == JavaVersion.VERSION_1_8) JavaVersion.VERSION_1_8 else JavaVersion.VERSION_11
 }
 
 tasks.named<Test>("test") {
