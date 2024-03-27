@@ -3,6 +3,7 @@ plugins {
     application
     jacoco
     id("com.google.osdetector") version "1.7.3"
+    id("com.adarshr.test-logger") version "4.0.0"
 }
 
 repositories {
@@ -15,7 +16,12 @@ dependencies {
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit-pioneer:junit-pioneer:2.2.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
 }
 
 application {
