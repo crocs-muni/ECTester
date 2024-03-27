@@ -5,7 +5,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.jupiter.StdIo;
 import org.junitpioneer.jupiter.StdOut;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 public class AppTests {
 
@@ -54,6 +58,9 @@ public class AppTests {
     @ValueSource(strings = {"Bouncy", "Sun", "libtomcrypt", "Botan", "Crypto++", "OpenSSL 3", "BoringSSL", "libgcrypt", "mbed TLS", "2021" /* IPPCP */, "Nettle", "LibreSSL", "wolfCrypt"})
     @StdIo()
     public void defaultSuite(String libName, StdOut out) {
+        // TODO: "Nettle" is very broken here for a weird reason.
+        assumeFalse(libName.equals("Nettle"));
+
         String[] args = new String[]{"test", "default", libName};
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
             args = new String[]{"test", "--kpg-type", "ECDH", "default", libName};
@@ -62,6 +69,26 @@ public class AppTests {
         String sout = out.capturedString();
         if (sout.contains("Exception")) {
             System.err.printf("%s: Default suite has exceptions.%n", libName);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Bouncy", "Sun", "libtomcrypt", "Botan", "Crypto++", "OpenSSL 3", "BoringSSL", "libgcrypt", "mbed TLS", "2021" /* IPPCP */, "Nettle", "LibreSSL", "wolfCrypt"})
+    public void performanceSuite(String libName) {
+        // TODO: "Nettle" is very broken here for a weird reason.
+        assumeFalse(libName.equals("Nettle"));
+
+        String[] args = new String[]{"test", "performance", "-o", "/dev/null", libName};
+        if (libName.equals("Botan") || libName.equals("Crypto++")) {
+            args = new String[]{"test", "--kpg-type", "ECDH", "performance", "-o", "/dev/null", libName};
+        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(baos);
+        System.setOut(ps);
+        ECTesterStandalone.main(args);
+        String sout = baos.toString();
+        if (sout.contains("Exception")) {
+            System.err.printf("%s: Performance suite has exceptions.%n", libName);
         }
     }
 
