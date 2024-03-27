@@ -839,9 +839,13 @@ public class ECTesterStandalone {
         KeyPair kp = kpg.genKeyPair();
         ECPrivateKey privateKey = (ECPrivateKey) kp.getPrivate();
         ECParameterSpec params = privateKey.getParams();
-        System.out.println(params);
-        EC_Curve curve = EC_Curve.fromSpec(params);
-        curve.writeCSV(System.out);
+        if (params == null) {
+            System.err.println("Parameters could not be exported (they are NULL).");
+        } else {
+            System.out.println(params);
+            EC_Curve curve = EC_Curve.fromSpec(params);
+            curve.writeCSV(System.out);
+        }
     }
 
     public static void main(String[] args) {

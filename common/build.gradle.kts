@@ -21,3 +21,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.klinec/jcardsim
     api("com.klinec:jcardsim:3.0.5.11")
 }
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+}

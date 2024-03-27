@@ -12,6 +12,16 @@ public class WolfCryptLib extends ProviderECLibrary {
     }
 
     @Override
+    public boolean initialize() {
+        try {
+            System.loadLibrary("wolfcryptjni");
+            return super.initialize();
+        } catch (UnsatisfiedLinkError ule) {
+            return false;
+        }
+    }
+
+    @Override
     public Set<String> getCurves() {
         return new HashSet<>();
     }

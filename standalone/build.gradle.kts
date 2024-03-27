@@ -1,7 +1,8 @@
-
 plugins {
     application
+    jacoco
     id("com.google.osdetector") version "1.7.3"
+    id("com.adarshr.test-logger") version "4.0.0"
 }
 
 repositories {
@@ -9,12 +10,22 @@ repositories {
 }
 
 dependencies {
-    implementation(files("$rootDir/ext/wolfcrypt-jni.jar"))
+    // Fallback to bundled wolfcrypt-jni if the submodule one is not built.
+    if (file("$rootDir/ext/wolfcrypt-jni/lib/wolfcrypt-jni.jar").exists()) {
+        implementation(files("$rootDir/ext/wolfcrypt-jni/lib/wolfcrypt-jni.jar"))
+    } else {
+        implementation(files("$rootDir/ext/wolfcrypt-jni.jar"))
+    }
     implementation(project(":common"))
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit-pioneer:junit-pioneer:2.2.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
 }
 
 application {
@@ -25,6 +36,23 @@ application {
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
+    // Report is always generated after tests run
+    finalizedBy(tasks.jacocoTestReport)
+    // Add wolfcrypt JNI lib path to LD_LIBRARY_PATH (as our native library loading does not handle it)
+    environment(
+            "LD_LIBRARY_PATH", "$rootDir/ext/wolfcrypt-jni/lib/:" + System.getenv("LD_LIBRARY_PATH")
+    )
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required = true
+    }
+}
+
+testlogger {
+    theme = com.adarshr.gradle.testlogger.theme.ThemeType.MOCHA
+    showStandardStreams = true
 }
 
 tasks.withType<JavaCompile> {
@@ -48,6 +76,7 @@ tasks.register<Exec>("libs") {
 
 tasks.register<Jar>("uberJar") {
     archiveFileName = "ECTesterStandalone.jar"
+    duplicatesStrategy = DuplicatesStrategy.WARN
 
     from(sourceSets.main.get().output)
 
