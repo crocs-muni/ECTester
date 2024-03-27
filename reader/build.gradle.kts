@@ -46,6 +46,7 @@ tasks.jacocoTestReport {
 
 testlogger {
     theme = com.adarshr.gradle.testlogger.theme.ThemeType.MOCHA
+    showStandardStreams = true
 }
 
 tasks.register<Jar>("uberJar") {
