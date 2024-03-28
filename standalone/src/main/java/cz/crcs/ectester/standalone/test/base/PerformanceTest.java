@@ -4,6 +4,7 @@ import cz.crcs.ectester.common.test.BaseTestable;
 import cz.crcs.ectester.common.test.Result;
 import cz.crcs.ectester.common.test.SimpleTest;
 import cz.crcs.ectester.common.test.TestCallback;
+import cz.crcs.ectester.standalone.libs.ProviderECLibrary;
 
 import java.util.Arrays;
 
@@ -11,6 +12,8 @@ import java.util.Arrays;
  * @author David Hofman
  */
 public class PerformanceTest extends SimpleTest<BaseTestable> {
+
+    private ProviderECLibrary library;
     private long[] times;
     private long mean;
     private long median;
@@ -18,23 +21,24 @@ public class PerformanceTest extends SimpleTest<BaseTestable> {
     private final int count;
     private final String desc;
 
-    private PerformanceTest(BaseTestable testable, int count, String desc) {
+    private PerformanceTest(BaseTestable testable, ProviderECLibrary library, int count, String desc) {
         super(testable, new TestCallback<BaseTestable>() {
             @Override
             public Result apply(BaseTestable testable) {
                 return new Result(Result.Value.SUCCESS);
             }
         });
+        this.library = library;
         this.count = count;
         this.desc = desc;
     }
 
-    public static PerformanceTest repeat(BaseTestable testable, int count) {
-        return new PerformanceTest(testable, count, null);
+    public static PerformanceTest repeat(BaseTestable testable, ProviderECLibrary library, int count) {
+        return new PerformanceTest(testable, library, count, null);
     }
 
-    public static PerformanceTest repeat(BaseTestable testable, String desc, int count) {
-        return new PerformanceTest(testable, count, desc);
+    public static PerformanceTest repeat(BaseTestable testable, ProviderECLibrary library, String desc, int count) {
+        return new PerformanceTest(testable, library, count, desc);
     }
 
     @Override
@@ -99,11 +103,16 @@ public class PerformanceTest extends SimpleTest<BaseTestable> {
     }
 
     private long measureTime() {
-        if(testable.hasRun()) {
-                testable.reset();
+        if (testable.hasRun()) {
+            testable.reset();
         }
-        long startTime = System.nanoTime();
-        testable.run();
-        return System.nanoTime() - startTime;
+        if (library.getNativeTimingSupport().isEmpty()) {
+            long startTime = System.nanoTime();
+            testable.run();
+            return System.nanoTime() - startTime;
+        } else {
+            testable.run();
+            return library.getLastNativeTiming();
+        }
     }
 }
