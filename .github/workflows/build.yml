@@ -123,9 +123,9 @@ jobs:
         with:
           key: libs-${{ env.BORINGSSL_VERSION }}-${{ env.LIBRESSL_VERSION }}-${{ env.IPPCP_VERSION }}-${{ env.WOLFCRYPT_VERSION }}-${{ env.WOLFSSL_VERSION }}-${{ matrix.java }}
           path: |
-            ext/boringssl/build/crypto/libcrypto.so
-            ext/libressl/build/crypto/libcrypto.so
-            ext/ipp-crypto/build/.build/RELEASE/lib/libippcp.so
+            ext/boringssl/build/
+            ext/libressl/build/
+            ext/ipp-crypto/build/
             ext/wolfcrypt-jni/lib/wolfcrypt-jni.jar
             ext/wolfcrypt-jni/lib/libwolfcryptjni.so
 
