@@ -142,11 +142,14 @@ cryptopp.o: cryptopp.cpp
 # mbedTLS shim
 mbedtls: mbedtls_provider.so
 
-mbedtls_provider.so: mbedtls.o c_utils.o | lib_timing.so
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -lmbedcrypto -l:lib_timing.so
+lib_mbedtls.so:
+	cp $(PROJECT_ROOT_PATH)/ext/mbedtls/build/library/libmbedcrypto.so lib_mbedtls.so
+
+mbedtls_provider.so: mbedtls.o c_utils.o | lib_timing.so lib_mbedtls.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_mbedtls.so -l:lib_timing.so
 
 mbedtls.o: mbedtls.c
-	$(CC) $(CFLAGS) -c $<
+	$(CC) -I$(PROJECT_ROOT_PATH)/ext/mbedtls/include/ $(CFLAGS) -c $<
 
 
 # Intel Performance Primitives crypto shim
