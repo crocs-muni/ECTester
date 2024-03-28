@@ -92,7 +92,7 @@ jobs:
     env:
       # ffs: https://github.com/adoptium/adoptium-support/issues/485 !!!
       # also, add the wolfcrypt JNI path
-      LD_LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/:${{ GITHUB_WORKSPACE }}/ext/wolfcrypt-jni/lib/"
+      LD_LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/:${{github.workspace}}/ext/wolfcrypt-jni/lib/"
     name: Build standalone on Java ${{ matrix.java }}
     steps:
       - uses: actions/checkout@v4
@@ -125,7 +125,7 @@ jobs:
         uses: actions/cache@v4
         id: cache-libs
         with:
-          key: libs-${{ env.BORINGSSL_VERSION }}-${{ env.LIBRESSL_VERSION }}-${{ env.LIBRESSL_VERSION }}-${{ env.IPPCP_VERSION }}-${{ env.WOLFCRYPT_VERSION }}-${{ env.WOLFSSL_VERSION }}-${{ hashFiles(".github/workflows/build.yml") }}-${{ matrix.java }}
+          key: libs-${{ env.BORINGSSL_VERSION }}-${{ env.LIBRESSL_VERSION }}-${{ env.LIBRESSL_VERSION }}-${{ env.IPPCP_VERSION }}-${{ env.WOLFCRYPT_VERSION }}-${{ env.WOLFSSL_VERSION }}-${{ hashFiles('.github/workflows/build.yml') }}-${{ matrix.java }}
           path: |
             ext/boringssl/build/
             ext/libressl/build/
