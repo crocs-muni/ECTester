@@ -48,7 +48,11 @@ dependencies {
     // Include plugin as it has bundled GP & other tools.
     // Alternative: include GP manually, but the included
     // version has to be compatible with the plugin.
-    runtimeOnly("com.klinec:gradle-javacard:1.8.0")
+    runtimeOnly("com.klinec:gradle-javacard:1.8.0") {
+        // Exclude old BouncyCastle (we have newer).
+        exclude(group = "org.bouncycastle", module="bcpkix-jdk15on")
+    }
+    runtimeOnly("org.bouncycastle:bcpkix-jdk18on:1.77")
 }
 
 java {
