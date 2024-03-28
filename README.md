@@ -323,13 +323,13 @@ specifying `LD_LIBRARY_PATH` will help load it. Consulting the next sections sho
 
 #### Native
 
-ECTester interfaces with native libraries by using custom shim libraries that expose the functionality via the [Java Native Interface](https://en.wikipedia.org/wiki/Java_Native_Interface), these can be found in the [src/cz/crcs/ectester/standalone/libs/jni](src/cz/crcs/ectester/standalone/libs/jni) directory along with a Makefile (Makefile.bat for Windows). The shim library will depend on the native library, and have a name like `boringssl_provider.so`, `botan_provider.so`, `cryptopp_provider.so` and `openssl_provider.so`. The Makefile has a target for every library that it supports that builds its shim, see the `help` target for more info. The Makefile is automatically ran when the `:standalone:libs` gradle task is triggered, so if all is setup correctly, you do not need to deal with the Makefile while building.
+ECTester interfaces with native libraries by using custom shim libraries that expose the functionality via the [Java Native Interface](https://en.wikipedia.org/wiki/Java_Native_Interface), these can be found in the [standalone/src/main/java/cz/crcs/ectester/standalone/libs/jni](standalone/src/main/java/cz/crcs/ectester/standalone/libs/jni) directory along with a Makefile (Makefile.bat for Windows). The shim library will depend on the native library, and have a name like `boringssl_provider.so`, `botan_provider.so`, `cryptopp_provider.so` and `openssl_provider.so`. The Makefile has a target for every library that it supports that builds its shim, see the `help` target for more info. The Makefile is automatically ran when the `:standalone:libs` gradle task is triggered, so if all is setup correctly, you do not need to deal with the Makefile while building.
 
 There are two important environmental variables that should be set in your environment. First, you should set `JAVA_HOME` which should point to your JDK. The tooling uses `JAVA_HOME` to locate native Java library headers, like `jni.h`. Second, ECTester uses pkg-config to locate the native libraries, if your pkg-config files are in an unusual place the pkg-config command would not find them by default, you should set `PKG_CONFIG_PATH` to the directory containing the `*.pc` files. If pkg-config files are unavailable for the library you are trying to test, you will need to change the Makefile manually to apply the correct options to the commands (CFLAGS, include options, linker options...).
 
 Below you can see how a full build with all the libraries currently supported on Linux looks
 ```
-> cd standalone/main/resources/cz/crcs/ectester/standalone/libs/jni
+> cd standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni
 > make
 cc -DLTM_DESC  -fPIC -I"/usr/lib/jvm/java-21-openjdk/include" -I"/usr/lib/jvm/java-21-openjdk/include/linux" -I. -Wno-deprecated-declarations -O2 -c tomcrypt.c
 cc -fPIC -I"/usr/lib/jvm/java-21-openjdk/include" -I"/usr/lib/jvm/java-21-openjdk/include/linux" -I. -Wno-deprecated-declarations -O2 -c c_utils.c

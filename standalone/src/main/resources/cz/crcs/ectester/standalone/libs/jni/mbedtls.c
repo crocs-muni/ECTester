@@ -225,8 +225,7 @@ static jobject create_ec_param_spec(JNIEnv *env, const mbedtls_ecp_group *group)
 
     jclass ecutil_class = (*env)->FindClass(env, "cz/crcs/ectester/common/util/ECUtil");
     jmethodID from_X962 = (*env)->GetStaticMethodID(env, ecutil_class, "fromX962", "([BLjava/security/spec/EllipticCurve;)Ljava/security/spec/ECPoint;");
-	size_t point_len;
-	mbedtls_ecp_point_write_binary(group, &group->G, MBEDTLS_ECP_PF_UNCOMPRESSED, &point_len, NULL, 0);
+	size_t point_len = 2 * mbedtls_mpi_size(&group->P) + 1;
 	jbyteArray g_bytes = (*env)->NewByteArray(env, (jint) point_len);
 	jbyte *g_data = (*env)->GetByteArrayElements(env, g_bytes, NULL);
 	mbedtls_ecp_point_write_binary(group, &group->G, MBEDTLS_ECP_PF_UNCOMPRESSED, &point_len, g_data, point_len);
@@ -240,7 +239,7 @@ static jobject create_ec_param_spec(JNIEnv *env, const mbedtls_ecp_group *group)
     return (*env)->NewObject(env, ec_parameter_spec_class, ec_parameter_spec_init, elliptic_curve, g, n, h);
 }
 
-static void create_curve(JNIEnv *env, jobject params, mbedtls_ecp_group *group) {
+static int create_curve(JNIEnv *env, jobject params, mbedtls_ecp_group *group) {
     mbedtls_ecp_group_init(group);
     group->id = 0;
 
@@ -271,13 +270,27 @@ static void create_curve(JNIEnv *env, jobject params, mbedtls_ecp_group *group) 
     jbyteArray point_array = (jbyteArray) (*env)->CallStaticObjectMethod(env, ecutil_class, to_uncompressed, g, bitsize);
 	jsize data_size = (*env)->GetArrayLength(env, point_array);
 	jbyte *point_data = (*env)->GetByteArrayElements(env, point_array, NULL);
-	mbedtls_ecp_point_read_binary(group, &group->G, point_data, data_size);
+	// The mbedtls_ecp_point_read_binary function we use to setup the generator actually
+	// internally relies on the group generator already being set to a sane value.
+	// Thus we need to set it to the point at infinity first, only then can we load the
+	// correct generator.
+	int error = mbedtls_ecp_set_zero(&group->G);
+	if (error) {
+		throw_new_var(env, "java/security/GeneralSecurityException", err_to_string(error));
+		return error;
+	}
+	error = mbedtls_ecp_point_read_binary(group, &group->G, point_data, data_size);
 	(*env)->ReleaseByteArrayElements(env, point_array, point_data, JNI_ABORT);
+	if (error) {
+		throw_new_var(env, "java/security/GeneralSecurityException", err_to_string(error));
+		return error;
+	}
     
     jmethodID get_n = (*env)->GetMethodID(env, ec_parameter_spec_class, "getOrder", "()Ljava/math/BigInteger;");
     jobject n = (*env)->CallObjectMethod(env, params, get_n);
     mpi_from_biginteger(env, n, &group->N);
     group->pbits = group->nbits = mbedtls_mpi_bitlen(&group->P);
+    return 0;
 }
 
 static jobject generate_from_curve(JNIEnv *env, mbedtls_ecp_group *group) {
@@ -369,7 +382,10 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024MbedTLS_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2(JNIEnv *env, jobject this, jobject params, jobject random) {
     if ((*env)->IsInstanceOf(env, params, ec_parameter_spec_class)) {
         mbedtls_ecp_group curve;
-        create_curve(env, params, &curve);
+        int error = create_curve(env, params, &curve);
+        if (error) {
+        	return NULL;
+        }
         jobject result = generate_from_curve(env, &curve);
         mbedtls_ecp_group_free(&curve);
         return result;
@@ -417,7 +433,10 @@ static void create_privkey(JNIEnv *env, jbyteArray privkey, mbedtls_mpi *priv) {
 
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024MbedTLS_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2(JNIEnv *env, jobject this, jbyteArray pubkey, jbyteArray privkey, jobject params) {
     mbedtls_ecp_group curve;
-    create_curve(env, params, &curve);
+    int error = create_curve(env, params, &curve);
+    if (error) {
+    	return NULL;
+    }
 
     mbedtls_ecp_point pub;
     create_pubkey(env, pubkey, &curve, &pub);
@@ -429,7 +448,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     mbedtls_mpi_init(&result);
 
     native_timing_start();
-    int error = mbedtls_ecdh_compute_shared(&curve, &result, &pub, &priv, ctr_drbg_wrapper, &ctr_drbg);
+    error = mbedtls_ecdh_compute_shared(&curve, &result, &pub, &priv, ctr_drbg_wrapper, &ctr_drbg);
     native_timing_stop();
 
     if (error) {
@@ -463,7 +482,10 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgr
 
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024MbedTLS_sign(JNIEnv *env, jobject this, jbyteArray data, jbyteArray privkey, jobject params) {
     mbedtls_ecp_group curve;
-    create_curve(env, params, &curve);
+    int error = create_curve(env, params, &curve);
+	if (error) {
+		return NULL;
+	}
 
     mbedtls_mpi priv;
     create_privkey(env, privkey, &priv);
@@ -477,7 +499,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
 
     native_timing_start();
-    int error = mbedtls_ecdsa_sign(&curve, &r, &s, &priv, (unsigned char *) data_data, data_size, ctr_drbg_wrapper, &ctr_drbg);
+    error = mbedtls_ecdsa_sign(&curve, &r, &s, &priv, (unsigned char *) data_data, data_size, ctr_drbg_wrapper, &ctr_drbg);
     native_timing_stop();
 
     mbedtls_mpi_free(&priv);
@@ -504,7 +526,10 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024MbedTLS_verify(JNIEnv *env, jobject this, jbyteArray signature, jbyteArray data, jbyteArray pubkey, jobject params) {
     mbedtls_ecp_group curve;
-    create_curve(env, params, &curve);
+    int error = create_curve(env, params, &curve);
+	if (error) {
+		return JNI_FALSE;
+	}
 
     mbedtls_ecp_point pub;
     create_pubkey(env, pubkey, &curve, &pub);
@@ -533,7 +558,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
 
     native_timing_start();
-    int error = mbedtls_ecdsa_verify(&curve, (unsigned char *) data_data, data_size, &pub, &r, &s);
+    error = mbedtls_ecdsa_verify(&curve, (unsigned char *) data_data, data_size, &pub, &r, &s);
     native_timing_stop();
 
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
