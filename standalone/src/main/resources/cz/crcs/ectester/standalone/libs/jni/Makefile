@@ -149,7 +149,7 @@ mbedtls_provider.so: mbedtls.o c_utils.o | lib_timing.so lib_mbedtls.so
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_mbedtls.so -l:lib_timing.so
 
 mbedtls.o: mbedtls.c
-	$(CC) -I$(PROJECT_ROOT_PATH)/ext/mbedtls/include/ $(CFLAGS) -c $<
+	$(CC) -I$(PROJECT_ROOT_PATH)/ext/mbedtls/build/include/ $(CFLAGS) -c $<
 
 
 # Intel Performance Primitives crypto shim
@@ -185,7 +185,7 @@ libressl_provider.so: libressl.o c_utils.o | lib_timing.so lib_libressl.so
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_libressl.so -l:lib_timing.so
 
 libressl.o: libressl.c
-	$(CC) -I$(PROJECT_ROOT_PATH)/ext/libressl/include/ $(CFLAGS) -c $<
+	$(CC) -I$(PROJECT_ROOT_PATH)/ext/libressl/build/include/ $(CFLAGS) -c $<
 
 
 help:

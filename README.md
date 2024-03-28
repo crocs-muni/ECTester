@@ -47,7 +47,7 @@ git submodule update --init --recursive       # To initialize submodules (JavaCa
 The applet comes in several flavors, targeting JavaCard `2.2.1`, `2.2.2` and `3.0.5`. The `2.2.2` and later flavors
 support extended length APDUs which are necessary for some commands to work properly.
 
-The `:standalone:libs` task invokes a Makefile in `src/cz/crcs/ectester/standalone/libs/jni`, which tries to build the
+The `:standalone:libs` task invokes a Makefile in `standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni`, which tries to build the
 C/C++ shim libraries required for ECTester to test the actual native cryptographic libraries from Java.
 The Makefile uses pkg-config to locate the libraries installed, thus if non-standard location of the tested libraries is
 used, the Makefile or your pkg-config needs some changes to work.

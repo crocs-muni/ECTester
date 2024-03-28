@@ -125,7 +125,7 @@ jobs:
         uses: actions/cache@v4
         id: cache-libs
         with:
-          key: libs-${{ env.BORINGSSL_VERSION }}-${{ env.LIBRESSL_VERSION }}-${{ env.LIBRESSL_VERSION }}-${{ env.IPPCP_VERSION }}-${{ env.WOLFCRYPT_VERSION }}-${{ env.WOLFSSL_VERSION }}-${{ matrix.java }}
+          key: libs-${{ env.BORINGSSL_VERSION }}-${{ env.LIBRESSL_VERSION }}-${{ env.LIBRESSL_VERSION }}-${{ env.IPPCP_VERSION }}-${{ env.WOLFCRYPT_VERSION }}-${{ env.WOLFSSL_VERSION }}-{{ hashFiles(".github/workflows/build.yml") }}-${{ matrix.java }}
           path: |
             ext/boringssl/build/
             ext/libressl/build/
