@@ -125,17 +125,6 @@ public abstract class NativeProvider extends Provider {
     }
 
     @SuppressWarnings("serial")
-    public static class Matrixssl extends NativeProvider {
-
-        public Matrixssl(String name, double version, String info) {
-            super(name, version, info);
-        }
-
-        @Override
-        native void setup();
-    }
-
-    @SuppressWarnings("serial")
     public static class Libressl extends NativeProvider {
 
         public Libressl(String name, double version, String info) {

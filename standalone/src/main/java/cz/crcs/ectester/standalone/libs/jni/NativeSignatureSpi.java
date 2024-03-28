@@ -505,27 +505,6 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
         }
     }
 
-    public abstract static class Matrixssl extends SimpleSignatureSpi {
-        private final String type;
-
-        public Matrixssl(String type) {
-            this.type = type;
-        }
-
-        @Override
-        native byte[] sign(byte[] data, byte[] privkey, ECParameterSpec params);
-
-        @Override
-        native boolean verify(byte[] signature, byte[] data, byte[] pubkey, ECParameterSpec params);
-    }
-
-    public static class MatrixsslECDSAwithNONE extends Matrixssl {
-
-        public MatrixsslECDSAwithNONE() {
-            super("NONEwithECDSA");
-        }
-    }
-
     public abstract static class Mscng extends ExtendedSignatureSpi {
         private final String type;
 

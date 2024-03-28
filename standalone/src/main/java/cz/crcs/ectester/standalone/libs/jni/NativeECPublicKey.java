@@ -121,13 +121,6 @@ public abstract class NativeECPublicKey implements ECPublicKey {
     }
 
     @SuppressWarnings("serial")
-    public static class Matrixssl extends ANSIX962 {
-        public Matrixssl(byte[] keyData, ECParameterSpec params) {
-            super(keyData, params);
-        }
-    }
-
-    @SuppressWarnings("serial")
     public static class Libressl extends ANSIX962 {
         public Libressl(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);

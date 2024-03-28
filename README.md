@@ -298,7 +298,6 @@ Currently supported libraries include:
  - [Botan](https://botan.randombit.net/)
  - [Microsoft CNG](https://msdn.microsoft.com/en-us/library/windows/desktop/aa376210(v=vs.85).aspx)
  - [Intel Performance Primitives Crypto](https://github.com/intel/ipp-crypto)
- - [MatrixSSL](https://github.com/matrixssl/matrixssl)
  - [MbedTLS](https://github.com/ARMmbed/mbedtls)
  - [Nettle](https://www.lysator.liu.se/~nisse/nettle/)
  - [LibreSSL](https://www.libressl.org/)
@@ -312,7 +311,7 @@ For more information on ECC libraries see [LIBS](docs/LIBS.md).
 ./gradlew :standalone:uberJar                 # To build the standalone tool (jar) -> "standalone/build/libs/ECTesterStandalone.jar"
 ```
 Simply doing the above should build everything necessary to test libraries via the standalone app,
-(except the BoringSSL, LibreSSL, ipp-crypto and MatrixSSL libraries)
+(except the BoringSSL, LibreSSL, ipp-crypto, mbedTLS, and wolfCrypt libraries)
 the sections below describe the details of how that works and what needs to be done if it doesn't.
 
 To see whether your build was successful, run:
@@ -351,12 +350,12 @@ cc -fPIC -shared -O2 -o boringssl_provider.so -Wl,-rpath,'$ORIGIN/lib' boringssl
 cc -fPIC -shared -O2 -o gcrypt_provider.so -Wl,-rpath,'$ORIGIN/lib' gcrypt.o c_utils.o -L. -lgcrypt -lgpg-error -l:lib_timing.so
 cc -fPIC -shared -O2 -o mbedtls_provider.so -Wl,-rpath,'$ORIGIN/lib' mbedtls.o c_utils.o -L. -lmbedcrypto -l:lib_timing.so
 cc -fPIC -shared -O2 -o ippcp_provider.so -Wl,-rpath,'$ORIGIN/lib' ippcp.o c_utils.o -L. -lippcp -l:lib_timing.so
-cc -fPIC -shared -O2 -o matrixssl_provider.so -Wl,-rpath,'$ORIGIN/lib' -L. matrixssl.o c_utils.o libcrypt_s.a libcore_s.a -l:lib_timing.so
 g++ -fPIC -shared -O2 -o botan_provider.so -Wl,-rpath,'$ORIGIN/lib' botan.o cpp_utils.o -L. -lbotan-2 -fstack-protector -m64 -pthread  -l:lib_timing.so
 g++ -fPIC -shared -O2 -o cryptopp_provider.so -Wl,-rpath,'$ORIGIN/lib' cryptopp.o cpp_utils.o -L. -L/usr/local/lib -lcryptopp  -l:lib_timing.so
 ```
 
-BoringSSL, LibreSSL, ipp-crypto and partially wolfCrypt are included as git submodules. Make sure you run: `git submodule update --init --recursive` 
+BoringSSL, LibreSSL, ipp-crypto, mbedTLS and partially wolfCrypt are included as git submodules.
+Make sure you run: `git submodule update --init --recursive` 
 after checking out the ECTester repository to initialize them. To build BoringSSL do:
 ```shell
 cd ext/boringssl
@@ -505,14 +504,6 @@ Snippet below shows how the `list-libs` command for well, listing currently supp
 		- KeyAgreements: ECDH
 		- Signatures: NONEwithECDSA
 		- Curves: secp112r1, secp112r2, secp128r1, secp128r2, secp160r1, secp160r2, secp192r1, secp224r1, secp256r1, secp384r1, secp521r1
-
-	- MatrixSSL
-		- Version: 4.100000
-		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
-		- KeyPairGenerators: EC
-		- KeyAgreements: ECDH
-		- Signatures: NONEwithECDSA
-		- Curves: brainpoolP224r1, brainpoolP256r1, brainpoolP384r1, brainpoolP512r1, secp192r1, secp224r1, secp256r1, secp384r1, secp521r1
 ```
 
 Snippet below demonstrates generation of 1000 (`-n`) keys on the named curve `secp256r1` (`-nc`) using the BouncyCastle library.

@@ -5,8 +5,8 @@ CC?=gcc
 CXX?=g++
 
 LFLAGS+=-fPIC -shared
-CFLAGS+=-fPIC -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
-CXXFLAGS+=-fPIC -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I.
+CFLAGS+=-fPIC -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I. -Wno-deprecated-declarations
+CXXFLAGS+=-fPIC -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I. -Wno-deprecated-declarations
 
 DEBUG ?= 0
 PROJECT_ROOT_PATH ?= ../../../../../../../../../..
@@ -59,7 +59,7 @@ JNI_PLATFORMINCLUDEDIR ?= $(JNI_INCLUDEDIR)/$(JNI_PLATFORM)
 ###############################################################################
 ## Targets.
 
-all: tomcrypt botan cryptopp openssl boringssl gcrypt mbedtls ippcp matrixssl nettle libressl
+all: tomcrypt botan cryptopp openssl boringssl gcrypt mbedtls ippcp nettle libressl
 
 # Common utils
 c_utils.o: c_utils.c
@@ -165,16 +165,6 @@ ippcp.o: ippcp.c
 	$(CC) -I$(PROJECT_ROOT_PATH)/ext/ipp-crypto/build/.build/RELEASE/include/ $(CFLAGS) -c $<
 
 
-# MatrixSSL shim
-matrixssl: matrixssl_provider.so
-
-matrixssl_provider.so: matrixssl.o c_utils.o | lib_timing.so
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' -L. $^ libcrypt_s.a libcore_s.a -l:lib_timing.so
-
-matrixssl.o: matrixssl.c
-	$(CC) $(CFLAGS) -Imatrixssl/ -c $<
-
-
 # Nettle shim
 nettle: nettle_provider.so
 
@@ -209,7 +199,6 @@ help:
 	@echo "    - cryptopp"
 	@echo "    - mbedtls"
 	@echo "    - ippcp"
-	@echo "    - matrixssl"
 	@echo "    - nettle"
 	@echo "    - libressl"
 
@@ -218,4 +207,4 @@ clean:
 	rm -rf *.o
 	rm -rf *.so
 
-.PHONY: all help clean openssl boringssl gcrypt tomcrypt botan cryptopp mbedtls ippcp matrixssl nettle libressl
+.PHONY: all help clean openssl boringssl gcrypt tomcrypt botan cryptopp mbedtls ippcp nettle libressl

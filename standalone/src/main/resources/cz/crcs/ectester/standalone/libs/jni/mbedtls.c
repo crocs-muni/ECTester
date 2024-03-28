@@ -1,5 +1,7 @@
 #include "native.h"
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include <mbedtls/ecdsa.h>
 #include <mbedtls/ecdh.h>
@@ -7,7 +9,6 @@
 #include <mbedtls/version.h>
 #include <mbedtls/entropy.h>
 #include <mbedtls/ctr_drbg.h>
-#include <stdio.h>
 
 #include "c_utils.h"
 #include "c_timing.h"

@@ -28,7 +28,6 @@ public class LibTests {
                 WolfCryptLib.class,
                 MbedTLSLib.class,
                 IppcpLib.class,
-                MatrixsslLib.class,
                 NettleLib.class,
                 LibresslLib.class};
         for (Class<?> c : libClasses) {
