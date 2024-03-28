@@ -120,13 +120,6 @@ public abstract class NativeECPrivateKey implements ECPrivateKey {
     }
 
     @SuppressWarnings("serial")
-    public static class Matrixssl extends Raw {
-        public Matrixssl(byte[] keyData, ECParameterSpec params) {
-            super(keyData, params);
-        }
-    }
-
-    @SuppressWarnings("serial")
     public static class Libressl extends Raw {
         public Libressl(byte[] keyData, ECParameterSpec params) {
             super(keyData, params);

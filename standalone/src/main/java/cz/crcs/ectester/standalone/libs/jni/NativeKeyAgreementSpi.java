@@ -354,26 +354,6 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         }
     }
 
-    public abstract static class Matrixssl extends SimpleKeyAgreementSpi {
-        private final String type;
-
-        public Matrixssl(String type) {
-            this.type = type;
-        }
-
-        @Override
-        native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params);
-
-        @Override
-        native SecretKey generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params, String algorithm);
-    }
-
-    public static class MatrixsslECDH extends Matrixssl {
-        public MatrixsslECDH() {
-            super("ECDH");
-        }
-    }
-
     public abstract static class Libressl extends SimpleKeyAgreementSpi {
         private final String type;
 

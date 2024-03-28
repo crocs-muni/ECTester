@@ -82,6 +82,9 @@ tasks.register<Jar>("uberJar") {
 
     manifest {
         attributes["Main-Class"] = application.mainClass
+        if (JavaVersion.current() > JavaVersion.VERSION_1_8) {
+            attributes["Add-Exports"] = "jdk.crypto.ec/sun.security.ec"
+        }
     }
 
     dependsOn(configurations.runtimeClasspath)

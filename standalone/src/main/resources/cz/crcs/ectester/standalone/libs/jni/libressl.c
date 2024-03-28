@@ -1,7 +1,6 @@
 #include "native.h"
 #include <string.h>
 
-#include <openssl/conf.h>
 #include <openssl/opensslv.h>
 #include <openssl/objects.h>
 #include <openssl/obj_mac.h>
