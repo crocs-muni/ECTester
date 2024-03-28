@@ -329,34 +329,42 @@ There are two important environmental variables that should be set in your envir
 
 Below you can see how a full build with all the libraries currently supported on Linux looks
 ```
-> cd src/cz/crcs/ectester/standalone/libs/jni
+> cd standalone/main/resources/cz/crcs/ectester/standalone/libs/jni
 > make
-cc -DLTM_DESC -I/usr/local/include  -fPIC -I"/usr/lib/jvm/java-8-openjdk/include" -I"/usr/lib/jvm/java-8-openjdk/include/linux" -I. -O2 -c tomcrypt.c
-cc -fPIC -I"/usr/lib/jvm/java-8-openjdk/include" -I"/usr/lib/jvm/java-8-openjdk/include/linux" -I. -O2 -c c_utils.c
-cc -o lib_timing.so -shared -fPIC -I"/usr/lib/jvm/java-8-openjdk/include" -I"/usr/lib/jvm/java-8-openjdk/include/linux" -I. -O2 -Wl,-soname,lib_timing.so c_timing.c
-g++ -I/usr/include/botan-2  -fPIC -I"/usr/lib/jvm/java-8-openjdk/include" -I"/usr/lib/jvm/java-8-openjdk/include/linux" -I. -O2 -c botan.cpp
-g++ -fPIC -I"/usr/lib/jvm/java-8-openjdk/include" -I"/usr/lib/jvm/java-8-openjdk/include/linux" -I. -O2 -c cpp_utils.cpp
-g++ -I/usr/local/include  -fPIC -I"/usr/lib/jvm/java-8-openjdk/include" -I"/usr/lib/jvm/java-8-openjdk/include/linux" -I. -O2 -c cryptopp.cpp
-cc  -fPIC -I"/usr/lib/jvm/java-8-openjdk/include" -I"/usr/lib/jvm/java-8-openjdk/include/linux" -I. -O2 -c openssl.c
-cc -I../../../../../../../ext/boringssl/include/ -fPIC -I"/usr/lib/jvm/java-8-openjdk/include" -I"/usr/lib/jvm/java-8-openjdk/include/linux" -I. -O2 -c boringssl.c
-cp ../../../../../../../ext/boringssl/build/crypto/libcrypto.so lib_boringssl.so
-cc  -fPIC -I"/usr/lib/jvm/java-8-openjdk/include" -I"/usr/lib/jvm/java-8-openjdk/include/linux" -I. -O2 -c gcrypt.c
-cc -fPIC -I"/usr/lib/jvm/java-8-openjdk/include" -I"/usr/lib/jvm/java-8-openjdk/include/linux" -I. -O2 -c mbedtls.c
-cc -fPIC -I"/usr/lib/jvm/java-8-openjdk/include" -I"/usr/lib/jvm/java-8-openjdk/include/linux" -I. -O2 -c ippcp.c
-cc -fPIC -I"/usr/lib/jvm/java-8-openjdk/include" -I"/usr/lib/jvm/java-8-openjdk/include/linux" -I. -O2 -Imatrixssl/ -c matrixssl.c
-cc -fPIC -shared -O2 -o tomcrypt_provider.so -Wl,-rpath,'$ORIGIN/lib' tomcrypt.o c_utils.o -L. -ltommath -L/usr/local/lib -ltomcrypt  -l:lib_timing.so
-cc -fPIC -shared -O2 -o openssl_provider.so -Wl,-rpath,'$ORIGIN/lib' openssl.o c_utils.o -L. -lssl -lcrypto  -l:lib_timing.so
+cc -DLTM_DESC  -fPIC -I"/usr/lib/jvm/java-21-openjdk/include" -I"/usr/lib/jvm/java-21-openjdk/include/linux" -I. -Wno-deprecated-declarations -O2 -c tomcrypt.c
+cc -fPIC -I"/usr/lib/jvm/java-21-openjdk/include" -I"/usr/lib/jvm/java-21-openjdk/include/linux" -I. -Wno-deprecated-declarations -O2 -c c_utils.c
+cc -o lib_timing.so -shared -fPIC -I"/usr/lib/jvm/java-21-openjdk/include" -I"/usr/lib/jvm/java-21-openjdk/include/linux" -I. -Wno-deprecated-declarations -O2 -Wl,-soname,lib_timing.so c_timing.c
+cc -fPIC -shared -O2 -o tomcrypt_provider.so -Wl,-rpath,'$ORIGIN/lib' tomcrypt.o c_utils.o -L. -ltommath -ltomcrypt -l:lib_timing.so
+g++ -I/usr/include/botan-2 -fPIC -I"/usr/lib/jvm/java-21-openjdk/include" -I"/usr/lib/jvm/java-21-openjdk/include/linux" -I. -Wno-deprecated-declarations -O2 -c botan.cpp
+g++ -fPIC -I"/usr/lib/jvm/java-21-openjdk/include" -I"/usr/lib/jvm/java-21-openjdk/include/linux" -I. -Wno-deprecated-declarations -O2 -c cpp_utils.cpp
+g++ -fPIC -shared -O2 -o botan_provider.so -Wl,-rpath,'$ORIGIN/lib' botan.o cpp_utils.o -L. -lbotan-2 -fstack-protector -m64 -pthread -l:lib_timing.so
+g++  -fPIC -I"/usr/lib/jvm/java-21-openjdk/include" -I"/usr/lib/jvm/java-21-openjdk/include/linux" -I. -Wno-deprecated-declarations -O2 -c cryptopp.cpp
+g++ -fPIC -shared -O2 -o cryptopp_provider.so -Wl,-rpath,'$ORIGIN/lib' cryptopp.o cpp_utils.o -L. -lcryptopp -l:lib_timing.so
+cc  -fPIC -I"/usr/lib/jvm/java-21-openjdk/include" -I"/usr/lib/jvm/java-21-openjdk/include/linux" -I. -Wno-deprecated-declarations -O2 -c openssl.c
+cc -fPIC -shared -O2 -o openssl_provider.so -Wl,-rpath,'$ORIGIN/lib' openssl.o c_utils.o -L. -lssl -lcrypto -l:lib_timing.so
+cc -I../../../../../../../../../../boringssl/include/ -fPIC -I"/usr/lib/jvm/java-21-openjdk/include" -I"/usr/lib/jvm/java-21-openjdk/include/linux" -I. -Wno-deprecated-declarations -O2 -c boringssl.c
+cp ../../../../../../../../../../boringssl/build/crypto/libcrypto.so lib_boringssl.so
 cc -fPIC -shared -O2 -o boringssl_provider.so -Wl,-rpath,'$ORIGIN/lib' boringssl.o c_utils.o -L. lib_boringssl.so -l:lib_timing.so
-cc -fPIC -shared -O2 -o gcrypt_provider.so -Wl,-rpath,'$ORIGIN/lib' gcrypt.o c_utils.o -L. -lgcrypt -lgpg-error -l:lib_timing.so
-cc -fPIC -shared -O2 -o mbedtls_provider.so -Wl,-rpath,'$ORIGIN/lib' mbedtls.o c_utils.o -L. -lmbedcrypto -l:lib_timing.so
-cc -fPIC -shared -O2 -o ippcp_provider.so -Wl,-rpath,'$ORIGIN/lib' ippcp.o c_utils.o -L. -lippcp -l:lib_timing.so
-g++ -fPIC -shared -O2 -o botan_provider.so -Wl,-rpath,'$ORIGIN/lib' botan.o cpp_utils.o -L. -lbotan-2 -fstack-protector -m64 -pthread  -l:lib_timing.so
-g++ -fPIC -shared -O2 -o cryptopp_provider.so -Wl,-rpath,'$ORIGIN/lib' cryptopp.o cpp_utils.o -L. -L/usr/local/lib -lcryptopp  -l:lib_timing.so
+cc -I/usr/local/include -fPIC -I"/usr/lib/jvm/java-21-openjdk/include" -I"/usr/lib/jvm/java-21-openjdk/include/linux" -I. -Wno-deprecated-declarations -O2 -c gcrypt.c
+cc -fPIC -shared -O2 -o gcrypt_provider.so -Wl,-rpath,'$ORIGIN/lib' gcrypt.o c_utils.o -L. -L/usr/local/lib -lgcrypt -lgpg-error -l:lib_timing.so
+cc -I../../../../../../../../../../ext/mbedtls/include/ -fPIC -I"/usr/lib/jvm/java-21-openjdk/include" -I"/usr/lib/jvm/java-21-openjdk/include/linux" -I. -Wno-deprecated-declarations -O2 -c mbedtls.c
+cp ../../../../../../../../../../ext/mbedtls/build/library/libmbedcrypto.so lib_mbedtls.so
+cc -fPIC -shared -O2 -o mbedtls_provider.so -Wl,-rpath,'$ORIGIN/lib' mbedtls.o c_utils.o -L. lib_mbedtls.so -l:lib_timing.so
+cc -I../../../../../../../../../../ipp-crypto/build/.build/RELEASE/include/ -fPIC -I"/usr/lib/jvm/java-21-openjdk/include" -I"/usr/lib/jvm/java-21-openjdk/include/linux" -I. -Wno-deprecated-declarations -O2 -c ippcp.c
+cp ../../../../../../../../../../ipp-crypto/build/.build/RELEASE/lib/libippcp.so lib_ippcp.so
+cc -fPIC -shared -O2 -o ippcp_provider.so -Wl,-rpath,'$ORIGIN/lib' ippcp.o c_utils.o -L. lib_ippcp.so -l:lib_timing.so
+cc  -lhogweed -lgmp -fPIC -I"/usr/lib/jvm/java-21-openjdk/include" -I"/usr/lib/jvm/java-21-openjdk/include/linux" -I. -Wno-deprecated-declarations -O2 -c nettle.c
+cc -fPIC -shared -O2 -o nettle_provider.so -Wl,-rpath,'$ORIGIN/lib' nettle.o c_utils.o -L. -lnettle -l:lib_timing.so -lhogweed -lgmp
+cc -I../../../../../../../../../../ext/libressl/include/ -fPIC -I"/usr/lib/jvm/java-21-openjdk/include" -I"/usr/lib/jvm/java-21-openjdk/include/linux" -I. -Wno-deprecated-declarations -O2 -c libressl.c
+cp ../../../../../../../../../../ext/libressl/build/crypto/libcrypto.so lib_libressl.so
+cc -fPIC -shared -O2 -o libressl_provider.so -Wl,-rpath,'$ORIGIN/lib' libressl.o c_utils.o -L. lib_libressl.so -l:lib_timing.so
 ```
 
 BoringSSL, LibreSSL, ipp-crypto, mbedTLS and partially wolfCrypt are included as git submodules.
 Make sure you run: `git submodule update --init --recursive` 
-after checking out the ECTester repository to initialize them. To build BoringSSL do:
+after checking out the ECTester repository to initialize them.
+
+To build BoringSSL do:
 ```shell
 cd ext/boringssl
 cmake -GNinja -Bbuild -DBUILD_SHARED_LIBS=1
@@ -382,6 +390,17 @@ cd build
 ninja
 ```
 
+To build mbedTLS do:
+```shell
+cd ext/mbedtls
+python -m venv virt
+. virt/bin/activate
+pip install -r scripts/basic.requirements.txt
+cmake -GNinja -Bbuild -DUSE_SHARED_MBEDTLS_LIBRARY=On
+cd build
+ninja
+```
+
 To build wolfCrypt-JNI do:
 (You need to have wolfSSL installed and ready for development)
 ```shell
@@ -396,19 +415,19 @@ The produced `lib/wolfcrypt-jni.jar` will be automatically included into the sta
 However, the produced `lib/libwolfcryptjni.so` native library will not be automatically loaded. You thus need to include it
 on `LD_LIBRARY_PATH`.
 
+Consult the GitHub CI [build script](.github/workflows/build.yml) for an example that runs on Ubuntu 22.04.
+
 
 #### Java
 
 OpenJDK JRE is required to test ECDH on Windows properly, as Oracle JRE requires the Java Cryptography Providers
 for certain classes (such as a [KeyAgreement](https://docs.oracle.com/javase/8/docs/api/javax/crypto/KeyAgreement.html))
 to be signed by keys that are signed by their JCA Code Signing Authority. ECTester internally uses Java Cryptography Provider
-API to expose and test native libraries. OpenJDK for Windows can be obtained from [ojdkbuild/ojdkbuild](https://github.com/ojdkbuild/ojdkbuild).
+API to expose and test native libraries.
 
 Installing the Java Cryptography Extension Unlimited Strength policy files is necessary to do testing
-with quite a lot of practical key sizes, they are available for download:
+(for Java 8) with quite a lot of practical key sizes, they are available for download:
 
- - [Java 6](http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html)
- - [Java 7](http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html)
  - [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html)
 
 To install, place them in `${java.home}/jre/lib/security/`.
@@ -418,39 +437,39 @@ To install, place them in `${java.home}/jre/lib/security/`.
 Snippet below shows how the `list-libs` command for well, listing currently supported libraries, behaves if all supported libraries are present (on Linux).
 ```
 > java -jar ECTesterStandalone.jar list-libs
-	- Sun Elliptic Curve provider (EC, ECDSA, ECDH)
-		- Version: 1.800000
+	- Sun Elliptic Curve provider
+		- Version: 21.000000
 		- Supports native timing: []
 		- KeyPairGenerators: EC
 		- KeyAgreements: ECDH
-		- Signatures: NONEwithECDSA, ECDSA, SHA384withECDSA, SHA224withECDSA, SHA512withECDSA, SHA256withECDSA
-		- Curves: X9.62 c2tnb191v1, X9.62 c2tnb191v2, X9.62 c2tnb191v3, X9.62 c2tnb239v1, X9.62 c2tnb239v2, X9.62 c2tnb239v3, X9.62 c2tnb359v1, X9.62 c2tnb431r1, X9.62 prime192v2, X9.62 prime192v3, X9.62 prime239v1, X9.62 prime239v2, X9.62 prime239v3, brainpoolP160r1, brainpoolP192r1, brainpoolP224r1, brainpoolP256r1, brainpoolP320r1, brainpoolP384r1, brainpoolP512r1, secp112r1, secp112r2, secp128r1, secp128r2, secp160k1, secp160r1, secp160r2, secp192k1, secp192r1, secp224k1, secp224r1, secp256k1, secp256r1, secp384r1, secp521r1, sect113r1, sect113r2, sect131r1, sect131r2, sect163k1, sect163r1, sect163r2, sect193r1, sect193r2, sect233k1, sect233r1, sect239k1, sect283k1, sect283r1, sect409k1, sect409r1, sect571k1, sect571r1
+		- Signatures: SHA3-256withECDSA, NONEwithECDSA, ECDSA, SHA3-384withECDSA, SHA384withECDSA, SHA3-512withECDSA, SHA224withECDSA, SHA512withECDSA, SHA3-224withECDSA, SHA256withECDSA
+		- Curves: secp256r1, secp384r1, secp521r1
 
-	- BouncyCastle Security Provider v1.58
-		- Version: 1.580000
+	- BouncyCastle Security Provider v1.77
+		- Version: 1.770000
 		- Supports native timing: []
-		- KeyPairGenerators: ECMQV, ECDSA, EC, ECDH, ECDHC
-		- KeyAgreements: ECCDHwithSHA384KDF, ECDHwithSHA256KDF, ECDHwithSHA384KDF, ECDHwithSHA1KDF, ECDHwithSHA224KDF, ECDH, ECDHC, ECDHwithSHA512KDF, ECCDHwithSHA1KDF, ECCDHwithSHA512KDF, ECCDHwithSHA224KDF, ECCDHwithSHA256KDF
-		- Signatures: SHA1withCVC-ECDSA, NONEwithECDSA, ECGOST3410, SHA256withECNR, ECGOST3410-2012-512, SHA512withECDDSA, GOST3411-2012-512withECGOST3410-2012-512, SHA3-512withECDSA, SHA384withPLAIN-ECDSA, SHA256withECDSA, SHA224withECDDSA, SHA256withECDDSA, ECDSA, SHA3-256withECDSA, SHA256withPLAIN-ECDSA, SHA224withECNR, SHA384withECDDSA, SHA512withECNR, SHA256withCVC-ECDSA, SHA1withECNR, ECDDSA, SHA1withPLAIN-ECDSA, GOST3411-2012-256withECGOST3410-2012-256, SHA384withCVC-ECDSA, SHA512withPLAIN-ECDSA, SHA224withCVC-ECDSA, SHA3-224withECDSA, SHA3-224withECDDSA, SHA224withPLAIN-ECDSA, SHA3-384withECDDSA, SHA384withECDSA, SHA3-384withECDSA, SHA3-512withECDDSA, SM3withSM2, GOST3411withECGOST3410, SHA224withECDSA, SHA512withECDSA, RIPEMD160withECDSA, ECGOST3410-2012-256, SHA512withCVC-ECDSA, RIPEMD160withPLAIN-ECDSA, SHA3-256withECDDSA
-		- Curves: B-163, B-233, B-283, B-409, B-571, FRP256v1, K-163, K-233, K-283, K-409, K-571, P-192, P-224, P-256, P-384, P-521, brainpoolp160r1, brainpoolp160t1, brainpoolp192r1, brainpoolp192t1, brainpoolp224r1, brainpoolp224t1, brainpoolp256r1, brainpoolp256t1, brainpoolp320r1, brainpoolp320t1, brainpoolp384r1, brainpoolp384t1, brainpoolp512r1, brainpoolp512t1, c2pnb163v1, c2pnb163v2, c2pnb163v3, c2pnb176w1, c2pnb208w1, c2pnb272w1, c2pnb304w1, c2pnb368w1, c2tnb191v1, c2tnb191v2, c2tnb191v3, c2tnb239v1, c2tnb239v2, c2tnb239v3, c2tnb359v1, c2tnb431r1, prime192v1, prime192v2, prime192v3, prime239v1, prime239v2, prime239v3, prime256v1, secp112r1, secp112r2, secp128r1, secp128r2, secp160k1, secp160r1, secp160r2, secp192k1, secp192r1, secp224k1, secp224r1, secp256k1, secp256r1, secp384r1, secp521r1, sect113r1, sect113r2, sect131r1, sect131r2, sect163k1, sect163r1, sect163r2, sect193r1, sect193r2, sect233k1, sect233r1, sect239k1, sect283k1, sect283r1, sect409k1, sect409r1, sect571k1, sect571r1, sm2p256v1, wapip192v1
+		- KeyPairGenerators: ECDSA, ECMQV, EC, ECDH, ECDHC
+		- KeyAgreements: ECCDHwithSHA384KDF, ECDHwithSHA384KDF, ECDHwithSHA256KDF, ECDHwithSHA1KDF, ECDHwithSHA224KDF, ECDH, ECDHC, ECDHwithSHA512KDF, ECCDHwithSHA1KDF, ECCDHwithSHA512KDF, ECCDHwithSHA224KDF, ECCDHwithSHA256KDF
+		- Signatures: SHA1withCVC-ECDSA, NONEwithECDSA, ECGOST3410, SHA256withECNR, ECGOST3410-2012-512, SHA512withECDDSA, GOST3411-2012-512withECGOST3410-2012-512, SHA3-512withECDSA, SHA384withPLAIN-ECDSA, SHA256withECDSA, SHA256withECDDSA, SHA224withECDDSA, SHA3-256withECDSA, ECDSA, SHA256withPLAIN-ECDSA, SHA224withECNR, SHA384withECDDSA, SHA512withECNR, SHA256withCVC-ECDSA, SHA1withECNR, ECDDSA, SHA1withPLAIN-ECDSA, GOST3411-2012-256withECGOST3410-2012-256, SHA512withPLAIN-ECDSA, SHA384withCVC-ECDSA, SHA224withCVC-ECDSA, SHA3-224withECDSA, SHA3-224withECDDSA, SHA224withPLAIN-ECDSA, SHA3-384withECDDSA, SHA384withECDSA, SHA3-384withECDSA, SHA3-512withECDDSA, SM3withSM2, GOST3411withECGOST3410, ECGOST3410-2012-256, SHA224withECDSA, SHA512withECDSA, RIPEMD160withECDSA, SHA512withCVC-ECDSA, RIPEMD160withPLAIN-ECDSA, SHA3-256withECDDSA
+		- Curves: B-163, B-233, B-283, B-409, B-571, FRP256v1, GostR3410-2001-CryptoPro-A, GostR3410-2001-CryptoPro-B, GostR3410-2001-CryptoPro-C, GostR3410-2001-CryptoPro-XchA, GostR3410-2001-CryptoPro-XchB, K-163, K-233, K-283, K-409, K-571, P-192, P-224, P-256, P-384, P-521, Tc26-Gost-3410-12-256-paramSetA, Tc26-Gost-3410-12-512-paramSetA, Tc26-Gost-3410-12-512-paramSetB, Tc26-Gost-3410-12-512-paramSetC, brainpoolP160r1, brainpoolP160t1, brainpoolP192r1, brainpoolP192t1, brainpoolP224r1, brainpoolP224t1, brainpoolP256r1, brainpoolP256t1, brainpoolP320r1, brainpoolP320t1, brainpoolP384r1, brainpoolP384t1, brainpoolP512r1, brainpoolP512t1, c2pnb163v1, c2pnb163v2, c2pnb163v3, c2pnb176w1, c2pnb208w1, c2pnb272w1, c2pnb304w1, c2pnb368w1, c2tnb191v1, c2tnb191v2, c2tnb191v3, c2tnb239v1, c2tnb239v2, c2tnb239v3, c2tnb359v1, c2tnb431r1, prime192v1, prime192v2, prime192v3, prime239v1, prime239v2, prime239v3, prime256v1, secp112r1, secp112r2, secp128r1, secp128r2, secp160k1, secp160r1, secp160r2, secp192k1, secp192r1, secp224k1, secp224r1, secp256k1, secp256r1, secp384r1, secp521r1, sect113r1, sect113r2, sect131r1, sect131r2, sect163k1, sect163r1, sect163r2, sect193r1, sect193r2, sect233k1, sect233r1, sect239k1, sect283k1, sect283r1, sect409k1, sect409r1, sect571k1, sect571r1, sm2p256v1, wapi192v1, wapip192v1
 
-	- libtomcrypt 1.18.1
-		- Version: 1.180000
+	- libtomcrypt 1.18.2
+		- Version: 1.000000
 		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
 		- KeyPairGenerators: EC
 		- KeyAgreements: ECDH
 		- Signatures: NONEwithECDSA
 		- Curves: ECC-192, ECC-224, ECC-256, ECC-384, ECC-521, SECP112R1, SECP128R1, SECP160R1
 
-	- Botan 2.11.0 (release, dated 20190701, revision git:16a726c3ad10316bd8d37b6118a5cc52894e8e8f, distribution unspecified)
-		- Version: 2.110000
+	- Botan 2.19.3 (release, dated 20221116, revision git:15dc32f12d05e99a267f0fc47d88b678b71b8b05, distribution unspecified)
+		- Version: 2.000000
 		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
-		- KeyPairGenerators: ECGDSA, ECDSA, ECKCDSA, ECDH
-		- KeyAgreements: ECDHwithSHA256KDF, ECDHwithSHA384KDF, ECDHwithSHA1KDF, ECDHwithSHA224KDF, ECDH, ECDHwithSHA512KDF
+		- KeyPairGenerators: ECGDSA, ECKCDSA, ECDSA, ECDH
+		- KeyAgreements: ECDHwithSHA384KDF, ECDHwithSHA256KDF, ECDHwithSHA1KDF, ECDHwithSHA224KDF, ECDH, ECDHwithSHA512KDF
 		- Signatures: NONEwithECDSA, NONEwithECKCDSA, SHA256withECKCDSA, SHA512withECGDSA, SHA256withECDSA, NONEwithECGDSA, ECKCDSA, ECDSA, SHA224withECKCDSA, SHA384withECKCDSA, SHA224withECGDSA, SHA384withECDSA, ECGDSA, SHA384withECGDSA, SHA224withECDSA, SHA512withECDSA, SHA512withECKCDSA
-		- Curves: brainpool160r1, brainpool192r1, brainpool224r1, brainpool256r1, brainpool320r1, brainpool384r1, brainpool512r1, frp256v1, gost_256A, secp160k1, secp160r1, secp160r2, secp192k1, secp192r1, secp224k1, secp224r1, secp256k1, secp256r1, secp384r1, secp521r1, sm2p256v1, x962_p192v2, x962_p192v3, x962_p239v1, x962_p239v2, x962_p239v3
+		- Curves: brainpool160r1, brainpool192r1, brainpool224r1, brainpool256r1, brainpool320r1, brainpool384r1, brainpool512r1, frp256v1, gost_256A, gost_512A, secp160k1, secp160r1, secp160r2, secp192k1, secp192r1, secp224k1, secp224r1, secp256k1, secp256r1, secp384r1, secp521r1, sm2p256v1, x962_p192v2, x962_p192v3, x962_p239v1, x962_p239v2, x962_p239v3
 
-	- Crypto++ 8.3.0
+	- Crypto++ 8.9.0
 		- Version: 8.000000
 		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
 		- KeyPairGenerators: ECDSA, ECDH
@@ -458,52 +477,67 @@ Snippet below shows how the `list-libs` command for well, listing currently supp
 		- Signatures: ECDSA, SHA384withECDSA, SHA224withECDSA, SHA512withECDSA, SHA256withECDSA
 		- Curves: 1.2.156.10197.1.301, 1.2.156.10197.1.301.3.1, 1.2.840.10045.3.1.1, 1.2.840.10045.3.1.7, 1.3.132.0.1, 1.3.132.0.10, 1.3.132.0.15, 1.3.132.0.16, 1.3.132.0.17, 1.3.132.0.2, 1.3.132.0.22, 1.3.132.0.23, 1.3.132.0.24, 1.3.132.0.25, 1.3.132.0.26, 1.3.132.0.27, 1.3.132.0.28, 1.3.132.0.29, 1.3.132.0.3, 1.3.132.0.30, 1.3.132.0.31, 1.3.132.0.32, 1.3.132.0.33, 1.3.132.0.34, 1.3.132.0.35, 1.3.132.0.36, 1.3.132.0.37, 1.3.132.0.38, 1.3.132.0.39, 1.3.132.0.4, 1.3.132.0.5, 1.3.132.0.6, 1.3.132.0.7, 1.3.132.0.8, 1.3.132.0.9, 1.3.36.3.3.2.8.1.1.1, 1.3.36.3.3.2.8.1.1.11, 1.3.36.3.3.2.8.1.1.13, 1.3.36.3.3.2.8.1.1.3, 1.3.36.3.3.2.8.1.1.5, 1.3.36.3.3.2.8.1.1.7, 1.3.36.3.3.2.8.1.1.9
 
-	- OpenSSL 1.1.1c  28 May 2019
-		- Version: 1.110000
+	- OpenSSL 3.2.1 30 Jan 2024
+		- Version: 3.200000
 		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
 		- KeyPairGenerators: EC
 		- KeyAgreements: ECDH
 		- Signatures: NONEwithECDSA
 		- Curves: Oakley-EC2N-3, Oakley-EC2N-4, SM2, brainpoolP160r1, brainpoolP160t1, brainpoolP192r1, brainpoolP192t1, brainpoolP224r1, brainpoolP224t1, brainpoolP256r1, brainpoolP256t1, brainpoolP320r1, brainpoolP320t1, brainpoolP384r1, brainpoolP384t1, brainpoolP512r1, brainpoolP512t1, c2pnb163v1, c2pnb163v2, c2pnb163v3, c2pnb176v1, c2pnb208w1, c2pnb272w1, c2pnb304w1, c2pnb368w1, c2tnb191v1, c2tnb191v2, c2tnb191v3, c2tnb239v1, c2tnb239v2, c2tnb239v3, c2tnb359v1, c2tnb431r1, prime192v1, prime192v2, prime192v3, prime239v1, prime239v2, prime239v3, prime256v1, secp112r1, secp112r2, secp128r1, secp128r2, secp160k1, secp160r1, secp160r2, secp192k1, secp224k1, secp224r1, secp256k1, secp384r1, secp521r1, sect113r1, sect113r2, sect131r1, sect131r2, sect163k1, sect163r1, sect163r2, sect193r1, sect193r2, sect233k1, sect233r1, sect239k1, sect283k1, sect283r1, sect409k1, sect409r1, sect571k1, sect571r1, wap-wsg-idm-ecid-wtls1, wap-wsg-idm-ecid-wtls10, wap-wsg-idm-ecid-wtls11, wap-wsg-idm-ecid-wtls12, wap-wsg-idm-ecid-wtls3, wap-wsg-idm-ecid-wtls4, wap-wsg-idm-ecid-wtls5, wap-wsg-idm-ecid-wtls6, wap-wsg-idm-ecid-wtls7, wap-wsg-idm-ecid-wtls8, wap-wsg-idm-ecid-wtls9
 
-	- OpenSSL 1.1.0 (compatible; BoringSSL)
-		- Version: 1.100000
+	- OpenSSL 1.1.1 (compatible; BoringSSL)
+		- Version: 1.110000
 		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
 		- KeyPairGenerators: EC
 		- KeyAgreements: ECDH
 		- Signatures: NONEwithECDSA
 		- Curves: prime256v1, secp224r1, secp384r1, secp521r1
 
-	- libgcrypt 1.8.4
-		- Version: 1.800000
+	- libgcrypt 1.10.3-unknown
+		- Version: 1.000000
 		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
 		- KeyPairGenerators: EC
 		- KeyAgreements: ECDH
 		- Signatures: SHA224withECDDSA, SHA256withECDDSA, NONEwithECDSA, ECDSA, ECDDSA, SHA384withECDSA, SHA512withECDDSA, SHA224withECDSA, SHA512withECDSA, SHA384withECDDSA, SHA256withECDSA
-		- Curves: Curve25519, Ed25519, GOST2001-CryptoPro-A, GOST2001-CryptoPro-B, GOST2001-CryptoPro-C, GOST2001-test, GOST2012-tc26-A, GOST2012-tc26-B, GOST2012-test, NIST P-192, NIST P-224, NIST P-256, NIST P-384, NIST P-521, brainpoolP160r1, brainpoolP192r1, brainpoolP224r1, brainpoolP256r1, brainpoolP320r1, brainpoolP384r1, brainpoolP512r1, secp256k1
+		- Curves: Curve25519, Ed25519, Ed448, GOST2001-CryptoPro-A, GOST2001-CryptoPro-B, GOST2001-CryptoPro-C, GOST2001-test, GOST2012-256-A, GOST2012-512-tc26-A, GOST2012-512-tc26-B, GOST2012-512-tc26-C, GOST2012-512-test, NIST P-192, NIST P-224, NIST P-256, NIST P-384, NIST P-521, X448, brainpoolP160r1, brainpoolP192r1, brainpoolP224r1, brainpoolP256r1, brainpoolP320r1, brainpoolP384r1, brainpoolP512r1, secp256k1, sm2p256v1
 
 	- wolfCrypt JCE Provider
-		- Version: 1.000000
+		- Version: 1.500000
 		- Supports native timing: []
-		- KeyPairGenerators: EC
 		- KeyAgreements: ECDH
 		- Signatures: ECDSA, SHA384withECDSA, SHA512withECDSA, SHA256withECDSA
 
-	- mbed TLS 2.16.0
+	- Mbed TLS 3.5.2
 		- Version: 3.000000
 		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
 		- KeyPairGenerators: EC
 		- KeyAgreements: ECDH
 		- Signatures: NONEwithECDSA
-		- Curves: brainpoolP256r1, brainpoolP384r1, brainpoolP512r1, secp192k1, secp192r1, secp224k1, secp224r1, secp256k1, secp256r1, secp384r1, secp521r1
+		- Curves: brainpoolP256r1, brainpoolP384r1, brainpoolP512r1, secp192k1, secp192r1, secp224k1, secp224r1, secp256k1, secp256r1, secp384r1, secp521r1, x25519, x448
 
-	- 2020.0.0 (-)
-		- Version: 2020.000000
+	- 2021.7.0 (11.5 ) (-)
+		- Version: 2021.700000
 		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
 		- KeyPairGenerators: EC
 		- KeyAgreements: ECDH
 		- Signatures: NONEwithECDSA
 		- Curves: secp112r1, secp112r2, secp128r1, secp128r2, secp160r1, secp160r2, secp192r1, secp224r1, secp256r1, secp384r1, secp521r1
+
+	- Nettle
+		- Version: 3.900000
+		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
+		- KeyPairGenerators: EC
+		- KeyAgreements: ECDH
+		- Signatures: NONEwithECDSA
+		- Curves: secp192r1, secp224r1, secp256r1, secp384r1, secp521r1
+
+	- LibreSSL 3.9.0
+		- Version: 3.900000
+		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
+		- KeyPairGenerators: EC
+		- KeyAgreements: ECDH
+		- Signatures: NONEwithECDSA
+		- Curves: FRP256v1, brainpoolP160r1, brainpoolP160t1, brainpoolP192r1, brainpoolP192t1, brainpoolP224r1, brainpoolP224t1, brainpoolP256r1, brainpoolP256t1, brainpoolP320r1, brainpoolP320t1, brainpoolP384r1, brainpoolP384t1, brainpoolP512r1, brainpoolP512t1, prime192v1, prime192v2, prime192v3, prime239v1, prime239v2, prime239v3, prime256v1, secp112r1, secp112r2, secp128r1, secp128r2, secp160k1, secp160r1, secp160r2, secp192k1, secp224k1, secp224r1, secp256k1, secp384r1, secp521r1, wap-wsg-idm-ecid-wtls12, wap-wsg-idm-ecid-wtls6, wap-wsg-idm-ecid-wtls7, wap-wsg-idm-ecid-wtls8, wap-wsg-idm-ecid-wtls9
 ```
 
 Snippet below demonstrates generation of 1000 (`-n`) keys on the named curve `secp256r1` (`-nc`) using the BouncyCastle library.
