@@ -557,7 +557,7 @@ index;time[nano];pubW;privS;secret[NONE]
 ...
 ```
 
-It is recommended to disably [CPU frequency scaling](https://wiki.archlinux.org/index.php/CPU_frequency_scaling) of your processor before performing collection of timing data, as it adds significant noise to the data as it kicks in. Also, running the collection on very high priority and locked to a single core (`taskset -c 0`) helps as well.
+It is recommended to disable [CPU frequency scaling](https://wiki.archlinux.org/index.php/CPU_frequency_scaling) of your processor before performing collection of timing data, as it adds significant noise to the data as it kicks in. Also, running the collection on very high priority and locked to a single core (`taskset -c 0`) helps as well.
 
 ## Analysis
 

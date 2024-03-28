@@ -61,7 +61,7 @@ public class ECUtil {
     }
 
     public static byte[] toX962Compressed(ECPoint point, ECParameterSpec spec) {
-        return toX962Compressed(point, spec.getOrder().bitLength());
+        return toX962Compressed(point, spec.getCurve().getField().getFieldSize());
     }
 
     public static byte[] toX962Uncompressed(ECPoint point, int bits) {
@@ -74,7 +74,7 @@ public class ECUtil {
     }
 
     public static byte[] toX962Uncompressed(ECPoint point, ECParameterSpec spec) {
-        return toX962Uncompressed(point, spec.getOrder().bitLength());
+        return toX962Uncompressed(point, spec.getCurve().getField().getFieldSize());
     }
 
     public static byte[] toX962Hybrid(ECPoint point, int bits) {
@@ -351,7 +351,8 @@ public class ECUtil {
             return null;
         }
         try {
-            int bitSize = params.getOrder().bitLength();
+            BigInteger n = params.getOrder();
+            int bitSize = n.bitLength();
             // Hash the data.
             byte[] hash;
             if (hashAlgo == null || hashAlgo.equals("NONE")) {
@@ -370,16 +371,16 @@ public class ECUtil {
             // Parse signature
             BigInteger[] sigPair;
             if (sigType.contains("CVC") || sigType.contains("PLAIN")) {
-                sigPair = PlainDSAEncoding.INSTANCE.decode(params.getOrder(), signature);
+                sigPair = PlainDSAEncoding.INSTANCE.decode(n, signature);
             } else {
-                sigPair = StandardDSAEncoding.INSTANCE.decode(params.getOrder(), signature);
+                sigPair = StandardDSAEncoding.INSTANCE.decode(n, signature);
             }
             BigInteger r = sigPair[0];
             BigInteger s = sigPair[1];
 
-            BigInteger rd = privkey.multiply(r).mod(params.getOrder());
-            BigInteger hrd = hashInt.add(rd).mod(params.getOrder());
-            return s.modInverse(params.getOrder()).multiply(hrd).mod(params.getOrder());
+            BigInteger rd = privkey.multiply(r).mod(n);
+            BigInteger hrd = hashInt.add(rd).mod(n);
+            return s.modInverse(n).multiply(hrd).mod(n);
         } catch (NoSuchAlgorithmException | IOException | ArithmeticException ex) {
             ex.printStackTrace();
             return null;
@@ -456,7 +457,7 @@ public class ECUtil {
     }
 
     public static boolean equalKeyPairParameters(ECPrivateKey priv, ECPublicKey pub) {
-        if(priv == null || pub == null) {
+        if (priv == null || pub == null) {
             return false;
         }
         return priv.getParams().getCurve().equals(pub.getParams().getCurve()) &&

@@ -209,7 +209,7 @@ static jobject create_ec_param_spec(JNIEnv *env, const mbedtls_ecp_group *group)
     jobject field = (*env)->NewObject(env, fp_field_class, fp_field_init, p);
 
     jobject a;
-    if (group->A.p == NULL) {
+    if (mbedtls_ecp_group_a_is_minus_3(group)) {
         jmethodID biginteger_subtract = (*env)->GetMethodID(env, biginteger_class, "subtract", "(Ljava/math/BigInteger;)Ljava/math/BigInteger;");
         jmethodID biginteger_valueof = (*env)->GetStaticMethodID(env, biginteger_class, "valueOf", "(J)Ljava/math/BigInteger;");
         jobject three = (*env)->CallStaticObjectMethod(env, biginteger_class, biginteger_valueof, (jlong) 3);
@@ -222,10 +222,15 @@ static jobject create_ec_param_spec(JNIEnv *env, const mbedtls_ecp_group *group)
     jmethodID elliptic_curve_init = (*env)->GetMethodID(env, elliptic_curve_class, "<init>", "(Ljava/security/spec/ECField;Ljava/math/BigInteger;Ljava/math/BigInteger;)V");
     jobject elliptic_curve = (*env)->NewObject(env, elliptic_curve_class, elliptic_curve_init, field, a, b);
 
-    jobject gx = biginteger_from_mpi(env, &group->G.X);
-    jobject gy = biginteger_from_mpi(env, &group->G.Y);
-    jmethodID point_init = (*env)->GetMethodID(env, point_class, "<init>", "(Ljava/math/BigInteger;Ljava/math/BigInteger;)V");
-    jobject g = (*env)->NewObject(env, point_class, point_init, gx, gy);
+    jclass ecutil_class = (*env)->FindClass(env, "cz/crcs/ectester/common/util/ECUtil");
+    jmethodID from_X962 = (*env)->GetStaticMethodID(env, ecutil_class, "fromX962", "([BLjava/security/spec/EllipticCurve;)Ljava/security/spec/ECPoint;");
+	size_t point_len;
+	mbedtls_ecp_point_write_binary(group, &group->G, MBEDTLS_ECP_PF_UNCOMPRESSED, &point_len, NULL, 0);
+	jbyteArray g_bytes = (*env)->NewByteArray(env, (jint) point_len);
+	jbyte *g_data = (*env)->GetByteArrayElements(env, g_bytes, NULL);
+	mbedtls_ecp_point_write_binary(group, &group->G, MBEDTLS_ECP_PF_UNCOMPRESSED, &point_len, g_data, point_len);
+	(*env)->ReleaseByteArrayElements(env, g_bytes, g_data, 0);
+	jobject g = (*env)->CallStaticObjectMethod(env, ecutil_class, from_X962, g_bytes, elliptic_curve);
 
     jobject n = biginteger_from_mpi(env, &group->N);
     jint h = 1;
@@ -259,36 +264,36 @@ static void create_curve(JNIEnv *env, jobject params, mbedtls_ecp_group *group) 
     jmethodID get_g = (*env)->GetMethodID(env, ec_parameter_spec_class, "getGenerator", "()Ljava/security/spec/ECPoint;");
     jobject g = (*env)->CallObjectMethod(env, params, get_g);
 
-    jmethodID get_x = (*env)->GetMethodID(env, point_class, "getAffineX", "()Ljava/math/BigInteger;");
-    jobject gx = (*env)->CallObjectMethod(env, g, get_x);
-    mpi_from_biginteger(env, gx, &group->G.X);
-
-    jmethodID get_y = (*env)->GetMethodID(env, point_class, "getAffineY", "()Ljava/math/BigInteger;");
-    jobject gy = (*env)->CallObjectMethod(env, g, get_y);
-    mpi_from_biginteger(env, gy, &group->G.Y);
-
-    mbedtls_mpi_lset(&group->G.Z, 1);
-
+    jclass ecutil_class = (*env)->FindClass(env, "cz/crcs/ectester/common/util/ECUtil");
+    jmethodID to_uncompressed = (*env)->GetStaticMethodID(env, ecutil_class, "toX962Uncompressed", "(Ljava/security/spec/ECPoint;I)[B");
+    jint bitsize = (jint) mbedtls_mpi_bitlen(&group->P);
+    jbyteArray point_array = (jbyteArray) (*env)->CallStaticObjectMethod(env, ecutil_class, to_uncompressed, g, bitsize);
+	jsize data_size = (*env)->GetArrayLength(env, point_array);
+	jbyte *point_data = (*env)->GetByteArrayElements(env, point_array, NULL);
+	mbedtls_ecp_point_read_binary(group, &group->G, point_data, data_size);
+	(*env)->ReleaseByteArrayElements(env, point_array, point_data, JNI_ABORT);
+    
     jmethodID get_n = (*env)->GetMethodID(env, ec_parameter_spec_class, "getOrder", "()Ljava/math/BigInteger;");
     jobject n = (*env)->CallObjectMethod(env, params, get_n);
     mpi_from_biginteger(env, n, &group->N);
     group->pbits = group->nbits = mbedtls_mpi_bitlen(&group->P);
-    group->h = 0;
 }
 
 static jobject generate_from_curve(JNIEnv *env, mbedtls_ecp_group *group) {
+	static int gen_counter = 0;
     mbedtls_mpi d;
     mbedtls_mpi_init(&d);
 
     mbedtls_ecp_point Q;
     mbedtls_ecp_point_init(&Q);
 
-    if (ctr_drbg.reseed_counter >= ctr_drbg.reseed_interval) {
+    if (gen_counter >= MBEDTLS_CTR_DRBG_RESEED_INTERVAL/2) {
         // Reseed manually, outside of the timing window, to not disturb the timing data.
         // They are somewhat disturbed anyway, but we cannot really get rid of that easily.
         // We also help it by using a wrapper and pausing for random gen.
         mbedtls_ctr_drbg_reseed(&ctr_drbg, NULL, 0);
     }
+    gen_counter++;
 
     native_timing_start();
     int error = mbedtls_ecp_gen_keypair(group, &d, &Q, ctr_drbg_wrapper, &ctr_drbg);
