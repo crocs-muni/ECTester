@@ -99,7 +99,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
     return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Botan_paramsSupported(JNIEnv *env, jobject self, jobject params){
+jboolean check_params(JNIEnv *env, jobject params) {
     if (params == NULL) {
         return JNI_FALSE;
     }
@@ -126,6 +126,10 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
         }
     }
     return JNI_FALSE;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Botan_paramsSupported(JNIEnv *env, jobject self, jobject params){
+    return check_params(env, params);
 }
 
 static jobject biginteger_from_bigint(JNIEnv *env, const Botan::BigInt& bigint) {
@@ -305,6 +309,10 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
 }
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Botan_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2(JNIEnv *env, jobject self, jobject params, jobject random){
+    if (!check_params(env, params)) {
+        throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
+        return NULL;
+    }
     Botan::EC_Group curve_group = group_from_params(env, params);
     return generate_from_group(env, self, curve_group);
 }
@@ -340,6 +348,10 @@ static std::string get_kdf(const std::string& type_str, size_t *kdf_bits) {
 }
 
 jbyteArray generate_secret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params, jstring algorithm) {
+    if (!check_params(env, params)) {
+        throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
+        return NULL;
+    }
     Botan::EC_Group curve_group = group_from_params(env, params);
 
     jsize privkey_length = env->GetArrayLength(privkey);
@@ -400,6 +412,10 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgr
 }
 
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Botan_sign(JNIEnv *env, jobject self, jbyteArray data, jbyteArray privkey, jobject params){
+    if (!check_params(env, params)) {
+        throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
+        return NULL;
+    }
     Botan::EC_Group curve_group = group_from_params(env, params);
 
     jclass botan_sig_class = env->FindClass("cz/crcs/ectester/standalone/libs/jni/NativeSignatureSpi$Botan");
@@ -463,6 +479,10 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 }
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Botan_verify(JNIEnv *env, jobject self, jbyteArray signature, jbyteArray data, jbyteArray pubkey, jobject params){
+    if (!check_params(env, params)) {
+        throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
+        return JNI_FALSE;
+    }
     Botan::EC_Group curve_group = group_from_params(env, params);
 
     jclass botan_sig_class = env->FindClass("cz/crcs/ectester/standalone/libs/jni/NativeSignatureSpi$Botan");

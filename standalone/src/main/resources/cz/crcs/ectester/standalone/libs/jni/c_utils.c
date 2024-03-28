@@ -232,21 +232,18 @@ char *biginteger_to_hex(JNIEnv *env, jobject big, jint bytes) {
     jstring big_string = (*env)->CallObjectMethod(env, big, to_string, (jint) 16);
 
     jsize len = (*env)->GetStringUTFLength(env, big_string);
-#if defined(__WIN32__) || defined(_MSC_VER)
-    char *raw_string = _alloca(len);
-#else
-    char raw_string[len];
-#endif
-    (*env)->GetStringUTFRegion(env, big_string, 0, len, raw_string);
+    const char *raw_string = (*env)->GetStringUTFChars(env, big_string, 0);
 
-    char *result = calloc(bytes, 2);
+    char *result = calloc(bytes, sizeof(char) * 2);
     if (len >= bytes) {
-        return strncpy(result, raw_string, 2*bytes);
+    	strncpy(result, raw_string, 2*bytes);
     } else {
         jsize diff = bytes - len;
         for (jint i = 0; i < diff*2; ++i) {
             result[i] = '0';
         }
-        return strncpy(result + diff*2, raw_string, 2*bytes);
+        strncpy(result + diff*2, raw_string, 2*bytes);
     }
+    (*env)->ReleaseStringUTFChars(env, big_string, raw_string);
+    return result;
 }

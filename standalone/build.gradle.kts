@@ -38,6 +38,9 @@ tasks.named<Test>("test") {
     useJUnitPlatform()
     // Report is always generated after tests run
     finalizedBy(tasks.jacocoTestReport)
+    jvmArgs(
+            "--add-exports", "jdk.crypto.ec/sun.security.ec=ALL-UNNAMED"
+    )
     // Add wolfcrypt JNI lib path to LD_LIBRARY_PATH (as our native library loading does not handle it)
     environment(
             "LD_LIBRARY_PATH", "$rootDir/ext/wolfcrypt-jni/lib/:" + System.getenv("LD_LIBRARY_PATH")

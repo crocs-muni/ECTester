@@ -176,6 +176,10 @@ static ltc_ecc_set_type* create_curve(JNIEnv *env, jobject params) {
     jmethodID get_field = (*env)->GetMethodID(env, elliptic_curve_class, "getField", "()Ljava/security/spec/ECField;");
     jobject field = (*env)->CallObjectMethod(env, elliptic_curve, get_field);
 
+    if (!(*env)->IsInstanceOf(env, field, fp_field_class)) {
+    	return NULL;
+    }
+
     jmethodID get_bits = (*env)->GetMethodID(env, fp_field_class, "getFieldSize", "()I");
     jint bits = (*env)->CallIntMethod(env, field, get_bits);
     jint bytes = (bits + 7) / 8;
@@ -284,6 +288,10 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024TomCrypt_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2(JNIEnv *env, jobject this, jobject params, jobject random){
     if ((*env)->IsInstanceOf(env, params, ec_parameter_spec_class)) {
         ltc_ecc_set_type *curve = create_curve(env, params);
+        if (!curve) {
+			throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
+			return NULL;
+        }
         jobject result = generate_from_curve(env, curve);
         free_curve(curve);
         return result;
@@ -352,6 +360,10 @@ static jboolean pubkey_from_bytes(JNIEnv *env, jbyteArray pubkey, const ltc_ecc_
 
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024TomCrypt_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2(JNIEnv *env, jobject this, jbyteArray pubkey, jbyteArray privkey, jobject params){
     ltc_ecc_set_type *curve = create_curve(env, params);
+    if (!curve) {
+		throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
+		return NULL;
+    }
 
     ecc_key pub;
     if (!pubkey_from_bytes(env, pubkey, curve, &pub)) {
@@ -395,6 +407,10 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgr
 
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024TomCryptRaw_sign(JNIEnv *env, jobject this, jbyteArray data, jbyteArray privkey, jobject params) {
     ltc_ecc_set_type *curve = create_curve(env, params);
+    if (!curve) {
+		throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
+		return NULL;
+    }
 
     ecc_key priv;
     if (!privkey_from_bytes(env, privkey, curve, &priv)) {
@@ -432,6 +448,10 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024TomCryptRaw_verify(JNIEnv *env, jobject this, jbyteArray signature, jbyteArray data, jbyteArray pubkey, jobject params) {
     ltc_ecc_set_type *curve = create_curve(env, params);
+    if (!curve) {
+		throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
+		return JNI_FALSE;
+    }
 
     ecc_key pub;
     if (!pubkey_from_bytes(env, pubkey, curve, &pub)) {

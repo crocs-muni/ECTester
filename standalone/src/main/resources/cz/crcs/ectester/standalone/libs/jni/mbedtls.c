@@ -249,6 +249,11 @@ static int create_curve(JNIEnv *env, jobject params, mbedtls_ecp_group *group) {
     jmethodID get_field = (*env)->GetMethodID(env, elliptic_curve_class, "getField", "()Ljava/security/spec/ECField;");
     jobject field = (*env)->CallObjectMethod(env, curve, get_field);
 
+    if (!(*env)->IsInstanceOf(env, field, fp_field_class)) {
+    	throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
+    	return 1;
+    }
+
     jmethodID get_p = (*env)->GetMethodID(env, fp_field_class, "getP", "()Ljava/math/BigInteger;");
     jobject p = (*env)->CallObjectMethod(env, field, get_p);
     mpi_from_biginteger(env, p, &group->P);
