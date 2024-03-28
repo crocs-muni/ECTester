@@ -92,7 +92,7 @@ jobs:
     env:
       # ffs: https://github.com/adoptium/adoptium-support/issues/485 !!!
       # also, add the wolfcrypt JNI path
-      LD_LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/:ext/wolfcrypt-jni/lib/"
+      LD_LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/:${{ GITHUB_WORKSPACE }}/ext/wolfcrypt-jni/lib/"
     name: Build standalone on Java ${{ matrix.java }}
     steps:
       - uses: actions/checkout@v4
