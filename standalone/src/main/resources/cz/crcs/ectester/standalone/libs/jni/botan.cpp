@@ -368,7 +368,14 @@ jbyteArray generate_secret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteAr
 
     jsize pubkey_length = env->GetArrayLength(pubkey);
     jbyte *pubkey_data = env->GetByteArrayElements(pubkey, nullptr);
-    Botan::PointGFp public_point = curve_group.OS2ECP((uint8_t*) pubkey_data, pubkey_length);
+	Botan::PointGFp public_point;
+	try {
+		public_point = curve_group.OS2ECP((uint8_t*) pubkey_data, pubkey_length);
+	} catch (Botan::Exception & ex) {
+		throw_new(env, "java/security/GeneralSecurityException", ex.what());
+		return nullptr;
+	}
+
     env->ReleaseByteArrayElements(pubkey, pubkey_data, JNI_ABORT);
 
     Botan::ECDH_PublicKey pkey(curve_group, public_point);
@@ -499,7 +506,13 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 
     jsize pubkey_length = env->GetArrayLength(pubkey);
     jbyte *pubkey_data = env->GetByteArrayElements(pubkey, nullptr);
-    Botan::PointGFp public_point = curve_group.OS2ECP((uint8_t*) pubkey_data, pubkey_length);
+	Botan::PointGFp public_point;
+	try {
+		public_point = curve_group.OS2ECP((uint8_t*) pubkey_data, pubkey_length);
+	} catch (Botan::Exception & ex) {
+		throw_new(env, "java/security/GeneralSecurityException", ex.what());
+		return JNI_FALSE;
+	}
     env->ReleaseByteArrayElements(pubkey, pubkey_data, JNI_ABORT);
 
     std::unique_ptr<Botan::EC_PublicKey> pkey;
