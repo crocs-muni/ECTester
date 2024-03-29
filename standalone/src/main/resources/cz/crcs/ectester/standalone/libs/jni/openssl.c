@@ -1,3 +1,6 @@
+#include "c_utils.h"
+#include "c_timing.h"
+
 #include "native.h"
 #include <string.h>
 
@@ -10,9 +13,6 @@
 #include <openssl/err.h>
 #include <openssl/ec.h>
 #include <openssl/ecdsa.h>
-
-#include "c_utils.h"
-#include "c_timing.h"
 
 
 

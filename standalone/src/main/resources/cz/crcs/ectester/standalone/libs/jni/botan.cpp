@@ -16,6 +16,12 @@
 #include "cpp_utils.hpp"
 #include "c_timing.h"
 
+/*
+ * Botan:
+ *  - Supports prime field curves only.
+ *  - Named curves and explicit params.
+ */
+
 static jclass provider_class;
 static Botan::AutoSeeded_RNG rng;
 
@@ -32,7 +38,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_createP
     name_str.insert(0, "Botan ");
 
     jstring name = env->NewStringUTF(name_str.c_str());
-    double version = strtod(v_str, NULL);
+    double version = strtod(v_str, nullptr);
     jstring info = env->NewStringUTF(info_str);
 
     return env->NewObject(provider_class, init, name, version, info);
@@ -86,8 +92,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_getCurv
     jobject result = env->NewObject(set_class, set_ctr);
 
     const std::set<std::string>& curves = Botan::EC_Group::known_named_groups();
-    for (auto it = curves.begin(); it != curves.end(); ++it) {
-        std::string curve_name = *it;
+    for (const auto& curve_name : curves) {
         jstring name_str = env->NewStringUTF(curve_name.c_str());
         env->CallBooleanMethod(result, set_add, name_str);
     }
@@ -100,7 +105,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
 }
 
 jboolean check_params(JNIEnv *env, jobject params) {
-    if (params == NULL) {
+    if (params == nullptr) {
         return JNI_FALSE;
     }
 
@@ -117,8 +122,8 @@ jboolean check_params(JNIEnv *env, jobject params) {
     } else if (env->IsInstanceOf(params, ecgen_parameter_spec_class)) {
         const std::set<std::string>& curves = Botan::EC_Group::known_named_groups();
         jmethodID get_name = env->GetMethodID(ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
-        jstring name = (jstring) env->CallObjectMethod(params, get_name);
-        const char *utf_name = env->GetStringUTFChars(name, NULL);
+        auto name = (jstring) env->CallObjectMethod(params, get_name);
+        const char *utf_name = env->GetStringUTFChars(name, nullptr);
         std::string str_name(utf_name);
         env->ReleaseStringUTFChars(name, utf_name);
         if (curves.find(str_name) != curves.end()) {
@@ -135,7 +140,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
 static jobject biginteger_from_bigint(JNIEnv *env, const Botan::BigInt& bigint) {
     std::vector<uint8_t> bigint_data = Botan::BigInt::encode(bigint);
     jbyteArray bigint_array = env->NewByteArray(bigint_data.size());
-    jbyte * bigint_bytes = env->GetByteArrayElements(bigint_array, NULL);
+    jbyte *bigint_bytes = env->GetByteArrayElements(bigint_array, nullptr);
     std::copy(bigint_data.begin(), bigint_data.end(), bigint_bytes);
     env->ReleaseByteArrayElements(bigint_array, bigint_bytes, 0);
 
@@ -147,7 +152,7 @@ static Botan::BigInt bigint_from_biginteger(JNIEnv *env, jobject biginteger) {
     jmethodID to_byte_array = env->GetMethodID(biginteger_class, "toByteArray", "()[B");
     jbyteArray byte_array = (jbyteArray) env->CallObjectMethod(biginteger, to_byte_array);
     jsize byte_length = env->GetArrayLength(byte_array);
-    jbyte *byte_data = env->GetByteArrayElements(byte_array, NULL);
+    jbyte *byte_data = env->GetByteArrayElements(byte_array, nullptr);
     Botan::BigInt result((unsigned char *) byte_data, byte_length);
     env->ReleaseByteArrayElements(byte_array, byte_data, JNI_ABORT);
     return result;
@@ -199,7 +204,7 @@ static Botan::EC_Group group_from_params(JNIEnv *env, jobject params) {
     } else if (env->IsInstanceOf(params, ecgen_parameter_spec_class)) {
         jmethodID get_name = env->GetMethodID(ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
         jstring name = (jstring) env->CallObjectMethod(params, get_name);
-        const char *utf_name = env->GetStringUTFChars(name, NULL);
+        const char *utf_name = env->GetStringUTFChars(name, nullptr);
         std::string curve_name(utf_name);
         env->ReleaseStringUTFChars(name, utf_name);
         return Botan::EC_Group(curve_name);
@@ -240,7 +245,7 @@ static jobject generate_from_group(JNIEnv* env, jobject self, Botan::EC_Group gr
     jclass botan_kpg_class = env->FindClass("cz/crcs/ectester/standalone/libs/jni/NativeKeyPairGeneratorSpi$Botan");
     jfieldID type_id = env->GetFieldID(botan_kpg_class, "type", "Ljava/lang/String;");
     jstring type = (jstring) env->GetObjectField(self, type_id);
-    const char* type_data = env->GetStringUTFChars(type, NULL);
+    const char* type_data = env->GetStringUTFChars(type, nullptr);
     std::string type_str(type_data);
     env->ReleaseStringUTFChars(type, type_data);
 
@@ -259,7 +264,7 @@ static jobject generate_from_group(JNIEnv* env, jobject self, Botan::EC_Group gr
         native_timing_stop();
     } catch (Botan::Exception & ex) {
         throw_new(env, "java/security/GeneralSecurityException", ex.what());
-        return NULL;
+        return nullptr;
     }
 
     jobject ec_param_spec = params_from_group(env, group);
@@ -268,7 +273,7 @@ static jobject generate_from_group(JNIEnv* env, jobject self, Botan::EC_Group gr
     std::vector<uint8_t> pub_data = pub_point.encode(Botan::PointGFp::UNCOMPRESSED);
 
     jbyteArray pub_bytearray = env->NewByteArray(pub_data.size());
-    jbyte *pub_bytes = env->GetByteArrayElements(pub_bytearray, NULL);
+    jbyte *pub_bytes = env->GetByteArrayElements(pub_bytearray, nullptr);
     std::copy(pub_data.begin(), pub_data.end(), pub_bytes);
     env->ReleaseByteArrayElements(pub_bytearray, pub_bytes, 0);
 
@@ -280,7 +285,7 @@ static jobject generate_from_group(JNIEnv* env, jobject self, Botan::EC_Group gr
     std::vector<uint8_t> priv_data = Botan::BigInt::encode(priv_scalar);
 
     jbyteArray priv_bytearray = env->NewByteArray(priv_data.size());
-    jbyte *priv_bytes = env->GetByteArrayElements(priv_bytearray, NULL);
+    jbyte *priv_bytes = env->GetByteArrayElements(priv_bytearray, nullptr);
     std::copy(priv_data.begin(), priv_data.end(), priv_bytes);
     env->ReleaseByteArrayElements(priv_bytearray, priv_bytes, 0);
 
@@ -295,8 +300,8 @@ static jobject generate_from_group(JNIEnv* env, jobject self, Botan::EC_Group gr
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Botan_generate__ILjava_security_SecureRandom_2(JNIEnv *env, jobject self, jint keysize, jobject random){
     const std::set<std::string>& curves = Botan::EC_Group::known_named_groups();
-    for (auto it = curves.begin(); it != curves.end(); ++it) {
-        Botan::EC_Group curve_group = Botan::EC_Group(*it);
+    for (const auto & curve : curves) {
+        Botan::EC_Group curve_group = Botan::EC_Group(curve);
         size_t curve_size = curve_group.get_p_bits();
         if (curve_size == (size_t) keysize) {
             //generate on this group. Even thou no default groups are present...
@@ -305,13 +310,13 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
     }
 
     throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
-    return NULL;
+    return nullptr;
 }
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Botan_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2(JNIEnv *env, jobject self, jobject params, jobject random){
     if (!check_params(env, params)) {
-        throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
-        return NULL;
+        throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
+        return nullptr;
     }
     Botan::EC_Group curve_group = group_from_params(env, params);
     return generate_from_group(env, self, curve_group);
@@ -349,20 +354,20 @@ static std::string get_kdf(const std::string& type_str, size_t *kdf_bits) {
 
 jbyteArray generate_secret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params, jstring algorithm) {
     if (!check_params(env, params)) {
-        throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
-        return NULL;
+		throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
+        return nullptr;
     }
     Botan::EC_Group curve_group = group_from_params(env, params);
 
     jsize privkey_length = env->GetArrayLength(privkey);
-    jbyte *privkey_data = env->GetByteArrayElements(privkey, NULL);
+    jbyte *privkey_data = env->GetByteArrayElements(privkey, nullptr);
     Botan::BigInt privkey_scalar((unsigned char *) privkey_data, privkey_length);
     env->ReleaseByteArrayElements(privkey, privkey_data, JNI_ABORT);
 
     Botan::ECDH_PrivateKey skey(rng, curve_group, privkey_scalar);
 
     jsize pubkey_length = env->GetArrayLength(pubkey);
-    jbyte *pubkey_data = env->GetByteArrayElements(pubkey, NULL);
+    jbyte *pubkey_data = env->GetByteArrayElements(pubkey, nullptr);
     Botan::PointGFp public_point = curve_group.OS2ECP((uint8_t*) pubkey_data, pubkey_length);
     env->ReleaseByteArrayElements(pubkey, pubkey_data, JNI_ABORT);
 
@@ -372,7 +377,7 @@ jbyteArray generate_secret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteAr
     jclass botan_ka_class = env->FindClass("cz/crcs/ectester/standalone/libs/jni/NativeKeyAgreementSpi$Botan");
     jfieldID type_id = env->GetFieldID(botan_ka_class, "type", "Ljava/lang/String;");
     jstring type = (jstring) env->GetObjectField(self, type_id);
-    const char *type_data = env->GetStringUTFChars(type, NULL);
+    const char *type_data = env->GetStringUTFChars(type, nullptr);
     std::string type_str(type_data);
     env->ReleaseStringUTFChars(type, type_data);
 
@@ -388,10 +393,10 @@ jbyteArray generate_secret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteAr
         native_timing_stop();
     } catch (Botan::Exception & ex) {
         throw_new(env, "java/security/GeneralSecurityException", ex.what());
-        return NULL;
+        return nullptr;
     }
     jbyteArray result = env->NewByteArray(derived.size());
-    jbyte *result_data = env->GetByteArrayElements(result, NULL);
+    jbyte *result_data = env->GetByteArrayElements(result, nullptr);
     std::copy(derived.begin(), derived.end(), result_data);
     env->ReleaseByteArrayElements(result, result_data, 0);
 
@@ -399,13 +404,13 @@ jbyteArray generate_secret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteAr
 }
 
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Botan_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params){
-    return generate_secret(env, self, pubkey, privkey, params, NULL);
+    return generate_secret(env, self, pubkey, privkey, params, nullptr);
 }
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Botan_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2Ljava_lang_String_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params, jstring algorithm) {
     jbyteArray secret = generate_secret(env, self, pubkey, privkey, params, algorithm);
-    if (secret == NULL) {
-        return NULL;
+    if (secret == nullptr) {
+        return nullptr;
     }
     jmethodID spec_init = env->GetMethodID(secret_key_spec_class, "<init>", ("([BLjava/lang/String;)V"));
     return env->NewObject(secret_key_spec_class, spec_init, secret, algorithm);
@@ -413,20 +418,20 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgr
 
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Botan_sign(JNIEnv *env, jobject self, jbyteArray data, jbyteArray privkey, jobject params){
     if (!check_params(env, params)) {
-        throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
-        return NULL;
+		throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
+        return nullptr;
     }
     Botan::EC_Group curve_group = group_from_params(env, params);
 
     jclass botan_sig_class = env->FindClass("cz/crcs/ectester/standalone/libs/jni/NativeSignatureSpi$Botan");
     jfieldID type_id = env->GetFieldID(botan_sig_class, "type", "Ljava/lang/String;");
     jstring type = (jstring) env->GetObjectField(self, type_id);
-    const char *type_data = env->GetStringUTFChars(type, NULL);
+    const char *type_data = env->GetStringUTFChars(type, nullptr);
     std::string type_str(type_data);
     env->ReleaseStringUTFChars(type, type_data);
 
     jsize privkey_length = env->GetArrayLength(privkey);
-    jbyte *privkey_bytes = env->GetByteArrayElements(privkey, NULL);
+    jbyte *privkey_bytes = env->GetByteArrayElements(privkey, nullptr);
     Botan::BigInt privkey_scalar((uint8_t*) privkey_bytes, privkey_length);
     env->ReleaseByteArrayElements(privkey, privkey_bytes, JNI_ABORT);
 
@@ -457,7 +462,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     Botan::PK_Signer signer(*skey, rng, emsa, Botan::DER_SEQUENCE);
 
     jsize data_length = env->GetArrayLength(data);
-    jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
+    jbyte *data_bytes = env->GetByteArrayElements(data, nullptr);
     std::vector<uint8_t> sig;
     try {
         native_timing_start();
@@ -466,12 +471,12 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     } catch (Botan::Exception & ex) {
         throw_new(env, "java/security/GeneralSecurityException", ex.what());
         env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
-        return NULL;
+        return nullptr;
     }
     env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);
 
     jbyteArray result = env->NewByteArray(sig.size());
-    jbyte *result_data = env->GetByteArrayElements(result, NULL);
+    jbyte *result_data = env->GetByteArrayElements(result, nullptr);
     std::copy(sig.begin(), sig.end(), result_data);
     env->ReleaseByteArrayElements(result, result_data, 0);
 
@@ -480,7 +485,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Botan_verify(JNIEnv *env, jobject self, jbyteArray signature, jbyteArray data, jbyteArray pubkey, jobject params){
     if (!check_params(env, params)) {
-        throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
+		throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
         return JNI_FALSE;
     }
     Botan::EC_Group curve_group = group_from_params(env, params);
@@ -488,12 +493,12 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     jclass botan_sig_class = env->FindClass("cz/crcs/ectester/standalone/libs/jni/NativeSignatureSpi$Botan");
     jfieldID type_id = env->GetFieldID(botan_sig_class, "type", "Ljava/lang/String;");
     jstring type = (jstring) env->GetObjectField(self, type_id);
-    const char *type_data = env->GetStringUTFChars(type, NULL);
+    const char *type_data = env->GetStringUTFChars(type, nullptr);
     std::string type_str(type_data);
     env->ReleaseStringUTFChars(type, type_data);
 
     jsize pubkey_length = env->GetArrayLength(pubkey);
-    jbyte *pubkey_data = env->GetByteArrayElements(pubkey, NULL);
+    jbyte *pubkey_data = env->GetByteArrayElements(pubkey, nullptr);
     Botan::PointGFp public_point = curve_group.OS2ECP((uint8_t*) pubkey_data, pubkey_length);
     env->ReleaseByteArrayElements(pubkey, pubkey_data, JNI_ABORT);
 
@@ -525,8 +530,8 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 
     jsize data_length = env->GetArrayLength(data);
     jsize sig_length = env->GetArrayLength(signature);
-    jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
-    jbyte *sig_bytes = env->GetByteArrayElements(signature, NULL);
+    jbyte *data_bytes = env->GetByteArrayElements(data, nullptr);
+    jbyte *sig_bytes = env->GetByteArrayElements(signature, nullptr);
 
     bool result;
     try {

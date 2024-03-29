@@ -1,12 +1,12 @@
+#include "c_timing.h"
+#include "c_utils.h"
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include "native.h"
 
 #include <ippcp.h>
-
-#include "c_timing.h"
-#include "c_utils.h"
 
 #define _POSIX_C_SOURCE 200809L
 
@@ -55,11 +55,12 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_IppcpLib_createP
 	jmethodID init = (*env)->GetMethodID(env, local_provider_class, "<init>", "(Ljava/lang/String;DLjava/lang/String;)V");
 
 	const IppLibraryVersion *lib = ippcpGetLibVersion();
-	jstring name = (*env)->NewStringUTF(env, lib->Name);
+	char full_name[strlen("ippcp ") + strlen(lib->Name) + 1];
+	strcpy(full_name, "ippcp ");
+	strcat(full_name, lib->Name);
+	jstring name = (*env)->NewStringUTF(env, full_name);
 	double version = (double)lib->major + ((double)lib->minor / 10);
 	jstring info = (*env)->NewStringUTF(env, lib->Version);
-
-	// printf("%s\n%s\n%d.%d.%d.%d\n", lib->Name, lib->Version, lib->major, lib->minor, lib->majorBuild, lib->build);
 
 	return (*env)->NewObject(env, provider_class, init, name, version, info);
 }
@@ -255,6 +256,10 @@ static IppsECCPState *create_curve(JNIEnv *env, jobject params, int *keysize) {
     jmethodID get_field = (*env)->GetMethodID(env, elliptic_curve_class, "getField", "()Ljava/security/spec/ECField;");
     jobject field = (*env)->CallObjectMethod(env, curve, get_field);
 
+	if (!(*env)->IsInstanceOf(env, field, fp_field_class)) {
+		return NULL;
+	}
+
 	jmethodID get_bits = (*env)->GetMethodID(env, fp_field_class, "getFieldSize", "()I");
     jint bits = (*env)->CallIntMethod(env, field, get_bits);
 
@@ -293,12 +298,31 @@ static IppsECCPState *create_curve(JNIEnv *env, jobject params, int *keysize) {
 	}
 
 	int size;
-	ippsECCPGetSize(bits, &size);
+	IppStatus err = ippsECCPGetSize(bits, &size);
+	if (err != ippStsNoErr) {
+		goto err_out;
+	}
 	IppsECCPState *result = malloc(size);
-	ippsECCPInit(bits, result);
-	ippsECCPSet(p_bn, a_bn, b_bn, gx_bn, gy_bn, n_bn, h, result);
-
+	err = ippsECCPInit(bits, result);
+	if (err != ippStsNoErr) {
+		free(result);
+		goto err_out;
+	}
+	err = ippsECCPSet(p_bn, a_bn, b_bn, gx_bn, gy_bn, n_bn, h, result);
+	if (err != ippStsNoErr) {
+		free(result);
+		goto err_out;
+	}
 	return result;
+
+err_out:
+	free(p_bn);
+	free(a_bn);
+	free(b_bn);
+	free(gx_bn);
+	free(gy_bn);
+	free(n_bn);
+	return NULL;
 }
 
 static jobject create_ec_param_spec(JNIEnv *env, int keysize, IppsECCPState *curve) {
@@ -451,6 +475,10 @@ Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Ippcp_g
 	if ((*env)->IsInstanceOf(env, params, ec_parameter_spec_class)) {
 		int keysize;
 		IppsECCPState *curve = create_curve(env, params, &keysize);
+		if (!curve) {
+			throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
+			return NULL;
+		}
 		jobject result = generate_from_curve(env, keysize, curve);
 		free(curve);
 		return result;
@@ -503,6 +531,10 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 	jint coord_size = ((*env)->GetArrayLength(env, pubkey) - 1) / 2;
 	jint keysize;
 	IppsECCPState *curve = create_curve(env, params, &keysize);
+	if (!curve) {
+		throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
+		return NULL;
+	}
 
 	if (VALIDATE_CURVE) {
 		IppECResult validation;
@@ -559,6 +591,10 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgr
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Ippcp_sign(JNIEnv *env, jobject this, jbyteArray data, jbyteArray privkey, jobject params) {
 	jint keysize;
 	IppsECCPState *curve = create_curve(env, params, &keysize);
+	if (!curve) {
+		throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
+		return NULL;
+	}
 
 	if (VALIDATE_CURVE) {
 		IppECResult validation;
@@ -625,6 +661,10 @@ error:
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Ippcp_verify(JNIEnv *env, jobject this, jbyteArray signature, jbyteArray data, jbyteArray pubkey, jobject params) {
 	jint keysize;
 	IppsECCPState *curve = create_curve(env, params, &keysize);
+	if (!curve) {
+		throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
+		return JNI_FALSE;
+	}
 
 	if (VALIDATE_CURVE) {
 		IppECResult validation;

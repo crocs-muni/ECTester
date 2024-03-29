@@ -1,9 +1,10 @@
+#include "c_timing.h"
+#include "c_utils.h"
+
 #include <windows.h>
 #include <bcrypt.h>
 #include "native.h"
 
-#include "c_timing.h"
-#include "c_utils.h"
 
 // BCRYPT and NT things.
 #define NT_SUCCESS(status) (((NTSTATUS)(status)) >= 0)

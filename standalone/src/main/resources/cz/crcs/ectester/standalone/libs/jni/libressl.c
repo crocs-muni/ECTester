@@ -1,3 +1,6 @@
+#include "c_utils.h"
+#include "c_timing.h"
+
 #include "native.h"
 #include <string.h>
 
@@ -11,8 +14,7 @@
 #include <openssl/ecdh.h>
 #include <openssl/ecdsa.h>
 
-#include "c_utils.h"
-#include "c_timing.h"
+
 
 
 static jclass provider_class;

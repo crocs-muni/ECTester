@@ -1,3 +1,6 @@
+#include "c_utils.h"
+#include "c_timing.h"
+
 #include "native.h"
 #include <string.h>
 
@@ -11,8 +14,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "c_utils.h"
-#include "c_timing.h"
 
 static struct yarrow256_ctx yarrow;
 
@@ -94,6 +95,7 @@ static const struct ecc_curve* create_curve_from_name(JNIEnv *env, const char* c
 	if (strcasecmp("secp521r1", curve_name) == 0) {
 		return nettle_get_secp_521r1();
 	}
+	return NULL;
 }
 
 static const struct ecc_curve* create_curve_from_size(JNIEnv *env, jint keysize) {

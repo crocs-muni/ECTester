@@ -72,6 +72,12 @@ using CryptoPP::Integer;
 #include "cpp_utils.hpp"
 #include "c_timing.h"
 
+/*
+ * Crypto++:
+*  - Supports both prime field and binary field curves.
+*  - Named curves (OID) and explicit params.
+ */
+
 static jclass provider_class;
 static AutoSeededRandomPool rng;
 
@@ -163,8 +169,8 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_getC
 
     std::vector<OID> all_oids = get_all_curve_oids();
 
-    for (auto oid = all_oids.begin(); oid != all_oids.end(); ++oid) {
-        jstring name_str = env->NewStringUTF(oid_to_str(*oid).c_str());
+    for (auto & all_oid : all_oids) {
+        jstring name_str = env->NewStringUTF(oid_to_str(all_oid).c_str());
         env->CallBooleanMethod(result, set_add, name_str);
     }
 
@@ -173,16 +179,16 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_getC
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Cryptopp_keysizeSupported(JNIEnv *env, jobject self, jint keysize){
     std::vector<OID> ecp_oids = get_curve_oids<ECP>();
-    for (auto oid = ecp_oids.begin(); oid != ecp_oids.end(); ++oid) {
-        DL_GroupParameters_EC<ECP> group(*oid);
+    for (auto & ecp_oid : ecp_oids) {
+        DL_GroupParameters_EC<ECP> group(ecp_oid);
         if (((jint) group.GetCurve().GetField().MaxElementBitLength()) == keysize) {
             return JNI_TRUE;
         }
     }
 
     std::vector<OID> e2n_oids = get_curve_oids<EC2N>();
-    for (auto oid = e2n_oids.begin(); oid != e2n_oids.end(); ++oid) {
-        DL_GroupParameters_EC<EC2N> group(*oid);
+    for (auto & e2n_oid : e2n_oids) {
+        DL_GroupParameters_EC<EC2N> group(e2n_oid);
         if (((jint) group.GetCurve().FieldSize().ConvertToLong()) == keysize) {
             return JNI_TRUE;
         }
@@ -191,7 +197,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
 }
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Cryptopp_paramsSupported(JNIEnv *env, jobject self, jobject params){
-    if (params == NULL) {
+    if (params == nullptr) {
         return JNI_FALSE;
     }
 
@@ -202,13 +208,13 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
         // Compare with OIDs I guess?
         jmethodID get_name = env->GetMethodID(ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
         jstring name = (jstring) env->CallObjectMethod(params, get_name);
-        const char *utf_name = env->GetStringUTFChars(name, NULL);
+        const char *utf_name = env->GetStringUTFChars(name, nullptr);
         std::string str_name(utf_name);
         env->ReleaseStringUTFChars(name, utf_name);
 
         std::vector<OID> all_oids = get_all_curve_oids();
-        for (auto oid = all_oids.begin(); oid != all_oids.end(); ++oid) {
-            std::string oid_s = oid_to_str(*oid);
+        for (auto & all_oid : all_oids) {
+            std::string oid_s = oid_to_str(all_oid);
             if (str_name == oid_s) {
                 return JNI_TRUE;
             }
@@ -222,7 +228,7 @@ static Integer integer_from_biginteger(JNIEnv *env, jobject bigint) {
 
     jbyteArray byte_array = (jbyteArray) env->CallObjectMethod(bigint, to_byte_array);
     jsize byte_length = env->GetArrayLength(byte_array);
-    jbyte *byte_data = env->GetByteArrayElements(byte_array, NULL);
+    jbyte *byte_data = env->GetByteArrayElements(byte_array, nullptr);
     Integer result((byte *) byte_data, (size_t) byte_length);
     env->ReleaseByteArrayElements(byte_array, byte_data, JNI_ABORT);
     return result;
@@ -231,7 +237,7 @@ static Integer integer_from_biginteger(JNIEnv *env, jobject bigint) {
 static jobject biginteger_from_integer(JNIEnv *env, const Integer &integer) {
     jbyteArray byte_array = (jbyteArray) env->NewByteArray(integer.MinEncodedSize());
 
-    jbyte *bigint_bytes = env->GetByteArrayElements(byte_array, NULL);
+    jbyte *bigint_bytes = env->GetByteArrayElements(byte_array, nullptr);
     integer.Encode((byte *) bigint_bytes, integer.MinEncodedSize());
     env->ReleaseByteArrayElements(byte_array, bigint_bytes, 0);
 
@@ -243,7 +249,7 @@ static jobject biginteger_from_polmod2(JNIEnv *env, const PolynomialMod2 &polmod
     jmethodID biginteger_init = env->GetMethodID(biginteger_class, "<init>", "(I[B)V");
 
     jbyteArray mod_array = env->NewByteArray(polmod.MinEncodedSize());
-    jbyte *mod_data = env->GetByteArrayElements(mod_array, NULL);
+    jbyte *mod_data = env->GetByteArrayElements(mod_array, nullptr);
     polmod.Encode((byte *) mod_data, polmod.MinEncodedSize());
     env->ReleaseByteArrayElements(mod_array, mod_data, 0);
 
@@ -301,15 +307,15 @@ static std::unique_ptr<DL_GroupParameters_EC<ECP>> fp_group_from_params(JNIEnv *
     } else if (env->IsInstanceOf(params, ecgen_parameter_spec_class)) {
         jmethodID get_name = env->GetMethodID(ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
         jstring name = (jstring) env->CallObjectMethod(params, get_name);
-        const char *utf_name = env->GetStringUTFChars(name, NULL);
+        const char *utf_name = env->GetStringUTFChars(name, nullptr);
         std::string str_name(utf_name);
         env->ReleaseStringUTFChars(name, utf_name);
 
         std::vector<OID> ecp_oids = get_curve_oids<ECP>();
-        for (auto oid = ecp_oids.begin(); oid != ecp_oids.end(); ++oid) {
-            std::string oid_s = oid_to_str(*oid);
+        for (auto & ecp_oid : ecp_oids) {
+            std::string oid_s = oid_to_str(ecp_oid);
             if (str_name == oid_s) {
-                return std::make_unique<DL_GroupParameters_EC<ECP>>(*oid);
+                return std::make_unique<DL_GroupParameters_EC<ECP>>(ecp_oid);
             }
         }
     }
@@ -357,7 +363,7 @@ static std::unique_ptr<DL_GroupParameters_EC<EC2N>> f2m_group_from_params(JNIEnv
         jmethodID get_midterms = env->GetMethodID(f2m_field_class, "getMidTermsOfReductionPolynomial", "()[I");
         jintArray midterms = (jintArray) env->CallObjectMethod(field, get_midterms);
         jsize midterm_length = env->GetArrayLength(midterms);
-        jint *midterm_data = env->GetIntArrayElements(midterms, NULL);
+        jint *midterm_data = env->GetIntArrayElements(midterms, nullptr);
 
         jmethodID get_m = env->GetMethodID(f2m_field_class, "getM", "()I");
         jint m = env->CallIntMethod(field, get_m);
@@ -375,11 +381,11 @@ static std::unique_ptr<DL_GroupParameters_EC<EC2N>> f2m_group_from_params(JNIEnv
         jmethodID to_byte_array = env->GetMethodID(biginteger_class, "toByteArray", "()[B");
         jbyteArray a_array = (jbyteArray) env->CallObjectMethod(a, to_byte_array);
         jsize a_length = env->GetArrayLength(a_array);
-        jbyte *a_data = env->GetByteArrayElements(a_array, NULL);
+        jbyte *a_data = env->GetByteArrayElements(a_array, nullptr);
 
         jbyteArray b_array = (jbyteArray) env->CallObjectMethod(b, to_byte_array);
         jsize b_length = env->GetArrayLength(b_array);
-        jbyte *b_data = env->GetByteArrayElements(b_array, NULL);
+        jbyte *b_data = env->GetByteArrayElements(b_array, nullptr);
 
         EC2N curve(*base_field, EC2N::FieldElement((byte *) a_data, (size_t) a_length), EC2N::FieldElement((byte *) b_data, (size_t) b_length));
         env->ReleaseByteArrayElements(a_array, a_data, JNI_ABORT);
@@ -387,13 +393,13 @@ static std::unique_ptr<DL_GroupParameters_EC<EC2N>> f2m_group_from_params(JNIEnv
 
         jbyteArray gx_array = (jbyteArray) env->CallObjectMethod(gx, to_byte_array);
         jsize gx_length = env->GetArrayLength(gx_array);
-        jbyte *gx_data = env->GetByteArrayElements(gx_array, NULL);
+        jbyte *gx_data = env->GetByteArrayElements(gx_array, nullptr);
         PolynomialMod2 gxm((byte *) gx_data, (size_t) gx_length);
         env->ReleaseByteArrayElements(gx_array, gx_data, JNI_ABORT);
 
         jbyteArray gy_array = (jbyteArray) env->CallObjectMethod(gy, to_byte_array);
         jsize gy_length = env->GetArrayLength(gy_array);
-        jbyte *gy_data = env->GetByteArrayElements(gy_array, NULL);
+        jbyte *gy_data = env->GetByteArrayElements(gy_array, nullptr);
         PolynomialMod2 gym((byte *) gy_data, (size_t) gy_length);
         env->ReleaseByteArrayElements(gy_array, gy_data, JNI_ABORT);
 
@@ -403,15 +409,15 @@ static std::unique_ptr<DL_GroupParameters_EC<EC2N>> f2m_group_from_params(JNIEnv
     } else if (env->IsInstanceOf(params, ecgen_parameter_spec_class)) {
         jmethodID get_name = env->GetMethodID(ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
         jstring name = (jstring) env->CallObjectMethod(params, get_name);
-        const char *utf_name = env->GetStringUTFChars(name, NULL);
+        const char *utf_name = env->GetStringUTFChars(name, nullptr);
         std::string str_name(utf_name);
         env->ReleaseStringUTFChars(name, utf_name);
 
         std::vector<OID> e2n_oids = get_curve_oids<EC2N>();
-        for (auto oid = e2n_oids.begin(); oid != e2n_oids.end(); ++oid) {
-            std::string oid_s = oid_to_str(*oid);
+        for (auto & e2n_oid : e2n_oids) {
+            std::string oid_s = oid_to_str(e2n_oid);
             if (str_name == oid_s) {
-                return std::make_unique<DL_GroupParameters_EC<EC2N>>(*oid);
+                return std::make_unique<DL_GroupParameters_EC<EC2N>>(e2n_oid);
             }
         }
     }
@@ -436,13 +442,13 @@ template <class EC> jobject finish_params(JNIEnv *env, jobject field, jobject a,
 }
 
 template <class EC> jobject params_from_group(JNIEnv *env, DL_GroupParameters_EC<EC> group) {
-    return NULL;
+    return nullptr;
 }
 
 template <> jobject params_from_group<ECP>(JNIEnv *env, DL_GroupParameters_EC<ECP> group) {
-    ECP curve = group.GetCurve();
+    const ECP& curve = group.GetCurve();
     jmethodID fp_field_init = env->GetMethodID(fp_field_class, "<init>", "(Ljava/math/BigInteger;)V");
-    ModularArithmetic mod = curve.GetField();
+    const ModularArithmetic& mod = curve.GetField();
     jobject p = biginteger_from_integer(env, mod.GetModulus());
     jobject a = biginteger_from_integer(env, curve.GetA());
     jobject b = biginteger_from_integer(env, curve.GetB());
@@ -456,7 +462,7 @@ template <> jobject params_from_group<ECP>(JNIEnv *env, DL_GroupParameters_EC<EC
 }
 
 template <> jobject params_from_group<EC2N>(JNIEnv *env, DL_GroupParameters_EC<EC2N> group) {
-    EC2N curve = group.GetCurve();
+    const EC2N& curve = group.GetCurve();
     PolynomialMod2 mod = curve.GetField().GetModulus();
     int m = mod.Degree();
     unsigned int coeff_count = mod.CoefficientCount();
@@ -472,9 +478,9 @@ template <> jobject params_from_group<EC2N>(JNIEnv *env, DL_GroupParameters_EC<E
         ks = env->NewIntArray(3);
         to_find = 3;
     } else {
-        return NULL;
+        return nullptr;
     }
-    jint *ks_data = env->GetIntArrayElements(ks, NULL);
+    jint *ks_data = env->GetIntArrayElements(ks, nullptr);
     for (int i = m - 1; i > 0 && found < to_find; --i) {
         if (mod.GetCoefficient(i) == 1) {
             ks_data[found++] = i;
@@ -504,11 +510,11 @@ template <class EC> jobject generate_from_group(JNIEnv *env, DL_GroupParameters_
         native_timing_stop();
     } catch (Exception & ex) {
         throw_new(env, "java/security/GeneralSecurityException", ex.what());
-        return NULL;
+        return nullptr;
     }
 
     jbyteArray pub_bytearray = env->NewByteArray(pub.SizeInBytes());
-    jbyte *pub_bytes = env->GetByteArrayElements(pub_bytearray, NULL);
+    jbyte *pub_bytes = env->GetByteArrayElements(pub_bytearray, nullptr);
     std::copy(pub.BytePtr(), pub.BytePtr()+pub.SizeInBytes(), pub_bytes);
     env->ReleaseByteArrayElements(pub_bytearray, pub_bytes, 0);
 
@@ -517,7 +523,7 @@ template <class EC> jobject generate_from_group(JNIEnv *env, DL_GroupParameters_
     jobject pubkey = env->NewObject(pubkey_class, ec_pub_init, pub_bytearray, ec_pub_param_spec);
 
     jbyteArray priv_bytearray = env->NewByteArray(priv.SizeInBytes());
-    jbyte *priv_bytes = env->GetByteArrayElements(priv_bytearray, NULL);
+    jbyte *priv_bytes = env->GetByteArrayElements(priv_bytearray, nullptr);
     std::copy(priv.BytePtr(), priv.BytePtr()+priv.SizeInBytes(), priv_bytes);
     env->ReleaseByteArrayElements(priv_bytearray, priv_bytes, 0);
 
@@ -532,8 +538,8 @@ template <class EC> jobject generate_from_group(JNIEnv *env, DL_GroupParameters_
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Cryptopp_generate__ILjava_security_SecureRandom_2(JNIEnv *env, jobject self, jint keysize, jobject random){
     std::vector<OID> ecp_oids = get_curve_oids<ECP>();
-    for (auto oid = ecp_oids.begin(); oid != ecp_oids.end(); ++oid) {
-        DL_GroupParameters_EC<ECP> group(*oid);
+    for (auto & ecp_oid : ecp_oids) {
+        DL_GroupParameters_EC<ECP> group(ecp_oid);
         if (((jint) group.GetCurve().GetField().MaxElementBitLength()) == keysize) {
             jobject params = params_from_group(env, group);
             return generate_from_group<ECP>(env, group, params);
@@ -541,14 +547,14 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
     }
 
     std::vector<OID> e2n_oids = get_curve_oids<EC2N>();
-    for (auto oid = e2n_oids.begin(); oid != e2n_oids.end(); ++oid) {
-        DL_GroupParameters_EC<EC2N> group(*oid);
+    for (auto & e2n_oid : e2n_oids) {
+        DL_GroupParameters_EC<EC2N> group(e2n_oid);
         if ((jint) group.GetCurve().FieldSize().ConvertToLong() == keysize) {
             jobject params = params_from_group(env, group);
             return generate_from_group<EC2N>(env, group, params);
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Cryptopp_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2(JNIEnv *env, jobject self, jobject params, jobject random) {
@@ -559,17 +565,17 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
     } else {
         return generate_from_group<ECP>(env, *ecp_group, params);
     }
-    return NULL;
+    return nullptr;
 }
 
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Cryptopp_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params) {
     jsize privkey_length = env->GetArrayLength(privkey);
-    jbyte *privkey_data = env->GetByteArrayElements(privkey, NULL);
+    jbyte *privkey_data = env->GetByteArrayElements(privkey, nullptr);
     SecByteBlock private_key((byte *) privkey_data, privkey_length);
     env->ReleaseByteArrayElements(privkey, privkey_data, JNI_ABORT);
 
     jsize pubkey_length = env->GetArrayLength(pubkey);
-    jbyte *pubkey_data = env->GetByteArrayElements(pubkey, NULL);
+    jbyte *pubkey_data = env->GetByteArrayElements(pubkey, nullptr);
     SecByteBlock public_key((byte *) pubkey_data, pubkey_length);
     env->ReleaseByteArrayElements(pubkey, pubkey_data, JNI_ABORT);
 
@@ -587,7 +593,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
             native_timing_stop();
         } catch (Exception & ex) {
             throw_new(env, "java/security/GeneralSecurityException", ex.what());
-            return NULL;
+            return nullptr;
         }
     } else {
         ECDH<ECP>::Domain dh_agreement(*ecp_group);
@@ -599,16 +605,16 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
             native_timing_stop();
         } catch (Exception & ex) {
             throw_new(env, "java/security/GeneralSecurityException", ex.what());
-            return NULL;
+            return nullptr;
         }
     }
     if (!success) {
         throw_new(env, "java/security/GeneralSecurityException", "Agreement was unsuccessful.");
-        return NULL;
+        return nullptr;
     }
 
     jbyteArray result = env->NewByteArray(secret->size());
-    jbyte *result_data = env->GetByteArrayElements(result, NULL);
+    jbyte *result_data = env->GetByteArrayElements(result, nullptr);
     std::copy(secret->begin(), secret->end(), result_data);
     env->ReleaseByteArrayElements(result, result_data, 0);
 
@@ -617,7 +623,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Cryptopp_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2Ljava_lang_String_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params, jstring algorithm){
     throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
-    return NULL;
+    return nullptr;
 }
 
 template <class EC, class H>
@@ -630,7 +636,7 @@ jbyteArray sign_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray
     std::string signature(signer.MaxSignatureLength(), 0);
 
     jsize data_length = env->GetArrayLength(data);
-    jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
+    jbyte *data_bytes = env->GetByteArrayElements(data, nullptr);
     native_timing_start();
     size_t len = signer.SignMessage(rng, (byte *)data_bytes, data_length, (byte *)signature.c_str());
     native_timing_stop();
@@ -641,7 +647,7 @@ jbyteArray sign_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray
     size_t sig_len = DSAConvertSignatureFormat(sig, sizeof(sig), DSA_DER, (byte *)signature.c_str(), len, DSA_P1363);
 
     jbyteArray result = env->NewByteArray(sig_len);
-    jbyte *result_bytes = env->GetByteArrayElements(result, NULL);
+    jbyte *result_bytes = env->GetByteArrayElements(result, nullptr);
     std::copy(sig, sig+sig_len, result_bytes);
     env->ReleaseByteArrayElements(result, result_bytes, 0);
 
@@ -652,16 +658,16 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     jclass cryptopp_sig_class = env->FindClass("cz/crcs/ectester/standalone/libs/jni/NativeSignatureSpi$Cryptopp");
     jfieldID type_id = env->GetFieldID(cryptopp_sig_class, "type", "Ljava/lang/String;");
     jstring type = (jstring) env->GetObjectField(self, type_id);
-    const char *type_data = env->GetStringUTFChars(type, NULL);
+    const char *type_data = env->GetStringUTFChars(type, nullptr);
     std::string type_str(type_data);
     env->ReleaseStringUTFChars(type, type_data);
 
     jsize privkey_length = env->GetArrayLength(privkey);
-    jbyte *privkey_data = env->GetByteArrayElements(privkey, NULL);
+    jbyte *privkey_data = env->GetByteArrayElements(privkey, nullptr);
     Integer private_key_x((byte *) privkey_data, (size_t) privkey_length);
     env->ReleaseByteArrayElements(privkey, privkey_data, JNI_ABORT);
 
-    jbyteArray result = NULL;
+    jbyteArray result = nullptr;
 
     std::unique_ptr<DL_GroupParameters_EC<ECP>> ecp_group = fp_group_from_params(env, params);
     if (ecp_group == nullptr) {
@@ -698,7 +704,7 @@ template <class EC, class H>
 jboolean verify_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray data, jbyteArray signature, jbyteArray pubkey) {
     typename EC::Point pkey_point;
     jsize pubkey_length = env->GetArrayLength(pubkey);
-    jbyte *pubkey_data = env->GetByteArrayElements(pubkey, NULL);
+    jbyte *pubkey_data = env->GetByteArrayElements(pubkey, nullptr);
     group.GetCurve().DecodePoint(pkey_point, (byte *)pubkey_data, pubkey_length);
     env->ReleaseByteArrayElements(pubkey, pubkey_data, JNI_ABORT);
 
@@ -710,14 +716,14 @@ jboolean verify_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray
     size_t bytes = (bit_length + 7)/8;
 
     jsize sig_length = env->GetArrayLength(signature);
-    jbyte *sig_bytes = env->GetByteArrayElements(signature, NULL);
+    jbyte *sig_bytes = env->GetByteArrayElements(signature, nullptr);
 
     byte sig[bytes * 2];
     size_t sig_len = DSAConvertSignatureFormat(sig, bytes * 2, DSA_P1363, (byte *)sig_bytes, sig_length, DSA_DER);
     env->ReleaseByteArrayElements(signature, sig_bytes, JNI_ABORT);
 
     jsize data_length = env->GetArrayLength(data);
-    jbyte *data_bytes = env->GetByteArrayElements(data, NULL);
+    jbyte *data_bytes = env->GetByteArrayElements(data, nullptr);
     native_timing_start();
     bool result = verifier.VerifyMessage((byte *)data_bytes, data_length, sig, sig_len);
     native_timing_stop();
@@ -730,7 +736,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     jclass cryptopp_sig_class = env->FindClass("cz/crcs/ectester/standalone/libs/jni/NativeSignatureSpi$Cryptopp");
     jfieldID type_id = env->GetFieldID(cryptopp_sig_class, "type", "Ljava/lang/String;");
     jstring type = (jstring) env->GetObjectField(self, type_id);
-    const char *type_data = env->GetStringUTFChars(type, NULL);
+    const char *type_data = env->GetStringUTFChars(type, nullptr);
     std::string type_str(type_data);
     env->ReleaseStringUTFChars(type, type_data);
 

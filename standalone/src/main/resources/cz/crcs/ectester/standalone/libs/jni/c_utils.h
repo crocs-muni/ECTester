@@ -57,11 +57,11 @@ char *biginteger_to_hex(JNIEnv *env, jobject big, jint bytes);
 /**
  * Some useful defines to init the provider.
  */
-#define INIT_PROVIDER(env, provider_class) jmethodID provider_put = (*env)->GetMethodID(env, provider_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
+#define INIT_PROVIDER(env, provider_class) jmethodID provider_put = (*(env))->GetMethodID(env, provider_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
 #define ADD_PROPERTY(env, self, base_name, base_class, prop_name, prop_class) do {                                                              \
-                                                                           jstring ec = (*env)->NewStringUTF(env, base_name prop_name);         \
-                                                                           jstring ec_value = (*env)->NewStringUTF(env, base_class prop_class); \
-                                                                           (*env)->CallObjectMethod(env, self, provider_put, ec, ec_value);     \
+                                                                           jstring ec = (*(env))->NewStringUTF(env, base_name prop_name);         \
+                                                                           jstring ec_value = (*(env))->NewStringUTF(env, base_class prop_class); \
+                                                                           (*(env))->CallObjectMethod(env, self, provider_put, ec, ec_value);     \
                                                                        } while (0)
 #define ADD_KPG(env, self, kpg_name, kpg_class)       ADD_PROPERTY(env, self, "KeyPairGenerator.", "cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$", kpg_name, kpg_class)
 #define ADD_KA(env, self, ka_name, ka_class)          ADD_PROPERTY(env, self, "KeyAgreement.", "cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$", ka_name, ka_class)

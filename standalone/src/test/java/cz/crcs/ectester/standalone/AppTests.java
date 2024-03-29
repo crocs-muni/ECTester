@@ -77,9 +77,6 @@ public class AppTests {
     @ValueSource(strings = {"Bouncy", "Sun", "libtomcrypt", "Botan", "Crypto++", "OpenSSL 3", "BoringSSL", "libgcrypt", "mbed TLS", "2021" /* IPPCP */, "Nettle", "LibreSSL", "wolfCrypt"})
     @StdIo()
     public void testVectorSuite(String libName, StdOut out) {
-        // TODO: Fix libgcrypt and IPPCP in handling binary field curves (reject them).
-        assumeFalse(libName.equals("libgcrypt") || libName.equals("2021"));
-
         String[] args = new String[]{"test", "test-vectors", libName};
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
             args = new String[]{"test", "--kpg-type", "ECDH", "test-vectors", libName};

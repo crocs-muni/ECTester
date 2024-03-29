@@ -1,5 +1,8 @@
+#include "c_utils.h"
+#include "c_timing.h"
+
 #include "native.h"
-#include <string.h>
+#include <strings.h>
 
 #include <openssl/conf.h>
 #include <openssl/opensslv.h>
@@ -12,9 +15,11 @@
 #include <openssl/ecdh.h>
 #include <openssl/ecdsa.h>
 
-#include "c_utils.h"
-#include "c_timing.h"
-
+/*
+ * BoringSSL:
+ *  - Supports prime field curves only.
+ *  - Named curves and explicit params.
+ */
 
 static jclass provider_class;
 
@@ -113,6 +118,7 @@ static EC_GROUP *create_curve(JNIEnv *env, jobject params) {
     jobject field = (*env)->CallObjectMethod(env, elliptic_curve, get_field);
 
     if ((*env)->IsInstanceOf(env, field, f2m_field_class)) {
+
         return NULL;
     }
 
@@ -192,7 +198,8 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
     if ((*env)->IsInstanceOf(env, params, ec_parameter_spec_class)) {
         EC_GROUP *curve = create_curve(env, params);
         jboolean result = !curve;
-        EC_GROUP_free(curve);
+		if (curve)
+        	EC_GROUP_free(curve);
         return result;
     } else if ((*env)->IsInstanceOf(env, params, ecgen_parameter_spec_class)) {
         jmethodID get_name = (*env)->GetMethodID(env, ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
@@ -345,6 +352,10 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Boringssl_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2(JNIEnv *env, jobject self, jobject params, jobject random) {
     if ((*env)->IsInstanceOf(env, params, ec_parameter_spec_class)) {
         EC_GROUP *curve = create_curve(env, params);
+		if (!curve) {
+			throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
+			return NULL;
+		}
         jobject result = generate_from_curve(env, curve);
         EC_GROUP_free(curve);
         return result;

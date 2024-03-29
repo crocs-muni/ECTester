@@ -368,6 +368,12 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         native SecretKey generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params, String algorithm);
     }
 
+    public static class LibresslECDH extends Libressl {
+        public LibresslECDH() {
+            super("ECDH");
+        }
+    }
+
     public abstract static class Nettle extends SimpleKeyAgreementSpi {
         private final String type;
 
@@ -378,6 +384,7 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         @Override
         byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params) {
             try {
+                // TODO: OMG remove this monstrosity.
                 AlgorithmParameters tmp = AlgorithmParameters.getInstance("EC");
                 tmp.init(params);
                 ECGenParameterSpec spec = tmp.getParameterSpec(ECGenParameterSpec.class);
@@ -420,10 +427,4 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
             super("ECDH");
         }
     }
-    public static class LibresslECDH extends Libressl {
-        public LibresslECDH() {
-            super("ECDH");
-        }
-    }
-
 }

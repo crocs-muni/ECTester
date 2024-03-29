@@ -127,16 +127,16 @@ jbyteArray asn1_der_encode(JNIEnv *env, const jbyte *r, size_t r_len, const jbyt
     jbyte s_length = (jbyte) s_len + (s[0] & 0x80 ? 1 : 0);
 
     // R and S are < 128 bytes, so 1 byte tag + 1 byte len + len bytes value
-    size_t seq_value_len = 2 + r_length + 2 + s_length;
-    size_t whole_len = seq_value_len;
+    jint seq_value_len = 2 + r_length + 2 + s_length;
+	jint whole_len = seq_value_len;
 
     // The SEQUENCE length might be >= 128, so more bytes of length
-    size_t seq_len_len = 0;
+	jint seq_len_len = 0;
     if (seq_value_len >= 128) {
-        size_t s = seq_value_len;
+		jint svl = seq_value_len;
         do {
             seq_len_len++;
-        } while ((s = s >> 8));
+        } while ((svl = svl >> 8));
     }
     // seq_len_len bytes for length and one for length of length
     whole_len += seq_len_len + 1;
@@ -183,11 +183,11 @@ bool asn1_der_decode(JNIEnv *env, jbyteArray sig, jbyte **r_data, size_t *r_len,
         (*env)->ReleaseByteArrayElements(env, sig, data, JNI_ABORT);
         return false;
     }
-    size_t seq_value_len = 0;
+    jint seq_value_len = 0;
     if (!(data[i] & 0x80)) {
         seq_value_len = data[i++];
     } else {
-        size_t seq_len_len = data[i++] & 0x7f;
+		jint seq_len_len = data[i++] & 0x7f;
         while (seq_len_len > 0) {
             seq_value_len |= (data[i++] << (seq_len_len - 1));
             seq_len_len--;

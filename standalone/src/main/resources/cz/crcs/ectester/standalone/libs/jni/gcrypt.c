@@ -1,10 +1,18 @@
+#include "c_utils.h"
+#include "c_timing.h"
+
 #include "native.h"
 #include <stdio.h>
 #include <ctype.h>
 #include <stdbool.h>
 #include <gcrypt.h>
-#include "c_utils.h"
-#include "c_timing.h"
+
+/*
+ * libgcrypt:
+ *  - Supports prime field curves only.
+ *  - Named curves and (likely) explicit params for keygen.
+ *  - TODO: Add support for explicit params in keygen.
+ */
 
 static jclass provider_class;
 
@@ -65,7 +73,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_GcryptLib_getCur
     const char *name;
     unsigned int nbits;
 
-    for (size_t i = 0; (name = gcry_pk_get_curve(NULL, i, &nbits)); i++){
+    for (jint i = 0; (name = gcry_pk_get_curve(NULL, i, &nbits)); i++){
         jstring curve_name = (*env)->NewStringUTF(env, name);
         (*env)->CallBooleanMethod(env, result, hash_set_add, curve_name);
     }
@@ -77,7 +85,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
     const char *name;
     unsigned int nbits;
 
-    for (size_t i = 0; (name = gcry_pk_get_curve(NULL, i, &nbits)); i++){
+    for (jint i = 0; (name = gcry_pk_get_curve(NULL, i, &nbits)); i++){
         if (nbits == keysize) {
             return JNI_TRUE;
         }
@@ -133,7 +141,7 @@ static gcry_mpi_t bytearray_to_mpi(JNIEnv *env, jbyteArray array) {
 
     gcry_mpi_t result;
 
-    size_t length = (*env)->GetArrayLength(env, array);
+    jsize length = (*env)->GetArrayLength(env, array);
     jbyte data[length + 1];
     data[0] = 0;
     (*env)->GetByteArrayRegion(env, array, 0, length, data + 1);
@@ -354,6 +362,10 @@ static gcry_sexp_t create_key(JNIEnv *env, jobject ec_param_spec, const char *ke
     jmethodID get_field = (*env)->GetMethodID(env, elliptic_curve_class, "getField", "()Ljava/security/spec/ECField;");
     jobject field = (*env)->CallObjectMethod(env, elliptic_curve, get_field);
 
+	if (!(*env)->IsInstanceOf(env, field, fp_field_class)) {
+		return NULL;
+	}
+
     jmethodID get_bits = (*env)->GetMethodID(env, fp_field_class, "getFieldSize", "()I");
     jint bits = (*env)->CallIntMethod(env, field, get_bits);
     jint bytes = (bits + 7) / 8;
@@ -437,6 +449,10 @@ static gcry_sexp_t create_privkey(JNIEnv *env, jobject ec_param_spec, jbyteArray
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Gcrypt_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2(JNIEnv *env, jobject this, jbyteArray pubkey, jbyteArray privkey, jobject params) {
     jbyteArray result = NULL;
     gcry_sexp_t pub = create_pubkey(env, params, pubkey);
+	if (!pub) {
+		throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
+		return NULL;
+	}
     gcry_mpi_t priv = bytearray_to_mpi(env, privkey);
 
     gcry_sexp_t enc_sexp;
@@ -547,6 +563,10 @@ static void get_sign_data_sexp(JNIEnv *env, gcry_sexp_t *result, jobject this, j
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Gcrypt_sign(JNIEnv *env, jobject this, jbyteArray data, jbyteArray privkey, jobject params) {
     jbyteArray result = NULL;
     gcry_sexp_t priv_sexp = create_privkey(env, params, NULL, privkey);
+	if (!priv_sexp) {
+		throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
+		return NULL;
+	}
 
     gcry_sexp_t data_sexp;
     get_sign_data_sexp(env, &data_sexp, this, data);
@@ -582,6 +602,10 @@ release_init:
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Gcrypt_verify(JNIEnv *env, jobject this, jbyteArray sig, jbyteArray data, jbyteArray pubkey, jobject params) {
     jboolean result = JNI_FALSE;
     gcry_sexp_t pub_sexp = create_pubkey(env, params, pubkey);
+	if (!pub_sexp) {
+		throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
+		return JNI_FALSE;
+	}
 
     gcry_sexp_t data_sexp;
     get_sign_data_sexp(env, &data_sexp, this, data);

@@ -1,9 +1,10 @@
+#include "c_utils.h"
+#include "c_timing.h"
+
 #include "native.h"
 #include <stdio.h>
 #include <string.h>
 #include <tomcrypt.h>
-#include "c_utils.h"
-#include "c_timing.h"
 
 static prng_state ltc_prng;
 static jclass provider_class;

@@ -1,3 +1,6 @@
+#include "c_utils.h"
+#include "c_timing.h"
+
 #include "native.h"
 #include <string.h>
 #include <stdio.h>
@@ -10,8 +13,6 @@
 #include <mbedtls/entropy.h>
 #include <mbedtls/ctr_drbg.h>
 
-#include "c_utils.h"
-#include "c_timing.h"
 
 static mbedtls_ctr_drbg_context ctr_drbg;
 static mbedtls_entropy_context entropy;
@@ -228,7 +229,7 @@ static jobject create_ec_param_spec(JNIEnv *env, const mbedtls_ecp_group *group)
 	size_t point_len = 2 * mbedtls_mpi_size(&group->P) + 1;
 	jbyteArray g_bytes = (*env)->NewByteArray(env, (jint) point_len);
 	jbyte *g_data = (*env)->GetByteArrayElements(env, g_bytes, NULL);
-	mbedtls_ecp_point_write_binary(group, &group->G, MBEDTLS_ECP_PF_UNCOMPRESSED, &point_len, g_data, point_len);
+	mbedtls_ecp_point_write_binary(group, &group->G, MBEDTLS_ECP_PF_UNCOMPRESSED, &point_len, (unsigned char *) g_data, point_len);
 	(*env)->ReleaseByteArrayElements(env, g_bytes, g_data, 0);
 	jobject g = (*env)->CallStaticObjectMethod(env, ecutil_class, from_X962, g_bytes, elliptic_curve);
 
@@ -277,14 +278,14 @@ static int create_curve(JNIEnv *env, jobject params, mbedtls_ecp_group *group) {
 	jbyte *point_data = (*env)->GetByteArrayElements(env, point_array, NULL);
 	// The mbedtls_ecp_point_read_binary function we use to setup the generator actually
 	// internally relies on the group generator already being set to a sane value.
-	// Thus we need to set it to the point at infinity first, only then can we load the
+	// Thus, we need to set it to the point at infinity first, only then can we load the
 	// correct generator.
 	int error = mbedtls_ecp_set_zero(&group->G);
 	if (error) {
 		throw_new_var(env, "java/security/GeneralSecurityException", err_to_string(error));
 		return error;
 	}
-	error = mbedtls_ecp_point_read_binary(group, &group->G, point_data, data_size);
+	error = mbedtls_ecp_point_read_binary(group, &group->G, (unsigned char *) point_data, data_size);
 	(*env)->ReleaseByteArrayElements(env, point_array, point_data, JNI_ABORT);
 	if (error) {
 		throw_new_var(env, "java/security/GeneralSecurityException", err_to_string(error));
@@ -307,7 +308,7 @@ static jobject generate_from_curve(JNIEnv *env, mbedtls_ecp_group *group) {
     mbedtls_ecp_point_init(&Q);
 
     if (gen_counter >= MBEDTLS_CTR_DRBG_RESEED_INTERVAL/2) {
-        // Reseed manually, outside of the timing window, to not disturb the timing data.
+        // Reseed manually, outside the timing window, to not disturb the timing data.
         // They are somewhat disturbed anyway, but we cannot really get rid of that easily.
         // We also help it by using a wrapper and pausing for random gen.
         mbedtls_ctr_drbg_reseed(&ctr_drbg, NULL, 0);
