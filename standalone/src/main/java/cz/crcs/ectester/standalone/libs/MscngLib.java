@@ -9,7 +9,7 @@ import java.util.Set;
 public class MscngLib extends NativeECLibrary {
 
     public MscngLib() {
-        super("mscng_provider", "bcrypt");
+        super("MicrosoftCNG", "mscng_provider", "bcrypt");
     }
 
     @Override

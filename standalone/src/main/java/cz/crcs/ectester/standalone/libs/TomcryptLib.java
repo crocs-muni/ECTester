@@ -9,7 +9,7 @@ import java.util.Set;
 public class TomcryptLib extends NativeECLibrary {
 
     public TomcryptLib() {
-        super("tomcrypt_provider", "tommath", "tomcrypt");
+        super("tomcrypt","tomcrypt_provider", "tommath", "tomcrypt");
     }
 
     @Override

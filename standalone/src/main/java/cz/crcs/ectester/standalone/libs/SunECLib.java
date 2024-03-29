@@ -11,7 +11,7 @@ import java.util.TreeSet;
 public class SunECLib extends ProviderECLibrary {
 
     public SunECLib() {
-        super(new SunEC());
+        super("SunEC", new SunEC());
     }
 
     @Override

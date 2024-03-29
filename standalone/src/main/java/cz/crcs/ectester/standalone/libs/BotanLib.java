@@ -9,7 +9,7 @@ import java.util.Set;
 public class BotanLib extends NativeECLibrary {
 
     public BotanLib() {
-        super("botan_provider", "botan-2");
+        super("Botan", "botan_provider", "botan-2");
     }
 
     @Override

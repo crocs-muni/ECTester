@@ -296,7 +296,8 @@ public class ECTesterStandalone {
         for (ProviderECLibrary lib : libs) {
             if (lib.isInitialized() && (cfg.selected == null || lib == cfg.selected)) {
                 System.out.println("\t- " + Colors.bold(lib.name()));
-                System.out.println(Colors.bold("\t\t- Version: ") + String.format("%f", lib.getProvider().getVersion()));
+                System.out.println(Colors.bold("\t\t- Fullname: ") + lib.getProvider().getName());
+                System.out.println(Colors.bold("\t\t- Version: ") + lib.getProvider().getVersionStr());
                 System.out.println(Colors.bold("\t\t- Supports native timing: ") + lib.getNativeTimingSupport().toString());
                 Set<KeyPairGeneratorIdent> kpgs = lib.getKPGs();
                 if (!kpgs.isEmpty()) {

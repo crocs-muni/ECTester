@@ -9,7 +9,7 @@ import java.util.Set;
 public class CryptoppLib extends NativeECLibrary {
 
     public CryptoppLib() {
-        super("cryptopp_provider", "cryptopp");
+        super("Crypto++","cryptopp_provider", "cryptopp");
     }
 
     @Override

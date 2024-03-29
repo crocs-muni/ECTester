@@ -15,14 +15,16 @@ import java.util.function.Function;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public abstract class ProviderECLibrary implements ECLibrary {
+    String name;
     Provider provider;
     private boolean initialized = false;
 
-    public ProviderECLibrary() {
-
+    public ProviderECLibrary(String name) {
+        this.name = name;
     }
 
-    public ProviderECLibrary(Provider provider) {
+    public ProviderECLibrary(String name, Provider provider) {
+        this.name = name;
         this.provider = provider;
     }
 
@@ -99,7 +101,7 @@ public abstract class ProviderECLibrary implements ECLibrary {
 
     @Override
     public String name() {
-        return provider.getInfo();
+        return name;
     }
 
     public Provider getProvider() {

@@ -13,7 +13,7 @@ import java.util.TreeSet;
 public class BouncyCastleLib extends ProviderECLibrary {
 
     public BouncyCastleLib() {
-        super(new BouncyCastleProvider());
+        super("BouncyCastle", new BouncyCastleProvider());
     }
 
     @Override

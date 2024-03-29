@@ -9,7 +9,7 @@ import java.util.Set;
 public class GcryptLib extends NativeECLibrary {
 
     public GcryptLib() {
-        super("gcrypt_provider", "gcrypt", "gpg-error");
+        super("libgcrypt","gcrypt_provider", "gcrypt", "gpg-error");
     }
 
     @Override

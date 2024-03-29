@@ -8,7 +8,7 @@ import java.util.Set;
  */
 public class OpensslLib extends NativeECLibrary {
     public OpensslLib() {
-        super("openssl_provider", "crypto");
+        super("OpenSSL", "openssl_provider", "crypto");
     }
 
     @Override

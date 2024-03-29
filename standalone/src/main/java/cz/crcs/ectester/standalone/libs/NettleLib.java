@@ -9,7 +9,7 @@ import java.util.Set;
 public class NettleLib extends NativeECLibrary {
 
     public NettleLib() {
-        super("nettle_provider", "nettle","hogweed", "gmp");
+        super("Nettle", "nettle_provider", "nettle","hogweed", "gmp");
     }
 
     @Override

@@ -15,8 +15,8 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
     private final String resource;
     private final String[] requriements;
 
-
-    public NativeECLibrary(String resource, String... requirements) {
+    public NativeECLibrary(String name, String resource, String... requirements) {
+        super(name);
         this.resource = resource;
         this.requriements = requirements;
     }

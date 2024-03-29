@@ -55,10 +55,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_IppcpLib_createP
 	jmethodID init = (*env)->GetMethodID(env, local_provider_class, "<init>", "(Ljava/lang/String;DLjava/lang/String;)V");
 
 	const IppLibraryVersion *lib = ippcpGetLibVersion();
-	char full_name[strlen("ippcp ") + strlen(lib->Name) + 1];
-	strcpy(full_name, "ippcp ");
-	strcat(full_name, lib->Name);
-	jstring name = (*env)->NewStringUTF(env, full_name);
+	jstring name = (*env)->NewStringUTF(env, lib->Name);
 	double version = (double)lib->major + ((double)lib->minor / 10);
 	jstring info = (*env)->NewStringUTF(env, lib->Version);
 

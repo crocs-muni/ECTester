@@ -8,7 +8,7 @@ import java.util.Set;
 public class WolfCryptLib extends ProviderECLibrary {
 
     public WolfCryptLib() {
-        super(new WolfCryptProvider());
+        super("wolfCrypt", new WolfCryptProvider());
     }
 
     @Override
