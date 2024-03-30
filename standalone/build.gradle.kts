@@ -59,10 +59,15 @@ testlogger {
 }
 
 tasks.withType<JavaCompile> {
-    if (JavaVersion.current() > JavaVersion.VERSION_1_8) {
+    if (JavaVersion.current() > JavaVersion.VERSION_1_8 && JavaVersion.current() < JavaVersion.VERSION_22) {
         options.compilerArgs.addAll(arrayOf(
                 "--add-modules", "jdk.crypto.ec",
                 "--add-exports", "jdk.crypto.ec/sun.security.ec=ALL-UNNAMED"
+        ))
+    } else if (JavaVersion.current() >= JavaVersion.VERSION_22) {
+        options.compilerArgs.addAll(arrayOf(
+                "--add-modules", "java.base",
+                "--add-exports", "java.base/sun.security.ec=ALL-UNNAMED"
         ))
     }
 }

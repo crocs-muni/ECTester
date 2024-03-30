@@ -672,28 +672,39 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     std::unique_ptr<DL_GroupParameters_EC<ECP>> ecp_group = fp_group_from_params(env, params);
     if (ecp_group == nullptr) {
         std::unique_ptr<DL_GroupParameters_EC<EC2N>> ec2n_group = f2m_group_from_params(env, params);
-        if (type_str.find("SHA1") != std::string::npos) {
-            result = sign_message<EC2N, SHA1>(env, *ec2n_group, data, private_key_x);
-        } else if (type_str.find("SHA224") != std::string::npos) {
-            result = sign_message<EC2N, SHA224>(env, *ec2n_group, data, private_key_x);
-        } else if (type_str.find("SHA256") != std::string::npos) {
-            result = sign_message<EC2N, SHA256>(env, *ec2n_group, data, private_key_x);
-        } else if (type_str.find("SHA384") != std::string::npos) {
-            result = sign_message<EC2N, SHA384>(env, *ec2n_group, data, private_key_x);
-        } else if (type_str.find("SHA512") != std::string::npos) {
-            result = sign_message<EC2N, SHA512>(env, *ec2n_group, data, private_key_x);
+
+        try {
+            if (type_str.find("SHA1") != std::string::npos) {
+                result = sign_message<EC2N, SHA1>(env, *ec2n_group, data, private_key_x);
+            } else if (type_str.find("SHA224") != std::string::npos) {
+                result = sign_message<EC2N, SHA224>(env, *ec2n_group, data, private_key_x);
+            } else if (type_str.find("SHA256") != std::string::npos) {
+                result = sign_message<EC2N, SHA256>(env, *ec2n_group, data, private_key_x);
+            } else if (type_str.find("SHA384") != std::string::npos) {
+                result = sign_message<EC2N, SHA384>(env, *ec2n_group, data, private_key_x);
+            } else if (type_str.find("SHA512") != std::string::npos) {
+                result = sign_message<EC2N, SHA512>(env, *ec2n_group, data, private_key_x);
+            }
+        } catch (Exception & ex) {
+            throw_new(env, "java/security/GeneralSecurityException", ex.what());
+            return nullptr;
         }
     } else {
-        if (type_str.find("SHA1") != std::string::npos) {
-            result = sign_message<ECP, SHA1>(env, *ecp_group, data, private_key_x);
-        } else if (type_str.find("SHA224") != std::string::npos) {
-            result = sign_message<ECP, SHA224>(env, *ecp_group, data, private_key_x);
-        } else if (type_str.find("SHA256") != std::string::npos) {
-            result = sign_message<ECP, SHA256>(env, *ecp_group, data, private_key_x);
-        } else if (type_str.find("SHA384") != std::string::npos) {
-            result = sign_message<ECP, SHA384>(env, *ecp_group, data, private_key_x);
-        } else if (type_str.find("SHA512") != std::string::npos) {
-            result = sign_message<ECP, SHA512>(env, *ecp_group, data, private_key_x);
+        try {
+            if (type_str.find("SHA1") != std::string::npos) {
+                result = sign_message<ECP, SHA1>(env, *ecp_group, data, private_key_x);
+            } else if (type_str.find("SHA224") != std::string::npos) {
+                result = sign_message<ECP, SHA224>(env, *ecp_group, data, private_key_x);
+            } else if (type_str.find("SHA256") != std::string::npos) {
+                result = sign_message<ECP, SHA256>(env, *ecp_group, data, private_key_x);
+            } else if (type_str.find("SHA384") != std::string::npos) {
+                result = sign_message<ECP, SHA384>(env, *ecp_group, data, private_key_x);
+            } else if (type_str.find("SHA512") != std::string::npos) {
+                result = sign_message<ECP, SHA512>(env, *ecp_group, data, private_key_x);
+            }
+        } catch (Exception & ex) {
+            throw_new(env, "java/security/GeneralSecurityException", ex.what());
+            return nullptr;
         }
     }
 
@@ -744,28 +755,38 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     if (ecp_group == nullptr) {
         std::unique_ptr<DL_GroupParameters_EC<EC2N>> ec2n_group = f2m_group_from_params(env, params);
 
-        if (type_str.find("SHA1") != std::string::npos) {
-            return verify_message<EC2N, SHA1>(env, *ec2n_group, data, signature, pubkey);
-        } else if (type_str.find("SHA224") != std::string::npos) {
-            return verify_message<EC2N, SHA224>(env, *ec2n_group, data, signature, pubkey);
-        } else if (type_str.find("SHA256") != std::string::npos) {
-            return verify_message<EC2N, SHA256>(env, *ec2n_group, data, signature, pubkey);
-        } else if (type_str.find("SHA384") != std::string::npos) {
-            return verify_message<EC2N, SHA384>(env, *ec2n_group, data, signature, pubkey);
-        } else if (type_str.find("SHA512") != std::string::npos) {
-            return verify_message<EC2N, SHA512>(env, *ec2n_group, data, signature, pubkey);
+        try {
+            if (type_str.find("SHA1") != std::string::npos) {
+                return verify_message<EC2N, SHA1>(env, *ec2n_group, data, signature, pubkey);
+            } else if (type_str.find("SHA224") != std::string::npos) {
+                return verify_message<EC2N, SHA224>(env, *ec2n_group, data, signature, pubkey);
+            } else if (type_str.find("SHA256") != std::string::npos) {
+                return verify_message<EC2N, SHA256>(env, *ec2n_group, data, signature, pubkey);
+            } else if (type_str.find("SHA384") != std::string::npos) {
+                return verify_message<EC2N, SHA384>(env, *ec2n_group, data, signature, pubkey);
+            } else if (type_str.find("SHA512") != std::string::npos) {
+                return verify_message<EC2N, SHA512>(env, *ec2n_group, data, signature, pubkey);
+            }
+        } catch (Exception & ex) {
+            throw_new(env, "java/security/GeneralSecurityException", ex.what());
+            return JNI_FALSE;
         }
     } else {
-        if (type_str.find("SHA1") != std::string::npos) {
-            return verify_message<ECP, SHA1>(env, *ecp_group, data, signature, pubkey);
-        } else if (type_str.find("SHA224") != std::string::npos) {
-            return verify_message<ECP, SHA224>(env, *ecp_group, data, signature, pubkey);
-        } else if (type_str.find("SHA256") != std::string::npos) {
-            return verify_message<ECP, SHA256>(env, *ecp_group, data, signature, pubkey);
-        } else if (type_str.find("SHA384") != std::string::npos) {
-            return verify_message<ECP, SHA384>(env, *ecp_group, data, signature, pubkey);
-        } else if (type_str.find("SHA512") != std::string::npos) {
-            return verify_message<ECP, SHA512>(env, *ecp_group, data, signature, pubkey);
+        try {
+            if (type_str.find("SHA1") != std::string::npos) {
+                return verify_message<ECP, SHA1>(env, *ecp_group, data, signature, pubkey);
+            } else if (type_str.find("SHA224") != std::string::npos) {
+                return verify_message<ECP, SHA224>(env, *ecp_group, data, signature, pubkey);
+            } else if (type_str.find("SHA256") != std::string::npos) {
+                return verify_message<ECP, SHA256>(env, *ecp_group, data, signature, pubkey);
+            } else if (type_str.find("SHA384") != std::string::npos) {
+                return verify_message<ECP, SHA384>(env, *ecp_group, data, signature, pubkey);
+            } else if (type_str.find("SHA512") != std::string::npos) {
+                return verify_message<ECP, SHA512>(env, *ecp_group, data, signature, pubkey);
+            }
+        } catch (Exception & ex) {
+            throw_new(env, "java/security/GeneralSecurityException", ex.what());
+            return JNI_FALSE;
         }
     }
     // unreachable

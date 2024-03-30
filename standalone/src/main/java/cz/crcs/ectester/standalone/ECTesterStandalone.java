@@ -201,6 +201,7 @@ public class ECTesterStandalone {
         testOpts.addOption(bits);
         testOpts.addOption(namedCurve);
         testOpts.addOption(curveName);
+        testOpts.addOption(output);
         testOpts.addOption(Option.builder("gt").longOpt("kpg-type").desc("Set the KeyPairGenerator object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("kt").longOpt("ka-type").desc("Set the KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("st").longOpt("sig-type").desc("Set the Signature object [type].").hasArg().argName("type").optionalArg(false).build());
@@ -755,19 +756,26 @@ public class ECTesterStandalone {
     /**
      *
      */
-    private void test() throws TestException, ParserConfigurationException {
+    private void test() throws TestException, ParserConfigurationException, FileNotFoundException {
+        PrintStream out;
+        if (cli.hasOption("test.output")) {
+            out = new PrintStream(FileUtil.openStream(cli.getOptionValues("test.output")));
+        } else {
+            out = System.out;
+        }
+
         TestWriter writer;
         switch (cli.getOptionValue("test.format", "text").toLowerCase()) {
             case "yaml":
             case "yml":
-                writer = new YAMLTestWriter(System.out);
+                writer = new YAMLTestWriter(out);
                 break;
             case "xml":
-                writer = new XMLTestWriter(System.out);
+                writer = new XMLTestWriter(out);
                 break;
             case "text":
             default:
-                writer = new TextTestWriter(System.out);
+                writer = new TextTestWriter(out);
                 break;
         }
 
