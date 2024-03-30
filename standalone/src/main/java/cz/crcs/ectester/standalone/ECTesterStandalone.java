@@ -36,6 +36,7 @@ import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
 import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
 import cz.crcs.ectester.standalone.consts.SignatureIdent;
 import cz.crcs.ectester.standalone.libs.*;
+import cz.crcs.ectester.standalone.output.FileTestWriter;
 import cz.crcs.ectester.standalone.output.TextTestWriter;
 import cz.crcs.ectester.standalone.output.XMLTestWriter;
 import cz.crcs.ectester.standalone.output.YAMLTestWriter;
@@ -194,7 +195,8 @@ public class ECTesterStandalone {
         privateKey.addOption(filePrivate);
         Option curveName = Option.builder("cn").longOpt("curve-name").desc("Use a named curve, search from curves supported by the library: <name>").hasArg().argName("name").optionalArg(false).numberOfArgs(1).build();
         Option bits = Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").numberOfArgs(1).build();
-        Option output = Option.builder("o").longOpt("output").desc("Output into file <output_file>.").hasArgs().argName("output_file").optionalArg(false).numberOfArgs(1).build();
+        Option output = Option.builder("o").longOpt("output").desc("Output into file <output_file>. The file can be prefixed by the format (one of text,yml,xml), such as: xml:<output_file>.").hasArgs().argName("output_file").optionalArg(false).numberOfArgs(1).build();
+        Option outputRaw = Option.builder("o").longOpt("output").desc("Output CSV into file <output_file>.").hasArgs().argName("output_file").optionalArg(false).numberOfArgs(1).build();
         Option timeSource = Option.builder("ts").longOpt("time-source").desc("Use a given native timing source: {rdtsc, monotonic, monotonic-raw, cputime-process, cputime-thread, perfcount}").hasArgs().argName("source").optionalArg(false).numberOfArgs(1).build();
 
         Options testOpts = new Options();
@@ -216,7 +218,7 @@ public class ECTesterStandalone {
         ecdhOpts.addOption(bits);
         ecdhOpts.addOption(namedCurve);
         ecdhOpts.addOption(curveName);
-        ecdhOpts.addOption(output);
+        ecdhOpts.addOption(outputRaw);
         ecdhOpts.addOption(timeSource);
         ecdhOpts.addOption(Option.builder("t").longOpt("type").desc("Set KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdhOpts.addOption(Option.builder().longOpt("key-type").desc("Set the key [algorithm] for which the key should be derived in KeyAgreements with KDF. Default is \"AES\".").hasArg().argName("algorithm").optionalArg(false).build());
@@ -232,7 +234,7 @@ public class ECTesterStandalone {
         ecdsaOpts.addOption(bits);
         ecdsaOpts.addOption(namedCurve);
         ecdsaOpts.addOption(curveName);
-        ecdsaOpts.addOption(output);
+        ecdsaOpts.addOption(outputRaw);
         ecdsaOpts.addOption(timeSource);
         ecdsaOpts.addOptionGroup(privateKey);
         ecdsaOpts.addOptionGroup(publicKey);
@@ -247,7 +249,7 @@ public class ECTesterStandalone {
         generateOpts.addOption(bits);
         generateOpts.addOption(namedCurve);
         generateOpts.addOption(curveName);
-        generateOpts.addOption(output);
+        generateOpts.addOption(outputRaw);
         generateOpts.addOption(timeSource);
         generateOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Generate [amount] of EC keys.").build());
         generateOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPairGenerator object [type].").build());
@@ -256,7 +258,7 @@ public class ECTesterStandalone {
 
         Options exportOpts = new Options();
         exportOpts.addOption(bits);
-        exportOpts.addOption(output);
+        exportOpts.addOption(outputRaw);
         exportOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPair object [type].").build());
         ParserOptions export = new ParserOptions(new DefaultParser(), exportOpts, "Export default curve parameters.");
         actions.put("export", export);
@@ -757,28 +759,7 @@ public class ECTesterStandalone {
      *
      */
     private void test() throws TestException, ParserConfigurationException, FileNotFoundException {
-        PrintStream out;
-        if (cli.hasOption("test.output")) {
-            out = new PrintStream(FileUtil.openStream(cli.getOptionValues("test.output")));
-        } else {
-            out = System.out;
-        }
-
-        TestWriter writer;
-        switch (cli.getOptionValue("test.format", "text").toLowerCase()) {
-            case "yaml":
-            case "yml":
-                writer = new YAMLTestWriter(out);
-                break;
-            case "xml":
-                writer = new XMLTestWriter(out);
-                break;
-            case "text":
-            default:
-                writer = new TextTestWriter(out);
-                break;
-        }
-
+        TestWriter writer = new FileTestWriter(cli.getOptionValue("test.format", "text"), true, cli.getOptionValues("test.output"));
         StandaloneTestSuite suite;
 
         switch (cli.getArg(0).toLowerCase()) {

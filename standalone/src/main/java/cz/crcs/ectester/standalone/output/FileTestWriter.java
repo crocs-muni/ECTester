@@ -1,4 +1,4 @@
-package cz.crcs.ectester.reader.output;
+package cz.crcs.ectester.standalone.output;
 
 import cz.crcs.ectester.common.output.BaseFileTestWriter;
 import cz.crcs.ectester.common.output.TestWriter;
