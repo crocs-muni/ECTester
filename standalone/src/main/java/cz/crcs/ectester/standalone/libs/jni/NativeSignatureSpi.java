@@ -618,7 +618,6 @@ public abstract class NativeSignatureSpi extends SignatureSpi {
                 return verify(signature, data, pubkey, spec);
 
             } catch (NoSuchAlgorithmException | InvalidParameterSpecException e) {
-                e.printStackTrace();
                 return false;
             }
         }

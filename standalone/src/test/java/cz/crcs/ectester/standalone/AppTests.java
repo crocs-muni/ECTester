@@ -1,6 +1,8 @@
 package cz.crcs.ectester.standalone;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junitpioneer.jupiter.StdIo;
@@ -9,7 +11,6 @@ import org.junitpioneer.jupiter.StdOut;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -143,7 +144,7 @@ public class AppTests {
     @ParameterizedTest
     @MethodSource("libs")
     public void signatureSuite(String libName) {
-        String[] args = buildCLIArgs(libName, "signature");
+        String[] args = buildCLIArgs(libName, "signature", "-q");
         switch (libName) {
             case "Nettle":
             case "libgcrypt":
@@ -153,7 +154,7 @@ public class AppTests {
             case "LibreSSL":
             case "IPPCP":
             case "mbedTLS":
-                args = buildCLIArgs(libName, "signature", "-st", "NONEwithECDSA");
+                args = buildCLIArgs(libName, "signature", "-st", "NONEwithECDSA", "-q");
                 break;
         }
         ECTesterStandalone.main(args);
@@ -161,23 +162,108 @@ public class AppTests {
 
     @ParameterizedTest
     @MethodSource("libs")
+    @Timeout(20)
     public void miscSuite(String libName) {
-        String[] args = buildCLIArgs(libName, "miscellaneous");
+        String[] args = buildCLIArgs(libName, "miscellaneous", "-q");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
-            args = buildCLIArgs(libName, "miscellaneous", "--kpg-type", "ECDH");
+            args = buildCLIArgs(libName, "miscellaneous", "--kpg-type", "ECDH", "-q");
         }
         ECTesterStandalone.main(args);
     }
 
     @ParameterizedTest
     @MethodSource("libs")
+    @Timeout(20)
+    public void twistSuite(String libName) {
+        // TODO: "Nettle" is very broken here for a weird reason.
+        assumeFalse(libName.equals("Nettle"));
+
+        String[] args = buildCLIArgs(libName, "twist", "-q");
+        if (libName.equals("Botan") || libName.equals("Crypto++")) {
+            args = buildCLIArgs(libName, "twist", "--kpg-type", "ECDH", "-q");
+        }
+        ECTesterStandalone.main(args);
+    }
+
+    @ParameterizedTest
+    @MethodSource("libs")
+    @Timeout(20)
+    public void degenerateSuite(String libName) {
+        // TODO: "Nettle" is very broken here for a weird reason.
+        assumeFalse(libName.equals("Nettle"));
+
+        String[] args = buildCLIArgs(libName, "degenerate", "-q");
+        if (libName.equals("Botan") || libName.equals("Crypto++")) {
+            args = buildCLIArgs(libName, "degenerate", "--kpg-type", "ECDH", "-q");
+        }
+        ECTesterStandalone.main(args);
+    }
+
+    @ParameterizedTest
+    @MethodSource("libs")
+    @Timeout(20)
+    public void edgeCasesSuite(String libName) {
+        // TODO: Crypto++ and tomcrypt is broken here.
+        assumeFalse(libName.equals("Crypto++") || libName.equals("tomcrypt"));
+
+        String[] args = buildCLIArgs(libName, "edge-cases", "-q");
+        if (libName.equals("Botan") || libName.equals("Crypto++")) {
+            args = buildCLIArgs(libName, "edge-cases", "--kpg-type", "ECDH", "-q");
+        }
+        ECTesterStandalone.main(args);
+    }
+
+    @ParameterizedTest
+    @MethodSource("libs")
+    @Timeout(20)
+    public void compositeSuite(String libName) {
+        // TODO: "Crypto++" and IPPCP cycles indefinitely here.
+        assumeFalse(libName.equals("Crypto++") || libName.equals("IPPCP"));
+
+        String[] args = buildCLIArgs(libName, "composite", "-q");
+        if (libName.equals("Botan") || libName.equals("Crypto++")) {
+            args = buildCLIArgs(libName, "composite", "--kpg-type", "ECDH", "-q");
+        }
+        ECTesterStandalone.main(args);
+    }
+
+    @ParameterizedTest
+    @MethodSource("libs")
+    @Timeout(20)
+    public void cofactorSuite(String libName) {
+        String[] args = buildCLIArgs(libName, "cofactor", "-q");
+        if (libName.equals("Botan") || libName.equals("Crypto++")) {
+            args = buildCLIArgs(libName, "cofactor", "--kpg-type", "ECDH", "-q");
+        }
+        ECTesterStandalone.main(args);
+    }
+
+    @ParameterizedTest
+    @MethodSource("libs")
+    @Timeout(20)
+    // TODO: This breaks the tests because the libs do all sorts of weird stuff here.
+    @Disabled
+    public void wrongSuite(String libName) {
+        // TODO: "BouncyCastle" and Crypto++ cycles indefinitely here.
+        assumeFalse(libName.equals("BouncyCastle") || libName.equals("Crypto++") || libName.equals("IPPCP") || libName.equals("wolfCrypt"));
+
+        String[] args = buildCLIArgs(libName, "wrong", "-q");
+        if (libName.equals("Botan") || libName.equals("Crypto++")) {
+            args = buildCLIArgs(libName, "wrong", "--kpg-type", "ECDH", "-q");
+        }
+        ECTesterStandalone.main(args);
+    }
+
+    @ParameterizedTest
+    @MethodSource("libs")
+    @Timeout(20)
     public void invalidSuite(String libName) {
         // TODO: "Nettle" is very broken here for a weird reason.
         assumeFalse(libName.equals("Nettle"));
 
-        String[] args = buildCLIArgs(libName, "invalid");
+        String[] args = buildCLIArgs(libName, "invalid", "-q");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
-            args = buildCLIArgs(libName, "invalid", "--kpg-type", "ECDH");
+            args = buildCLIArgs(libName, "invalid", "--kpg-type", "ECDH", "-q");
         }
         ECTesterStandalone.main(args);
     }

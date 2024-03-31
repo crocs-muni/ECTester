@@ -197,6 +197,7 @@ public class ECTesterStandalone {
         Option bits = Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").numberOfArgs(1).build();
         Option output = Option.builder("o").longOpt("output").desc("Output into file <output_file>. The file can be prefixed by the format (one of text,yml,xml), such as: xml:<output_file>.").hasArgs().argName("output_file").optionalArg(false).numberOfArgs(1).build();
         Option outputRaw = Option.builder("o").longOpt("output").desc("Output CSV into file <output_file>.").hasArgs().argName("output_file").optionalArg(false).numberOfArgs(1).build();
+        Option quiet = Option.builder("q").longOpt("quiet").desc("Do not output to stdout.").build();
         Option timeSource = Option.builder("ts").longOpt("time-source").desc("Use a given native timing source: {rdtsc, monotonic, monotonic-raw, cputime-process, cputime-thread, perfcount}").hasArgs().argName("source").optionalArg(false).numberOfArgs(1).build();
 
         Options testOpts = new Options();
@@ -204,6 +205,7 @@ public class ECTesterStandalone {
         testOpts.addOption(namedCurve);
         testOpts.addOption(curveName);
         testOpts.addOption(output);
+        testOpts.addOption(quiet);
         testOpts.addOption(Option.builder("gt").longOpt("kpg-type").desc("Set the KeyPairGenerator object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("kt").longOpt("ka-type").desc("Set the KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("st").longOpt("sig-type").desc("Set the Signature object [type].").hasArg().argName("type").optionalArg(false).build());
@@ -759,7 +761,7 @@ public class ECTesterStandalone {
      *
      */
     private void test() throws TestException, ParserConfigurationException, FileNotFoundException {
-        TestWriter writer = new FileTestWriter(cli.getOptionValue("test.format", "text"), true, cli.getOptionValues("test.output"));
+        TestWriter writer = new FileTestWriter(cli.getOptionValue("test.format", "text"), !cli.hasOption("test.quiet"), cli.getOptionValues("test.output"));
         StandaloneTestSuite suite;
 
         switch (cli.getArg(0).toLowerCase()) {

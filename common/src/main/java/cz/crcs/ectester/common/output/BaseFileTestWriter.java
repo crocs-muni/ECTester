@@ -4,21 +4,24 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.LinkedList;
+import java.util.List;
 
 public abstract class BaseFileTestWriter extends TeeTestWriter {
 
     public BaseFileTestWriter(String defaultFormat, boolean systemOut, String[] files) throws ParserConfigurationException, FileNotFoundException {
         int fLength = files == null ? 0 : files.length;
-        writers = new TestWriter[systemOut ? fLength + 1 : fLength];
+        List<TestWriter> lWriters = new LinkedList<>();
         if (systemOut) {
-            writers[0] = createWriter(defaultFormat, System.out);
+            lWriters.add(createWriter(defaultFormat, System.out));
         }
         for (int i = 0; i < fLength; ++i) {
             String[] matched = matchName(files[i]);
             String format = matched[0];
             String fName = matched[1];
-            writers[i + 1] = createWriter(format, new PrintStream(new FileOutputStream(fName)));
+            lWriters.add(createWriter(format, new PrintStream(new FileOutputStream(fName))));
         }
+        writers = lWriters.toArray(new TestWriter[0]);
     }
 
     protected abstract String[] matchName(String name);

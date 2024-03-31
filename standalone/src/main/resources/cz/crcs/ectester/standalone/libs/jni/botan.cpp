@@ -318,7 +318,13 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
         throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
         return nullptr;
     }
-    Botan::EC_Group curve_group = group_from_params(env, params);
+    Botan::EC_Group curve_group;
+    try {
+        curve_group = group_from_params(env, params);
+	} catch (Botan::Exception & ex) {
+		throw_new(env, "java/security/GeneralSecurityException", ex.what());
+		return nullptr;
+	}
     return generate_from_group(env, self, curve_group);
 }
 
@@ -357,7 +363,13 @@ jbyteArray generate_secret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteAr
 		throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
         return nullptr;
     }
-    Botan::EC_Group curve_group = group_from_params(env, params);
+    Botan::EC_Group curve_group;
+    try {
+        curve_group = group_from_params(env, params);
+	} catch (Botan::Exception & ex) {
+		throw_new(env, "java/security/GeneralSecurityException", ex.what());
+		return nullptr;
+	}
 
     jsize privkey_length = env->GetArrayLength(privkey);
     jbyte *privkey_data = env->GetByteArrayElements(privkey, nullptr);
@@ -428,7 +440,13 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 		throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
         return nullptr;
     }
-    Botan::EC_Group curve_group = group_from_params(env, params);
+    Botan::EC_Group curve_group;
+    try {
+        curve_group = group_from_params(env, params);
+	} catch (Botan::Exception & ex) {
+		throw_new(env, "java/security/GeneralSecurityException", ex.what());
+		return nullptr;
+	}
 
     jclass botan_sig_class = env->FindClass("cz/crcs/ectester/standalone/libs/jni/NativeSignatureSpi$Botan");
     jfieldID type_id = env->GetFieldID(botan_sig_class, "type", "Ljava/lang/String;");
@@ -439,16 +457,28 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 
     jsize privkey_length = env->GetArrayLength(privkey);
     jbyte *privkey_bytes = env->GetByteArrayElements(privkey, nullptr);
-    Botan::BigInt privkey_scalar((uint8_t*) privkey_bytes, privkey_length);
+    Botan::BigInt privkey_scalar;
+    try {
+        privkey_scalar = Botan::BigInt((uint8_t*) privkey_bytes, privkey_length);
+    } catch (Botan::Exception & ex) {
+        throw_new(env, "java/security/GeneralSecurityException", ex.what());
+        env->ReleaseByteArrayElements(privkey, privkey_bytes, JNI_ABORT);
+        return NULL;
+    }
     env->ReleaseByteArrayElements(privkey, privkey_bytes, JNI_ABORT);
 
     std::unique_ptr<Botan::EC_PrivateKey> skey;
-    if (type_str.find("ECDSA") != std::string::npos) {
-        skey = std::make_unique<Botan::ECDSA_PrivateKey>(rng, curve_group, privkey_scalar);
-    } else if (type_str.find("ECKCDSA") != std::string::npos) {
-        skey = std::make_unique<Botan::ECKCDSA_PrivateKey>(rng, curve_group, privkey_scalar);
-    } else if (type_str.find("ECGDSA") != std::string::npos) {
-        skey = std::make_unique<Botan::ECGDSA_PrivateKey>(rng, curve_group, privkey_scalar);
+    try {
+        if (type_str.find("ECDSA") != std::string::npos) {
+            skey = std::make_unique<Botan::ECDSA_PrivateKey>(rng, curve_group, privkey_scalar);
+        } else if (type_str.find("ECKCDSA") != std::string::npos) {
+            skey = std::make_unique<Botan::ECKCDSA_PrivateKey>(rng, curve_group, privkey_scalar);
+        } else if (type_str.find("ECGDSA") != std::string::npos) {
+            skey = std::make_unique<Botan::ECGDSA_PrivateKey>(rng, curve_group, privkey_scalar);
+        }
+    } catch (Botan::Exception & ex) {
+        throw_new(env, "java/security/GeneralSecurityException", ex.what());
+        return NULL;
     }
 
     std::string emsa;
@@ -466,12 +496,12 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
         emsa = "EMSA1(SHA-512)";
     }
 
-    Botan::PK_Signer signer(*skey, rng, emsa, Botan::DER_SEQUENCE);
-
     jsize data_length = env->GetArrayLength(data);
     jbyte *data_bytes = env->GetByteArrayElements(data, nullptr);
     std::vector<uint8_t> sig;
     try {
+        Botan::PK_Signer signer(*skey, rng, emsa, Botan::DER_SEQUENCE);
+
         native_timing_start();
         sig = signer.sign_message((uint8_t*) data_bytes, data_length, rng);
         native_timing_stop();
@@ -495,7 +525,13 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 		throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
         return JNI_FALSE;
     }
-    Botan::EC_Group curve_group = group_from_params(env, params);
+    Botan::EC_Group curve_group;
+    try {
+        curve_group = group_from_params(env, params);
+	} catch (Botan::Exception & ex) {
+		throw_new(env, "java/security/GeneralSecurityException", ex.what());
+		return JNI_FALSE;
+	}
 
     jclass botan_sig_class = env->FindClass("cz/crcs/ectester/standalone/libs/jni/NativeSignatureSpi$Botan");
     jfieldID type_id = env->GetFieldID(botan_sig_class, "type", "Ljava/lang/String;");
@@ -511,17 +547,23 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 		public_point = curve_group.OS2ECP((uint8_t*) pubkey_data, pubkey_length);
 	} catch (Botan::Exception & ex) {
 		throw_new(env, "java/security/GeneralSecurityException", ex.what());
+		env->ReleaseByteArrayElements(pubkey, pubkey_data, JNI_ABORT);
 		return JNI_FALSE;
 	}
     env->ReleaseByteArrayElements(pubkey, pubkey_data, JNI_ABORT);
 
     std::unique_ptr<Botan::EC_PublicKey> pkey;
-    if (type_str.find("ECDSA") != std::string::npos) {
-        pkey = std::make_unique<Botan::ECDSA_PublicKey>(curve_group, public_point);
-    } else if (type_str.find("ECKCDSA") != std::string::npos) {
-        pkey = std::make_unique<Botan::ECKCDSA_PublicKey>(curve_group, public_point);
-    } else if (type_str.find("ECGDSA") != std::string::npos) {
-        pkey = std::make_unique<Botan::ECGDSA_PublicKey>(curve_group, public_point);
+    try {
+        if (type_str.find("ECDSA") != std::string::npos) {
+            pkey = std::make_unique<Botan::ECDSA_PublicKey>(curve_group, public_point);
+        } else if (type_str.find("ECKCDSA") != std::string::npos) {
+            pkey = std::make_unique<Botan::ECKCDSA_PublicKey>(curve_group, public_point);
+        } else if (type_str.find("ECGDSA") != std::string::npos) {
+            pkey = std::make_unique<Botan::ECGDSA_PublicKey>(curve_group, public_point);
+        }
+    } catch (Botan::Exception & ex) {
+        throw_new(env, "java/security/GeneralSecurityException", ex.what());
+        return JNI_FALSE;
     }
 
     std::string emsa;
@@ -539,15 +581,16 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
         emsa = "EMSA1(SHA-512)";
     }
 
-    Botan::PK_Verifier verifier(*pkey, emsa, Botan::DER_SEQUENCE);
-
     jsize data_length = env->GetArrayLength(data);
     jsize sig_length = env->GetArrayLength(signature);
     jbyte *data_bytes = env->GetByteArrayElements(data, nullptr);
     jbyte *sig_bytes = env->GetByteArrayElements(signature, nullptr);
 
     bool result;
+
     try {
+        Botan::PK_Verifier verifier(*pkey, emsa, Botan::DER_SEQUENCE);
+
         native_timing_start();
         result = verifier.verify_message((uint8_t*)data_bytes, data_length, (uint8_t*)sig_bytes, sig_length);
         native_timing_stop();

@@ -411,7 +411,6 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
                 return generateSecret(pubkey, privkey, spec);
 
             } catch (NoSuchAlgorithmException | InvalidParameterSpecException e) {
-                e.printStackTrace();
                 return null;
             }
         }

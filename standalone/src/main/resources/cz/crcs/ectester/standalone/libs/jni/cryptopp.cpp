@@ -558,13 +558,19 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
 }
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Cryptopp_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2(JNIEnv *env, jobject self, jobject params, jobject random) {
-    std::unique_ptr<DL_GroupParameters_EC<ECP>> ecp_group = fp_group_from_params(env, params);
-    if (ecp_group == nullptr) {
-        std::unique_ptr<DL_GroupParameters_EC<EC2N>> ec2n_group = f2m_group_from_params(env, params);
-        return generate_from_group<EC2N>(env, *ec2n_group, params);
-    } else {
-        return generate_from_group<ECP>(env, *ecp_group, params);
+    try {
+        std::unique_ptr<DL_GroupParameters_EC<ECP>> ecp_group = fp_group_from_params(env, params);
+        if (ecp_group == nullptr) {
+            std::unique_ptr<DL_GroupParameters_EC<EC2N>> ec2n_group = f2m_group_from_params(env, params);
+            return generate_from_group<EC2N>(env, *ec2n_group, params);
+        } else {
+            return generate_from_group<ECP>(env, *ecp_group, params);
+        }
+    } catch (Exception & ex) {
+        throw_new(env, "java/security/GeneralSecurityException", ex.what());
+        return nullptr;
     }
+
     return nullptr;
 }
 
@@ -581,33 +587,32 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 
     bool success;
     std::unique_ptr<SecByteBlock> secret;
-    std::unique_ptr<DL_GroupParameters_EC<ECP>> ecp_group = fp_group_from_params(env, params);
-    if (ecp_group == nullptr) {
-        std::unique_ptr<DL_GroupParameters_EC<EC2N>> ec2n_group = f2m_group_from_params(env, params);
-        ECDH<EC2N>::Domain dh_agreement(*ec2n_group);
+    try {
+        std::unique_ptr<DL_GroupParameters_EC<ECP>> ecp_group = fp_group_from_params(env, params);
+        if (ecp_group == nullptr) {
+            std::unique_ptr<DL_GroupParameters_EC<EC2N>> ec2n_group = f2m_group_from_params(env, params);
 
-        try {
+            ECDH<EC2N>::Domain dh_agreement(*ec2n_group);
+
             secret = std::make_unique<SecByteBlock>(dh_agreement.AgreedValueLength());
             native_timing_start();
             success = dh_agreement.Agree(*secret, private_key, public_key);
             native_timing_stop();
-        } catch (Exception & ex) {
-            throw_new(env, "java/security/GeneralSecurityException", ex.what());
-            return nullptr;
-        }
-    } else {
-        ECDH<ECP>::Domain dh_agreement(*ecp_group);
 
-        try {
+        } else {
+            ECDH<ECP>::Domain dh_agreement(*ecp_group);
+
             secret = std::make_unique<SecByteBlock>(dh_agreement.AgreedValueLength());
             native_timing_start();
             success = dh_agreement.Agree(*secret, private_key, public_key);
             native_timing_stop();
-        } catch (Exception & ex) {
-            throw_new(env, "java/security/GeneralSecurityException", ex.what());
-            return nullptr;
+
         }
+    } catch (Exception & ex) {
+        throw_new(env, "java/security/GeneralSecurityException", ex.what());
+        return nullptr;
     }
+
     if (!success) {
         throw_new(env, "java/security/GeneralSecurityException", "Agreement was unsuccessful.");
         return nullptr;
