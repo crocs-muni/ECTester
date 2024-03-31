@@ -192,6 +192,13 @@ jobs:
           path: |
             standalone/build/libs/ECTesterStandalone.jar
 
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-standalone-${{ matrix.java }}
+          path: |
+            standalone/build/results/
+
       - name: Upload code coverage
         uses: codecov/codecov-action@v4
         with:

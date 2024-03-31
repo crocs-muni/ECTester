@@ -7,7 +7,12 @@ import org.junitpioneer.jupiter.StdIo;
 import org.junitpioneer.jupiter.StdOut;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.PrintStream;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,6 +64,27 @@ public class AppTests {
         return Stream.of("BoringSSL", "Botan", "BouncyCastle", "Crypto++", "IPPCP", "LibreSSL", "libgcrypt", "mbedTLS", "Nettle", "OpenSSL", "SunEC", "tomcrypt", "wolfCrypt");
     }
 
+    String[] buildCLIArgs(String libName, String suite, String... additional) {
+        String resultPath = System.getenv("RESULT_PATH");
+        List<String> args = new LinkedList<>();
+        args.add("test");
+        if (resultPath != null) {
+            File resultDir = new File(resultPath);
+            if (resultDir.exists() || resultDir.mkdirs()) {
+                args.add("-o");
+                args.add(String.format("text:%s/%s_%s.txt", resultPath, suite, libName));
+                args.add("-o");
+                args.add(String.format("yaml:%s/%s_%s.yml", resultPath, suite, libName));
+                args.add("-o");
+                args.add(String.format("xml:%s/%s_%s.xml", resultPath, suite, libName));
+            }
+        }
+        Collections.addAll(args, additional);
+        args.add(suite);
+        args.add(libName);
+        return args.toArray(new String[]{});
+    }
+
     @SuppressWarnings("JUnitMalformedDeclaration")
     @ParameterizedTest
     @MethodSource("libs")
@@ -67,9 +93,9 @@ public class AppTests {
         // TODO: "Nettle" is very broken here for a weird reason.
         assumeFalse(libName.equals("Nettle"));
 
-        String[] args = new String[]{"test", "default", libName};
+        String[] args = buildCLIArgs(libName, "default");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
-            args = new String[]{"test", "--kpg-type", "ECDH", "default", libName};
+            args = buildCLIArgs(libName, "default", "--kpg-type", "ECDH");
         }
         ECTesterStandalone.main(args);
         String sout = out.capturedString();
@@ -83,9 +109,9 @@ public class AppTests {
     @MethodSource("libs")
     @StdIo()
     public void testVectorSuite(String libName, StdOut out) {
-        String[] args = new String[]{"test", "test-vectors", libName};
+        String[] args = buildCLIArgs(libName, "test-vectors");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
-            args = new String[]{"test", "--kpg-type", "ECDH", "test-vectors", libName};
+            args = buildCLIArgs(libName, "test-vectors", "--kpg-type", "ECDH");
         }
         ECTesterStandalone.main(args);
         String sout = out.capturedString();
@@ -100,9 +126,9 @@ public class AppTests {
         // TODO: "Nettle" is very broken here for a weird reason.
         assumeFalse(libName.equals("Nettle"));
 
-        String[] args = new String[]{"test", "performance", libName};
+        String[] args = buildCLIArgs(libName, "performance");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
-            args = new String[]{"test", "--kpg-type", "ECDH", "performance", libName};
+            args = buildCLIArgs(libName, "performance", "--kpg-type", "ECDH");
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
@@ -117,7 +143,7 @@ public class AppTests {
     @ParameterizedTest
     @MethodSource("libs")
     public void signatureSuite(String libName) {
-        String[] args = new String[]{"test", "signature", libName};
+        String[] args = buildCLIArgs(libName, "signature");
         switch (libName) {
             case "Nettle":
             case "libgcrypt":
@@ -127,7 +153,7 @@ public class AppTests {
             case "LibreSSL":
             case "IPPCP":
             case "mbedTLS":
-                args = new String[]{"test", "-st", "NONEwithECDSA", "signature", libName};
+                args = buildCLIArgs(libName, "signature", "-st", "NONEwithECDSA");
                 break;
         }
         ECTesterStandalone.main(args);
@@ -136,9 +162,9 @@ public class AppTests {
     @ParameterizedTest
     @MethodSource("libs")
     public void miscSuite(String libName) {
-        String[] args = new String[]{"test", "miscellaneous", libName};
+        String[] args = buildCLIArgs(libName, "miscellaneous");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
-            args = new String[]{"test", "--kpg-type", "ECDH", "miscellaneous", libName};
+            args = buildCLIArgs(libName, "miscellaneous", "--kpg-type", "ECDH");
         }
         ECTesterStandalone.main(args);
     }
@@ -149,9 +175,9 @@ public class AppTests {
         // TODO: "Nettle" is very broken here for a weird reason.
         assumeFalse(libName.equals("Nettle"));
 
-        String[] args = new String[]{"test", "invalid", libName};
+        String[] args = buildCLIArgs(libName, "invalid");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
-            args = new String[]{"test", "--kpg-type", "ECDH", "invalid", libName};
+            args = buildCLIArgs(libName, "invalid", "--kpg-type", "ECDH");
         }
         ECTesterStandalone.main(args);
     }

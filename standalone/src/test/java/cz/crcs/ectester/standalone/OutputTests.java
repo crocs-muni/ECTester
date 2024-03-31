@@ -14,7 +14,7 @@ public class OutputTests {
     @ValueSource(strings = {"text", "xml", "yml"})
     @StdIo()
     public void formats(String format, StdOut out) {
-        ECTesterStandalone.main(new String[]{"test", "-f", format, "default", "Sun"});
+        ECTesterStandalone.main(new String[]{"test", "-f", format, "default", "SunEC"});
         String s = out.capturedString();
         assertFalse(s.isEmpty());
     }

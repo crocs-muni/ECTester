@@ -35,15 +35,29 @@ application {
 }
 
 tasks.named<Test>("test") {
+    val resultsDir = layout.buildDirectory.dir("results").get().asFile;
+    doFirst {
+        resultsDir.mkdirs();
+    }
+
     useJUnitPlatform()
     // Report is always generated after tests run
     finalizedBy(tasks.jacocoTestReport)
-    jvmArgs(
-            "--add-exports", "jdk.crypto.ec/sun.security.ec=ALL-UNNAMED"
-    )
+
+    if (JavaVersion.current() > JavaVersion.VERSION_1_8 && JavaVersion.current() < JavaVersion.VERSION_22) {
+        jvmArgs("--add-exports", "jdk.crypto.ec/sun.security.ec=ALL-UNNAMED"
+        )
+    } else if (JavaVersion.current() >= JavaVersion.VERSION_22) {
+        jvmArgs("--add-exports", "java.base/sun.security.ec=ALL-UNNAMED")
+    }
+
     // Add wolfcrypt JNI lib path to LD_LIBRARY_PATH (as our native library loading does not handle it)
     environment(
             "LD_LIBRARY_PATH", "$rootDir/ext/wolfcrypt-jni/lib/:" + System.getenv("LD_LIBRARY_PATH")
+    )
+    // Add a path where we will store our test results.
+    environment(
+            "RESULT_PATH", resultsDir.absolutePath
     )
 }
 
@@ -77,7 +91,7 @@ tasks.register<Exec>("libs") {
     environment("PROJECT_ROOT_PATH", rootDir.absolutePath)
     if (osdetector.os == "windows") {
         commandLine("makefile.bat", "/c")
-    } else if (osdetector.os == "linux"){
+    } else if (osdetector.os == "linux") {
         commandLine("make", "-k", "-B")
     }
 }
