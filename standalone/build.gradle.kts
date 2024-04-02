@@ -89,10 +89,18 @@ tasks.withType<JavaCompile> {
 tasks.register<Exec>("libs") {
     workingDir("src/main/resources/cz/crcs/ectester/standalone/libs/jni")
     environment("PROJECT_ROOT_PATH", rootDir.absolutePath)
+
+    val libName = findProperty("libName") ?: ""
+    if ( libName == "" ) {
+        println("Building all libraries")
+    } else {
+        println("Buidling ${libName}")
+    }
+
     if (osdetector.os == "windows") {
-        commandLine("makefile.bat", "/c")
+        commandLine("makefile.bat", "/c", libName)
     } else if (osdetector.os == "linux") {
-        commandLine("make", "-k", "-B")
+        commandLine("make", "-k", "-B", libName)
     }
 }
 
