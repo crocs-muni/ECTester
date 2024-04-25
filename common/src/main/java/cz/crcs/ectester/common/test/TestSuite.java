@@ -55,7 +55,9 @@ public abstract class TestSuite {
      */
     protected <T extends Test> T runTest(T t) {
         running = t;
+        writer.beginTest(t);
         t.run();
+        writer.endTest(t);
         running = null;
         return t;
     }
