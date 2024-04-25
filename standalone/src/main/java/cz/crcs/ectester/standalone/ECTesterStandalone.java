@@ -37,11 +37,14 @@ import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
 import cz.crcs.ectester.standalone.consts.SignatureIdent;
 import cz.crcs.ectester.standalone.libs.*;
 import cz.crcs.ectester.standalone.output.FileTestWriter;
-import cz.crcs.ectester.standalone.output.TextTestWriter;
-import cz.crcs.ectester.standalone.output.XMLTestWriter;
-import cz.crcs.ectester.standalone.output.YAMLTestWriter;
 import cz.crcs.ectester.standalone.test.suites.*;
 import org.apache.commons.cli.*;
+import org.bouncycastle.asn1.ASN1OctetString;
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import org.bouncycastle.jcajce.interfaces.EdDSAPrivateKey;
+import org.bouncycastle.jcajce.interfaces.EdDSAPublicKey;
+import org.bouncycastle.jcajce.interfaces.XDHPrivateKey;
+import org.bouncycastle.jcajce.interfaces.XDHPublicKey;
 
 import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
@@ -55,8 +58,7 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.*;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
+import java.security.interfaces.*;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
@@ -158,6 +160,8 @@ public class ECTesterStandalone {
                 listIdents();
             } else if (cli.isNext("ecdh")) {
                 ecdh();
+            } else if (cli.isNext("xdh")) {
+                xdh();
             } else if (cli.isNext("ecdsa")) {
                 ecdsa();
             } else if (cli.isNext("generate")) {
@@ -231,6 +235,11 @@ public class ECTesterStandalone {
         ecdhOpts.addOption(Option.builder().longOpt("fixed-public").desc("Perform ECDH with fixed public key.").build());
         ParserOptions ecdh = new ParserOptions(new DefaultParser(), ecdhOpts, "Perform EC based KeyAgreement.");
         actions.put("ecdh", ecdh);
+
+        Options xdhOpts = new Options();
+        xdhOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do XDH [amount] times.").build());
+        ParserOptions xdh = new ParserOptions(new DefaultParser(), xdhOpts, "Perform XDH (x25519/x448).");
+        actions.put("xdh", xdh);
 
         Options ecdsaOpts = new Options();
         ecdsaOpts.addOption(bits);
@@ -512,6 +521,10 @@ public class ECTesterStandalone {
         }
     }
 
+    private void xdh() {
+
+    }
+
     /**
      *
      */
@@ -744,11 +757,36 @@ public class ECTesterStandalone {
             if (!lib.getNativeTimingSupport().isEmpty()) {
                 elapsed = lib.getLastNativeTiming();
             }
-            ECPublicKey publicKey = (ECPublicKey) kp.getPublic();
-            ECPrivateKey privateKey = (ECPrivateKey) kp.getPrivate();
-
-            String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(publicKey.getW(), publicKey.getParams()), false);
-            String priv = ByteUtil.bytesToHex(privateKey.getS().toByteArray(), false);
+            PublicKey pubkey = kp.getPublic();
+            PrivateKey privkey = kp.getPrivate();
+            String pub;
+            String priv;
+            if (pubkey instanceof ECPublicKey && privkey instanceof ECPrivateKey) {
+                ECPublicKey publicKey = (ECPublicKey) pubkey;
+                ECPrivateKey privateKey = (ECPrivateKey) privkey;
+                pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(publicKey.getW(), publicKey.getParams()), false);
+                priv = ByteUtil.bytesToHex(privateKey.getS().toByteArray(), false);
+            } else if (pubkey instanceof XECPublicKey && privkey instanceof XECPrivateKey) {
+                pub = ByteUtil.bytesToHex(((XECPublicKey) pubkey).getU().toByteArray(), false);
+                priv = ByteUtil.bytesToHex(((XECPrivateKey) privkey).getScalar().get(), false);
+            } else if (pubkey instanceof EdECPublicKey && privkey instanceof EdECPrivateKey) {
+                pub = ByteUtil.bytesToHex(((EdECPublicKey) pubkey).getPoint().getY().toByteArray(), false);
+                priv = ByteUtil.bytesToHex(((EdECPrivateKey) privkey).getBytes().get(), false);
+            } else if (pubkey instanceof XDHPublicKey && privkey instanceof XDHPrivateKey) {
+                // Special-case BouncyCastle XDH
+                pub = ByteUtil.bytesToHex(((XDHPublicKey) pubkey).getU().toByteArray(), false);
+                PrivateKeyInfo pkinfo = PrivateKeyInfo.getInstance(privkey.getEncoded());
+                priv = ByteUtil.bytesToHex(ASN1OctetString.getInstance(pkinfo.getPrivateKey().getOctets()).getOctets(), false);
+            } else if (pubkey instanceof EdDSAPublicKey && privkey instanceof EdDSAPrivateKey) {
+                // Special-case BouncyCastle EdDSA
+                pub = ByteUtil.bytesToHex(((EdDSAPublicKey) pubkey).getPointEncoding(), false);
+                PrivateKeyInfo pkinfo = PrivateKeyInfo.getInstance(privkey.getEncoded());
+                priv = ByteUtil.bytesToHex(ASN1OctetString.getInstance(pkinfo.getPrivateKey().getOctets()).getOctets(), false);
+            } else {
+                System.err.println(pubkey.getClass().getCanonicalName());
+                System.err.println(privkey.getClass().getCanonicalName());
+                break;
+            }
             out.printf("%d;%d;%s;%s%n", i, elapsed, pub, priv);
         }
 
