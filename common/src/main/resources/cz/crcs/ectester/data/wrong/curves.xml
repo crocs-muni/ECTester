@@ -92,4 +92,46 @@
         <file>wrongt571.csv</file>
         <desc>The field polynomial is not irreducible in F_2^571[x].</desc>
     </curve>
+    <curve>
+        <id>pseudo192</id>
+        <bits>192</bits>
+        <field>prime</field>
+        <file>pseudo192.csv</file>
+        <desc>The field is not prime (but a Carmichael pseudoprime, see https://github.com/crocs-muni/fooling-primality-tests/).</desc>
+    </curve>
+    <curve>
+        <id>pseudo224</id>
+        <bits>224</bits>
+        <field>prime</field>
+        <file>pseudo224.csv</file>
+        <desc>The field is not prime (but a Carmichael pseudoprime, see https://github.com/crocs-muni/fooling-primality-tests/).</desc>
+    </curve>
+    <curve>
+        <id>pseudo256</id>
+        <bits>256</bits>
+        <field>prime</field>
+        <file>pseudo256.csv</file>
+        <desc>The field is not prime (but a Carmichael pseudoprime, see https://github.com/crocs-muni/fooling-primality-tests/).</desc>
+    </curve>
+    <curve>
+        <id>pseudo384</id>
+        <bits>384</bits>
+        <field>prime</field>
+        <file>pseudo384.csv</file>
+        <desc>The field is not prime (but a Carmichael pseudoprime, see https://github.com/crocs-muni/fooling-primality-tests/).</desc>
+    </curve>
+    <curve>
+        <id>pseudo512</id>
+        <bits>512</bits>
+        <field>prime</field>
+        <file>pseudo512.csv</file>
+        <desc>The field is not prime (but a Carmichael pseudoprime, see https://github.com/crocs-muni/fooling-primality-tests/).</desc>
+    </curve>
+    <curve>
+        <id>pseudo521</id>
+        <bits>521</bits>
+        <field>prime</field>
+        <file>pseudo521.csv</file>
+        <desc>The field is not prime (but a Carmichael pseudoprime, see https://github.com/crocs-muni/fooling-primality-tests/).</desc>
+    </curve>
 </curves>
