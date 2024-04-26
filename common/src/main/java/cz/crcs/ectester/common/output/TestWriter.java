@@ -19,20 +19,32 @@ public interface TestWriter {
     void begin(TestSuite suite);
 
     /**
-     * @param t
-     * @param index
+     * Begin the test (before it is run).
+     * @param t Test to begin output of.
+     */
+    void beginTest(Test t);
+
+    /**
+     * End the test (after it is run, or errored out).
+     * @param t Test to end output of.
+     */
+    void endTest(Test t);
+
+    /**
+     * @param t Test to output.
+     * @param index Index of the test.
      */
     void outputTest(Test t, int index);
 
     /**
-     * @param t
-     * @param cause
-     * @param index
+     * @param t Test to output the error from.
+     * @param cause Throwable to output.
+     * @param index Index of the test.
      */
     void outputError(Test t, Throwable cause, int index);
 
     /**
-     *
+     * End writing the TestSuite.
      */
     void end();
 }

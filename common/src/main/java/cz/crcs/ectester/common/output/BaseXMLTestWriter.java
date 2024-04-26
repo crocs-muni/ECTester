@@ -116,6 +116,16 @@ public abstract class BaseXMLTestWriter implements TestWriter {
     }
 
     @Override
+    public void beginTest(Test t) {
+
+    }
+
+    @Override
+    public void endTest(Test t) {
+
+    }
+
+    @Override
     public void outputTest(Test t, int index) {
         if (!t.hasRun())
             return;

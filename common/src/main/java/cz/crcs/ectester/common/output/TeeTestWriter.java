@@ -21,6 +21,20 @@ public class TeeTestWriter implements TestWriter {
     }
 
     @Override
+    public void beginTest(Test t) {
+        for (TestWriter writer : writers) {
+            writer.beginTest(t);
+        }
+    }
+
+    @Override
+    public void endTest(Test t) {
+        for (TestWriter writer : writers) {
+            writer.endTest(t);
+        }
+    }
+
+    @Override
     public void outputTest(Test t, int index) {
         for (TestWriter writer : writers) {
             writer.outputTest(t, index);
