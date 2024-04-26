@@ -62,6 +62,7 @@ import java.security.interfaces.*;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
+import java.security.spec.NamedParameterSpec;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -160,8 +161,6 @@ public class ECTesterStandalone {
                 listIdents();
             } else if (cli.isNext("ecdh")) {
                 ecdh();
-            } else if (cli.isNext("xdh")) {
-                xdh();
             } else if (cli.isNext("ecdsa")) {
                 ecdsa();
             } else if (cli.isNext("generate")) {
@@ -235,11 +234,6 @@ public class ECTesterStandalone {
         ecdhOpts.addOption(Option.builder().longOpt("fixed-public").desc("Perform ECDH with fixed public key.").build());
         ParserOptions ecdh = new ParserOptions(new DefaultParser(), ecdhOpts, "Perform EC based KeyAgreement.");
         actions.put("ecdh", ecdh);
-
-        Options xdhOpts = new Options();
-        xdhOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do XDH [amount] times.").build());
-        ParserOptions xdh = new ParserOptions(new DefaultParser(), xdhOpts, "Perform XDH (x25519/x448).");
-        actions.put("xdh", xdh);
 
         Options ecdsaOpts = new Options();
         ecdsaOpts.addOption(bits);
@@ -467,8 +461,8 @@ public class ECTesterStandalone {
             other = kpg.genKeyPair();
         }
 
-        ECPrivateKey privkey = (ECPrivateKey) ECUtil.loadKey(EC_Consts.PARAMETER_S, cli.getOptionValue("ecdh.named-private"), cli.getOptionValue("ecdh.private"), spec);
-        ECPublicKey pubkey = (ECPublicKey) ECUtil.loadKey(EC_Consts.PARAMETER_W, cli.getOptionValue("ecdh.named-public"), cli.getOptionValue("ecdh.public"), spec);
+        PrivateKey privkey = (ECPrivateKey) ECUtil.loadKey(EC_Consts.PARAMETER_S, cli.getOptionValue("ecdh.named-private"), cli.getOptionValue("ecdh.private"), spec);
+        PublicKey pubkey = (ECPublicKey) ECUtil.loadKey(EC_Consts.PARAMETER_W, cli.getOptionValue("ecdh.named-public"), cli.getOptionValue("ecdh.public"), spec);
 
         int amount = Integer.parseInt(cli.getOptionValue("ecdh.amount", "1"));
         for (int i = 0; i < amount || amount == 0; ++i) {
@@ -480,11 +474,11 @@ public class ECTesterStandalone {
             }
 
             if (!cli.hasOption("ecdh.named-private") && !cli.hasOption("ecdh.private")) {
-                privkey = (ECPrivateKey) one.getPrivate();
+                privkey = one.getPrivate();
             }
 
             if (!cli.hasOption("ecdh.named-public") && !cli.hasOption("ecdh.public")) {
-                pubkey = (ECPublicKey) other.getPublic();
+                pubkey = other.getPublic();
             }
 
             long elapsed = -System.nanoTime();
@@ -510,8 +504,8 @@ public class ECTesterStandalone {
             }
             ka = kaIdent.getInstance(lib.getProvider());
 
-            String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW(), pubkey.getParams()), false);
-            String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
+            String pub = ByteUtil.bytesToHex(ECUtil.pubkeyToBytes(pubkey), false);
+            String priv = ByteUtil.bytesToHex(ECUtil.privkeyToBytes(privkey), false);
             String dh = ByteUtil.bytesToHex(result, false);
             out.printf("%d;%d;%s;%s;%s%n", i, elapsed, pub, priv, dh);
         }
@@ -519,10 +513,6 @@ public class ECTesterStandalone {
         if (cli.hasOption("ecdh.output")) {
             out.close();
         }
-    }
-
-    private void xdh() {
-
     }
 
     /**
@@ -759,30 +749,11 @@ public class ECTesterStandalone {
             }
             PublicKey pubkey = kp.getPublic();
             PrivateKey privkey = kp.getPrivate();
-            String pub;
-            String priv;
-            if (pubkey instanceof ECPublicKey && privkey instanceof ECPrivateKey) {
-                ECPublicKey publicKey = (ECPublicKey) pubkey;
-                ECPrivateKey privateKey = (ECPrivateKey) privkey;
-                pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(publicKey.getW(), publicKey.getParams()), false);
-                priv = ByteUtil.bytesToHex(privateKey.getS().toByteArray(), false);
-            } else if (pubkey instanceof XECPublicKey && privkey instanceof XECPrivateKey) {
-                pub = ByteUtil.bytesToHex(((XECPublicKey) pubkey).getU().toByteArray(), false);
-                priv = ByteUtil.bytesToHex(((XECPrivateKey) privkey).getScalar().get(), false);
-            } else if (pubkey instanceof EdECPublicKey && privkey instanceof EdECPrivateKey) {
-                pub = ByteUtil.bytesToHex(((EdECPublicKey) pubkey).getPoint().getY().toByteArray(), false);
-                priv = ByteUtil.bytesToHex(((EdECPrivateKey) privkey).getBytes().get(), false);
-            } else if (pubkey instanceof XDHPublicKey && privkey instanceof XDHPrivateKey) {
-                // Special-case BouncyCastle XDH
-                pub = ByteUtil.bytesToHex(((XDHPublicKey) pubkey).getU().toByteArray(), false);
-                PrivateKeyInfo pkinfo = PrivateKeyInfo.getInstance(privkey.getEncoded());
-                priv = ByteUtil.bytesToHex(ASN1OctetString.getInstance(pkinfo.getPrivateKey().getOctets()).getOctets(), false);
-            } else if (pubkey instanceof EdDSAPublicKey && privkey instanceof EdDSAPrivateKey) {
-                // Special-case BouncyCastle EdDSA
-                pub = ByteUtil.bytesToHex(((EdDSAPublicKey) pubkey).getPointEncoding(), false);
-                PrivateKeyInfo pkinfo = PrivateKeyInfo.getInstance(privkey.getEncoded());
-                priv = ByteUtil.bytesToHex(ASN1OctetString.getInstance(pkinfo.getPrivateKey().getOctets()).getOctets(), false);
-            } else {
+            byte[] pubBytes = ECUtil.pubkeyToBytes(pubkey);
+            byte[] privBytes = ECUtil.privkeyToBytes(privkey);
+            String pub = ByteUtil.bytesToHex(pubBytes, false);
+            String priv = ByteUtil.bytesToHex(privBytes, false);
+            if (pubBytes == null || privBytes == null) {
                 System.err.println(pubkey.getClass().getCanonicalName());
                 System.err.println(privkey.getClass().getCanonicalName());
                 break;
@@ -801,7 +772,6 @@ public class ECTesterStandalone {
     private void test() throws TestException, ParserConfigurationException, FileNotFoundException {
         TestWriter writer = new FileTestWriter(cli.getOptionValue("test.format", "text"), !cli.hasOption("test.quiet"), cli.getOptionValues("test.output"));
         StandaloneTestSuite suite;
-
         switch (cli.getArg(0).toLowerCase()) {
             case "test-vectors":
                 suite = new StandaloneTestVectorSuite(writer, cfg, cli);
@@ -836,9 +806,9 @@ public class ECTesterStandalone {
             case "performance":
                 suite = new StandalonePerformanceSuite(writer, cfg, cli);
                 break;
-            case "default":
             default:
                 suite = new StandaloneDefaultSuite(writer, cfg, cli);
+                break;
         }
 
         suite.run();
