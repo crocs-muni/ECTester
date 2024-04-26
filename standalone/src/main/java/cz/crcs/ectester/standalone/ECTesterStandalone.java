@@ -39,12 +39,6 @@ import cz.crcs.ectester.standalone.libs.*;
 import cz.crcs.ectester.standalone.output.FileTestWriter;
 import cz.crcs.ectester.standalone.test.suites.*;
 import org.apache.commons.cli.*;
-import org.bouncycastle.asn1.ASN1OctetString;
-import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
-import org.bouncycastle.jcajce.interfaces.EdDSAPrivateKey;
-import org.bouncycastle.jcajce.interfaces.EdDSAPublicKey;
-import org.bouncycastle.jcajce.interfaces.XDHPrivateKey;
-import org.bouncycastle.jcajce.interfaces.XDHPublicKey;
 
 import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
@@ -62,7 +56,6 @@ import java.security.interfaces.*;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
-import java.security.spec.NamedParameterSpec;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -608,17 +601,17 @@ public class ECTesterStandalone {
         String hashAlgoOut = sigIdent.getHashAlgo() != null ? String.format("[%s]", sigIdent.getHashAlgo()) : "";
         out.printf("index;signTime[%s];verifyTime[%s];data;pubW;privS;signature%s;nonce;verified%n", timeUnit, timeUnit, hashAlgoOut);
 
-        ECPrivateKey privkey = (ECPrivateKey) ECUtil.loadKey(EC_Consts.PARAMETER_S, cli.getOptionValue("ecdsa.named-private"), cli.getOptionValue("ecdsa.private"), spec);
-        ECPublicKey pubkey = (ECPublicKey) ECUtil.loadKey(EC_Consts.PARAMETER_W, cli.getOptionValue("ecdsa.named-public"), cli.getOptionValue("ecdsa.public"), spec);
+        PrivateKey privkey = (ECPrivateKey) ECUtil.loadKey(EC_Consts.PARAMETER_S, cli.getOptionValue("ecdsa.named-private"), cli.getOptionValue("ecdsa.private"), spec);
+        PublicKey pubkey = (ECPublicKey) ECUtil.loadKey(EC_Consts.PARAMETER_W, cli.getOptionValue("ecdsa.named-public"), cli.getOptionValue("ecdsa.public"), spec);
 
         KeyPair one;
         if (cli.hasOption("ecdsa.fixed")) {
             one = kpg.genKeyPair();
             if (!cli.hasOption("ecdsa.named-private")) {
-                privkey = (ECPrivateKey) one.getPrivate();
+                privkey = one.getPrivate();
             }
             if (!cli.hasOption("ecdsa.named-public")) {
-                pubkey = (ECPublicKey) one.getPublic();
+                pubkey = one.getPublic();
             }
         }
 
@@ -629,10 +622,10 @@ public class ECTesterStandalone {
                 one = kpg.genKeyPair();
 
                 if (!cli.hasOption("ecdsa.named-private")) {
-                    privkey = (ECPrivateKey) one.getPrivate();
+                    privkey = one.getPrivate();
                 }
                 if (!cli.hasOption("ecdsa.named-public")) {
-                    pubkey = (ECPublicKey) one.getPublic();
+                    pubkey = one.getPublic();
                 }
             }
 
@@ -656,27 +649,31 @@ public class ECTesterStandalone {
                 verifyTime = lib.getLastNativeTiming();
             }
 
-            String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW(), pubkey.getParams()), false);
-            String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
+            String pub = ByteUtil.bytesToHex(ECUtil.pubkeyToBytes(pubkey), false);
+            String priv = ByteUtil.bytesToHex(ECUtil.privkeyToBytes(privkey), false);
             String sign = ByteUtil.bytesToHex(signature, false);
             String k = "";
-            ECParameterSpec kSpec = spec;
-            if (kSpec == null) {
-                kSpec = privkey.getParams();
-            }
-            if (kSpec != null) {
-                // Parse the types out of SignatureIdent.
-                String hashAlgo = sigIdent.getHashAlgo();
-                String sigType = sigIdent.getSigType();
-                if (sigType == null) {
-                    sigType = sigIdent.toString();
+            if (privkey instanceof ECPrivateKey) {
+                ECPrivateKey ecPrivateKey = (ECPrivateKey) privkey;
+                ECParameterSpec kSpec = spec;
+                if (kSpec == null) {
+                    kSpec = ecPrivateKey.getParams();
                 }
+                if (kSpec != null) {
+                    // Parse the types out of SignatureIdent.
+                    String hashAlgo = sigIdent.getHashAlgo();
+                    String sigType = sigIdent.getSigType();
+                    if (sigType == null) {
+                        sigType = sigIdent.toString();
+                    }
 
-                BigInteger kValue = ECUtil.recoverSignatureNonce(signature, data, privkey.getS(), kSpec, hashAlgo, sigType);
-                if (kValue != null) {
-                    k = ByteUtil.bytesToHex(kValue.toByteArray(), false);
+                    BigInteger kValue = ECUtil.recoverSignatureNonce(signature, data, ecPrivateKey.getS(), kSpec, hashAlgo, sigType);
+                    if (kValue != null) {
+                        k = ByteUtil.bytesToHex(kValue.toByteArray(), false);
+                    }
                 }
             }
+
             out.printf("%d;%d;%d;%s;%s;%s;%s;%s;%d%n", i, signTime, verifyTime, dataString, pub, priv, sign, k, verified ? 1 : 0);
         }
 
