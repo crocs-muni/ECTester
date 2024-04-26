@@ -2,20 +2,22 @@ package cz.crcs.ectester.common.util;
 
 import cz.crcs.ectester.common.ec.*;
 import cz.crcs.ectester.data.EC_Store;
+import org.bouncycastle.asn1.ASN1OctetString;
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.bouncycastle.crypto.signers.PlainDSAEncoding;
 import org.bouncycastle.crypto.signers.StandardDSAEncoding;
+import org.bouncycastle.jcajce.interfaces.EdDSAPrivateKey;
+import org.bouncycastle.jcajce.interfaces.EdDSAPublicKey;
+import org.bouncycastle.jcajce.interfaces.XDHPrivateKey;
+import org.bouncycastle.jcajce.interfaces.XDHPublicKey;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyPair;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.ECKey;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
+import java.security.*;
+import java.security.interfaces.*;
 import java.security.spec.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -452,6 +454,46 @@ public class ECUtil {
             } else if (params == EC_Consts.PARAMETER_S) {
                 return new RawECPrivateKey(toScalar(param), (ECParameterSpec) spec);
             }
+        }
+        return null;
+    }
+
+    public static byte[] pubkeyToBytes(PublicKey pubkey) {
+        if (pubkey instanceof ECPublicKey) {
+            ECPublicKey ecPublicKey = (ECPublicKey) pubkey;
+            return ECUtil.toX962Uncompressed(ecPublicKey.getW(), ecPublicKey.getParams());
+        } else if (pubkey instanceof XECPublicKey) {
+            XECPublicKey xedPublicKey = (XECPublicKey) pubkey;
+            return xedPublicKey.getU().toByteArray();
+        } else if (pubkey instanceof EdECPublicKey) {
+            EdECPublicKey edECPublicKey = (EdECPublicKey) pubkey;
+            return edECPublicKey.getPoint().getY().toByteArray();
+        } else if (pubkey instanceof XDHPublicKey) {
+            XDHPublicKey xdhPublicKey = (XDHPublicKey) pubkey;
+            return xdhPublicKey.getU().toByteArray();
+            // Special-case BouncyCastle XDH
+        } else if (pubkey instanceof EdDSAPublicKey) {
+            EdDSAPublicKey edDSAPublicKey = (EdDSAPublicKey) pubkey;
+            // Special-case BouncyCastle EdDSA
+            return edDSAPublicKey.getPointEncoding();
+        }
+        return null;
+    }
+
+    public static byte[] privkeyToBytes(PrivateKey privkey) {
+        if (privkey instanceof ECPrivateKey) {
+            ECPrivateKey ecPrivateKey = (ECPrivateKey) privkey;
+            return ecPrivateKey.getS().toByteArray();
+        } else if (privkey instanceof XECPrivateKey) {
+            XECPrivateKey xecPrivateKey = (XECPrivateKey) privkey;
+            return xecPrivateKey.getScalar().get();
+        } else if (privkey instanceof EdECPrivateKey) {
+            EdECPrivateKey edECPrivateKey = (EdECPrivateKey) privkey;
+            return edECPrivateKey.getBytes().get();
+        } else if (privkey instanceof XDHPrivateKey || privkey instanceof EdDSAPrivateKey) {
+            // Special-case BouncyCastle XDH and EdDSA
+            PrivateKeyInfo xpkinfo = PrivateKeyInfo.getInstance(privkey.getEncoded());
+            return ASN1OctetString.getInstance(xpkinfo.getPrivateKey().getOctets()).getOctets();
         }
         return null;
     }

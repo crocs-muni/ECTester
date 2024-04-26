@@ -36,12 +36,15 @@ There are three parts of ECTester, the JavaCard applet used for testing, the rea
 standalone app which tests software libraries. The target platform for ECTester is Linux, but things should work on
 Windows as well, although testing of standalone libraries will be limited to Java libraries and Microsoft CNG library.
 
+The ECTester parts require different Java versions. Reader and standalone parts require Java >= 15 while the applet build
+will be able to target different JavaCard versions based on the Java version, see [this list](https://github.com/martinpaljak/ant-javacard/wiki/JavaCard-SDK-and-JDK-version-compatibility).
+
 To build ECTester simply do:
 ```bash
 git submodule update --init --recursive       # To initialize submodules (JavaCard SDKs, Microsoft CNG, BoringSSL, ...)
 ./gradlew :applet:buildJavaCard               # To build the applet (cap) -> "applet/build/javacard/applet[221,222,305].cap".
 ./gradlew :reader:uberJar                     # To build the reader tool (jar) -> "reader/build/libs/ECTesterReader.jar"
-./gradlew :standalone:libs                    # To build the native library shims. (Necessary
+./gradlew :standalone:libs                    # To build the native library shims.
 ./gradlew :standalone:uberJar                 # To build the standalone tool (jar) -> "standalone/build/libs/ECTesterStandalone.jar"
 ```
 The applet comes in several flavors, targeting JavaCard `2.2.1`, `2.2.2` and `3.0.5`. The `2.2.2` and later flavors
