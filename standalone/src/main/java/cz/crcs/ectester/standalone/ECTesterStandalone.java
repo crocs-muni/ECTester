@@ -315,19 +315,19 @@ public class ECTesterStandalone {
                 System.out.println(Colors.bold("\t\t- Supports native timing: ") + lib.getNativeTimingSupport().toString());
                 Set<KeyPairGeneratorIdent> kpgs = lib.getKPGs();
                 if (!kpgs.isEmpty()) {
-                    System.out.println(Colors.bold("\t\t- KeyPairGenerators: ") + kpgs.stream().map(KeyPairGeneratorIdent::getName).collect(Collectors.joining(", ")));
+                    System.out.println(Colors.bold("\t\t- KeyPairGenerators: ") + kpgs.stream().map(KeyPairGeneratorIdent::getName).sorted().collect(Collectors.joining(", ")));
                 }
                 Set<KeyAgreementIdent> eckas = lib.getKAs();
                 if (!eckas.isEmpty()) {
-                    System.out.println(Colors.bold("\t\t- KeyAgreements: ") + eckas.stream().map(KeyAgreementIdent::getName).collect(Collectors.joining(", ")));
+                    System.out.println(Colors.bold("\t\t- KeyAgreements: ") + eckas.stream().map(KeyAgreementIdent::getName).sorted().collect(Collectors.joining(", ")));
                 }
                 Set<SignatureIdent> sigs = lib.getSigs();
                 if (!sigs.isEmpty()) {
-                    System.out.println(Colors.bold("\t\t- Signatures: ") + sigs.stream().map(SignatureIdent::getName).collect(Collectors.joining(", ")));
+                    System.out.println(Colors.bold("\t\t- Signatures: ") + sigs.stream().map(SignatureIdent::getName).sorted().collect(Collectors.joining(", ")));
                 }
                 Set<String> curves = lib.getCurves();
                 if (!curves.isEmpty()) {
-                    System.out.println(Colors.bold("\t\t- Curves: ") + String.join(", ", curves));
+                    System.out.println(Colors.bold("\t\t- Curves: ") + curves.stream().sorted().collect(Collectors.joining(", ")));
                 }
                 System.out.println();
             }
