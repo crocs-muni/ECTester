@@ -4,7 +4,7 @@
 CC?=gcc
 CXX?=g++
 
-LFLAGS+=-fPIC -shared
+LFLAGS+=-fPIC -shared -L "$(JNI_LIBDIR)" -L "$(JNI_LIBDIR)/server" #-ljsig -ljvm
 CFLAGS+=-fPIC -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I. -Wno-deprecated-declarations
 CXXFLAGS+=-fPIC -I"$(JNI_INCLUDEDIR)" -I"$(JNI_PLATFORMINCLUDEDIR)" -I. -Wno-deprecated-declarations
 
@@ -36,10 +36,15 @@ endif
 
 ifneq ($(JAVA_HOME),)
   JNI_INCLUDEDIR ?= $(JAVA_HOME)/include
+  JNI_LIBDIR ?= $(JAVA_HOME)/lib
 endif
 
 ifeq ($(JNI_INCLUDEDIR),)
   $(error "Could not determine JNI include dir. Try specifying either JAVA_HOME or JNI_INCLUDEDIR.")
+endif
+
+ifeq ($(JNI_LIBDIR),)
+  $(error "Could not determine JNI lib dir. Try specifying either JAVA_HOME or JNI_LIBDIR.")
 endif
 
 TARGETTRIPLET := $(shell $(CC) -dumpmachine)
@@ -67,6 +72,9 @@ c_utils.o: c_utils.c
 
 lib_timing.so: c_timing.c
 	$(CC) -o $@ -shared $(CFLAGS) -Wl,-soname,lib_timing.so $<
+
+lib_signals.so: c_signals.c
+	$(CC) -o $@ -shared $(CFLAGS) -Wl,-soname,lib_signals.so $<
 
 cpp_utils.o: cpp_utils.cpp
 	$(CXX) $(CXXFLAGS) -c $<
@@ -98,8 +106,8 @@ boringssl.o: boringssl.c
 # libgcrypt shim
 gcrypt: gcrypt_provider.so
 
-gcrypt_provider.so: gcrypt.o c_utils.o | lib_timing.so
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell libgcrypt-config --libs) -l:lib_timing.so
+gcrypt_provider.so: gcrypt.o c_utils.o | lib_timing.so lib_signals.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell libgcrypt-config --libs) -l:lib_timing.so -l:lib_signals.so
 
 gcrypt.o: gcrypt.c
 	$(CC) $(shell libgcrypt-config --cflags) $(CFLAGS) -c $<
