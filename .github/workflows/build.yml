@@ -52,7 +52,7 @@ jobs:
 
     strategy:
       matrix:
-        java: [ "17", "21", "22" ]
+        java: [ "17", "21"]
     name: Build reader on Java ${{ matrix.java }}
     steps:
       - uses: actions/checkout@v4
@@ -88,7 +88,7 @@ jobs:
 
     strategy:
       matrix:
-        java: [ "17", "21", "22"]
+        java: [ "17", "21"]
     env:
       # ffs: https://github.com/adoptium/adoptium-support/issues/485 !!!
       # also, add the wolfcrypt JNI path
