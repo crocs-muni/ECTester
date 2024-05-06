@@ -116,7 +116,7 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
             Map<String, Object> result = new LinkedHashMap<>();
             result.put("type", "library");
             result.put("ectester", ECTesterStandalone.VERSION);
-            result.put("name", standaloneSuite.getLibrary().name());
+            result.put("name", standaloneSuite.getLibrary().fullName());
             return result;
         }
         return null;
