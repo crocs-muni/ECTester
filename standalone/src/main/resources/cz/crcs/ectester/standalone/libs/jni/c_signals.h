@@ -9,6 +9,8 @@ extern "C"
 {
 #endif
 
+#define TIMEOUT 5
+
 /**
  *
  */
@@ -51,7 +53,8 @@ jobject get_siginfo(JNIEnv *env);
 						(*env)->ThrowNew(env, timeoutexception_class, "Operation timed out."); \
 					} \
 } while (0)
-
+#define SIG_CATCH_HANDLE(env) SIG_CATCH(); \
+							  SIG_HANDLE(env)
 
 
 #ifdef __cplusplus
