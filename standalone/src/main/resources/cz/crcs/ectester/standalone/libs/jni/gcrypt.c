@@ -277,12 +277,6 @@ static jobject generate_from_sexp(JNIEnv *env, gcry_sexp_t gen_sexp) {
     gcry_error_t err = gcry_pk_genkey(&key_sexp, gen_sexp);
     native_timing_stop();
 
-	SIG_TRY() {
-		//raise(SIGSEGV);
-	} SIG_CATCH();
-
-	SIG_HANDLE(env);
-
     if (gcry_err_code(err) != GPG_ERR_NO_ERROR) {
         throw_new_var(env, "java/security/GeneralSecurityException", "Error generating key. Error: %ui", gcry_err_code(err));
         goto release_sexp;

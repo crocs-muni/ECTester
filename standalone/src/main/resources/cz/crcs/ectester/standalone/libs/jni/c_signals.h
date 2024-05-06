@@ -2,6 +2,7 @@
 
 #include <jni.h>
 #include <setjmp.h>
+#include <signal.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -11,12 +12,12 @@ extern "C"
 /**
  *
  */
-void init_signals(jmp_buf *env);
+void init_signals(jmp_buf *env, unsigned int timeout);
 
 /**
  *
  */
-jmp_buf *get_jmpbuf();
+sigjmp_buf *get_jmpbuf();
 
 /**
  *
@@ -34,8 +35,8 @@ bool get_timedout();
 jobject get_siginfo(JNIEnv *env);
 
 
-#define SIG_TRY() 	init_signals(get_jmpbuf()); \
-					if (!setjmp(*get_jmpbuf()))
+#define SIG_TRY(timeout) 	init_signals(get_jmpbuf(), timeout); \
+							if (!sigsetjmp(*get_jmpbuf(), 1))
 #define SIG_CATCH() deinit_signals();
 #define SIG_HANDLE(env) do { \
 					jobject siginfo = get_siginfo(env); \

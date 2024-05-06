@@ -6,29 +6,38 @@
 #include <signal.h>
 #include <setjmp.h>
 #include <stdbool.h>
-
-// TODO: Handle alarms properly.
-//       Create a new thread, make it sleep, then send alarm to the main thread.
+#include <pthread.h>
+#include <unistd.h>
 
 static siginfo_t last_siginfo;
 static bool initialized = false;
 static bool caught = false;
 static bool timedout = false;
-static jmp_buf *target = NULL;
+static sigjmp_buf buf;
+static sigjmp_buf *target = NULL;
+
+struct timer_arg {
+	unsigned int timeout;
+	pthread_t main_thread;
+};
+static struct timer_arg ta;
+static pthread_t timer_thread;
 
 void handler(int signo, siginfo_t *info, void *context) {
+	//printf("Signal, %i\n", signo);
 	last_siginfo = *info;
 	caught = true;
-	longjmp(*target, 1);
+	siglongjmp(*target, 1);
 }
 
 void alarm_handler(int signo) {
+	//printf("Alarm\n");
 	timedout = true;
+	siglongjmp(*target, 1);
 }
 
-static jmp_buf buf;
 
-jmp_buf *get_jmpbuf() {
+sigjmp_buf *get_jmpbuf() {
 	return &buf;
 }
 
@@ -36,7 +45,14 @@ static struct sigaction old_segv;
 static struct sigaction old_abrt;
 static struct sigaction old_alrm;
 
-void init_signals(jmp_buf *env) {
+void *timer(void *arg) {
+	sleep(ta.timeout);
+	pthread_kill(ta.main_thread, SIGALRM);
+	return NULL;
+}
+
+void init_signals(sigjmp_buf *env, unsigned int timeout) {
+	//printf("Initializing signals!\n");
 	struct sigaction action;
 	action.sa_sigaction = handler;
 	sigemptyset(&action.sa_mask);
@@ -55,10 +71,18 @@ void init_signals(jmp_buf *env) {
 	initialized = true;
 	caught = false;
 	timedout = false;
+
+	ta.timeout = timeout;
+	ta.main_thread = pthread_self();
+
+	pthread_create(&timer_thread, NULL, timer, (void *)&ta);
 }
 
 
 void deinit_signals() {
+	//printf("Deinitializing signals!\n");
+	pthread_cancel(timer_thread);
+
 	sigaction(SIGSEGV, NULL, &old_segv);
 	sigaction(SIGABRT, NULL, &old_abrt);
 	sigaction(SIGALRM, NULL, &old_alrm);

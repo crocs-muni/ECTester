@@ -74,7 +74,7 @@ lib_timing.so: c_timing.c
 	$(CC) -o $@ -shared $(CFLAGS) -Wl,-soname,lib_timing.so $<
 
 lib_signals.so: c_signals.c
-	$(CC) -o $@ -shared $(CFLAGS) -Wl,-soname,lib_signals.so $<
+	$(CC) -o $@ -shared $(CFLAGS) -pthread -lpthread -Wl,-soname,lib_signals.so $<
 
 cpp_utils.o: cpp_utils.cpp
 	$(CXX) $(CXXFLAGS) -c $<
@@ -107,7 +107,7 @@ boringssl.o: boringssl.c
 gcrypt: gcrypt_provider.so
 
 gcrypt_provider.so: gcrypt.o c_utils.o | lib_timing.so lib_signals.so
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell libgcrypt-config --libs) -l:lib_timing.so -l:lib_signals.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -pthread -lpthread $(shell libgcrypt-config --libs) -l:lib_timing.so -l:lib_signals.so
 
 gcrypt.o: gcrypt.c
 	$(CC) $(shell libgcrypt-config --cflags) $(CFLAGS) -c $<
