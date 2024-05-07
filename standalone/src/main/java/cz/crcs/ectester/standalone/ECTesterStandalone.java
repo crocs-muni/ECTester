@@ -106,8 +106,10 @@ public class ECTesterStandalone {
                 FileUtil.writeNewer(LIB_RESOURCE_DIR + "lib_timing.so", reqs.resolve("lib_timing.so"));
                 System.load(reqs.resolve("lib_timing.so").toString());
 
-                FileUtil.writeNewer(LIB_RESOURCE_DIR + "lib_signals.so", reqs.resolve("lib_signals.so"));
-                System.load(reqs.resolve("lib_signals.so").toString());
+                FileUtil.writeNewer(LIB_RESOURCE_DIR + "lib_csignals.so", reqs.resolve("lib_csignals.so"));
+                System.load(reqs.resolve("lib_csignals.so").toString());
+                FileUtil.writeNewer(LIB_RESOURCE_DIR + "lib_cppsignals.so", reqs.resolve("lib_cppsignals.so"));
+                System.load(reqs.resolve("lib_cppsignals.so").toString());
             }
 
             List<ProviderECLibrary> libObjects = new LinkedList<>();

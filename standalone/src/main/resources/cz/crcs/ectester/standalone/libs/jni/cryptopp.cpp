@@ -71,7 +71,12 @@ using CryptoPP::Integer;
 
 #include "cpp_utils.hpp"
 #include "c_timing.h"
-#include "c_signals.h"
+#include "cpp_signals.hpp"
+#undef SIG_TRY
+#undef SIG_CATCH_HANDLE
+#undef SIG_CATCH
+#undef SIG_HANDLE
+#undef SIG_DEINIT
 #define SIG_TRY(x)
 #define SIG_CATCH_HANDLE(x)
 #define SIG_CATCH()
