@@ -84,7 +84,7 @@ cpp_utils.o: cpp_utils.cpp
 openssl: openssl_provider.so
 
 openssl_provider.so: openssl.o c_utils.o | lib_timing.so lib_signals.so
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs openssl) -l:lib_timing.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs openssl) -l:lib_timing.so -l:lib_signals.so
 
 openssl.o: openssl.c
 	$(CC) $(shell pkg-config --cflags openssl) $(CFLAGS) -c $<
