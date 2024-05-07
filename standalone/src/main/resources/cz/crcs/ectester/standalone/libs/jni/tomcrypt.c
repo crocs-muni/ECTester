@@ -1,5 +1,6 @@
 #include "c_utils.h"
 #include "c_timing.h"
+#include "c_signals.h"
 
 #include "native.h"
 #include <stdio.h>
@@ -232,9 +233,12 @@ static void free_curve(ltc_ecc_set_type *curve) {
 static jobject generate_from_curve(JNIEnv *env, const ltc_ecc_set_type *curve) {
     ecc_key key;
 
-    native_timing_start();
-    int err = ecc_make_key_ex(&ltc_prng, find_prng("yarrow"), &key, curve);
-    native_timing_stop();
+	int err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = ecc_make_key_ex(&ltc_prng, find_prng("yarrow"), &key, curve);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (err != CRYPT_OK) {
         throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
@@ -381,9 +385,12 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     unsigned char result[curve->size];
     unsigned long output_len = curve->size;
 
-    native_timing_start();
-    int err = ecc_shared_secret(&priv, &pub, result, &output_len);
-    native_timing_stop();
+	int err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = ecc_shared_secret(&priv, &pub, result, &output_len);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (err != CRYPT_OK) {
         throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
@@ -425,9 +432,12 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     unsigned char result[curve->size*4];
     unsigned long output_len = curve->size*4;
 
-    native_timing_start();
-    int err = ecc_sign_hash((unsigned char *) data_data, data_size, result, &output_len, &ltc_prng, find_prng("yarrow"), &priv);
-    native_timing_stop();
+	int err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = ecc_sign_hash((unsigned char *) data_data, data_size, result, &output_len, &ltc_prng, find_prng("yarrow"), &priv);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (err != CRYPT_OK) {
         throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
@@ -467,9 +477,12 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     jbyte *sig_data = (*env)->GetByteArrayElements(env, signature, NULL);
 
     int result;
-    native_timing_start();
-    int err = ecc_verify_hash((unsigned char *) sig_data, sig_size, (unsigned char *) data_data, data_size, &result, &pub);
-    native_timing_stop();
+    int err;
+    SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = ecc_verify_hash((unsigned char *) sig_data, sig_size, (unsigned char *) data_data, data_size, &result, &pub);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (err != CRYPT_OK) {
         throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));

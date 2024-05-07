@@ -1,5 +1,6 @@
 #include "c_utils.h"
 #include "c_timing.h"
+#include "c_signals.h"
 
 #include "native.h"
 #include <string.h>
@@ -315,9 +316,12 @@ static jobject generate_from_curve(JNIEnv *env, mbedtls_ecp_group *group) {
     }
     gen_counter++;
 
-    native_timing_start();
-    int error = mbedtls_ecp_gen_keypair(group, &d, &Q, ctr_drbg_wrapper, &ctr_drbg);
-    native_timing_stop();
+	int error;
+    SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		error = mbedtls_ecp_gen_keypair(group, &d, &Q, ctr_drbg_wrapper, &ctr_drbg);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (error) {
         throw_new(env, "java/security/GeneralSecurityException", err_to_string(error));
@@ -453,9 +457,11 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     mbedtls_mpi result;
     mbedtls_mpi_init(&result);
 
-    native_timing_start();
-    error = mbedtls_ecdh_compute_shared(&curve, &result, &pub, &priv, ctr_drbg_wrapper, &ctr_drbg);
-    native_timing_stop();
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		error = mbedtls_ecdh_compute_shared(&curve, &result, &pub, &priv, ctr_drbg_wrapper, &ctr_drbg);
+		native_timing_stop();
+	} SIG_CATCH_HANDLE(env);
 
     if (error) {
         throw_new(env, "java/security/GeneralSecurityException", err_to_string(error));
@@ -504,9 +510,11 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     jsize data_size = (*env)->GetArrayLength(env, data);
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
 
-    native_timing_start();
-    error = mbedtls_ecdsa_sign(&curve, &r, &s, &priv, (unsigned char *) data_data, data_size, ctr_drbg_wrapper, &ctr_drbg);
-    native_timing_stop();
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		error = mbedtls_ecdsa_sign(&curve, &r, &s, &priv, (unsigned char *) data_data, data_size, ctr_drbg_wrapper, &ctr_drbg);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     mbedtls_mpi_free(&priv);
     mbedtls_ecp_group_free(&curve);
@@ -563,9 +571,11 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     jsize data_size = (*env)->GetArrayLength(env, data);
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
 
-    native_timing_start();
-    error = mbedtls_ecdsa_verify(&curve, (unsigned char *) data_data, data_size, &pub, &r, &s);
-    native_timing_stop();
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		error = mbedtls_ecdsa_verify(&curve, (unsigned char *) data_data, data_size, &pub, &r, &s);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
     if (error) {

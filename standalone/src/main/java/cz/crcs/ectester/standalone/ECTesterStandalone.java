@@ -36,6 +36,8 @@ import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
 import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
 import cz.crcs.ectester.standalone.consts.SignatureIdent;
 import cz.crcs.ectester.standalone.libs.*;
+import cz.crcs.ectester.standalone.libs.jni.SignalException;
+import cz.crcs.ectester.standalone.libs.jni.TimeoutException;
 import cz.crcs.ectester.standalone.output.FileTestWriter;
 import cz.crcs.ectester.standalone.test.suites.*;
 import org.apache.commons.cli.*;
@@ -103,6 +105,11 @@ public class ECTesterStandalone {
             if (!System.getProperty("os.name").startsWith("Windows")) {
                 FileUtil.writeNewer(LIB_RESOURCE_DIR + "lib_timing.so", reqs.resolve("lib_timing.so"));
                 System.load(reqs.resolve("lib_timing.so").toString());
+
+                FileUtil.writeNewer(LIB_RESOURCE_DIR + "lib_csignals.so", reqs.resolve("lib_csignals.so"));
+                System.load(reqs.resolve("lib_csignals.so").toString());
+                FileUtil.writeNewer(LIB_RESOURCE_DIR + "lib_cppsignals.so", reqs.resolve("lib_cppsignals.so"));
+                System.load(reqs.resolve("lib_cppsignals.so").toString());
             }
 
             List<ProviderECLibrary> libObjects = new LinkedList<>();
@@ -739,7 +746,16 @@ public class ECTesterStandalone {
         int amount = Integer.parseInt(cli.getOptionValue("generate.amount", "1"));
         for (int i = 0; i < amount || amount == 0; ++i) {
             long elapsed = -System.nanoTime();
-            KeyPair kp = kpg.genKeyPair();
+            KeyPair kp;
+            try {
+                kp = kpg.genKeyPair();
+            } catch (SignalException exc) {
+                System.err.println(exc.getSigInfo());
+                continue;
+            } catch (TimeoutException exc) {
+                System.err.println(exc);
+                continue;
+            }
             elapsed += System.nanoTime();
             if (!lib.getNativeTimingSupport().isEmpty()) {
                 elapsed = lib.getLastNativeTiming();

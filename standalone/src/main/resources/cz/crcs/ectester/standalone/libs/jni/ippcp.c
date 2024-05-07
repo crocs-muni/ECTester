@@ -1,5 +1,6 @@
 #include "c_timing.h"
 #include "c_utils.h"
+#include "c_signals.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -379,9 +380,12 @@ static jobject generate_from_curve(JNIEnv *env, int keysize, IppsECCPState *curv
 	int ord_bytes = (ord_bits + 7) / 8;
 	IppsBigNumState *secret = new_bn(ord_bits);
 
-	native_timing_start();
-	IppStatus err = ippsECCPGenKeyPair(secret, point, curve, prng_wrapper, prng_state);
-	native_timing_stop();
+	IppStatus err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = ippsECCPGenKeyPair(secret, point, curve, prng_wrapper, prng_state);
+		native_timing_stop();
+	} SIG_CATCH_HANDLE(env);
 
 	if (err != ippStsNoErr) {
 		throw_new(env, "java/security/GeneralSecurityException", ippcpGetStatusString(err));
@@ -559,9 +563,12 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 
 	IppsBigNumState *share = new_bn(keysize);
 
-	native_timing_start();
-	IppStatus err = ippsECCPSharedSecretDH(priv_bn, pub, share, curve);
-	native_timing_stop();
+	IppStatus err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = ippsECCPSharedSecretDH(priv_bn, pub, share, curve);
+		native_timing_stop();
+	} SIG_CATCH_HANDLE(env);
 
 	free(priv_bn);
 	free(pub);
@@ -622,23 +629,29 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 	jbyte r_buf[ord_bytes];
 	jbyte s_buf[ord_bytes];
 
-	native_timing_start();
-	IppStatus err = ippsECCPGenKeyPair(ephemeral_secret, ephemeral_point, curve, prng_wrapper, prng_state);
-	if (err != ippStsNoErr) {
-		throw_new(env, "java/security/GeneralSecurityException", ippcpGetStatusString(err));
-		goto error;
-	}
-	err = ippsECCPSetKeyPair(ephemeral_secret, ephemeral_point, ippFalse, curve);
-	if (err != ippStsNoErr) {
-		throw_new(env, "java/security/GeneralSecurityException", ippcpGetStatusString(err));
-		goto error;
-	}
-	err = ippsECCPSignDSA(data_bn, priv_bn, r, s, curve);
-	if (err != ippStsNoErr) {
-		throw_new(env, "java/security/GeneralSecurityException", ippcpGetStatusString(err));
-		goto error;
-	}
-	native_timing_stop();
+	IppStatus err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = ippsECCPGenKeyPair(ephemeral_secret, ephemeral_point, curve, prng_wrapper, prng_state);
+		if (err != ippStsNoErr) {
+			SIG_DEINIT();
+			throw_new(env, "java/security/GeneralSecurityException", ippcpGetStatusString(err));
+			goto error;
+		}
+		err = ippsECCPSetKeyPair(ephemeral_secret, ephemeral_point, ippFalse, curve);
+		if (err != ippStsNoErr) {
+			SIG_DEINIT();
+			throw_new(env, "java/security/GeneralSecurityException", ippcpGetStatusString(err));
+			goto error;
+		}
+		err = ippsECCPSignDSA(data_bn, priv_bn, r, s, curve);
+		if (err != ippStsNoErr) {
+			SIG_DEINIT();
+			throw_new(env, "java/security/GeneralSecurityException", ippcpGetStatusString(err));
+			goto error;
+		}
+		native_timing_stop();
+	} SIG_CATCH_HANDLE(env);
 
 	bn_get(r, (uint8_t *) r_buf, ord_bytes);
 	bn_get(s, (uint8_t *) s_buf, ord_bytes);
@@ -713,10 +726,13 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 
 	IppECResult result;
 
-	native_timing_start();
-	ippsECCPSetKeyPair(NULL, pub, ippTrue, curve);
-	IppStatus err = ippsECCPVerifyDSA(data_bn, r, s, &result, curve);
-	native_timing_stop();
+	IppStatus err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		ippsECCPSetKeyPair(NULL, pub, ippTrue, curve);
+		err = ippsECCPVerifyDSA(data_bn, r, s, &result, curve);
+		native_timing_stop();
+	} SIG_CATCH_HANDLE(env);
 
 	free(curve);
 	free(pub);

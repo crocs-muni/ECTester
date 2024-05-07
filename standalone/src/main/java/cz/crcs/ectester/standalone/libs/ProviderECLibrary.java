@@ -104,6 +104,10 @@ public abstract class ProviderECLibrary implements ECLibrary {
         return name;
     }
 
+    public String fullName() {
+        return name() + " (" + provider.getName() + ")";
+    }
+
     public Provider getProvider() {
         return provider;
     }
