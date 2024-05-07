@@ -1,5 +1,6 @@
 #include "c_utils.h"
 #include "c_timing.h"
+#include "c_signals.h"
 
 #include "native.h"
 #include <string.h>
@@ -313,9 +314,12 @@ static jobject generate_from_curve(JNIEnv *env, const EC_GROUP *curve) {
     EC_KEY *key = EC_KEY_new();
     EC_KEY_set_group(key, curve);
 
-    native_timing_start();
-    int err = EC_KEY_generate_key(key);
-    native_timing_stop();
+	int err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = EC_KEY_generate_key(key);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (!err) {
         throw_new(env, "java/security/GeneralSecurityException", "Error generating key, EC_KEY_generate_key.");
@@ -453,9 +457,12 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     jbyteArray result = (*env)->NewByteArray(env, secret_len);
     jbyte *result_data = (*env)->GetByteArrayElements(env, result, NULL);
 
-    native_timing_start();
-    int err = ECDH_compute_key(result_data, secret_len, EC_KEY_get0_public_key(pub), priv, NULL);
-    native_timing_stop();
+	int err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = ECDH_compute_key(result_data, secret_len, EC_KEY_get0_public_key(pub), priv, NULL);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (err <= 0) {
         throw_new(env, "java/security/GeneralSecurityException", "Error computing ECDH, ECDH_compute_key.");
@@ -489,9 +496,12 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
     // TODO: Do more Signatures here, maybe use the EVP interface to get to the hashes easier and not hash manually?
 
-    native_timing_start();
-    ECDSA_SIG *signature = ECDSA_do_sign((unsigned char *) data_data, data_size, priv);
-    native_timing_stop();
+	ECDSA_SIG *signature;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		signature = ECDSA_do_sign((unsigned char *) data_data, data_size, priv);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
     if (!signature) {
@@ -531,9 +541,13 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     jsize data_size = (*env)->GetArrayLength(env, data);
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
 
-    native_timing_start();
-    int result = ECDSA_do_verify((unsigned char *) data_data, data_size, sig_obj, pub);
-    native_timing_stop();
+	int result;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		result = ECDSA_do_verify((unsigned char *) data_data, data_size, sig_obj, pub);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
+
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
 
     if (result < 0) {
