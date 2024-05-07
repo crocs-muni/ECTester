@@ -83,9 +83,9 @@ void deinit_signals() {
 	//printf("Deinitializing signals!\n");
 	pthread_cancel(timer_thread);
 
-	sigaction(SIGSEGV, NULL, &old_segv);
-	sigaction(SIGABRT, NULL, &old_abrt);
-	sigaction(SIGALRM, NULL, &old_alrm);
+	sigaction(SIGSEGV, &old_segv, NULL);
+	sigaction(SIGABRT, &old_abrt, NULL);
+	sigaction(SIGALRM, &old_alrm, NULL);
 
 	target = NULL;
 	initialized = false;
