@@ -273,9 +273,12 @@ static jobject generate_from_sexp(JNIEnv *env, gcry_sexp_t gen_sexp) {
     jobject result = NULL;
     gcry_sexp_t key_sexp;
 
-    native_timing_start();
-    gcry_error_t err = gcry_pk_genkey(&key_sexp, gen_sexp);
-    native_timing_stop();
+	gcry_error_t err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = gcry_pk_genkey(&key_sexp, gen_sexp);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (gcry_err_code(err) != GPG_ERR_NO_ERROR) {
         throw_new_var(env, "java/security/GeneralSecurityException", "Error generating key. Error: %ui", gcry_err_code(err));
@@ -461,9 +464,12 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     gcry_sexp_t res_sexp;
     // TODO: figure out why ecc_encrypt_raw takes signed representation.. Nobody uses that., everybody uses unsigned reduced mod p.
 
-    native_timing_start();
-    gcry_error_t err = gcry_pk_encrypt(&res_sexp, enc_sexp, pub);
-    native_timing_stop();
+	gcry_error_t err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = gcry_pk_encrypt(&res_sexp, enc_sexp, pub);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (gcry_err_code(err) != GPG_ERR_NO_ERROR) {
         throw_new_var(env, "java/security/GeneralSecurityException", "Error performing ECDH. Error: %ui", gcry_err_code(err));
@@ -573,9 +579,13 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     get_sign_data_sexp(env, &data_sexp, this, data);
 
     gcry_sexp_t res_sexp;
-    native_timing_start();
-    gcry_error_t err = gcry_pk_sign(&res_sexp, data_sexp, priv_sexp);
-    native_timing_stop();
+	gcry_error_t err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = gcry_pk_sign(&res_sexp, data_sexp, priv_sexp);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
+
     if (gcry_err_code(err) != GPG_ERR_NO_ERROR) {
         throw_new_var(env, "java/security/GeneralSecurityException", "Error performing ECDSA. Error: %ui", gcry_err_code(err));
         goto release_init;
@@ -628,9 +638,12 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     gcry_sexp_t sig_sexp;
     gcry_sexp_build(&sig_sexp, NULL, "(sig-val (ecdsa (r %M) (s %M)))", r_mpi, s_mpi);
 
-    native_timing_start();
-    gcry_error_t err = gcry_pk_verify(sig_sexp, data_sexp, pub_sexp);
-    native_timing_stop();
+	gcry_error_t err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = gcry_pk_verify(sig_sexp, data_sexp, pub_sexp);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (gcry_err_code(err) != GPG_ERR_NO_ERROR) {
         if (gcry_err_code(err) != GPG_ERR_BAD_SIGNATURE) {
