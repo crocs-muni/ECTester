@@ -9,42 +9,42 @@
 /**
  *
  */
-void init_signals(jmp_buf *env, unsigned int timeout);
+void init_signals_c(jmp_buf *env, unsigned int timeout);
 
 /**
  *
  */
-sigjmp_buf *get_jmpbuf();
+sigjmp_buf *get_jmpbuf_c();
 
 /**
  *
  */
-void deinit_signals();
+void deinit_signals_c();
 
 /**
  *
  */
-bool get_timedout();
+bool get_timedout_c();
 
 /**
  *
  */
-jobject get_siginfo(JNIEnv *env);
+jobject get_siginfo_c(JNIEnv *env);
 
 
-#define SIG_TRY(timeout) 	init_signals(get_jmpbuf(), timeout); \
-							if (!sigsetjmp(*get_jmpbuf(), 1))
-#define SIG_CATCH() deinit_signals();
-#define SIG_DEINIT() deinit_signals();
+#define SIG_TRY(timeout) 	init_signals_c(get_jmpbuf_c(), timeout); \
+							if (!sigsetjmp(*get_jmpbuf_c(), 1))
+#define SIG_CATCH() deinit_signals_c();
+#define SIG_DEINIT() deinit_signals_c();
 #define SIG_HANDLE(env) do { \
-							jobject siginfo = get_siginfo(env); \
+							jobject siginfo = get_siginfo_c(env); \
 							if (siginfo != NULL) { \
 								jclass sigexception_class = (*env)->FindClass(env, "cz/crcs/ectester/standalone/libs/jni/SignalException"); \
 								jmethodID new_sigexception = (*env)->GetMethodID(env, sigexception_class, "<init>", "(Lcz/crcs/ectester/standalone/libs/jni/SigInfo;)V"); \
 								jobject sigexception = (*env)->NewObject(env, sigexception_class, new_sigexception, siginfo); \
 								(*env)->Throw(env, sigexception); \
 							} \
-							if (get_timedout()) { \
+							if (get_timedout_c()) { \
 								jclass timeoutexception_class = (*env)->FindClass(env, "cz/crcs/ectester/standalone/libs/jni/TimeoutException"); \
 								(*env)->ThrowNew(env, timeoutexception_class, "Operation timed out."); \
 							} \

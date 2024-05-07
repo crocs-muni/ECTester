@@ -40,7 +40,7 @@ void alarm_handler(int signo) {
 }
 
 
-sigjmp_buf *get_jmpbuf() {
+sigjmp_buf *get_jmpbuf_cpp() {
 	return &buf;
 }
 
@@ -54,7 +54,7 @@ void *timer(void *arg) {
 	return NULL;
 }
 
-void init_signals(sigjmp_buf *env, unsigned int timeout) {
+void init_signals_cpp(sigjmp_buf *env, unsigned int timeout) {
 	//printf("Initializing signals!\n");
 	struct sigaction action;
 	action.sa_sigaction = handler;
@@ -82,7 +82,7 @@ void init_signals(sigjmp_buf *env, unsigned int timeout) {
 }
 
 
-void deinit_signals() {
+void deinit_signals_cpp() {
 	//printf("Deinitializing signals!\n");
 	pthread_cancel(timer_thread);
 
@@ -94,11 +94,11 @@ void deinit_signals() {
 	initialized = false;
 }
 
-bool get_timedout() {
+bool get_timedout_cpp() {
 	return timedout;
 }
 
-jobject get_siginfo(JNIEnv *env) {
+jobject get_siginfo_cpp(JNIEnv *env) {
 	if (!caught) {
 		return NULL;
 	}
