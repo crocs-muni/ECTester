@@ -1,5 +1,6 @@
 #include "c_utils.h"
 #include "c_timing.h"
+#include "c_signals.h"
 
 #include "native.h"
 #include <string.h>
@@ -150,9 +151,12 @@ static jobject generate_from_curve(JNIEnv *env, const struct ecc_curve* curve, j
 
     ecc_point_init(&pub, curve);
     ecc_scalar_init(&priv, curve);
-    native_timing_start();
-    ecdsa_generate_keypair(&pub, &priv, (void *) &yarrow, (nettle_random_func *) yarrow256_random);
-    native_timing_stop();
+
+    SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		ecdsa_generate_keypair(&pub, &priv, (void *) &yarrow, (nettle_random_func *) yarrow256_random);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     mpz_t private_value;
     mpz_init(private_value);
@@ -311,9 +315,11 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     jbyteArray result = (*env)->NewByteArray(env, byte_size);
     jbyte *result_data = (*env)->GetByteArrayElements(env, result, NULL);
 
-    native_timing_start();
-    ecc_point_mul(&resultPoint, &privScalar, &eccPubPoint);
-    native_timing_stop();
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		ecc_point_mul(&resultPoint, &privScalar, &eccPubPoint);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     mpz_t x;
     mpz_init(x);
@@ -461,9 +467,11 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     struct dsa_signature signature;
     dsa_signature_init(&signature);
 
-    native_timing_start();
-    ecdsa_sign(&privScalar, (void *) &yarrow, (nettle_random_func *) yarrow256_random, data_size, (unsigned char*)data_data, &signature);
-    native_timing_stop();
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		ecdsa_sign(&privScalar, (void *) &yarrow, (nettle_random_func *) yarrow256_random, data_size, (unsigned char*)data_data, &signature);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
 
@@ -515,9 +523,13 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     jsize data_size = (*env)->GetArrayLength(env, data);
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
 
-    native_timing_start();
-    int result = ecdsa_verify(&eccPubPoint, data_size, (unsigned char*)data_data, &eccSignature);
-    native_timing_stop();
+	int result;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		result = ecdsa_verify(&eccPubPoint, data_size, (unsigned char*)data_data, &eccSignature);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
+
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
 
     ecc_point_clear(&eccPubPoint);
