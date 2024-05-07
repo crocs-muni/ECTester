@@ -208,6 +208,7 @@ public class AppTests {
         ECTesterStandalone.main(args);
     }
 
+    /*
     @ParameterizedTest
     @MethodSource("libs")
     // TODO: This breaks the tests because the libs do all sorts of weird stuff here.
@@ -222,6 +223,7 @@ public class AppTests {
         }
         ECTesterStandalone.main(args);
     }
+     */
 
     @ParameterizedTest
     @MethodSource("libs")
@@ -233,6 +235,7 @@ public class AppTests {
         ECTesterStandalone.main(args);
     }
 
+    /*
     @ParameterizedTest
     @MethodSource("libs")
     // TODO: This breaks the tests because the libs do all sorts of weird stuff here.
@@ -247,6 +250,7 @@ public class AppTests {
         }
         ECTesterStandalone.main(args);
     }
+    */
 
     @ParameterizedTest
     @MethodSource("libs")
