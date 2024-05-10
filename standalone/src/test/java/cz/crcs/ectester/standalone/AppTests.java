@@ -90,9 +90,6 @@ public class AppTests {
     @MethodSource("libs")
     @StdIo()
     public void defaultSuite(String libName, StdOut out) {
-        // TODO: "Nettle" is very broken here for a weird reason.
-        assumeFalse(libName.equals("Nettle"));
-
         String[] args = buildCLIArgs(libName, "default");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
             args = buildCLIArgs(libName, "default", "--kpg-type", "ECDH");
@@ -123,9 +120,6 @@ public class AppTests {
     @ParameterizedTest
     @MethodSource("libs")
     public void performanceSuite(String libName) {
-        // TODO: "Nettle" is very broken here for a weird reason.
-        assumeFalse(libName.equals("Nettle"));
-
         String[] args = buildCLIArgs(libName, "performance");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
             args = buildCLIArgs(libName, "performance", "--kpg-type", "ECDH");
@@ -172,9 +166,6 @@ public class AppTests {
     @ParameterizedTest
     @MethodSource("libs")
     public void twistSuite(String libName) {
-        // TODO: "Nettle" is very broken here for a weird reason.
-        assumeFalse(libName.equals("Nettle"));
-
         String[] args = buildCLIArgs(libName, "twist", "-q");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
             args = buildCLIArgs(libName, "twist", "--kpg-type", "ECDH", "-q");
@@ -185,9 +176,6 @@ public class AppTests {
     @ParameterizedTest
     @MethodSource("libs")
     public void degenerateSuite(String libName) {
-        // TODO: "Nettle" is very broken here for a weird reason.
-        assumeFalse(libName.equals("Nettle"));
-
         String[] args = buildCLIArgs(libName, "degenerate", "-q");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
             args = buildCLIArgs(libName, "degenerate", "--kpg-type", "ECDH", "-q");
@@ -255,9 +243,6 @@ public class AppTests {
     @ParameterizedTest
     @MethodSource("libs")
     public void invalidSuite(String libName) {
-        // TODO: "Nettle" is very broken here for a weird reason.
-        assumeFalse(libName.equals("Nettle"));
-
         String[] args = buildCLIArgs(libName, "invalid", "-q");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
             args = buildCLIArgs(libName, "invalid", "--kpg-type", "ECDH", "-q");

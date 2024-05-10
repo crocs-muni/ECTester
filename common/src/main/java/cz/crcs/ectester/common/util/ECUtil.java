@@ -507,4 +507,15 @@ public class ECUtil {
                 priv.getParams().getGenerator().equals(pub.getParams().getGenerator()) &&
                 priv.getParams().getOrder().equals(pub.getParams().getOrder());
     }
+
+    public static boolean equalECParameterSpec(ECParameterSpec left, ECParameterSpec right) {
+        if (left == null || right == null) {
+            return false;
+        }
+
+        return left.getCofactor() == right.getCofactor() &&
+                left.getCurve().equals(right.getCurve()) &&
+                left.getGenerator().equals(right.getGenerator()) &&
+                left.getOrder().equals(right.getOrder());
+    }
 }

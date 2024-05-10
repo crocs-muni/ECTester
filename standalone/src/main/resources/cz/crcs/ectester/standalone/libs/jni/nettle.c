@@ -36,7 +36,6 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_create
 }
 
 JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_00024Nettle_setup(JNIEnv *env, jobject self) {
-
     INIT_PROVIDER(env, provider_class);
     ADD_KPG(env, self, "EC", "Nettle");
     ADD_KA(env, self, "ECDH", "NettleECDH");
@@ -65,16 +64,6 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_getCur
     }
     
     return result;
-}
-
-JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Nettle_keysizeSupported(JNIEnv *env, jobject self, jint keysize) {
-    int supported[] = {192, 224, 256, 384, 521};
-    for (int i = 0; i < 5; i++) {
-        if (keysize == supported[i]) {
-            return JNI_TRUE;
-        }
-    }
-    return JNI_FALSE;
 }
 
 static const struct ecc_curve* create_curve_from_name(JNIEnv *env, const char* curve_name) {
@@ -114,34 +103,6 @@ static const struct ecc_curve* create_curve_from_size(JNIEnv *env, jint keysize)
         default:
         	return NULL;
 	}
-}
-
-JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Nettle_paramsSupported(JNIEnv *env, jobject self, jobject params){
-    if (params == NULL) {
-        return JNI_FALSE;
-    }
-
-    if ((*env)->IsInstanceOf(env, params, ec_parameter_spec_class)) {
-        return JNI_FALSE;
-    } else if ((*env)->IsInstanceOf(env, params, ecgen_parameter_spec_class)) {
-        jmethodID get_name = (*env)->GetMethodID(env, ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
-        jstring name = (*env)->CallObjectMethod(env, params, get_name);
-        const char *utf_name = (*env)->GetStringUTFChars(env, name, NULL);
-
-        char *curve_name[5] = {"secp192r1", "secp224r1", "secp256r1", "secp384r1", "secp521r1"};
-        for (int i = 0; i < sizeof(curve_name); i++) {
-            if (strcasecmp(utf_name, curve_name[i]) == 0) {
-                (*env)->ReleaseStringUTFChars(env, name, utf_name);
-                return JNI_TRUE;
-            }
-         }
-        (*env)->ReleaseStringUTFChars(env, name, utf_name);
-        return JNI_FALSE;
-    } else {
-        return JNI_FALSE;
-    }
-    return JNI_FALSE;
-    
 }
 
 static jobject generate_from_curve(JNIEnv *env, const struct ecc_curve* curve, jobject spec, int byte_size) {
@@ -210,16 +171,15 @@ static jobject generate_from_curve(JNIEnv *env, const struct ecc_curve* curve, j
     return (*env)->NewObject(env, keypair_class, keypair_init, pubkey, privkey);
 }
 
-JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Nettle_generate__ILjava_security_SecureRandom_2(JNIEnv *env, jobject self, jint keysize, jobject random) {
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Nettle_generate__ILjava_security_SecureRandom_2Ljava_security_spec_AlgorithmParameterSpec_2(JNIEnv *env, jobject self, jint keysize, jobject random, jobject spec) {
     const struct ecc_curve* curve = create_curve_from_size(env, keysize);
     if (!curve) {
     	throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
     	return NULL;
     }
     int byte_size = (keysize + 7) / 8;
-	jobject result = generate_from_curve(env, curve, NULL, byte_size);
+	jobject result = generate_from_curve(env, curve, spec, byte_size);
 	return result;
-    return NULL;
 }
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Nettle_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2Ljava_security_spec_AlgorithmParameterSpec_2(JNIEnv *env, jobject self, jobject params, jobject random, jobject spec) {
@@ -280,7 +240,7 @@ int barray_to_privkey(JNIEnv *env, struct ecc_scalar* privKey, jbyteArray priv) 
     return priv_len;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Nettle_generateSecret___3B_3BLjava_security_spec_ECGenParameterSpec_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params) {
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Nettle_generateSecret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params) {
     jmethodID get_name = (*env)->GetMethodID(env, ecgen_parameter_spec_class, "getName", "()Ljava/lang/String;");
     jstring name = (*env)->CallObjectMethod(env, params, get_name);
     const char* utf_name = (*env)->GetStringUTFChars(env, name, NULL);
@@ -337,11 +297,6 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     ecc_point_clear(&resultPoint);
     mpz_clear(x);
     return result;
-}
-
-JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Nettle_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2Ljava_lang_String_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params, jstring algorithm) {
-    throw_new(env, "java/lang/UnsupportedOperationException", "Not supported.");
-    return NULL;
 }
 
 // credit to https://github.com/crocs-muni/ECTester/blob/master/src/cz/crcs/ectester/standalone/libs/jni/c_utils.c

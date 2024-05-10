@@ -1,6 +1,9 @@
 package cz.crcs.ectester.standalone.libs.jni;
 
+import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.common.util.ECUtil;
+import cz.crcs.ectester.data.EC_Store;
+import cz.crcs.ectester.standalone.libs.NettleLib;
 
 import javax.crypto.KeyAgreementSpi;
 import javax.crypto.SecretKey;
@@ -11,7 +14,6 @@ import java.security.interfaces.ECPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
-import java.security.spec.InvalidParameterSpecException;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -61,6 +63,22 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         return secret.length;
     }
 
+    protected byte[] getPubkey() {
+        if (publicKey instanceof NativeECPublicKey) {
+            return ((NativeECPublicKey) publicKey).getData();
+        } else {
+            return ECUtil.pubkeyToBytes(publicKey);
+        }
+    }
+
+    protected byte[] getPrivkey() {
+        if (privateKey instanceof NativeECPrivateKey) {
+            return ((NativeECPrivateKey) privateKey).getData();
+        } else {
+            return ECUtil.privkeyToBytes(privateKey);
+        }
+    }
+
     private abstract static class SimpleKeyAgreementSpi extends NativeKeyAgreementSpi {
 
         @Override
@@ -70,22 +88,6 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
             }
             engineInit(key, random);
             this.params = params;
-        }
-
-        private byte[] getPubkey() {
-            if (publicKey instanceof NativeECPublicKey) {
-                return ((NativeECPublicKey) publicKey).getData();
-            } else {
-                return ECUtil.toX962Uncompressed(publicKey.getW(), ((ECParameterSpec) params));
-            }
-        }
-
-        private byte[] getPrivkey() {
-            if (privateKey instanceof NativeECPrivateKey) {
-                return ((NativeECPrivateKey) privateKey).getData();
-            } else {
-                return ECUtil.toByteArray(privateKey.getS(), ((ECParameterSpec) params).getOrder().bitLength());
-            }
         }
 
         @Override
@@ -98,7 +100,7 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         @Override
         protected SecretKey engineGenerateSecret(String algorithm) throws IllegalStateException, NoSuchAlgorithmException, InvalidKeyException {
             if (algorithm == null) {
-                throw new NoSuchAlgorithmException("Algorithm must not be null");
+                throw new NoSuchAlgorithmException("Algorithm must not be null.");
             }
             return generateSecret(getPubkey(), getPrivkey(), (ECParameterSpec) params, algorithm);
         }
@@ -111,11 +113,55 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         @Override
         protected void engineInit(Key key, AlgorithmParameterSpec params, SecureRandom random) throws InvalidKeyException, InvalidAlgorithmParameterException {
             if (!(params instanceof ECParameterSpec || params instanceof ECGenParameterSpec)) {
-                throw new InvalidAlgorithmParameterException();
+                throw new InvalidAlgorithmParameterException("Unknown parameter class.");
             }
             engineInit(key, random);
             this.params = params;
         }
+
+        @Override
+        protected byte[] engineGenerateSecret() throws IllegalStateException {
+            return generateSecret(publicKey, privateKey, params);
+        }
+
+        abstract byte[] generateSecret(ECPublicKey pubkey, ECPrivateKey privkey, AlgorithmParameterSpec params);
+
+        @Override
+        protected SecretKey engineGenerateSecret(String algorithm) throws IllegalStateException, NoSuchAlgorithmException, InvalidKeyException {
+            if (algorithm == null) {
+                throw new NoSuchAlgorithmException("Algorithm must not be null");
+            }
+            return generateSecret(publicKey, privateKey, params, algorithm);
+        }
+
+        abstract SecretKey generateSecret(ECPublicKey pubkey, ECPrivateKey privkey, AlgorithmParameterSpec params, String algorithm);
+    }
+
+    private abstract static class NamedKeyAgreementSpi extends NativeKeyAgreementSpi {
+
+        @Override
+        protected void engineInit(Key key, SecureRandom random) throws InvalidKeyException {
+            if (!(key instanceof ECPrivateKey)) {
+                throw new InvalidKeyException("Key must be instance of ECPrivateKey");
+            }
+            privateKey = (ECPrivateKey) key;
+            try {
+                this.params = parametersKnown(privateKey.getParams());
+            } catch (InvalidAlgorithmParameterException e) {
+                throw new InvalidKeyException(e);
+            }
+        }
+
+        @Override
+        protected void engineInit(Key key, AlgorithmParameterSpec params, SecureRandom random) throws InvalidKeyException, InvalidAlgorithmParameterException {
+            if (!(params instanceof ECParameterSpec || params instanceof ECGenParameterSpec)) {
+                throw new InvalidAlgorithmParameterException("Unknown parameter class.");
+            }
+            engineInit(key, random);
+            this.params = parametersKnown(params);
+        }
+
+        abstract ECGenParameterSpec parametersKnown(AlgorithmParameterSpec params) throws InvalidAlgorithmParameterException;
 
         @Override
         protected byte[] engineGenerateSecret() throws IllegalStateException {
@@ -374,7 +420,7 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         }
     }
 
-    public abstract static class Nettle extends SimpleKeyAgreementSpi {
+    public abstract static class Nettle extends NamedKeyAgreementSpi {
         private final String type;
 
         public Nettle(String type) {
@@ -382,43 +428,21 @@ public abstract class NativeKeyAgreementSpi extends KeyAgreementSpi {
         }
 
         @Override
-        byte[] generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params) {
-            try {
-                // TODO: OMG remove this monstrosity.
-                AlgorithmParameters tmp = AlgorithmParameters.getInstance("EC");
-                tmp.init(params);
-                ECGenParameterSpec spec = tmp.getParameterSpec(ECGenParameterSpec.class);
-                switch (spec.getName()) {
-                    case "1.2.840.10045.3.1.7":
-                        spec = new ECGenParameterSpec("secp256r1");
-                        break;
-                    case "1.2.840.10045.3.1.1":
-                        spec = new ECGenParameterSpec("secp192r1");
-                        break;
-                    case "1.3.132.0.33":
-                        spec = new ECGenParameterSpec("secp224r1");
-                        break;
-                    case "1.3.132.0.34":
-                        spec = new ECGenParameterSpec("secp384r1");
-                        break;
-                    case "1.3.132.0.35":
-                        spec = new ECGenParameterSpec("secp521r1");
-                        break;
-                    default:
-                        return null;
+        ECGenParameterSpec parametersKnown(AlgorithmParameterSpec params) throws InvalidAlgorithmParameterException {
+            return NettleLib.parametersKnown(params);
+        }
 
-                }
-                return generateSecret(pubkey, privkey, spec);
+        @Override
+        byte[] generateSecret(ECPublicKey pubkey, ECPrivateKey privkey, AlgorithmParameterSpec params) {
+            return generateSecret(getPubkey(), getPrivkey(), (ECGenParameterSpec) params);
+        }
 
-            } catch (NoSuchAlgorithmException | InvalidParameterSpecException e) {
-                return null;
-            }
+        @Override
+        SecretKey generateSecret(ECPublicKey pubkey, ECPrivateKey privkey, AlgorithmParameterSpec params, String algorithm) {
+            throw new UnsupportedOperationException("Not supported.");
         }
 
         native byte[] generateSecret(byte[] pubkey, byte[] privkey, ECGenParameterSpec params);
-
-        @Override
-        native SecretKey generateSecret(byte[] pubkey, byte[] privkey, ECParameterSpec params, String algorithm);
     }
 
     public static class NettleECDH extends Nettle {
