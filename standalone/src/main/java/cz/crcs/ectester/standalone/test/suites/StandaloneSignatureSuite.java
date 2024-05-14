@@ -73,6 +73,10 @@ public class StandaloneSignatureSuite extends StandaloneTestSuite {
     }
 
     private void ecdsaTest(EC_SigResult sig, SignatureIdent sigIdent, Result.ExpectedValue expected, byte[] defaultData) throws NoSuchAlgorithmException {
+        if (!sig.getSig().equals(sigIdent.getHashAlgo())) {
+            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "ECDSA test of " + sig.getId() + " not applicable."));
+            return;
+        }
         ECPublicKey ecpub = ECUtil.toPublicKey(EC_Store.getInstance().getObject(EC_Key.Public.class, sig.getVerifyKey()));
 
         byte[] data = sig.getSigData();
