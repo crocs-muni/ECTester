@@ -785,7 +785,40 @@ public class ECTesterStandalone {
     private void test() throws TestException, ParserConfigurationException, FileNotFoundException {
         TestWriter writer = new FileTestWriter(cli.getOptionValue("test.format", "text"), !cli.hasOption("test.quiet"), cli.getOptionValues("test.output"));
         StandaloneTestSuite suite;
-        switch (cli.getArg(0).toLowerCase()) {
+        String suiteOpt = cli.getArg(0) != null ? cli.getArg(0).toLowerCase() : "default";
+        String testSuite;
+        int testFrom;
+        int testTo;
+        if (suiteOpt.contains(":")) {
+            String[] parts = suiteOpt.split(":");
+            if (parts.length < 2 || parts.length > 3) {
+                System.err.println("Invalid test suite selection.");
+                return;
+            }
+            testSuite = parts[0];
+            try {
+                testFrom = Integer.parseInt(parts[1]);
+            } catch (NumberFormatException nfe) {
+                System.err.println("Invalid test_from number: " + parts[1] + ".");
+                return;
+            }
+            if (parts.length == 3) {
+                try {
+                    testTo = Integer.parseInt(parts[2]);
+                } catch (NumberFormatException nfe) {
+                    System.err.println("Invalid test_to number: " + parts[2] + ".");
+                    return;
+                }
+            } else {
+                testTo = -1;
+            }
+        } else {
+            testSuite = suiteOpt;
+            testFrom = 0;
+            testTo = -1;
+        }
+
+        switch (testSuite) {
             case "test-vectors":
                 suite = new StandaloneTestVectorSuite(writer, cfg, cli);
                 break;
@@ -824,7 +857,7 @@ public class ECTesterStandalone {
                 break;
         }
 
-        suite.run();
+        suite.run(testFrom, testTo);
     }
 
     /**
