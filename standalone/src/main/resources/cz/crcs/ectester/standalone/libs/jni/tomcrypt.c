@@ -192,6 +192,22 @@ static ltc_ecc_set_type* create_curve(JNIEnv *env, jobject params) {
     jmethodID get_p = (*env)->GetMethodID(env, fp_field_class, "getP", "()Ljava/math/BigInteger;");
     jobject p = (*env)->CallObjectMethod(env, field, get_p);
 
+	jmethodID biginteger_valueof = (*env)->GetStaticMethodID(env, biginteger_class, "valueOf", "(J)Ljava/math/BigInteger;");
+	jobject three = (*env)->CallStaticObjectMethod(env, biginteger_class, biginteger_valueof, (jlong) 3);
+
+	jmethodID get_a = (*env)->GetMethodID(env, elliptic_curve_class, "getA", "()Ljava/math/BigInteger;");
+	jobject a = (*env)->CallObjectMethod(env, elliptic_curve, get_a);
+
+	jmethodID biginteger_add = (*env)->GetMethodID(env, biginteger_class, "add", "(Ljava/math/BigInteger;)Ljava/math/BigInteger;");
+	jobject a_3 = (*env)->CallObjectMethod(env, a, biginteger_add, three);
+
+	jmethodID biginteger_equals = (*env)->GetMethodID(env, biginteger_class, "equals", "(Ljava/lang/Object;)Z");
+	jboolean eq = (*env)->CallBooleanMethod(env, p, biginteger_equals, a_3);
+
+	if (!eq) {
+		return NULL;
+	}
+
     jmethodID get_g = (*env)->GetMethodID(env, ec_parameter_spec_class, "getGenerator", "()Ljava/security/spec/ECPoint;");
     jobject g = (*env)->CallObjectMethod(env, params, get_g);
 
