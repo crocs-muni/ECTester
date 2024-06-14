@@ -23,8 +23,9 @@
     </sigResult>
     <sigResult>
         <id>nok/random</id>
-        <sig>SHA1</sig>
+        <sig>*</sig>
         <inline>0x30440220e641671e6415629dc8398e35ae1362cb647f293a92553b1594d57fff58df302c02206baafface035e3758eea0dd9ef734976c70b6dd06f4d81d33f5e28bfb8730624</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
@@ -32,8 +33,9 @@
     </sigResult>
     <sigResult>
         <id>nok/r0</id>
-        <sig>SHA1</sig>
-        <inline>0x3044022000000000000000000000000000000000000000000000000000000000000000000220d0837b07fe63d225733391e6808a081fd8aeb1359511feba7ca4f266727f968e</inline>
+        <sig>*</sig>
+        <inline>0x30250201000220675e2eb20e1f1ec11c3016f7675d9a2e7a3c3370efde499ccb91920ab3da4ef3</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
@@ -41,8 +43,9 @@
     </sigResult>
     <sigResult>
         <id>nok/s0</id>
-        <sig>SHA1</sig>
-        <inline>0x304402206bea66d439da6b0b4a0e45b51e76d53336f27f7aa8e35f2008b77a8e021eff0a02200000000000000000000000000000000000000000000000000000000000000000</inline>
+        <sig>*</sig>
+        <inline>0x302502206bea66d439da6b0b4a0e45b51e76d53336f27f7aa8e35f2008b77a8e021eff0a020100</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
@@ -50,8 +53,9 @@
     </sigResult>
     <sigResult>
         <id>nok/r1</id>
-        <sig>SHA1</sig>
-        <inline>0x3044022000000000000000000000000000000000000000000000000000000000000000010220e660f19ddc20a30adda6ca175577b492e238ef8734b904a31045d453825974d4</inline>
+        <sig>*</sig>
+        <inline>0x302502010102203494a201a1a539189253c5eab77d1cb99ce1b154c642acc85a956cf2eec2bb3f</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
@@ -59,8 +63,9 @@
     </sigResult>
     <sigResult>
         <id>nok/s1</id>
-        <sig>SHA1</sig>
-        <inline>0x30440220d30ab3301d7132edbead77c0d622bbb7be8626c9ac5ee6c536281e6c18e79ab002200000000000000000000000000000000000000000000000000000000000000001</inline>
+        <sig>*</sig>
+        <inline>0x302502201ee448a2ce4695ac5b71d89553e3dd9688f33041f64aa9aed49c269f6f943c25020101</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
@@ -68,8 +73,9 @@
     </sigResult>
     <sigResult>
         <id>nok/r0s0</id>
-        <sig>SHA1</sig>
-        <inline>0x30440220000000000000000000000000000000000000000000000000000000000000000002200000000000000000000000000000000000000000000000000000000000000000</inline>
+        <sig>*</sig>
+        <inline>0x3006020100020100</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
@@ -77,8 +83,9 @@
     </sigResult>
     <sigResult>
         <id>nok/r0s1</id>
-        <sig>SHA1</sig>
-        <inline>0x30440220000000000000000000000000000000000000000000000000000000000000000002200000000000000000000000000000000000000000000000000000000000000001</inline>
+        <sig>*</sig>
+        <inline>0x3006020100020101</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
@@ -86,8 +93,9 @@
     </sigResult>
     <sigResult>
         <id>nok/r1s0</id>
-        <sig>SHA1</sig>
-        <inline>0x30440220000000000000000000000000000000000000000000000000000000000000000102200000000000000000000000000000000000000000000000000000000000000000</inline>
+        <sig>*</sig>
+        <inline>0x3006020101020100</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
@@ -95,35 +103,119 @@
     </sigResult>
     <sigResult>
         <id>nok/r1s1</id>
-        <sig>SHA1</sig>
-        <inline>0x30440220000000000000000000000000000000000000000000000000000000000000000102200000000000000000000000000000000000000000000000000000000000000001</inline>
+        <sig>*</sig>
+        <inline>0x3006020101020101</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
         <desc>Well-formed invalid signature with r = 1 and s = 1.</desc>
     </sigResult>
     <sigResult>
-        <id>nok/sp</id>
-        <sig>SHA1</sig>
-        <inline>0x30440220fc48281b60b73752f3e20c25e8a06b335122d5890db28d2969d3145fcd384e7b0220ffffffff00000001000000000000000000000000ffffffffffffffffffffffff</inline>
+        <id>nok/r0_padded</id>
+        <sig>*</sig>
+        <inline>0x3044022000000000000000000000000000000000000000000000000000000000000000000220675e2eb20e1f1ec11c3016f7675d9a2e7a3c3370efde499ccb91920ab3da4ef3</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
-        <desc>Well-formed invalid signature s = p.</desc>
+        <desc>Malformed (zero-padded) invalid signature with r = 0.</desc>
+    </sigResult>
+    <sigResult>
+        <id>nok/s0_padded</id>
+        <sig>*</sig>
+        <inline>0x304402206bea66d439da6b0b4a0e45b51e76d53336f27f7aa8e35f2008b77a8e021eff0a02200000000000000000000000000000000000000000000000000000000000000000</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
+        <curve>secg/secp256r1</curve>
+        <signkey>wrong/default_priv</signkey>
+        <verifykey>wrong/default_pub</verifykey>
+        <desc>Malformed (zero-padded) invalid signature with s = 0.</desc>
+    </sigResult>
+    <sigResult>
+        <id>nok/r1_padded</id>
+        <sig>*</sig>
+        <inline>0x30440220000000000000000000000000000000000000000000000000000000000000000102203494a201a1a539189253c5eab77d1cb99ce1b154c642acc85a956cf2eec2bb3f</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
+        <curve>secg/secp256r1</curve>
+        <signkey>wrong/default_priv</signkey>
+        <verifykey>wrong/default_pub</verifykey>
+        <desc>Malformed (zero-padded) invalid signature with r = 1.</desc>
+    </sigResult>
+    <sigResult>
+        <id>nok/s1_padded</id>
+        <sig>*</sig>
+        <inline>0x304402201ee448a2ce4695ac5b71d89553e3dd9688f33041f64aa9aed49c269f6f943c2502200000000000000000000000000000000000000000000000000000000000000001</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
+        <curve>secg/secp256r1</curve>
+        <signkey>wrong/default_priv</signkey>
+        <verifykey>wrong/default_pub</verifykey>
+        <desc>Malformed (zero-padded) invalid signature with s = 1.</desc>
+    </sigResult>
+    <sigResult>
+        <id>nok/r0s0_padded</id>
+        <sig>*</sig>
+        <inline>0x30440220000000000000000000000000000000000000000000000000000000000000000002200000000000000000000000000000000000000000000000000000000000000000</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
+        <curve>secg/secp256r1</curve>
+        <signkey>wrong/default_priv</signkey>
+        <verifykey>wrong/default_pub</verifykey>
+        <desc>Malformed (zero-padded) invalid signature with r = 0 and s = 0.</desc>
+    </sigResult>
+    <sigResult>
+        <id>nok/r0s1_padded</id>
+        <sig>*</sig>
+        <inline>0x30440220000000000000000000000000000000000000000000000000000000000000000002200000000000000000000000000000000000000000000000000000000000000001</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
+        <curve>secg/secp256r1</curve>
+        <signkey>wrong/default_priv</signkey>
+        <verifykey>wrong/default_pub</verifykey>
+        <desc>Malformed (zero-padded) invalid signature with r = 0 and s = 1.</desc>
+    </sigResult>
+    <sigResult>
+        <id>nok/r1s0_padded</id>
+        <sig>*</sig>
+        <inline>0x30440220000000000000000000000000000000000000000000000000000000000000000102200000000000000000000000000000000000000000000000000000000000000000</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
+        <curve>secg/secp256r1</curve>
+        <signkey>wrong/default_priv</signkey>
+        <verifykey>wrong/default_pub</verifykey>
+        <desc>Malformed (zero-padded) invalid signature with r = 1 and s = 0.</desc>
+    </sigResult>
+    <sigResult>
+        <id>nok/r1s1_padded</id>
+        <sig>*</sig>
+        <inline>0x30440220000000000000000000000000000000000000000000000000000000000000000102200000000000000000000000000000000000000000000000000000000000000001</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
+        <curve>secg/secp256r1</curve>
+        <signkey>wrong/default_priv</signkey>
+        <verifykey>wrong/default_pub</verifykey>
+        <desc>Malformed (zero-padded) invalid signature with r = 1 and s = 1.</desc>
+    </sigResult>
+    <sigResult>
+        <id>nok/sp</id>
+        <sig>*</sig>
+        <inline>0x30440220fc48281b60b73752f3e20c25e8a06b335122d5890db28d2969d3145fcd384e7b0220ffffffff00000001000000000000000000000000ffffffffffffffffffffffff</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
+        <curve>secg/secp256r1</curve>
+        <signkey>wrong/default_priv</signkey>
+        <verifykey>wrong/default_pub</verifykey>
+        <desc>Malformed (zero-padded) invalid signature s = p.</desc>
     </sigResult>
     <sigResult>
         <id>nok/s2p</id>
-        <sig>SHA1</sig>
+        <sig>*</sig>
         <inline>0x30450220feba982489753a51a69fd582673d2e62b6b07cc6374237c1424f1e469cb00a98022101fffffffe00000002000000000000000000000001fffffffffffffffffffffffe</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
-        <desc>Well-formed invalid signature with s = 2 * p.</desc>
+        <desc>Malformed (zero-padded) invalid signature with s = 2 * p.</desc>
     </sigResult>
     <sigResult>
         <id>nok/length_overflow16</id>
-        <sig>SHA1</sig>
+        <sig>*</sig>
         <inline>0x3083ff000002203988322ab9f52c7f11d5d1aa92a2ac0b00275bcad8e934682257323fda672482022052231597382268e8f3b82b99e386ebb7c7db1a8b4a8bdacd496190314e4c5bad</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
@@ -131,8 +223,9 @@
     </sigResult>
     <sigResult>
         <id>nok/length_overflow32</id>
-        <sig>SHA1</sig>
+        <sig>*</sig>
         <inline>0x3085ff0000000002203988322ab9f52c7f11d5d1aa92a2ac0b00275bcad8e934682257323fda672482022052231597382268e8f3b82b99e386ebb7c7db1a8b4a8bdacd496190314e4c5bad</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
@@ -140,8 +233,9 @@
     </sigResult>
     <sigResult>
         <id>nok/length_overflow64</id>
-        <sig>SHA1</sig>
+        <sig>*</sig>
         <inline>0x3089ff000000000000000002203988322ab9f52c7f11d5d1aa92a2ac0b00275bcad8e934682257323fda672482022052231597382268e8f3b82b99e386ebb7c7db1a8b4a8bdacd496190314e4c5bad</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
@@ -149,8 +243,9 @@
     </sigResult>
     <sigResult>
         <id>nok/length_indefinite</id>
-        <sig>SHA1</sig>
+        <sig>*</sig>
         <inline>0x308002203988322ab9f52c7f11d5d1aa92a2ac0b00275bcad8e934682257323fda672482022052231597382268e8f3b82b99e386ebb7c7db1a8b4a8bdacd496190314e4c5bad</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
@@ -158,8 +253,9 @@
     </sigResult>
     <sigResult>
         <id>nok/long</id>
-        <sig>SHA1</sig>
+        <sig>*</sig>
         <inline>0x30420220e641671e6415629dc8398e35ae1362cb647f293a92553b1594d57fff58df302c02206baafface035e3758eea0dd9ef734976c70b6dd06f4d81d33f5e28bfb8730624</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
@@ -167,8 +263,9 @@
     </sigResult>
     <sigResult>
         <id>nok/short</id>
-        <sig>SHA1</sig>
+        <sig>*</sig>
         <inline>0x30460220e641671e6415629dc8398e35ae1362cb647f293a92553b1594d57fff58df302c02206baafface035e3758eea0dd9ef734976c70b6dd06f4d81d33f5e28bfb8730624</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
@@ -176,8 +273,9 @@
     </sigResult>
     <sigResult>
         <id>nok/long_r</id>
-        <sig>SHA1</sig>
+        <sig>*</sig>
         <inline>0x3044021ee641671e6415629dc8398e35ae1362cb647f293a92553b1594d57fff58df302c02206baafface035e3758eea0dd9ef734976c70b6dd06f4d81d33f5e28bfb8730624</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
@@ -185,8 +283,9 @@
     </sigResult>
     <sigResult>
         <id>nok/long_s</id>
-        <sig>SHA1</sig>
+        <sig>*</sig>
         <inline>0x30440220e641671e6415629dc8398e35ae1362cb647f293a92553b1594d57fff58df302c021e6baafface035e3758eea0dd9ef734976c70b6dd06f4d81d33f5e28bfb8730624</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
@@ -194,8 +293,9 @@
     </sigResult>
     <sigResult>
         <id>nok/short_r</id>
-        <sig>SHA1</sig>
+        <sig>*</sig>
         <inline>0x30440222e641671e6415629dc8398e35ae1362cb647f293a92553b1594d57fff58df302c02206baafface035e3758eea0dd9ef734976c70b6dd06f4d81d33f5e28bfb8730624</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
@@ -203,8 +303,9 @@
     </sigResult>
     <sigResult>
         <id>nok/short_s</id>
-        <sig>SHA1</sig>
+        <sig>*</sig>
         <inline>0x30440220e641671e6415629dc8398e35ae1362cb647f293a92553b1594d57fff58df302c02226baafface035e3758eea0dd9ef734976c70b6dd06f4d81d33f5e28bfb8730624</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>

@@ -349,6 +349,39 @@ public class ECUtil {
         return new KeyPair(pubkey, privkey);
     }
 
+    /**
+     * Validate DER or PLAIN signature format.
+     *
+     * @throws IllegalArgumentException in case of invalid format.
+     * @param signature
+     * @param params
+     * @param hashAlgo
+     * @param sigType
+     */
+    public static void validateSignatureFormat(byte[] signature, ECParameterSpec params, String hashAlgo, String sigType) {
+        BigInteger n = params.getOrder();
+        try {
+            if (sigType.contains("CVC") || sigType.contains("PLAIN")) {
+                PlainDSAEncoding.INSTANCE.decode(n, signature);
+            } else {
+                StandardDSAEncoding.INSTANCE.decode(n, signature);
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    /**
+     * Recover the ECDSA signature nonce.
+     *
+     * @param signature
+     * @param data
+     * @param privkey
+     * @param params
+     * @param hashAlgo
+     * @param sigType
+     * @return The nonce.
+     */
     public static BigInteger recoverSignatureNonce(byte[] signature, byte[] data, BigInteger privkey, ECParameterSpec params, String hashAlgo, String sigType) {
         // We do not know how to reconstruct those nonces so far.
         // sigType.contains("ECKCDSA") || sigType.contains("ECNR") || sigType.contains("SM2")
@@ -381,9 +414,9 @@ public class ECUtil {
                 r = sigPair[0];
                 s = sigPair[1];
             } else {
-                ASN1Sequence seq = (ASN1Sequence)ASN1Primitive.fromByteArray(signature);
-                r = ((ASN1Integer)seq.getObjectAt(0)).getValue();
-                s = ((ASN1Integer)seq.getObjectAt(1)).getValue();
+                ASN1Sequence seq = (ASN1Sequence) ASN1Primitive.fromByteArray(signature);
+                r = ((ASN1Integer) seq.getObjectAt(0)).getValue();
+                s = ((ASN1Integer) seq.getObjectAt(1)).getValue();
             }
 
 
