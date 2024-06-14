@@ -115,19 +115,19 @@ public abstract class BaseTextTestWriter implements TestWriter {
 
     @Override
     public void beginTest(Test t) {
-        if (t instanceof CompoundTest) {
-            CompoundTest test = (CompoundTest) t;
-        } else {
-            SimpleTest<? extends BaseTestable> test = (SimpleTest<? extends BaseTestable>) t;
+        if (System.console() != null) {
+            output.print("Running ▶ " + t.getDescription());
+            output.flush();
         }
-        output.print("Running ▶ " + t.getDescription());
-        output.flush();
     }
 
 
     @Override
     public void endTest(Test t) {
-        output.print("\33[2K\r");
+        if (System.console() != null) {
+            output.print("\33[2K\r");
+            output.flush();
+        }
     }
 
     @Override
