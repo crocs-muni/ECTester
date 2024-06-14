@@ -3,6 +3,9 @@ package cz.crcs.ectester.common.util;
 import cz.crcs.ectester.common.ec.*;
 import cz.crcs.ectester.data.EC_Store;
 import org.bouncycastle.asn1.ASN1OctetString;
+import org.bouncycastle.asn1.ASN1Integer;
+import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.bouncycastle.crypto.signers.PlainDSAEncoding;
@@ -371,14 +374,18 @@ public class ECUtil {
             }
 
             // Parse signature
-            BigInteger[] sigPair;
+            BigInteger r;
+            BigInteger s;
             if (sigType.contains("CVC") || sigType.contains("PLAIN")) {
-                sigPair = PlainDSAEncoding.INSTANCE.decode(n, signature);
+                BigInteger[] sigPair = PlainDSAEncoding.INSTANCE.decode(n, signature);
+                r = sigPair[0];
+                s = sigPair[1];
             } else {
-                sigPair = StandardDSAEncoding.INSTANCE.decode(n, signature);
+                ASN1Sequence seq = (ASN1Sequence)ASN1Primitive.fromByteArray(signature);
+                r = ((ASN1Integer)seq.getObjectAt(0)).getValue();
+                s = ((ASN1Integer)seq.getObjectAt(1)).getValue();
             }
-            BigInteger r = sigPair[0];
-            BigInteger s = sigPair[1];
+
 
             BigInteger rd = privkey.multiply(r).mod(n);
             BigInteger hrd = hashInt.add(rd).mod(n);
