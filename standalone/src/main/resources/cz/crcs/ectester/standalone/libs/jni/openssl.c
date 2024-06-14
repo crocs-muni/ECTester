@@ -455,10 +455,19 @@ EC_KEY *barray_to_pubkey(JNIEnv *env, const EC_GROUP *curve, jbyteArray pub) {
     jsize pub_len = (*env)->GetArrayLength(env, pub);
     jbyte *pub_data = (*env)->GetByteArrayElements(env, pub, NULL);
     EC_POINT *pub_point = EC_POINT_new(curve);
-    EC_POINT_oct2point(curve, pub_point, (unsigned char *) pub_data, pub_len, NULL);
+    int retval = EC_POINT_oct2point(curve, pub_point, (unsigned char *) pub_data, pub_len, NULL);
     (*env)->ReleaseByteArrayElements(env, pub, pub_data, JNI_ABORT);
-    EC_KEY_set_public_key(result, pub_point);
+    if (!retval) {
+    	EC_POINT_free(pub_point);
+    	throw_new(env, "java/security/GeneralSecurityException", "Error loading key, EC_POINT_oct2point.");
+    	return NULL;
+    }
+    retval = EC_KEY_set_public_key(result, pub_point);
     EC_POINT_free(pub_point);
+	if (!retval) {
+		throw_new(env, "java/security/GeneralSecurityException", "Error loading key, EC_KEY_set_public_key.");
+		return NULL;
+	}
     return result;
 }
 
@@ -469,8 +478,12 @@ EC_KEY *barray_to_privkey(JNIEnv *env,  const EC_GROUP *curve, jbyteArray priv) 
     jbyte *priv_data = (*env)->GetByteArrayElements(env, priv, NULL);
     BIGNUM *s = BN_bin2bn((unsigned char *) priv_data, priv_len, NULL);
     (*env)->ReleaseByteArrayElements(env, priv, priv_data, JNI_ABORT);
-    EC_KEY_set_private_key(result, s);
+    int retval = EC_KEY_set_private_key(result, s);
     BN_free(s);
+    if (!retval) {
+		throw_new(env, "java/security/GeneralSecurityException", "Error loading key, EC_KEY_set_private_key.");
+		return NULL;
+    }
     return result;
 }
 
@@ -482,7 +495,13 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     }
 
     EC_KEY *pub = barray_to_pubkey(env, curve, pubkey);
+    if (!pub) {
+    	return NULL;
+    }
     EC_KEY *priv = barray_to_privkey(env, curve, privkey);
+	if (!priv) {
+		return NULL;
+	}
 
     int field_size = EC_GROUP_get_degree(curve);
     size_t secret_len = (field_size + 7)/8;
@@ -526,6 +545,9 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     }
 
     EC_KEY *priv = barray_to_privkey(env, curve, privkey);
+    if (!priv) {
+    	return NULL;
+    }
 
     jsize data_size = (*env)->GetArrayLength(env, data);
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
@@ -566,6 +588,9 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     }
 
     EC_KEY *pub = barray_to_pubkey(env, curve, pubkey);
+    if (!pub) {
+    	return JNI_FALSE;
+    }
 
     jsize sig_len = (*env)->GetArrayLength(env, signature);
     jbyte *sig_data = (*env)->GetByteArrayElements(env, signature, NULL);
