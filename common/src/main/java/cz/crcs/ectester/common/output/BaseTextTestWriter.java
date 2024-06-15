@@ -51,11 +51,13 @@ public abstract class BaseTextTestWriter implements TestWriter {
 
     private String testString(Test t, String prefix, int index) {
         boolean compound = t instanceof CompoundTest;
+        boolean cont = compound ? ((CompoundTest) t).getStartedTests().length > 0 : false;
+        boolean root = prefix.equals("");
 
         Result result = t.getResult();
 
         String line = "";
-        if (prefix.equals("")) {
+        if (root) {
             char[] charLine = new char[BASE_WIDTH + 24];
             new String(new char[BASE_WIDTH + 24]).replace("\0", "━").getChars(0, charLine.length - 1, charLine, 0);
             charLine[0] = '■';
@@ -68,10 +70,20 @@ public abstract class BaseTextTestWriter implements TestWriter {
 
         StringBuilder out = new StringBuilder();
         out.append(t.ok() ? Colors.ok(" OK ") : Colors.error("NOK "));
-        out.append(compound ? (prefix.equals("") ? "╋ " : "┳ ") : "━ ");
+        String marker;
+        if (compound) {
+            if (root) {
+                marker = cont ? "╋" : "┻";
+            } else {
+                marker = cont ? "┳" : "━";
+            }
+        } else {
+            marker = "━";
+        }
+        out.append(marker + " ");
         int width = BASE_WIDTH - (prefix.length() + 6);
         String widthSpec = "%-" + width + "s";
-        String desc = ((prefix.equals("")) ? "(" + index + ") " : "") + t.getDescription();
+        String desc = ((root) ? "(" + index + ") " : "") + t.getDescription();
         out.append(String.format(widthSpec, desc));
         out.append(" ┃ ");
         Colors.Foreground valueColor;
