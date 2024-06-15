@@ -12,6 +12,16 @@
         <desc>A correct signature by the default key.</desc>
     </sigResult>
     <sigResult>
+        <id>nok/malleable/s+n</id>
+        <sig>SHA1</sig>
+        <inline>0x304502203988322ab9f52c7f11d5d1aa92a2ac0b00275bcad8e934682257323fda67248202210152231596382268e9f3b82b99e386ebb784c21538f1a379523d1b5af44aaf80fe</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
+        <curve>secg/secp256r1</curve>
+        <signkey>wrong/default_priv</signkey>
+        <verifykey>wrong/default_pub</verifykey>
+        <desc>A correct signature modified by adding n to s.</desc>
+    </sigResult>
+    <sigResult>
         <id>nok/negated</id>
         <sig>SHA1</sig>
         <inline>0x304402203988322ab9f52c7f11d5d1aa92a2ac0b00275bcad8e934682257323fda672482022052231597382268e8f3b82b99e386ebb7c7db1a8b4a8bdacd496190314e4c5bad</inline>
@@ -194,22 +204,52 @@
     <sigResult>
         <id>nok/sp</id>
         <sig>*</sig>
-        <inline>0x30440220fc48281b60b73752f3e20c25e8a06b335122d5890db28d2969d3145fcd384e7b0220ffffffff00000001000000000000000000000000ffffffffffffffffffffffff</inline>
+        <inline>0x304502207c48281b60b73752f3e20c25e8a06b335122d5890db28d2969d3145fcd384e7b022100ffffffff00000001000000000000000000000000ffffffffffffffffffffffff</inline>
         <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
-        <desc>Malformed (zero-padded) invalid signature s = p.</desc>
+        <desc>Well-formed invalid signature s = p.</desc>
     </sigResult>
     <sigResult>
         <id>nok/s2p</id>
         <sig>*</sig>
-        <inline>0x30450220feba982489753a51a69fd582673d2e62b6b07cc6374237c1424f1e469cb00a98022101fffffffe00000002000000000000000000000001fffffffffffffffffffffffe</inline>
+        <inline>0x304502207eba982489753a51a69fd582673d2e62b6b07cc6374237c1424f1e469cb00a98022101fffffffe00000002000000000000000000000001fffffffffffffffffffffffe</inline>
         <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
         <curve>secg/secp256r1</curve>
         <signkey>wrong/default_priv</signkey>
         <verifykey>wrong/default_pub</verifykey>
-        <desc>Malformed (zero-padded) invalid signature with s = 2 * p.</desc>
+        <desc>Well-formed invalid signature with s = 2 * p.</desc>
+    </sigResult>
+    <sigResult>
+        <id>nok/sn</id>
+        <sig>*</sig>
+        <inline>0x304502207c48281b60b73752f3e20c25e8a06b335122d5890db28d2969d3145fcd384e7b022100ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
+        <curve>secg/secp256r1</curve>
+        <signkey>wrong/default_priv</signkey>
+        <verifykey>wrong/default_pub</verifykey>
+        <desc>Well-formed invalid signature s = n.</desc>
+    </sigResult>
+    <sigResult>
+        <id>nok/rnsn</id>
+        <sig>*</sig>
+        <inline>0x3046022100ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551022100ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
+        <curve>secg/secp256r1</curve>
+        <signkey>wrong/default_priv</signkey>
+        <verifykey>wrong/default_pub</verifykey>
+        <desc>Well-formed invalid signature r = n and s = n.</desc>
+    </sigResult>
+    <sigResult>
+        <id>nok/s2n</id>
+        <sig>*</sig>
+        <inline>0x304502207eba982489753a51a69fd582673d2e62b6b07cc6374237c1424f1e469cb00a98022101fffffffe00000002000000000000000000000001fffffffffffffffffffffffe</inline>
+        <raw>0xABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB</raw>
+        <curve>secg/secp256r1</curve>
+        <signkey>wrong/default_priv</signkey>
+        <verifykey>wrong/default_pub</verifykey>
+        <desc>Well-formed invalid signature with s = 2 * n.</desc>
     </sigResult>
     <sigResult>
         <id>nok/length_overflow16</id>
