@@ -519,7 +519,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     } SIG_CATCH_HANDLE(env);
 
     if (err <= 0) {
-        throw_new(env, "java/security/GeneralSecurityException", "Error computing ECDH, ECDH_compute_key.");
+        throw_new_var(env, "java/security/GeneralSecurityException", "Error computing ECDH, ECDH_compute_key (%i).", err);
         EC_KEY_free(pub); EC_KEY_free(priv); EC_GROUP_free(curve);
         (*env)->ReleaseByteArrayElements(env, result, result_data, JNI_ABORT);
         return NULL;
@@ -611,7 +611,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
 
     if (result < 0) {
-        throw_new(env, "java/security/GeneralSecurityException", "Error verifying, ECDSA_do_verify.");
+        throw_new_var(env, "java/security/GeneralSecurityException", "Error verifying, ECDSA_do_verify (%i).", result);
         EC_KEY_free(pub); EC_GROUP_free(curve); ECDSA_SIG_free(sig_obj);
         return JNI_FALSE;
     }
