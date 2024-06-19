@@ -225,7 +225,10 @@ int barray_to_pubkey(JNIEnv *env, struct ecc_point* pubKey , jbyteArray pub) {
     mpz_import(x, pointLength, 1, sizeof(unsigned char), 0, 0, pub_data+1);
     mpz_import(y, pointLength, 1, sizeof(unsigned char), 0, 0, pub_data+1+pointLength);
     (*env)->ReleaseByteArrayElements(env, pub, pub_data, JNI_ABORT);
-    ecc_point_set(pubKey, x, y);
+    if (ecc_point_set(pubKey, x, y) == 0) {
+    	throw_new(env, "java/security/GeneralSecurityException", "Error loading key, ecc_point_set.");
+    	return 0;
+    }
     return pointLength;
 }
 
@@ -267,7 +270,12 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
 
     struct ecc_point eccPubPoint;
     ecc_point_init(&eccPubPoint, curve);
-    barray_to_pubkey(env, &eccPubPoint, pubkey);
+    int publen = barray_to_pubkey(env, &eccPubPoint, pubkey);
+    if (publen == 0) {
+    	ecc_scalar_clear(&privScalar);
+    	ecc_point_clear(&eccPubPoint);
+    	return NULL;
+    }
 
     struct ecc_point resultPoint;
     ecc_point_init(&resultPoint, curve);
