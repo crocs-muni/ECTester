@@ -73,7 +73,7 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
         KeyGeneratorTestable kgtOther = null;
         ECParameterSpec spec = null;
         List<Test> kpgTests = new LinkedList<>();
-        for(KeyPairGeneratorIdent kpgIdent : kpgIdents) {
+        for (KeyPairGeneratorIdent kpgIdent : kpgIdents) {
             KeyPairGenerator kpg = kpgIdent.getInstance(cfg.selected.getProvider());
             if (cli.hasOption("test.bits")) {
                 int bits = Integer.parseInt(cli.getOptionValue("test.bits"));
@@ -111,7 +111,7 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
                 kaTests.add(PerformanceTest.repeat(testable, cfg.selected, kaIdent.getName(), count));
             }
         }
-        if(kaTests.isEmpty()) {
+        if (kaTests.isEmpty()) {
             kaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified KeyAgreement types is supported by the library."));
         }
         doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "KeyAgreement performance tests", kaTests.toArray(new Test[0])));
@@ -121,17 +121,17 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
         for (SignatureIdent sigIdent : cfg.selected.getSigs()) {
             if (sigAlgo == null || sigIdent.containsAny(sigTypes)) {
                 Signature sig = sigIdent.getInstance(cfg.selected.getProvider());
-                sigTests.add(PerformanceTest.repeat(new SignatureTestable(sig, kgtOne, null), cfg.selected, sigIdent.getName(),count));
-                if(kgtOne.getKeyPair() != null) {
+                sigTests.add(PerformanceTest.repeat(new SignatureTestable(sig, kgtOne, null), cfg.selected, sigIdent.getName(), count));
+                if (kgtOne.getKeyPair() != null) {
                     ECPrivateKey signKey = (ECPrivateKey) kgtOne.getKeyPair().getPrivate();
                     sigTestsNoVerification.add(PerformanceTest.repeat(new SignatureTestable(sig, signKey, null, null), cfg.selected, sigIdent.getName(), count));
                 }
             }
         }
-        if(sigTestsNoVerification.isEmpty() & !sigTests.isEmpty()) {
+        if (sigTestsNoVerification.isEmpty() & !sigTests.isEmpty()) {
             sigTestsNoVerification.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Signature tests with no verification require a successfully generated private key."));
         }
-        if(sigTests.isEmpty()) {
+        if (sigTests.isEmpty()) {
             sigTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified Signature types is supported by the library."));
             sigTestsNoVerification.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified Signature types is supported by the library."));
         }

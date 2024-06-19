@@ -76,10 +76,10 @@ public class StandaloneCofactorSuite extends StandaloneTestSuite {
             ECParameterSpec spec = curve.toSpec();
             KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
 
-            Test generate =  KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
+            Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
             runTest(generate);
             KeyPair kp = kgt.getKeyPair();
-            if(kp == null) {
+            if (kp == null) {
                 Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() + ". " + "KeyAgreement tests will be skipped.", generate);
                 doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Cofactor test of " + curve.getId() + ".", generateFail));
                 continue;
@@ -101,7 +101,7 @@ public class StandaloneCofactorSuite extends StandaloneTestSuite {
                     allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform " + kaIdent.getName() + " with public points on non-generator subgroup.", specificKaTests.toArray(new Test[0])));
                 }
             }
-            if(allKaTests.isEmpty()) {
+            if (allKaTests.isEmpty()) {
                 allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified key agreement types is supported by the library."));
             }
             Test tests = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Do tests.", allKaTests.toArray(new Test[0]));

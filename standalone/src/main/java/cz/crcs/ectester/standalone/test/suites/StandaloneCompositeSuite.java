@@ -85,10 +85,10 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
 
             //Generate KeyPair
             KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
-            Test generate =  KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
+            Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
             runTest(generate);
             KeyPair kp = kgt.getKeyPair();
-            if(kp == null) {
+            if (kp == null) {
                 Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() + ". " + "KeyAgreement tests will be skipped.", generate);
                 doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Composite test of " + curve.getId() + ".", generateFail));
                 continue;
@@ -104,14 +104,14 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
                     for (EC_Key.Public pub : curveKeys.getValue()) {
                         ECPublicKey ecpub = ECUtil.toPublicKey(pub);
                         KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                        KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpriv ,ecpub);
+                        KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpriv, ecpub);
                         Test keyAgreement = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
                         specificKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Composite test of " + curve.getId() + ", with generated private key, " + pub.getDesc(), keyAgreement));
                     }
                     allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform " + kaIdent.getName() + " with various public points.", specificKaTests.toArray(new Test[0])));
                 }
             }
-            if(allKaTests.isEmpty()) {
+            if (allKaTests.isEmpty()) {
                 allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified key agreement types is supported by the library."));
             }
             Test tests = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Do tests.", allKaTests.toArray(new Test[0]));
@@ -153,7 +153,7 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
     }
 
     private void testGroup(List<EC_Curve> curves, KeyPairGenerator kpg, String testName, Result.ExpectedValue dhValue) throws Exception {
-         for (EC_Curve curve : curves) {
+        for (EC_Curve curve : curves) {
             String description;
             if (testName == null) {
                 description = curve.getDesc() + " test of " + curve.getId() + ".";
@@ -162,19 +162,19 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
             }
 
             //generate KeyPair
-             KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, curve.toSpec());
-             Test generate =  KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
-             runTest(generate);
-             KeyPair kp = kgt.getKeyPair();
-             if(kp == null) {
-                 Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() +
-                         ". " + " Other tests will be skipped.", generate);
-                 doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, description, generateFail));
-                 continue;
-             }
-             Test generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair.", generate);
-             ECPrivateKey ecpriv = (ECPrivateKey) kp.getPrivate();
-             ECPublicKey ecpub = (ECPublicKey) kp.getPublic();
+            KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, curve.toSpec());
+            Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
+            runTest(generate);
+            KeyPair kp = kgt.getKeyPair();
+            if (kp == null) {
+                Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() +
+                        ". " + " Other tests will be skipped.", generate);
+                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, description, generateFail));
+                continue;
+            }
+            Test generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair.", generate);
+            ECPrivateKey ecpriv = (ECPrivateKey) kp.getPrivate();
+            ECPublicKey ecpub = (ECPublicKey) kp.getPublic();
 
             //perform KeyAgreement tests
             List<Test> kaTests = new LinkedList<>();
@@ -185,7 +185,7 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
                     kaTests.add(KeyAgreementTest.expectError(testable, dhValue));
                 }
             }
-            if(kaTests.isEmpty()) {
+            if (kaTests.isEmpty()) {
                 kaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified KeyAgreement types is supported by the library."));
             }
 
@@ -198,7 +198,7 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
                     sigTests.add(SignatureTest.expectError(testable, dhValue));
                 }
             }
-            if(sigTests.isEmpty()) {
+            if (sigTests.isEmpty()) {
                 sigTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified Signature types is supported by the library."));
             }
 

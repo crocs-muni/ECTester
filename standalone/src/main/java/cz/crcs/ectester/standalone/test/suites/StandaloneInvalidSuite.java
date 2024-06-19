@@ -76,17 +76,17 @@ public class StandaloneInvalidSuite extends StandaloneTestSuite {
             KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
 
             Test generateSuccess;
-            Test generate =  KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
+            Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
             runTest(generate);
             KeyPair kp = kgt.getKeyPair();
-            if(kp != null) {
+            if (kp != null) {
                 generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair.", generate);
             } else { //If KeyPair generation fails, try generating it on a default curve instead. Use this key only if it has the same domain parameters as our public key.
                 KeyGeneratorTestable kgtOnDefaultCurve = new KeyGeneratorTestable(kpg, curve.getBits());
                 Test generateOnDefaultCurve = KeyGeneratorTest.expectError(kgtOnDefaultCurve, Result.ExpectedValue.ANY);
                 runTest(generateOnDefaultCurve);
                 kp = kgtOnDefaultCurve.getKeyPair();
-                if(kp != null && ECUtil.equalKeyPairParameters((ECPrivateKey) kp.getPrivate(), ECUtil.toPublicKey(keys.get(0)))) {
+                if (kp != null && ECUtil.equalKeyPairParameters((ECPrivateKey) kp.getPrivate(), ECUtil.toPublicKey(keys.get(0)))) {
                     generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair.", generateOnDefaultCurve);
                 } else {
                     Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() + ". " + "KeyAgreement tests will be skipped.", generate);
@@ -110,7 +110,7 @@ public class StandaloneInvalidSuite extends StandaloneTestSuite {
                     allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform " + kaIdent.getName() + " with invalid public points.", specificKaTests.toArray(new Test[0])));
                 }
             }
-            if(allKaTests.isEmpty()) {
+            if (allKaTests.isEmpty()) {
                 allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified key agreement types is supported by the library."));
             }
             Test tests = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Do tests.", allKaTests.toArray(new Test[0]));

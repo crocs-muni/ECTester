@@ -31,7 +31,7 @@ public class StandaloneTestVectorSuite extends StandaloneTestSuite {
     protected void runTests() throws Exception {
         Map<String, EC_KAResult> results = EC_Store.getInstance().getObjects(EC_KAResult.class, "test");
         for (EC_KAResult result : results.values()) {
-            if(!"DH_PLAIN".equals(result.getKA())) {
+            if (!"DH_PLAIN".equals(result.getKA())) {
                 continue;
             }
 
