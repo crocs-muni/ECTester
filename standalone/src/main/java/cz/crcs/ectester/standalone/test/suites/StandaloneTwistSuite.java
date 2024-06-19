@@ -22,6 +22,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
+import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
 import java.util.*;
 
@@ -81,17 +82,29 @@ public class StandaloneTwistSuite extends StandaloneTestSuite {
             KeyPair kp = kgt.getKeyPair();
             if (kp != null) {
                 generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair.", generate);
-            } else { //If KeyPair generation fails, try generating it on a default curve instead. Use this key only if it has the same domain parameters as our public key.
-                KeyGeneratorTestable kgtOnDefaultCurve = new KeyGeneratorTestable(kpg, curve.getBits());
-                Test generateOnDefaultCurve = KeyGeneratorTest.expectError(kgtOnDefaultCurve, Result.ExpectedValue.ANY);
-                runTest(generateOnDefaultCurve);
-                kp = kgtOnDefaultCurve.getKeyPair();
-                if (kp != null && ECUtil.equalKeyPairParameters((ECPrivateKey) kp.getPrivate(), ECUtil.toPublicKey(keys.get(0)))) {
-                    generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair.", generateOnDefaultCurve);
+            } else {
+                // If KeyPair generation fails, try generating it on named curve instead.
+                ECGenParameterSpec namedSpec = new ECGenParameterSpec(curve.getId());
+                KeyGeneratorTestable kgtOnNamedCurve = new KeyGeneratorTestable(kpg, namedSpec);
+                Test generateOnNamedCurve = KeyGeneratorTest.expectError(kgtOnNamedCurve, Result.ExpectedValue.ANY);
+                runTest(generateOnNamedCurve);
+                kp = kgtOnNamedCurve.getKeyPair();
+                if (kp != null) {
+                    generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair (named curve).", generateOnNamedCurve);
                 } else {
-                    Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() + ". " + "KeyAgreement tests will be skipped.", generate);
-                    doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Twist test of " + curve.getId() + ".", generateFail));
-                    continue;
+                    // If even the named curve generation fails, try generating with the default curve instead. Use this key only if it has the same domain parameters as our public key.
+                    KeyGeneratorTestable kgtOnDefaultCurve = new KeyGeneratorTestable(kpg, curve.getBits());
+                    Test generateOnDefaultCurve = KeyGeneratorTest.expectError(kgtOnDefaultCurve, Result.ExpectedValue.ANY);
+                    runTest(generateOnDefaultCurve);
+                    kp = kgtOnDefaultCurve.getKeyPair();
+                    if (kp != null && ECUtil.equalKeyPairParameters((ECPrivateKey) kp.getPrivate(), ECUtil.toPublicKey(keys.get(0)))) {
+                        generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair (default curve).", generateOnDefaultCurve);
+                    } else {
+                        Test generateNotEqual = CompoundTest.function(tests -> new Result(Result.Value.FAILURE, "Default parameters do not match the curve " + curve.getId()), "Default parameters do not match the curve " + curve.getId(), generateOnDefaultCurve);
+                        Test generateFail = CompoundTest.any(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() + ". " + "KeyAgreement tests will be skipped.", generate, generateOnNamedCurve, generateNotEqual);
+                        doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Twist test of " + curve.getId() + ".", generateFail));
+                        continue;
+                    }
                 }
             }
             ECPrivateKey ecpriv = (ECPrivateKey) kp.getPrivate();
