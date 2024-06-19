@@ -181,8 +181,11 @@ static jobject mpi_to_biginteger(JNIEnv *env, gcry_mpi_t mpi) {
         return NULL;
     }
 
-    jmethodID biginteger_init = (*env)->GetMethodID(env, biginteger_class, "<init>", "(I[B)V");
     jbyteArray bytes = mpi_to_bytearray(env, mpi);
+    if (!bytes) {
+    	return NULL;
+    }
+    jmethodID biginteger_init = (*env)->GetMethodID(env, biginteger_class, "<init>", "(I[B)V");
     jobject result = (*env)->NewObject(env, biginteger_class, biginteger_init, 1, bytes);
     return result;
 }
@@ -245,7 +248,11 @@ static jobject create_ec_param_spec(JNIEnv *env, gcry_sexp_t key) {
     jmethodID fp_field_init = (*env)->GetMethodID(env, fp_field_class, "<init>", "(Ljava/math/BigInteger;)V");
     jobject field = (*env)->NewObject(env, fp_field_class, fp_field_init, pi);
 
-    jobject ai = mpi_to_biginteger(env, a);
+	jobject ai = mpi_to_biginteger(env, a);
+	if (!ai) {
+		jmethodID biginteger_valueof = (*env)->GetStaticMethodID(env, biginteger_class, "valueOf", "(J)Ljava/math/BigInteger;");
+		ai = (*env)->CallStaticObjectMethod(env, biginteger_class, biginteger_valueof, (jlong)0);
+	}
     jobject bi = mpi_to_biginteger(env, b);
 
     jmethodID elliptic_curve_init = (*env)->GetMethodID(env, elliptic_curve_class, "<init>", "(Ljava/security/spec/ECField;Ljava/math/BigInteger;Ljava/math/BigInteger;)V");
