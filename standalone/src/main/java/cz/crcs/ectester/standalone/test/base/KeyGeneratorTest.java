@@ -4,6 +4,9 @@ import cz.crcs.ectester.common.test.Result;
 import cz.crcs.ectester.common.test.SimpleTest;
 import cz.crcs.ectester.common.test.TestCallback;
 
+import java.security.spec.ECGenParameterSpec;
+import java.security.spec.ECParameterSpec;
+
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
@@ -38,6 +41,15 @@ public class KeyGeneratorTest extends SimpleTest<KeyGeneratorTestable> {
 
     @Override
     public String getDescription() {
-        return "KeyPairGenerator " + testable.getKpg().getAlgorithm();
+        String params = "";
+        if (testable.getKeysize() != 0) {
+            params = String.format("(default %d-bit curve)", testable.getKeysize());
+        } else if (testable.getSpec() instanceof ECGenParameterSpec) {
+            String name = ((ECGenParameterSpec)testable.getSpec()).getName();
+            params = String.format("(%s)", name);
+        } else if (testable.getSpec() instanceof ECParameterSpec) {
+            params = "(custom curve)";
+        }
+        return "KeyPairGenerator " + testable.getKpg().getAlgorithm() + " on " + params;
     }
 }

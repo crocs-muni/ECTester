@@ -25,7 +25,7 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_15
 }
 
 application {
@@ -90,7 +90,7 @@ tasks.register<Exec>("libs") {
     workingDir("src/main/resources/cz/crcs/ectester/standalone/libs/jni")
     environment("PROJECT_ROOT_PATH", rootDir.absolutePath)
 
-    val libName = findProperty("libName") ?: ""
+    val libName = findProperty("libName") ?: "all"
     if ( libName == "" ) {
         println("Building all libraries")
     } else {

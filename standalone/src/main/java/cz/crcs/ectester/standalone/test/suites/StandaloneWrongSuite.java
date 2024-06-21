@@ -103,7 +103,7 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
         /* Just do the default run on the wrong curves.
          * These should generally fail, the curves aren't curves.
          */
-        if(!skip) {
+        if (!skip) {
             Map<String, EC_Curve> wrongCurves = EC_Store.getInstance().getObjects(EC_Curve.class, "wrong");
             for (Map.Entry<String, EC_Curve> e : wrongCurves.entrySet()) {
 
@@ -151,11 +151,11 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
             short bits = curve.getBits();
             final byte[] originalp = curve.getParam(EC_Consts.PARAMETER_FP)[0];
 
-            curve.setParam(EC_Consts.PARAMETER_FP, new byte[][]{ ByteUtil.hexToBytes("0")});
-            Test prime0 = ecdhTest(toCustomSpec(curve),"ECDH with p = 0.");
+            curve.setParam(EC_Consts.PARAMETER_FP, new byte[][]{ByteUtil.hexToBytes("0")});
+            Test prime0 = ecdhTest(toCustomSpec(curve), "ECDH with p = 0.");
 
-            curve.setParam(EC_Consts.PARAMETER_FP, new byte[][]{ ByteUtil.hexToBytes("1")});
-            Test prime1 = ecdhTest(toCustomSpec(curve),"ECDH with p = 1.");
+            curve.setParam(EC_Consts.PARAMETER_FP, new byte[][]{ByteUtil.hexToBytes("1")});
+            Test prime1 = ecdhTest(toCustomSpec(curve), "ECDH with p = 1.");
 
             short keyHalf = (short) (bits / 2);
             BigInteger prime = new BigInteger(keyHalf, 50, r);
@@ -173,23 +173,23 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
 
             Test composite = ecdhTest(toCustomSpec(curve), "ECDH with p = q * s.");
 
-            Test wrongPrime = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with corrupted prime parameter.", prime0 , prime1, primePower, composite );
+            Test wrongPrime = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with corrupted prime parameter.", prime0, prime1, primePower, composite);
 
-            curve.setParam(EC_Consts.PARAMETER_FP, new byte[][] {originalp});
+            curve.setParam(EC_Consts.PARAMETER_FP, new byte[][]{originalp});
             final byte[][] originalG = curve.getParam(EC_Consts.PARAMETER_G);
 
             byte[] Gx = new BigInteger(curve.getBits(), r).toByteArray();
             byte[] Gy = new BigInteger(curve.getBits(), r).toByteArray();
-            curve.setParam(EC_Consts.PARAMETER_G, new byte[][] {Gx, Gy});
+            curve.setParam(EC_Consts.PARAMETER_G, new byte[][]{Gx, Gy});
             Test fullRandomG = ecdhTest(toCustomSpec(curve), "ECDH with G = random data.");
 
             final BigInteger originalBigp = new BigInteger(1, originalp);
             byte[] smallerGx = new BigInteger(curve.getBits(), r).mod(originalBigp).toByteArray();
             byte[] smallerGy = new BigInteger(curve.getBits(), r).mod(originalBigp).toByteArray();
-            curve.setParam(EC_Consts.PARAMETER_G, new byte[][] {smallerGx, smallerGy});
+            curve.setParam(EC_Consts.PARAMETER_G, new byte[][]{smallerGx, smallerGy});
             Test randomG = ecdhTest(toCustomSpec(curve), "ECDH with G = random data mod p.");
 
-            curve.setParam(EC_Consts.PARAMETER_G, new byte[][] {ByteUtil.hexToBytes("0"), ByteUtil.hexToBytes("0")});
+            curve.setParam(EC_Consts.PARAMETER_G, new byte[][]{ByteUtil.hexToBytes("0"), ByteUtil.hexToBytes("0")});
             Test zeroG = ecdhTest(toCustomSpec(curve), "ECDH with G = infinity.");
 
             Test wrongG = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with corrupted G parameter.", fullRandomG, randomG, zeroG);
@@ -199,7 +199,7 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
             final BigInteger originalBigR = new BigInteger(1, originalR);
 
             List<Test> allRTests = new LinkedList<>();
-            if(!skip) {
+            if (!skip) {
                 byte[] RZero = new byte[]{(byte) 0};
                 curve.setParam(EC_Consts.PARAMETER_R, new byte[][]{RZero});
                 allRTests.add(ecdhTest(toCustomSpec(curve), "ECDH with R = 0."));
@@ -215,7 +215,7 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
                 prevPrimeR = BigInteger.probablePrime(originalBigR.bitLength() - 1, r);
             } while (prevPrimeR.compareTo(originalBigR) >= 0);
             byte[] prevRBytes = ECUtil.toByteArray(prevPrimeR, bits);
-            curve.setParam(EC_Consts.PARAMETER_R, new byte[][] {prevRBytes});
+            curve.setParam(EC_Consts.PARAMETER_R, new byte[][]{prevRBytes});
             allRTests.add(ecdhTest(toCustomSpec(curve), "ECDH with R = some prime (but [r]G != infinity) smaller than original R."));
 
             BigInteger nextPrimeR = originalBigR.nextProbablePrime();
@@ -225,15 +225,15 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
 
             byte[] nonprimeRBytes = nextRBytes.clone();
             nonprimeRBytes[nonprimeRBytes.length - 1] ^= 1;
-            curve.setParam(EC_Consts.PARAMETER_R, new byte[][] {nonprimeRBytes} );
+            curve.setParam(EC_Consts.PARAMETER_R, new byte[][]{nonprimeRBytes});
             allRTests.add(ecdhTest(toCustomSpec(curve), "ECDH with R = some composite (but [r]G != infinity)."));
 
             Test wrongR = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with corrupted R parameter.", allRTests.toArray(new Test[0]));
 
-            curve.setParam(EC_Consts.PARAMETER_R, new byte[][] {originalR});
+            curve.setParam(EC_Consts.PARAMETER_R, new byte[][]{originalR});
 
             byte[] kRaw = new byte[]{(byte) 0xff};
-            curve.setParam(EC_Consts.PARAMETER_K, new byte[][] {kRaw});
+            curve.setParam(EC_Consts.PARAMETER_K, new byte[][]{kRaw});
             Test bigK = ecdhTest(toCustomSpec(curve), "ECDH with big K.");
 
             byte[] kZero = new byte[]{(byte) 0};
@@ -241,7 +241,7 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
             Test zeroK = ecdhTest(toCustomSpec(curve), "ECDH with K = 0.");
 
             Test wrongK = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with corrupted K parameter.", bigK, zeroK);
-            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests of " + bits + "b " + "FP", wrongPrime, wrongG, wrongR , wrongK));
+            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests of " + bits + "b " + "FP", wrongPrime, wrongG, wrongR, wrongK));
         }
 
 
@@ -284,10 +284,10 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
     private Test ecdhTest(ECParameterSpec spec, String desc) throws NoSuchAlgorithmException {
         //generate KeyPair
         KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
-        Test generate =  KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.FAILURE);
+        Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.FAILURE);
         runTest(generate);
         KeyPair kp = kgt.getKeyPair();
-        if(kp == null) {
+        if (kp == null) {
             return CompoundTest.all(Result.ExpectedValue.SUCCESS, desc, generate);
         }
         ECPublicKey pub = (ECPublicKey) kp.getPublic();

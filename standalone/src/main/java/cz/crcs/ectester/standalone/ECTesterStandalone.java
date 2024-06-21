@@ -36,10 +36,9 @@ import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
 import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
 import cz.crcs.ectester.standalone.consts.SignatureIdent;
 import cz.crcs.ectester.standalone.libs.*;
+import cz.crcs.ectester.standalone.libs.jni.SignalException;
+import cz.crcs.ectester.standalone.libs.jni.TimeoutException;
 import cz.crcs.ectester.standalone.output.FileTestWriter;
-import cz.crcs.ectester.standalone.output.TextTestWriter;
-import cz.crcs.ectester.standalone.output.XMLTestWriter;
-import cz.crcs.ectester.standalone.output.YAMLTestWriter;
 import cz.crcs.ectester.standalone.test.suites.*;
 import org.apache.commons.cli.*;
 
@@ -55,8 +54,7 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.*;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
+import java.security.interfaces.*;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
@@ -105,8 +103,13 @@ public class ECTesterStandalone {
             reqs.toFile().mkdirs();
 
             if (!System.getProperty("os.name").startsWith("Windows")) {
-                FileUtil.writeNewer(LIB_RESOURCE_DIR + "lib_timing.so", reqs.resolve("lib_timing.so"));
+                FileUtil.write(LIB_RESOURCE_DIR + "lib_timing.so", reqs.resolve("lib_timing.so"));
                 System.load(reqs.resolve("lib_timing.so").toString());
+
+                FileUtil.write(LIB_RESOURCE_DIR + "lib_csignals.so", reqs.resolve("lib_csignals.so"));
+                System.load(reqs.resolve("lib_csignals.so").toString());
+                FileUtil.write(LIB_RESOURCE_DIR + "lib_cppsignals.so", reqs.resolve("lib_cppsignals.so"));
+                System.load(reqs.resolve("lib_cppsignals.so").toString());
             }
 
             List<ProviderECLibrary> libObjects = new LinkedList<>();
@@ -132,16 +135,6 @@ public class ECTesterStandalone {
                 }
             }
             libs = libObjects.toArray(new ProviderECLibrary[0]);
-
-            //TODO: push this further down to only initialize if necessary.
-            //      and only initialize the chosen lib (so give libs a name in Java only)
-            for (ECLibrary lib : libs) {
-                try {
-                    lib.initialize();
-                } catch (Exception ex) {
-                    System.err.println(ex.getMessage());
-                }
-            }
 
             cfg = new Config(libs);
             if (!cfg.readOptions(cli)) {
@@ -299,26 +292,36 @@ public class ECTesterStandalone {
      */
     private void listLibraries() {
         for (ProviderECLibrary lib : libs) {
-            if (lib.isInitialized() && (cfg.selected == null || lib == cfg.selected)) {
+            if (cfg.selected == null || lib == cfg.selected) {
+                try {
+                    if (!lib.initialize()) {
+                        continue;
+                    }
+                } catch (Exception ex) {
+                    System.err.println("Error initializing " + lib.fullName());
+                    System.err.println(ex.getMessage());
+                    continue;
+                }
+
                 System.out.println("\t- " + Colors.bold(lib.name()));
                 System.out.println(Colors.bold("\t\t- Fullname: ") + lib.getProvider().getName());
                 System.out.println(Colors.bold("\t\t- Version: ") + lib.getProvider().getVersionStr());
                 System.out.println(Colors.bold("\t\t- Supports native timing: ") + lib.getNativeTimingSupport().toString());
                 Set<KeyPairGeneratorIdent> kpgs = lib.getKPGs();
                 if (!kpgs.isEmpty()) {
-                    System.out.println(Colors.bold("\t\t- KeyPairGenerators: ") + kpgs.stream().map(KeyPairGeneratorIdent::getName).collect(Collectors.joining(", ")));
+                    System.out.println(Colors.bold("\t\t- KeyPairGenerators: ") + kpgs.stream().map(KeyPairGeneratorIdent::getName).sorted().collect(Collectors.joining(", ")));
                 }
                 Set<KeyAgreementIdent> eckas = lib.getKAs();
                 if (!eckas.isEmpty()) {
-                    System.out.println(Colors.bold("\t\t- KeyAgreements: ") + eckas.stream().map(KeyAgreementIdent::getName).collect(Collectors.joining(", ")));
+                    System.out.println(Colors.bold("\t\t- KeyAgreements: ") + eckas.stream().map(KeyAgreementIdent::getName).sorted().collect(Collectors.joining(", ")));
                 }
                 Set<SignatureIdent> sigs = lib.getSigs();
                 if (!sigs.isEmpty()) {
-                    System.out.println(Colors.bold("\t\t- Signatures: ") + sigs.stream().map(SignatureIdent::getName).collect(Collectors.joining(", ")));
+                    System.out.println(Colors.bold("\t\t- Signatures: ") + sigs.stream().map(SignatureIdent::getName).sorted().collect(Collectors.joining(", ")));
                 }
                 Set<String> curves = lib.getCurves();
                 if (!curves.isEmpty()) {
-                    System.out.println(Colors.bold("\t\t- Curves: ") + String.join(", ", curves));
+                    System.out.println(Colors.bold("\t\t- Curves: ") + curves.stream().sorted().collect(Collectors.joining(", ")));
                 }
                 System.out.println();
             }
@@ -458,8 +461,8 @@ public class ECTesterStandalone {
             other = kpg.genKeyPair();
         }
 
-        ECPrivateKey privkey = (ECPrivateKey) ECUtil.loadKey(EC_Consts.PARAMETER_S, cli.getOptionValue("ecdh.named-private"), cli.getOptionValue("ecdh.private"), spec);
-        ECPublicKey pubkey = (ECPublicKey) ECUtil.loadKey(EC_Consts.PARAMETER_W, cli.getOptionValue("ecdh.named-public"), cli.getOptionValue("ecdh.public"), spec);
+        PrivateKey privkey = (ECPrivateKey) ECUtil.loadKey(EC_Consts.PARAMETER_S, cli.getOptionValue("ecdh.named-private"), cli.getOptionValue("ecdh.private"), spec);
+        PublicKey pubkey = (ECPublicKey) ECUtil.loadKey(EC_Consts.PARAMETER_W, cli.getOptionValue("ecdh.named-public"), cli.getOptionValue("ecdh.public"), spec);
 
         int amount = Integer.parseInt(cli.getOptionValue("ecdh.amount", "1"));
         for (int i = 0; i < amount || amount == 0; ++i) {
@@ -471,11 +474,11 @@ public class ECTesterStandalone {
             }
 
             if (!cli.hasOption("ecdh.named-private") && !cli.hasOption("ecdh.private")) {
-                privkey = (ECPrivateKey) one.getPrivate();
+                privkey = one.getPrivate();
             }
 
             if (!cli.hasOption("ecdh.named-public") && !cli.hasOption("ecdh.public")) {
-                pubkey = (ECPublicKey) other.getPublic();
+                pubkey = other.getPublic();
             }
 
             long elapsed = -System.nanoTime();
@@ -501,8 +504,8 @@ public class ECTesterStandalone {
             }
             ka = kaIdent.getInstance(lib.getProvider());
 
-            String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW(), pubkey.getParams()), false);
-            String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
+            String pub = ByteUtil.bytesToHex(ECUtil.pubkeyToBytes(pubkey), false);
+            String priv = ByteUtil.bytesToHex(ECUtil.privkeyToBytes(privkey), false);
             String dh = ByteUtil.bytesToHex(result, false);
             out.printf("%d;%d;%s;%s;%s%n", i, elapsed, pub, priv, dh);
         }
@@ -605,17 +608,17 @@ public class ECTesterStandalone {
         String hashAlgoOut = sigIdent.getHashAlgo() != null ? String.format("[%s]", sigIdent.getHashAlgo()) : "";
         out.printf("index;signTime[%s];verifyTime[%s];data;pubW;privS;signature%s;nonce;verified%n", timeUnit, timeUnit, hashAlgoOut);
 
-        ECPrivateKey privkey = (ECPrivateKey) ECUtil.loadKey(EC_Consts.PARAMETER_S, cli.getOptionValue("ecdsa.named-private"), cli.getOptionValue("ecdsa.private"), spec);
-        ECPublicKey pubkey = (ECPublicKey) ECUtil.loadKey(EC_Consts.PARAMETER_W, cli.getOptionValue("ecdsa.named-public"), cli.getOptionValue("ecdsa.public"), spec);
+        PrivateKey privkey = (ECPrivateKey) ECUtil.loadKey(EC_Consts.PARAMETER_S, cli.getOptionValue("ecdsa.named-private"), cli.getOptionValue("ecdsa.private"), spec);
+        PublicKey pubkey = (ECPublicKey) ECUtil.loadKey(EC_Consts.PARAMETER_W, cli.getOptionValue("ecdsa.named-public"), cli.getOptionValue("ecdsa.public"), spec);
 
         KeyPair one;
         if (cli.hasOption("ecdsa.fixed")) {
             one = kpg.genKeyPair();
             if (!cli.hasOption("ecdsa.named-private")) {
-                privkey = (ECPrivateKey) one.getPrivate();
+                privkey = one.getPrivate();
             }
             if (!cli.hasOption("ecdsa.named-public")) {
-                pubkey = (ECPublicKey) one.getPublic();
+                pubkey = one.getPublic();
             }
         }
 
@@ -626,10 +629,10 @@ public class ECTesterStandalone {
                 one = kpg.genKeyPair();
 
                 if (!cli.hasOption("ecdsa.named-private")) {
-                    privkey = (ECPrivateKey) one.getPrivate();
+                    privkey = one.getPrivate();
                 }
                 if (!cli.hasOption("ecdsa.named-public")) {
-                    pubkey = (ECPublicKey) one.getPublic();
+                    pubkey = one.getPublic();
                 }
             }
 
@@ -653,27 +656,31 @@ public class ECTesterStandalone {
                 verifyTime = lib.getLastNativeTiming();
             }
 
-            String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(pubkey.getW(), pubkey.getParams()), false);
-            String priv = ByteUtil.bytesToHex(privkey.getS().toByteArray(), false);
+            String pub = ByteUtil.bytesToHex(ECUtil.pubkeyToBytes(pubkey), false);
+            String priv = ByteUtil.bytesToHex(ECUtil.privkeyToBytes(privkey), false);
             String sign = ByteUtil.bytesToHex(signature, false);
             String k = "";
-            ECParameterSpec kSpec = spec;
-            if (kSpec == null) {
-                kSpec = privkey.getParams();
-            }
-            if (kSpec != null) {
-                // Parse the types out of SignatureIdent.
-                String hashAlgo = sigIdent.getHashAlgo();
-                String sigType = sigIdent.getSigType();
-                if (sigType == null) {
-                    sigType = sigIdent.toString();
+            if (privkey instanceof ECPrivateKey) {
+                ECPrivateKey ecPrivateKey = (ECPrivateKey) privkey;
+                ECParameterSpec kSpec = spec;
+                if (kSpec == null) {
+                    kSpec = ecPrivateKey.getParams();
                 }
+                if (kSpec != null) {
+                    // Parse the types out of SignatureIdent.
+                    String hashAlgo = sigIdent.getHashAlgo();
+                    String sigType = sigIdent.getSigType();
+                    if (sigType == null) {
+                        sigType = sigIdent.toString();
+                    }
 
-                BigInteger kValue = ECUtil.recoverSignatureNonce(signature, data, privkey.getS(), kSpec, hashAlgo, sigType);
-                if (kValue != null) {
-                    k = ByteUtil.bytesToHex(kValue.toByteArray(), false);
+                    BigInteger kValue = ECUtil.recoverSignatureNonce(signature, data, ecPrivateKey.getS(), kSpec, hashAlgo, sigType);
+                    if (kValue != null) {
+                        k = ByteUtil.bytesToHex(kValue.toByteArray(), false);
+                    }
                 }
             }
+
             out.printf("%d;%d;%d;%s;%s;%s;%s;%s;%d%n", i, signTime, verifyTime, dataString, pub, priv, sign, k, verified ? 1 : 0);
         }
 
@@ -739,16 +746,31 @@ public class ECTesterStandalone {
         int amount = Integer.parseInt(cli.getOptionValue("generate.amount", "1"));
         for (int i = 0; i < amount || amount == 0; ++i) {
             long elapsed = -System.nanoTime();
-            KeyPair kp = kpg.genKeyPair();
+            KeyPair kp;
+            try {
+                kp = kpg.genKeyPair();
+            } catch (SignalException exc) {
+                System.err.println(exc.getSigInfo());
+                continue;
+            } catch (TimeoutException exc) {
+                System.err.println(exc);
+                continue;
+            }
             elapsed += System.nanoTime();
             if (!lib.getNativeTimingSupport().isEmpty()) {
                 elapsed = lib.getLastNativeTiming();
             }
-            ECPublicKey publicKey = (ECPublicKey) kp.getPublic();
-            ECPrivateKey privateKey = (ECPrivateKey) kp.getPrivate();
-
-            String pub = ByteUtil.bytesToHex(ECUtil.toX962Uncompressed(publicKey.getW(), publicKey.getParams()), false);
-            String priv = ByteUtil.bytesToHex(privateKey.getS().toByteArray(), false);
+            PublicKey pubkey = kp.getPublic();
+            PrivateKey privkey = kp.getPrivate();
+            byte[] pubBytes = ECUtil.pubkeyToBytes(pubkey);
+            byte[] privBytes = ECUtil.privkeyToBytes(privkey);
+            String pub = ByteUtil.bytesToHex(pubBytes, false);
+            String priv = ByteUtil.bytesToHex(privBytes, false);
+            if (pubBytes == null || privBytes == null) {
+                System.err.println(pubkey.getClass().getCanonicalName());
+                System.err.println(privkey.getClass().getCanonicalName());
+                break;
+            }
             out.printf("%d;%d;%s;%s%n", i, elapsed, pub, priv);
         }
 
@@ -763,8 +785,40 @@ public class ECTesterStandalone {
     private void test() throws TestException, ParserConfigurationException, FileNotFoundException {
         TestWriter writer = new FileTestWriter(cli.getOptionValue("test.format", "text"), !cli.hasOption("test.quiet"), cli.getOptionValues("test.output"));
         StandaloneTestSuite suite;
+        String suiteOpt = cli.getArg(0) != null ? cli.getArg(0).toLowerCase() : "default";
+        String testSuite;
+        int testFrom;
+        int testTo;
+        if (suiteOpt.contains(":")) {
+            String[] parts = suiteOpt.split(":");
+            if (parts.length < 2 || parts.length > 3) {
+                System.err.println("Invalid test suite selection.");
+                return;
+            }
+            testSuite = parts[0];
+            try {
+                testFrom = Integer.parseInt(parts[1]);
+            } catch (NumberFormatException nfe) {
+                System.err.println("Invalid test_from number: " + parts[1] + ".");
+                return;
+            }
+            if (parts.length == 3) {
+                try {
+                    testTo = Integer.parseInt(parts[2]);
+                } catch (NumberFormatException nfe) {
+                    System.err.println("Invalid test_to number: " + parts[2] + ".");
+                    return;
+                }
+            } else {
+                testTo = -1;
+            }
+        } else {
+            testSuite = suiteOpt;
+            testFrom = 0;
+            testTo = -1;
+        }
 
-        switch (cli.getArg(0).toLowerCase()) {
+        switch (testSuite) {
             case "test-vectors":
                 suite = new StandaloneTestVectorSuite(writer, cfg, cli);
                 break;
@@ -798,12 +852,12 @@ public class ECTesterStandalone {
             case "performance":
                 suite = new StandalonePerformanceSuite(writer, cfg, cli);
                 break;
-            case "default":
             default:
                 suite = new StandaloneDefaultSuite(writer, cfg, cli);
+                break;
         }
 
-        suite.run();
+        suite.run(testFrom, testTo);
     }
 
     /**
@@ -888,7 +942,7 @@ public class ECTesterStandalone {
                 if (libraryName != null) {
                     List<ProviderECLibrary> matchedLibs = new LinkedList<>();
                     for (ProviderECLibrary lib : libs) {
-                        if (lib.isInitialized() && lib.name().toLowerCase().contains(libraryName.toLowerCase())) {
+                        if (lib.name().toLowerCase().contains(libraryName.toLowerCase())) {
                             matchedLibs.add(lib);
                         }
                     }
@@ -900,6 +954,12 @@ public class ECTesterStandalone {
                         return false;
                     } else {
                         selected = matchedLibs.get(0);
+                        try {
+                            selected.initialize();
+                        } catch (Exception ex) {
+                            System.err.println("Error initializing " + selected.fullName());
+                            System.err.println(ex.getMessage());
+                        }
                     }
                 }
             }

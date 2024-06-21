@@ -264,10 +264,10 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
 
         //generate KeyPair
         KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
-        Test generate =  KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
+        Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
         runTest(generate);
         KeyPair kp = kgt.getKeyPair();
-        if(kp == null) {
+        if (kp == null) {
             Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on "
                     + secp160r1.getBits() + "b secp160r1." + " Other tests will be skipped.", generate);
             doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Test private key values near zero, near p and near/larger than the order on" + secp160r1.getId() + ".", generateFail));

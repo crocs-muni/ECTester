@@ -18,10 +18,11 @@ public class KeyAgreementIdent extends Ident {
     private static final List<KeyAgreementIdent> ALL = new LinkedList<>();
 
     static {
-        //https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html
+        // https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html
         // Basic ECDH and ECDHC (plain/raw)
         ALL.add(new KeyAgreementIdent("ECDH"));
         ALL.add(new KeyAgreementIdent("ECDHC", "ECCDH"));
+
         // ECDH and ECDHC with SHA as KDF, OIDs from RFC 3278
         ALL.add(new KeyAgreementIdent("ECDHwithSHA1KDF", true, "1.3.133.16.840.63.0.2"));
         ALL.add(new KeyAgreementIdent("ECCDHwithSHA1KDF", true, "1.3.133.16.840.63.0.3"));
@@ -33,11 +34,13 @@ public class KeyAgreementIdent extends Ident {
         ALL.add(new KeyAgreementIdent("ECCDHwithSHA384KDF", true, "1.3.132.1.14.2"));
         ALL.add(new KeyAgreementIdent("ECDHwithSHA512KDF", true, "1.3.132.1.11.3"));
         ALL.add(new KeyAgreementIdent("ECCDHwithSHA512KDF", true, "1.3.132.1.14.3"));
+
         // Microsoft specific KDF
         ALL.add(new KeyAgreementIdent("ECDHwithSHA1KDF(CNG)"));
         ALL.add(new KeyAgreementIdent("ECDHwithSHA256KDF(CNG)"));
         ALL.add(new KeyAgreementIdent("ECDHwithSHA384KDF(CNG)"));
         ALL.add(new KeyAgreementIdent("ECDHwithSHA512KDF(CNG)"));
+
         // CKDF requires custom AlgorithmParameterSpec (only BouncyCastle)
         //ALL.add(new KeyAgreementIdent("ECDHwithSHA1CKDF", true));
         //ALL.add(new KeyAgreementIdent("ECCDHwithSHA1CKDF", true));
@@ -47,6 +50,7 @@ public class KeyAgreementIdent extends Ident {
         //ALL.add(new KeyAgreementIdent("ECCDHwithSHA384CKDF", true));
         //ALL.add(new KeyAgreementIdent("ECDHwithSHA512CKDF", true));
         //ALL.add(new KeyAgreementIdent("ECCDHwithSHA512CKDF", true));
+
         // ECMQV - Disable for now as it needs diferent params(too different from DH)
         //ALL.add(new KeyAgreementIdent("ECMQV"));
         //ALL.add(new KeyAgreementIdent("ECMQVwithSHA1KDF", true));
@@ -59,10 +63,16 @@ public class KeyAgreementIdent extends Ident {
         //ALL.add(new KeyAgreementIdent("ECMQVwithSHA256CKDF", true, "1.3.132.1.15.1"));
         //ALL.add(new KeyAgreementIdent("ECMQVwithSHA384CKDF", true, "1.3.132.1.15.2"));
         //ALL.add(new KeyAgreementIdent("ECMQVwithSHA512CKDF", true, "1.3.132.1.15.3"));
+
         // ECVKO - Disable for now as it needs diferent params(too different from DH)
         //ALL.add(new KeyAgreementIdent("ECVKO", "ECGOST3410", "1.2.643.2.2.19", "GOST-3410-2001", "1.2.643.2.2.96"));
         //ALL.add(new KeyAgreementIdent("ECVKO256", "ECGOST3410-2012-256", "1.2.643.7.1.1.6.1", "1.2.643.7.1.1.1.1"));
         //ALL.add(new KeyAgreementIdent("ECVKO512", "ECGOST3410-2012-512", "1.2.643.7.1.1.6.2", "1.2.643.7.1.1.1.2"));
+
+        // XDH (RFC 7748)
+        ALL.add(new KeyAgreementIdent("XDH"));
+        ALL.add(new KeyAgreementIdent("X25519"));
+        ALL.add(new KeyAgreementIdent("X448"));
     }
 
     public static KeyAgreementIdent get(String ident) {

@@ -1,5 +1,6 @@
 #include "c_utils.h"
 #include "c_timing.h"
+#include "c_signals.h"
 
 #include "native.h"
 #include <string.h>
@@ -313,9 +314,12 @@ static jobject generate_from_curve(JNIEnv *env, const EC_GROUP *curve) {
     EC_KEY *key = EC_KEY_new();
     EC_KEY_set_group(key, curve);
 
-    native_timing_start();
-    int err = EC_KEY_generate_key(key);
-    native_timing_stop();
+	int err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = EC_KEY_generate_key(key);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (!err) {
         throw_new(env, "java/security/GeneralSecurityException", "Error generating key, EC_KEY_generate_key.");
@@ -416,10 +420,19 @@ EC_KEY *barray_to_pubkey(JNIEnv *env, const EC_GROUP *curve, jbyteArray pub) {
     jsize pub_len = (*env)->GetArrayLength(env, pub);
     jbyte *pub_data = (*env)->GetByteArrayElements(env, pub, NULL);
     EC_POINT *pub_point = EC_POINT_new(curve);
-    EC_POINT_oct2point(curve, pub_point, (unsigned char *) pub_data, pub_len, NULL);
+    int retval = EC_POINT_oct2point(curve, pub_point, (unsigned char *) pub_data, pub_len, NULL);
     (*env)->ReleaseByteArrayElements(env, pub, pub_data, JNI_ABORT);
-    EC_KEY_set_public_key(result, pub_point);
+    if (!retval) {
+    	EC_POINT_free(pub_point);
+    	throw_new(env, "java/security/GeneralSecurityException", "Error loading key, EC_POINT_oct2point.");
+    	return NULL;
+    }
+    retval = EC_KEY_set_public_key(result, pub_point);
     EC_POINT_free(pub_point);
+	if (!retval) {
+		throw_new(env, "java/security/GeneralSecurityException", "Error loading key, EC_KEY_set_public_key.");
+		return NULL;
+	}
     return result;
 }
 
@@ -430,32 +443,46 @@ EC_KEY *barray_to_privkey(JNIEnv *env,  const EC_GROUP *curve, jbyteArray priv) 
     jbyte *priv_data = (*env)->GetByteArrayElements(env, priv, NULL);
     BIGNUM *s = BN_bin2bn((unsigned char *) priv_data, priv_len, NULL);
     (*env)->ReleaseByteArrayElements(env, priv, priv_data, JNI_ABORT);
-    EC_KEY_set_private_key(result, s);
+    int retval = EC_KEY_set_private_key(result, s);
     BN_free(s);
+    if (!retval) {
+		throw_new(env, "java/security/GeneralSecurityException", "Error loading key, EC_KEY_set_private_key.");
+		return NULL;
+    }
     return result;
 }
 
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Libressl_generateSecret___3B_3BLjava_security_spec_ECParameterSpec_2(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteArray privkey, jobject params) {
+    jbyteArray result = NULL;
     EC_GROUP *curve = create_curve(env, params);
     if (!curve) {
         throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
-        return NULL;
+        goto free_curve;
     }
 
     EC_KEY *pub = barray_to_pubkey(env, curve, pubkey);
+	if (!pub) {
+		goto free_pub;
+	}
     EC_KEY *priv = barray_to_privkey(env, curve, privkey);
+	if (!priv) {
+		goto free_priv;
+	}
 
     int field_size = EC_GROUP_get_degree(curve);
     size_t secret_len = (field_size + 7)/8;
 
     //TODO: Do more KeyAgreements here, but will have to do the hash-fun manually,
     //      probably using the ECDH_KDF_X9_62 by wrapping it and dynamically choosing the EVP_MD. from the type string.
-    jbyteArray result = (*env)->NewByteArray(env, secret_len);
+    result = (*env)->NewByteArray(env, secret_len);
     jbyte *result_data = (*env)->GetByteArrayElements(env, result, NULL);
 
-    native_timing_start();
-    int err = ECDH_compute_key(result_data, secret_len, EC_KEY_get0_public_key(pub), priv, NULL);
-    native_timing_stop();
+	int err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = ECDH_compute_key(result_data, secret_len, EC_KEY_get0_public_key(pub), priv, NULL);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (err <= 0) {
         throw_new(env, "java/security/GeneralSecurityException", "Error computing ECDH, ECDH_compute_key.");
@@ -465,8 +492,11 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     }
     (*env)->ReleaseByteArrayElements(env, result, result_data, 0);
 
-    EC_KEY_free(pub);
+free_priv:
     EC_KEY_free(priv);
+free_pub:
+    EC_KEY_free(pub);
+free_curve:
     EC_GROUP_free(curve);
     return result;
 }
@@ -477,21 +507,28 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgr
 }
 
 JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Libressl_sign(JNIEnv *env, jobject self, jbyteArray data, jbyteArray privkey, jobject params) {
+	jbyteArray result = NULL;
     EC_GROUP *curve = create_curve(env, params);
     if (!curve) {
         throw_new(env, "java/security/InvalidAlgorithmParameterException", "Curve not found.");
-        return NULL;
+        goto free_curve;
     }
 
     EC_KEY *priv = barray_to_privkey(env, curve, privkey);
+    if (!priv) {
+		goto free_priv;
+    }
 
     jsize data_size = (*env)->GetArrayLength(env, data);
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
     // TODO: Do more Signatures here, maybe use the EVP interface to get to the hashes easier and not hash manually?
 
-    native_timing_start();
-    ECDSA_SIG *signature = ECDSA_do_sign((unsigned char *) data_data, data_size, priv);
-    native_timing_stop();
+	ECDSA_SIG *signature;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		signature = ECDSA_do_sign((unsigned char *) data_data, data_size, priv);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
     if (!signature) {
@@ -501,14 +538,16 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     }
 
     jsize sig_len = i2d_ECDSA_SIG(signature, NULL);
-    jbyteArray result = (*env)->NewByteArray(env, sig_len);
+    result = (*env)->NewByteArray(env, sig_len);
     jbyte *result_data = (*env)->GetByteArrayElements(env, result, NULL);
     jbyte *result_data_ptr = result_data;
     i2d_ECDSA_SIG(signature, (unsigned char **)&result_data_ptr);
     (*env)->ReleaseByteArrayElements(env, result, result_data, 0);
 
     ECDSA_SIG_free(signature);
+free_priv:
     EC_KEY_free(priv);
+free_curve:
     EC_GROUP_free(curve);
     return result;
 }
@@ -521,6 +560,10 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     }
 
     EC_KEY *pub = barray_to_pubkey(env, curve, pubkey);
+	if (!pub) {
+		EC_GROUP_free(curve);
+		return JNI_FALSE;
+	}
 
     jsize sig_len = (*env)->GetArrayLength(env, signature);
     jbyte *sig_data = (*env)->GetByteArrayElements(env, signature, NULL);
@@ -531,9 +574,13 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     jsize data_size = (*env)->GetArrayLength(env, data);
     jbyte *data_data = (*env)->GetByteArrayElements(env, data, NULL);
 
-    native_timing_start();
-    int result = ECDSA_do_verify((unsigned char *) data_data, data_size, sig_obj, pub);
-    native_timing_stop();
+	int result;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		result = ECDSA_do_verify((unsigned char *) data_data, data_size, sig_obj, pub);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
+
     (*env)->ReleaseByteArrayElements(env, data, data_data, JNI_ABORT);
 
     if (result < 0) {

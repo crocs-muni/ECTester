@@ -19,7 +19,7 @@ public class CustomECFieldFp extends ECFieldFp {
 
     @Override
     public int getFieldSize() {
-        return p.bitCount();
+        return p.bitLength();
     }
 
     @Override

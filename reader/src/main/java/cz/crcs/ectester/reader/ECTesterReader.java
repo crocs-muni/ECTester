@@ -73,7 +73,7 @@ public class ECTesterReader {
     private static String CLI_HEADER;
     private static String CLI_FOOTER = "\n" + LICENSE;
 
-    private static final byte[] SELECT_PREFIX = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x0c};
+    private static final byte[] SELECT_PREFIX = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x0f};
     private static final byte[] AID_PREFIX = {(byte) 0x45, (byte) 0x43, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x65, (byte) 0x72};
     private static final byte[] AID_CURRENT_VERSION = {(byte) 0x30, (byte) 0x33, (byte) 0x33}; // VERSION v0.3.3
     private static final byte[] AID_SUFFIX_221 = {(byte) 0x20, (byte) 0x32, (byte) 0x32, (byte) 0x31};

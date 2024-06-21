@@ -2,20 +2,25 @@ package cz.crcs.ectester.common.util;
 
 import cz.crcs.ectester.common.ec.*;
 import cz.crcs.ectester.data.EC_Store;
+import org.bouncycastle.asn1.ASN1OctetString;
+import org.bouncycastle.asn1.ASN1Integer;
+import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.bouncycastle.crypto.signers.PlainDSAEncoding;
 import org.bouncycastle.crypto.signers.StandardDSAEncoding;
+import org.bouncycastle.jcajce.interfaces.EdDSAPrivateKey;
+import org.bouncycastle.jcajce.interfaces.EdDSAPublicKey;
+import org.bouncycastle.jcajce.interfaces.XDHPrivateKey;
+import org.bouncycastle.jcajce.interfaces.XDHPublicKey;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyPair;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.ECKey;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
+import java.security.*;
+import java.security.interfaces.*;
 import java.security.spec.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -344,6 +349,39 @@ public class ECUtil {
         return new KeyPair(pubkey, privkey);
     }
 
+    /**
+     * Validate DER or PLAIN signature format.
+     *
+     * @throws IllegalArgumentException in case of invalid format.
+     * @param signature
+     * @param params
+     * @param hashAlgo
+     * @param sigType
+     */
+    public static void validateSignatureFormat(byte[] signature, ECParameterSpec params, String hashAlgo, String sigType) {
+        BigInteger n = params.getOrder();
+        try {
+            if (sigType.contains("CVC") || sigType.contains("PLAIN")) {
+                PlainDSAEncoding.INSTANCE.decode(n, signature);
+            } else {
+                StandardDSAEncoding.INSTANCE.decode(n, signature);
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    /**
+     * Recover the ECDSA signature nonce.
+     *
+     * @param signature
+     * @param data
+     * @param privkey
+     * @param params
+     * @param hashAlgo
+     * @param sigType
+     * @return The nonce.
+     */
     public static BigInteger recoverSignatureNonce(byte[] signature, byte[] data, BigInteger privkey, ECParameterSpec params, String hashAlgo, String sigType) {
         // We do not know how to reconstruct those nonces so far.
         // sigType.contains("ECKCDSA") || sigType.contains("ECNR") || sigType.contains("SM2")
@@ -369,14 +407,18 @@ public class ECUtil {
             }
 
             // Parse signature
-            BigInteger[] sigPair;
+            BigInteger r;
+            BigInteger s;
             if (sigType.contains("CVC") || sigType.contains("PLAIN")) {
-                sigPair = PlainDSAEncoding.INSTANCE.decode(n, signature);
+                BigInteger[] sigPair = PlainDSAEncoding.INSTANCE.decode(n, signature);
+                r = sigPair[0];
+                s = sigPair[1];
             } else {
-                sigPair = StandardDSAEncoding.INSTANCE.decode(n, signature);
+                ASN1Sequence seq = (ASN1Sequence) ASN1Primitive.fromByteArray(signature);
+                r = ((ASN1Integer) seq.getObjectAt(0)).getValue();
+                s = ((ASN1Integer) seq.getObjectAt(1)).getValue();
             }
-            BigInteger r = sigPair[0];
-            BigInteger s = sigPair[1];
+
 
             BigInteger rd = privkey.multiply(r).mod(n);
             BigInteger hrd = hashInt.add(rd).mod(n);
@@ -456,6 +498,46 @@ public class ECUtil {
         return null;
     }
 
+    public static byte[] pubkeyToBytes(PublicKey pubkey) {
+        if (pubkey instanceof ECPublicKey) {
+            ECPublicKey ecPublicKey = (ECPublicKey) pubkey;
+            return ECUtil.toX962Uncompressed(ecPublicKey.getW(), ecPublicKey.getParams());
+        } else if (pubkey instanceof XECPublicKey) {
+            XECPublicKey xedPublicKey = (XECPublicKey) pubkey;
+            return xedPublicKey.getU().toByteArray();
+        } else if (pubkey instanceof EdECPublicKey) {
+            EdECPublicKey edECPublicKey = (EdECPublicKey) pubkey;
+            return edECPublicKey.getPoint().getY().toByteArray();
+        } else if (pubkey instanceof XDHPublicKey) {
+            XDHPublicKey xdhPublicKey = (XDHPublicKey) pubkey;
+            return xdhPublicKey.getU().toByteArray();
+            // Special-case BouncyCastle XDH
+        } else if (pubkey instanceof EdDSAPublicKey) {
+            EdDSAPublicKey edDSAPublicKey = (EdDSAPublicKey) pubkey;
+            // Special-case BouncyCastle EdDSA
+            return edDSAPublicKey.getPointEncoding();
+        }
+        return null;
+    }
+
+    public static byte[] privkeyToBytes(PrivateKey privkey) {
+        if (privkey instanceof ECPrivateKey) {
+            ECPrivateKey ecPrivateKey = (ECPrivateKey) privkey;
+            return ecPrivateKey.getS().toByteArray();
+        } else if (privkey instanceof XECPrivateKey) {
+            XECPrivateKey xecPrivateKey = (XECPrivateKey) privkey;
+            return xecPrivateKey.getScalar().get();
+        } else if (privkey instanceof EdECPrivateKey) {
+            EdECPrivateKey edECPrivateKey = (EdECPrivateKey) privkey;
+            return edECPrivateKey.getBytes().get();
+        } else if (privkey instanceof XDHPrivateKey || privkey instanceof EdDSAPrivateKey) {
+            // Special-case BouncyCastle XDH and EdDSA
+            PrivateKeyInfo xpkinfo = PrivateKeyInfo.getInstance(privkey.getEncoded());
+            return ASN1OctetString.getInstance(xpkinfo.getPrivateKey().getOctets()).getOctets();
+        }
+        return null;
+    }
+
     public static boolean equalKeyPairParameters(ECPrivateKey priv, ECPublicKey pub) {
         if (priv == null || pub == null) {
             return false;
@@ -464,5 +546,16 @@ public class ECUtil {
                 priv.getParams().getCofactor() == pub.getParams().getCofactor() &&
                 priv.getParams().getGenerator().equals(pub.getParams().getGenerator()) &&
                 priv.getParams().getOrder().equals(pub.getParams().getOrder());
+    }
+
+    public static boolean equalECParameterSpec(ECParameterSpec left, ECParameterSpec right) {
+        if (left == null || right == null) {
+            return false;
+        }
+
+        return left.getCofactor() == right.getCofactor() &&
+                left.getCurve().equals(right.getCurve()) &&
+                left.getGenerator().equals(right.getGenerator()) &&
+                left.getOrder().equals(right.getOrder());
     }
 }

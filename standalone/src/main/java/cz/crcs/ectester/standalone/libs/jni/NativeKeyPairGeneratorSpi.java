@@ -2,6 +2,7 @@ package cz.crcs.ectester.standalone.libs.jni;
 
 import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.data.EC_Store;
+import cz.crcs.ectester.standalone.libs.NettleLib;
 
 import java.security.*;
 import java.security.spec.AlgorithmParameterSpec;
@@ -293,7 +294,7 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
         @Override
         native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random);
     }
-  
+
     public static class Libressl extends NativeKeyPairGeneratorSpi {
 
         public Libressl() {
@@ -319,26 +320,48 @@ public abstract class NativeKeyPairGeneratorSpi extends KeyPairGeneratorSpi {
         }
 
         @Override
-        native boolean keysizeSupported(int keysize);
+        boolean keysizeSupported(int keysize) {
+            switch (keysize) {
+                case 192, 224, 256, 384, 521:
+                    return true;
+                default:
+                    return false;
+            }
+        }
 
         @Override
-        native boolean paramsSupported(AlgorithmParameterSpec params);
+        boolean paramsSupported(AlgorithmParameterSpec params) {
+            try {
+                NettleLib.parametersKnown(params);
+                return true;
+            } catch (InvalidAlgorithmParameterException ignored) {
+                return false;
+            }
+        }
 
         @Override
-        native KeyPair generate(int keysize, SecureRandom random);
+        KeyPair generate(int keysize, SecureRandom random) {
+            EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, "secg/secp" + keysize + "r1");
+            return generate(keysize, random, curve.toSpec());
+        }
+
+        native KeyPair generate(int keysize, SecureRandom random, AlgorithmParameterSpec spec);
 
         @Override
         KeyPair generate(AlgorithmParameterSpec params, SecureRandom random) {
-            if (params instanceof ECGenParameterSpec) {
-                    String curveName = ((ECGenParameterSpec) params).getName();
-                    if (curveName.contains("secp")) {
-                        curveName = "secg/" + curveName;
-                    }
-                    EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
-                    ECParameterSpec spec = curve.toSpec();
-                    return generate(params, random, spec);
+            ECGenParameterSpec named;
+            try {
+                named = NettleLib.parametersKnown(params);
+            } catch (InvalidAlgorithmParameterException ignored) {
+                return null;
             }
-            return null;
+            String curveName = named.getName();
+            if (curveName.startsWith("secp")) {
+                curveName = "secg/" + curveName;
+            }
+            EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
+            ECParameterSpec spec = curve.toSpec();
+            return generate(params, random, spec);
         }
 
         native KeyPair generate(AlgorithmParameterSpec params, SecureRandom random, AlgorithmParameterSpec spec);

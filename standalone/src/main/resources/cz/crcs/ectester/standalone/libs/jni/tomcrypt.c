@@ -1,5 +1,6 @@
 #include "c_utils.h"
 #include "c_timing.h"
+#include "c_signals.h"
 
 #include "native.h"
 #include <stdio.h>
@@ -191,6 +192,22 @@ static ltc_ecc_set_type* create_curve(JNIEnv *env, jobject params) {
     jmethodID get_p = (*env)->GetMethodID(env, fp_field_class, "getP", "()Ljava/math/BigInteger;");
     jobject p = (*env)->CallObjectMethod(env, field, get_p);
 
+	jmethodID biginteger_valueof = (*env)->GetStaticMethodID(env, biginteger_class, "valueOf", "(J)Ljava/math/BigInteger;");
+	jobject three = (*env)->CallStaticObjectMethod(env, biginteger_class, biginteger_valueof, (jlong) 3);
+
+	jmethodID get_a = (*env)->GetMethodID(env, elliptic_curve_class, "getA", "()Ljava/math/BigInteger;");
+	jobject a = (*env)->CallObjectMethod(env, elliptic_curve, get_a);
+
+	jmethodID biginteger_add = (*env)->GetMethodID(env, biginteger_class, "add", "(Ljava/math/BigInteger;)Ljava/math/BigInteger;");
+	jobject a_3 = (*env)->CallObjectMethod(env, a, biginteger_add, three);
+
+	jmethodID biginteger_equals = (*env)->GetMethodID(env, biginteger_class, "equals", "(Ljava/lang/Object;)Z");
+	jboolean eq = (*env)->CallBooleanMethod(env, p, biginteger_equals, a_3);
+
+	if (!eq) {
+		return NULL;
+	}
+
     jmethodID get_g = (*env)->GetMethodID(env, ec_parameter_spec_class, "getGenerator", "()Ljava/security/spec/ECPoint;");
     jobject g = (*env)->CallObjectMethod(env, params, get_g);
 
@@ -232,9 +249,12 @@ static void free_curve(ltc_ecc_set_type *curve) {
 static jobject generate_from_curve(JNIEnv *env, const ltc_ecc_set_type *curve) {
     ecc_key key;
 
-    native_timing_start();
-    int err = ecc_make_key_ex(&ltc_prng, find_prng("yarrow"), &key, curve);
-    native_timing_stop();
+	int err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = ecc_make_key_ex(&ltc_prng, find_prng("yarrow"), &key, curve);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (err != CRYPT_OK) {
         throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
@@ -381,9 +401,12 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     unsigned char result[curve->size];
     unsigned long output_len = curve->size;
 
-    native_timing_start();
-    int err = ecc_shared_secret(&priv, &pub, result, &output_len);
-    native_timing_stop();
+	int err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = ecc_shared_secret(&priv, &pub, result, &output_len);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (err != CRYPT_OK) {
         throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
@@ -425,9 +448,12 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     unsigned char result[curve->size*4];
     unsigned long output_len = curve->size*4;
 
-    native_timing_start();
-    int err = ecc_sign_hash((unsigned char *) data_data, data_size, result, &output_len, &ltc_prng, find_prng("yarrow"), &priv);
-    native_timing_stop();
+	int err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = ecc_sign_hash((unsigned char *) data_data, data_size, result, &output_len, &ltc_prng, find_prng("yarrow"), &priv);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (err != CRYPT_OK) {
         throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));
@@ -467,9 +493,12 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     jbyte *sig_data = (*env)->GetByteArrayElements(env, signature, NULL);
 
     int result;
-    native_timing_start();
-    int err = ecc_verify_hash((unsigned char *) sig_data, sig_size, (unsigned char *) data_data, data_size, &result, &pub);
-    native_timing_stop();
+    int err;
+    SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = ecc_verify_hash((unsigned char *) sig_data, sig_size, (unsigned char *) data_data, data_size, &result, &pub);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (err != CRYPT_OK) {
         throw_new(env, "java/security/GeneralSecurityException", error_to_string(err));

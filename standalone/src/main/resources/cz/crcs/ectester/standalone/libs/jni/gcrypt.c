@@ -1,5 +1,6 @@
 #include "c_utils.h"
 #include "c_timing.h"
+#include "c_signals.h"
 
 #include "native.h"
 #include <stdio.h>
@@ -180,8 +181,11 @@ static jobject mpi_to_biginteger(JNIEnv *env, gcry_mpi_t mpi) {
         return NULL;
     }
 
-    jmethodID biginteger_init = (*env)->GetMethodID(env, biginteger_class, "<init>", "(I[B)V");
     jbyteArray bytes = mpi_to_bytearray(env, mpi);
+    if (!bytes) {
+    	return NULL;
+    }
+    jmethodID biginteger_init = (*env)->GetMethodID(env, biginteger_class, "<init>", "(I[B)V");
     jobject result = (*env)->NewObject(env, biginteger_class, biginteger_init, 1, bytes);
     return result;
 }
@@ -194,20 +198,6 @@ static gcry_mpi_t biginteger_to_mpi(JNIEnv *env, jobject bigint) {
     jmethodID to_byte_array = (*env)->GetMethodID(env, biginteger_class, "toByteArray", "()[B");
     jbyteArray byte_array = (jbyteArray) (*env)->CallObjectMethod(env, bigint, to_byte_array);
     return bytearray_to_mpi(env, byte_array);
-}
-
-static jint mpi_to_jint(gcry_mpi_t mpi) {
-    jint result = 0;
-    unsigned long nbits = gcry_mpi_get_nbits(mpi);
-    int max_bits = sizeof(jint) * 8;
-    for (size_t i = 0; i < nbits && i < max_bits; ++i) {
-        if (gcry_mpi_test_bit(mpi, nbits - i - 1)) {
-            result = ((result << 1) | 1);
-        } else {
-            result = (result << 1);
-        }
-    }
-    return result;
 }
 
 static jobject buff_to_ecpoint(JNIEnv *env, gcry_buffer_t buff) {
@@ -232,9 +222,10 @@ static jobject buff_to_ecpoint(JNIEnv *env, gcry_buffer_t buff) {
 
 static jobject create_ec_param_spec(JNIEnv *env, gcry_sexp_t key) {
     jobject result = NULL;
-    gcry_mpi_t p, a, b, n, h;
+    gcry_mpi_t p, a, b, n;
+    unsigned int h;
     gcry_buffer_t g = {0};
-    gcry_error_t err = gcry_sexp_extract_param(key, "ecc", "pab&g+nh", &p, &a, &b, &g, &n, &h, NULL);
+    gcry_error_t err = gcry_sexp_extract_param(key, "ecc", "pab&g+n%uh", &p, &a, &b, &g, &n, &h, NULL);
     if (gcry_err_code(err) != GPG_ERR_NO_ERROR) {
         throw_new_var(env, "java/security/GeneralSecurityException", "Error exporting domain parameters. Error: %ui", gcry_err_code(err));
         goto end;
@@ -244,7 +235,11 @@ static jobject create_ec_param_spec(JNIEnv *env, gcry_sexp_t key) {
     jmethodID fp_field_init = (*env)->GetMethodID(env, fp_field_class, "<init>", "(Ljava/math/BigInteger;)V");
     jobject field = (*env)->NewObject(env, fp_field_class, fp_field_init, pi);
 
-    jobject ai = mpi_to_biginteger(env, a);
+	jobject ai = mpi_to_biginteger(env, a);
+	if (!ai) {
+		jmethodID biginteger_valueof = (*env)->GetStaticMethodID(env, biginteger_class, "valueOf", "(J)Ljava/math/BigInteger;");
+		ai = (*env)->CallStaticObjectMethod(env, biginteger_class, biginteger_valueof, (jlong)0);
+	}
     jobject bi = mpi_to_biginteger(env, b);
 
     jmethodID elliptic_curve_init = (*env)->GetMethodID(env, elliptic_curve_class, "<init>", "(Ljava/security/spec/ECField;Ljava/math/BigInteger;Ljava/math/BigInteger;)V");
@@ -253,7 +248,7 @@ static jobject create_ec_param_spec(JNIEnv *env, gcry_sexp_t key) {
     jobject gen = buff_to_ecpoint(env, g);
 
     jobject order = mpi_to_biginteger(env, n);
-    jint cofactor = mpi_to_jint(h);
+    jint cofactor = (jint) h;
 
     jmethodID ec_parameter_spec_init = (*env)->GetMethodID(env, ec_parameter_spec_class, "<init>", "(Ljava/security/spec/EllipticCurve;Ljava/security/spec/ECPoint;Ljava/math/BigInteger;I)V");
     result = (*env)->NewObject(env, ec_parameter_spec_class, ec_parameter_spec_init, elliptic_curve, gen, order, cofactor);
@@ -264,7 +259,6 @@ end:
     gcry_mpi_release(b);
     gcry_free(g.data);
     gcry_mpi_release(n);
-    gcry_mpi_release(h);
     return result;
 }
 
@@ -272,9 +266,12 @@ static jobject generate_from_sexp(JNIEnv *env, gcry_sexp_t gen_sexp) {
     jobject result = NULL;
     gcry_sexp_t key_sexp;
 
-    native_timing_start();
-    gcry_error_t err = gcry_pk_genkey(&key_sexp, gen_sexp);
-    native_timing_stop();
+	gcry_error_t err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = gcry_pk_genkey(&key_sexp, gen_sexp);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (gcry_err_code(err) != GPG_ERR_NO_ERROR) {
         throw_new_var(env, "java/security/GeneralSecurityException", "Error generating key. Error: %ui", gcry_err_code(err));
@@ -460,12 +457,15 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKey
     gcry_sexp_t res_sexp;
     // TODO: figure out why ecc_encrypt_raw takes signed representation.. Nobody uses that., everybody uses unsigned reduced mod p.
 
-    native_timing_start();
-    gcry_error_t err = gcry_pk_encrypt(&res_sexp, enc_sexp, pub);
-    native_timing_stop();
+	gcry_error_t err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = gcry_pk_encrypt(&res_sexp, enc_sexp, pub);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (gcry_err_code(err) != GPG_ERR_NO_ERROR) {
-        throw_new_var(env, "java/security/GeneralSecurityException", "Error performing ECDH. Error: %ui", gcry_err_code(err));
+        throw_new_var(env, "java/security/GeneralSecurityException", "Error performing ECDH. Error: %u", gcry_err_code(err));
         goto end;
     }
 
@@ -572,11 +572,15 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     get_sign_data_sexp(env, &data_sexp, this, data);
 
     gcry_sexp_t res_sexp;
-    native_timing_start();
-    gcry_error_t err = gcry_pk_sign(&res_sexp, data_sexp, priv_sexp);
-    native_timing_stop();
+	gcry_error_t err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = gcry_pk_sign(&res_sexp, data_sexp, priv_sexp);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
+
     if (gcry_err_code(err) != GPG_ERR_NO_ERROR) {
-        throw_new_var(env, "java/security/GeneralSecurityException", "Error performing ECDSA. Error: %ui", gcry_err_code(err));
+        throw_new_var(env, "java/security/GeneralSecurityException", "Error performing ECDSA. Error: %u", gcry_err_code(err));
         goto release_init;
     }
 
@@ -584,7 +588,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     gcry_buffer_t s_buf = {0};
     err = gcry_sexp_extract_param(res_sexp, "ecdsa", "&rs", &r_buf, &s_buf, NULL);
     if (gcry_err_code(err) != GPG_ERR_NO_ERROR) {
-        throw_new_var(env, "java/security/GeneralSecurityException", "Error extracting ECDSA output. Error: %ui", gcry_err_code(err));
+        throw_new_var(env, "java/security/GeneralSecurityException", "Error extracting ECDSA output. Error: %u", gcry_err_code(err));
         goto release_res;
     }
     result = asn1_der_encode(env, r_buf.data, r_buf.len, s_buf.data, s_buf.len);
@@ -627,13 +631,16 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     gcry_sexp_t sig_sexp;
     gcry_sexp_build(&sig_sexp, NULL, "(sig-val (ecdsa (r %M) (s %M)))", r_mpi, s_mpi);
 
-    native_timing_start();
-    gcry_error_t err = gcry_pk_verify(sig_sexp, data_sexp, pub_sexp);
-    native_timing_stop();
+	gcry_error_t err;
+	SIG_TRY(TIMEOUT) {
+		native_timing_start();
+		err = gcry_pk_verify(sig_sexp, data_sexp, pub_sexp);
+		native_timing_stop();
+    } SIG_CATCH_HANDLE(env);
 
     if (gcry_err_code(err) != GPG_ERR_NO_ERROR) {
         if (gcry_err_code(err) != GPG_ERR_BAD_SIGNATURE) {
-            throw_new(env, "java/security/GeneralSecurityException", "Error verif sig.");
+            throw_new_var(env, "java/security/GeneralSecurityException", "Error verif sig. Error: %u", gcry_err_code(err));
             goto release_init;
         }
     } else {

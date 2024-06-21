@@ -11,6 +11,7 @@ public class KeyPairGeneratorIdent extends Ident {
     private static final List<KeyPairGeneratorIdent> ALL = new LinkedList<>();
 
     static {
+        // Short-Weierstrass
         ALL.add(new KeyPairGeneratorIdent("EC"));
         ALL.add(new KeyPairGeneratorIdent("ECDH"));
         ALL.add(new KeyPairGeneratorIdent("ECDSA"));
@@ -22,6 +23,14 @@ public class KeyPairGeneratorIdent extends Ident {
         ALL.add(new KeyPairGeneratorIdent("ECKCDSA"));
         // ECGDSA? Botan provides.
         ALL.add(new KeyPairGeneratorIdent("ECGDSA"));
+        // Montgomery
+        ALL.add(new KeyPairGeneratorIdent("XDH"));
+        ALL.add(new KeyPairGeneratorIdent("X25519"));
+        ALL.add(new KeyPairGeneratorIdent("X448"));
+        // Twisted-Edwards
+        ALL.add(new KeyPairGeneratorIdent("EdDSA"));
+        ALL.add(new KeyPairGeneratorIdent("Ed25519"));
+        ALL.add(new KeyPairGeneratorIdent("Ed448"));
     }
 
     public static KeyPairGeneratorIdent get(String ident) {

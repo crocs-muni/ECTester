@@ -1861,3 +1861,139 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 }
 #endif
 #endif
+/* Header for class cz_crcs_ectester_standalone_libs_NettleLib */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_NettleLib
+#define _Included_cz_crcs_ectester_standalone_libs_NettleLib
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_NettleLib
+ * Method:    createProvider
+ * Signature: ()Ljava/security/Provider;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_createProvider
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_NettleLib
+ * Method:    getCurves
+ * Signature: ()Ljava/util/Set;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_getCurves
+  (JNIEnv *, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeProvider_Nettle */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeProvider_Nettle
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeProvider_Nettle
+#ifdef __cplusplus
+extern "C" {
+#endif
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Nettle_serialVersionUID
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Nettle_serialVersionUID 1421746759512286392LL
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Nettle_MAX_ARRAY_SIZE
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Nettle_MAX_ARRAY_SIZE 2147483639L
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Nettle_KEYS
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Nettle_KEYS 0L
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Nettle_VALUES
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Nettle_VALUES 1L
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Nettle_ENTRIES
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Nettle_ENTRIES 2L
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Nettle_serialVersionUID
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Nettle_serialVersionUID 4112578634029874840LL
+#undef cz_crcs_ectester_standalone_libs_jni_NativeProvider_Nettle_serialVersionUID
+#define cz_crcs_ectester_standalone_libs_jni_NativeProvider_Nettle_serialVersionUID -4298000515446427739LL
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeProvider_Nettle
+ * Method:    setup
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_00024Nettle_setup
+  (JNIEnv *, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Nettle */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Nettle
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Nettle
+#ifdef __cplusplus
+extern "C" {
+#endif
+#undef cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Nettle_DEFAULT_KEYSIZE
+#define cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Nettle_DEFAULT_KEYSIZE 256L
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Nettle
+ * Method:    generate
+ * Signature: (ILjava/security/SecureRandom;Ljava/security/spec/AlgorithmParameterSpec;)Ljava/security/KeyPair;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Nettle_generate__ILjava_security_SecureRandom_2Ljava_security_spec_AlgorithmParameterSpec_2
+  (JNIEnv *, jobject, jint, jobject, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_Nettle
+ * Method:    generate
+ * Signature: (Ljava/security/spec/AlgorithmParameterSpec;Ljava/security/SecureRandom;Ljava/security/spec/AlgorithmParameterSpec;)Ljava/security/KeyPair;
+ */
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Nettle_generate__Ljava_security_spec_AlgorithmParameterSpec_2Ljava_security_SecureRandom_2Ljava_security_spec_AlgorithmParameterSpec_2
+  (JNIEnv *, jobject, jobject, jobject, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Nettle */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Nettle
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Nettle
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_Nettle
+ * Method:    generateSecret
+ * Signature: ([B[BLjava/security/spec/ECGenParameterSpec;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyAgreementSpi_00024Nettle_generateSecret
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Nettle */
+
+#ifndef _Included_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Nettle
+#define _Included_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Nettle
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Nettle
+ * Method:    sign
+ * Signature: ([B[BLjava/security/spec/ECGenParameterSpec;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Nettle_sign
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_Nettle
+ * Method:    verify
+ * Signature: ([B[B[BLjava/security/spec/ECGenParameterSpec;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSignatureSpi_00024Nettle_verify
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jbyteArray, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+

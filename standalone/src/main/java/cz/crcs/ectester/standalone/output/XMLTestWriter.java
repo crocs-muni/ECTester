@@ -147,7 +147,7 @@ public class XMLTestWriter extends BaseXMLTestWriter {
             result.setAttribute("ectester", ECTesterStandalone.VERSION);
 
             Element name = doc.createElement("name");
-            name.setTextContent(standaloneSuite.getLibrary().name());
+            name.setTextContent(standaloneSuite.getLibrary().fullName());
             result.appendChild(name);
             return result;
         }

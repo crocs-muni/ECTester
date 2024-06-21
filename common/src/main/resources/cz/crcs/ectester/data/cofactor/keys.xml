@@ -668,7 +668,7 @@
     </pubkey>
     <pubkey>
         <id>pq/cofactor192/1</id>
-        <inline>0x6366613b66339fa580f390d630ccf9b535437229aa8b61cd,0x1b975fa3848bd68f34f6a08b7cf190bcaeaf9782270e2413</inline>
+        <inline>0x28f5b96b08f9dbe661472dbf8e5925b944e42ac5fdfdb2da,0x227e8b2a9b07d1cd67211d4b933bf43eefbb7140e5a65dca</inline>
         <curve>composite/pq/composite192/1</curve>
         <desc>cofactor order = 0x00000000000000000000035efd8bad55038e6bd22db8b805</desc>
     </pubkey>
