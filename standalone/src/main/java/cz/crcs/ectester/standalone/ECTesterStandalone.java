@@ -136,16 +136,6 @@ public class ECTesterStandalone {
             }
             libs = libObjects.toArray(new ProviderECLibrary[0]);
 
-            //TODO: push this further down to only initialize if necessary.
-            //      and only initialize the chosen lib (so give libs a name in Java only)
-            for (ECLibrary lib : libs) {
-                try {
-                    lib.initialize();
-                } catch (Exception ex) {
-                    System.err.println(ex.getMessage());
-                }
-            }
-
             cfg = new Config(libs);
             if (!cfg.readOptions(cli)) {
                 return;
@@ -302,7 +292,17 @@ public class ECTesterStandalone {
      */
     private void listLibraries() {
         for (ProviderECLibrary lib : libs) {
-            if (lib.isInitialized() && (cfg.selected == null || lib == cfg.selected)) {
+            if (cfg.selected == null || lib == cfg.selected) {
+                try {
+                    if (!lib.initialize()) {
+                        continue;
+                    }
+                } catch (Exception ex) {
+                    System.err.println("Error initializing " + lib.fullName());
+                    System.err.println(ex.getMessage());
+                    continue;
+                }
+
                 System.out.println("\t- " + Colors.bold(lib.name()));
                 System.out.println(Colors.bold("\t\t- Fullname: ") + lib.getProvider().getName());
                 System.out.println(Colors.bold("\t\t- Version: ") + lib.getProvider().getVersionStr());
@@ -942,7 +942,7 @@ public class ECTesterStandalone {
                 if (libraryName != null) {
                     List<ProviderECLibrary> matchedLibs = new LinkedList<>();
                     for (ProviderECLibrary lib : libs) {
-                        if (lib.isInitialized() && lib.name().toLowerCase().contains(libraryName.toLowerCase())) {
+                        if (lib.name().toLowerCase().contains(libraryName.toLowerCase())) {
                             matchedLibs.add(lib);
                         }
                     }
@@ -954,6 +954,12 @@ public class ECTesterStandalone {
                         return false;
                     } else {
                         selected = matchedLibs.get(0);
+                        try {
+                            selected.initialize();
+                        } catch (Exception ex) {
+                            System.err.println("Error initializing " + selected.fullName());
+                            System.err.println(ex.getMessage());
+                        }
                     }
                 }
             }
