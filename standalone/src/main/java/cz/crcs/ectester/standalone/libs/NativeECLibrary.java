@@ -33,7 +33,7 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
             Path libPath = libDir.resolve(resource + "." + suffix);
 
             /* Write the shim. */
-            boolean found = FileUtil.writeNewer(ECTesterStandalone.LIB_RESOURCE_DIR + resource + "." + suffix, libPath);
+            boolean found = FileUtil.write(ECTesterStandalone.LIB_RESOURCE_DIR + resource + "." + suffix, libPath);
             if (!found) {
                 return false;
             }
@@ -44,7 +44,7 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
                     if (requirement.endsWith(suffix)) {
                         /* The requirement is bundled, write it */
                         Path reqPath = libReqDir.resolve(requirement);
-                        found = FileUtil.writeNewer(ECTesterStandalone.LIB_RESOURCE_DIR + requirement, reqPath);
+                        found = FileUtil.write(ECTesterStandalone.LIB_RESOURCE_DIR + requirement, reqPath);
                         if (!found) {
                             return false;
                         }

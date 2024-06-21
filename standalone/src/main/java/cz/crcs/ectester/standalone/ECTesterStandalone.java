@@ -103,12 +103,12 @@ public class ECTesterStandalone {
             reqs.toFile().mkdirs();
 
             if (!System.getProperty("os.name").startsWith("Windows")) {
-                FileUtil.writeNewer(LIB_RESOURCE_DIR + "lib_timing.so", reqs.resolve("lib_timing.so"));
+                FileUtil.write(LIB_RESOURCE_DIR + "lib_timing.so", reqs.resolve("lib_timing.so"));
                 System.load(reqs.resolve("lib_timing.so").toString());
 
-                FileUtil.writeNewer(LIB_RESOURCE_DIR + "lib_csignals.so", reqs.resolve("lib_csignals.so"));
+                FileUtil.write(LIB_RESOURCE_DIR + "lib_csignals.so", reqs.resolve("lib_csignals.so"));
                 System.load(reqs.resolve("lib_csignals.so").toString());
-                FileUtil.writeNewer(LIB_RESOURCE_DIR + "lib_cppsignals.so", reqs.resolve("lib_cppsignals.so"));
+                FileUtil.write(LIB_RESOURCE_DIR + "lib_cppsignals.so", reqs.resolve("lib_cppsignals.so"));
                 System.load(reqs.resolve("lib_cppsignals.so").toString());
             }
 

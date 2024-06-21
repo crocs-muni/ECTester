@@ -81,6 +81,17 @@ public class FileUtil {
         return true;
     }
 
+    public static boolean write(String resourcePath, Path outPath) throws IOException {
+        URL reqURL = FileUtil.class.getResource(resourcePath);
+        if (reqURL == null) {
+            return false;
+        }
+        URLConnection reqConn = reqURL.openConnection();
+        Files.copy(reqConn.getInputStream(), outPath, StandardCopyOption.REPLACE_EXISTING);
+        reqConn.getInputStream().close();
+        return true;
+    }
+
     public static Path getLibDir() {
         return getAppData().resolve("ECTesterStandalone");
     }
