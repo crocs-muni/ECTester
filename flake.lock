@@ -18,7 +18,58 @@
         "type": "github"
       }
     },
+    "flake-utils_2": {
+      "locked": {
+        "lastModified": 1605370193,
+        "narHash": "sha256-YyMTf3URDL/otKdKgtoMChu4vfVL3vCMkRqpGifhUn0=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "5021eac20303a61fafe17224c087f5519baed54d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "gradle2nix": {
+      "inputs": {
+        "flake-utils": "flake-utils_2",
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1718325867,
+        "narHash": "sha256-UU9a/haXvr0qKo4noB40K7d47Zl9ZiigVE5rkeHBS7s=",
+        "owner": "tadfisher",
+        "repo": "gradle2nix",
+        "rev": "03c1b713ad139eb6dfc8d463b5bd348368125cf1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tadfisher",
+        "repo": "gradle2nix",
+        "rev": "03c1b713ad139eb6dfc8d463b5bd348368125cf1",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
+      "locked": {
+        "lastModified": 1718530797,
+        "narHash": "sha256-pup6cYwtgvzDpvpSCFh1TEUjw2zkNpk8iolbKnyFmmU=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "b60ebf54c15553b393d144357375ea956f89e9a9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
       "locked": {
         "lastModified": 1711001935,
         "narHash": "sha256-URtGpHue7HHZK0mrHnSf8wJ6OmMKYSsoLmJybrOLFSQ=",
@@ -37,7 +88,8 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs"
+        "gradle2nix": "gradle2nix",
+        "nixpkgs": "nixpkgs_2"
       }
     },
     "systems": {
