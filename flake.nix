@@ -137,13 +137,11 @@
               # gradleInstallFlags = [ "installDist" ];
               # gradleBuildFlags = [ "standalone:uberJar" ]; # ":standalone:compileJava" ":standalone:uberJar" ]; "--no-build-cache"
               lockFile = ./gradle.lock;
-              gradleBuildFlags = [ "standalone:libs" "-PlibName=libressl" ":standalone:uberJar"]; # ":standalone:compileJava" ":standalone:uberJar" ]; "--no-build-cache"
+              gradleBuildFlags = [ ":standalone:uberJar"]; # ":standalone:compileJava" ":standalone:uberJar" ]; "--no-build-cache"
               src = ./.;
 
-              # cp ${libresslShim.out}/lib/libressl_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
-              # ls -lat standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/libressl_provider.so
-              # exit 1
               preConfigure = ''
+                cp ${libresslShim.out}/lib/libressl_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 pushd standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 make lib_timing.so lib_csignals.so lib_cppsignals.so
                 popd
