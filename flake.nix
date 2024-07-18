@@ -338,7 +338,7 @@
             global-platform-pro
             gradle
             # libraries to test
-            # openssl
+            openssl
             libressl
             # glibc
             boringssl
@@ -380,7 +380,7 @@
             libtomcrypt
             botan2
             cryptopp
-            # openssl
+            openssl
             libgcrypt
             nettle
             gmp
