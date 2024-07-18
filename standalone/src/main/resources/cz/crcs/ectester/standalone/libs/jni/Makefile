@@ -189,15 +189,14 @@ nettle.o: nettle.c
 # LibreSSL shim
 libressl: libressl_provider.so
 
-lib_libressl.so:
-	cp $(PROJECT_ROOT_PATH)/ext/libressl/build/crypto/libcrypto.so lib_libressl.so
+# lib_libressl.so:
+# 	cp $(PROJECT_ROOT_PATH)/ext/libressl/build/crypto/libcrypto.so lib_libressl.so
 
-libressl_provider.so: libressl.o c_utils.o | lib_timing.so lib_csignals.so lib_libressl.so
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_libressl.so -l:lib_timing.so -l:lib_csignals.so
+libressl_provider.so: libressl.o c_utils.o | lib_timing.so lib_csignals.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs libresslcrypto) -l:lib_timing.so -l:lib_csignals.so
 
 libressl.o: libressl.c
-	$(CC) -I$(PROJECT_ROOT_PATH)/ext/libressl/build/include/ $(CFLAGS) -c $<
-
+	$(CC) $(shell pkg-config --cflags libresslcrypto) $(CFLAGS) -c $<
 
 help:
 	@echo "# This makefile builds the JNI shims necessary to test native libraries."
