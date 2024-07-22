@@ -103,6 +103,25 @@
           ];
 
         });
+        mbedtlsShim = with pkgs; stdenv.mkDerivation rec {
+          name = "MbedTLSShim";
+          src = ./standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni;
+
+          buildInputs = [
+            mbedtls
+            pkg-config
+            jdk11_headless
+          ];
+
+          buildPhase = ''
+            make mbedtls
+          '';
+
+          installPhase = ''
+            mkdir --parents $out/lib
+            cp mbedtls_provider.so $out/lib
+          '';
+        };
         overlays = [];
         pkgs = import nixpkgs {
           inherit system overlays;
@@ -141,6 +160,7 @@
                 cp ${libresslShim.out}/lib/libressl_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 cp ${boringsslShim.out}/lib/boringssl_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 cp ${patched_boringssl.out}/lib/lib_boringssl.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
+                cp ${mbedtlsShim.out}/lib/mbedtls_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 pushd standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 make lib_timing.so lib_csignals.so lib_cppsignals.so
                 popd
