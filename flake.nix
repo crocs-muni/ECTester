@@ -14,23 +14,57 @@
   outputs = { self, nixpkgs, flake-utils, gradle2nix, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        libresslShim = with pkgs; stdenv.mkDerivation {
-          name = "LibreSSLShim";
+        patched_boringssl = with pkgs; pkgs.boringssl.overrideAttrs (final: prev: rec {
+           src = fetchgit {
+            url = "https://boringssl.googlesource.com/boringssl";
+            # rev = "d274b1bacdca36f3941bf78e43dc38acf676a1a8"; # master at the time of writing
+            # hash = "sha256-FtJFZorlGqPBfkPgFbEztNvYHweFaRVeuAM8xOMleMk=";
+            # NOTE 
+            rev = "80a243e07ef77156af66efa7d22ac35aba44c1b3"; # ECTester submodule version at the time of writing
+            hash = "sha256-Sa1XjU7wi4umVQ6BUj9BxJMHYlXNg6xw9Cb/vBE+ScQ=";
+          };
+
+          # NOTE this build does not match upstream, but is what ECTester did at the time of writing
+          buildPhase = ''
+            cmake -GNinja -DBUILD_SHARED_LIBS=1 -Bbuild
+            pushd build
+            ninja crypto
+            popd
+          '';
+
+          installPhase = ''
+            mkdir --parents $bin/bin $dev $out/lib
+            mv include $dev
+
+            pushd build
+            mv crypto/libcrypto.so $out/lib/lib_boringssl.so
+            popd
+          '';
+
+        });
+
+        boringsslShim = with pkgs; stdenv.mkDerivation {
+          name = "BoringSSLShim";
           src = ./standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni;
 
           buildInputs = [
-            libressl
+            patched_boringssl
             pkg-config
             jdk11_headless
           ];
 
           buildPhase = ''
-            make libressl
+            make boringssl
           '';
+
+          BORINGSSL_CFLAGS = "${patched_boringssl.dev.outPath}/include";
+          # LD_LIBRARY_PATH = with pkgs; lib.makeLibraryPath [
+          #   patched_boringssl
+          # ];
 
           installPhase = ''
             mkdir --parents $out/lib
-            cp libressl_provider.so $out/lib
+            cp boringssl_provider.so $out/lib
           '';
         };
         # openssl_3013 = pkgs.openssl.overrideAttrs (_old: rec {
