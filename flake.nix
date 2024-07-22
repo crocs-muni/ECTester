@@ -43,30 +43,6 @@
 
         });
 
-        boringsslShim = with pkgs; stdenv.mkDerivation {
-          name = "BoringSSLShim";
-          src = ./standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni;
-
-          buildInputs = [
-            patched_boringssl
-            pkg-config
-            jdk11_headless
-          ];
-
-          buildPhase = ''
-            make boringssl
-          '';
-
-          BORINGSSL_CFLAGS = "${patched_boringssl.dev.outPath}/include";
-          # LD_LIBRARY_PATH = with pkgs; lib.makeLibraryPath [
-          #   patched_boringssl
-          # ];
-
-          installPhase = ''
-            mkdir --parents $out/lib
-            cp boringssl_provider.so $out/lib
-          '';
-        };
 
         libressl = pkgs.libressl.overrideAttrs (_old: rec {
           # devLibPath = pkgs.lib.makeLibraryPath [ pkgs.libressl.dev ];
@@ -103,25 +79,9 @@
           ];
 
         });
-        mbedtlsShim = with pkgs; stdenv.mkDerivation rec {
-          name = "MbedTLSShim";
-          src = ./standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni;
-
-          buildInputs = [
-            mbedtls
-            pkg-config
-            jdk11_headless
-          ];
-
-          buildPhase = ''
-            make mbedtls
-          '';
-
-          installPhase = ''
-            mkdir --parents $out/lib
-            cp mbedtls_provider.so $out/lib
-          '';
-        };
+        libresslShim = import ./nix/libresslshim.nix { pkgs = pkgs; libressl = libressl; };
+        boringsslShim = import ./nix/boringsslshim.nix { pkgs = pkgs; boringssl = patched_boringssl; };
+        mbedtlsShim = import ./nix/mbedtlsshim.nix { pkgs = pkgs; };
         overlays = [];
         pkgs = import nixpkgs {
           inherit system overlays;
