@@ -84,7 +84,7 @@
 
           # NOTE: Due to name conflicts between OpenSSL and LibreSSL we need to resolve this manually.
           postFixup =  pkgs.lib.concatLines [ 
-            _old.postFixup
+            ( _old.postFixup or "" )
             ''
             cp $dev/lib/pkgconfig/libcrypto.pc $dev/lib/pkgconfig/libresslcrypto.pc
             sed --in-place --expression 's/-lcrypto/-lresslcrypto/' $dev/lib/pkgconfig/libresslcrypto.pc
