@@ -19,7 +19,7 @@
             url = "https://boringssl.googlesource.com/boringssl";
             # rev = "d274b1bacdca36f3941bf78e43dc38acf676a1a8"; # master at the time of writing
             # hash = "sha256-FtJFZorlGqPBfkPgFbEztNvYHweFaRVeuAM8xOMleMk=";
-            # NOTE 
+            # NOTE
             rev = "80a243e07ef77156af66efa7d22ac35aba44c1b3"; # ECTester submodule version at the time of writing
             hash = "sha256-Sa1XjU7wi4umVQ6BUj9BxJMHYlXNg6xw9Cb/vBE+ScQ=";
           };
@@ -67,31 +67,7 @@
             cp boringssl_provider.so $out/lib
           '';
         };
-        # openssl_3013 = pkgs.openssl.overrideAttrs (_old: rec {
-        #   version = "3.0.13";
-        #   pname = "openssl";
-        #   src = pkgs.fetchurl {
-        #     url = "https://www.openssl.org/source/openssl-${version}.tar.gz";
-        #     hash = "sha256-iFJXU/edO+wn0vp8ZqoLkrOqlJja/ZPXz6SzeAza4xM=";
-        #   };
-        #   # FIXME this might cause unwanted things
-        #   patches = [];
-        # });
-        # openssl_315 = pkgs.openssl.overrideAttrs (_old: rec {
-        #   version = "3.1.5";
-        #   pname = "openssl";
-        #   src = pkgs.fetchurl {
-        #     url = "https://www.openssl.org/source/openssl-${version}.tar.gz";
-        #     hash = "sha256-auAVRn2r8EabE5rakzGTJ74kuYJR/67O2gIhhI3AkmI=";
-        #   };
-        #   # FIXME this might cause unwanted things
-        #   patches = [];
-        # });
-        boirngssl = pkgs.boringssl.overrideAttrs (_old: rec {
-          postFixup = ''
-            ls 
-          '';
-        });
+
         libressl = pkgs.libressl.overrideAttrs (_old: rec {
           # devLibPath = pkgs.lib.makeLibraryPath [ pkgs.libressl.dev ];
           # pname = "libressl";
@@ -176,6 +152,8 @@
 
               preConfigure = ''
                 cp ${libresslShim.out}/lib/libressl_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
+                cp ${boringsslShim.out}/lib/boringssl_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
+                cp ${patched_boringssl.out}/lib/lib_boringssl.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 pushd standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 make lib_timing.so lib_csignals.so lib_cppsignals.so
                 popd
@@ -196,6 +174,7 @@
                 # openssl_3013
                 # boringssl
                 libressl
+                patched_boringssl
                 libtomcrypt
                 libtommath
                 botan2
@@ -228,78 +207,15 @@
                 libconfig
               ];
 
-              # buildBoringSSL = ''
-              #   pushd ext/boringssl
-              #   mkdir --parents build
-              #   pushd build
-              #   cmake -GNinja -DBUILD_SHARED_LIBS=1 ..
-              #   ninja
-              #   popd
-              # '';
-
-              # buildLibreSSL = ''
-              #   pushd ext/libressl
-              #   ./autogen.sh
-              #   mkdir --parents build
-              #   pushd build
-              #   cmake -GNinja -DBUILD_SHARED_LIBS=1 ..
-              #   ninja
-              #   popd
-              # '';
-
-              # TODO OpenJDK 64-Bit Server VM warning: You have loaded library
-              # /home/qup/.local/share/ECTesterStandalone/lib/lib_ippcp.so which
-              # might have disabled stack guard. The VM will try to fix the stack
-              # guard now. It's highly recommended that you fix the library with
-              # 'execstack -c <libfile>', or link it with '-z noexecstack'.
-              # buildIppCrypto = ''
-              #   pushd ext/ipp-crypto
-              #   CC=clang CXX=clang++ cmake CMakeLists.txt -GNinja -Bbuild -DARCH=intel64  # Does not work with GCC 12+
-              #   mkdir --parents build
-              #   pushd build
-              #   ninja
-              #   popd
-              #  '';
-
-              # buildMbedTLS = ''
-              #   pushd ext/mbedtls
-              #   python -m venv virt
-              #   . virt/bin/activate
-              #   pip install -r scripts/basic.requirements.txt
-              #   cmake -GNinja -Bbuild -DUSE_SHARED_MBEDTLS_LIBRARY=On
-              #   cd build
-              #   ninja
-              # '';
-
-              # wolfCrypt-JNI = ''
-              #   pushd ext/wolfcrypt-jni
-              #   mkdir junit
-              #   wget -P junit/ https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar
-              #   wget -P junit/ https://repo1.maven.org/maven2/org/hamcrest/hamcrest-all/1.3/hamcrest-all-1.3.jar
-              #   make -f makefile.linux
-              #   env JUNIT_HOME=junit/ ant build-jce-release
-              # '';
-
-              # preConfigure = lib.concatLines [
-              #   buildBoringSSL
-              #   buildLibreSSL
-              #   buildIppCrypto
-              #   buildMbedTLS
-              #   wolfCrypt-JNI
-              # ];
-
-              # buildPhase = ''
-              #   ./gradlew clean build --offline
-              # '';
-
               buildInputs = [
                 jdk17_headless
-                libressl
+                # libressl
                 # patched_openssl
               ];
 
               LD_LIBRARY_PATH = lib.makeLibraryPath [
                 # libresslShim
+                boringsslShim
 
                 libtommath
                 libtomcrypt
@@ -308,12 +224,15 @@
                 libgcrypt
                 patched_openssl
                 libressl
+                patched_boringssl
                 ninja
                 nettle
                 gmp
                 libgpg-error
                 libconfig
               ];
+
+              BORINGSSL_CFLAGS = "${patched_boringssl.dev.outPath}/include";
 
               # FIXME more things to copy here
               installPhase = ''
@@ -323,7 +242,6 @@
               '';
               
               postFixup = ''
-
                 makeWrapper \
                   ${jdk17_headless}/bin/java $out/bin/${pname} \
                   --add-flags "-jar $out/build/libs/${pname}.jar" \
@@ -375,7 +293,7 @@
             openssl
             libressl
             # glibc
-            boringssl
+            patched_boringssl
             libtomcrypt
             libtommath
             botan2
@@ -415,12 +333,18 @@
             botan2
             cryptopp
             openssl
+            patched_boringssl
             libgcrypt
             nettle
             gmp
             libgpg-error
             libconfig
           ];
+
+          BORINGSSL_CFLAGS = "${patched_boringssl.dev.outPath}/include";
+          # CFLAGS = with pkgs; [
+          #   patched_boringssl.dev
+          # ];
 
           # NOTE: Mixing postVenvCreation aznd shellHook results in only shellHook being called
           # shellHook = ''
