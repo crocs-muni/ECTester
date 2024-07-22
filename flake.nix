@@ -103,20 +103,7 @@
           ];
 
         });
-        overlays = [
-          # (final: prev: {
-          #   openssl_01 = prev.openssl.overrideAttrs (old: rec{
-          #     version = "3.0.8";
-          #     pname = "openssl";
-          #     src = pkgs.fetchurl {
-          #       url = "https://www.openssl.org/source/openssl-${version}.tar.gz";
-          #       hash = "sha256-bBPSvzj98x6sPOKjRwc2c/XWMmM5jx9p0N9KQSU+Sz4=";
-          #     };
-          #     FIXME Removing patches might cause unwanted things.
-          #     patches = [];
-          #   });
-          # })
-        ];
+        overlays = [];
         pkgs = import nixpkgs {
           inherit system overlays;
         };
