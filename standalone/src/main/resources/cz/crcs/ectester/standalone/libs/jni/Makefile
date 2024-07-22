@@ -100,7 +100,7 @@ boringssl: boringssl_provider.so
 # 	cp $(PROJECT_ROOT_PATH)/ext/boringssl/build/crypto/libcrypto.so lib_boringssl.so
 
 boringssl_provider.so: boringssl.o c_utils.o | lib_timing.so lib_csignals.so
-	NIX_CFLAGS_COMPILE= $(CC) $(CFLAGS) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -l:lib_boringssl.so -l:lib_timing.so -l:lib_csignals.so
+	NIX_CFLAGS_COMPILE= $(CC) $(CFLAGS) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic -l:lib_boringssl.a -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
 
 boringssl.o: boringssl.c
 	NIX_CFLAGS_COMPILE= $(CC) -I$(BORINGSSL_CFLAGS) $(CFLAGS) -c $<

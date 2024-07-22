@@ -23,7 +23,7 @@
 
           # NOTE this build does not match upstream, but is what ECTester did at the time of writing
           buildPhase = ''
-            cmake -GNinja -DBUILD_SHARED_LIBS=1 -Bbuild
+            cmake -GNinja -Bbuild
             pushd build
             ninja crypto
             popd
@@ -34,7 +34,7 @@
             mv include $dev
 
             pushd build
-            mv crypto/libcrypto.so $out/lib/lib_boringssl.so
+            mv crypto/libcrypto.a $out/lib/lib_boringssl.a
             popd
           '';
 
@@ -116,7 +116,7 @@
               preConfigure = ''
                 cp ${libresslShim.out}/lib/libressl_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 cp ${boringsslShim.out}/lib/boringssl_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
-                cp ${patched_boringssl.out}/lib/lib_boringssl.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
+                cp ${patched_boringssl.out}/lib/lib_boringssl.a standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 cp ${mbedtlsShim.out}/lib/mbedtls_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 pushd standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 make lib_timing.so lib_csignals.so lib_cppsignals.so
@@ -235,14 +235,12 @@
         };
         devShells.default = with pkgs; mkShell rec {
           nativeBuildInputs = [
-            libresslShim
+            pkg-config
           ];
 
           preConfigure = ''
-            cp ${libresslShim.out}/libressl_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
-            ls standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni
+            cp ${patched_boringssl}/lib/lib_boringssl.a standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
           '';
-
 
           buildInputs = [
             # # gradle2nix
