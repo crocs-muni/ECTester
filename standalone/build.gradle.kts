@@ -10,12 +10,8 @@ repositories {
 }
 
 dependencies {
-    // Fallback to bundled wolfcrypt-jni if the submodule one is not built.
-    if (file("$rootDir/ext/wolfcrypt-jni/lib/wolfcrypt-jni.jar").exists()) {
-        implementation(files("$rootDir/ext/wolfcrypt-jni/lib/wolfcrypt-jni.jar"))
-    } else {
-        implementation(files("$rootDir/ext/wolfcrypt-jni.jar"))
-    }
+    val wolfcryptLibPath = System.getenv("WOLFCRYPT_LIB_PATH") + "/wolfcrypt-jni.jar";
+    implementation(files(wolfcryptLibPath))
     implementation(project(":common"))
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
@@ -51,10 +47,6 @@ tasks.named<Test>("test") {
         jvmArgs("--add-exports", "java.base/sun.security.ec=ALL-UNNAMED")
     }
 
-    // Add wolfcrypt JNI lib path to LD_LIBRARY_PATH (as our native library loading does not handle it)
-    environment(
-            "LD_LIBRARY_PATH", "$rootDir/ext/wolfcrypt-jni/lib/:" + System.getenv("LD_LIBRARY_PATH")
-    )
     // Add a path where we will store our test results.
     environment(
             "RESULT_PATH", resultsDir.absolutePath
