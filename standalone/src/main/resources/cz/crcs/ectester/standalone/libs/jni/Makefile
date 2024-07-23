@@ -173,14 +173,11 @@ mbedtls.o: mbedtls.c
 # Intel Performance Primitives crypto shim
 ippcp: ippcp_provider.so
 
-lib_ippcp.so:
-	cp $(PROJECT_ROOT_PATH)/ext/ipp-crypto/build/.build/RELEASE/lib/libippcp.so lib_ippcp.so
-
-ippcp_provider.so: ippcp.o c_utils.o | lib_timing.so lib_csignals.so lib_ippcp.so
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_ippcp.so -l:lib_timing.so -l:lib_csignals.so
+ippcp_provider.so: ippcp.o c_utils.o | lib_timing.so lib_csignals.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L$(IPP_CRYPTO_LIB) -Wl,-Bstatic -l:libippcp.a -L. -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
 
 ippcp.o: ippcp.c
-	$(CC) -I$(PROJECT_ROOT_PATH)/ext/ipp-crypto/build/.build/RELEASE/include/ $(CFLAGS) -c $<
+	$(CC) -I$(IPP_CRYPTO_HEADER) $(CFLAGS) -c $<
 
 
 # Nettle shim

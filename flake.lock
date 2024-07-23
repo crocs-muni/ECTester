@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "custom-nixpkgs": {
+      "locked": {
+        "lastModified": 1721657519,
+        "narHash": "sha256-GX9DU5wHfUsUlBNX5WZzLLj1SbawinMDPMCfwKuOKlU=",
+        "owner": "quapka",
+        "repo": "nixpkgs",
+        "rev": "951e69f7ca8f1ade27297bac8e5dc6e292d9be3b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "quapka",
+        "ref": "add-ipp-crypto",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "flake-utils": {
       "inputs": {
         "systems": "systems"
@@ -87,6 +103,7 @@
     },
     "root": {
       "inputs": {
+        "custom-nixpkgs": "custom-nixpkgs",
         "flake-utils": "flake-utils",
         "gradle2nix": "gradle2nix",
         "nixpkgs": "nixpkgs_2"

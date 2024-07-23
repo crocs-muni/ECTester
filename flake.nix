@@ -5,13 +5,14 @@
     nixpkgs.url      = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url  = "github:numtide/flake-utils";
     gradle2nix.url   = "github:tadfisher/gradle2nix/03c1b713ad139eb6dfc8d463b5bd348368125cf1";
+    custom-nixpkgs.url = "github:quapka/nixpkgs/add-ipp-crypto"; # custom for of nixpkgs with ipp-crypto packaged
     # FIXME how to add submodule declaratively?
     # submodule = {
     #   url = ./
     # };
   };
 
-  outputs = { self, nixpkgs, flake-utils, gradle2nix, ... }:
+  outputs = { self, nixpkgs, custom-nixpkgs, flake-utils, gradle2nix, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         patched_boringssl = with pkgs; pkgs.boringssl.overrideAttrs (final: prev: rec {
@@ -79,8 +80,13 @@
         libresslShim = import ./nix/libresslshim.nix { pkgs = pkgs; libressl = libressl; };
         boringsslShim = import ./nix/boringsslshim.nix { pkgs = pkgs; boringssl = patched_boringssl; };
         mbedtlsShim = import ./nix/mbedtlsshim.nix { pkgs = pkgs; };
+        ippcryptoShim = import ./nix/ippcryptoshim.nix { pkgs = pkgs; ipp-crypto = customPkgs.ipp-crypto; };
+
         overlays = [];
         pkgs = import nixpkgs {
+          inherit system overlays;
+        };
+        customPkgs = import custom-nixpkgs {
           inherit system overlays;
         };
         buildECTesterStandalone = { opensslVersion, opensslHash }: (
@@ -283,6 +289,8 @@
             nettle
             # libressl
 
+            customPkgs.ipp-crypto
+
             gmp
             libgpg-error
             wget
@@ -392,6 +400,9 @@
         #   ${buildLibreSSL}
         #   popd
         # '';
+        IPP_CRYPTO_HEADER = "${customPkgs.ipp-crypto.dev}/include";
+        IPP_CRYPTO_LIB = "${customPkgs.ipp-crypto}/lib/";
+
 
         };
       }
