@@ -2,16 +2,16 @@
   "nodes": {
     "custom-nixpkgs": {
       "locked": {
-        "lastModified": 1721657519,
-        "narHash": "sha256-GX9DU5wHfUsUlBNX5WZzLLj1SbawinMDPMCfwKuOKlU=",
+        "lastModified": 1721747370,
+        "narHash": "sha256-H+T7mrJ6JdnFLecs7xXwvuEM4aSUgUOc5uSvjbXoSOQ=",
         "owner": "quapka",
         "repo": "nixpkgs",
-        "rev": "951e69f7ca8f1ade27297bac8e5dc6e292d9be3b",
+        "rev": "ab32dd2547891356585d1cdb2f03f7070b1d1f89",
         "type": "github"
       },
       "original": {
         "owner": "quapka",
-        "ref": "add-ipp-crypto",
+        "ref": "customPkgs",
         "repo": "nixpkgs",
         "type": "github"
       }

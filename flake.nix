@@ -5,7 +5,7 @@
     nixpkgs.url      = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url  = "github:numtide/flake-utils";
     gradle2nix.url   = "github:tadfisher/gradle2nix/03c1b713ad139eb6dfc8d463b5bd348368125cf1";
-    custom-nixpkgs.url = "github:quapka/nixpkgs/add-ipp-crypto"; # custom for of nixpkgs with ipp-crypto packaged
+    custom-nixpkgs.url = "github:quapka/nixpkgs/customPkgs"; # custom for of nixpkgs with ipp-crypto packaged
     # FIXME how to add submodule declaratively?
     # submodule = {
     #   url = ./
@@ -15,6 +15,14 @@
   outputs = { self, nixpkgs, custom-nixpkgs, flake-utils, gradle2nix, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
+        wolfcryptjni = with customPkgs; wolfcrypt-jni.overrideAttrs (final: prev: {
+          src = pkgs.fetchFromGitHub {
+            owner = "wolfSSL";
+            repo = "wolfcrypt-jni";
+            rev = "0497ee767c994775beda2f2091009593961e5c7e";
+            hash = "sha256-mtUXUyIKJ617WzAWjlOaMscWM7zuGBISVMEAbmQNBOg=";
+          };
+        });
         patched_boringssl = with pkgs; pkgs.boringssl.overrideAttrs (final: prev: rec {
            src = fetchgit {
             url = "https://boringssl.googlesource.com/boringssl";
@@ -124,6 +132,7 @@
                 cp ${boringsslShim.out}/lib/boringssl_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 cp ${patched_boringssl.out}/lib/lib_boringssl.a standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 cp ${mbedtlsShim.out}/lib/mbedtls_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
+                cp ${wolfcryptjni}/lib/* standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 pushd standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 make lib_timing.so lib_csignals.so lib_cppsignals.so
                 popd
@@ -200,9 +209,11 @@
                 gmp
                 libgpg-error
                 libconfig
+                wolfcryptjni
               ];
 
               BORINGSSL_CFLAGS = "${patched_boringssl.dev.outPath}/include";
+              WOLFCRYPT_LIB_PATH = "${wolfcryptjni}/lib";
 
               # FIXME more things to copy here
               installPhase = ''
@@ -309,9 +320,11 @@
             gmp
             libgpg-error
             libconfig
+            wolfcryptjni
           ];
 
           BORINGSSL_CFLAGS = "${patched_boringssl.dev.outPath}/include";
+          WOLFCRYPT_LIB_PATH = "${wolfcryptjni}/lib";
 
 
         IPP_CRYPTO_HEADER = "${customPkgs.ipp-crypto.dev}/include";
