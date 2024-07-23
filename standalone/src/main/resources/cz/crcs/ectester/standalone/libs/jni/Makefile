@@ -96,9 +96,6 @@ openssl.o: openssl.c
 # BoringSSL shim
 boringssl: boringssl_provider.so
 
-# lib_boringssl.so:
-# 	cp $(PROJECT_ROOT_PATH)/ext/boringssl/build/crypto/libcrypto.so lib_boringssl.so
-
 boringssl_provider.so: boringssl.o c_utils.o | lib_timing.so lib_csignals.so
 	NIX_CFLAGS_COMPILE= $(CC) $(CFLAGS) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic -l:lib_boringssl.a -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
 
@@ -153,15 +150,6 @@ cryptopp.o: cryptopp.cpp
 # mbedTLS shim
 mbedtls: mbedtls_provider.so
 
-# lib_mbedtls.so:
-# 	cp $(PROJECT_ROOT_PATH)/ext/mbedtls/build/library/libmbedcrypto.so lib_mbedtls.so
-
-# mbedtls_provider.so: mbedtls.o c_utils.o | lib_timing.so lib_csignals.so lib_mbedtls.so
-# 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_mbedtls.so -l:lib_timing.so -l:lib_csignals.so
-
-# mbedtls.o: mbedtls.c
-# 	$(CC) -I$(PROJECT_ROOT_PATH)/ext/mbedtls/build/include/ $(CFLAGS) -c $<
-
 mbedtls_provider.so: mbedtls.o c_utils.o | lib_timing.so lib_csignals.so
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -lmbedcrypto -l:lib_timing.so -l:lib_csignals.so
 
@@ -192,9 +180,6 @@ nettle.o: nettle.c
 
 # LibreSSL shim
 libressl: libressl_provider.so
-
-# lib_libressl.so:
-# 	cp $(PROJECT_ROOT_PATH)/ext/libressl/build/crypto/libcrypto.so lib_libressl.so
 
 libressl_provider.so: libressl.o c_utils.o | lib_timing.so lib_csignals.so
 	NIX_CFLAGS_COMPILE= $(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs libresslcrypto) -l:lib_timing.so -l:lib_csignals.so
