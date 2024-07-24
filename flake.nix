@@ -46,10 +46,17 @@
             mv crypto/libcrypto.a $out/lib/lib_boringssl.a
             popd
           '';
-
         });
-
-
+        # FIXME: `nix develeop` now has different version than `nix run`
+        openssl = { version ? "", hash ? "" }: (pkgs.openssl.override { static = true; }).overrideAttrs (final: prev: rec {
+          pname = "openssl";
+          src = if version != "" then pkgs.fetchurl {
+            url = "https://www.openssl.org/source/openssl-${version}.tar.gz";
+            hash = hash;
+          } else prev.src;
+          # FIXME Removing patches might cause unwanted things; this should be version based!
+          patches = [];
+        });
         libressl = pkgs.libressl.overrideAttrs (_old: rec {
           # devLibPath = pkgs.lib.makeLibraryPath [ pkgs.libressl.dev ];
           # pname = "libressl";
@@ -99,23 +106,7 @@
         };
         buildECTesterStandalone = { opensslVersion, opensslHash }: (
           let
-            patched_openssl = pkgs.openssl.overrideAttrs (_old: rec {
-              version = opensslVersion;
-              pname = "openssl";
-              src = pkgs.fetchurl {
-                url = "https://www.openssl.org/source/openssl-${version}.tar.gz";
-                hash = opensslHash;
-              };
-              # FIXME Removing patches might cause unwanted things.
-              patches = [];
-            });
-
-            # devLibPath = pkgs.lib.makeLibraryPath [ pkgs.libressl.dev ];
-            # libressl = pkgs.libressl.overrideAttrs (_old: {
-            #   fixupPhase = ''
-            #     cp ${devLibPath}/openssl.pc ${devLibPath}/libressl.pc
-            #   '';
-            # });
+            opensslx = (openssl { version = opensslVersion; hash = opensslHash; });
           in
           with pkgs;
             gradle2nix.builders.${system}.buildGradlePackage rec {
@@ -146,7 +137,7 @@
                 pkg-config
                 global-platform-pro
                 gradle
-                # patched_openssl
+                opensslx
                 makeWrapper
 
                 # libraries to test
@@ -189,7 +180,7 @@
               buildInputs = [
                 jdk17_headless
                 # libressl
-                # patched_openssl
+                opensslx
               ];
 
               LD_LIBRARY_PATH = lib.makeLibraryPath [
@@ -201,8 +192,7 @@
                 botan2
                 cryptopp
                 libgcrypt
-                patched_openssl
-                libressl
+                opensslx
                 patched_boringssl
                 ninja
                 nettle
@@ -219,9 +209,9 @@
               installPhase = ''
                 mkdir -p $out
                 cp -r standalone/build $out
-                echo ${opensslVersion} > $out/build/opensslVersion
+                ls ${opensslx}/lib/* > $out/po
               '';
-              
+
               postFixup = ''
                 makeWrapper \
                   ${jdk17_headless}/bin/java $out/bin/${pname} \
@@ -269,7 +259,7 @@
             global-platform-pro
             gradle
             # libraries to test
-            openssl
+            (openssl {})
             libressl
             # glibc
             patched_boringssl
@@ -313,7 +303,8 @@
             libtomcrypt
             botan2
             cryptopp
-            openssl
+            # (openssl {})
+            (openssl {})
             patched_boringssl
             libgcrypt
             nettle
