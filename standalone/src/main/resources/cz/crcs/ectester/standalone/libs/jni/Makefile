@@ -107,7 +107,7 @@ boringssl.o: boringssl.c
 gcrypt: gcrypt_provider.so
 
 gcrypt_provider.so: gcrypt.o c_utils.o | lib_timing.so lib_csignals.so
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -pthread -lpthread $(shell libgcrypt-config --libs) -l:lib_timing.so -l:lib_csignals.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -pthread -lpthread -Wl,-Bstatic $(shell libgcrypt-config --libs) -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
 
 gcrypt.o: gcrypt.c
 	$(CC) $(shell libgcrypt-config --cflags) $(CFLAGS) -c $<

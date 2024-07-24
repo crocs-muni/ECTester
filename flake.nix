@@ -57,6 +57,12 @@
           # FIXME Removing patches might cause unwanted things; this should be version based!
           patches = [];
         });
+        libgcrypt = pkgs.libgcrypt.overrideAttrs (final: prev: {
+          configureFlags = ( prev.configureFlags or [] ) ++ [ "--enable-static" ];
+        });
+        libgpg-error = pkgs.libgpg-error.overrideAttrs (final: prev: {
+          configureFlags = ( prev.configureFlags or [] ) ++ [ "--enable-static" ];
+        });
         libressl = pkgs.libressl.overrideAttrs (_old: rec {
           # devLibPath = pkgs.lib.makeLibraryPath [ pkgs.libressl.dev ];
           # pname = "libressl";
@@ -115,7 +121,8 @@
               # gradleInstallFlags = [ "installDist" ];
               # gradleBuildFlags = [ "standalone:uberJar" ]; # ":standalone:compileJava" ":standalone:uberJar" ]; "--no-build-cache"
               lockFile = ./gradle.lock;
-              gradleBuildFlags = [ ":standalone:uberJar"]; # ":standalone:compileJava" ":standalone:uberJar" ]; "--no-build-cache"
+              # FIXME all libs need to be built, but combining Gradle build all-libs and dedicated shim derivations won't work 
+              gradleBuildFlags = [ "libs" "-PlibName=gcrypt" ":standalone:uberJar"]; # ":standalone:compileJava" ":standalone:uberJar" ]; "--no-build-cache"
               src = ./.;
 
               preConfigure = ''
@@ -163,6 +170,7 @@
 
                 clang
                 libgcrypt
+                libgpg-error
                 mbedtls
                 nasm
                 libtool
@@ -192,6 +200,7 @@
                 botan2
                 cryptopp
                 libgcrypt
+                libgpg-error
                 opensslx
                 patched_boringssl
                 ninja
@@ -281,6 +290,7 @@
 
             # clang
             libgcrypt
+            libgpg-error
             mbedtls
             nasm
             libtool
@@ -307,6 +317,7 @@
             (openssl {})
             patched_boringssl
             libgcrypt
+            libgpg-error
             nettle
             gmp
             libgpg-error
