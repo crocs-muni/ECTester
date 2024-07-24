@@ -63,6 +63,9 @@
         libgpg-error = pkgs.libgpg-error.overrideAttrs (final: prev: {
           configureFlags = ( prev.configureFlags or [] ) ++ [ "--enable-static" ];
         });
+        libtomcrypt = pkgs.libtomcrypt.overrideAttrs (final: prev: {
+          makefile = "makefile";
+        });
         libressl = pkgs.libressl.overrideAttrs (_old: rec {
           # devLibPath = pkgs.lib.makeLibraryPath [ pkgs.libressl.dev ];
           # pname = "libressl";
@@ -122,7 +125,7 @@
               # gradleBuildFlags = [ "standalone:uberJar" ]; # ":standalone:compileJava" ":standalone:uberJar" ]; "--no-build-cache"
               lockFile = ./gradle.lock;
               # FIXME all libs need to be built, but combining Gradle build all-libs and dedicated shim derivations won't work 
-              gradleBuildFlags = [ "libs" "-PlibName=gcrypt" ":standalone:uberJar"]; # ":standalone:compileJava" ":standalone:uberJar" ]; "--no-build-cache"
+              gradleBuildFlags = [ "libs" "-PlibName=tomcrypt" ":standalone:uberJar"]; # ":standalone:compileJava" ":standalone:uberJar" ]; "--no-build-cache"
               src = ./.;
 
               preConfigure = ''
