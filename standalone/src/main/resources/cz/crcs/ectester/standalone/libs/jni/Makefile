@@ -127,7 +127,7 @@ tomcrypt.o: tomcrypt.c
 botan: botan_provider.so
 
 botan_provider.so: botan.o cpp_utils.o | lib_timing.so lib_cppsignals.so
-	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs botan-2) -l:lib_timing.so -l:lib_cppsignals.so
+	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic $(shell pkg-config --libs botan-2) -Wl,-Bdynamic -l:lib_timing.so -l:lib_cppsignals.so
 
 botan.o: botan.cpp
 	$(CXX) $(shell pkg-config --cflags botan-2) $(CXXFLAGS) -c $<
