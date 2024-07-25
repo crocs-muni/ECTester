@@ -66,6 +66,9 @@
         libtomcrypt = pkgs.libtomcrypt.overrideAttrs (final: prev: {
           makefile = "makefile.unix";
         });
+        nettle = pkgs.nettle.overrideAttrs (final: prev: {
+          configureFlags = ( prev.configureFlags or [] ) ++ [ "--enable-static" ];
+        });
         cryptopp = pkgs.cryptopp.override { enableStatic = true; };
         libressl = pkgs.libressl.overrideAttrs (_old: rec {
           # devLibPath = pkgs.lib.makeLibraryPath [ pkgs.libressl.dev ];
