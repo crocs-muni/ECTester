@@ -64,7 +64,7 @@
           configureFlags = ( prev.configureFlags or [] ) ++ [ "--enable-static" ];
         });
         libtomcrypt = pkgs.libtomcrypt.overrideAttrs (final: prev: {
-          makefile = "makefile";
+          makefile = "makefile.unix";
         });
         libressl = pkgs.libressl.overrideAttrs (_old: rec {
           # devLibPath = pkgs.lib.makeLibraryPath [ pkgs.libressl.dev ];
