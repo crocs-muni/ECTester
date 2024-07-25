@@ -157,6 +157,9 @@
                 cp ${opensslShim.out}/lib/openssl_provider.so ${jniLibsPath}
                 cp ${boringsslShim.out}/lib/boringssl_provider.so ${jniLibsPath}
                 cp ${gcryptShim.out}/lib/gcrypt_provider.so ${jniLibsPath}
+                cp ${libresslShim.out}/lib/libressl_provider.so ${jniLibsPath}
+                cp ${mbedtlsShim.out}/lib/mbedtls_provider.so ${jniLibsPath}
+                cp ${wolfcryptjni}/lib/* ${jniLibsPath}
                 cp ${commonLibs}/lib/* ${jniLibsPath}
               '';
 
@@ -190,7 +193,6 @@
                 libb64
 
                 clang
-                mbedtls
                 nasm
                 libtool
                 perl
