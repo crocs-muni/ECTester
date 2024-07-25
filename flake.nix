@@ -116,12 +116,12 @@
 
         });
         libresslShim = import ./nix/libresslshim.nix { pkgs = pkgs; libressl = libressl; };
-        boringsslShim = import ./nix/boringsslshim.nix { pkgs = pkgs; boringssl = patched_boringssl; };
         # Current list of targets: tomcrypt botan cryptopp openssl boringssl gcrypt mbedtls ippcp nettle libressl
         tomcryptShim = import ./nix/tomcryptshim.nix { inherit pkgs libtomcrypt libtommath; };
         botanShim = import ./nix/botanshim.nix { inherit pkgs; };
         cryptoppShim = import ./nix/cryptoppshim.nix { inherit pkgs cryptopp; };
         opensslShimBuilder = { version, hash }: import ./nix/opensslshim.nix { inherit pkgs; openssl = (openssl { version = version; hash = hash;}); };
+        boringsslShim = import ./nix/boringsslshim.nix { inherit pkgs; boringssl = patched_boringssl; };
         mbedtlsShim = import ./nix/mbedtlsshim.nix { pkgs = pkgs; };
         ippcryptoShim = import ./nix/ippcryptoshim.nix { pkgs = pkgs; ipp-crypto = customPkgs.ipp-crypto; };
 
@@ -150,18 +150,12 @@
               jniLibsPath = "standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/";
 
               preConfigure = ''
-                cp ${libresslShim.out}/lib/libressl_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 cp ${boringsslShim.out}/lib/boringssl_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
-                cp ${patched_boringssl.out}/lib/lib_boringssl.a standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
-                cp ${mbedtlsShim.out}/lib/mbedtls_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
-                cp ${wolfcryptjni}/lib/* standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
-                pushd standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
-                make lib_timing.so lib_csignals.so lib_cppsignals.so
-                popd
                 cp ${tomcryptShim.out}/lib/tomcrypt_provider.so ${jniLibsPath}
                 cp ${botanShim.out}/lib/botan_provider.so ${jniLibsPath}
                 cp ${cryptoppShim.out}/lib/cryptopp_provider.so ${jniLibsPath}
                 cp ${opensslShim.out}/lib/openssl_provider.so ${jniLibsPath}
+                cp ${boringsslShim.out}/lib/boringssl_provider.so ${jniLibsPath}
                 cp ${commonLibs}/lib/* ${jniLibsPath}
               '';
 
@@ -176,7 +170,7 @@
                 makeWrapper
 
                 # libraries to test
-                patched_boringssl
+                # patched_boringssl
                 # libressl
                 libtomcrypt
                 libtommath
@@ -225,7 +219,7 @@
                 libgcrypt
                 libgpg-error
                 # libressl
-                patched_boringssl
+                # patched_boringssl
                 ninja
                 nettle
                 gmp
@@ -235,7 +229,7 @@
                 commonLibs
               ];
 
-              BORINGSSL_CFLAGS = "${patched_boringssl.dev.outPath}/include";
+              # BORINGSSL_CFLAGS = "${patched_boringssl.dev.outPath}/include";
               WOLFCRYPT_LIB_PATH = "${wolfcryptjni}/lib";
 
               # FIXME more things to copy here

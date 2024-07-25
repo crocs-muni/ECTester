@@ -17,9 +17,6 @@ with pkgs; stdenv.mkDerivation {
   '';
 
   BORINGSSL_CFLAGS = "${boringssl.dev.outPath}/include";
-  # LD_LIBRARY_PATH = with pkgs; lib.makeLibraryPath [
-  #   boringssl
-  # ];
 
   installPhase = ''
     mkdir --parents $out/lib
