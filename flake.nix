@@ -64,8 +64,16 @@
         libgpg-error = pkgs.libgpg-error.overrideAttrs (final: prev: {
           configureFlags = ( prev.configureFlags or [] ) ++ [ "--enable-static" ];
         });
-        libtomcrypt = pkgs.libtomcrypt.overrideAttrs (final: prev: {
+        libtomcrypt = (pkgs.libtomcrypt.override { libtommath = libtommath; }).overrideAttrs (final: prev: {
           makefile = "makefile.unix";
+        });
+        libtommath = pkgs.libtommath.overrideAttrs (final: prev: rec {
+          makefile = "makefile.unix";
+          version = "1.3.0";
+          src = pkgs.fetchurl {
+            url = "https://github.com/libtom/libtommath/releases/download/v${version}/ltm-${version}.tar.xz";
+            sha256 = "sha256-KWJy2TQ1mRMI63NgdgDANLVYgHoH6CnnURQuZcz6nQg=";
+          };
         });
         nettle = pkgs.nettle.overrideAttrs (final: prev: {
           configureFlags = ( prev.configureFlags or [] ) ++ [ "--enable-static" ];
@@ -109,6 +117,8 @@
         });
         libresslShim = import ./nix/libresslshim.nix { pkgs = pkgs; libressl = libressl; };
         boringsslShim = import ./nix/boringsslshim.nix { pkgs = pkgs; boringssl = patched_boringssl; };
+        # Current list of targets: tomcrypt botan cryptopp openssl boringssl gcrypt mbedtls ippcp nettle libressl
+        tomcryptShim = import ./nix/tomcryptshim.nix { inherit pkgs libtomcrypt libtommath; };
         botanShim = import ./nix/botanshim.nix { inherit pkgs; };
         mbedtlsShim = import ./nix/mbedtlsshim.nix { pkgs = pkgs; };
         ippcryptoShim = import ./nix/ippcryptoshim.nix { pkgs = pkgs; ipp-crypto = customPkgs.ipp-crypto; };
@@ -146,6 +156,7 @@
                 pushd standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 make lib_timing.so lib_csignals.so lib_cppsignals.so
                 popd
+                cp ${tomcryptShim.out}/lib/tomcrypt_provider.so ${jniLibsPath}
                 cp ${botanShim.out}/lib/botan_provider.so ${jniLibsPath}
                 cp ${commonLibs}/lib/* ${jniLibsPath}
               '';

@@ -117,7 +117,7 @@ gcrypt.o: gcrypt.c
 tomcrypt: tomcrypt_provider.so
 
 tomcrypt_provider.so: tomcrypt.o c_utils.o | lib_timing.so lib_csignals.so
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -ltommath -Wl,-Bstatic $(shell pkg-config --libs libtomcrypt) -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic $(shell pkg-config --libs libtomcrypt libtommath) -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
 
 tomcrypt.o: tomcrypt.c
 	$(CC) -DLTM_DESC $(shell pkg-config --cflags libtomcrypt) $(CFLAGS) -c $<
