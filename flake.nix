@@ -15,6 +15,7 @@
   outputs = { self, nixpkgs, custom-nixpkgs, flake-utils, gradle2nix, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
+        commonLibs = import ./nix/commonlibs.nix { pkgs = pkgs; };
         wolfcryptjni = with customPkgs; wolfcrypt-jni.overrideAttrs (final: prev: {
           src = pkgs.fetchFromGitHub {
             owner = "wolfSSL";
@@ -133,6 +134,8 @@
               gradleBuildFlags = [ "libs" "-PlibName=tomcrypt" ":standalone:uberJar"]; # ":standalone:compileJava" ":standalone:uberJar" ]; "--no-build-cache"
               src = ./.;
 
+              jniLibsPath = "standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/";
+
               preConfigure = ''
                 cp ${libresslShim.out}/lib/libressl_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 cp ${boringsslShim.out}/lib/boringssl_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
@@ -142,6 +145,7 @@
                 pushd standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 make lib_timing.so lib_csignals.so lib_cppsignals.so
                 popd
+                cp ${commonLibs}/lib/* ${jniLibsPath}
               '';
 
               nativeBuildInputs = [
@@ -195,12 +199,10 @@
                 jdk17_headless
                 # libressl
                 opensslx
+                commonLibs
               ];
 
               LD_LIBRARY_PATH = lib.makeLibraryPath [
-                # libresslShim
-                boringsslShim
-
                 libtommath
                 libtomcrypt
                 botan2
@@ -216,6 +218,7 @@
                 libgpg-error
                 libconfig
                 wolfcryptjni
+                commonLibs
               ];
 
               BORINGSSL_CFLAGS = "${patched_boringssl.dev.outPath}/include";
