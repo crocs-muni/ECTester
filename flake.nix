@@ -122,6 +122,7 @@
         cryptoppShim = import ./nix/cryptoppshim.nix { inherit pkgs cryptopp; };
         opensslShimBuilder = { version, hash }: import ./nix/opensslshim.nix { inherit pkgs; openssl = (openssl { version = version; hash = hash;}); };
         boringsslShim = import ./nix/boringsslshim.nix { inherit pkgs; boringssl = patched_boringssl; };
+        gcryptShim = import ./nix/gcryptshim.nix { inherit pkgs libgcrypt libgpg-error; };
         mbedtlsShim = import ./nix/mbedtlsshim.nix { pkgs = pkgs; };
         ippcryptoShim = import ./nix/ippcryptoshim.nix { pkgs = pkgs; ipp-crypto = customPkgs.ipp-crypto; };
 
@@ -150,12 +151,12 @@
               jniLibsPath = "standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/";
 
               preConfigure = ''
-                cp ${boringsslShim.out}/lib/boringssl_provider.so standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 cp ${tomcryptShim.out}/lib/tomcrypt_provider.so ${jniLibsPath}
                 cp ${botanShim.out}/lib/botan_provider.so ${jniLibsPath}
                 cp ${cryptoppShim.out}/lib/cryptopp_provider.so ${jniLibsPath}
                 cp ${opensslShim.out}/lib/openssl_provider.so ${jniLibsPath}
                 cp ${boringsslShim.out}/lib/boringssl_provider.so ${jniLibsPath}
+                cp ${gcryptShim.out}/lib/gcrypt_provider.so ${jniLibsPath}
                 cp ${commonLibs}/lib/* ${jniLibsPath}
               '';
 
