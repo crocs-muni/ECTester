@@ -109,6 +109,7 @@
         });
         libresslShim = import ./nix/libresslshim.nix { pkgs = pkgs; libressl = libressl; };
         boringsslShim = import ./nix/boringsslshim.nix { pkgs = pkgs; boringssl = patched_boringssl; };
+        botanShim = import ./nix/botanshim.nix { inherit pkgs; };
         mbedtlsShim = import ./nix/mbedtlsshim.nix { pkgs = pkgs; };
         ippcryptoShim = import ./nix/ippcryptoshim.nix { pkgs = pkgs; ipp-crypto = customPkgs.ipp-crypto; };
 
@@ -145,6 +146,7 @@
                 pushd standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/
                 make lib_timing.so lib_csignals.so lib_cppsignals.so
                 popd
+                cp ${botanShim.out}/lib/botan_provider.so ${jniLibsPath}
                 cp ${commonLibs}/lib/* ${jniLibsPath}
               '';
 
