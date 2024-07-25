@@ -13,14 +13,14 @@
   ];
 
   IPP_CRYPTO_HEADER = "${ipp-crypto.dev}/include";
-  IPP_CRYPTO_LIB = "${ipp-crypto}/lib/"
+  IPP_CRYPTO_LIB = "${ipp-crypto}/lib/";
 
   buildPhase = ''
-    make ippcrypto
+    make ippcp
   '';
 
   installPhase = ''
     mkdir --parents $out/lib
-    cp mbedtls_provider.so $out/lib
+    cp ippcp_provider.so $out/lib
   '';
 }
