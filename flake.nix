@@ -190,8 +190,6 @@
                 libb64
 
                 clang
-                libgcrypt
-                libgpg-error
                 mbedtls
                 nasm
                 libtool
@@ -217,14 +215,11 @@
                 libtomcrypt
                 botan2
                 cryptopp
-                libgcrypt
-                libgpg-error
                 # libressl
                 # patched_boringssl
                 ninja
                 nettle
                 gmp
-                libgpg-error
                 libconfig
                 wolfcryptjni
                 commonLibs
