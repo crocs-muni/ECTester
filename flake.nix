@@ -121,6 +121,7 @@
         tomcryptShim = import ./nix/tomcryptshim.nix { inherit pkgs libtomcrypt libtommath; };
         botanShim = import ./nix/botanshim.nix { inherit pkgs; };
         cryptoppShim = import ./nix/cryptoppshim.nix { inherit pkgs cryptopp; };
+        opensslShimBuilder = { version, hash }: import ./nix/opensslshim.nix { inherit pkgs; openssl = (openssl { version = version; hash = hash;}); };
         mbedtlsShim = import ./nix/mbedtlsshim.nix { pkgs = pkgs; };
         ippcryptoShim = import ./nix/ippcryptoshim.nix { pkgs = pkgs; ipp-crypto = customPkgs.ipp-crypto; };
 
@@ -133,7 +134,7 @@
         };
         buildECTesterStandalone = { opensslVersion, opensslHash }: (
           let
-            opensslx = (openssl { version = opensslVersion; hash = opensslHash; });
+            opensslShim = (opensslShimBuilder { version = opensslVersion; hash = opensslHash; });
           in
           with pkgs;
             gradle2nix.builders.${system}.buildGradlePackage rec {
@@ -160,6 +161,7 @@
                 cp ${tomcryptShim.out}/lib/tomcrypt_provider.so ${jniLibsPath}
                 cp ${botanShim.out}/lib/botan_provider.so ${jniLibsPath}
                 cp ${cryptoppShim.out}/lib/cryptopp_provider.so ${jniLibsPath}
+                cp ${opensslShim.out}/lib/openssl_provider.so ${jniLibsPath}
                 cp ${commonLibs}/lib/* ${jniLibsPath}
               '';
 
@@ -171,7 +173,6 @@
                 pkg-config
                 global-platform-pro
                 gradle
-                opensslx
                 makeWrapper
 
                 # libraries to test
@@ -213,7 +214,6 @@
               buildInputs = [
                 jdk17_headless
                 # libressl
-                opensslx
                 commonLibs
               ];
 
@@ -224,7 +224,6 @@
                 cryptopp
                 libgcrypt
                 libgpg-error
-                opensslx
                 # libressl
                 patched_boringssl
                 ninja
@@ -243,7 +242,6 @@
               installPhase = ''
                 mkdir -p $out
                 cp -r standalone/build $out
-                ls ${opensslx}/lib/* > $out/po
               '';
 
               postFixup = ''
