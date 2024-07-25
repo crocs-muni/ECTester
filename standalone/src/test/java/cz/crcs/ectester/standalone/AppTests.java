@@ -94,6 +94,9 @@ public class AppTests {
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
             args = buildCLIArgs(libName, "default", "--kpg-type", "ECDH");
         }
+        if (libName.equals("wolfCrypt")) {
+        	args = buildCLIArgs(libName, "default", "-b", "256");
+        }
         ECTesterStandalone.main(args);
         String sout = out.capturedString();
         if (sout.contains("Exception")) {
@@ -123,6 +126,9 @@ public class AppTests {
         String[] args = buildCLIArgs(libName, "performance");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
             args = buildCLIArgs(libName, "performance", "--kpg-type", "ECDH");
+        }
+        if (libName.equals("wolfCrypt")) {
+        	args = buildCLIArgs(libName, "performance", "-b", "256");
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
