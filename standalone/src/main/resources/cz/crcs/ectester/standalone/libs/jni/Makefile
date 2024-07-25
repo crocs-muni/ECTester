@@ -151,7 +151,7 @@ cryptopp.o: cryptopp.cpp
 mbedtls: mbedtls_provider.so
 
 mbedtls_provider.so: mbedtls.o c_utils.o | lib_timing.so lib_csignals.so
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -lmbedcrypto -l:lib_timing.so -l:lib_csignals.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic -lmbedcrypto -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
 
 mbedtls.o: mbedtls.c
 	$(CC) $(CFLAGS) -c $<
