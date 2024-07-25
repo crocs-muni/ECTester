@@ -120,6 +120,7 @@
         # Current list of targets: tomcrypt botan cryptopp openssl boringssl gcrypt mbedtls ippcp nettle libressl
         tomcryptShim = import ./nix/tomcryptshim.nix { inherit pkgs libtomcrypt libtommath; };
         botanShim = import ./nix/botanshim.nix { inherit pkgs; };
+        cryptoppShim = import ./nix/cryptoppshim.nix { inherit pkgs cryptopp; };
         mbedtlsShim = import ./nix/mbedtlsshim.nix { pkgs = pkgs; };
         ippcryptoShim = import ./nix/ippcryptoshim.nix { pkgs = pkgs; ipp-crypto = customPkgs.ipp-crypto; };
 
@@ -158,6 +159,7 @@
                 popd
                 cp ${tomcryptShim.out}/lib/tomcrypt_provider.so ${jniLibsPath}
                 cp ${botanShim.out}/lib/botan_provider.so ${jniLibsPath}
+                cp ${cryptoppShim.out}/lib/cryptopp_provider.so ${jniLibsPath}
                 cp ${commonLibs}/lib/* ${jniLibsPath}
               '';
 
