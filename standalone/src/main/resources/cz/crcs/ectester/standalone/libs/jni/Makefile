@@ -182,7 +182,7 @@ nettle.o: nettle.c
 libressl: libressl_provider.so
 
 libressl_provider.so: libressl.o c_utils.o | lib_timing.so lib_csignals.so
-	NIX_CFLAGS_COMPILE= $(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs libresslcrypto) -l:lib_timing.so -l:lib_csignals.so
+	NIX_CFLAGS_COMPILE= $(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic $(shell pkg-config --libs libresslcrypto) -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
 
 libressl.o: libressl.c
 	NIX_CFLAGS_COMPILE= $(CC) $(shell pkg-config --cflags libresslcrypto) $(CFLAGS) -c $<

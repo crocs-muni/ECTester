@@ -70,7 +70,7 @@
           configureFlags = ( prev.configureFlags or [] ) ++ [ "--enable-static" ];
         });
         cryptopp = pkgs.cryptopp.override { enableStatic = true; };
-        libressl = pkgs.libressl.overrideAttrs (_old: rec {
+        libressl = (pkgs.libressl.override { buildShared = false; } ).overrideAttrs (_old: rec {
           # devLibPath = pkgs.lib.makeLibraryPath [ pkgs.libressl.dev ];
           # pname = "libressl";
           # version = "3.9.2";
@@ -101,6 +101,7 @@
             cp $dev/lib/pkgconfig/libcrypto.pc $dev/lib/pkgconfig/libresslcrypto.pc
             sed --in-place --expression 's/-lcrypto/-lresslcrypto/' $dev/lib/pkgconfig/libresslcrypto.pc
             ln -s $out/lib/libcrypto.so $out/lib/libresslcrypto.so
+            ln -s $out/lib/libcrypto.a $out/lib/libresslcrypto.a
             ''
           ];
 
@@ -155,10 +156,8 @@
                 makeWrapper
 
                 # libraries to test
-                # openssl_3013
-                # boringssl
-                libressl
                 patched_boringssl
+                # libressl
                 libtomcrypt
                 libtommath
                 botan2
@@ -209,6 +208,7 @@
                 libgcrypt
                 libgpg-error
                 opensslx
+                # libressl
                 patched_boringssl
                 ninja
                 nettle
