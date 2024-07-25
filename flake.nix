@@ -66,6 +66,7 @@
         libtomcrypt = pkgs.libtomcrypt.overrideAttrs (final: prev: {
           makefile = "makefile.unix";
         });
+        cryptopp = pkgs.cryptopp.override { enableStatic = true; };
         libressl = pkgs.libressl.overrideAttrs (_old: rec {
           # devLibPath = pkgs.lib.makeLibraryPath [ pkgs.libressl.dev ];
           # pname = "libressl";

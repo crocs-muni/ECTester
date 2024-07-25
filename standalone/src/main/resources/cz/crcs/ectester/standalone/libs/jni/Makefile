@@ -141,7 +141,7 @@ endif
 cryptopp: cryptopp_provider.so
 
 cryptopp_provider.so: cryptopp.o cpp_utils.o | lib_timing.so lib_cppsignals.so
-	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs $(CRYPTOPP_NAME)) -l:lib_timing.so -l:lib_cppsignals.so
+	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic $(shell pkg-config --libs $(CRYPTOPP_NAME)) -Wl,-Bdynamic -l:lib_timing.so -l:lib_cppsignals.so
 
 cryptopp.o: cryptopp.cpp
 	$(CXX) $(shell pkg-config --cflags $(CRYPTOPP_NAME)) $(CXXFLAGS) -c $<
