@@ -124,6 +124,7 @@
         gcryptShim = import ./nix/gcryptshim.nix { inherit pkgs libgcrypt libgpg-error; };
         mbedtlsShim = import ./nix/mbedtlsshim.nix { pkgs = pkgs; };
         ippcpShim = import ./nix/ippcpshim.nix { pkgs = pkgs; ipp-crypto = customPkgs.ipp-crypto; };
+        nettleShim = import ./nix/nettleshim.nix { inherit pkgs nettle; };
         libresslShim = import ./nix/libresslshim.nix { inherit pkgs libressl; };
 
         overlays = [];
@@ -158,6 +159,7 @@
                 cp ${gcryptShim.out}/lib/gcrypt_provider.so ${jniLibsPath}
                 cp ${mbedtlsShim.out}/lib/mbedtls_provider.so ${jniLibsPath}
                 cp ${ippcpShim.out}/lib/ippcp_provider.so ${jniLibsPath}
+                cp ${nettleShim.out}/lib/nettle_provider.so ${jniLibsPath}
                 cp ${libresslShim.out}/lib/libressl_provider.so ${jniLibsPath}
                 cp ${wolfcryptjni}/lib/* ${jniLibsPath}
                 cp ${commonLibs}/lib/* ${jniLibsPath}
