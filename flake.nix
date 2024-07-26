@@ -115,7 +115,6 @@
           ];
 
         });
-        libresslShim = import ./nix/libresslshim.nix { pkgs = pkgs; libressl = libressl; };
         # Current list of targets: tomcrypt botan cryptopp openssl boringssl gcrypt mbedtls ippcp nettle libressl
         tomcryptShim = import ./nix/tomcryptshim.nix { inherit pkgs libtomcrypt libtommath; };
         botanShim = import ./nix/botanshim.nix { inherit pkgs; };
@@ -125,6 +124,7 @@
         gcryptShim = import ./nix/gcryptshim.nix { inherit pkgs libgcrypt libgpg-error; };
         mbedtlsShim = import ./nix/mbedtlsshim.nix { pkgs = pkgs; };
         ippcpShim = import ./nix/ippcpshim.nix { pkgs = pkgs; ipp-crypto = customPkgs.ipp-crypto; };
+        libresslShim = import ./nix/libresslshim.nix { inherit pkgs libressl; };
 
         overlays = [];
         pkgs = import nixpkgs {
@@ -157,9 +157,9 @@
                 cp ${opensslShim.out}/lib/openssl_provider.so ${jniLibsPath}
                 cp ${boringsslShim.out}/lib/boringssl_provider.so ${jniLibsPath}
                 cp ${gcryptShim.out}/lib/gcrypt_provider.so ${jniLibsPath}
-                cp ${libresslShim.out}/lib/libressl_provider.so ${jniLibsPath}
                 cp ${mbedtlsShim.out}/lib/mbedtls_provider.so ${jniLibsPath}
                 cp ${ippcpShim.out}/lib/ippcp_provider.so ${jniLibsPath}
+                cp ${libresslShim.out}/lib/libressl_provider.so ${jniLibsPath}
                 cp ${wolfcryptjni}/lib/* ${jniLibsPath}
                 cp ${commonLibs}/lib/* ${jniLibsPath}
               '';
