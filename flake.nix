@@ -141,11 +141,10 @@
             gradle2nix.builders.${system}.buildGradlePackage rec {
               pname = "ECTesterStandalone";
               version = "0.3.3";
-              # gradleInstallFlags = [ "installDist" ];
-              # gradleBuildFlags = [ "standalone:uberJar" ]; # ":standalone:compileJava" ":standalone:uberJar" ]; "--no-build-cache"
               lockFile = ./gradle.lock;
-              # FIXME all libs need to be built, but combining Gradle build all-libs and dedicated shim derivations won't work 
-              gradleBuildFlags = [ "libs" "-PlibName=tomcrypt" ":standalone:uberJar"]; # ":standalone:compileJava" ":standalone:uberJar" ]; "--no-build-cache"
+
+              # NOTE: the shims are built separately, therefore no need to call libs
+              gradleBuildFlags = [ ":standalone:uberJar"];
               src = ./.;
 
               jniLibsPath = "standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/";
