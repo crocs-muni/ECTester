@@ -124,7 +124,6 @@
         boringsslShim = import ./nix/boringsslshim.nix { inherit pkgs; boringssl = patched_boringssl; };
         gcryptShim = import ./nix/gcryptshim.nix { inherit pkgs libgcrypt libgpg-error; };
         mbedtlsShim = import ./nix/mbedtlsshim.nix { pkgs = pkgs; };
-        ippcryptoShim = import ./nix/ippcryptoshim.nix { pkgs = pkgs; ipp-crypto = customPkgs.ipp-crypto; };
         ippcpShim = import ./nix/ippcpshim.nix { pkgs = pkgs; ipp-crypto = customPkgs.ipp-crypto; };
 
         overlays = [];
