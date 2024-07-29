@@ -133,21 +133,6 @@ index bee51a1..b36a13a 100644
         });
         cryptopp = pkgs.cryptopp.override { enableStatic = true; };
         libressl = (pkgs.libressl.override { buildShared = false; } ).overrideAttrs (_old: rec {
-          # devLibPath = pkgs.lib.makeLibraryPath [ pkgs.libressl.dev ];
-          # pname = "libressl";
-          # version = "3.9.2";
-          # includes = [ "tests/tlstest.sh" ];
-          # src = pkgs.fetchurl {
-          #   url = "mirror://openbsd/LibreSSL/${pname}-${version}.tar.gz";
-          #   hash = "sha256-ewMdrGSlnrbuMwT3/7ddrTOrjJ0nnIR/ksifuEYGj5c=";
-          # };
-          # nativeBuildInputs = _old.nativeBuildInputs ++ (with pkgs; [
-          #   pkg-config
-          # ]);
-
-          # Patched according to the previous versions:
-          # https://github.com/NixOS/nixpkgs/blob/nixos-24.05/pkgs/development/libraries/libressl/default.nix#L118
-          # For unknown reasons the newer versions are not patched this way (yet?)
           patches = [
             (pkgs.fetchpatch {
               url = "https://github.com/libressl/portable/commit/86e4965d7f20c3a6afc41d95590c9f6abb4fe788.patch";
@@ -157,7 +142,10 @@ index bee51a1..b36a13a 100644
           ];
 
           # NOTE: Due to name conflicts between OpenSSL and LibreSSL we need to resolve this manually.
-          postFixup =  pkgs.lib.concatLines [ 
+          #       This is not needed for building the individual shims through Nix, as libresslShim build env does not
+          #       contain OpenSSL at all, but for the interactive shell (started with `nix develop`), when multiple
+          #       lib shims are built alongside each other.
+          postFixup = pkgs.lib.concatLines [
             ( _old.postFixup or "" )
             ''
             cp $dev/lib/pkgconfig/libcrypto.pc $dev/lib/pkgconfig/libresslcrypto.pc
@@ -168,6 +156,7 @@ index bee51a1..b36a13a 100644
           ];
 
         });
+        gmp = pkgs.gmp.override { withStatic = true; };
         # Current list of targets: tomcrypt botan cryptopp openssl boringssl gcrypt mbedtls ippcp nettle libressl
         tomcryptShim = import ./nix/tomcryptshim.nix { inherit pkgs libtomcrypt libtommath; };
         botanShim = import ./nix/botanshim.nix { inherit pkgs; };
@@ -177,7 +166,7 @@ index bee51a1..b36a13a 100644
         gcryptShim = import ./nix/gcryptshim.nix { inherit pkgs libgcrypt libgpg-error; };
         mbedtlsShim = import ./nix/mbedtlsshim.nix { pkgs = pkgs; };
         ippcpShim = import ./nix/ippcpshim.nix { pkgs = pkgs; ipp-crypto = customPkgs.ipp-crypto; };
-        nettleShim = import ./nix/nettleshim.nix { inherit pkgs nettle; };
+        nettleShim = import ./nix/nettleshim.nix { inherit pkgs nettle gmp; };
         libresslShim = import ./nix/libresslshim.nix { inherit pkgs libressl; };
 
         overlays = [];
@@ -255,7 +244,7 @@ index bee51a1..b36a13a 100644
                 wolfssl
                 nettle
 
-                gmp
+                # gmp
                 libgpg-error
                 wget
                 libconfig
@@ -275,8 +264,8 @@ index bee51a1..b36a13a 100644
                 # libressl
                 # patched_boringssl
                 ninja
-                nettle
-                gmp
+                # nettle
+                # gmp
                 libconfig
                 wolfcryptjni
                 commonLibs

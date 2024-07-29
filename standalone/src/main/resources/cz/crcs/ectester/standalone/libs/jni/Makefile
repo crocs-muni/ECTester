@@ -172,10 +172,11 @@ ippcp.o: ippcp.c
 nettle: nettle_provider.so
 
 nettle_provider.so: nettle.o c_utils.o | lib_timing.so lib_csignals.so
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic $(shell pkg-config --libs nettle) -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so $(shell pkg-config --libs hogweed) -lgmp
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic $(shell pkg-config --libs nettle hogweed gmp) \
+		-Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
 
 nettle.o: nettle.c
-	$(CC) $(shell pkg-config --cflags nettle) $(shell pkg-config --libs hogweed) -lgmp $(CFLAGS) -c $<
+	$(CC) -Wl,-static $(shell pkg-config --cflags nettle hogweed gmp) $(CFLAGS) -c $<
 
 
 # LibreSSL shim

@@ -1,6 +1,7 @@
 {
    pkgs
   , nettle
+  , gmp
 }:
 with pkgs; stdenv.mkDerivation rec {
   name = "NettleShim";
@@ -8,6 +9,7 @@ with pkgs; stdenv.mkDerivation rec {
 
   buildInputs = [
     nettle
+    gmp
     pkg-config
     jdk11_headless
   ];
