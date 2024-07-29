@@ -64,16 +64,59 @@
         libgpg-error = pkgs.libgpg-error.overrideAttrs (final: prev: {
           configureFlags = ( prev.configureFlags or [] ) ++ [ "--enable-static" ];
         });
-        libtomcrypt = (pkgs.libtomcrypt.override { libtommath = libtommath; }).overrideAttrs (final: prev: {
-          makefile = "makefile.unix";
+        libtomcrypt = (pkgs.libtomcrypt.override { libtommath = libtommath; }).overrideAttrs (final: prev: rec {
+          makefile = "makefile";
+          version = "1.18.2";
+          src = pkgs.fetchurl {
+            url = "https://github.com/libtom/libtomcrypt/releases/download/v${version}/crypt-${version}.tar.xz";
+            sha256 = "113vfrgapyv72lalhd3nkw7jnks8az0gcb5wqn9hj19nhcxlrbcn";
+          };
+          patches = ( prev.patches or [] ) ++ [
+            ( pkgs.writeText "pkgconfig-for-static.patch" ''
+diff --git a/makefile b/makefile
+index cd94b86f..ffb65402 100644
+--- a/makefile
++++ b/makefile
+@@ -79,6 +79,9 @@ $(foreach demo, $(strip $(DEMOS)), $(eval $(call DEMO_template,$(demo))))
+ #as root in order to have a high enough permission to write to the correct
+ #directories and to set the owner and group to root.
+ install: $(call print-help,install,Installs the library and headers) .common_install
++	sed -e 's,^prefix=.*,prefix=$(PREFIX),' -e 's,^Version:.*,Version: $(VERSION_PC),' libtomcrypt.pc.in > libtomcrypt.pc
++	install -p -d $(DESTDIR)$(LIBPATH)/pkgconfig
++	install -p -m 644 libtomcrypt.pc $(DESTDIR)$(LIBPATH)/pkgconfig/
+ 
+ install_bins: $(call print-help,install_bins,Installs the useful demos ($(USEFUL_DEMOS))) .common_install_bins
+
+            '')
+          ];
         });
         libtommath = pkgs.libtommath.overrideAttrs (final: prev: rec {
-          makefile = "makefile.unix";
+          makefile = "makefile";
           version = "1.3.0";
           src = pkgs.fetchurl {
             url = "https://github.com/libtom/libtommath/releases/download/v${version}/ltm-${version}.tar.xz";
             sha256 = "sha256-KWJy2TQ1mRMI63NgdgDANLVYgHoH6CnnURQuZcz6nQg=";
           };
+          patches = ( prev.patches or [] ) ++
+          [
+            ( pkgs.writeText "pkgconfig-for-static.patch" ''
+diff --git a/makefile b/makefile
+index bee51a1..b36a13a 100644
+--- a/makefile
++++ b/makefile
+@@ -90,6 +90,10 @@ install: $(LIBNAME)
+ 	install -d $(DESTDIR)$(INCPATH)
+ 	install -m 644 $(LIBNAME) $(DESTDIR)$(LIBPATH)
+ 	install -m 644 $(HEADERS_PUB) $(DESTDIR)$(INCPATH)
++	sed -e 's,^prefix=.*,prefix=$(PREFIX),' -e 's,^Version:.*,Version: $(VERSION_PC),' -e 's,@CMAKE_INSTALL_LIBDIR@,lib,' \
++		-e 's,@CMAKE_INSTALL_INCLUDEDIR@,include,' libtommath.pc.in > libtommath.pc
++	install -d $(DESTDIR)$(LIBPATH)/pkgconfig
++	install -m 644 libtommath.pc $(DESTDIR)$(LIBPATH)/pkgconfig/
+ 
+ uninstall:
+ 	rm $(DESTDIR)$(LIBPATH)/$(LIBNAME)
+              '')
+          ];
         });
         nettle = pkgs.nettle.overrideAttrs (final: prev: {
           configureFlags = ( prev.configureFlags or [] ) ++ [ "--enable-static" ];
