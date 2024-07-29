@@ -79,6 +79,8 @@
               INSTALL_USER=$(id -u))
           '';
           patches = ( prev.patches or [] ) ++ [
+            # NOTE: LibTomCrypt does not expose the lib, when built statically (using `makefile and not `makefile.shared`).
+            #       This patch copies the necessary code from `makefile.shared`.
             ( pkgs.writeText "pkgconfig-for-static.patch" ''
 diff --git a/makefile b/makefile
 index cd94b86f..ffb65402 100644
@@ -104,8 +106,9 @@ index cd94b86f..ffb65402 100644
             url = "https://github.com/libtom/libtommath/releases/download/v${version}/ltm-${version}.tar.xz";
             sha256 = "sha256-KWJy2TQ1mRMI63NgdgDANLVYgHoH6CnnURQuZcz6nQg=";
           };
-          patches = ( prev.patches or [] ) ++
-          [
+          patches = ( prev.patches or [] ) ++ [
+            # NOTE: LibTomMath does not expose the lib, when built statically (using `makefile and not `makefile.shared`).
+            #       This patch copies the necessary code from `makefile.shared`.
             ( pkgs.writeText "pkgconfig-for-static.patch" ''
 diff --git a/makefile b/makefile
 index bee51a1..b36a13a 100644
