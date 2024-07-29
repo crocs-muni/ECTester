@@ -71,6 +71,13 @@
             url = "https://github.com/libtom/libtomcrypt/releases/download/v${version}/crypt-${version}.tar.xz";
             sha256 = "113vfrgapyv72lalhd3nkw7jnks8az0gcb5wqn9hj19nhcxlrbcn";
           };
+          preBuild = ''
+            makeFlagsArray+=(PREFIX=$out \
+              CFLAGS="-DUSE_LTM -DLTM_DESC" \
+              EXTRALIBS=\"-ltommath\" \
+              INSTALL_GROUP=$(id -g) \
+              INSTALL_USER=$(id -u))
+          '';
           patches = ( prev.patches or [] ) ++ [
             ( pkgs.writeText "pkgconfig-for-static.patch" ''
 diff --git a/makefile b/makefile
