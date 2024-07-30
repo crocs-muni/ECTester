@@ -111,7 +111,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_crea
     }
 
     jstring name = env->NewStringUTF(lib_name.c_str());
-    double version = lib_version / 100;
+    double version = lib_version / 100.0;
     jstring info = env->NewStringUTF(ss.str().c_str());
 
     return env->NewObject(provider_class, init, name, version, info);
