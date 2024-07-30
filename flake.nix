@@ -45,15 +45,25 @@
           '';
         });
         # FIXME: `nix develeop` now has different version than `nix run`
-        openssl = { version ? "", hash ? "" }: (pkgs.openssl.override { static = true; }).overrideAttrs (final: prev: rec {
+        opensslBuilder = { version ? null, hash ? null }: (pkgs.openssl.override { static = true; }).overrideAttrs (final: prev: rec {
           pname = "openssl";
-          src = if version != "" then pkgs.fetchurl {
+          src = if version != null then pkgs.fetchurl {
             url = "https://www.openssl.org/source/openssl-${version}.tar.gz";
             hash = hash;
           } else prev.src;
           # FIXME Removing patches might cause unwanted things; this should be version based!
           patches = [];
         });
+        botan2Builder = { version, source_extension, hash }: pkgs.botan2.overrideAttrs (final: prev: {
+          src = if ( version == null ) then prev.src else
+            pkgs.fetchurl {
+              urls = [
+                 "http://botan.randombit.net/releases/Botan-${version}.${source_extension}"
+              ];
+              inherit hash;
+            };
+        });
+
         libgcrypt = pkgs.libgcrypt.overrideAttrs (final: prev: {
           configureFlags = ( prev.configureFlags or [] ) ++ [ "--enable-static" ];
         });
@@ -96,7 +106,15 @@
         nettle = pkgs.nettle.overrideAttrs (final: prev: {
           configureFlags = ( prev.configureFlags or [] ) ++ [ "--enable-static" ];
         });
-        cryptopp = pkgs.cryptopp.override { enableStatic = true; };
+        cryptoppBuilder = { version, hash }: (pkgs.cryptopp.override { enableStatic = true; }).overrideAttrs (final: prev: {
+          src = if version == null then prev.src else
+            pkgs.fetchFromGitHub {
+              owner = "weidai11";
+              repo = "cryptopp";
+              rev = "CRYPTOPP_${version}";
+              inherit hash;
+          };
+        });
         libressl = (pkgs.libressl.override { buildShared = false; } ).overrideAttrs (_old: rec {
           patches = [
             (pkgs.fetchpatch {
@@ -135,10 +153,10 @@
 
         # Shims and libs
         # Current list of targets: tomcrypt botan cryptopp openssl boringssl gcrypt mbedtls ippcp nettle libressl
-        tomcryptShim = import ./nix/tomcryptshim.nix { inherit pkgs libtomcrypt libtommath; };
-        botanShim = import ./nix/botanshim.nix { inherit pkgs; };
-        cryptoppShim = import ./nix/cryptoppshim.nix { inherit pkgs cryptopp; };
-        opensslShimBuilder = { version, hash }: import ./nix/opensslshim.nix { inherit pkgs; openssl = (openssl { version = version; hash = hash;}); };
+        tomcryptShim = pkgs.callPackage ./nix/tomcryptshim.nix { inherit pkgs libtomcrypt libtommath; };
+        botanShimBuilder = { version, source_extension, hash }: pkgs.callPackage ./nix/botanshim.nix { botan2 = botan2Builder { inherit version source_extension hash; }; };
+        cryptoppShimBuilder = { version, hash}: pkgs.callPackage ./nix/cryptoppshim.nix { cryptopp = cryptoppBuilder { inherit version hash; };};
+        opensslShimBuilder = { version, hash }: import ./nix/opensslshim.nix { inherit pkgs; openssl = (opensslBuilder { version = version; hash = hash;}); };
         boringsslShim = import ./nix/boringsslshim.nix { inherit pkgs; boringssl = boringssl; };
         gcryptShim = import ./nix/gcryptshim.nix { inherit pkgs libgcrypt libgpg-error; };
         mbedtlsShim = import ./nix/mbedtlsshim.nix { pkgs = pkgs; };
@@ -148,9 +166,15 @@
 
         commonLibs = import ./nix/commonlibs.nix { pkgs = pkgs; };
 
-        buildECTesterStandalone = { opensslVersion, opensslHash }: (
+        buildECTesterStandalone = {
+          openssl ? { version = null; hash = null; },
+          botan ? { version = null; source_extension = null; hash = null; },
+          cryptopp ? { version = null; hash = null; },
+        }: (
           let
-            opensslShim = (opensslShimBuilder { version = opensslVersion; hash = opensslHash; });
+            opensslShim = (opensslShimBuilder { inherit (openssl) version hash; });
+            botanShim = botanShimBuilder { inherit (botan) version source_extension hash; };
+            cryptoppShim = cryptoppShimBuilder { inherit (cryptopp) version hash; };
           in
           with pkgs;
             gradle2nix.builders.${system}.buildGradlePackage rec {
@@ -201,20 +225,10 @@
       in
       {
         packages = rec {
-          default = openssl_331;
-          openssl_331 = buildECTesterStandalone {
-            opensslVersion="3.3.1"; opensslHash="sha256-d3zVlihMiDN1oqehG/XSeG/FQTJV76sgxQ1v/m0CC34=";
-          }; 
-          openssl_322 = buildECTesterStandalone {
-            opensslVersion="3.2.2"; opensslHash="sha256-GXFJwY2enyksQ/BACsq6EuX1LKz+BQ89GZJ36nOOwuc=";
-          }; 
-          openssl_316 = buildECTesterStandalone {
-            opensslVersion="3.1.6"; opensslHash="sha256-XSvkA2tHjvPLCoVMqbNTByw6DibYpW+PCrn7btMtONc=";
-          }; 
-          openssl_3014 = buildECTesterStandalone {
-            opensslVersion="3.0.14"; opensslHash="sha256-7soDXU3U6E/CWEbZUtpil0hK+gZQpvhMaC453zpBI8o=";
-          }; 
-          # openssl_111w = buildECTesterStandalone "1.1.1w" "sha256-zzCYlQy02FOtlcCEHx+cbT3BAtzPys1SHZOSUgi3asg=";
+          default = openssl.v331;
+          openssl = pkgs.callPackage ./nix/openssl_pkg_versions.nix { inherit buildECTesterStandalone; };
+          botan = pkgs.callPackage ./nix/botan_pkg_versions.nix { inherit buildECTesterStandalone; };
+          cryptopp = pkgs.callPackage ./nix/cryptopp_pkg_versions.nix { inherit buildECTesterStandalone; };
         };
         devShells.default = with pkgs; mkShell rec {
           nativeBuildInputs = [
@@ -235,7 +249,7 @@
             global-platform-pro
             gradle
             # libraries to test
-            (openssl {})
+            (opensslBuilder {})
             libressl
             # glibc
             boringssl
@@ -280,8 +294,7 @@
             libtomcrypt
             botan2
             cryptopp
-            # (openssl {})
-            (openssl {})
+            (opensslBuilder {})
             boringssl
             libgcrypt
             libgpg-error
