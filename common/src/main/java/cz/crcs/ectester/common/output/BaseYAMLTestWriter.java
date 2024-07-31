@@ -125,6 +125,6 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
         String out = yaml.dump(result);
 
         output.println(out);
-        output.println("---");
+        output.println("...");
     }
 }
