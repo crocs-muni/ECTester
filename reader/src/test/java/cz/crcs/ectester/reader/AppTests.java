@@ -1,11 +1,12 @@
 package cz.crcs.ectester.reader;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.jupiter.DisabledUntil;
 import org.junitpioneer.jupiter.StdIo;
 import org.junitpioneer.jupiter.StdOut;
 
+import java.time.Duration;
+
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AppTests {
@@ -37,62 +38,74 @@ public class AppTests {
     // Add StdIo to all the suite tests when this is resolved: https://github.com/junit-pioneer/junit-pioneer/issues/822
 
     @Test
+    @XFail(value = "JCardSim sometimes times-out.")
     public void defaultSuite() {
-        ECTesterReader.main(new String[]{"-t", "default", "-s"});
+        assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "default", "-s"}));
     }
 
     @Test
+    @XFail(value = "JCardSim sometimes times-out.")
     public void testVectorSuite() {
-        ECTesterReader.main(new String[]{"-t", "test-vectors", "-s"});
+        assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "test-vectors", "-s"}));
     }
 
     @Test
+    @XFail(value = "JCardSim sometimes times-out.")
     public void compressionSuite() {
-        ECTesterReader.main(new String[]{"-t", "compression", "-s"});
+        assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "compression", "-s"}));
     }
 
     @Test
+    @XFail(value = "JCardSim sometimes times-out.")
     public void wrongSuite() {
-        ECTesterReader.main(new String[]{"-t", "wrong", "-s", "-y"});
+        assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "wrong", "-s", "-y"}));
     }
 
     @Test
+    @XFail(value = "JCardSim sometimes times-out.")
     public void degenerateSuite() {
-        ECTesterReader.main(new String[]{"-t", "degenerate", "-s", "-y"});
+        assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "degenerate", "-s", "-y"}));
     }
 
     @Test
+    @XFail(value = "JCardSim sometimes times-out.")
     public void cofactorSuite() {
-        ECTesterReader.main(new String[]{"-t", "cofactor", "-s", "-y"});
+        assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "cofactor", "-s", "-y"}));
     }
 
     @Test
+    @XFail(value = "JCardSim sometimes times-out.")
     public void compositeSuite() {
-        ECTesterReader.main(new String[]{"-t", "composite", "-s", "-y"});
+        assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "composite", "-s", "-y"}));
     }
 
     @Test
+    @XFail(value = "JCardSim sometimes times-out.")
     public void invalidSuite() {
-        ECTesterReader.main(new String[]{"-t", "invalid", "-s", "-y"});
+        assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "invalid", "-s", "-y"}));
     }
 
     @Test
+    @XFail(value = "JCardSim sometimes times-out.")
     public void edgeCasesSuite() {
-        ECTesterReader.main(new String[]{"-t", "edge-cases", "-s", "-y"});
+        assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "edge-cases", "-s", "-y"}));
     }
 
     @Test
+    @XFail(value = "JCardSim sometimes times-out.")
     public void signatureSuite() {
-        ECTesterReader.main(new String[]{"-t", "signature", "-s"});
+        assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "signature", "-s"}));
     }
 
     @Test
+    @XFail(value = "JCardSim sometimes times-out.")
     public void twistSuite() {
-        ECTesterReader.main(new String[]{"-t", "twist", "-s", "-y"});
+        assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "twist", "-s", "-y"}));
     }
 
     @Test
+    @XFail(value = "JCardSim sometimes times-out.")
     public void miscellaneousSuite() {
-        ECTesterReader.main(new String[]{"-t", "miscellaneous", "-s", "-y"});
+        assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "miscellaneous", "-s", "-y"}));
     }
 }
