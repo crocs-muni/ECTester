@@ -114,8 +114,8 @@ public class CardCompressionSuite extends CardTestSuite {
                         byte[] pubHybridEncoded = ByteUtil.prependLength(pubHybrid);
                         Test kaBadHybrid = CommandTest.expect(new Command.ECDH_direct(this.card, CardConsts.KEYPAIR_LOCAL, CardConsts.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, kaType, pubHybridEncoded), Result.ExpectedValue.FAILURE);
 
-                        byte[] pubInfinityEncoded = {0x01, 0x00};
-                        Test kaBadInfinity = CommandTest.expect(new Command.ECDH_direct(this.card, CardConsts.KEYPAIR_LOCAL, CardConsts.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, kaType, pubInfinityEncoded), Result.ExpectedValue.FAILURE);
+                        byte[] pubInfinityEncoded = {0x00};
+                        Test kaBadInfinity = CommandTest.expect(new Command.ECDH_direct(this.card, CardConsts.KEYPAIR_LOCAL, CardConsts.EXPORT_FALSE, EC_Consts.TRANSFORMATION_INFINITY, kaType, pubInfinityEncoded), Result.ExpectedValue.FAILURE);
                         thisTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests of corrupted hybrid form and infinity.", kaBadHybrid, kaBadInfinity));
                     }
                     kaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "KeyAgreement tests of " + CardUtil.getKATypeString(kaType) + ".", thisTests.toArray(new Test[0])));

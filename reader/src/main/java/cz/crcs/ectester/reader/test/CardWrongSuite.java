@@ -113,7 +113,7 @@ public class CardWrongSuite extends CardTestSuite {
 
             Test randomG = ecdhTest(new Command.Transform(this.card, CardConsts.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_G, (short) (EC_Consts.TRANSFORMATION_FULLRANDOM | EC_Consts.TRANSFORMATION_04_MASK)), "Set G = random non-point/point-like.", "ECDH with non-point G.");
             Test fullRandomG = ecdhTest(new Command.Transform(this.card, CardConsts.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_G, EC_Consts.TRANSFORMATION_FULLRANDOM), "Set G = random data.", "ECDH with G = random data.");
-            Test zeroG = ecdhTest(new Command.Transform(this.card, CardConsts.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_G, EC_Consts.TRANSFORMATION_INFINITY), "Set G = inifnity.", "ECDH with G = infinity.");
+            Test zeroG = ecdhTest(new Command.Transform(this.card, CardConsts.KEYPAIR_BOTH, EC_Consts.KEY_BOTH, EC_Consts.PARAMETER_G, EC_Consts.TRANSFORMATION_INFINITY), "Set G = infinity.", "ECDH with G = infinity.");
             Test wrongG = CompoundTest.all(ExpectedValue.SUCCESS, "Tests with corrupted G parameter.", randomG, fullRandomG, zeroG);
 
             byte[] originalR = EC_Consts.getCurveParameter(curve, EC_Consts.PARAMETER_R);
