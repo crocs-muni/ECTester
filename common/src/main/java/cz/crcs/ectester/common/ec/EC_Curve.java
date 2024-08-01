@@ -5,6 +5,7 @@ import org.bouncycastle.math.ec.ECCurve;
 
 import java.math.BigInteger;
 import java.security.spec.*;
+import java.util.Arrays;
 
 /**
  * An Elliptic curve, contains parameters Fp/F2M, A, B, G, R, (K)?.
@@ -96,7 +97,15 @@ public class EC_Curve extends EC_Params {
             BigInteger b = new BigInteger(1, getParam(EC_Consts.PARAMETER_B)[0]);
             BigInteger r = new BigInteger(1, getParam(EC_Consts.PARAMETER_R)[0]);
             BigInteger k = new BigInteger(1, getParam(EC_Consts.PARAMETER_K)[0]);
-            return new ECCurve.F2m(m, e1, e2, e3, a, b, r, k);
+            int[] powers = Arrays.stream(new int[]{e1, e2, e3}).sorted().toArray();
+            e1 = powers[0];
+            e2 = powers[1];
+            e3 = powers[2];
+            if (e1 == 0 && e2 == 0) {
+                return new ECCurve.F2m(m, e3, 0, 0, a, b, r, k);
+            } else {
+                return new ECCurve.F2m(m, e1, e2, e3, a, b, r, k);
+            }
         }
     }
 

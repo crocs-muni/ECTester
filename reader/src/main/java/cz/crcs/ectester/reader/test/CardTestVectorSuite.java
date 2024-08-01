@@ -63,13 +63,7 @@ public class CardTestVectorSuite extends CardTestSuite {
                 throw new IOException("Test vector keys couldn't be located.");
             }
             List<Test> testVector = new LinkedList<>();
-            Test allocate = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS));
-            if (!allocate.ok()) {
-                doTest(CompoundTest.all(ExpectedValue.SUCCESS, "No support for " + curve.getBits() + "b " + CardUtil.getKeyTypeString(curve.getField()) + ".", allocate));
-                continue;
-            }
-
-            testVector.add(allocate);
+            testVector.add(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS));
             testVector.add(CommandTest.expect(new Command.Set(this.card, CardConsts.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.SUCCESS));
             testVector.add(CommandTest.expect(new Command.Set(this.card, CardConsts.KEYPAIR_LOCAL, EC_Consts.CURVE_external, EC_Consts.PARAMETER_S, onekey.flatten(EC_Consts.PARAMETER_S)), ExpectedValue.SUCCESS));
             testVector.add(CommandTest.expect(new Command.Set(this.card, CardConsts.KEYPAIR_REMOTE, EC_Consts.CURVE_external, EC_Consts.PARAMETER_W, otherkey.flatten(EC_Consts.PARAMETER_W)), ExpectedValue.SUCCESS));
@@ -112,12 +106,7 @@ public class CardTestVectorSuite extends CardTestSuite {
         testCurves.addAll(EC_Store.getInstance().getObjects(EC_Curve.class, "brainpool").values().stream().filter((curve) -> curve.getField() == EC_Consts.ALG_EC_FP).collect(Collectors.toList()));
         for (EC_Curve curve : testCurves) {
             List<Test> testVector = new LinkedList<>();
-            Test allocate = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS));
-            if (!allocate.ok()) {
-                doTest(CompoundTest.all(ExpectedValue.SUCCESS, "No support for " + curve.getBits() + "b " + CardUtil.getKeyTypeString(curve.getField()) + ".", allocate));
-                continue;
-            }
-            testVector.add(allocate);
+            testVector.add(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS));
             testVector.add(CommandTest.expect(new Command.Set(this.card, CardConsts.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.SUCCESS));
             testVector.add(CommandTest.expect(new Command.Generate(this.card, CardConsts.KEYPAIR_BOTH), ExpectedValue.SUCCESS));
             CommandTest exportLocal = CommandTest.expect(new Command.Export(this.card, CardConsts.KEYPAIR_LOCAL, EC_Consts.KEY_PUBLIC, EC_Consts.PARAMETER_W), ExpectedValue.ANY);

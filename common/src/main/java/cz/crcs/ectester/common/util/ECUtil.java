@@ -14,6 +14,8 @@ import org.bouncycastle.jcajce.interfaces.EdDSAPrivateKey;
 import org.bouncycastle.jcajce.interfaces.EdDSAPublicKey;
 import org.bouncycastle.jcajce.interfaces.XDHPrivateKey;
 import org.bouncycastle.jcajce.interfaces.XDHPublicKey;
+import org.bouncycastle.math.ec.ECCurve;
+import org.bouncycastle.math.ec.ECFieldElement;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -244,64 +246,87 @@ public class ECUtil {
     }
 
     public static EC_Params fullRandomPoint(EC_Curve curve) {
-        EllipticCurve ecCurve = curve.toCurve();
-
-        BigInteger p;
-        if (ecCurve.getField() instanceof ECFieldFp) {
+        if (curve.getField() == EC_Consts.ALG_EC_FP) {
+            EllipticCurve ecCurve = curve.toCurve();
             ECFieldFp fp = (ECFieldFp) ecCurve.getField();
-            p = fp.getP();
+            BigInteger p = fp.getP();
             if (!p.isProbablePrime(20)) {
                 return null;
             }
-        } else {
-            //TODO
-            return null;
-        }
-        BigInteger x;
-        BigInteger rhs;
-        do {
-            x = new BigInteger(ecCurve.getField().getFieldSize(), rand).mod(p);
-            rhs = computeRHS(x, ecCurve.getA(), ecCurve.getB(), p);
-        } while (!isResidue(rhs, p));
-        BigInteger y = modSqrt(rhs, p);
-        if (rand.nextBoolean()) {
-            y = p.subtract(y);
-        }
+            BigInteger x;
+            BigInteger rhs;
+            do {
+                x = new BigInteger(ecCurve.getField().getFieldSize(), rand).mod(p);
+                rhs = computeRHS(x, ecCurve.getA(), ecCurve.getB(), p);
+            } while (!isResidue(rhs, p));
+            BigInteger y = modSqrt(rhs, p);
+            if (rand.nextBoolean()) {
+                y = p.subtract(y);
+            }
 
-        byte[] xArr = toByteArray(x, ecCurve.getField().getFieldSize());
-        byte[] yArr = toByteArray(y, ecCurve.getField().getFieldSize());
-        return new EC_Params(EC_Consts.PARAMETER_W, new byte[][]{xArr, yArr});
+            byte[] xArr = toByteArray(x, ecCurve.getField().getFieldSize());
+            byte[] yArr = toByteArray(y, ecCurve.getField().getFieldSize());
+            return new EC_Params(EC_Consts.PARAMETER_W, new byte[][]{xArr, yArr});
+        } else {
+            ECCurve.F2m bcCurve = (ECCurve.F2m) curve.toBCCurve();
+            BigInteger b = new BigInteger(bcCurve.getFieldSize(), rand);
+            org.bouncycastle.math.ec.ECPoint point;
+            while (true) {
+                try {
+                    ECFieldElement.F2m x = (ECFieldElement.F2m) bcCurve.fromBigInteger(b);
+                    byte[] pointTry = ByteUtil.concatenate(new byte[]{0x02}, x.getEncoded());
+                    point = bcCurve.decodePoint(pointTry);
+                    break;
+                } catch (IllegalArgumentException iae) {
+                    b = new BigInteger(bcCurve.getFieldSize(), rand);
+                }
+            }
+
+            return new EC_Params(EC_Consts.PARAMETER_W, new byte[][] {point.getAffineXCoord().getEncoded(), point.getAffineYCoord().getEncoded()});
+        }
     }
 
     public static EC_Params fixedRandomPoint(EC_Curve curve) {
-        EllipticCurve ecCurve = curve.toCurve();
-
-        BigInteger p;
-        if (ecCurve.getField() instanceof ECFieldFp) {
+        if (curve.getField() == EC_Consts.ALG_EC_FP) {
+            EllipticCurve ecCurve = curve.toCurve();
             ECFieldFp fp = (ECFieldFp) ecCurve.getField();
-            p = fp.getP();
+            BigInteger p = fp.getP();
             if (!p.isProbablePrime(20)) {
                 return null;
             }
+            BigInteger x = new BigInteger(1, hashCurve(curve)).mod(p);
+            BigInteger rhs = computeRHS(x, ecCurve.getA(), ecCurve.getB(), p);
+            while (!isResidue(rhs, p)) {
+                x = x.add(BigInteger.ONE).mod(p);
+                rhs = computeRHS(x, ecCurve.getA(), ecCurve.getB(), p);
+            }
+            BigInteger y = modSqrt(rhs, p);
+            if (y.bitCount() % 2 == 0) {
+                y = p.subtract(y);
+            }
+
+            byte[] xArr = toByteArray(x, ecCurve.getField().getFieldSize());
+            byte[] yArr = toByteArray(y, ecCurve.getField().getFieldSize());
+            return new EC_Params(EC_Consts.PARAMETER_W, new byte[][]{xArr, yArr});
         } else {
-            //TODO
-            return null;
+            ECCurve.F2m bcCurve = (ECCurve.F2m) curve.toBCCurve();
+            BigInteger b = new BigInteger(1, hashCurve(curve));
+            while (b.bitLength() > bcCurve.getFieldSize()) {
+                b = b.shiftRight(1);
+            }
+            org.bouncycastle.math.ec.ECPoint point;
+            while (true) {
+                try {
+                    ECFieldElement.F2m x = (ECFieldElement.F2m) bcCurve.fromBigInteger(b);
+                    byte[] pointTry = ByteUtil.concatenate(new byte[]{0x02}, x.getEncoded());
+                    point = bcCurve.decodePoint(pointTry);
+                    break;
+                } catch (IllegalArgumentException iae) {
+                    b = b.add(BigInteger.ONE);
+                }
+            }
+            return new EC_Params(EC_Consts.PARAMETER_W, new byte[][] {point.getAffineXCoord().getEncoded(), point.getAffineYCoord().getEncoded()});
         }
-
-        BigInteger x = new BigInteger(1, hashCurve(curve)).mod(p);
-        BigInteger rhs = computeRHS(x, ecCurve.getA(), ecCurve.getB(), p);
-        while (!isResidue(rhs, p)) {
-            x = x.add(BigInteger.ONE).mod(p);
-            rhs = computeRHS(x, ecCurve.getA(), ecCurve.getB(), p);
-        }
-        BigInteger y = modSqrt(rhs, p);
-        if (y.bitCount() % 2 == 0) {
-            y = p.subtract(y);
-        }
-
-        byte[] xArr = toByteArray(x, ecCurve.getField().getFieldSize());
-        byte[] yArr = toByteArray(y, ecCurve.getField().getFieldSize());
-        return new EC_Params(EC_Consts.PARAMETER_W, new byte[][]{xArr, yArr});
     }
 
     public static ECPoint toPoint(EC_Params params) {
@@ -352,11 +377,11 @@ public class ECUtil {
     /**
      * Validate DER or PLAIN signature format.
      *
-     * @throws IllegalArgumentException in case of invalid format.
      * @param signature
      * @param params
      * @param hashAlgo
      * @param sigType
+     * @throws IllegalArgumentException in case of invalid format.
      */
     public static void validateSignatureFormat(byte[] signature, ECParameterSpec params, String hashAlgo, String sigType) {
         BigInteger n = params.getOrder();

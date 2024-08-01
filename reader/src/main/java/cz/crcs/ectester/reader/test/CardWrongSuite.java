@@ -42,24 +42,17 @@ public class CardWrongSuite extends CardTestSuite {
         for (Map.Entry<String, EC_Curve> e : curves.entrySet()) {
             EC_Curve curve = e.getValue();
             List<Test> tests = new LinkedList<>();
-            Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS));
-            if (!key.ok()) {
-                doTest(CompoundTest.all(ExpectedValue.FAILURE, "No support for " + curve.getBits() + "b " + CardUtil.getKeyTypeString(curve.getField()), key));
-                continue;
-            }
-            tests.add(key);
-            Test set = runTest(CommandTest.expect(new Command.Set(this.card, CardConsts.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.FAILURE));
-            Test generate = runTest(setupKeypairs(curve, ExpectedValue.SUCCESS, CardConsts.KEYPAIR_BOTH));
-            Test setup = runTest(CompoundTest.any(ExpectedValue.SUCCESS, "Set wrong curve and generate keypairs.", set, generate));
+            Test key = CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS);
+            Test set = CommandTest.expect(new Command.Set(this.card, CardConsts.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.FAILURE);
+            Test generate = setupKeypairs(curve, ExpectedValue.SUCCESS, CardConsts.KEYPAIR_BOTH);
+            Test setup = CompoundTest.any(ExpectedValue.SUCCESS, "Set wrong curve and generate keypairs.", key, set, generate);
             tests.add(setup);
 
             for (byte kaType : EC_Consts.KA_TYPES) {
-                Test allocate = runTest(CommandTest.expect(new Command.AllocateKeyAgreement(this.card, kaType), ExpectedValue.SUCCESS));
-                if (allocate.ok()) {
-                    Test ka = runTest(CommandTest.expect(new Command.ECDH(this.card, CardConsts.KEYPAIR_REMOTE, CardConsts.KEYPAIR_LOCAL, CardConsts.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, kaType), ExpectedValue.FAILURE));
-                    Test kaTest = runTest(CompoundTest.all(ExpectedValue.SUCCESS, "Allocate and perform KA.", allocate, ka));
-                    tests.add(kaTest);
-                }
+                Test allocate = CommandTest.expect(new Command.AllocateKeyAgreement(this.card, kaType), ExpectedValue.SUCCESS);
+                Test ka = CommandTest.expect(new Command.ECDH(this.card, CardConsts.KEYPAIR_REMOTE, CardConsts.KEYPAIR_LOCAL, CardConsts.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, kaType), ExpectedValue.FAILURE);
+                Test kaTest = CompoundTest.all(ExpectedValue.SUCCESS, "Allocate and perform KA.", allocate, ka);
+                tests.add(kaTest);
             }
             doTest(CompoundTest.function((tsts) -> {
                 for (int i = 0; i < tsts.length; ++i) {
@@ -82,11 +75,7 @@ public class CardWrongSuite extends CardTestSuite {
         Random r = new Random();
         for (short keyLength : EC_Consts.FP_SIZES) {
             byte curve = EC_Consts.getCurve(keyLength, EC_Consts.ALG_EC_FP);
-            Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, keyLength, EC_Consts.ALG_EC_FP), ExpectedValue.SUCCESS));
-            if (!key.ok()) {
-                doTest(CompoundTest.all(ExpectedValue.FAILURE, "No support for " + keyLength + "b ALG_EC_FP.", key));
-                continue;
-            }
+            Test key = CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, keyLength, EC_Consts.ALG_EC_FP), ExpectedValue.SUCCESS);
             Test set = CommandTest.expect(new Command.Set(this.card, CardConsts.KEYPAIR_BOTH, curve, EC_Consts.PARAMETERS_DOMAIN_FP, null), ExpectedValue.SUCCESS);
             Test setup = CompoundTest.all(ExpectedValue.SUCCESS, "KeyPair setup.", key, set);
 
@@ -162,11 +151,7 @@ public class CardWrongSuite extends CardTestSuite {
          */
         for (short keyLength : EC_Consts.F2M_SIZES) {
             byte curve = EC_Consts.getCurve(keyLength, EC_Consts.ALG_EC_F2M);
-            Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, keyLength, EC_Consts.ALG_EC_F2M), ExpectedValue.SUCCESS));
-            if (!key.ok()) {
-                doTest(CompoundTest.all(ExpectedValue.FAILURE, "No support for " + keyLength + "b ALG_EC_F2M.", key));
-                continue;
-            }
+            Test key = CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, keyLength, EC_Consts.ALG_EC_F2M), ExpectedValue.SUCCESS);
             Test set = CommandTest.expect(new Command.Set(this.card, CardConsts.KEYPAIR_BOTH, curve, EC_Consts.PARAMETERS_DOMAIN_F2M, null), ExpectedValue.SUCCESS);
             Test setup = CompoundTest.all(ExpectedValue.SUCCESS, "KeyPair setup.", key, set);
 

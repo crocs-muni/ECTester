@@ -13,7 +13,7 @@ import cz.crcs.ectester.reader.command.Command;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,19 +44,13 @@ public class CardDefaultSuite extends CardTestSuite {
         short[] keySizes = field == EC_Consts.ALG_EC_FP ? EC_Consts.FP_SIZES : EC_Consts.F2M_SIZES;
         short domain = field == EC_Consts.ALG_EC_FP ? EC_Consts.PARAMETERS_DOMAIN_FP : EC_Consts.PARAMETERS_DOMAIN_F2M;
         for (short keyLength : keySizes) {
-
             List<Test> supportTests = new LinkedList<>();
-            Test allocateFirst = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, keyLength, field), ExpectedValue.SUCCESS));
-            if (!allocateFirst.ok()) {
-                doTest(CompoundTest.all(ExpectedValue.SUCCESS, "No support for " + keyLength + "b " + CardUtil.getKeyTypeString(field) + ".", allocateFirst));
-                continue;
-            }
+            Test allocateFirst = CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, keyLength, field), ExpectedValue.SUCCESS);
+            Test genDefault = CommandTest.expect(new Command.Generate(this.card, CardConsts.KEYPAIR_BOTH), ExpectedValue.SUCCESS);
+            Test allocateSecond = CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, keyLength, field), ExpectedValue.SUCCESS);
+            Test setCustom = CommandTest.expect(new Command.Set(this.card, CardConsts.KEYPAIR_BOTH, EC_Consts.getCurve(keyLength, field), domain, null), ExpectedValue.SUCCESS);
+            Test genCustom = CommandTest.expect(new Command.Generate(this.card, CardConsts.KEYPAIR_BOTH), ExpectedValue.SUCCESS);
             supportTests.add(allocateFirst);
-
-            Test genDefault = runTest(CommandTest.expect(new Command.Generate(this.card, CardConsts.KEYPAIR_BOTH), ExpectedValue.SUCCESS));
-            Test allocateSecond = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, keyLength, field), ExpectedValue.SUCCESS));
-            Test setCustom = runTest(CommandTest.expect(new Command.Set(this.card, CardConsts.KEYPAIR_BOTH, EC_Consts.getCurve(keyLength, field), domain, null), ExpectedValue.SUCCESS));
-            Test genCustom = runTest(CommandTest.expect(new Command.Generate(this.card, CardConsts.KEYPAIR_BOTH), ExpectedValue.SUCCESS));
             supportTests.add(genDefault);
             supportTests.add(allocateSecond);
             supportTests.add(setCustom);
@@ -64,68 +58,77 @@ public class CardDefaultSuite extends CardTestSuite {
 
             List<Test> kaTests = new LinkedList<>();
             for (byte kaType : EC_Consts.KA_TYPES) {
-                Test allocate = runTest(CommandTest.expect(new Command.AllocateKeyAgreement(this.card, kaType), ExpectedValue.SUCCESS));
-                if (allocate.ok()) {
-                    Command ecdh = new Command.ECDH(this.card, CardConsts.KEYPAIR_LOCAL, CardConsts.KEYPAIR_REMOTE, CardConsts.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, kaType);
-                    Test ka = runTest(CommandTest.expect(ecdh, ExpectedValue.SUCCESS));
-                    Test kaCompressed = runTest(CommandTest.expect(new Command.ECDH(this.card, CardConsts.KEYPAIR_LOCAL, CardConsts.KEYPAIR_REMOTE, CardConsts.EXPORT_FALSE, EC_Consts.TRANSFORMATION_COMPRESS, kaType), ExpectedValue.SUCCESS));
+                Test allocate = CommandTest.expect(new Command.AllocateKeyAgreement(this.card, kaType), ExpectedValue.SUCCESS);
+                Command ecdh = new Command.ECDH(this.card, CardConsts.KEYPAIR_LOCAL, CardConsts.KEYPAIR_REMOTE, CardConsts.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, kaType);
+                Test ka = CommandTest.expect(ecdh, ExpectedValue.SUCCESS);
+                Test kaCompressed = CommandTest.expect(new Command.ECDH(this.card, CardConsts.KEYPAIR_LOCAL, CardConsts.KEYPAIR_REMOTE, CardConsts.EXPORT_FALSE, EC_Consts.TRANSFORMATION_COMPRESS, kaType), ExpectedValue.SUCCESS);
 
-                    String kaDesc = "Test of the " + CardUtil.getKATypeString(kaType) + " KeyAgreement.";
-                    Function<Test[], Result> kaCallback = (tests) -> {
-                        if (tests[1].ok() || tests[2].ok()) {
-                            return new Result(Value.SUCCESS, "Some ECDH is supported.");
-                        } else {
-                            return new Result(Value.FAILURE, "ECDH failed.");
-                        }
-                    };
-
-                    Test compound;
-                    if (ka.ok()) {
-                        Test perfTest = runTest(PerformanceTest.repeat(this.card, ecdh, 10));
-                        compound = runTest(CompoundTest.function(kaCallback, kaDesc, allocate, ka, kaCompressed, perfTest));
+                String kaDesc = "Test of the " + CardUtil.getKATypeString(kaType) + " KeyAgreement.";
+                Function<Test[], Result> kaCallback = (tests) -> {
+                    if (tests[1].ok() || tests[2].ok()) {
+                        return new Result(Value.SUCCESS, "Some ECDH is supported.");
                     } else {
-                        compound = runTest(CompoundTest.function(kaCallback, kaDesc, allocate, ka, kaCompressed));
+                        return new Result(Value.FAILURE, "ECDH failed.");
                     }
+                };
 
-                    kaTests.add(compound);
-                } else {
-                    runTest(allocate);
-                    kaTests.add(allocate);
-                }
+                Consumer<Test[]> runCallback = tests -> {
+                    for (Test t : tests) {
+                        if (t instanceof PerformanceTest) {
+                            if (tests[0].ok() && tests[1].ok()) {
+                                t.run();
+                            }
+                        } else {
+                            t.run();
+                        }
+                    }
+                };
+
+                Test perfTest = PerformanceTest.repeat(this.card, ecdh, 10);
+                Test compound = CompoundTest.function(kaCallback, runCallback, kaDesc, allocate, ka, kaCompressed, perfTest);
+                kaTests.add(compound);
             }
-            Test kaTest = runTest(CompoundTest.any(ExpectedValue.SUCCESS, "KeyAgreement tests.", kaTests.toArray(new Test[0])));
+            Test kaTest = CompoundTest.any(ExpectedValue.SUCCESS, "KeyAgreement tests.", kaTests.toArray(new Test[0]));
             supportTests.add(kaTest);
 
             List<Test> signTests = new LinkedList<>();
             for (byte sigType : EC_Consts.SIG_TYPES) {
-                Test allocate = runTest(CommandTest.expect(new Command.AllocateSignature(this.card, sigType), ExpectedValue.SUCCESS));
-                if (allocate.ok()) {
-                    Command ecdsa = new Command.ECDSA(this.card, CardConsts.KEYPAIR_LOCAL, sigType, CardConsts.EXPORT_FALSE, null);
-                    Test expect = runTest(CommandTest.expect(ecdsa, ExpectedValue.SUCCESS));
+                Test allocate = CommandTest.expect(new Command.AllocateSignature(this.card, sigType), ExpectedValue.SUCCESS);
+                Command ecdsa = new Command.ECDSA(this.card, CardConsts.KEYPAIR_LOCAL, sigType, CardConsts.EXPORT_FALSE, null);
+                Test sign = CommandTest.expect(ecdsa, ExpectedValue.SUCCESS);
 
-                    String signDesc = "Test of the " + CardUtil.getSigTypeString(sigType) + " signature.";
+                String signDesc = "Test of the " + CardUtil.getSigTypeString(sigType) + " signature.";
 
-                    Random rand = new Random();
-                    byte[] sigData = new byte[64];
-                    rand.nextBytes(sigData);
+                byte[] sigData = new byte[]{(byte) domain, sigType};
 
-                    Test compound;
-                    if (expect.ok()) {
-                        Command ecdsaSign = new Command.ECDSA_sign(this.card, CardConsts.KEYPAIR_LOCAL, sigType, CardConsts.EXPORT_TRUE, sigData);
-                        PerformanceTest signTest = runTest(PerformanceTest.repeat(this.card, "Sign", ecdsaSign, 10));
-                        byte[] signature = signTest.getResponses()[0].getParam(0);
-                        Command ecdsaVerify = new Command.ECDSA_verify(this.card, CardConsts.KEYPAIR_LOCAL, sigType, sigData, signature);
-                        PerformanceTest verifyTest = runTest(PerformanceTest.repeat(this.card, "Verify", ecdsaVerify, 10));
-                        compound = runTest(CompoundTest.all(ExpectedValue.SUCCESS, signDesc, allocate, expect, signTest, verifyTest));
+                Function<Test[], Result> sigCallback = (tests) -> {
+                    if (tests[1].ok()) {
+                        return new Result(Value.SUCCESS, "Some ECDSA is supported.");
                     } else {
-                        compound = runTest(CompoundTest.all(ExpectedValue.SUCCESS, signDesc, allocate, expect));
+                        return new Result(Value.FAILURE, "ECDSA failed.");
                     }
-                    signTests.add(compound);
-                } else {
-                    signTests.add(allocate);
-                }
+                };
+                Consumer<Test[]> runCallback = tests -> {
+                    for (Test t : tests) {
+                        if (t instanceof PerformanceTest) {
+                            if (tests[0].ok() && tests[1].ok()) {
+                                t.run();
+                            }
+                        } else {
+                            t.run();
+                        }
+                    }
+                };
+
+                Command ecdsaSign = new Command.ECDSA_sign(this.card, CardConsts.KEYPAIR_LOCAL, sigType, CardConsts.EXPORT_TRUE, sigData);
+                PerformanceTest signTest = PerformanceTest.repeat(this.card, "Sign", ecdsaSign, 10);
+
+                CommandTestable.FunctionCommandTestable verifyTestable = new CommandTestable.FunctionCommandTestable(() -> new Command.ECDSA_verify(this.card, CardConsts.KEYPAIR_LOCAL, sigType, sigData, signTest.getResponses()[0].getParam(0)));
+                PerformanceTest verifyTest = PerformanceTest.repeat(this.card, "Verify", verifyTestable, 10);
+                Test compound = CompoundTest.function(sigCallback, runCallback, signDesc, allocate, sign, signTest, verifyTest);
+                signTests.add(compound);
             }
-            Test signTest = runTest(CompoundTest.any(ExpectedValue.SUCCESS, "Signature tests.", signTests.toArray(new Test[0])));
+            Test signTest = CompoundTest.any(ExpectedValue.SUCCESS, "Signature tests.", signTests.toArray(new Test[0]));
             supportTests.add(signTest);
             ExpectedValue[] testExpects = {ExpectedValue.SUCCESS, ExpectedValue.ANY, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS, ExpectedValue.SUCCESS};
             List<ExpectedValue> expects = Stream.of(testExpects).collect(Collectors.toList());
