@@ -64,10 +64,13 @@ public class EC_Curve extends EC_Params {
             e1 = powers[0];
             e2 = powers[1];
             e3 = powers[2];
-            if (e2 == 0 && e3 == 0) {
-                powers = new int[]{e1};
+            System.err.println(e1);
+            System.err.println(e2);
+            System.err.println(e3);
+            if (e1 == 0 && e2 == 0) {
+                powers = new int[]{e3};
             } else {
-                powers = new int[]{e1, e2, e3};
+                powers = new int[]{e3, e2, e1};
             }
             return powers;
         } else {
@@ -131,7 +134,7 @@ public class EC_Curve extends EC_Params {
             if (powers.length == 1) {
                 return new ECCurve.F2m(m, powers[0], 0, 0, a, b, r, k);
             } else {
-                return new ECCurve.F2m(m, powers[0], powers[1], powers[2], a, b, r, k);
+                return new ECCurve.F2m(m, powers[2], powers[1], powers[0], a, b, r, k);
             }
         }
     }
