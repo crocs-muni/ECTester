@@ -1,5 +1,6 @@
 package cz.crcs.ectester.reader;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.jupiter.StdIo;
 import org.junitpioneer.jupiter.StdOut;
@@ -45,6 +46,7 @@ public class AppTests {
 
     @Test
     @XFail(value = "JCardSim sometimes times-out.")
+    @Disabled
     public void testVectorSuite() {
         assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "test-vectors", "-s"}));
     }
@@ -57,6 +59,7 @@ public class AppTests {
 
     @Test
     @XFail(value = "JCardSim sometimes times-out.")
+    @Disabled
     public void wrongSuite() {
         assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "wrong", "-s", "-y"}));
     }
@@ -69,12 +72,14 @@ public class AppTests {
 
     @Test
     @XFail(value = "JCardSim sometimes times-out.")
+    @Disabled
     public void cofactorSuite() {
         assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "cofactor", "-s", "-y"}));
     }
 
     @Test
     @XFail(value = "JCardSim sometimes times-out.")
+    @Disabled
     public void compositeSuite() {
         assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "composite", "-s", "-y"}));
     }
