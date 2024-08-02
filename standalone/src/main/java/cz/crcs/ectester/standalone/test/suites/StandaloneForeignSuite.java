@@ -22,6 +22,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
+import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
 import java.util.*;
@@ -50,43 +51,103 @@ public abstract class StandaloneForeignSuite extends StandaloneTestSuite {
         for (Map.Entry<EC_Curve, List<EC_Key.Public>> e : curveList.entrySet()) {
             EC_Curve curve = e.getKey();
             List<EC_Key.Public> keys = e.getValue();
+            ECPublicKey singlePkey = ECUtil.toPublicKey(keys.get(0));
 
             KeyPairGenerator kpg = kpgIdent.getInstance(cfg.selected.getProvider());
             ECParameterSpec spec = curve.toSpec();
-            KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
+            ECGenParameterSpec namedSpec = new ECGenParameterSpec(curve.getId());
 
-            Test generateSuccess;
-            Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
-            runTest(generate);
-            KeyPair kp = kgt.getKeyPair();
-            if (kp != null) {
-                generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair.", generate);
-            } else {
-                // If KeyPair generation fails, try generating it on named curve instead.
-                ECGenParameterSpec namedSpec = new ECGenParameterSpec(curve.getId());
-                KeyGeneratorTestable kgtOnNamedCurve = new KeyGeneratorTestable(kpg, namedSpec);
-                Test generateOnNamedCurve = KeyGeneratorTest.expectError(kgtOnNamedCurve, Result.ExpectedValue.ANY);
-                runTest(generateOnNamedCurve);
-                kp = kgtOnNamedCurve.getKeyPair();
-                if (kp != null) {
-                    generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair (named curve).", generateOnNamedCurve);
-                } else {
-                    // If even the named curve generation fails, try generating with the default curve instead. Use this key only if it has the same domain parameters as our public key.
-                    KeyGeneratorTestable kgtOnDefaultCurve = new KeyGeneratorTestable(kpg, curve.getBits());
-                    Test generateOnDefaultCurve = KeyGeneratorTest.expectError(kgtOnDefaultCurve, Result.ExpectedValue.ANY);
-                    runTest(generateOnDefaultCurve);
-                    kp = kgtOnDefaultCurve.getKeyPair();
-                    if (kp != null && ECUtil.equalKeyPairParameters((ECPrivateKey) kp.getPrivate(), ECUtil.toPublicKey(keys.get(0)))) {
-                        generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair (default curve).", generateOnDefaultCurve);
-                    } else {
-                        Test generateNotEqual = CompoundTest.function(tests -> new Result(Result.Value.FAILURE, "Default parameters do not match the curve " + curve.getId()), "Default parameters do not match the curve " + curve.getId(), generateOnDefaultCurve);
-                        Test generateFail = CompoundTest.any(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() + ". " + "KeyAgreement tests will be skipped.", generate, generateOnNamedCurve, generateNotEqual);
-                        doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, this.capName + " curve test of " + curve.getId() + ".", generateFail));
-                        continue;
+            KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
+            KeyGeneratorTestable kgtOnNamedCurve = new KeyGeneratorTestable(kpg, namedSpec);
+            KeyGeneratorTestable kgtOnDefaultCurve = new KeyGeneratorTestable(kpg, curve.getBits());
+
+            // This is some nasty hacking...
+            KeyGeneratorTestable theKgt = new KeyGeneratorTestable(kpg) {
+                private KeyGeneratorTestable current = null;
+
+                @Override
+                public Exception getException() {
+                    if (current != null) {
+                        return current.getException();
+                    }
+                    return super.getException();
+                }
+
+                @Override
+                public KeyGeneratorStage getStage() {
+                    if (current != null) {
+                        return current.getStage();
+                    }
+                    return super.getStage();
+                }
+
+                @Override
+                public void run() {
+                    stage = KeyGeneratorStage.Init;
+                    kgt.run();
+                    if (kgt.ok()) {
+                        ok = true;
+                        error = false;
+                        current = kgt;
+                        hasRun = true;
+                        return;
+                    }
+                    kgtOnNamedCurve.run();
+                    if (kgtOnNamedCurve.ok()) {
+                        ok = true;
+                        error = false;
+                        current = kgtOnNamedCurve;
+                        hasRun = true;
+                        return;
+                    }
+                    kgtOnDefaultCurve.run();
+                    if (kgtOnDefaultCurve.ok() && ECUtil.equalKeyPairParameters((ECPrivateKey) kgtOnDefaultCurve.getKeyPair().getPrivate(), singlePkey)) {
+                        ok = true;
+                        error = false;
+                        current = kgtOnDefaultCurve;
+                        hasRun = true;
                     }
                 }
-            }
-            ECPrivateKey ecpriv = (ECPrivateKey) kp.getPrivate();
+
+                @Override
+                public KeyPair getKeyPair() {
+                    if (current != null) {
+                        return current.getKeyPair();
+                    }
+                    return super.getKeyPair();
+                }
+
+                @Override
+                public KeyPairGenerator getKpg() {
+                    if (current != null) {
+                        return current.getKpg();
+                    }
+                    return super.getKpg();
+                }
+
+                @Override
+                public AlgorithmParameterSpec getSpec() {
+                    if (current != null) {
+                        return current.getSpec();
+                    }
+                    return super.getSpec();
+                }
+
+                @Override
+                public int getKeysize() {
+                    if (current != null) {
+                        return current.getKeysize();
+                    }
+                    return super.getKeysize();
+                }
+            };
+
+            Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.SUCCESS);
+            Test generateOnNamedCurve = KeyGeneratorTest.expectError(kgtOnNamedCurve, Result.ExpectedValue.SUCCESS);
+            Test generateOnDefaultCurve = KeyGeneratorTest.expectError(kgtOnDefaultCurve, Result.ExpectedValue.SUCCESS);
+            Test generateFinal = KeyGeneratorTest.expectError(theKgt, Result.ExpectedValue.SUCCESS);
+            //generate, generateOnNamedCurve, generateOnDefaultCurve,
+            Test generateAny = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate a keypair on the standard curve.",  generateFinal);
 
             List<Test> allKaTests = new LinkedList<>();
             for (KeyAgreementIdent kaIdent : cfg.selected.getKAs()) {
@@ -95,7 +156,7 @@ public abstract class StandaloneForeignSuite extends StandaloneTestSuite {
                     for (EC_Key.Public pub : keys) {
                         ECPublicKey ecpub = ECUtil.toPublicKey(pub);
                         KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                        KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpriv, ecpub);
+                        KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpub, theKgt);
                         Test keyAgreement = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
                         specificKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " invalid key test.", keyAgreement));
                     }
@@ -106,7 +167,7 @@ public abstract class StandaloneForeignSuite extends StandaloneTestSuite {
                 allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified key agreement types is supported by the library."));
             }
             Test tests = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Do tests.", allKaTests.toArray(new Test[0]));
-            doTest(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, this.capName + " curve test of " + curve.getId() + ".", generateSuccess, tests));
+            doTest(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, this.capName + " curve test of " + curve.getId() + ".", generateAny, tests));
         }
     }
 }
