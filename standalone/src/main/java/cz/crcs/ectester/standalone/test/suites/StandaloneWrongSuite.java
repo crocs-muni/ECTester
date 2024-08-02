@@ -69,29 +69,18 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
             for (Map.Entry<String, EC_Curve> e : wrongCurves.entrySet()) {
 
                 EC_Curve curve = e.getValue();
-                ECParameterSpec spec = curve.toSpec();
+                ECParameterSpec spec = toCustomSpec(curve);
                 String type = curve.getField() == javacard.security.KeyPair.ALG_EC_FP ? "FP" : "F2M";
 
                 //try generating a keypair
                 KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
                 Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
-                runTest(generate);
-                KeyPair kp = kgt.getKeyPair();
-                if (kp == null) {
-                    Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() + ".", generate);
-                    doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Wrong curve test of " + curve.getBits()
-                            + "b " + type + ". " + curve.getDesc(), generateFail));
-                    continue;
-                }
-                Test generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair.", generate);
-                ECPrivateKey ecpriv = (ECPrivateKey) kp.getPrivate();
-                ECPublicKey ecpub = (ECPublicKey) kp.getPublic();
 
                 KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpriv, ecpub);
+                KeyAgreementTestable testable = new KeyAgreementTestable(ka, kgt, kgt);
                 Test ecdh = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
-                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Wrong curve test of " + curve.getBits()
-                        + "b " + type + ". " + curve.getDesc(), generateSuccess, ecdh));
+                doTest(CompoundTest.function(CompoundTest.EXPECT_ALL_SUCCESS, CompoundTest.RUN_ALL_IF_FIRST, "Wrong curve test of " + curve.getBits()
+                        + "b " + type + ". " + curve.getDesc(), generate, ecdh));
             }
         }
 
@@ -225,7 +214,7 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
                     ByteUtil.shortToBytes((short) 0),
                     ByteUtil.shortToBytes((short) 0)};
             curve.setParam(EC_Consts.PARAMETER_F2M, coeffBytes);
-            Test coeff0 = ecdhTest(toCustomSpec(curve), "ECDH with wrong field polynomial: x^");
+            Test coeff0 = ecdhTest(toCustomSpec(curve), "ECDH with wrong field polynomial: 0");
 
             short e1 = (short) (2 * bits);
             short e2 = (short) (3 * bits);
@@ -246,19 +235,12 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
         //generate KeyPair
         KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
         Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.FAILURE);
-        runTest(generate);
-        KeyPair kp = kgt.getKeyPair();
-        if (kp == null) {
-            return CompoundTest.all(Result.ExpectedValue.SUCCESS, desc, generate);
-        }
-        ECPublicKey pub = (ECPublicKey) kp.getPublic();
-        ECPrivateKey priv = (ECPrivateKey) kp.getPrivate();
 
         //perform ECDH
         KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-        KeyAgreementTestable testable = new KeyAgreementTestable(ka, priv, pub);
+        KeyAgreementTestable testable = new KeyAgreementTestable(ka, kgt, kgt);
         Test ecdh = KeyAgreementTest.expect(testable, Result.ExpectedValue.FAILURE);
-        return CompoundTest.all(Result.ExpectedValue.SUCCESS, desc, generate, ecdh);
+        return CompoundTest.function(CompoundTest.EXPECT_ALL_SUCCESS, CompoundTest.RUN_ALL_IF_FIRST, desc, generate, ecdh);
     }
 
     //constructs ECParameterSpec from EC_Curve even if the parameters of the curve are wrong

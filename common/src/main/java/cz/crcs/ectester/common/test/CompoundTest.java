@@ -38,7 +38,7 @@ public class CompoundTest extends Test implements Cloneable {
 
     public final static Consumer<Test[]> RUN_ALL_IF_FIRST = tests -> {
         tests[0].run();
-        if (tests[0].getResult().getValue().equals(Result.Value.SUCCESS)) {
+        if (tests[0].getResult().getValue().equals(Result.Value.SUCCESS) || tests[0].getResult().getValue().equals(Result.Value.UXSUCCESS)) {
             for (int i = 1; i < tests.length; i++) {
                 tests[i].run();
             }
