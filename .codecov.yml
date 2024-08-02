@@ -1,5 +1,5 @@
 comment:
-  layout: "condensed_header, condensed_diff, condensed_flags, condensed_components"  # show component info in the PR comment
+  layout: "condensed_header, condensed_files, diff, components, condensed_footer"  # show component info in the PR comment
 
 component_management:
   default_rules:  # default rules that will be inherited by all components
