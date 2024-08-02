@@ -33,12 +33,11 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_createP
     jmethodID init = env->GetMethodID(local_provider_class, "<init>", "(Ljava/lang/String;DLjava/lang/String;)V");
 
     const char* info_str = Botan::version_cstr();
-    const char* v_str = Botan::short_version_cstr();
     std::string name_str = Botan::short_version_string();
     name_str.insert(0, "Botan ");
 
     jstring name = env->NewStringUTF(name_str.c_str());
-    double version = strtod(v_str, nullptr);
+    double version = BOTAN_VERSION_MAJOR + ((double)BOTAN_VERSION_MINOR/100) + ((double)BOTAN_VERSION_PATCH/1000);
     jstring info = env->NewStringUTF(info_str);
 
     return env->NewObject(provider_class, init, name, version, info);

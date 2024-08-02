@@ -5,7 +5,9 @@
 #include "native.h"
 #include <stdio.h>
 #include <string.h>
+#include <locale.h>
 #include <tomcrypt.h>
+
 
 static prng_state ltc_prng;
 static jclass provider_class;
@@ -18,7 +20,9 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_crea
     jmethodID init = (*env)->GetMethodID(env, local_provider_class, "<init>", "(Ljava/lang/String;DLjava/lang/String;)V");
 
     jstring name =  (*env)->NewStringUTF(env, "libtomcrypt " SCRYPT);
+    char *locale = setlocale(LC_NUMERIC, "C");
     double version = strtod(SCRYPT, NULL);
+    setlocale(LC_NUMERIC, locale);
 
     return (*env)->NewObject(env, provider_class, init, name, version, name);
 }

@@ -28,7 +28,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_creat
     jmethodID init = (*env)->GetMethodID(env, local_provider_class, "<init>", "(Ljava/lang/String;DLjava/lang/String;)V");
 
     jstring name =  (*env)->NewStringUTF(env, MBEDTLS_VERSION_STRING_FULL);
-    double version = MBEDTLS_VERSION_MAJOR + (MBEDTLS_VERSION_MINOR/10) + (MBEDTLS_VERSION_PATCH/100);
+    double version = MBEDTLS_VERSION_MAJOR + ((double)MBEDTLS_VERSION_MINOR/10) + ((double)MBEDTLS_VERSION_PATCH/100);
 
     return (*env)->NewObject(env, provider_class, init, name, version, name);
 }
