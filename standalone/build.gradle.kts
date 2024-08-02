@@ -62,9 +62,12 @@ tasks.named<Test>("test") {
     )
 }
 
-tasks.jacocoTestReport {
+tasks.named<JacocoReport>("testCodeCoverageReport") {
     reports {
+        html.required = true
+        html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/test/html"))
         xml.required = true
+        xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
     }
 }
 
