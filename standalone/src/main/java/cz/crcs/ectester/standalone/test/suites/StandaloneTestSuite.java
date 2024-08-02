@@ -40,7 +40,7 @@ public abstract class StandaloneTestSuite extends TestSuite {
             if (identOpt.isPresent()) {
                 ident = identOpt.get();
             } else {
-                System.err.printf("The default %s algorithm type of \"%s\" was not found. Need to specify a type.", identName, defaultChoice);
+                System.err.printf("The default %s algorithm type of \"%s\" (default) was not found. Need to specify a type.", identName, defaultChoice);
                 return null;
             }
         } else {

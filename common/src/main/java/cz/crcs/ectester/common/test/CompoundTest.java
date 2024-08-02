@@ -26,9 +26,22 @@ public class CompoundTest extends Test implements Cloneable {
         return new Result(Result.Value.SUCCESS, "All sub-tests had the expected result.");
     };
 
+    public final static Function<Test[], Result> EXPECT_ALL_SUCCESS = tests -> EXPECT_ALL.apply(Result.ExpectedValue.SUCCESS, tests);
+    public final static Function<Test[], Result> EXPECT_ALL_FAILURE = tests -> EXPECT_ALL.apply(Result.ExpectedValue.FAILURE, tests);
+    public final static Function<Test[], Result> EXPECT_ALL_ANY = tests -> EXPECT_ALL.apply(Result.ExpectedValue.ANY, tests);
+
     public final static Consumer<Test[]> RUN_ALL = tests -> {
         for (Test t : tests) {
             t.run();
+        }
+    };
+
+    public final static Consumer<Test[]> RUN_ALL_IF_FIRST = tests -> {
+        tests[0].run();
+        if (tests[0].getResult().getValue().equals(Result.Value.SUCCESS)) {
+            for (int i = 1; i < tests.length; i++) {
+                tests[i].run();
+            }
         }
     };
 

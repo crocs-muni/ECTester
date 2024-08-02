@@ -78,14 +78,7 @@ public class StandaloneCofactorSuite extends StandaloneTestSuite {
                 allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified key agreement types is supported by the library."));
             }
             Test kaTests = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Do tests.", allKaTests.toArray(new Test[0]));
-            Function<Test[], Result> callback = (tests) -> CompoundTest.EXPECT_ALL.apply(Result.ExpectedValue.SUCCESS, tests);
-            Consumer<Test[]> runCallback = (tests) -> {
-                tests[0].run();
-                if (tests[0].getResult().getValue().equals(Result.Value.SUCCESS)) {
-                    tests[1].run();
-                }
-            };
-            doTest(CompoundTest.function(callback, runCallback, "Cofactor test of " + curve.getId() + ".", generate, kaTests));
+            doTest(CompoundTest.function(CompoundTest.EXPECT_ALL_SUCCESS, CompoundTest.RUN_ALL_IF_FIRST, "Cofactor test of " + curve.getId() + ".", generate, kaTests));
         }
     }
 }
