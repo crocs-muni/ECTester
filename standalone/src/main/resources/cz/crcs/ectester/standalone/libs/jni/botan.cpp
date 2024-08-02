@@ -496,11 +496,16 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
         emsa = "EMSA1(SHA-512)";
     }
 
+    Botan::Signature_Format sigformat = Botan::Signature_Format::DER_SEQUENCE;
+    if (type_str.find("ECKCDSA") != std::string::npos) {
+        sigformat = Botan::Signature_Format::IEEE_1363;
+    }
+
     jsize data_length = env->GetArrayLength(data);
     jbyte *data_bytes = env->GetByteArrayElements(data, nullptr);
     std::vector<uint8_t> sig;
     try {
-        Botan::PK_Signer signer(*skey, rng, emsa, Botan::DER_SEQUENCE);
+        Botan::PK_Signer signer(*skey, rng, emsa, sigformat);
 
         native_timing_start();
         sig = signer.sign_message((uint8_t*) data_bytes, data_length, rng);
@@ -581,6 +586,11 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
         emsa = "EMSA1(SHA-512)";
     }
 
+    Botan::Signature_Format sigformat = Botan::Signature_Format::DER_SEQUENCE;
+    if (type_str.find("ECKCDSA") != std::string::npos) {
+        sigformat = Botan::Signature_Format::IEEE_1363;
+    }
+
     jsize data_length = env->GetArrayLength(data);
     jsize sig_length = env->GetArrayLength(signature);
     jbyte *data_bytes = env->GetByteArrayElements(data, nullptr);
@@ -589,7 +599,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     bool result;
 
     try {
-        Botan::PK_Verifier verifier(*pkey, emsa, Botan::DER_SEQUENCE);
+        Botan::PK_Verifier verifier(*pkey, emsa, sigformat);
 
         native_timing_start();
         result = verifier.verify_message((uint8_t*)data_bytes, data_length, (uint8_t*)sig_bytes, sig_length);

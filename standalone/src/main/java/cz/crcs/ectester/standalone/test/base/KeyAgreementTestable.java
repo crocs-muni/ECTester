@@ -66,13 +66,44 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
     }
 
     public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable privKgt, KeyGeneratorTestable pubKgt, ECParameterSpec spec) {
-        this(ka, (ECPrivateKey) null, null, spec);
+        this(ka, null, (ECPublicKey) null, spec);
         this.kgtPrivate = privKgt;
         this.kgtPublic = pubKgt;
     }
 
     public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable privKgt, KeyGeneratorTestable pubKgt, ECParameterSpec spec, String keyAlgo) {
         this(ka, privKgt, pubKgt, spec);
+        this.keyAlgo = keyAlgo;
+    }
+
+    public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable kgt, ECPrivateKey privateKey) {
+        this(ka, privateKey, null, (ECParameterSpec) null);
+        this.kgtPublic = kgt;
+    }
+
+    public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable kgt, ECPrivateKey privateKey, String keyAlgo) {
+        this(ka, kgt, privateKey, (ECParameterSpec) null);
+        this.keyAlgo = keyAlgo;
+    }
+
+    public KeyAgreementTestable(KeyAgreement ka, ECPublicKey publicKey, KeyGeneratorTestable kgt) {
+        this(ka, null, publicKey, (ECParameterSpec) null);
+        this.kgtPrivate = kgt;
+    }
+
+    public KeyAgreementTestable(KeyAgreement ka, ECPublicKey publicKey, KeyGeneratorTestable kgt, String keyAlgo) {
+        this(ka, publicKey, kgt, (ECParameterSpec) null);
+        this.keyAlgo = keyAlgo;
+    }
+
+    public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable privKgt, KeyGeneratorTestable pubKgt) {
+        this(ka, null, (ECPublicKey) null, (ECParameterSpec) null);
+        this.kgtPrivate = privKgt;
+        this.kgtPublic = pubKgt;
+    }
+
+    public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable privKgt, KeyGeneratorTestable pubKgt, String keyAlgo) {
+        this(ka, privKgt, pubKgt, (ECParameterSpec) null);
         this.keyAlgo = keyAlgo;
     }
 

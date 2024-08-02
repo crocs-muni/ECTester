@@ -26,24 +26,36 @@ public class PerformanceTest extends SimpleTest<CommandTestable> {
     private int count;
     private String desc;
 
+    private PerformanceTest(CardMngr cardManager, CommandTestable testable, TestCallback<CommandTestable> callback, int count, String desc) {
+        super(testable, callback);
+        this.cardManager = cardManager;
+        this.count = count;
+        this.desc = desc;
+    }
+
     private PerformanceTest(CardMngr cardManager, CommandTestable testable, int count, String desc) {
-        super(testable, new TestCallback<CommandTestable>() {
+        this(cardManager, testable, new TestCallback<CommandTestable>() {
             @Override
             public Result apply(CommandTestable testable) {
                 return new Result(Result.Value.SUCCESS);
             }
-        });
-        this.cardManager = cardManager;
-        this.count = count;
-        this.desc = desc;
+        }, count, desc);
     }
 
     public static PerformanceTest repeat(CardMngr cardManager, Command cmd, int count) {
         return new PerformanceTest(cardManager, new CommandTestable(cmd), count, null);
     }
 
+    public static PerformanceTest repeat(CardMngr cardManager, CommandTestable testable, int count) {
+        return new PerformanceTest(cardManager, testable, count, null);
+    }
+
     public static PerformanceTest repeat(CardMngr cardManager, String desc, Command cmd, int count) {
         return new PerformanceTest(cardManager, new CommandTestable(cmd), count, desc);
+    }
+
+    public static PerformanceTest repeat(CardMngr cardManager, String desc, CommandTestable testable, int count) {
+        return new PerformanceTest(cardManager, testable, count, desc);
     }
 
     @Override

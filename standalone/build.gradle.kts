@@ -1,6 +1,7 @@
 plugins {
     application
     jacoco
+    id("jacoco-report-aggregation")
     id("com.google.osdetector") version "1.7.3"
     id("com.adarshr.test-logger") version "4.0.0"
 }
@@ -42,7 +43,7 @@ tasks.named<Test>("test") {
     ignoreFailures = true
     useJUnitPlatform()
     // Report is always generated after tests run
-    finalizedBy(tasks.jacocoTestReport)
+    finalizedBy(tasks.named<JacocoReport>("testCodeCoverageReport"))
 
     if (JavaVersion.current() > JavaVersion.VERSION_1_8 && JavaVersion.current() < JavaVersion.VERSION_22) {
         jvmArgs("--add-exports", "jdk.crypto.ec/sun.security.ec=ALL-UNNAMED"
@@ -61,9 +62,12 @@ tasks.named<Test>("test") {
     )
 }
 
-tasks.jacocoTestReport {
+tasks.named<JacocoReport>("testCodeCoverageReport") {
     reports {
+        html.required = true
+        html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/test/html"))
         xml.required = true
+        xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
     }
 }
 

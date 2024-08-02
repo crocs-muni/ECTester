@@ -43,13 +43,13 @@ public class KeyGeneratorTest extends SimpleTest<KeyGeneratorTestable> {
     public String getDescription() {
         String params = "";
         if (testable.getKeysize() != 0) {
-            params = String.format("(default %d-bit curve)", testable.getKeysize());
+            params = String.format("on (default %d-bit curve)", testable.getKeysize());
         } else if (testable.getSpec() instanceof ECGenParameterSpec) {
             String name = ((ECGenParameterSpec)testable.getSpec()).getName();
-            params = String.format("(%s)", name);
+            params = String.format("on (%s)", name);
         } else if (testable.getSpec() instanceof ECParameterSpec) {
-            params = "(custom curve)";
+            params = "on (custom curve)";
         }
-        return "KeyPairGenerator " + testable.getKpg().getAlgorithm() + " on " + params;
+        return "KeyPairGenerator " + testable.getKpg().getAlgorithm() + " " + params;
     }
 }

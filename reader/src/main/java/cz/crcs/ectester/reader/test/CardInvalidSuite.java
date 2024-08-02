@@ -40,11 +40,7 @@ public class CardInvalidSuite extends CardTestSuite {
             EC_Curve curve = e.getKey();
             List<EC_Key.Public> keys = e.getValue();
 
-            Test allocate = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS));
-            if (!allocate.ok()) {
-                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "No support for " + curve.getId() + ".", allocate));
-                continue;
-            }
+            Test allocate = CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, curve.getBits(), curve.getField()), ExpectedValue.SUCCESS);
             Test set = CommandTest.expect(new Command.Set(this.card, CardConsts.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), ExpectedValue.SUCCESS);
             Test generate = CommandTest.expect(new Command.Generate(this.card, CardConsts.KEYPAIR_LOCAL), ExpectedValue.SUCCESS);
 

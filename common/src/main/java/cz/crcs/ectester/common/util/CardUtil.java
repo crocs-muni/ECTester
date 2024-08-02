@@ -456,6 +456,23 @@ public class CardUtil {
         }
     }
 
+    public static String getSigTypeAlgoString(byte sigType) {
+        switch (sigType) {
+            case EC_Consts.Signature_ALG_ECDSA_SHA:
+                return "SHA1withECDSA";
+            case EC_Consts.Signature_ALG_ECDSA_SHA_224:
+                return "SHA224withECDSA";
+            case EC_Consts.Signature_ALG_ECDSA_SHA_256:
+                return "SHA256withECDSA";
+            case EC_Consts.Signature_ALG_ECDSA_SHA_384:
+                return "SHA384withECDSA";
+            case EC_Consts.Signature_ALG_ECDSA_SHA_512:
+                return "SHA512withECDSA";
+            default:
+                return "unknown";
+        }
+    }
+
     public static byte getSigType(String sigTypeString) {
         switch (sigTypeString) {
             case "ECDSA_SHA":

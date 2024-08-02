@@ -51,53 +51,13 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
         String kaAlgo = cli.getOptionValue("test.ka-type");
         String kpgAlgo = cli.getOptionValue("test.kpg-type");
 
-        if (kaAlgo == null) {
-            // try ECDH, if not, fail with: need to specify ka algo.
-            Optional<KeyAgreementIdent> kaIdentOpt = cfg.selected.getKAs().stream()
-                    .filter((ident) -> ident.contains("ECDH"))
-                    .findFirst();
-            if (kaIdentOpt.isPresent()) {
-                kaIdent = kaIdentOpt.get();
-            } else {
-                System.err.println("The default KeyAgreement algorithm type of \"ECDH\" was not found. Need to specify a type.");
-                return;
-            }
-        } else {
-            // try the specified, if not, fail with: wrong ka algo/not found.
-            Optional<KeyAgreementIdent> kaIdentOpt = cfg.selected.getKAs().stream()
-                    .filter((ident) -> ident.contains(kaAlgo))
-                    .findFirst();
-            if (kaIdentOpt.isPresent()) {
-                kaIdent = kaIdentOpt.get();
-            } else {
-                System.err.println("The KeyAgreement algorithm type of \"" + kaAlgo + "\" was not found.");
-                return;
-            }
+        kaIdent = getKeyAgreementIdent(kaAlgo);
+        if (kaIdent == null) {
+            return;
         }
-
-        KeyPairGeneratorIdent kpgIdent;
-        if (kpgAlgo == null) {
-            // try EC, if not, fail with: need to specify kpg algo.
-            Optional<KeyPairGeneratorIdent> kpgIdentOpt = cfg.selected.getKPGs().stream()
-                    .filter((ident) -> ident.contains("EC"))
-                    .findFirst();
-            if (kpgIdentOpt.isPresent()) {
-                kpgIdent = kpgIdentOpt.get();
-            } else {
-                System.err.println("The default KeyPairGenerator algorithm type of \"EC\" was not found. Need to specify a type.");
-                return;
-            }
-        } else {
-            // try the specified, if not, fail with: wrong kpg algo/not found.
-            Optional<KeyPairGeneratorIdent> kpgIdentOpt = cfg.selected.getKPGs().stream()
-                    .filter((ident) -> ident.contains(kpgAlgo))
-                    .findFirst();
-            if (kpgIdentOpt.isPresent()) {
-                kpgIdent = kpgIdentOpt.get();
-            } else {
-                System.err.println("The KeyPairGenerator algorithm type of \"" + kpgAlgo + "\" was not found.");
-                return;
-            }
+        KeyPairGeneratorIdent kpgIdent = getKeyPairGeneratorIdent(kpgAlgo);
+        if (kpgIdent == null) {
+            return;
         }
         KeyPairGenerator kpg = kpgIdent.getInstance(cfg.selected.getProvider());
 
@@ -176,20 +136,10 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
             //generate KeyPair
             KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
             Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
-            runTest(generate);
-            KeyPair kp = kgt.getKeyPair();
-            if (kp == null) {
-                Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() +
-                        ". " + " Other tests will be skipped.", generate);
-                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with edge-case private key values over" + curve.getId() + ".", generateFail));
-                continue;
-            }
-            Test generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate KeyPair.", generate);
-            ECPublicKey ecpub = (ECPublicKey) kp.getPublic();
 
             //perform ECDH tests
-            Test zeroS = ecdhTest(ecpub, BigInteger.ZERO, spec, "ECDH with S = 0.", Result.ExpectedValue.FAILURE);
-            Test oneS = ecdhTest(ecpub, BigInteger.ONE, spec, "ECDH with S = 1.", Result.ExpectedValue.FAILURE);
+            Test zeroS = ecdhTest(kgt, BigInteger.ZERO, spec, "ECDH with S = 0.", Result.ExpectedValue.FAILURE);
+            Test oneS = ecdhTest(kgt, BigInteger.ONE, spec, "ECDH with S = 1.", Result.ExpectedValue.FAILURE);
 
             byte[] rParam = curve.getParam(EC_Consts.PARAMETER_R)[0];
             BigInteger R = new BigInteger(1, rParam);
@@ -208,14 +158,14 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
             BigInteger rm1 = R.subtract(BigInteger.ONE);
             BigInteger rp1 = R.add(BigInteger.ONE);
 
-            Test alternateS = ecdhTest(ecpub, alternate, spec, "ECDH with S = 101010101...01010.", Result.ExpectedValue.SUCCESS);
-            Test alternateOtherS = ecdhTest(ecpub, alternateOther, spec, "ECDH with S = 010101010...10101.", Result.ExpectedValue.SUCCESS);
-            Test fullS = ecdhTest(ecpub, full, spec, "ECDH with S = 111111111...11111 (but < r).", Result.ExpectedValue.SUCCESS);
-            Test smallerS = ecdhTest(ecpub, smaller, spec, "ECDH with S < r.", Result.ExpectedValue.SUCCESS);
-            Test exactS = ecdhTest(ecpub, R, spec, "ECDH with S = r.", Result.ExpectedValue.FAILURE);
-            Test largeS = ecdhTest(ecpub, larger, spec, "ECDH with S > r.", Result.ExpectedValue.ANY);
-            Test rm1S = ecdhTest(ecpub, rm1, spec, "ECDH with S = r - 1.", Result.ExpectedValue.SUCCESS);
-            Test rp1S = ecdhTest(ecpub, rp1, spec, "ECDH with S = r + 1.", Result.ExpectedValue.ANY);
+            Test alternateS = ecdhTest(kgt, alternate, spec, "ECDH with S = 101010101...01010.", Result.ExpectedValue.SUCCESS);
+            Test alternateOtherS = ecdhTest(kgt, alternateOther, spec, "ECDH with S = 010101010...10101.", Result.ExpectedValue.SUCCESS);
+            Test fullS = ecdhTest(kgt, full, spec, "ECDH with S = 111111111...11111 (but < r).", Result.ExpectedValue.SUCCESS);
+            Test smallerS = ecdhTest(kgt, smaller, spec, "ECDH with S < r.", Result.ExpectedValue.SUCCESS);
+            Test exactS = ecdhTest(kgt, R, spec, "ECDH with S = r.", Result.ExpectedValue.FAILURE);
+            Test largeS = ecdhTest(kgt, larger, spec, "ECDH with S > r.", Result.ExpectedValue.ANY);
+            Test rm1S = ecdhTest(kgt, rm1, spec, "ECDH with S = r - 1.", Result.ExpectedValue.SUCCESS);
+            Test rp1S = ecdhTest(kgt, rp1, spec, "ECDH with S = r + 1.", Result.ExpectedValue.ANY);
 
             byte[] k = curve.getParam(EC_Consts.PARAMETER_K)[0];
             BigInteger K = new BigInteger(1, k);
@@ -225,12 +175,12 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
 
             Result.ExpectedValue kExpected = K.equals(BigInteger.ONE) ? Result.ExpectedValue.SUCCESS : Result.ExpectedValue.FAILURE;
 
-            Test krS /*ONE!*/ = ecdhTest(ecpub, kr, spec, "ECDH with S = k * r.", Result.ExpectedValue.FAILURE);
-            Test krm1S = ecdhTest(ecpub, krm1, spec, "ECDH with S = (k * r) - 1.", kExpected);
-            Test krp1S = ecdhTest(ecpub, krp1, spec, "ECDH with S = (k * r) + 1.", Result.ExpectedValue.ANY);
+            Test krS /*ONE!*/ = ecdhTest(kgt, kr, spec, "ECDH with S = k * r.", Result.ExpectedValue.FAILURE);
+            Test krm1S = ecdhTest(kgt, krm1, spec, "ECDH with S = (k * r) - 1.", kExpected);
+            Test krp1S = ecdhTest(kgt, krp1, spec, "ECDH with S = (k * r) + 1.", Result.ExpectedValue.ANY);
 
-            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with edge-case private key values over " + curve.getId() + ".",
-                    generateSuccess, zeroS, oneS, alternateS, alternateOtherS, fullS, smallerS, exactS, largeS, rm1S, rp1S, krS, krm1S, krp1S));
+            doTest(CompoundTest.function(CompoundTest.EXPECT_ALL_SUCCESS, CompoundTest.RUN_ALL_IF_FIRST, "Tests with edge-case private key values over " + curve.getId() + ".",
+                    generate, zeroS, oneS, alternateS, alternateOtherS, fullS, smallerS, exactS, largeS, rm1S, rp1S, krS, krm1S, krp1S));
         }
 
         EC_Curve secp160r1 = EC_Store.getInstance().getObject(EC_Curve.class, "secg/secp160r1");
@@ -265,29 +215,19 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
         //generate KeyPair
         KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
         Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
-        runTest(generate);
-        KeyPair kp = kgt.getKeyPair();
-        if (kp == null) {
-            Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on "
-                    + secp160r1.getBits() + "b secp160r1." + " Other tests will be skipped.", generate);
-            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Test private key values near zero, near p and near/larger than the order on" + secp160r1.getId() + ".", generateFail));
-            return;
-        }
-        Test generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate KeyPair.", generate);
-        ECPublicKey ecpub = (ECPublicKey) kp.getPublic();
 
         //perform ECDH tests
         Test[] zeroTests = new Test[n];
         int i = 0;
         for (BigInteger nearZero : zeros) {
-            zeroTests[i++] = ecdhTest(ecpub, nearZero, spec, nearZero.toString(16), Result.ExpectedValue.SUCCESS);
+            zeroTests[i++] = ecdhTest(kgt, nearZero, spec, nearZero.toString(16), Result.ExpectedValue.SUCCESS);
         }
         Test zeroTest = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Near zero.", zeroTests);
 
         Test[] pTests = new Test[n];
         i = 0;
         for (BigInteger nearP : ps) {
-            pTests[i++] = ecdhTest(ecpub, nearP, spec, nearP.toString(16) + (nearP.compareTo(p) > 0 ? " (>p)" : " (<=p)"), Result.ExpectedValue.SUCCESS);
+            pTests[i++] = ecdhTest(kgt, nearP, spec, nearP.toString(16) + (nearP.compareTo(p) > 0 ? " (>p)" : " (<=p)"), Result.ExpectedValue.SUCCESS);
         }
         Test pTest = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Near p.", pTests);
 
@@ -295,19 +235,19 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
         i = 0;
         for (BigInteger nearR : rs) {
             if (nearR.compareTo(r) >= 0) {
-                rTests[i++] = ecdhTest(ecpub, nearR, spec, nearR.toString(16) + " (>=r)", Result.ExpectedValue.FAILURE);
+                rTests[i++] = ecdhTest(kgt, nearR, spec, nearR.toString(16) + " (>=r)", Result.ExpectedValue.FAILURE);
             } else {
-                rTests[i++] = ecdhTest(ecpub, nearR, spec, nearR.toString(16) + " (<r)", Result.ExpectedValue.SUCCESS);
+                rTests[i++] = ecdhTest(kgt, nearR, spec, nearR.toString(16) + " (<r)", Result.ExpectedValue.SUCCESS);
             }
         }
         Test rTest = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Near r.", rTests);
-        doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Test private key values near zero, near p and near/larger than the order.", generateSuccess, zeroTest, pTest, rTest));
+        doTest(CompoundTest.function(CompoundTest.EXPECT_ALL_SUCCESS, CompoundTest.RUN_ALL_IF_FIRST, "Test private key values near zero, near p and near/larger than the order.", generate, zeroTest, pTest, rTest));
     }
 
-    private Test ecdhTest(ECPublicKey pub, BigInteger SParam, ECParameterSpec spec, String desc, Result.ExpectedValue expect) throws NoSuchAlgorithmException {
+    private Test ecdhTest(KeyGeneratorTestable kgt, BigInteger SParam, ECParameterSpec spec, String desc, Result.ExpectedValue expect) throws NoSuchAlgorithmException {
         ECPrivateKey priv = new RawECPrivateKey(SParam, spec);
         KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-        KeyAgreementTestable testable = new KeyAgreementTestable(ka, priv, pub);
+        KeyAgreementTestable testable = new KeyAgreementTestable(ka, kgt, priv);
         return CompoundTest.all(Result.ExpectedValue.SUCCESS, desc, KeyAgreementTest.expectError(testable, expect));
     }
 }

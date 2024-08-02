@@ -81,6 +81,12 @@ jobs:
           path: |
             reader/build/libs/ECTesterReader.jar
 
+      - name: Upload code coverage
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: crocs-muni/ECTester
+
   standalone:
     runs-on: ubuntu-latest
     permissions:

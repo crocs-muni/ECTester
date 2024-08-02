@@ -50,54 +50,15 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
         String kaAlgo = cli.getOptionValue("test.ka-type");
         boolean skip = cli.getArg(1).equalsIgnoreCase("-skip");
 
-        KeyPairGeneratorIdent kpgIdent;
-        if (kpgAlgo == null) {
-            // try EC, if not, fail with: need to specify kpg algo.
-            Optional<KeyPairGeneratorIdent> kpgIdentOpt = cfg.selected.getKPGs().stream()
-                    .filter((ident) -> ident.contains("EC"))
-                    .findFirst();
-            if (kpgIdentOpt.isPresent()) {
-                kpgIdent = kpgIdentOpt.get();
-            } else {
-                System.err.println("The default KeyPairGenerator algorithm type of \"EC\" was not found. Need to specify a type.");
-                return;
-            }
-        } else {
-            // try the specified, if not, fail with: wrong kpg algo/not found.
-            Optional<KeyPairGeneratorIdent> kpgIdentOpt = cfg.selected.getKPGs().stream()
-                    .filter((ident) -> ident.contains(kpgAlgo))
-                    .findFirst();
-            if (kpgIdentOpt.isPresent()) {
-                kpgIdent = kpgIdentOpt.get();
-            } else {
-                System.err.println("The KeyPairGenerator algorithm type of \"" + kpgAlgo + "\" was not found.");
-                return;
-            }
+        KeyPairGeneratorIdent kpgIdent = getKeyPairGeneratorIdent(kpgAlgo);
+        if (kpgIdent == null) {
+            return;
         }
         kpg = kpgIdent.getInstance(cfg.selected.getProvider());
 
-        if (kaAlgo == null) {
-            // try ECDH, if not, fail with: need to specify ka algo.
-            Optional<KeyAgreementIdent> kaIdentOpt = cfg.selected.getKAs().stream()
-                    .filter((ident) -> ident.contains("ECDH"))
-                    .findFirst();
-            if (kaIdentOpt.isPresent()) {
-                kaIdent = kaIdentOpt.get();
-            } else {
-                System.err.println("The default KeyAgreement algorithm type of \"ECDH\" was not found. Need to specify a type.");
-                return;
-            }
-        } else {
-            // try the specified, if not, fail with: wrong ka algo/not found.
-            Optional<KeyAgreementIdent> kaIdentOpt = cfg.selected.getKAs().stream()
-                    .filter((ident) -> ident.contains(kaAlgo))
-                    .findFirst();
-            if (kaIdentOpt.isPresent()) {
-                kaIdent = kaIdentOpt.get();
-            } else {
-                System.err.println("The KeyAgreement algorithm type of \"" + kaAlgo + "\" was not found.");
-                return;
-            }
+        kaIdent = getKeyAgreementIdent(kaAlgo);
+        if (kaIdent == null) {
+            return;
         }
 
         /* Just do the default run on the wrong curves.
@@ -108,29 +69,18 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
             for (Map.Entry<String, EC_Curve> e : wrongCurves.entrySet()) {
 
                 EC_Curve curve = e.getValue();
-                ECParameterSpec spec = curve.toSpec();
+                ECParameterSpec spec = toCustomSpec(curve);
                 String type = curve.getField() == javacard.security.KeyPair.ALG_EC_FP ? "FP" : "F2M";
 
                 //try generating a keypair
                 KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
                 Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
-                runTest(generate);
-                KeyPair kp = kgt.getKeyPair();
-                if (kp == null) {
-                    Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() + ".", generate);
-                    doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Wrong curve test of " + curve.getBits()
-                            + "b " + type + ". " + curve.getDesc(), generateFail));
-                    continue;
-                }
-                Test generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair.", generate);
-                ECPrivateKey ecpriv = (ECPrivateKey) kp.getPrivate();
-                ECPublicKey ecpub = (ECPublicKey) kp.getPublic();
 
                 KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpriv, ecpub);
+                KeyAgreementTestable testable = new KeyAgreementTestable(ka, kgt, kgt);
                 Test ecdh = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
-                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Wrong curve test of " + curve.getBits()
-                        + "b " + type + ". " + curve.getDesc(), generateSuccess, ecdh));
+                doTest(CompoundTest.function(CompoundTest.EXPECT_ALL_SUCCESS, CompoundTest.RUN_ALL_IF_FIRST, "Wrong curve test of " + curve.getBits()
+                        + "b " + type + ". " + curve.getDesc(), generate, ecdh));
             }
         }
 
@@ -264,7 +214,7 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
                     ByteUtil.shortToBytes((short) 0),
                     ByteUtil.shortToBytes((short) 0)};
             curve.setParam(EC_Consts.PARAMETER_F2M, coeffBytes);
-            Test coeff0 = ecdhTest(toCustomSpec(curve), "ECDH with wrong field polynomial: x^");
+            Test coeff0 = ecdhTest(toCustomSpec(curve), "ECDH with wrong field polynomial: 0");
 
             short e1 = (short) (2 * bits);
             short e2 = (short) (3 * bits);
@@ -285,50 +235,17 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
         //generate KeyPair
         KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
         Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.FAILURE);
-        runTest(generate);
-        KeyPair kp = kgt.getKeyPair();
-        if (kp == null) {
-            return CompoundTest.all(Result.ExpectedValue.SUCCESS, desc, generate);
-        }
-        ECPublicKey pub = (ECPublicKey) kp.getPublic();
-        ECPrivateKey priv = (ECPrivateKey) kp.getPrivate();
 
         //perform ECDH
         KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-        KeyAgreementTestable testable = new KeyAgreementTestable(ka, priv, pub);
+        KeyAgreementTestable testable = new KeyAgreementTestable(ka, kgt, kgt);
         Test ecdh = KeyAgreementTest.expect(testable, Result.ExpectedValue.FAILURE);
-        return CompoundTest.all(Result.ExpectedValue.SUCCESS, desc, generate, ecdh);
-    }
-
-    //constructs EllipticCurve from EC_Curve even if the parameters of the curve are wrong
-    private EllipticCurve toCustomCurve(EC_Curve curve) {
-        ECField field;
-        if (curve.getField() == javacard.security.KeyPair.ALG_EC_FP) {
-            field = new CustomECFieldFp(new BigInteger(1, curve.getData(0)));
-        } else {
-            byte[][] fieldData = curve.getParam(EC_Consts.PARAMETER_F2M);
-            int m = ByteUtil.getShort(fieldData[0], 0);
-            int e1 = ByteUtil.getShort(fieldData[1], 0);
-            int e2 = ByteUtil.getShort(fieldData[2], 0);
-            int e3 = ByteUtil.getShort(fieldData[3], 0);
-            int[] powers;
-            if (e2 == 0 && e3 == 0) {
-                powers = new int[]{e1};
-            } else {
-                powers = new int[]{e1, e2, e3};
-            }
-            field = new CustomECFieldF2m(m, powers);
-        }
-
-        BigInteger a = new BigInteger(1, curve.getParam(EC_Consts.PARAMETER_A)[0]);
-        BigInteger b = new BigInteger(1, curve.getParam(EC_Consts.PARAMETER_B)[0]);
-
-        return new CustomEllipticCurve(field, a, b);
+        return CompoundTest.function(CompoundTest.EXPECT_ALL_SUCCESS, CompoundTest.RUN_ALL_IF_FIRST, desc, generate, ecdh);
     }
 
     //constructs ECParameterSpec from EC_Curve even if the parameters of the curve are wrong
     private ECParameterSpec toCustomSpec(EC_Curve curve) {
-        EllipticCurve customCurve = toCustomCurve(curve);
+        EllipticCurve customCurve = curve.toCustomCurve();
 
         byte[][] G = curve.getParam(EC_Consts.PARAMETER_G);
         BigInteger gx = new BigInteger(1, G[0]);

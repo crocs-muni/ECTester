@@ -143,15 +143,11 @@ public class CardEdgeCasesSuite extends CardTestSuite {
         curves.add(EC_Store.getInstance().getObject(EC_Curve.class, "cofactor/cofactor160p4"));
         Random rand = new Random();
         for (EC_Curve curve : curves) {
-            Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, curve.getBits(), EC_Consts.ALG_EC_FP), Result.ExpectedValue.SUCCESS));
-            if (!key.ok()) {
-                doTest(CompoundTest.all(Result.ExpectedValue.FAILURE, "No support for " + curve.getBits() + "b " + curve.getId() + ".", key));
-                continue;
-            }
+            Test key = CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, curve.getBits(), EC_Consts.ALG_EC_FP), Result.ExpectedValue.SUCCESS);
             Test set = CommandTest.expect(new Command.Set(this.card, CardConsts.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.ExpectedValue.SUCCESS);
             Test generate = CommandTest.expect(new Command.Generate(this.card, CardConsts.KEYPAIR_LOCAL), Result.ExpectedValue.SUCCESS);
             CommandTest export = CommandTest.expect(new Command.Export(this.card, CardConsts.KEYPAIR_LOCAL, EC_Consts.KEY_PUBLIC, EC_Consts.PARAMETER_W), Result.ExpectedValue.SUCCESS);
-            Test setup = runTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "KeyPair setup.", key, set, generate, export));
+            Test setup = CompoundTest.all(Result.ExpectedValue.SUCCESS, "KeyPair setup.", key, set, generate, export);
 
             /*
             byte[] pParam = curve.getParam(EC_Consts.PARAMETER_FP)[0];
@@ -268,11 +264,7 @@ public class CardEdgeCasesSuite extends CardTestSuite {
         Arrays.sort(ps);
         Arrays.sort(zeros);
 
-        Test key = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, secp160r1.getBits(), EC_Consts.ALG_EC_FP), Result.ExpectedValue.SUCCESS));
-        if (!key.ok()) {
-            doTest(CompoundTest.all(Result.ExpectedValue.FAILURE, "No support for " + secp160r1.getBits() + "b secp160r1.", key));
-            return;
-        }
+        Test key = CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, secp160r1.getBits(), EC_Consts.ALG_EC_FP), Result.ExpectedValue.SUCCESS);
         Test set = CommandTest.expect(new Command.Set(this.card, CardConsts.KEYPAIR_BOTH, EC_Consts.CURVE_external, secp160r1.getParams(), secp160r1.flatten()), Result.ExpectedValue.SUCCESS);
         Test generate = CommandTest.expect(new Command.Generate(this.card, CardConsts.KEYPAIR_LOCAL), Result.ExpectedValue.SUCCESS);
         Test setup = CompoundTest.all(Result.ExpectedValue.SUCCESS, "KeyPair setup.", key, set, generate);

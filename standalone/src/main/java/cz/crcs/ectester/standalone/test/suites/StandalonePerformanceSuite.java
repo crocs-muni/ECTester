@@ -48,25 +48,15 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
         List<String> sigTypes = sigAlgo != null ? Arrays.asList(sigAlgo.split(",")) : new ArrayList<>();
 
         List<KeyPairGeneratorIdent> kpgIdents = new LinkedList<>();
-        if (kpgAlgo == null) {
-            // try EC, if not, fail with: need to specify kpg algo.
-            Optional<KeyPairGeneratorIdent> kpgIdentOpt = cfg.selected.getKPGs().stream()
-                    .filter((ident) -> ident.contains("EC"))
-                    .findFirst();
-            if (kpgIdentOpt.isPresent()) {
-                kpgIdents.add(kpgIdentOpt.get());
-            } else {
-                System.err.println("The default KeyPairGenerator algorithm type of \"EC\" was not found. Need to specify a type.");
-                return;
+        for (String kpgChoice : kpgTypes) {
+            KeyPairGeneratorIdent ident = getKeyPairGeneratorIdent(kpgChoice);
+            if (ident != null && !kpgIdents.contains(ident)) {
+                kpgIdents.add(ident);
             }
-        } else {
-            // try the specified, if not, fail with: wrong kpg algo/not found.
-            kpgIdents = cfg.selected.getKPGs().stream()
-                    .filter((ident) -> ident.containsAny(kpgTypes)).collect(Collectors.toList());
-            if (kpgIdents.isEmpty()) {
-                System.err.println("No KeyPairGenerator algorithms of specified types were found.");
-                return;
-            }
+        }
+        if (kpgIdents.isEmpty()) {
+            System.err.println("Need some KeyPairGenerators to be able to generate keys. Select at least one supported one using the -gt/--kpg-type option.");
+            return;
         }
 
         KeyGeneratorTestable kgtOne = null;
@@ -94,8 +84,8 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
                 kgtOther = new KeyGeneratorTestable(kpg);
             }
             kpgTests.add(PerformanceTest.repeat(kgtOne, cfg.selected, kpgIdent.getName(), count));
+            kpgTests.add(PerformanceTest.repeat(kgtOther, cfg.selected, kpgIdent.getName(), count));
         }
-        runTest(KeyGeneratorTest.expect(kgtOther, Result.ExpectedValue.SUCCESS));
         doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "KeyPairGenerator performance tests", kpgTests.toArray(new Test[0])));
 
         List<Test> kaTests = new LinkedList<>();

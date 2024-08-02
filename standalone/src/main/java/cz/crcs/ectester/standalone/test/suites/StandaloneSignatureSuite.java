@@ -31,29 +31,9 @@ public class StandaloneSignatureSuite extends StandaloneTestSuite {
     protected void runTests() throws Exception {
         String sigAlgo = cli.getOptionValue("test.sig-type");
 
-        SignatureIdent sigIdent;
-        if (sigAlgo == null) {
-            // try ECDSA, if not, fail with: need to specify sig algo.
-            Optional<SignatureIdent> sigIdentOpt = cfg.selected.getSigs().stream()
-                    .filter((ident) -> ident.contains("ECDSA"))
-                    .findFirst();
-            if (sigIdentOpt.isPresent()) {
-                sigIdent = sigIdentOpt.get();
-            } else {
-                System.err.println("The default Signature algorithm type of \"ECDSA\" was not found. Need to specify a type.");
-                return;
-            }
-        } else {
-            // try the specified, if not, fail with: wrong sig algo/not found.
-            Optional<SignatureIdent> sigIdentOpt = cfg.selected.getSigs().stream()
-                    .filter((ident) -> ident.contains(sigAlgo))
-                    .findFirst();
-            if (sigIdentOpt.isPresent()) {
-                sigIdent = sigIdentOpt.get();
-            } else {
-                System.err.println("The Signature algorithm type of \"" + sigAlgo + "\" was not found.");
-                return;
-            }
+        SignatureIdent sigIdent = getSignatureIdent(sigAlgo);
+        if (sigIdent == null) {
+            return;
         }
 
         Map<String, EC_SigResult> results = EC_Store.getInstance().getObjects(EC_SigResult.class, "wrong");

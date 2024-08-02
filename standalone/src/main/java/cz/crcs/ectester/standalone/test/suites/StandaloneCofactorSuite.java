@@ -24,6 +24,8 @@ import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECParameterSpec;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @author David Hofman
@@ -41,29 +43,9 @@ public class StandaloneCofactorSuite extends StandaloneTestSuite {
         String kaAlgo = cli.getOptionValue("test.ka-type");
         List<String> kaTypes = kaAlgo != null ? Arrays.asList(kaAlgo.split(",")) : new ArrayList<>();
 
-        KeyPairGeneratorIdent kpgIdent;
-        if (kpgAlgo == null) {
-            // try EC, if not, fail with: need to specify kpg algo.
-            Optional<KeyPairGeneratorIdent> kpgIdentOpt = cfg.selected.getKPGs().stream()
-                    .filter((ident) -> ident.contains("EC"))
-                    .findFirst();
-            if (kpgIdentOpt.isPresent()) {
-                kpgIdent = kpgIdentOpt.get();
-            } else {
-                System.err.println("The default KeyPairGenerator algorithm type of \"EC\" was not found. Need to specify a type.");
-                return;
-            }
-        } else {
-            // try the specified, if not, fail with: wrong kpg algo/not found.
-            Optional<KeyPairGeneratorIdent> kpgIdentOpt = cfg.selected.getKPGs().stream()
-                    .filter((ident) -> ident.contains(kpgAlgo))
-                    .findFirst();
-            if (kpgIdentOpt.isPresent()) {
-                kpgIdent = kpgIdentOpt.get();
-            } else {
-                System.err.println("The KeyPairGenerator algorithm type of \"" + kpgAlgo + "\" was not found.");
-                return;
-            }
+        KeyPairGeneratorIdent kpgIdent = getKeyPairGeneratorIdent(kpgAlgo);
+        if (kpgIdent == null) {
+            return;
         }
 
         Map<String, EC_Key.Public> pubkeys = EC_Store.getInstance().getObjects(EC_Key.Public.class, "cofactor");
@@ -77,15 +59,6 @@ public class StandaloneCofactorSuite extends StandaloneTestSuite {
             KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
 
             Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
-            runTest(generate);
-            KeyPair kp = kgt.getKeyPair();
-            if (kp == null) {
-                Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() + ". " + "KeyAgreement tests will be skipped.", generate);
-                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Cofactor test of " + curve.getId() + ".", generateFail));
-                continue;
-            }
-            Test generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair.", generate);
-            ECPrivateKey ecpriv = (ECPrivateKey) kp.getPrivate();
 
             List<Test> allKaTests = new LinkedList<>();
             for (KeyAgreementIdent kaIdent : cfg.selected.getKAs()) {
@@ -94,7 +67,7 @@ public class StandaloneCofactorSuite extends StandaloneTestSuite {
                     for (EC_Key.Public pub : keys) {
                         ECPublicKey ecpub = ECUtil.toPublicKey(pub);
                         KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                        KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpriv, ecpub);
+                        KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpub, kgt);
                         Test keyAgreement = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
                         specificKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " cofactor key test.", keyAgreement));
                     }
@@ -104,8 +77,8 @@ public class StandaloneCofactorSuite extends StandaloneTestSuite {
             if (allKaTests.isEmpty()) {
                 allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified key agreement types is supported by the library."));
             }
-            Test tests = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Do tests.", allKaTests.toArray(new Test[0]));
-            doTest(CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Cofactor test of " + curve.getId() + ".", generateSuccess, tests));
+            Test kaTests = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Do tests.", allKaTests.toArray(new Test[0]));
+            doTest(CompoundTest.function(CompoundTest.EXPECT_ALL_SUCCESS, CompoundTest.RUN_ALL_IF_FIRST, "Cofactor test of " + curve.getId() + ".", generate, kaTests));
         }
     }
 }
