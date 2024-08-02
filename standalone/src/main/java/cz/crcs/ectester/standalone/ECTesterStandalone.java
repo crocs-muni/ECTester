@@ -71,7 +71,7 @@ public class ECTesterStandalone {
     private ProviderECLibrary[] libs;
     private Config cfg;
 
-    private Options opts = new Options();
+    private final Options opts = new Options();
     private TreeParser optParser;
     private TreeCommandLine cli;
     public static final String VERSION = "v0.3.3";
@@ -903,7 +903,7 @@ public class ECTesterStandalone {
      *
      */
     public static class Config {
-        private ProviderECLibrary[] libs;
+        private final ProviderECLibrary[] libs;
         public ProviderECLibrary selected = null;
         public boolean color = false;
 

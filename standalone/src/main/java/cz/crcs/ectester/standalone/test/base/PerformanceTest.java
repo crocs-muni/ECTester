@@ -13,7 +13,7 @@ import java.util.Arrays;
  */
 public class PerformanceTest extends SimpleTest<BaseTestable> {
 
-    private ProviderECLibrary library;
+    private final ProviderECLibrary library;
     private long[] times;
     private long mean;
     private long median;

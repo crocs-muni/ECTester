@@ -46,10 +46,9 @@ public class TextTestWriter extends BaseTextTestWriter {
     protected String deviceString(TestSuite suite) {
         if (suite instanceof StandaloneTestSuite) {
             StandaloneTestSuite standaloneSuite = (StandaloneTestSuite) suite;
-            StringBuilder sb = new StringBuilder();
-            sb.append("═══ ").append(Colors.underline("ECTester version:")).append(" ").append(ECTesterStandalone.VERSION).append(System.lineSeparator());
-            sb.append("═══ ").append(Colors.underline("Library:")).append(" ").append(standaloneSuite.getLibrary().fullName()).append(System.lineSeparator());
-            return sb.toString();
+            String sb = "═══ " + Colors.underline("ECTester version:") + " " + ECTesterStandalone.VERSION + System.lineSeparator() +
+                    "═══ " + Colors.underline("Library:") + " " + standaloneSuite.getLibrary().fullName() + System.lineSeparator();
+            return sb;
         }
         return "";
     }

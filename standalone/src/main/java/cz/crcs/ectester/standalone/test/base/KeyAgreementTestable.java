@@ -46,7 +46,7 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
     }
 
     public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable kgt, ECPrivateKey privateKey, ECParameterSpec spec) {
-        this(ka, privateKey, (ECPublicKey) null, spec);
+        this(ka, privateKey, null, spec);
         this.kgtPublic = kgt;
     }
 
@@ -56,7 +56,7 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
     }
 
     public KeyAgreementTestable(KeyAgreement ka, ECPublicKey publicKey, KeyGeneratorTestable kgt, ECParameterSpec spec) {
-        this(ka, (ECPrivateKey) null, publicKey, spec);
+        this(ka, null, publicKey, spec);
         this.kgtPrivate = kgt;
     }
 
@@ -66,7 +66,7 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
     }
 
     public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable privKgt, KeyGeneratorTestable pubKgt, ECParameterSpec spec) {
-        this(ka, (ECPrivateKey) null, (ECPublicKey) null, spec);
+        this(ka, null, (ECPublicKey) null, spec);
         this.kgtPrivate = privKgt;
         this.kgtPublic = pubKgt;
     }
@@ -97,7 +97,7 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
     }
 
     public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable privKgt, KeyGeneratorTestable pubKgt) {
-        this(ka, (ECPrivateKey) null, (ECPublicKey) null, (ECParameterSpec) null);
+        this(ka, null, (ECPublicKey) null, (ECParameterSpec) null);
         this.kgtPrivate = privKgt;
         this.kgtPublic = pubKgt;
     }

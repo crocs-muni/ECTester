@@ -11,7 +11,7 @@ import java.security.interfaces.ECPublicKey;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class SignatureTestable extends StandaloneTestable<SignatureTestable.SignatureStage> {
-    private Signature sig;
+    private final Signature sig;
     private ECPrivateKey signKey;
     private ECPublicKey verifyKey;
     private KeyGeneratorTestable kgt;
