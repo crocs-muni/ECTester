@@ -2,6 +2,7 @@ package cz.crcs.ectester.common.test;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -16,13 +17,22 @@ public class CompoundTest extends Test implements Cloneable {
     private Test[] tests;
     private String description = "";
 
-    private final static Consumer<Test[]> RUN_ALL = tests -> {
+    public final static BiFunction<Result.ExpectedValue, Test[], Result> EXPECT_ALL = (what, tests) -> {
+        for (Test test : tests) {
+            if (!Result.Value.fromExpected(what, test.ok()).ok()) {
+                return new Result(Result.Value.FAILURE, "Some sub-tests did not have the expected result.");
+            }
+        }
+        return new Result(Result.Value.SUCCESS, "All sub-tests had the expected result.");
+    };
+
+    public final static Consumer<Test[]> RUN_ALL = tests -> {
         for (Test t : tests) {
             t.run();
         }
     };
 
-    private final static Consumer<Test[]> RUN_GREEDY_ALL = tests -> {
+    public final static Consumer<Test[]> RUN_GREEDY_ALL = tests -> {
         for (Test t : tests) {
             t.run();
             if (!t.ok()) {
@@ -31,7 +41,7 @@ public class CompoundTest extends Test implements Cloneable {
         }
     };
 
-    private final static Consumer<Test[]> RUN_GREEDY_ANY = tests -> {
+    public final static Consumer<Test[]> RUN_GREEDY_ANY = tests -> {
         for (Test t : tests) {
             t.run();
             if (t.ok()) {
@@ -68,14 +78,7 @@ public class CompoundTest extends Test implements Cloneable {
     }
 
     private static CompoundTest expectAll(Result.ExpectedValue what, Consumer<Test[]> runCallback, Test[] all) {
-        return new CompoundTest((tests) -> {
-            for (Test test : tests) {
-                if (!Result.Value.fromExpected(what, test.ok()).ok()) {
-                    return new Result(Result.Value.FAILURE, "Some sub-tests did not have the expected result.");
-                }
-            }
-            return new Result(Result.Value.SUCCESS, "All sub-tests had the expected result.");
-        }, runCallback, all);
+        return new CompoundTest((tests) -> EXPECT_ALL.apply(what, tests), runCallback, all);
     }
 
     public static CompoundTest all(Result.ExpectedValue what, Test... all) {
