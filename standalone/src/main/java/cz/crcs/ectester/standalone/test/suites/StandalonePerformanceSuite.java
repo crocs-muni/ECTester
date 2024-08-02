@@ -84,8 +84,8 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
                 kgtOther = new KeyGeneratorTestable(kpg);
             }
             kpgTests.add(PerformanceTest.repeat(kgtOne, cfg.selected, kpgIdent.getName(), count));
+            kpgTests.add(PerformanceTest.repeat(kgtOther, cfg.selected, kpgIdent.getName(), count));
         }
-        runTest(KeyGeneratorTest.expect(kgtOther, Result.ExpectedValue.SUCCESS));
         doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "KeyPairGenerator performance tests", kpgTests.toArray(new Test[0])));
 
         List<Test> kaTests = new LinkedList<>();
