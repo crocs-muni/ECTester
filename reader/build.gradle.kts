@@ -1,6 +1,7 @@
 plugins {
     application
     jacoco
+    id("jacoco-report-aggregation")
     id("com.adarshr.test-logger") version "4.0.0"
 }
 
@@ -35,7 +36,7 @@ application {
 tasks.named<Test>("test") {
     useJUnitPlatform()
     // Report is always generated after tests run
-    finalizedBy(tasks.jacocoTestReport)
+    finalizedBy(tasks.named<JacocoReport>("testCodeCoverageReport"))
 }
 
 tasks.jacocoTestReport {
