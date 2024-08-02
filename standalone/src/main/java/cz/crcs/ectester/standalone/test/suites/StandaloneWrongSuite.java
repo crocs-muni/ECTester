@@ -50,54 +50,15 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
         String kaAlgo = cli.getOptionValue("test.ka-type");
         boolean skip = cli.getArg(1).equalsIgnoreCase("-skip");
 
-        KeyPairGeneratorIdent kpgIdent;
-        if (kpgAlgo == null) {
-            // try EC, if not, fail with: need to specify kpg algo.
-            Optional<KeyPairGeneratorIdent> kpgIdentOpt = cfg.selected.getKPGs().stream()
-                    .filter((ident) -> ident.contains("EC"))
-                    .findFirst();
-            if (kpgIdentOpt.isPresent()) {
-                kpgIdent = kpgIdentOpt.get();
-            } else {
-                System.err.println("The default KeyPairGenerator algorithm type of \"EC\" was not found. Need to specify a type.");
-                return;
-            }
-        } else {
-            // try the specified, if not, fail with: wrong kpg algo/not found.
-            Optional<KeyPairGeneratorIdent> kpgIdentOpt = cfg.selected.getKPGs().stream()
-                    .filter((ident) -> ident.contains(kpgAlgo))
-                    .findFirst();
-            if (kpgIdentOpt.isPresent()) {
-                kpgIdent = kpgIdentOpt.get();
-            } else {
-                System.err.println("The KeyPairGenerator algorithm type of \"" + kpgAlgo + "\" was not found.");
-                return;
-            }
+        KeyPairGeneratorIdent kpgIdent = getKeyPairGeneratorIdent(kpgAlgo);
+        if (kpgIdent == null) {
+            return;
         }
         kpg = kpgIdent.getInstance(cfg.selected.getProvider());
 
-        if (kaAlgo == null) {
-            // try ECDH, if not, fail with: need to specify ka algo.
-            Optional<KeyAgreementIdent> kaIdentOpt = cfg.selected.getKAs().stream()
-                    .filter((ident) -> ident.contains("ECDH"))
-                    .findFirst();
-            if (kaIdentOpt.isPresent()) {
-                kaIdent = kaIdentOpt.get();
-            } else {
-                System.err.println("The default KeyAgreement algorithm type of \"ECDH\" was not found. Need to specify a type.");
-                return;
-            }
-        } else {
-            // try the specified, if not, fail with: wrong ka algo/not found.
-            Optional<KeyAgreementIdent> kaIdentOpt = cfg.selected.getKAs().stream()
-                    .filter((ident) -> ident.contains(kaAlgo))
-                    .findFirst();
-            if (kaIdentOpt.isPresent()) {
-                kaIdent = kaIdentOpt.get();
-            } else {
-                System.err.println("The KeyAgreement algorithm type of \"" + kaAlgo + "\" was not found.");
-                return;
-            }
+        kaIdent = getKeyAgreementIdent(kaAlgo);
+        if (kaIdent == null) {
+            return;
         }
 
         /* Just do the default run on the wrong curves.
