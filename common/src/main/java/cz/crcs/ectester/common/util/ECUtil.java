@@ -202,7 +202,7 @@ public class ECUtil {
         }
     }
 
-    private static byte[] hashCurve(EC_Curve curve) {
+    public static byte[] hashCurve(EC_Curve curve) {
         int bytes = (curve.getBits() + 7) / 8;
         byte[] result = new byte[bytes];
         SHA1Digest digest = new SHA1Digest();
