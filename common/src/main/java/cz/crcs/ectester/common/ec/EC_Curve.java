@@ -54,6 +54,27 @@ public class EC_Curve extends EC_Params {
         return "<" + getId() + "> " + (field == EC_Consts.ALG_EC_FP ? "Prime" : "Binary") + " field Elliptic curve (" + String.valueOf(bits) + "b)" + (desc == null ? "" : ": " + desc) + System.lineSeparator() + super.toString();
     }
 
+    private int[] getPowers() {
+        if (this.field == EC_Consts.ALG_EC_F2M) {
+            byte[][] fieldData = getParam(EC_Consts.PARAMETER_F2M);
+            int e1 = ByteUtil.getShort(fieldData[1], 0);
+            int e2 = ByteUtil.getShort(fieldData[2], 0);
+            int e3 = ByteUtil.getShort(fieldData[3], 0);
+            int[] powers = Arrays.stream(new int[]{e1, e2, e3}).sorted().toArray();
+            e1 = powers[0];
+            e2 = powers[1];
+            e3 = powers[2];
+            if (e2 == 0 && e3 == 0) {
+                powers = new int[]{e1};
+            } else {
+                powers = new int[]{e1, e2, e3};
+            }
+            return powers;
+        } else {
+            return null;
+        }
+    }
+
     public EllipticCurve toCurve() {
         ECField field;
         if (this.field == EC_Consts.ALG_EC_FP) {
@@ -61,15 +82,7 @@ public class EC_Curve extends EC_Params {
         } else {
             byte[][] fieldData = getParam(EC_Consts.PARAMETER_F2M);
             int m = ByteUtil.getShort(fieldData[0], 0);
-            int e1 = ByteUtil.getShort(fieldData[1], 0);
-            int e2 = ByteUtil.getShort(fieldData[2], 0);
-            int e3 = ByteUtil.getShort(fieldData[3], 0);
-            int[] powers;
-            if (e2 == 0 && e3 == 0) {
-                powers = new int[]{e1};
-            } else {
-                powers = new int[]{e1, e2, e3};
-            }
+            int[] powers = getPowers();
             field = new ECFieldF2m(m, powers);
         }
 
@@ -77,6 +90,26 @@ public class EC_Curve extends EC_Params {
         BigInteger b = new BigInteger(1, getParam(EC_Consts.PARAMETER_B)[0]);
 
         return new EllipticCurve(field, a, b);
+    }
+
+    /**
+     * Constructs EllipticCurve from EC_Curve even if the parameters of the curve are wrong.
+     */
+    public EllipticCurve toCustomCurve() {
+        ECField field;
+        if (this.field == EC_Consts.ALG_EC_FP) {
+            field = new CustomECFieldFp(new BigInteger(1, this.getData(0)));
+        } else {
+            byte[][] fieldData = this.getParam(EC_Consts.PARAMETER_F2M);
+            int m = ByteUtil.getShort(fieldData[0], 0);
+            int[] powers = getPowers();
+            field = new CustomECFieldF2m(m, powers);
+        }
+
+        BigInteger a = new BigInteger(1, this.getParam(EC_Consts.PARAMETER_A)[0]);
+        BigInteger b = new BigInteger(1, this.getParam(EC_Consts.PARAMETER_B)[0]);
+
+        return new CustomEllipticCurve(field, a, b);
     }
 
     public ECCurve toBCCurve() {
@@ -90,21 +123,15 @@ public class EC_Curve extends EC_Params {
         } else {
             byte[][] fieldData = getParam(EC_Consts.PARAMETER_F2M);
             int m = ByteUtil.getShort(fieldData[0], 0);
-            int e1 = ByteUtil.getShort(fieldData[1], 0);
-            int e2 = ByteUtil.getShort(fieldData[2], 0);
-            int e3 = ByteUtil.getShort(fieldData[3], 0);
             BigInteger a = new BigInteger(1, getParam(EC_Consts.PARAMETER_A)[0]);
             BigInteger b = new BigInteger(1, getParam(EC_Consts.PARAMETER_B)[0]);
             BigInteger r = new BigInteger(1, getParam(EC_Consts.PARAMETER_R)[0]);
             BigInteger k = new BigInteger(1, getParam(EC_Consts.PARAMETER_K)[0]);
-            int[] powers = Arrays.stream(new int[]{e1, e2, e3}).sorted().toArray();
-            e1 = powers[0];
-            e2 = powers[1];
-            e3 = powers[2];
-            if (e1 == 0 && e2 == 0) {
-                return new ECCurve.F2m(m, e3, 0, 0, a, b, r, k);
+            int[] powers = getPowers();
+            if (powers.length == 1) {
+                return new ECCurve.F2m(m, powers[0], 0, 0, a, b, r, k);
             } else {
-                return new ECCurve.F2m(m, e1, e2, e3, a, b, r, k);
+                return new ECCurve.F2m(m, powers[0], powers[1], powers[2], a, b, r, k);
             }
         }
     }

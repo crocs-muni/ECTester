@@ -261,35 +261,9 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
         return CompoundTest.all(Result.ExpectedValue.SUCCESS, desc, generate, ecdh);
     }
 
-    //constructs EllipticCurve from EC_Curve even if the parameters of the curve are wrong
-    private EllipticCurve toCustomCurve(EC_Curve curve) {
-        ECField field;
-        if (curve.getField() == javacard.security.KeyPair.ALG_EC_FP) {
-            field = new CustomECFieldFp(new BigInteger(1, curve.getData(0)));
-        } else {
-            byte[][] fieldData = curve.getParam(EC_Consts.PARAMETER_F2M);
-            int m = ByteUtil.getShort(fieldData[0], 0);
-            int e1 = ByteUtil.getShort(fieldData[1], 0);
-            int e2 = ByteUtil.getShort(fieldData[2], 0);
-            int e3 = ByteUtil.getShort(fieldData[3], 0);
-            int[] powers;
-            if (e2 == 0 && e3 == 0) {
-                powers = new int[]{e1};
-            } else {
-                powers = new int[]{e1, e2, e3};
-            }
-            field = new CustomECFieldF2m(m, powers);
-        }
-
-        BigInteger a = new BigInteger(1, curve.getParam(EC_Consts.PARAMETER_A)[0]);
-        BigInteger b = new BigInteger(1, curve.getParam(EC_Consts.PARAMETER_B)[0]);
-
-        return new CustomEllipticCurve(field, a, b);
-    }
-
     //constructs ECParameterSpec from EC_Curve even if the parameters of the curve are wrong
     private ECParameterSpec toCustomSpec(EC_Curve curve) {
-        EllipticCurve customCurve = toCustomCurve(curve);
+        EllipticCurve customCurve = curve.toCustomCurve();
 
         byte[][] G = curve.getParam(EC_Consts.PARAMETER_G);
         BigInteger gx = new BigInteger(1, G[0]);
