@@ -209,9 +209,10 @@
         buildECTesterStandalone = {
           tomcrypt ? { version = null; hash = null; },
           tommath ? { version = null; hash = null; },
-          openssl ? { version = null; hash = null; },
           botan ? { version = null; source_extension = null; hash = null; },
           cryptopp ? { version = null; hash = null; },
+          openssl ? { version = null; hash = null; },
+          boringssl ? { version = null; hash = null; },
         }: (
           let
             tomcryptShim = tomcryptShimBuilder {
@@ -275,9 +276,10 @@
         packages = rec {
           default = openssl.v331;
           tomcrypt = pkgs.callPackage ./nix/tomcrypt_pkg_versions.nix { inherit buildECTesterStandalone; };
-          openssl = pkgs.callPackage ./nix/openssl_pkg_versions.nix { inherit buildECTesterStandalone; };
           botan = pkgs.callPackage ./nix/botan_pkg_versions.nix { inherit buildECTesterStandalone; };
           cryptopp = pkgs.callPackage ./nix/cryptopp_pkg_versions.nix { inherit buildECTesterStandalone; };
+          openssl = pkgs.callPackage ./nix/openssl_pkg_versions.nix { inherit buildECTesterStandalone; };
+          boringssl = pkgs.callPackage ./nix/boringssl_pkg_versions.nix { inherit buildECTesterStandalone; };
         };
         devShells.default = with pkgs; mkShell rec {
           nativeBuildInputs = [
