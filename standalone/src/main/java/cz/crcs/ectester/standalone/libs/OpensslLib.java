@@ -16,4 +16,10 @@ public class OpensslLib extends NativeECLibrary {
 
     @Override
     public native Set<String> getCurves();
+
+    @Override
+    public native boolean supportsDeterministicPRNG();
+
+    @Override
+    public native void setupDeterministicPRNG(byte[] seed);
 }

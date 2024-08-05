@@ -191,7 +191,8 @@ public class ECTesterStandalone {
         Option output = Option.builder("o").longOpt("output").desc("Output into file <output_file>. The file can be prefixed by the format (one of text,yml,xml), such as: xml:<output_file>.").hasArgs().argName("output_file").optionalArg(false).numberOfArgs(1).build();
         Option outputRaw = Option.builder("o").longOpt("output").desc("Output CSV into file <output_file>.").hasArgs().argName("output_file").optionalArg(false).numberOfArgs(1).build();
         Option quiet = Option.builder("q").longOpt("quiet").desc("Do not output to stdout.").build();
-        Option timeSource = Option.builder("ts").longOpt("time-source").desc("Use a given native timing source: {rdtsc, monotonic, monotonic-raw, cputime-process, cputime-thread, perfcount}").hasArgs().argName("source").optionalArg(false).numberOfArgs(1).build();
+        Option timeSource = Option.builder("ts").longOpt("time-source").desc("Use a given native timing source: {rdtsc, monotonic, monotonic-raw, cputime-process, cputime-thread}").hasArgs().argName("source").optionalArg(false).numberOfArgs(1).build();
+        Option prngSeed = Option.builder("ps").longOpt("prng-seed").desc("Use a deterministic PRNG with the given seed (hexadecimal).").hasArgs().argName("seed").optionalArg(false).numberOfArgs(1).build();
 
         Options testOpts = new Options();
         testOpts.addOption(bits);
@@ -199,6 +200,7 @@ public class ECTesterStandalone {
         testOpts.addOption(curveName);
         testOpts.addOption(output);
         testOpts.addOption(quiet);
+        testOpts.addOption(prngSeed);
         testOpts.addOption(Option.builder("gt").longOpt("kpg-type").desc("Set the KeyPairGenerator object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("kt").longOpt("ka-type").desc("Set the KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("st").longOpt("sig-type").desc("Set the Signature object [type].").hasArg().argName("type").optionalArg(false).build());
@@ -215,6 +217,7 @@ public class ECTesterStandalone {
         ecdhOpts.addOption(curveName);
         ecdhOpts.addOption(outputRaw);
         ecdhOpts.addOption(timeSource);
+        ecdhOpts.addOption(prngSeed);
         ecdhOpts.addOption(Option.builder("t").longOpt("type").desc("Set KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdhOpts.addOption(Option.builder().longOpt("key-type").desc("Set the key [algorithm] for which the key should be derived in KeyAgreements with KDF. Default is \"AES\".").hasArg().argName("algorithm").optionalArg(false).build());
         ecdhOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDH [amount] times.").build());
@@ -231,6 +234,7 @@ public class ECTesterStandalone {
         ecdsaOpts.addOption(curveName);
         ecdsaOpts.addOption(outputRaw);
         ecdsaOpts.addOption(timeSource);
+        ecdsaOpts.addOption(prngSeed);
         ecdsaOpts.addOptionGroup(privateKey);
         ecdsaOpts.addOptionGroup(publicKey);
         ecdsaOpts.addOption(Option.builder().longOpt("fixed").desc("Perform all ECDSA with fixed keypair.").build());
@@ -246,6 +250,7 @@ public class ECTesterStandalone {
         generateOpts.addOption(curveName);
         generateOpts.addOption(outputRaw);
         generateOpts.addOption(timeSource);
+        generateOpts.addOption(prngSeed);
         generateOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Generate [amount] of EC keys.").build());
         generateOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPairGenerator object [type].").build());
         ParserOptions generate = new ParserOptions(new DefaultParser(), generateOpts, "Generate EC keypairs.");
@@ -307,6 +312,7 @@ public class ECTesterStandalone {
                 System.out.println(Colors.bold("\t\t- Fullname: ") + lib.getProvider().getName());
                 System.out.println(Colors.bold("\t\t- Version: ") + lib.getProvider().getVersionStr());
                 System.out.println(Colors.bold("\t\t- Supports native timing: ") + lib.getNativeTimingSupport().toString());
+                System.out.println(Colors.bold("\t\t- Supports deterministic PRNG: ") + lib.supportsDeterministicPRNG());
                 Set<KeyPairGeneratorIdent> kpgs = lib.getKPGs();
                 if (!kpgs.isEmpty()) {
                     System.out.println(Colors.bold("\t\t- KeyPairGenerators: ") + kpgs.stream().map(KeyPairGeneratorIdent::getName).sorted().collect(Collectors.joining(", ")));
@@ -428,6 +434,12 @@ public class ECTesterStandalone {
             String curveName = cli.getOptionValue("ecdh.curve-name");
             spec = new ECGenParameterSpec(curveName);
             kpg.initialize(spec);
+        }
+
+        if (cli.hasOption("ecdh.prng-seed")) {
+            String seedString = cli.getOptionValue("ecdh.prng-seed");
+            byte[] seed = ByteUtil.hexToBytes(seedString, true);
+            lib.setupDeterministicPRNG(seed);
         }
 
         if (cli.hasOption("ecdh.time-source")) {
@@ -586,6 +598,12 @@ public class ECTesterStandalone {
             kpg.initialize(new ECGenParameterSpec(curveName));
         }
 
+        if (cli.hasOption("ecdsa.prng-seed")) {
+            String seedString = cli.getOptionValue("ecdsa.prng-seed");
+            byte[] seed = ByteUtil.hexToBytes(seedString, true);
+            lib.setupDeterministicPRNG(seed);
+        }
+
         if (cli.hasOption("ecdsa.time-source")) {
             if (!lib.setNativeTimingType(cli.getOptionValue("ecdsa.time-source"))) {
                 System.err.println("Couldn't set native time source.");
@@ -722,6 +740,12 @@ public class ECTesterStandalone {
             kpg.initialize(new ECGenParameterSpec(curveName));
         }
 
+        if (cli.hasOption("generate.prng-seed")) {
+            String seedString = cli.getOptionValue("generate.prng-seed");
+            byte[] seed = ByteUtil.hexToBytes(seedString, true);
+            lib.setupDeterministicPRNG(seed);
+        }
+
         if (cli.hasOption("generate.time-source")) {
             if (!lib.setNativeTimingType(cli.getOptionValue("generate.time-source"))) {
                 System.err.println("Couldn't set native time source.");
@@ -816,6 +840,13 @@ public class ECTesterStandalone {
             testSuite = suiteOpt;
             testFrom = 0;
             testTo = -1;
+        }
+
+        ProviderECLibrary lib = cfg.selected;
+        if (cli.hasOption("test.prng-seed")) {
+            String seedString = cli.getOptionValue("test.prng-seed");
+            byte[] seed = ByteUtil.hexToBytes(seedString, true);
+            lib.setupDeterministicPRNG(seed);
         }
 
         switch (testSuite) {
@@ -992,6 +1023,15 @@ public class ECTesterStandalone {
                     String source = cli.getOptionValue(next + ".time-source");
                     if (!selected.getNativeTimingSupport().contains(source)) {
                         System.err.printf("Time source %s unavailable for library %s.%n", source, selected.name());
+                        return false;
+                    }
+                }
+            }
+
+            if (cli.isNext("generate") || cli.isNext("ecdh") || cli.isNext("ecdsa") || cli.isNext("test")) {
+                if (cli.hasOption(next + ".prng-seed")) {
+                    if (!selected.supportsDeterministicPRNG()) {
+                        System.err.printf("Deterministic PRNG is not supported by library %s.%n", selected.name());
                         return false;
                     }
                 }
