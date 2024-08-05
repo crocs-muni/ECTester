@@ -12,9 +12,9 @@ DEBUG ?= 0
 PROJECT_ROOT_PATH ?= ../../../../../../../../../..
 
 ifeq ($(DEBUG), 1)
-  CFLAGS+=-g -Wall
+  CFLAGS+=-g -O0 -Wall
   LFLAGS+=-g
-  CXXFLAGS+=-g -Wall
+  CXXFLAGS+=-g -O0 -Wall
 else
   CFLAGS+=-O2
   LFLAGS+=-O2

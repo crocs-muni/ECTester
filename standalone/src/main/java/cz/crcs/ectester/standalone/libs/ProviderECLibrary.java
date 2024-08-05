@@ -88,7 +88,8 @@ public abstract class ProviderECLibrary implements ECLibrary {
         return false;
     }
 
-    public void setupDeterministicPRNG(byte[] seed) {
+    public boolean setupDeterministicPRNG(byte[] seed) {
+        return false;
     }
 
     @Override

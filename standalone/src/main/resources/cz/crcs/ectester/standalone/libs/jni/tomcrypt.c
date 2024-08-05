@@ -81,13 +81,14 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_sup
 	return JNI_TRUE;
 }
 
-JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_setupDeterministicPRNG(JNIEnv *env, jobject self, jbyteArray seed) {
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_setupDeterministicPRNG(JNIEnv *env, jobject self, jbyteArray seed) {
 	yarrow_start(&ltc_prng);
 	jbyte *seed_data = (*env)->GetByteArrayElements(env, seed, NULL);
 	jsize seed_length = (*env)->GetArrayLength(env, seed);
 	yarrow_add_entropy(seed_data, seed_length, &ltc_prng);
 	yarrow_ready(&ltc_prng);
 	(*env)->ReleaseByteArrayElements(env, seed, seed_data, JNI_ABORT);
+	return JNI_TRUE;
 }
 
 

@@ -22,5 +22,5 @@ public class TomcryptLib extends NativeECLibrary {
     public native boolean supportsDeterministicPRNG();
 
     @Override
-    public native void setupDeterministicPRNG(byte[] seed);
+    public native boolean setupDeterministicPRNG(byte[] seed);
 }

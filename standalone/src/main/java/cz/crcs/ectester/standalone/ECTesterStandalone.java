@@ -439,7 +439,10 @@ public class ECTesterStandalone {
         if (cli.hasOption("ecdh.prng-seed")) {
             String seedString = cli.getOptionValue("ecdh.prng-seed");
             byte[] seed = ByteUtil.hexToBytes(seedString, true);
-            lib.setupDeterministicPRNG(seed);
+            if (!lib.setupDeterministicPRNG(seed)) {
+                System.err.println("Couldn't set PRNG seed.");
+                return;
+            }
         }
 
         if (cli.hasOption("ecdh.time-source")) {
@@ -601,7 +604,10 @@ public class ECTesterStandalone {
         if (cli.hasOption("ecdsa.prng-seed")) {
             String seedString = cli.getOptionValue("ecdsa.prng-seed");
             byte[] seed = ByteUtil.hexToBytes(seedString, true);
-            lib.setupDeterministicPRNG(seed);
+            if (!lib.setupDeterministicPRNG(seed)) {
+                System.err.println("Couldn't set PRNG seed.");
+                return;
+            }
         }
 
         if (cli.hasOption("ecdsa.time-source")) {
@@ -743,7 +749,10 @@ public class ECTesterStandalone {
         if (cli.hasOption("generate.prng-seed")) {
             String seedString = cli.getOptionValue("generate.prng-seed");
             byte[] seed = ByteUtil.hexToBytes(seedString, true);
-            lib.setupDeterministicPRNG(seed);
+            if (!lib.setupDeterministicPRNG(seed)) {
+                System.err.println("Couldn't set PRNG seed.");
+                return;
+            }
         }
 
         if (cli.hasOption("generate.time-source")) {
@@ -846,7 +855,10 @@ public class ECTesterStandalone {
         if (cli.hasOption("test.prng-seed")) {
             String seedString = cli.getOptionValue("test.prng-seed");
             byte[] seed = ByteUtil.hexToBytes(seedString, true);
-            lib.setupDeterministicPRNG(seed);
+            if (!lib.setupDeterministicPRNG(seed)) {
+                System.err.println("Couldn't set PRNG seed.");
+                return;
+            }
         }
 
         switch (testSuite) {
