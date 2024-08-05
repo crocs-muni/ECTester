@@ -15,7 +15,6 @@ import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
-import cz.crcs.ectester.reader.response.Response;
 
 import java.security.spec.ECPoint;
 import java.util.LinkedList;
@@ -79,7 +78,7 @@ public class CardCompressionSuite extends CardTestSuite {
             compressionTests.add(genCustom);
 
             EC_Curve secgCurve = EC_Store.getInstance().getObject(EC_Curve.class, "secg", CardUtil.getCurveName(curveId));
-            ECPoint pub = ECUtil.toPoint(ECUtil.fixedRandomPoint(secgCurve));
+            ECPoint pub = ECUtil.toPoint(preparePubkey(secgCurve));
 
             List<Test> kaTests = new LinkedList<>();
             for (byte kaType : EC_Consts.KA_TYPES) {

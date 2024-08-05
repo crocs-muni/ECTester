@@ -24,7 +24,7 @@ import java.util.function.Function;
 public class CardMiscSuite extends CardTestSuite {
 
     public CardMiscSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "miscellaneous", new String[]{"preset", "random"}, "Some miscellaneous tests, tries ECDH and ECDSA over supersingular curves, anomalous curves,",
+        super(writer, cfg, cardManager, "miscellaneous", "Some miscellaneous tests, tries ECDH and ECDSA over supersingular curves, anomalous curves,",
                 "Barreto-Naehrig curves with small embedding degree and CM discriminant, MNT curves,",
                 "some Montgomery curves transformed to short Weierstrass form and Curve25519 transformed to short Weierstrass form.");
     }
