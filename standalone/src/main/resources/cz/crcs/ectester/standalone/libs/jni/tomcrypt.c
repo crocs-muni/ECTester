@@ -76,6 +76,21 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_getC
     return result;
 }
 
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_supportsDeterministicPRNG(JNIEnv *env, jobject self) {
+	return JNI_TRUE;
+}
+
+JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_setupDeterministicPRNG(JNIEnv *env, jobject self, jbyteArray seed) {
+	yarrow_start(&ltc_prng);
+	jbyte *seed_data = (*env)->GetByteArrayElements(env, seed, NULL);
+	jsize seed_length = (*env)->GetArrayLength(env, seed);
+	yarrow_add_entropy(seed_data, seed_length, &ltc_prng);
+	yarrow_ready(&ltc_prng);
+	(*env)->ReleaseByteArrayElements(env, seed, seed_data, JNI_ABORT);
+}
+
+
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024TomCrypt_keysizeSupported(JNIEnv *env, jobject this, jint keysize){
     int key_bytes = (keysize + 7) / 8;
     const ltc_ecc_set_type * curve = ltc_ecc_sets;

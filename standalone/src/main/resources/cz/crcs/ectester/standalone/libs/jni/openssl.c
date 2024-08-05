@@ -114,7 +114,6 @@ RAND_METHOD stdlib_rand_meth = { stdlib_rand_seed,
 };
 
 JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_setupDeterministicPRNG(JNIEnv *env, jobject self, jbyteArray seed) {
-	printf("Enabling rand method.\n");
 	RAND_set_rand_method(&stdlib_rand_meth);
 	jbyte *seed_data = (*env)->GetByteArrayElements(env, seed, NULL);
 	jsize seed_length = (*env)->GetArrayLength(env, seed);
