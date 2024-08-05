@@ -1,5 +1,3 @@
-# NOTE: LibTomCrypt does not expose the lib, when built statically (using `makefile and not `makefile.shared`).
-#       This patch copies the necessary code from `makefile.shared`.
 diff --git a/makefile b/makefile
 index cd94b86f..ffb65402 100644
 --- a/makefile

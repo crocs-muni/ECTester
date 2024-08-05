@@ -19,6 +19,9 @@
           inherit system overlays;
         };
 
+        # removes the patch/revision from the version. E.g. getMajorMinor "1.2.3" = "1.2"
+        getMajorMinor = version: builtins.concatStringsSep "." (pkgs.lib.take 2 ( builtins.splitVersion version));
+
         # Altered upstream packages
         boringssl = with pkgs; pkgs.boringssl.overrideAttrs (final: prev: rec {
            src = fetchgit {
@@ -70,38 +73,71 @@
         libgpg-error = pkgs.libgpg-error.overrideAttrs (final: prev: {
           configureFlags = ( prev.configureFlags or [] ) ++ [ "--enable-static" ];
         });
-        libtomcrypt = (pkgs.libtomcrypt.override { libtommath = libtommath; }).overrideAttrs (final: prev: rec {
-          makefile = "makefile";
-          version = "1.18.2";
-          src = pkgs.fetchurl {
-            url = "https://github.com/libtom/libtomcrypt/releases/download/v${version}/crypt-${version}.tar.xz";
-            sha256 = "113vfrgapyv72lalhd3nkw7jnks8az0gcb5wqn9hj19nhcxlrbcn";
+        libtomcryptBuilder = { tcVersion, tcHash, tmVersion, tmHash }:
+        (pkgs.libtomcrypt.override { libtommath = libtommathBuilder { version = tmVersion; hash = tmHash; }; }).overrideAttrs (final: prev: 
+        let
+          preBuilds = {
+            "1.18" = ''
+              makeFlagsArray+=(PREFIX=$out \
+                CFLAGS="-DUSE_LTM -DLTM_DESC" \
+                EXTRALIBS=\"-ltommath\" \
+                INSTALL_GROUP=$(id -g) \
+                INSTALL_USER=$(id -u))
+            '';
+            "1.17" = ''
+              mkdir --parents $out/{lib, include, share/doc/}
+
+              makeFlagsArray+=(PREFIX=$out \
+                LIBPATH=$out/lib \
+                INCPATH=$out/include \
+                DATAPATH=$out/share/doc/libtomcrypt/pdf
+                CFLAGS_OPTS="-DUSE_LTM -DLTM_DESC" \
+                EXTRALIBS=\"-ltommath\" \
+                GROUP=$(id -g) \
+                USER=$(id -u))
+            '';
+            # "1.01" = ''
+            # '';
           };
-          preBuild = ''
-            makeFlagsArray+=(PREFIX=$out \
-              CFLAGS="-DUSE_LTM -DLTM_DESC" \
-              EXTRALIBS=\"-ltommath\" \
-              INSTALL_GROUP=$(id -g) \
-              INSTALL_USER=$(id -u))
-          '';
-          patches = ( prev.patches or [] ) ++ [
+          preBuild = if tcVersion != null
+          then if builtins.hasAttr (getMajorMinor tcVersion) preBuilds
+            then preBuilds."${getMajorMinor tcVersion}"
+            else preBuilds."1.17"
+          else preBuilds."1.18";
+        in
+        rec {
+          makefile = "makefile.unix";
+          version = tcVersion;
+
+          src = pkgs.fetchFromGitHub {
+            owner = "libtom";
+            repo = "libtomcrypt";
+            rev = "refs/tags/${version}";
+            leaveDotGit = true;
+            hash = tcHash;
+          };
+
+          inherit preBuild;
+          patches = if pkgs.lib.hasPrefix "1.18" version then ( prev.patches or [] ) ++ [
             # NOTE: LibTomCrypt does not expose the lib, when built statically (using `makefile and not `makefile.shared`).
             #       This patch copies the necessary code from `makefile.shared`.
-            ./nix/libtomcrypt-pkgconfig-for-static.patch
-          ];
+            # ./nix/libtomcrypt-pkgconfig-for-static.patch ]
+            ] else [];
         });
-        libtommath = pkgs.libtommath.overrideAttrs (final: prev: rec {
-          makefile = "makefile";
-          version = "1.3.0";
+
+        libtommathBuilder = { version, hash }: pkgs.libtommath.overrideAttrs (final: prev: rec {
+          makefile = "makefile.unix";
+          inherit version;
+          # version = "1.3.0";
           src = pkgs.fetchurl {
             url = "https://github.com/libtom/libtommath/releases/download/v${version}/ltm-${version}.tar.xz";
-            sha256 = "sha256-KWJy2TQ1mRMI63NgdgDANLVYgHoH6CnnURQuZcz6nQg=";
+            inherit hash;
           };
-          patches = ( prev.patches or [] ) ++ [
-            # NOTE: LibTomMath does not expose the lib, when built statically (using `makefile and not `makefile.shared`).
-            #       This patch copies the necessary code from `makefile.shared`.
-            ./nix/libtommath-pkgconfig-for-static-build.patch
-          ];
+          # patches = ( prev.patches or [] ) ++ [
+          #   # NOTE: LibTomMath does not expose the lib, when built statically (using `makefile and not `makefile.shared`).
+          #   #       This patch copies the necessary code from `makefile.shared`.
+          #   ./nix/libtommath-pkgconfig-for-static-build.patch
+          # ];
         });
         nettle = pkgs.nettle.overrideAttrs (final: prev: {
           configureFlags = ( prev.configureFlags or [] ) ++ [ "--enable-static" ];
@@ -153,7 +189,11 @@
 
         # Shims and libs
         # Current list of targets: tomcrypt botan cryptopp openssl boringssl gcrypt mbedtls ippcp nettle libressl
-        tomcryptShim = pkgs.callPackage ./nix/tomcryptshim.nix { inherit pkgs libtomcrypt libtommath; };
+        tomcryptShimBuilder = { tcVersion, tcHash, tmVersion, tmHash}: pkgs.callPackage ./nix/tomcryptshim.nix {
+          inherit pkgs;
+          libtomcrypt = ( libtomcryptBuilder { inherit tcVersion tcHash tmVersion tmHash; });
+          libtommath = ( libtommathBuilder { version = tmVersion; hash = tmHash; });
+        };
         botanShimBuilder = { version, source_extension, hash }: pkgs.callPackage ./nix/botanshim.nix { botan2 = botan2Builder { inherit version source_extension hash; }; };
         cryptoppShimBuilder = { version, hash}: pkgs.callPackage ./nix/cryptoppshim.nix { cryptopp = cryptoppBuilder { inherit version hash; };};
         opensslShimBuilder = { version, hash }: import ./nix/opensslshim.nix { inherit pkgs; openssl = (opensslBuilder { version = version; hash = hash;}); };
@@ -167,11 +207,19 @@
         commonLibs = import ./nix/commonlibs.nix { pkgs = pkgs; };
 
         buildECTesterStandalone = {
+          tomcrypt ? { version = null; hash = null; },
+          tommath ? { version = null; hash = null; },
           openssl ? { version = null; hash = null; },
           botan ? { version = null; source_extension = null; hash = null; },
           cryptopp ? { version = null; hash = null; },
         }: (
           let
+            tomcryptShim = tomcryptShimBuilder {
+              tcVersion = tomcrypt.version;
+              tcHash = tomcrypt.hash;
+              tmVersion = tommath.version;
+              tmHash = tommath.hash;
+            };
             opensslShim = (opensslShimBuilder { inherit (openssl) version hash; });
             botanShim = botanShimBuilder { inherit (botan) version source_extension hash; };
             cryptoppShim = cryptoppShimBuilder { inherit (cryptopp) version hash; };
@@ -226,6 +274,7 @@
       {
         packages = rec {
           default = openssl.v331;
+          tomcrypt = pkgs.callPackage ./nix/tomcrypt_pkg_versions.nix { inherit buildECTesterStandalone; };
           openssl = pkgs.callPackage ./nix/openssl_pkg_versions.nix { inherit buildECTesterStandalone; };
           botan = pkgs.callPackage ./nix/botan_pkg_versions.nix { inherit buildECTesterStandalone; };
           cryptopp = pkgs.callPackage ./nix/cryptopp_pkg_versions.nix { inherit buildECTesterStandalone; };
