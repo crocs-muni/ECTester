@@ -119,6 +119,47 @@ def fetch_openssl():
     with open(f"./nix/{pkg}_pkg_versions.nix", "w") as handle:
         handle.write(all_versions)
 
+def fetch_tomcrypt():
+    # fetch libtomcrypt
+    pass
+
+def fetch_gcrypt():
+
+    pkg = "gcrypt"
+    release_list = "https://gnupg.org/ftp/gcrypt/libgcrypt/"
+    download_url = "https://gnupg.org/ftp/gcrypt/libgcrypt/{version}"
+    resp = requests.get(release_list)
+    soup = BeautifulSoup(resp.content, 'html.parser')
+
+    single_version_template = env.from_string("""{{ flat_version }} = buildECTesterStandalone {
+    {{ pkg }} = { version="{{ version }}";  hash="{{ digest }}"; };
+  };""")
+
+    renders = []
+    for link in soup.find_all("a"):
+        if link.text.startswith("libgcrypt") and link.text.endswith("tar.bz2"):
+            download_link = download_url.format(version=link['href'])
+
+            match = re.match(r"libgcrypt-(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<dont>_do_not_use)?\.(?P<ext>.*)", link.text)
+            version = f"{match['major']}.{match['minor']}.{match['patch']}"
+            print(version)
+
+            digest = get_source_hash(download_link)
+            print(digest)
+
+            flat_version = f"v{match['major']}{match['minor']}{match['patch']}"
+            if match['dont']:
+                flat_version += "_do_not_use"
+
+
+            rendered = single_version_template.render(pkg=pkg, digest=digest, flat_version=flat_version, version=version).strip()
+            renders.append(rendered)
+
+    all_versions = all_versions_template.render(pkg_versions=renders).strip()
+    with open("./nix/gcrypt_pkg_versions.nix", "w") as handle:
+        handle.write(all_versions)
+
+
 
 
 
@@ -134,6 +175,8 @@ def main():
             fetch_cryptopp()
         case "openssl":
             fetch_openssl()
+        case "gcrypt":
+            fetch_gcrypt()
 
 
 if __name__ == '__main__':
