@@ -1,5 +1,6 @@
 {
   pkgs
+  , mbedtls
 }:
 with pkgs; stdenv.mkDerivation rec {
   name = "MbedTLSShim";

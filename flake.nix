@@ -77,6 +77,18 @@
         libgpg-error = pkgs.libgpg-error.overrideAttrs (final: prev: {
           configureFlags = ( prev.configureFlags or [] ) ++ [ "--enable-static" ];
         });
+
+        mbedtlsBuilder = { version, hash}: pkgs.mbedtls.overrideAttrs (final: prev: {
+          src = if version == null then prev.src else pkgs.fetchFromGitHub {
+            owner = "Mbed-TLS";
+            repo = "mbedtls";
+            rev = "mbedtls-${version}";
+            inherit hash;
+            # mbedtls >= 3.6.0 uses git submodules
+            fetchSubmodules = true;
+          };
+        });
+
         libtomcryptBuilder = { tcVersion, tcHash, tmVersion, tmHash }:
         (pkgs.libtomcrypt.override { libtommath = libtommathBuilder { version = tmVersion; hash = tmHash; }; }).overrideAttrs (final: prev: 
         let
@@ -203,7 +215,7 @@
         opensslShimBuilder = { version, hash }: import ./nix/opensslshim.nix { inherit pkgs; openssl = (opensslBuilder { version = version; hash = hash;}); };
         boringsslShim = import ./nix/boringsslshim.nix { inherit pkgs; boringssl = boringssl; };
         gcryptShimBuilder = { version, hash}: import ./nix/gcryptshim.nix { inherit pkgs libgpg-error; libgcrypt = libgcryptBuilder { inherit version hash; }; };
-        mbedtlsShim = import ./nix/mbedtlsshim.nix { pkgs = pkgs; };
+        mbedtlsShimBuilder = { version, hash }: import ./nix/mbedtlsshim.nix { inherit pkgs; mbedtls = ( mbedtlsBuilder { inherit version hash; }); };
         ippcpShim = import ./nix/ippcpshim.nix { pkgs = pkgs; ipp-crypto = customPkgs.ipp-crypto; };
         nettleShim = import ./nix/nettleshim.nix { inherit pkgs nettle gmp; };
         libresslShim = import ./nix/libresslshim.nix { inherit pkgs libressl; };
@@ -218,6 +230,7 @@
           openssl ? { version = null; hash = null; },
           boringssl ? { version = null; hash = null; },
           gcrypt ? { version = null; hash = null; },
+          mbedtls ? { version = null; hash = null; },
         }: (
           let
             tomcryptShim = tomcryptShimBuilder {
@@ -230,6 +243,7 @@
             botanShim = botanShimBuilder { inherit (botan) version source_extension hash; };
             cryptoppShim = cryptoppShimBuilder { inherit (cryptopp) version hash; };
             gcryptShim = gcryptShimBuilder { inherit (gcrypt) version hash; };
+            mbedtlsShim = mbedtlsShimBuilder { inherit (mbedtls) version hash; };
           in
           with pkgs;
             gradle2nix.builders.${system}.buildGradlePackage rec {
@@ -287,6 +301,7 @@
           openssl = pkgs.callPackage ./nix/openssl_pkg_versions.nix { inherit buildECTesterStandalone; };
           boringssl = pkgs.callPackage ./nix/boringssl_pkg_versions.nix { inherit buildECTesterStandalone; };
           gcrypt = pkgs.callPackage ./nix/gcrypt_pkg_versions.nix { inherit buildECTesterStandalone; };
+          mbedtls = pkgs.callPackage ./nix/mbedtls_pkg_versions.nix { inherit buildECTesterStandalone; };
 
           fetchReleases = with pkgs.python3Packages; buildPythonApplication {
             pname = "fetchReleases";

@@ -162,11 +162,41 @@ def fetch_gcrypt():
 
 
 
+def fetch_mbedtls():
+    # Mbed-TLS/mbedtls
+    pkg = "mbedtls"
+    owner = "Mbed-TLS"
+    repo = "mbedtls"
+    release_url = f"https://api.github.com/repos/{owner}/{repo}/releases"
+    resp = requests.get(release_url)
+
+    single_version_template = env.from_string("""{{ flat_version }} = buildECTesterStandalone {
+    {{ pkg }} = { version="{{ version }}"; hash="{{ digest }}"; };
+  };""")
+    renders = []
+    for release in resp.json():
+        if not release['draft'] and not release['prerelease']:
+            version = release['tag_name']
+            print(version)
+            flat_version = version.replace('.', '')
+            download_url = f"https://github.com/{owner}/{repo}/archive/{version}.tar.gz"
+            digest = get_source_hash(download_url, unpack=True)
+
+
+            rendered = single_version_template.render(pkg=pkg, digest=digest, flat_version=flat_version, version=version).strip()
+            renders.append(rendered)
+
+    all_versions = all_versions_template.render(pkg_versions=renders).strip()
+    with open(f"./nix/{pkg}_pkg_versions.nix", "w") as handle:
+        handle.write(all_versions)
+
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("lib")
     args = parser.parse_args()
+
+    print(f"Fetching versions and source hashes for: {args.lib}")
 
     match args.lib:
         case "botan":
@@ -177,6 +207,10 @@ def main():
             fetch_openssl()
         case "gcrypt":
             fetch_gcrypt()
+        case "mbedtls":
+            fetch_mbedtls()
+        case _:
+            print("Unknown library")
 
 
 if __name__ == '__main__':
