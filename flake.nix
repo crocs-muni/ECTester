@@ -89,6 +89,15 @@
           };
         });
 
+        ipp-cryptoBuilder = { version, hash }: customPkgs.ipp-crypto.overrideAttrs (final: prev: {
+          src = if version == null then prev.src else pkgs.fetchFromGitHub {
+            owner = "intel";
+            repo = "ipp-crypto";
+            rev = "ippcp_${version}";
+            inherit hash;
+          };
+        });
+
         libtomcryptBuilder = { tcVersion, tcHash, tmVersion, tmHash }:
         (pkgs.libtomcrypt.override { libtommath = libtommathBuilder { version = tmVersion; hash = tmHash; }; }).overrideAttrs (final: prev: 
         let
@@ -216,7 +225,7 @@
         boringsslShim = import ./nix/boringsslshim.nix { inherit pkgs; boringssl = boringssl; };
         gcryptShimBuilder = { version, hash}: import ./nix/gcryptshim.nix { inherit pkgs libgpg-error; libgcrypt = libgcryptBuilder { inherit version hash; }; };
         mbedtlsShimBuilder = { version, hash }: import ./nix/mbedtlsshim.nix { inherit pkgs; mbedtls = ( mbedtlsBuilder { inherit version hash; }); };
-        ippcpShim = import ./nix/ippcpshim.nix { pkgs = pkgs; ipp-crypto = customPkgs.ipp-crypto; };
+        ippcpShimBuilder = { version, hash }: import ./nix/ippcpshim.nix { pkgs = pkgs; ipp-crypto = ( ipp-cryptoBuilder { inherit version hash; }); };
         nettleShim = import ./nix/nettleshim.nix { inherit pkgs nettle gmp; };
         libresslShim = import ./nix/libresslshim.nix { inherit pkgs libressl; };
 
@@ -231,6 +240,7 @@
           boringssl ? { version = null; hash = null; },
           gcrypt ? { version = null; hash = null; },
           mbedtls ? { version = null; hash = null; },
+          ippcp ? { version = null; hash = null; },
         }: (
           let
             tomcryptShim = tomcryptShimBuilder {
@@ -244,6 +254,7 @@
             cryptoppShim = cryptoppShimBuilder { inherit (cryptopp) version hash; };
             gcryptShim = gcryptShimBuilder { inherit (gcrypt) version hash; };
             mbedtlsShim = mbedtlsShimBuilder { inherit (mbedtls) version hash; };
+            ippcpShim = ippcpShimBuilder { inherit (ippcp) version hash; };
           in
           with pkgs;
             gradle2nix.builders.${system}.buildGradlePackage rec {
@@ -302,6 +313,7 @@
           boringssl = pkgs.callPackage ./nix/boringssl_pkg_versions.nix { inherit buildECTesterStandalone; };
           gcrypt = pkgs.callPackage ./nix/gcrypt_pkg_versions.nix { inherit buildECTesterStandalone; };
           mbedtls = pkgs.callPackage ./nix/mbedtls_pkg_versions.nix { inherit buildECTesterStandalone; };
+          ippcp = pkgs.callPackage ./nix/ippcp_pkg_versions.nix { inherit buildECTesterStandalone; };
 
           fetchReleases = with pkgs.python3Packages; buildPythonApplication {
             pname = "fetchReleases";

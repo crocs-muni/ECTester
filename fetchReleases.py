@@ -190,6 +190,34 @@ def fetch_mbedtls():
     with open(f"./nix/{pkg}_pkg_versions.nix", "w") as handle:
         handle.write(all_versions)
 
+def fetch_ippcp():
+    # https://api.github.com/repos/intel/ipp-crypto/releases
+    pkg = "ippcp"
+    owner = "intel"
+    repo = "ipp-crypto"
+    release_url = f"https://api.github.com/repos/{owner}/{repo}/releases"
+    resp = requests.get(release_url)
+
+    single_version_template = env.from_string("""{{ flat_version }} = buildECTesterStandalone {
+    {{ pkg }} = { version="{{ version }}"; hash="{{ digest }}"; };
+  };""")
+    renders = []
+    for release in resp.json():
+        if not release['draft'] and not release['prerelease']:
+            version = release['tag_name'].split('_')[1]
+            print(version)
+            flat_version = "v" + version.replace('.', '_')
+            download_url = f"https://github.com/{owner}/{repo}/archive/{release['tag_name']}.tar.gz"
+            digest = get_source_hash(download_url, unpack=True)
+
+
+            rendered = single_version_template.render(pkg=pkg, digest=digest, flat_version=flat_version, version=version).strip()
+            renders.append(rendered)
+
+    all_versions = all_versions_template.render(pkg_versions=renders).strip()
+    with open(f"./nix/{pkg}_pkg_versions.nix", "w") as handle:
+        handle.write(all_versions)
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -209,6 +237,8 @@ def main():
             fetch_gcrypt()
         case "mbedtls":
             fetch_mbedtls()
+        case "ippcp":
+            fetch_ippcp()
         case _:
             print("Unknown library")
 
