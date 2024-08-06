@@ -166,7 +166,7 @@
         });
         nettleBuilder = { version, tag, hash }: pkgs.nettle.overrideAttrs (final: prev: {
           configureFlags = ( prev.configureFlags or [] ) ++ [ "--enable-static" ];
-          src = if version == null then prev.version else pkgs.fetchurl {
+          src = if version == null then prev.src else pkgs.fetchurl {
             url = "mirror://gnu/nettle/nettle-${version}.tar.gz";
             inherit hash;
           };
