@@ -218,6 +218,39 @@ def fetch_ippcp():
     with open(f"./nix/{pkg}_pkg_versions.nix", "w") as handle:
         handle.write(all_versions)
 
+def fetch_nettle():
+    # https://api.github.com/repos/intel/ipp-crypto/releases
+    pkg = "nettle"
+    owner = "gnutls"
+    repo = "nettle"
+    release_url = f"https://api.github.com/repos/{owner}/{repo}/tags"
+    resp = requests.get(release_url)
+
+    single_version_template = env.from_string("""{{ flat_version }} = buildECTesterStandalone {
+    {{ pkg }} = { version="{{ version }}"; tag="{{ tag }}"; hash="{{ digest }}"; };
+  };""")
+    renders = []
+    for tag in resp.json():
+        if tag['name'] == 'release_nettle_0.2.20010617':
+            continue
+        version = tag['name'].split('_')[1]
+        # NOTE skip release candidates
+        if re.search(r'\drc\d', version):
+            continue
+        flat_version = "v" + version.replace('.', '_')
+        # download_url = f"https://github.com/{owner}/{repo}/archive/{tag['name']}.tar.gz"
+        download_url = f"mirror://gnu/nettle/nettle-{version}.tar.gz"
+        print(download_url)
+        digest = get_source_hash(download_url, unpack=False)
+
+        rendered = single_version_template.render(
+                pkg=pkg, digest=digest, flat_version=flat_version, tag=tag['name'], version=version).strip()
+        renders.append(rendered)
+
+    all_versions = all_versions_template.render(pkg_versions=renders).strip()
+    with open(f"./nix/{pkg}_pkg_versions.nix", "w") as handle:
+        handle.write(all_versions)
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -239,6 +272,8 @@ def main():
             fetch_mbedtls()
         case "ippcp":
             fetch_ippcp()
+        case "nettle":
+            fetch_nettle()
         case _:
             print("Unknown library")
 

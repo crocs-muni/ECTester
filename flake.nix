@@ -164,8 +164,12 @@
             ./nix/libtommath-pkgconfig-for-static-build.patch
           ];
         });
-        nettle = pkgs.nettle.overrideAttrs (final: prev: {
+        nettleBuilder = { version, tag, hash }: pkgs.nettle.overrideAttrs (final: prev: {
           configureFlags = ( prev.configureFlags or [] ) ++ [ "--enable-static" ];
+          src = if version == null then prev.version else pkgs.fetchurl {
+            url = "mirror://gnu/nettle/nettle-${version}.tar.gz";
+            inherit hash;
+          };
         });
         cryptoppBuilder = { version, hash }: (pkgs.cryptopp.override { enableStatic = true; }).overrideAttrs (final: prev: {
           src = if version == null then prev.src else
@@ -226,7 +230,7 @@
         gcryptShimBuilder = { version, hash}: import ./nix/gcryptshim.nix { inherit pkgs libgpg-error; libgcrypt = libgcryptBuilder { inherit version hash; }; };
         mbedtlsShimBuilder = { version, hash }: import ./nix/mbedtlsshim.nix { inherit pkgs; mbedtls = ( mbedtlsBuilder { inherit version hash; }); };
         ippcpShimBuilder = { version, hash }: import ./nix/ippcpshim.nix { pkgs = pkgs; ipp-crypto = ( ipp-cryptoBuilder { inherit version hash; }); };
-        nettleShim = import ./nix/nettleshim.nix { inherit pkgs nettle gmp; };
+        nettleShimBuilder = { version, tag, hash }: import ./nix/nettleshim.nix { inherit pkgs gmp; nettle = ( nettleBuilder { inherit version tag hash; }); };
         libresslShim = import ./nix/libresslshim.nix { inherit pkgs libressl; };
 
         commonLibs = import ./nix/commonlibs.nix { pkgs = pkgs; };
@@ -241,6 +245,7 @@
           gcrypt ? { version = null; hash = null; },
           mbedtls ? { version = null; hash = null; },
           ippcp ? { version = null; hash = null; },
+          nettle ? { version = null; tag = null; hash = null; },
         }: (
           let
             tomcryptShim = tomcryptShimBuilder {
@@ -255,6 +260,7 @@
             gcryptShim = gcryptShimBuilder { inherit (gcrypt) version hash; };
             mbedtlsShim = mbedtlsShimBuilder { inherit (mbedtls) version hash; };
             ippcpShim = ippcpShimBuilder { inherit (ippcp) version hash; };
+            nettleShim = nettleShimBuilder { inherit (nettle) version tag hash; };
           in
           with pkgs;
             gradle2nix.builders.${system}.buildGradlePackage rec {
@@ -314,6 +320,7 @@
           gcrypt = pkgs.callPackage ./nix/gcrypt_pkg_versions.nix { inherit buildECTesterStandalone; };
           mbedtls = pkgs.callPackage ./nix/mbedtls_pkg_versions.nix { inherit buildECTesterStandalone; };
           ippcp = pkgs.callPackage ./nix/ippcp_pkg_versions.nix { inherit buildECTesterStandalone; };
+          nettle = pkgs.callPackage ./nix/nettle_pkg_versions.nix { inherit buildECTesterStandalone; };
 
           fetchReleases = with pkgs.python3Packages; buildPythonApplication {
             pname = "fetchReleases";
