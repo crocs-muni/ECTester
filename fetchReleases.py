@@ -251,6 +251,35 @@ def fetch_nettle():
     with open(f"./nix/{pkg}_pkg_versions.nix", "w") as handle:
         handle.write(all_versions)
 
+def fetch_libressl():
+    pkg = "libressl"
+    release_list = "https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/"
+    download_url = "mirror://openbsd/LibreSSL/libressl-{version}.tar.gz"
+    resp = requests.get(release_list)
+    soup = BeautifulSoup(resp.content, 'html.parser')
+
+    single_version_template = env.from_string("""{{ flat_version }} = buildECTesterStandalone {
+    {{ pkg }} = { version="{{ version }}"; hash="{{ digest }}"; };
+  };""")
+
+    renders = []
+    for link in soup.find_all("a"):
+        if link.text.startswith("libressl") and link.text.endswith('.tar.gz'):
+            match = re.match(r"libressl-(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)\.tar.gz", link.text)
+            version = f"{match['major']}.{match['minor']}.{match['patch']}"
+            download_link = download_url.format(version=version)
+            print(version)
+            digest = get_source_hash(download_link)
+            # NOTE: use underscore to separate the versions?
+            flat_version = f"v{match['major']}{match['minor']}{match['patch']}"
+
+            rendered = single_version_template.render(pkg="botan", digest=digest, flat_version=flat_version, version=version).strip()
+            renders.append(rendered)
+
+    all_versions = all_versions_template.render(pkg_versions=renders).strip()
+    with open("./nix/{pkg}_pkg_versions.nix", "w") as handle:
+        handle.write(all_versions)
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -274,6 +303,8 @@ def main():
             fetch_ippcp()
         case "nettle":
             fetch_nettle()
+        case "libressl":
+            fetch_libressl()
         case _:
             print("Unknown library")
 

@@ -180,7 +180,12 @@
               inherit hash;
           };
         });
-        libressl = (pkgs.libressl.override { buildShared = false; } ).overrideAttrs (_old: rec {
+        libresslBuilder = { version, hash }: (pkgs.libressl.override { buildShared = false; } ).overrideAttrs (final: prev: rec {
+
+          src = if version == null then prev.src else pkgs.fetchurl {
+            url = "mirror://openbsd/LibreSSL/${prev.pname}-${version}.tar.gz";
+            inherit hash;
+          };
           patches = [
             (pkgs.fetchpatch {
               url = "https://github.com/libressl/portable/commit/86e4965d7f20c3a6afc41d95590c9f6abb4fe788.patch";
@@ -194,7 +199,7 @@
           #       contain OpenSSL at all, but for the interactive shell (started with `nix develop`), when multiple
           #       lib shims are built alongside each other.
           postFixup = pkgs.lib.concatLines [
-            ( _old.postFixup or "" )
+            ( prev.postFixup or "" )
             ''
             cp $dev/lib/pkgconfig/libcrypto.pc $dev/lib/pkgconfig/libresslcrypto.pc
             sed --in-place --expression 's/-lcrypto/-lresslcrypto/' $dev/lib/pkgconfig/libresslcrypto.pc
@@ -231,7 +236,7 @@
         mbedtlsShimBuilder = { version, hash }: import ./nix/mbedtlsshim.nix { inherit pkgs; mbedtls = ( mbedtlsBuilder { inherit version hash; }); };
         ippcpShimBuilder = { version, hash }: import ./nix/ippcpshim.nix { pkgs = pkgs; ipp-crypto = ( ipp-cryptoBuilder { inherit version hash; }); };
         nettleShimBuilder = { version, tag, hash }: import ./nix/nettleshim.nix { inherit pkgs gmp; nettle = ( nettleBuilder { inherit version tag hash; }); };
-        libresslShim = import ./nix/libresslshim.nix { inherit pkgs libressl; };
+        libresslShimBuilder = { version, hash }: import ./nix/libresslshim.nix { inherit pkgs; libressl = ( libresslBuilder { inherit version hash; }); };
 
         commonLibs = import ./nix/commonlibs.nix { pkgs = pkgs; };
 
@@ -246,6 +251,7 @@
           mbedtls ? { version = null; hash = null; },
           ippcp ? { version = null; hash = null; },
           nettle ? { version = null; tag = null; hash = null; },
+          libressl ? { version = null; hash = null; },
         }: (
           let
             tomcryptShim = tomcryptShimBuilder {
@@ -261,6 +267,7 @@
             mbedtlsShim = mbedtlsShimBuilder { inherit (mbedtls) version hash; };
             ippcpShim = ippcpShimBuilder { inherit (ippcp) version hash; };
             nettleShim = nettleShimBuilder { inherit (nettle) version tag hash; };
+            libresslShim = libresslShimBuilder { inherit (libressl) version hash; };
           in
           with pkgs;
             gradle2nix.builders.${system}.buildGradlePackage rec {
@@ -321,6 +328,7 @@
           mbedtls = pkgs.callPackage ./nix/mbedtls_pkg_versions.nix { inherit buildECTesterStandalone; };
           ippcp = pkgs.callPackage ./nix/ippcp_pkg_versions.nix { inherit buildECTesterStandalone; };
           nettle = pkgs.callPackage ./nix/nettle_pkg_versions.nix { inherit buildECTesterStandalone; };
+          libressl = pkgs.callPackage ./nix/libressl_pkg_versions.nix { inherit buildECTesterStandalone; };
 
           fetchReleases = with pkgs.python3Packages; buildPythonApplication {
             pname = "fetchReleases";
