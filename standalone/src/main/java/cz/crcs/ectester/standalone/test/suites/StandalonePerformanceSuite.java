@@ -67,8 +67,8 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
             KeyPairGenerator kpg = kpgIdent.getInstance(cfg.selected.getProvider());
             if (cli.hasOption("test.bits")) {
                 int bits = Integer.parseInt(cli.getOptionValue("test.bits"));
-                kgtOne = new KeyGeneratorTestable(kpg, bits);
-                kgtOther = new KeyGeneratorTestable(kpg, bits);
+                kgtOne = KeyGeneratorTestable.builder().keyPairGenerator(kpg).keysize(bits).build();
+                kgtOther = KeyGeneratorTestable.builder().keyPairGenerator(kpg).keysize(bits).build();
             } else if (cli.hasOption("test.named-curve")) {
                 String curveName = cli.getOptionValue("test.named-curve");
                 EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
@@ -77,11 +77,11 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
                     return;
                 }
                 spec = curve.toSpec();
-                kgtOne = new KeyGeneratorTestable(kpg, spec);
-                kgtOther = new KeyGeneratorTestable(kpg, spec);
+                kgtOne = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).build();
+                kgtOther = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).build();
             } else {
-                kgtOne = new KeyGeneratorTestable(kpg);
-                kgtOther = new KeyGeneratorTestable(kpg);
+                kgtOne = KeyGeneratorTestable.builder().keyPairGenerator(kpg).build();
+                kgtOther = KeyGeneratorTestable.builder().keyPairGenerator(kpg).build();
             }
             kpgTests.add(PerformanceTest.repeat(kgtOne, cfg.selected, kpgIdent.getName(), count));
             kpgTests.add(PerformanceTest.repeat(kgtOther, cfg.selected, kpgIdent.getName(), count));

@@ -134,7 +134,7 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
             ECParameterSpec spec = curve.toSpec();
 
             //generate KeyPair
-            KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
+            KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).build();
             Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
 
             //perform ECDH tests
@@ -213,7 +213,7 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
         Arrays.sort(zeros);
 
         //generate KeyPair
-        KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
+        KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).build();
         Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
 
         //perform ECDH tests

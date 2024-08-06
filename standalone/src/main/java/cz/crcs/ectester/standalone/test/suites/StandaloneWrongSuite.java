@@ -73,7 +73,7 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
                 String type = curve.getField() == javacard.security.KeyPair.ALG_EC_FP ? "FP" : "F2M";
 
                 //try generating a keypair
-                KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
+                KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).build();
                 Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
 
                 KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
@@ -233,7 +233,7 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
 
     private Test ecdhTest(ECParameterSpec spec, String desc) throws NoSuchAlgorithmException {
         //generate KeyPair
-        KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
+        KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).build();
         Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.FAILURE);
 
         //perform ECDH

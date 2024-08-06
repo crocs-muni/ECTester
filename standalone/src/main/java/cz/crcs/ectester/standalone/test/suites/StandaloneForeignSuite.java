@@ -57,9 +57,9 @@ public abstract class StandaloneForeignSuite extends StandaloneTestSuite {
             ECParameterSpec spec = curve.toSpec();
             ECGenParameterSpec namedSpec = new ECGenParameterSpec(curve.getId());
 
-            KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
-            KeyGeneratorTestable kgtOnNamedCurve = new KeyGeneratorTestable(kpg, namedSpec);
-            KeyGeneratorTestable kgtOnDefaultCurve = new KeyGeneratorTestable(kpg, curve.getBits());
+            KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).build();
+            KeyGeneratorTestable kgtOnNamedCurve = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(namedSpec).build();
+            KeyGeneratorTestable kgtOnDefaultCurve = KeyGeneratorTestable.builder().keyPairGenerator(kpg).keysize(curve.getBits()).build();
 
             // This is some nasty hacking...
             KeyGeneratorTestable theKgt = new KeyGeneratorTestable(kpg) {

@@ -80,7 +80,7 @@ public class StandaloneMiscSuite extends StandaloneTestSuite {
 
     private void testCurve(EC_Curve curve, String catName, KeyPairGenerator kpg, Result.ExpectedValue expected) throws NoSuchAlgorithmException {
         //generate KeyPair
-        KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, curve.toSpec());
+        KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(curve.toSpec()).build();
         Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
 
         //perform KeyAgreement tests
