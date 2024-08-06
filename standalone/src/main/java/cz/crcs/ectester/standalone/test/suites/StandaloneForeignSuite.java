@@ -156,7 +156,7 @@ public abstract class StandaloneForeignSuite extends StandaloneTestSuite {
                     for (EC_Key.Public pub : keys) {
                         ECPublicKey ecpub = ECUtil.toPublicKey(pub);
                         KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                        KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpub, theKgt);
+                        KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).publicKey(ecpub).privateKgt(theKgt).build();
                         Test keyAgreement = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
                         specificKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " invalid key test.", keyAgreement));
                     }

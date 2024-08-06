@@ -75,7 +75,7 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
                     for (EC_Key.Public pub : curveKeys.getValue()) {
                         ECPublicKey ecpub = ECUtil.toPublicKey(pub);
                         KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                        KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpub, kgt);
+                        KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).publicKey(ecpub).privateKgt(kgt).build();
                         Test keyAgreement = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
                         specificKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Composite test of " + curve.getId() + ", with generated private key, " + pub.getDesc(), keyAgreement));
                     }
@@ -141,7 +141,7 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
             for (KeyAgreementIdent kaIdent : cfg.selected.getKAs()) {
                 if (kaAlgo == null || kaIdent.containsAny(kaTypes)) {
                     KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                    KeyAgreementTestable testable = new KeyAgreementTestable(ka, kgt, kgt);
+                    KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).publicKgt(kgt).privateKgt(kgt).build();
                     kaTests.add(KeyAgreementTest.expectError(testable, dhValue));
                 }
             }

@@ -94,9 +94,9 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
                 KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
                 KeyAgreementTestable testable;
                 if (kaIdent.requiresKeyAlgo()) {
-                    testable = new KeyAgreementTestable(ka, kgtOne, kgtOther, spec, keyAlgo);
+                    testable = KeyAgreementTestable.builder().ka(ka).privateKgt(kgtOne).publicKgt(kgtOther).spec(spec).keyAlgo(keyAlgo).build();
                 } else {
-                    testable = new KeyAgreementTestable(ka, kgtOne, kgtOther, spec);
+                    testable = KeyAgreementTestable.builder().ka(ka).privateKgt(kgtOne).publicKgt(kgtOther).spec(spec).build();
                 }
                 kaTests.add(PerformanceTest.repeat(testable, cfg.selected, kaIdent.getName(), count));
             }

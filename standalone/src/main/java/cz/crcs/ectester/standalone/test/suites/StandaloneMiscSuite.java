@@ -88,7 +88,7 @@ public class StandaloneMiscSuite extends StandaloneTestSuite {
         for (KeyAgreementIdent kaIdent : cfg.selected.getKAs()) {
             if (kaAlgo == null || kaIdent.containsAny(kaTypes)) {
                 KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                KeyAgreementTestable testable = new KeyAgreementTestable(ka, kgt, kgt);
+                KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).publicKgt(kgt).privateKgt(kgt).build();
                 kaTests.add(KeyAgreementTest.expectError(testable, expected));
             }
         }

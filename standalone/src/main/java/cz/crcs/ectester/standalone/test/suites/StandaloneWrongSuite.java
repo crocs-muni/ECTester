@@ -77,7 +77,7 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
                 Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
 
                 KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                KeyAgreementTestable testable = new KeyAgreementTestable(ka, kgt, kgt);
+                KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).privateKgt(kgt).publicKgt(kgt).build();
                 Test ecdh = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
                 doTest(CompoundTest.function(CompoundTest.EXPECT_ALL_SUCCESS, CompoundTest.RUN_ALL_IF_FIRST, "Wrong curve test of " + curve.getBits()
                         + "b " + type + ". " + curve.getDesc(), generate, ecdh));
@@ -238,7 +238,7 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
 
         //perform ECDH
         KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-        KeyAgreementTestable testable = new KeyAgreementTestable(ka, kgt, kgt);
+        KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).privateKgt(kgt).publicKgt(kgt).build();
         Test ecdh = KeyAgreementTest.expect(testable, Result.ExpectedValue.FAILURE);
         return CompoundTest.function(CompoundTest.EXPECT_ALL_SUCCESS, CompoundTest.RUN_ALL_IF_FIRST, desc, generate, ecdh);
     }

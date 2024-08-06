@@ -5,6 +5,7 @@ import javax.crypto.SecretKey;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
@@ -21,90 +22,20 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
     private KeyGeneratorTestable kgtPublic;
     private AlgorithmParameterSpec spec;
     private String keyAlgo;
+    private SecureRandom random;
+
     private byte[] secret;
     private SecretKey derived;
 
-    public KeyAgreementTestable(KeyAgreement ka, ECPrivateKey privateKey, ECPublicKey publicKey) {
-        this.ka = ka;
-        this.privateKey = privateKey;
-        this.publicKey = publicKey;
-    }
-
-    public KeyAgreementTestable(KeyAgreement ka, ECPrivateKey privateKey, ECPublicKey publicKey, String keyAlgo) {
-        this(ka, privateKey, publicKey);
-        this.keyAlgo = keyAlgo;
-    }
-
-    public KeyAgreementTestable(KeyAgreement ka, ECPrivateKey privateKey, ECPublicKey publicKey, ECParameterSpec spec) {
-        this(ka, privateKey, publicKey);
-        this.spec = spec;
-    }
-
-    public KeyAgreementTestable(KeyAgreement ka, ECPrivateKey privateKey, ECPublicKey publicKey, ECParameterSpec spec, String keyAlgo) {
-        this(ka, privateKey, publicKey, spec);
-        this.keyAlgo = keyAlgo;
-    }
-
-    public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable kgt, ECPrivateKey privateKey, ECParameterSpec spec) {
-        this(ka, privateKey, null, spec);
-        this.kgtPublic = kgt;
-    }
-
-    public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable kgt, ECPrivateKey privateKey, ECParameterSpec spec, String keyAlgo) {
-        this(ka, kgt, privateKey, spec);
-        this.keyAlgo = keyAlgo;
-    }
-
-    public KeyAgreementTestable(KeyAgreement ka, ECPublicKey publicKey, KeyGeneratorTestable kgt, ECParameterSpec spec) {
-        this(ka, null, publicKey, spec);
-        this.kgtPrivate = kgt;
-    }
-
-    public KeyAgreementTestable(KeyAgreement ka, ECPublicKey publicKey, KeyGeneratorTestable kgt, ECParameterSpec spec, String keyAlgo) {
-        this(ka, publicKey, kgt, spec);
-        this.keyAlgo = keyAlgo;
-    }
-
-    public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable privKgt, KeyGeneratorTestable pubKgt, ECParameterSpec spec) {
-        this(ka, null, (ECPublicKey) null, spec);
-        this.kgtPrivate = privKgt;
-        this.kgtPublic = pubKgt;
-    }
-
-    public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable privKgt, KeyGeneratorTestable pubKgt, ECParameterSpec spec, String keyAlgo) {
-        this(ka, privKgt, pubKgt, spec);
-        this.keyAlgo = keyAlgo;
-    }
-
-    public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable kgt, ECPrivateKey privateKey) {
-        this(ka, privateKey, null, (ECParameterSpec) null);
-        this.kgtPublic = kgt;
-    }
-
-    public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable kgt, ECPrivateKey privateKey, String keyAlgo) {
-        this(ka, kgt, privateKey, (ECParameterSpec) null);
-        this.keyAlgo = keyAlgo;
-    }
-
-    public KeyAgreementTestable(KeyAgreement ka, ECPublicKey publicKey, KeyGeneratorTestable kgt) {
-        this(ka, null, publicKey, (ECParameterSpec) null);
-        this.kgtPrivate = kgt;
-    }
-
-    public KeyAgreementTestable(KeyAgreement ka, ECPublicKey publicKey, KeyGeneratorTestable kgt, String keyAlgo) {
-        this(ka, publicKey, kgt, (ECParameterSpec) null);
-        this.keyAlgo = keyAlgo;
-    }
-
-    public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable privKgt, KeyGeneratorTestable pubKgt) {
-        this(ka, null, (ECPublicKey) null, (ECParameterSpec) null);
-        this.kgtPrivate = privKgt;
-        this.kgtPublic = pubKgt;
-    }
-
-    public KeyAgreementTestable(KeyAgreement ka, KeyGeneratorTestable privKgt, KeyGeneratorTestable pubKgt, String keyAlgo) {
-        this(ka, privKgt, pubKgt, (ECParameterSpec) null);
-        this.keyAlgo = keyAlgo;
+    KeyAgreementTestable(Builder builder) {
+        this.ka = builder.ka;
+        this.privateKey = builder.privateKey;
+        this.publicKey = builder.publicKey;
+        this.kgtPrivate = builder.kgtPrivate;
+        this.kgtPublic = builder.kgtPublic;
+        this.spec = builder.spec;
+        this.keyAlgo = builder.keyAlgo;
+        this.random = builder.random;
     }
 
     public String getKeyAlgorithm() {
@@ -153,9 +84,17 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
             stage = KeyAgreementStage.Init;
             try {
                 if (spec != null) {
-                    ka.init(privateKey, spec);
+                    if (random != null) {
+                        ka.init(privateKey, spec, random);
+                    } else {
+                        ka.init(privateKey, spec);
+                    }
                 } else {
-                    ka.init(privateKey);
+                    if (random != null) {
+                        ka.init(privateKey, random);
+                    } else {
+                        ka.init(privateKey);
+                    }
                 }
             } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
                 failOnException(e);
@@ -197,7 +136,12 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
         super.reset();
         try {
             ka = KeyAgreement.getInstance(ka.getAlgorithm(), ka.getProvider());
-        } catch (NoSuchAlgorithmException e) { }
+        } catch (NoSuchAlgorithmException e) {
+        }
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     public enum KeyAgreementStage {
@@ -206,5 +150,69 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
         Init,
         DoPhase,
         GenerateSecret
+    }
+
+    public static class Builder {
+        private KeyAgreement ka;
+        private ECPrivateKey privateKey;
+        private ECPublicKey publicKey;
+        private KeyGeneratorTestable kgtPrivate;
+        private KeyGeneratorTestable kgtPublic;
+        private AlgorithmParameterSpec spec;
+        private String keyAlgo;
+        private SecureRandom random;
+
+        public Builder ka(KeyAgreement ka) {
+            this.ka = ka;
+            return this;
+        }
+
+        public Builder privateKey(ECPrivateKey privateKey) {
+            this.privateKey = privateKey;
+            return this;
+        }
+
+        public Builder publicKey(ECPublicKey publicKey) {
+            this.publicKey = publicKey;
+            return this;
+        }
+
+        public Builder privateKgt(KeyGeneratorTestable privateKgt) {
+            this.kgtPrivate = privateKgt;
+            return this;
+        }
+
+        public Builder publicKgt(KeyGeneratorTestable publicKgt) {
+            this.kgtPublic = publicKgt;
+            return this;
+        }
+
+        public Builder spec(AlgorithmParameterSpec spec) {
+            this.spec = spec;
+            return this;
+        }
+
+        public Builder keyAlgo(String keyAlgo) {
+            this.keyAlgo = keyAlgo;
+            return this;
+        }
+
+        public Builder random(SecureRandom random) {
+            this.random = random;
+            return this;
+        }
+
+        public KeyAgreementTestable build() {
+            if (ka == null) {
+                throw new NullPointerException("ka needs to be not-null.");
+            }
+            if ((privateKey == null) == (kgtPrivate == null)) {
+                throw new IllegalStateException("One of (but not both) privateKey or privateKgt needs to be not-null.");
+            }
+            if ((publicKey == null) == (kgtPublic == null)) {
+                throw new IllegalStateException("One of (but not both) publicKey or publicKgt needs to be not-null.");
+            }
+            return new KeyAgreementTestable(this);
+        }
     }
 }
