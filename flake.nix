@@ -107,13 +107,12 @@
         in
         rec {
           makefile = "makefile.unix";
-          version = tcVersion;
+          version = if tcVersion != null then tcVersion else prev.version;
 
-          src = pkgs.fetchFromGitHub {
+          src = if version == prev.version then prev.src else pkgs.fetchFromGitHub {
             owner = "libtom";
             repo = "libtomcrypt";
-            rev = "refs/tags/${version}";
-            leaveDotGit = true;
+            rev = if pkgs.lib.hasPrefix "1.18" version then "refs/tags/v${version}" else "refs/tags/${version}" ;
             hash = tcHash;
           };
 
@@ -121,23 +120,24 @@
           patches = if pkgs.lib.hasPrefix "1.18" version then ( prev.patches or [] ) ++ [
             # NOTE: LibTomCrypt does not expose the lib, when built statically (using `makefile and not `makefile.shared`).
             #       This patch copies the necessary code from `makefile.shared`.
-            # ./nix/libtomcrypt-pkgconfig-for-static.patch ]
+            ./nix/libtomcrypt-pkgconfig-for-static.patch
             ] else [];
         });
 
         libtommathBuilder = { version, hash }: pkgs.libtommath.overrideAttrs (final: prev: rec {
           makefile = "makefile.unix";
-          inherit version;
-          # version = "1.3.0";
+          # version = if version != null then version else prev.version;
+          version = "1.3.0";
           src = pkgs.fetchurl {
             url = "https://github.com/libtom/libtommath/releases/download/v${version}/ltm-${version}.tar.xz";
-            inherit hash;
+            # hash = if hash != null then hash else prev.hash;
+            hash = "sha256-KWJy2TQ1mRMI63NgdgDANLVYgHoH6CnnURQuZcz6nQg";
           };
-          # patches = ( prev.patches or [] ) ++ [
-          #   # NOTE: LibTomMath does not expose the lib, when built statically (using `makefile and not `makefile.shared`).
-          #   #       This patch copies the necessary code from `makefile.shared`.
-          #   ./nix/libtommath-pkgconfig-for-static-build.patch
-          # ];
+          patches = ( prev.patches or [] ) ++ [
+            # NOTE: LibTomMath does not expose the lib, when built statically (using `makefile and not `makefile.shared`).
+            #       This patch copies the necessary code from `makefile.shared`.
+            ./nix/libtommath-pkgconfig-for-static-build.patch
+          ];
         });
         nettle = pkgs.nettle.overrideAttrs (final: prev: {
           configureFlags = ( prev.configureFlags or [] ) ++ [ "--enable-static" ];
