@@ -280,6 +280,26 @@
           cryptopp = pkgs.callPackage ./nix/cryptopp_pkg_versions.nix { inherit buildECTesterStandalone; };
           openssl = pkgs.callPackage ./nix/openssl_pkg_versions.nix { inherit buildECTesterStandalone; };
           boringssl = pkgs.callPackage ./nix/boringssl_pkg_versions.nix { inherit buildECTesterStandalone; };
+
+          fetchReleases = with pkgs.python3Packages; buildPythonApplication {
+            pname = "fetchReleases";
+            version = "0.1.0";
+            format = "other";
+
+            propagatedBuildInputs = [
+              jinja2
+              requests
+              beautifulsoup4
+            ];
+
+            src = ./fetchReleases.py;
+            dontUnpack = true;
+            installPhase = ''
+              install -Dm755 $src $out/bin/$pname
+            '';
+
+          };
+
         };
         devShells.default = with pkgs; mkShell rec {
           nativeBuildInputs = [
