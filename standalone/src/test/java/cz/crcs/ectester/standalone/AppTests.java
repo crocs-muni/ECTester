@@ -106,6 +106,9 @@ public class AppTests {
             case "BoringSSL":
                 args = new String[]{"generate", "-ps", "123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234", "-n", "10", "-cn", "prime256v1", libName};
                 break;
+            case "mbedTLS":
+                args = new String[]{"generate", "-ps", "12345678", "-n", "10", "-nc", "secg/secp256r1", libName};
+                break;
         }
         ECTesterStandalone.main(args);
         String out1 = out.capturedString();

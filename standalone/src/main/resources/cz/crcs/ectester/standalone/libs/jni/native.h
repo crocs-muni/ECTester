@@ -1389,6 +1389,22 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_creat
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_getCurves
   (JNIEnv *, jobject);
 
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_MbedTLSLib
+ * Method:    supportsDeterministicPRNG
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_supportsDeterministicPRNG
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_MbedTLSLib
+ * Method:    setupDeterministicPRNG
+ * Signature: ([B)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_setupDeterministicPRNG
+  (JNIEnv *, jobject, jbyteArray);
+
 #ifdef __cplusplus
 }
 #endif

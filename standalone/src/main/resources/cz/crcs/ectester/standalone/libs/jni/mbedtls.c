@@ -16,7 +16,8 @@
 
 
 static mbedtls_ctr_drbg_context ctr_drbg;
-static mbedtls_entropy_context entropy;
+static mbedtls_entropy_context urandom_entropy;
+static mbedtls_entropy_context fixed_entropy;
 static jclass provider_class;
 
 
@@ -62,6 +63,17 @@ static int dev_urandom(void *data, unsigned char *output, size_t len, size_t *ol
     return 0;
 }
 
+static unsigned char seed_store[32] = {0};
+
+static int fixed_random(void *data, unsigned char *output, size_t len, size_t *olen) {
+	for (size_t i = 0; i < len; ++i) {
+		output[i] = seed_store[i % 32];
+	}
+	*olen = len;
+	return 0;
+}
+
+
 static int ctr_drbg_wrapper(void *ctx, unsigned char *buf, size_t len) {
     native_timing_pause();
     int result = mbedtls_ctr_drbg_random(ctx, buf, len);
@@ -77,9 +89,9 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
     ADD_SIG(env, this, "NONEwithECDSA", "MbedTLSECDSAwithNONE");
 
     mbedtls_ctr_drbg_init(&ctr_drbg);
-    mbedtls_entropy_init(&entropy);
-    mbedtls_entropy_add_source(&entropy, dev_urandom, NULL, 32, MBEDTLS_ENTROPY_SOURCE_STRONG);
-    mbedtls_ctr_drbg_seed(&ctr_drbg, mbedtls_entropy_func, &entropy, NULL, 0);
+    mbedtls_entropy_init(&urandom_entropy);
+    mbedtls_entropy_add_source(&urandom_entropy, dev_urandom, NULL, 32, MBEDTLS_ENTROPY_SOURCE_STRONG);
+    mbedtls_ctr_drbg_seed(&ctr_drbg, mbedtls_entropy_func, &urandom_entropy, NULL, 0);
 
     init_classes(env, "MbedTLS");
 }
@@ -99,6 +111,32 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_getCu
         (*env)->CallBooleanMethod(env, result, hash_set_add, curve_name);
     }
     return result;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_supportsDeterministicPRNG(JNIEnv *env, jobject this) {
+	return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_setupDeterministicPRNG(JNIEnv *env, jobject this, jbyteArray seed) {
+	jsize seed_length = (*env)->GetArrayLength(env, seed);
+	if (seed_length > 32) {
+		fprintf(stderr, "Error setting seed, needs to be at most 32 bytes, is %i.\n", seed_length);
+		return JNI_FALSE;
+	}
+	jbyte *seed_data = (*env)->GetByteArrayElements(env, seed, NULL);
+	memcpy(seed_store, seed_data, seed_length);
+	(*env)->ReleaseByteArrayElements(env, seed, seed_data, JNI_ABORT);
+
+	memset(&ctr_drbg, 0, sizeof(ctr_drbg));
+    mbedtls_ctr_drbg_init(&ctr_drbg);
+
+    mbedtls_entropy_init(&fixed_entropy);
+    // This is NASTY! We are accessing something the library does not want us to.
+    fixed_entropy.private_source_count = 0;
+    mbedtls_entropy_add_source(&fixed_entropy, fixed_random, NULL, 32, MBEDTLS_ENTROPY_SOURCE_STRONG);
+    mbedtls_ctr_drbg_seed(&ctr_drbg, mbedtls_entropy_func, &fixed_entropy, NULL, 0);
+
+    return JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024MbedTLS_keysizeSupported(JNIEnv *env, jobject this, jint keysize) {
