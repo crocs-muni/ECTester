@@ -49,4 +49,10 @@ public class NettleLib extends NativeECLibrary {
         }
         throw new InvalidAlgorithmParameterException("Unknown curve.");
     }
+
+    @Override
+    public native boolean supportsDeterministicPRNG();
+
+    @Override
+    public native boolean setupDeterministicPRNG(byte[] seed);
 }

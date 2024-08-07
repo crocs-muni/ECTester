@@ -1932,6 +1932,21 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_create
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_getCurves
   (JNIEnv *, jobject);
 
+/*
+* Class:     cz_crcs_ectester_standalone_libs_NettleLib
+* Method:    supportsDeterministicPRNG
+* Signature: ()Z
+*/
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_supportsDeterministicPRNG
+(JNIEnv *, jobject);
+
+/*
+* Class:     cz_crcs_ectester_standalone_libs_NettleLib
+* Method:    setupDeterministicPRNG
+* Signature: ([B)Z
+*/
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_setupDeterministicPRNG
+(JNIEnv *, jobject, jbyteArray);
 #ifdef __cplusplus
 }
 #endif
