@@ -57,9 +57,9 @@ public abstract class StandaloneForeignSuite extends StandaloneTestSuite {
             ECParameterSpec spec = curve.toSpec();
             ECGenParameterSpec namedSpec = new ECGenParameterSpec(curve.getId());
 
-            KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).build();
-            KeyGeneratorTestable kgtOnNamedCurve = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(namedSpec).build();
-            KeyGeneratorTestable kgtOnDefaultCurve = KeyGeneratorTestable.builder().keyPairGenerator(kpg).keysize(curve.getBits()).build();
+            KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).random(getRandom()).spec(spec).build();
+            KeyGeneratorTestable kgtOnNamedCurve = KeyGeneratorTestable.builder().keyPairGenerator(kpg).random(getRandom()).spec(namedSpec).build();
+            KeyGeneratorTestable kgtOnDefaultCurve = KeyGeneratorTestable.builder().keyPairGenerator(kpg).random(getRandom()).keysize(curve.getBits()).build();
 
             // This is some nasty hacking...
             KeyGeneratorTestable theKgt = new KeyGeneratorTestable(kpg) {
@@ -156,7 +156,7 @@ public abstract class StandaloneForeignSuite extends StandaloneTestSuite {
                     for (EC_Key.Public pub : keys) {
                         ECPublicKey ecpub = ECUtil.toPublicKey(pub);
                         KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                        KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).publicKey(ecpub).privateKgt(theKgt).build();
+                        KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).publicKey(ecpub).privateKgt(theKgt).random(getRandom()).build();
                         Test keyAgreement = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
                         specificKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " invalid key test.", keyAgreement));
                     }

@@ -4,6 +4,7 @@ import cz.crcs.ectester.common.cli.Colors;
 import cz.crcs.ectester.common.output.BaseTextTestWriter;
 import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.test.Testable;
+import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.standalone.ECTesterStandalone;
 import cz.crcs.ectester.standalone.test.base.StandaloneTestable;
 import cz.crcs.ectester.standalone.test.suites.StandaloneTestSuite;
@@ -47,7 +48,8 @@ public class TextTestWriter extends BaseTextTestWriter {
         if (suite instanceof StandaloneTestSuite) {
             StandaloneTestSuite standaloneSuite = (StandaloneTestSuite) suite;
             String sb = "═══ " + Colors.underline("ECTester version:") + " " + ECTesterStandalone.VERSION + System.lineSeparator() +
-                    "═══ " + Colors.underline("Library:") + " " + standaloneSuite.getLibrary().fullName() + System.lineSeparator();
+                    "═══ " + Colors.underline("Library:") + " " + standaloneSuite.getLibrary().fullName() + System.lineSeparator() +
+                    "═══ " + Colors.underline("Seed:") + " " + ByteUtil.bytesToHex(standaloneSuite.getSeed()) + System.lineSeparator();
             return sb;
         }
         return "";

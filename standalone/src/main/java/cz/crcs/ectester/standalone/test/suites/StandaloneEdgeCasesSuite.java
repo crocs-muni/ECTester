@@ -92,7 +92,7 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
                     ECPublicKey ecpub = ECUtil.toPublicKey(EC_Store.getInstance().getObject(EC_Key.Public.class, pubkeyId));
 
                     KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                    KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).privateKey(ecpriv).publicKey(ecpub).build();
+                    KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).privateKey(ecpriv).publicKey(ecpub).random(getRandom()).build();
                     Test ecdh = KeyAgreementTest.match(testable, value.getData(0));
                     Test one = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Test " + id + ".", ecdh);
                     curveTests.add(one);
@@ -107,7 +107,7 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
             ECPrivateKey ecpriv = ECUtil.toPrivateKey(EC_Store.getInstance().getObject(EC_Key.Private.class, openssl_bug.getOtherKey()));
             ECPublicKey ecpub = ECUtil.toPublicKey(EC_Store.getInstance().getObject(EC_Key.Public.class, openssl_bug.getOneKey()));
             KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-            KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).privateKey(ecpriv).publicKey(ecpub).build();
+            KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).privateKey(ecpriv).publicKey(ecpub).random(getRandom()).build();
             Test ecdh = KeyAgreementTest.function(testable, new TestCallback<KeyAgreementTestable>() {
                 @Override
                 public Result apply(KeyAgreementTestable testable) {
@@ -134,7 +134,7 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
             ECParameterSpec spec = curve.toSpec();
 
             //generate KeyPair
-            KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).build();
+            KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).random(getRandom()).build();
             Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
 
             //perform ECDH tests
@@ -213,7 +213,7 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
         Arrays.sort(zeros);
 
         //generate KeyPair
-        KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).build();
+        KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).random(getRandom()).build();
         Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
 
         //perform ECDH tests
@@ -247,7 +247,7 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
     private Test ecdhTest(KeyGeneratorTestable kgt, BigInteger SParam, ECParameterSpec spec, String desc, Result.ExpectedValue expect) throws NoSuchAlgorithmException {
         ECPrivateKey priv = new RawECPrivateKey(SParam, spec);
         KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-        KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).privateKey(priv).publicKgt(kgt).build();
+        KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).privateKey(priv).publicKgt(kgt).random(getRandom()).build();
         return CompoundTest.all(Result.ExpectedValue.SUCCESS, desc, KeyAgreementTest.expectError(testable, expect));
     }
 }

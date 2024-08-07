@@ -149,6 +149,10 @@ public class XMLTestWriter extends BaseXMLTestWriter {
             Element name = doc.createElement("name");
             name.setTextContent(standaloneSuite.getLibrary().fullName());
             result.appendChild(name);
+
+            Element seed = doc.createElement("seed");
+            seed.setTextContent(ByteUtil.bytesToHex(standaloneSuite.getSeed()));
+            result.appendChild(seed);
             return result;
         }
         return null;

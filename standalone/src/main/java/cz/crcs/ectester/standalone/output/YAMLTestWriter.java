@@ -117,6 +117,7 @@ public class YAMLTestWriter extends BaseYAMLTestWriter {
             result.put("type", "library");
             result.put("ectester", ECTesterStandalone.VERSION);
             result.put("name", standaloneSuite.getLibrary().fullName());
+            result.put("seed", ByteUtil.bytesToHex(standaloneSuite.getSeed()));
             return result;
         }
         return null;

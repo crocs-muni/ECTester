@@ -45,8 +45,8 @@ public class StandaloneDefaultSuite extends StandaloneTestSuite {
         ECParameterSpec spec = null;
         if (cli.hasOption("test.bits")) {
             int bits = Integer.parseInt(cli.getOptionValue("test.bits"));
-            kgtOne = KeyGeneratorTestable.builder().keyPairGenerator(kpg).keysize(bits).build();
-            kgtOther = KeyGeneratorTestable.builder().keyPairGenerator(kpg).keysize(bits).build();
+            kgtOne = KeyGeneratorTestable.builder().keyPairGenerator(kpg).random(getRandom()).keysize(bits).build();
+            kgtOther = KeyGeneratorTestable.builder().keyPairGenerator(kpg).random(getRandom()).keysize(bits).build();
         } else if (cli.hasOption("test.named-curve")) {
             String curveName = cli.getOptionValue("test.named-curve");
             EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
@@ -55,11 +55,11 @@ public class StandaloneDefaultSuite extends StandaloneTestSuite {
                 return;
             }
             spec = curve.toSpec();
-            kgtOne = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).build();
-            kgtOther = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).build();
+            kgtOne = KeyGeneratorTestable.builder().keyPairGenerator(kpg).random(getRandom()).spec(spec).build();
+            kgtOther = KeyGeneratorTestable.builder().keyPairGenerator(kpg).random(getRandom()).spec(spec).build();
         } else {
-            kgtOne = KeyGeneratorTestable.builder().keyPairGenerator(kpg).build();
-            kgtOther = KeyGeneratorTestable.builder().keyPairGenerator(kpg).build();
+            kgtOne = KeyGeneratorTestable.builder().keyPairGenerator(kpg).random(getRandom()).build();
+            kgtOther = KeyGeneratorTestable.builder().keyPairGenerator(kpg).random(getRandom()).build();
         }
 
         doTest(KeyGeneratorTest.expect(kgtOne, Result.ExpectedValue.SUCCESS));
@@ -70,9 +70,9 @@ public class StandaloneDefaultSuite extends StandaloneTestSuite {
                 KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
                 KeyAgreementTestable testable;
                 if (kaIdent.requiresKeyAlgo()) {
-                    testable = KeyAgreementTestable.builder().ka(ka).privateKgt(kgtOne).publicKgt(kgtOther).spec(spec).keyAlgo(keyAlgo).build();
+                    testable = KeyAgreementTestable.builder().ka(ka).privateKgt(kgtOne).publicKgt(kgtOther).spec(spec).random(getRandom()).keyAlgo(keyAlgo).build();
                 } else {
-                    testable = KeyAgreementTestable.builder().ka(ka).privateKgt(kgtOne).publicKgt(kgtOther).spec(spec).build();
+                    testable = KeyAgreementTestable.builder().ka(ka).privateKgt(kgtOne).publicKgt(kgtOther).spec(spec).random(getRandom()).build();
                 }
                 doTest(KeyAgreementTest.expect(testable, Result.ExpectedValue.SUCCESS));
             }
@@ -81,7 +81,7 @@ public class StandaloneDefaultSuite extends StandaloneTestSuite {
             if (sigAlgo == null || sigIdent.contains(sigAlgo)) {
                 Signature sig = sigIdent.getInstance(cfg.selected.getProvider());
                 byte[] data = sigIdent.toString().getBytes();
-                doTest(SignatureTest.expect(new SignatureTestable(sig, kgtOne, data, null), Result.ExpectedValue.SUCCESS));
+                doTest(SignatureTest.expect(new SignatureTestable(sig, kgtOne, data, getRandom()), Result.ExpectedValue.SUCCESS));
             }
         }
     }

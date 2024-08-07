@@ -56,7 +56,7 @@ public class StandaloneCofactorSuite extends StandaloneTestSuite {
 
             KeyPairGenerator kpg = kpgIdent.getInstance(cfg.selected.getProvider());
             ECParameterSpec spec = curve.toSpec();
-            KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).build();
+            KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).random(getRandom()).build();
 
             Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
 
@@ -67,7 +67,7 @@ public class StandaloneCofactorSuite extends StandaloneTestSuite {
                     for (EC_Key.Public pub : keys) {
                         ECPublicKey ecpub = ECUtil.toPublicKey(pub);
                         KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                        KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).publicKey(ecpub).privateKgt(kgt).build();
+                        KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).publicKey(ecpub).privateKgt(kgt).random(getRandom()).build();
                         Test keyAgreement = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
                         specificKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " cofactor key test.", keyAgreement));
                     }

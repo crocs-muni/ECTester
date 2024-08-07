@@ -81,7 +81,7 @@ public class StandaloneMiscSuite extends StandaloneTestSuite {
 
     private void testCurve(EC_Curve curve, String catName, KeyPairGenerator kpg, Result.ExpectedValue expected) throws NoSuchAlgorithmException {
         //generate KeyPair
-        KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(curve.toSpec()).build();
+        KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(curve.toSpec()).random(getRandom()).build();
         Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
 
         //perform KeyAgreement tests
@@ -89,7 +89,7 @@ public class StandaloneMiscSuite extends StandaloneTestSuite {
         for (KeyAgreementIdent kaIdent : cfg.selected.getKAs()) {
             if (kaAlgo == null || kaIdent.containsAny(kaTypes)) {
                 KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).publicKgt(kgt).privateKgt(kgt).build();
+                KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).publicKgt(kgt).privateKgt(kgt).random(getRandom()).build();
                 kaTests.add(KeyAgreementTest.expectError(testable, expected));
             }
         }
@@ -103,7 +103,7 @@ public class StandaloneMiscSuite extends StandaloneTestSuite {
             if (sigAlgo == null || sigIdent.containsAny(sigTypes)) {
                 Signature sig = sigIdent.getInstance(cfg.selected.getProvider());
                 byte[] data = sigIdent.toString().getBytes();
-                SignatureTestable testable = new SignatureTestable(sig, kgt, data, null);
+                SignatureTestable testable = new SignatureTestable(sig, kgt, data, getRandom());
                 sigTests.add(SignatureTest.expectError(testable, expected));
             }
         }
