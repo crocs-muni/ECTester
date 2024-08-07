@@ -4,6 +4,7 @@ import cz.crcs.ectester.common.cli.TreeCommandLine;
 import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.util.ByteUtil;
+import cz.crcs.ectester.common.util.Util;
 import cz.crcs.ectester.standalone.ECTesterStandalone;
 import cz.crcs.ectester.standalone.consts.Ident;
 import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
@@ -34,7 +35,7 @@ public abstract class StandaloneTestSuite extends TestSuite {
         } else {
             seed = new SecureRandom().generateSeed(16);
         }
-        this.random = new SecureRandom(seed);
+        this.random = Util.getRandom(seed);
     }
 
     public ProviderECLibrary getLibrary() {

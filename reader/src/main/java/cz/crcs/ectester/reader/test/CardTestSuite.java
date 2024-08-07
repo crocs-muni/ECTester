@@ -10,6 +10,7 @@ import cz.crcs.ectester.common.test.Test;
 import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.util.CardConsts;
 import cz.crcs.ectester.common.util.ECUtil;
+import cz.crcs.ectester.common.util.Util;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
@@ -93,7 +94,7 @@ public abstract class CardTestSuite extends TestSuite {
         if (cfg.testDataSetup.equals("random")) {
             return new SecureRandom();
         } else {
-            return new SecureRandom(ECUtil.hashCurve(curve));
+            return Util.getRandom(ECUtil.hashCurve(curve));
         }
     }
 
@@ -103,7 +104,7 @@ public abstract class CardTestSuite extends TestSuite {
         } else {
             ByteBuffer b = ByteBuffer.allocate(4);
             b.putInt(seed);
-            return new SecureRandom(b.array());
+            return Util.getRandom(b.array());
         }
     }
 }

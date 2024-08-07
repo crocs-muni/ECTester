@@ -415,12 +415,26 @@ public class ECTesterStandalone {
             throw new NoSuchAlgorithmException(algo);
         }
 
+        SecureRandom random;
+        if (cli.hasOption("ecdh.prng-seed")) {
+            String seedString = cli.getOptionValue("ecdh.prng-seed");
+            byte[] seed = ByteUtil.hexToBytes(seedString, true);
+            random = SecureRandom.getInstance("DRBG");
+            random.setSeed(seed);
+            if (!lib.setupDeterministicPRNG(seed)) {
+                System.err.println("Couldn't set PRNG seed.");
+                return;
+            }
+        } else {
+            random = new SecureRandom();
+        }
+
         KeyAgreement ka = kaIdent.getInstance(lib.getProvider());
         KeyPairGenerator kpg = kpIdent.getInstance(lib.getProvider());
         AlgorithmParameterSpec spec = null;
         if (cli.hasOption("ecdh.bits")) {
             int bits = Integer.parseInt(cli.getOptionValue("ecdh.bits"));
-            kpg.initialize(bits);
+            kpg.initialize(bits, random);
         } else if (cli.hasOption("ecdh.named-curve")) {
             String curveName = cli.getOptionValue("ecdh.named-curve");
             EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
@@ -429,20 +443,15 @@ public class ECTesterStandalone {
                 return;
             }
             spec = curve.toSpec();
-            kpg.initialize(spec);
+            kpg.initialize(spec, random);
         } else if (cli.hasOption("ecdh.curve-name")) {
             String curveName = cli.getOptionValue("ecdh.curve-name");
             spec = new ECGenParameterSpec(curveName);
-            kpg.initialize(spec);
-        }
-
-        if (cli.hasOption("ecdh.prng-seed")) {
-            String seedString = cli.getOptionValue("ecdh.prng-seed");
-            byte[] seed = ByteUtil.hexToBytes(seedString, true);
-            if (!lib.setupDeterministicPRNG(seed)) {
-                System.err.println("Couldn't set PRNG seed.");
-                return;
-            }
+            kpg.initialize(spec, random);
+        } else if (cli.hasOption("ecdh.prng-seed") && !(lib instanceof NativeECLibrary)) {
+            // TODO: This only happens if at least one of the (pubkey and privkey) needs to be generated.
+            System.err.println("Unable to pass PRNG seed to a non-native library without specifying either key-size, named curve or curve name options.");
+            return;
         }
 
         if (cli.hasOption("ecdh.time-source")) {
@@ -498,9 +507,9 @@ public class ECTesterStandalone {
 
             long elapsed = -System.nanoTime();
             if (spec instanceof ECParameterSpec && lib instanceof NativeECLibrary) {
-                ka.init(privkey, spec);
+                ka.init(privkey, spec, random);
             } else {
-                ka.init(privkey);
+                ka.init(privkey, random);
             }
             ka.doPhase(pubkey, true);
             elapsed += System.nanoTime();
@@ -534,6 +543,22 @@ public class ECTesterStandalone {
      *
      */
     private void ecdsa() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, IOException, SignatureException {
+        ProviderECLibrary lib = cfg.selected;
+
+        SecureRandom random;
+        if (cli.hasOption("ecdsa.prng-seed")) {
+            String seedString = cli.getOptionValue("ecdsa.prng-seed");
+            byte[] seed = ByteUtil.hexToBytes(seedString, true);
+            random = SecureRandom.getInstance("DRBG");
+            random.setSeed(seed);
+            if (!lib.setupDeterministicPRNG(seed)) {
+                System.err.println("Couldn't set PRNG seed.");
+                return;
+            }
+        } else {
+            random = new SecureRandom();
+        }
+
         byte[] data;
         String dataString;
         if (cli.hasOption("ecdsa.file")) {
@@ -546,12 +571,12 @@ public class ECTesterStandalone {
             data = Files.readAllBytes(in.toPath());
             dataString = "";
         } else {
-            Random random = new Random();
+            Random dataRandom = new Random();
             data = new byte[32];
-            random.nextBytes(data);
+            dataRandom.nextBytes(data);
             dataString = ByteUtil.bytesToHex(data, false);
         }
-        ProviderECLibrary lib = cfg.selected;
+
         String algo = cli.getOptionValue("ecdsa.type", "ECDSA");
         SignatureIdent sigIdent = lib.getSigs().stream()
                 .filter((ident) -> ident.contains(algo))
@@ -586,7 +611,7 @@ public class ECTesterStandalone {
         ECParameterSpec spec = null;
         if (cli.hasOption("ecdsa.bits")) {
             int bits = Integer.parseInt(cli.getOptionValue("ecdsa.bits"));
-            kpg.initialize(bits);
+            kpg.initialize(bits, random);
         } else if (cli.hasOption("ecdsa.named-curve")) {
             String curveName = cli.getOptionValue("ecdsa.named-curve");
             EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
@@ -595,19 +620,14 @@ public class ECTesterStandalone {
                 return;
             }
             spec = curve.toSpec();
-            kpg.initialize(spec);
+            kpg.initialize(spec, random);
         } else if (cli.hasOption("ecdsa.curve-name")) {
             String curveName = cli.getOptionValue("ecdsa.curve-name");
-            kpg.initialize(new ECGenParameterSpec(curveName));
-        }
-
-        if (cli.hasOption("ecdsa.prng-seed")) {
-            String seedString = cli.getOptionValue("ecdsa.prng-seed");
-            byte[] seed = ByteUtil.hexToBytes(seedString, true);
-            if (!lib.setupDeterministicPRNG(seed)) {
-                System.err.println("Couldn't set PRNG seed.");
-                return;
-            }
+            kpg.initialize(new ECGenParameterSpec(curveName), random);
+        } else if (cli.hasOption("ecdsa.prng-seed") && !(lib instanceof NativeECLibrary)) {
+            // TODO: This only happens if at least one of the (pubkey and privkey) needs to be generated.
+            System.err.println("Unable to pass PRNG seed to a non-native library without specifying either key-size, named curve or curve name options.");
+            return;
         }
 
         if (cli.hasOption("ecdsa.time-source")) {
@@ -660,7 +680,7 @@ public class ECTesterStandalone {
                 }
             }
 
-            sig.initSign(privkey);
+            sig.initSign(privkey, random);
             sig.update(data);
 
             long signTime = -System.nanoTime();
@@ -729,10 +749,25 @@ public class ECTesterStandalone {
         if (ident == null) {
             throw new NoSuchAlgorithmException(algo);
         }
+
+        SecureRandom random;
+        if (cli.hasOption("generate.prng-seed")) {
+            String seedString = cli.getOptionValue("generate.prng-seed");
+            byte[] seed = ByteUtil.hexToBytes(seedString, true);
+            random = SecureRandom.getInstance("DRBG");
+            random.setSeed(seed);
+            if (!lib.setupDeterministicPRNG(seed)) {
+                System.err.println("Couldn't set PRNG seed.");
+                return;
+            }
+        } else {
+            random = new SecureRandom();
+        }
+
         KeyPairGenerator kpg = ident.getInstance(lib.getProvider());
         if (cli.hasOption("generate.bits")) {
             int bits = Integer.parseInt(cli.getOptionValue("generate.bits"));
-            kpg.initialize(bits);
+            kpg.initialize(bits, random);
         } else if (cli.hasOption("generate.named-curve")) {
             String curveName = cli.getOptionValue("generate.named-curve");
             EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
@@ -740,19 +775,13 @@ public class ECTesterStandalone {
                 System.err.println("Curve not found: " + curveName);
                 return;
             }
-            kpg.initialize(curve.toSpec());
+            kpg.initialize(curve.toSpec(), random);
         } else if (cli.hasOption("generate.curve-name")) {
             String curveName = cli.getOptionValue("generate.curve-name");
-            kpg.initialize(new ECGenParameterSpec(curveName));
-        }
-
-        if (cli.hasOption("generate.prng-seed")) {
-            String seedString = cli.getOptionValue("generate.prng-seed");
-            byte[] seed = ByteUtil.hexToBytes(seedString, true);
-            if (!lib.setupDeterministicPRNG(seed)) {
-                System.err.println("Couldn't set PRNG seed.");
-                return;
-            }
+            kpg.initialize(new ECGenParameterSpec(curveName), random);
+        } else if (cli.hasOption("generate.prng-seed") && !(lib instanceof NativeECLibrary)) {
+            System.err.println("Unable to pass PRNG seed to a non-native library without specifying either key-size, named curve or curve name options.");
+            return;
         }
 
         if (cli.hasOption("generate.time-source")) {

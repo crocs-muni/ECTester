@@ -129,7 +129,7 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
                 e.getKey().endsWith("r1") && e.getValue().getField() == javacard.security.KeyPair.ALG_EC_FP).map(Map.Entry::getValue).collect(Collectors.toList());
         curves.add(EC_Store.getInstance().getObject(EC_Curve.class, "cofactor/cofactor128p2"));
         curves.add(EC_Store.getInstance().getObject(EC_Curve.class, "cofactor/cofactor160p4"));
-        Random rand = new Random();
+        Random rand = getRandom();
         for (EC_Curve curve : curves) {
             ECParameterSpec spec = curve.toSpec();
 

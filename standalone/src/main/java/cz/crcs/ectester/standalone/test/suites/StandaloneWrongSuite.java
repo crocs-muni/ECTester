@@ -96,7 +96,7 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
         Map<String, EC_Curve> curveMap = EC_Store.getInstance().getObjects(EC_Curve.class, "secg");
         List<EC_Curve> curves = curveMap.entrySet().stream().filter((e) -> e.getKey().endsWith("r1") &&
                 e.getValue().getField() == javacard.security.KeyPair.ALG_EC_FP).map(Map.Entry::getValue).collect(Collectors.toList());
-        Random r = new Random();
+        Random r = getRandom();
         for (EC_Curve curve : curves) {
             short bits = curve.getBits();
             final byte[] originalp = curve.getParam(EC_Consts.PARAMETER_FP)[0];
