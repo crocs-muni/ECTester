@@ -193,7 +193,14 @@ public class ECTesterStandalone {
         Option outputRaw = Option.builder("o").longOpt("output").desc("Output CSV into file <output_file>.").hasArgs().argName("output_file").optionalArg(false).numberOfArgs(1).build();
         Option quiet = Option.builder("q").longOpt("quiet").desc("Do not output to stdout.").build();
         Option timeSource = Option.builder("ts").longOpt("time-source").desc("Use a given native timing source: {rdtsc, monotonic, monotonic-raw, cputime-process, cputime-thread}").hasArgs().argName("source").optionalArg(false).numberOfArgs(1).build();
-        Option prngSeed = Option.builder("ps").longOpt("prng-seed").desc("Use a deterministic PRNG with the given seed (hexadecimal).").hasArgs().argName("seed").optionalArg(false).numberOfArgs(1).build();
+        Option prngSeed = Option.builder("ps").longOpt("prng-seed").desc("Use a deterministic PRNG with the given [seed] (hexadecimal) in the library.").hasArgs().argName("seed").optionalArg(false).numberOfArgs(1).build();
+        Option file = Option.builder("f").longOpt("file").hasArg().argName("file").optionalArg(false).desc("Input [file] to sign.").build();
+        Option message = Option.builder("d").longOpt("data").desc("Sign the given [message].").hasArgs().argName("message").optionalArg(false).numberOfArgs(1).build();
+        Option messageSeed = Option.builder("ds").longOpt("data-seed").desc("Use a deterministic PRNG with the given [seed] (hexadecimal) to generate the messages.").hasArgs().argName("seed").optionalArg(false).numberOfArgs(1).build();
+        OptionGroup ecdsaMessage = new OptionGroup();
+        ecdsaMessage.addOption(file);
+        ecdsaMessage.addOption(message);
+        ecdsaMessage.addOption(messageSeed);
 
         Options testOpts = new Options();
         testOpts.addOption(bits);
@@ -241,7 +248,7 @@ public class ECTesterStandalone {
         ecdsaOpts.addOption(Option.builder().longOpt("fixed").desc("Perform all ECDSA with fixed keypair.").build());
         ecdsaOpts.addOption(Option.builder("t").longOpt("type").desc("Set Signature object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdsaOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDSA [amount] times.").build());
-        ecdsaOpts.addOption(Option.builder("f").longOpt("file").hasArg().argName("file").optionalArg(false).desc("Input [file] to sign.").build());
+        ecdsaOpts.addOptionGroup(ecdsaMessage);
         ParserOptions ecdsa = new ParserOptions(new DefaultParser(), ecdsaOpts, "Perform EC based Signature.");
         actions.put("ecdsa", ecdsa);
 
@@ -558,8 +565,9 @@ public class ECTesterStandalone {
             random = new SecureRandom();
         }
 
-        byte[] data;
-        String dataString;
+        byte[] data = null;
+        String dataString = null;
+        SecureRandom dataRandom = null;
         if (cli.hasOption("ecdsa.file")) {
             String fileName = cli.getOptionValue("ecdsa.file");
             File in = new File(fileName);
@@ -569,11 +577,15 @@ public class ECTesterStandalone {
             }
             data = Files.readAllBytes(in.toPath());
             dataString = "";
+        } else if (cli.hasOption("ecdsa.data")) {
+            dataString = cli.getOptionValue("ecdsa.data");
+            data = ByteUtil.hexToBytes(dataString);
+        } else if (cli.hasOption("ecdsa.data-seed")) {
+            String seedString = cli.getOptionValue("ecdsa.prng-seed");
+            byte[] seed = ByteUtil.hexToBytes(seedString, true);
+            dataRandom = Util.getRandom(seed);
         } else {
-            Random dataRandom = new Random();
-            data = new byte[32];
-            dataRandom.nextBytes(data);
-            dataString = ByteUtil.bytesToHex(data, false);
+            dataRandom = new SecureRandom();
         }
 
         String algo = cli.getOptionValue("ecdsa.type", "ECDSA");
@@ -677,6 +689,11 @@ public class ECTesterStandalone {
                 if (!cli.hasOption("ecdsa.named-public")) {
                     pubkey = one.getPublic();
                 }
+            }
+
+            if (dataRandom != null) {
+                data = dataRandom.generateSeed(16);
+                dataString = ByteUtil.bytesToHex(data, false);
             }
 
             sig.initSign(privkey, random);
