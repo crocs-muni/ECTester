@@ -23,28 +23,13 @@
         getMajorMinor = version: builtins.concatStringsSep "." (pkgs.lib.take 2 ( builtins.splitVersion version));
 
         # Altered upstream packages
-        boringssl = with pkgs; pkgs.boringssl.overrideAttrs (final: prev: rec {
-           src = fetchgit {
+        boringsslBuilder = { rev, hash }: pkgs.boringssl.overrideAttrs (final: prev: rec {
+          src = if rev == null then prev.src else pkgs.fetchgit {
             url = "https://boringssl.googlesource.com/boringssl";
-            rev = "67422ed4434116daa8898773692165ddd51a6ac2";
-            hash = "sha256-7ScEX6ZqBl3PL+zn4bBBPFu5xxP1YswGQxh7g8+9VUc=";
+            inherit rev hash;
           };
-
-          # NOTE this build does not match upstream, but is what ECTester did at the time of writing
-          buildPhase = ''
-            cmake -GNinja -Bbuild
-            pushd build
-            ninja crypto
-            popd
-          '';
-
-          installPhase = ''
-            mkdir --parents $bin/bin $dev $out/lib
-            mv include $dev
-
-            pushd build
-            mv crypto/libcrypto.a $out/lib/lib_boringssl.a
-            popd
+          postFixup = ''
+            cp $out/lib/libcrypto.a $out/lib/lib_boringssl.a
           '';
         });
         # FIXME: `nix develeop` now has different version than `nix run`
@@ -231,7 +216,7 @@
         botanShimBuilder = { version, source_extension, hash }: pkgs.callPackage ./nix/botanshim.nix { botan2 = botan2Builder { inherit version source_extension hash; }; };
         cryptoppShimBuilder = { version, hash}: pkgs.callPackage ./nix/cryptoppshim.nix { cryptopp = cryptoppBuilder { inherit version hash; };};
         opensslShimBuilder = { version, hash }: import ./nix/opensslshim.nix { inherit pkgs; openssl = (opensslBuilder { version = version; hash = hash;}); };
-        boringsslShim = import ./nix/boringsslshim.nix { inherit pkgs; boringssl = boringssl; };
+        boringsslShimBuilder = { rev, hash }: import ./nix/boringsslshim.nix { inherit pkgs; boringssl = ( boringsslBuilder { inherit rev hash; }); };
         gcryptShimBuilder = { version, hash}: import ./nix/gcryptshim.nix { inherit pkgs libgpg-error; libgcrypt = libgcryptBuilder { inherit version hash; }; };
         mbedtlsShimBuilder = { version, hash }: import ./nix/mbedtlsshim.nix { inherit pkgs; mbedtls = ( mbedtlsBuilder { inherit version hash; }); };
         ippcpShimBuilder = { version, hash }: import ./nix/ippcpshim.nix { pkgs = pkgs; ipp-crypto = ( ipp-cryptoBuilder { inherit version hash; }); };
@@ -246,7 +231,7 @@
           botan ? { version = null; source_extension = null; hash = null; },
           cryptopp ? { version = null; hash = null; },
           openssl ? { version = null; hash = null; },
-          boringssl ? { version = null; hash = null; },
+          boringssl ? { rev = null; hash = null; },
           gcrypt ? { version = null; hash = null; },
           mbedtls ? { version = null; hash = null; },
           ippcp ? { version = null; hash = null; },
@@ -263,6 +248,7 @@
             opensslShim = (opensslShimBuilder { inherit (openssl) version hash; });
             botanShim = botanShimBuilder { inherit (botan) version source_extension hash; };
             cryptoppShim = cryptoppShimBuilder { inherit (cryptopp) version hash; };
+            boringsslShim = boringsslShimBuilder { inherit (boringssl) rev hash; };
             gcryptShim = gcryptShimBuilder { inherit (gcrypt) version hash; };
             mbedtlsShim = mbedtlsShimBuilder { inherit (mbedtls) version hash; };
             ippcpShim = ippcpShimBuilder { inherit (ippcp) version hash; };
