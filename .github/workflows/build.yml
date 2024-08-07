@@ -189,7 +189,7 @@ jobs:
         run: ./gradlew standalone:run --args="list-libs"
 
       - name: Test
-        run: ./gradlew standalone:test
+        run: ./gradlew standalone:test --continue
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4

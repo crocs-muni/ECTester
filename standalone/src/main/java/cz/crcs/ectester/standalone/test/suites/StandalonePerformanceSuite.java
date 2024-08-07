@@ -38,9 +38,9 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
 
     @Override
     protected void runTests() throws Exception {
-        String kpgAlgo = cli.getOptionValue("test.kpg-type");
-        String kaAlgo = cli.getOptionValue("test.ka-type");
-        String sigAlgo = cli.getOptionValue("test.sig-type");
+        String kpgAlgo = cli.getOptionValue("test.kpg-type", "EC");
+        String kaAlgo = cli.getOptionValue("test.ka-type", "ECDH");
+        String sigAlgo = cli.getOptionValue("test.sig-type", "ECDSA");
         String keyAlgo = cli.getOptionValue("test.key-type", "AES");
 
         List<String> kpgTypes = kpgAlgo != null ? Arrays.asList(kpgAlgo.split(",")) : new ArrayList<>();
