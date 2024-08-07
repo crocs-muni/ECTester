@@ -25,4 +25,16 @@ public class WolfCryptLib extends ProviderECLibrary {
     public Set<String> getCurves() {
         return new HashSet<>();
     }
+
+    @Override
+    public boolean supportsDeterministicPRNG() {
+        return true;
+    }
+
+    @Override
+    public boolean setupDeterministicPRNG(byte[] seed) {
+        // This is done by passing the SecureRandom into the individual KeyPairGenerator, KeyAgreement and Signature
+        // instances. Thus, this does nothing.
+        return true;
+    }
 }
