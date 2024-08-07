@@ -29,8 +29,8 @@ public abstract class StandaloneTestSuite extends TestSuite {
         super(writer, name, description);
         this.cfg = cfg;
         this.cli = cli;
-        if (cli.hasOption("test.prng-seed")) {
-            String seedString = cli.getOptionValue("generate.prng-seed");
+        if (cli != null && cli.hasOption("test.prng-seed")) {
+            String seedString = cli.getOptionValue("test.prng-seed");
             this.seed = ByteUtil.hexToBytes(seedString, true);
         } else {
             seed = new SecureRandom().generateSeed(16);
