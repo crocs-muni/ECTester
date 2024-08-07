@@ -1570,6 +1570,22 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_IppcpLib_createP
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_IppcpLib_getCurves
   (JNIEnv *, jobject);
 
+/*
+* Class:     cz_crcs_ectester_standalone_libs_IppcpLib
+* Method:    supportsDeterministicPRNG
+* Signature: ()Z
+*/
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_IppcpLib_supportsDeterministicPRNG
+(JNIEnv *, jobject);
+
+/*
+* Class:     cz_crcs_ectester_standalone_libs_IppcpLib
+* Method:    setupDeterministicPRNG
+* Signature: ([B)Z
+*/
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_IppcpLib_setupDeterministicPRNG
+(JNIEnv *, jobject, jbyteArray);
+
 #ifdef __cplusplus
 }
 #endif
