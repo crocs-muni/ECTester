@@ -6,7 +6,10 @@ import json
 import jinja2
 import re
 import requests
+import shutil
+import tempfile
 
+import pathlib
 import subprocess as sp
 
 from base64 import b32encode, b32decode, b64encode, b16decode
@@ -161,6 +164,35 @@ def fetch_gcrypt():
 
 
 
+def fetch_boringssl():
+    pkg = "boringssl"
+
+    single_version_template = env.from_string("""{{ flat_version }} = buildECTesterStandalone {
+    {{ pkg }} = { rev="{{ rev }}"; hash="{{ digest }}"; };
+  };""")
+    renders = []
+    with tempfile.TemporaryDirectory() as repodir, tempfile.TemporaryDirectory() as gitdir:
+        repodir = pathlib.Path(repodir)
+        gitdir = pathlib.Path(gitdir)
+        sp.run(["git", "clone", "https://boringssl.googlesource.com/boringssl", repodir])
+        # NOTE: we need to get rid of the .git so that it is not included in the derivation hash
+        shutil.move(repodir / ".git", gitdir)
+
+        output = sp.check_output(["git", "-C", str(repodir), "--git-dir", str(gitdir / ".git"), "log", "--pretty=format:%H"])
+        refs = output.decode().split('\n')
+
+        for i, rev in enumerate(refs[:100]):
+            sp.run(["git", "-C", str(repodir), "--git-dir", str(gitdir / ".git"), "checkout", rev])
+            digest = sp.check_output(["nix", "hash", "path", str(repodir)]).decode().strip()
+            print(f"{i + 1: 4d}:{rev}:{digest}")
+            abbrev_commit = str(rev[:8])
+
+            rendered = single_version_template.render(pkg=pkg, digest=digest, flat_version=f"r{abbrev_commit}", rev=rev).strip()
+            renders.append(rendered)
+
+    all_versions = all_versions_template.render(pkg_versions=renders).strip()
+    with open(f"./nix/{pkg}_pkg_versions.nix", "w") as handle:
+        handle.write(all_versions)
 
 def fetch_mbedtls():
     # Mbed-TLS/mbedtls
@@ -295,6 +327,8 @@ def main():
             fetch_cryptopp()
         case "openssl":
             fetch_openssl()
+        case "boringssl":
+            fetch_boringssl()
         case "gcrypt":
             fetch_gcrypt()
         case "mbedtls":
