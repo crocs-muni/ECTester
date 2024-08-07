@@ -95,8 +95,10 @@ public class AppTests {
         String[] args = new String[]{"generate", "-ps", "123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234", "-n", "10", "-nc", "secg/secp256r1", libName};
         switch (libName) {
             case "Botan":
-            case "Crypto++":
                 args = new String[]{"generate", "-ps", "123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234", "-n", "10", "-nc", "secg/secp256r1", "-t", "ECDH", libName};
+                break;
+            case "Crypto++":
+                args = new String[]{"generate", "-ps", "12345678", "-n", "10", "-nc", "secg/secp256r1", "-t", "ECDH", libName};
                 break;
             case "Nettle":
             case "libgcrypt":

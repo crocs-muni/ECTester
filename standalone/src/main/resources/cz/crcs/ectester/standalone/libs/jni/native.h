@@ -468,6 +468,22 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_crea
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_getCurves
   (JNIEnv *, jobject);
 
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_CryptoppLib
+ * Method:    supportsDeterministicPRNG
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_supportsDeterministicPRNG
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_CryptoppLib
+ * Method:    setupDeterministicPRNG
+ * Signature: ([B)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_setupDeterministicPRNG
+  (JNIEnv *, jobject, jbyteArray);
+
 #ifdef __cplusplus
 }
 #endif
