@@ -10,9 +10,11 @@ import org.junitpioneer.jupiter.StdOut;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -83,6 +85,43 @@ public class AppTests {
         args.add(suite);
         args.add(libName);
         return args.toArray(new String[]{});
+    }
+
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    @ParameterizedTest
+    @MethodSource("libs")
+    @StdIo()
+    public void deterministicGenerate(String libName, StdOut out) {
+        String[] args = new String[]{"generate", "-ps", "123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234", "-n", "10", "-nc", "secg/secp256r1", libName};
+        switch (libName) {
+            case "Botan":
+            case "Crypto++":
+                args = new String[]{"generate", "-ps", "123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234", "-n", "10", "-nc", "secg/secp256r1", "-t", "ECDH", libName};
+                break;
+            case "Nettle":
+            case "libgcrypt":
+            case "wolfCrypt":
+                args = new String[]{"generate", "-ps", "123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234", "-n", "10", "-cn", "secp256r1", libName};
+                break;
+            case "BoringSSL":
+                args = new String[]{"generate", "-ps", "123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234", "-n", "10", "-cn", "prime256v1", libName};
+                break;
+        }
+        ECTesterStandalone.main(args);
+        String out1 = out.capturedString();
+        ECTesterStandalone.main(args);
+        String out2 = out.capturedString().substring(out1.length());
+        if (!out1.contains(";"))
+            return;
+        List<String> lines1 = out1.lines().collect(Collectors.toList());
+        List<String> lines2 = out2.lines().collect(Collectors.toList());
+        assertEquals(lines1.size(), lines2.size());
+        for (int i = 0; i < lines1.size(); ++i) {
+            String[] parts1 = lines1.get(i).split(";");
+            String[] parts2 = lines2.get(i).split(";");
+            assertEquals(parts1[2], parts2[2]);
+            assertEquals(parts1[3], parts2[3]);
+        }
     }
 
     @SuppressWarnings("JUnitMalformedDeclaration")

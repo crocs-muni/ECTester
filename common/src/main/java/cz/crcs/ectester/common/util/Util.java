@@ -35,7 +35,7 @@ public class Util {
     public static SecureRandom getRandom(byte[] seed) {
         SecureRandom random;
         try {
-            random = SecureRandom.getInstance("DRBG");
+            random = SecureRandom.getInstance("SHA1PRNG");
         } catch (NoSuchAlgorithmException ignored) {
             return null;
         }

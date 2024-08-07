@@ -31,6 +31,7 @@ import cz.crcs.ectester.common.test.TestException;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.common.util.ECUtil;
 import cz.crcs.ectester.common.util.FileUtil;
+import cz.crcs.ectester.common.util.Util;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
 import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
@@ -419,8 +420,7 @@ public class ECTesterStandalone {
         if (cli.hasOption("ecdh.prng-seed")) {
             String seedString = cli.getOptionValue("ecdh.prng-seed");
             byte[] seed = ByteUtil.hexToBytes(seedString, true);
-            random = SecureRandom.getInstance("DRBG");
-            random.setSeed(seed);
+            random = Util.getRandom(seed);
             if (!lib.setupDeterministicPRNG(seed)) {
                 System.err.println("Couldn't set PRNG seed.");
                 return;
@@ -549,8 +549,7 @@ public class ECTesterStandalone {
         if (cli.hasOption("ecdsa.prng-seed")) {
             String seedString = cli.getOptionValue("ecdsa.prng-seed");
             byte[] seed = ByteUtil.hexToBytes(seedString, true);
-            random = SecureRandom.getInstance("DRBG");
-            random.setSeed(seed);
+            random = Util.getRandom(seed);
             if (!lib.setupDeterministicPRNG(seed)) {
                 System.err.println("Couldn't set PRNG seed.");
                 return;
@@ -754,8 +753,7 @@ public class ECTesterStandalone {
         if (cli.hasOption("generate.prng-seed")) {
             String seedString = cli.getOptionValue("generate.prng-seed");
             byte[] seed = ByteUtil.hexToBytes(seedString, true);
-            random = SecureRandom.getInstance("DRBG");
-            random.setSeed(seed);
+            random = Util.getRandom(seed);
             if (!lib.setupDeterministicPRNG(seed)) {
                 System.err.println("Couldn't set PRNG seed.");
                 return;
