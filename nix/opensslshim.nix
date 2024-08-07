@@ -1,8 +1,6 @@
-{
-  pkgs
-  , openssl
-}:
-with pkgs; stdenv.mkDerivation {
+{ pkgs, openssl }:
+with pkgs;
+stdenv.mkDerivation {
   name = "OpenSSL Shim";
   src = ../standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni;
 

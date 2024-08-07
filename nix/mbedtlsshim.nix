@@ -1,8 +1,6 @@
-{
-  pkgs
-  , mbedtls
-}:
-with pkgs; stdenv.mkDerivation rec {
+{ pkgs, mbedtls }:
+with pkgs;
+stdenv.mkDerivation rec {
   name = "MbedTLSShim";
   src = ../standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni;
 

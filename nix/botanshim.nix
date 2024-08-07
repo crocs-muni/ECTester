@@ -1,9 +1,9 @@
-{ 
-  stdenv
-  , botan2
-  , pkg-config
+{
+  stdenv,
+  botan2,
+  pkg-config,
   # NOTE change to jdk17?
-  , jdk11_headless
+  jdk11_headless,
 }:
 stdenv.mkDerivation {
   name = "BotanShim";

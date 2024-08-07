@@ -1,9 +1,10 @@
 {
-  pkgs
-  , libtomcrypt
-  , libtommath
+  pkgs,
+  libtomcrypt,
+  libtommath,
 }:
-with pkgs; stdenv.mkDerivation {
+with pkgs;
+stdenv.mkDerivation {
   name = "TomCryptShim";
   src = ../standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni;
 

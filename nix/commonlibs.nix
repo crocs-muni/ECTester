@@ -1,7 +1,6 @@
-{
-   pkgs
-}:
-with pkgs; stdenv.mkDerivation rec {
+{ pkgs }:
+with pkgs;
+stdenv.mkDerivation rec {
   name = "Common Libraries";
   src = ../standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni;
 

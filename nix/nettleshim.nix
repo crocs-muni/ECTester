@@ -1,9 +1,10 @@
 {
-   pkgs
-  , nettle
-  , gmp
+  pkgs,
+  nettle,
+  gmp,
 }:
-with pkgs; stdenv.mkDerivation rec {
+with pkgs;
+stdenv.mkDerivation rec {
   name = "NettleShim";
   src = ../standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni;
 

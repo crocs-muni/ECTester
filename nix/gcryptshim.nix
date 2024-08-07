@@ -1,9 +1,10 @@
 {
-  pkgs
-  , libgcrypt
-  , libgpg-error
+  pkgs,
+  libgcrypt,
+  libgpg-error,
 }:
-with pkgs; stdenv.mkDerivation {
+with pkgs;
+stdenv.mkDerivation {
   name = "Gcrypt Shim";
   src = ../standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni;
 

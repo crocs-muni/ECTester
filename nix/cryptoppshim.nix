@@ -1,8 +1,6 @@
-{
-  pkgs
-  , cryptopp
-}:
-with pkgs; stdenv.mkDerivation {
+{ pkgs, cryptopp }:
+with pkgs;
+stdenv.mkDerivation {
   name = "Crypto++ Shim";
   src = ../standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni;
 

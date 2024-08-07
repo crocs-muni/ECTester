@@ -1,8 +1,6 @@
-{
-  pkgs
-  , boringssl
-}:
-with pkgs; stdenv.mkDerivation {
+{ pkgs, boringssl }:
+with pkgs;
+stdenv.mkDerivation {
   name = "BoringSSLShim";
   src = ../standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni;
 

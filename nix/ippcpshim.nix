@@ -1,8 +1,6 @@
-{
-  pkgs
-  , ipp-crypto
-}:
- with pkgs; stdenv.mkDerivation rec {
+{ pkgs, ipp-crypto }:
+with pkgs;
+stdenv.mkDerivation rec {
   name = "IppCryptoShim";
   src = ../standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni;
 
