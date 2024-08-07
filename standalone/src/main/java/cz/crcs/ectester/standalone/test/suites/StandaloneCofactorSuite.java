@@ -56,7 +56,7 @@ public class StandaloneCofactorSuite extends StandaloneTestSuite {
 
             KeyPairGenerator kpg = kpgIdent.getInstance(cfg.selected.getProvider());
             ECParameterSpec spec = curve.toSpec();
-            KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
+            KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).build();
 
             Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
 

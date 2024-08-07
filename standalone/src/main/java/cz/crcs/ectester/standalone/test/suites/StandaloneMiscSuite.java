@@ -7,6 +7,7 @@ import cz.crcs.ectester.common.test.CompoundTest;
 import cz.crcs.ectester.common.test.Result;
 import cz.crcs.ectester.common.test.Test;
 import cz.crcs.ectester.common.util.ByteUtil;
+import cz.crcs.ectester.common.util.ECUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.standalone.ECTesterStandalone;
 import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
@@ -101,7 +102,8 @@ public class StandaloneMiscSuite extends StandaloneTestSuite {
         for (SignatureIdent sigIdent : cfg.selected.getSigs()) {
             if (sigAlgo == null || sigIdent.containsAny(sigTypes)) {
                 Signature sig = sigIdent.getInstance(cfg.selected.getProvider());
-                SignatureTestable testable = new SignatureTestable(sig, kgt, hashCurve(curve));
+                byte[] data = sigIdent.toString().getBytes();
+                SignatureTestable testable = new SignatureTestable(sig, kgt, data, null);
                 sigTests.add(SignatureTest.expectError(testable, expected));
             }
         }

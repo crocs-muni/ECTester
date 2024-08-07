@@ -28,26 +28,6 @@ public class KeyGeneratorTestable extends StandaloneTestable<KeyGeneratorTestabl
         this.spec = builder.spec;
         this.random = builder.random;
     }
-    /*
-    public KeyGeneratorTestable(KeyPairGenerator kpg) {
-        this.kpg = kpg;
-    }
-
-    public KeyGeneratorTestable(KeyPairGenerator kpg, int keysize) {
-        this.kpg = kpg;
-        this.keysize = keysize;
-    }
-
-    public KeyGeneratorTestable(KeyPairGenerator kpg, ECParameterSpec spec) {
-        this.kpg = kpg;
-        this.spec = spec;
-    }
-
-    public KeyGeneratorTestable(KeyPairGenerator kpg, ECGenParameterSpec spec) {
-        this.kpg = kpg;
-        this.spec = spec;
-    }
-    */
 
     public int getKeysize() {
         return keysize;
@@ -143,6 +123,12 @@ public class KeyGeneratorTestable extends StandaloneTestable<KeyGeneratorTestabl
         }
 
         public KeyGeneratorTestable build() {
+            if (kpg == null) {
+                throw new NullPointerException("kpg mus be non-null.");
+            }
+            if (spec != null && keysize != 0) {
+                throw new IllegalStateException("Only one of spec and keysize can be set.");
+            }
             return new KeyGeneratorTestable(this);
         }
     }

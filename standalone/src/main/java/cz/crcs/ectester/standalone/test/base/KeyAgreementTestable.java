@@ -18,11 +18,11 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
     private KeyAgreement ka;
     private ECPrivateKey privateKey;
     private ECPublicKey publicKey;
-    private KeyGeneratorTestable kgtPrivate;
-    private KeyGeneratorTestable kgtPublic;
-    private AlgorithmParameterSpec spec;
-    private String keyAlgo;
-    private SecureRandom random;
+    private final KeyGeneratorTestable kgtPrivate;
+    private final KeyGeneratorTestable kgtPublic;
+    private final AlgorithmParameterSpec spec;
+    private final String keyAlgo;
+    private final SecureRandom random;
 
     private byte[] secret;
     private SecretKey derived;
@@ -204,13 +204,13 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
 
         public KeyAgreementTestable build() {
             if (ka == null) {
-                throw new NullPointerException("ka needs to be not-null.");
+                throw new NullPointerException("ka needs to be non-null.");
             }
             if ((privateKey == null) == (kgtPrivate == null)) {
-                throw new IllegalStateException("One of (but not both) privateKey or privateKgt needs to be not-null.");
+                throw new IllegalStateException("One of (but not both) privateKey or privateKgt needs to be non-null.");
             }
             if ((publicKey == null) == (kgtPublic == null)) {
-                throw new IllegalStateException("One of (but not both) publicKey or publicKgt needs to be not-null.");
+                throw new IllegalStateException("One of (but not both) publicKey or publicKgt needs to be non-null.");
             }
             return new KeyAgreementTestable(this);
         }

@@ -64,7 +64,7 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
             ECParameterSpec spec = curve.toSpec();
 
             //Generate KeyPair
-            KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
+            KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).build();
             Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
 
             //Perform KeyAgreement tests
@@ -133,7 +133,7 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
             }
 
             //generate KeyPair
-            KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, curve.toSpec());
+            KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(curve.toSpec()).build();
             Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
 
             //perform KeyAgreement tests
@@ -154,7 +154,8 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
             for (SignatureIdent sigIdent : cfg.selected.getSigs()) {
                 if (sigAlgo == null || sigIdent.containsAny(sigTypes)) {
                     Signature sig = sigIdent.getInstance(cfg.selected.getProvider());
-                    SignatureTestable testable = new SignatureTestable(sig, kgt, null);
+                    byte[] data = sigIdent.toString().getBytes();
+                    SignatureTestable testable = new SignatureTestable(sig, kgt, data, null);
                     sigTests.add(SignatureTest.expectError(testable, dhValue));
                 }
             }

@@ -4,6 +4,7 @@ import cz.crcs.ectester.common.cli.TreeCommandLine;
 import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.Result;
+import cz.crcs.ectester.common.util.ECUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.standalone.ECTesterStandalone;
 import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
@@ -79,7 +80,8 @@ public class StandaloneDefaultSuite extends StandaloneTestSuite {
         for (SignatureIdent sigIdent : cfg.selected.getSigs()) {
             if (sigAlgo == null || sigIdent.contains(sigAlgo)) {
                 Signature sig = sigIdent.getInstance(cfg.selected.getProvider());
-                doTest(SignatureTest.expect(new SignatureTestable(sig, kgtOne, null), Result.ExpectedValue.SUCCESS));
+                byte[] data = sigIdent.toString().getBytes();
+                doTest(SignatureTest.expect(new SignatureTestable(sig, kgtOne, data, null), Result.ExpectedValue.SUCCESS));
             }
         }
     }

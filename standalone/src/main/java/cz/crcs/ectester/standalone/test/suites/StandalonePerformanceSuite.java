@@ -111,10 +111,12 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
         for (SignatureIdent sigIdent : cfg.selected.getSigs()) {
             if (sigAlgo == null || sigIdent.containsAny(sigTypes)) {
                 Signature sig = sigIdent.getInstance(cfg.selected.getProvider());
-                sigTests.add(PerformanceTest.repeat(new SignatureTestable(sig, kgtOne, null), cfg.selected, sigIdent.getName(), count));
+                byte[] data = sigIdent.toString().getBytes();
+                sigTests.add(PerformanceTest.repeat(new SignatureTestable(sig, kgtOne, data, null), cfg.selected, sigIdent.getName(), count));
+                // TODO: The following will always fail as a runTest is not done at this point.
                 if (kgtOne.getKeyPair() != null) {
                     ECPrivateKey signKey = (ECPrivateKey) kgtOne.getKeyPair().getPrivate();
-                    sigTestsNoVerification.add(PerformanceTest.repeat(new SignatureTestable(sig, signKey, null, null), cfg.selected, sigIdent.getName(), count));
+                    sigTestsNoVerification.add(PerformanceTest.repeat(new SignatureTestable(sig, signKey, null, data, null), cfg.selected, sigIdent.getName(), count));
                 }
             }
         }

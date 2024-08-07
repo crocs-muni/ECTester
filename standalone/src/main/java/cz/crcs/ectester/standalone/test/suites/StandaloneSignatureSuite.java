@@ -61,11 +61,11 @@ public class StandaloneSignatureSuite extends StandaloneTestSuite {
 
         byte[] data = sig.getSigData();
         if (data == null) {
-            data = defaultData;
+            data = sigIdent.toString().getBytes();
         }
 
         Signature signature = sigIdent.getInstance(cfg.selected.getProvider());
-        SignatureTestable testable = new SignatureTestable(signature, ecpub, data, sig.getData(0));
+        SignatureTestable testable = new SignatureTestable(signature, ecpub, data, sig.getData(0), null);
         doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "ECDSA test of " + sig.getId() + ".", SignatureTest.expectError(testable, expected)));
     }
 }
