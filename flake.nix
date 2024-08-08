@@ -285,13 +285,17 @@
                     url = "mirror://openbsd/LibreSSL/${prev.pname}-${version}.tar.gz";
                     inherit hash;
                   };
-              patches = [
-                (pkgs.fetchpatch {
-                  url = "https://github.com/libressl/portable/commit/86e4965d7f20c3a6afc41d95590c9f6abb4fe788.patch";
-                  includes = [ "tests/tlstest.sh" ];
-                  hash = "sha256-XmmKTvP6+QaWxyGFCX6/gDfME9GqBWSx4X8RH8QbDXA=";
-                })
-              ];
+              patches =
+                if version == "3.8.2" then
+                  [
+                    (pkgs.fetchpatch {
+                      url = "https://github.com/libressl/portable/commit/86e4965d7f20c3a6afc41d95590c9f6abb4fe788.patch";
+                      includes = [ "tests/tlstest.sh" ];
+                      hash = "sha256-XmmKTvP6+QaWxyGFCX6/gDfME9GqBWSx4X8RH8QbDXA=";
+                    })
+                  ]
+                else
+                  [ ];
 
               # NOTE: Due to name conflicts between OpenSSL and LibreSSL we need to resolve this manually.
               #       This is not needed for building the individual shims through Nix, as libresslShim build env does not
