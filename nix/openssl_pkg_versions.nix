@@ -3,121 +3,121 @@
   v331 = buildECTesterStandalone {
     openssl = {
       version = "3.3.1";
-      hash = "sha256-Ezvzm40WNayUqEgwQsxEglG3cKDRLHrwwF6old3Zjx0=";
+      hash = "sha256-d3zVlihMiDN1oqehG/XSeG/FQTJV76sgxQ1v/m0CC34=";
     };
   };
   v322 = buildECTesterStandalone {
     openssl = {
       version = "3.2.2";
-      hash = "sha256-QYFzZZxh7gSRWwtSaV8JHgF6w+ZjePgTT9b4H+CjB6s=";
+      hash = "sha256-GXFJwY2enyksQ/BACsq6EuX1LKz+BQ89GZJ36nOOwuc=";
     };
   };
   v316 = buildECTesterStandalone {
     openssl = {
       version = "3.1.6";
-      hash = "sha256-QrArZza3vMRME4/iAy+K4mwtCyErH9mklYkRrZciPrM=";
+      hash = "sha256-XSvkA2tHjvPLCoVMqbNTByw6DibYpW+PCrn7btMtONc=";
     };
   };
   v3014 = buildECTesterStandalone {
     openssl = {
       version = "3.0.14";
-      hash = "sha256-DwwWLusMcv1Zz9t8KsV3pFVtFDvfAJTXCJDSfg6jAh8=";
+      hash = "sha256-7soDXU3U6E/CWEbZUtpil0hK+gZQpvhMaC453zpBI8o=";
     };
   };
   v330 = buildECTesterStandalone {
     openssl = {
       version = "3.3.0";
-      hash = "sha256-Gke9xG+sJWoNyO+2lvf3b6X5YEm6G2D97VR4vTFlxtI=";
+      hash = "sha256-U+ZrBDMipgar8Ah+dpmg4DOjf6E/65dC3zXDozsY+wI=";
     };
   };
   v321 = buildECTesterStandalone {
     openssl = {
       version = "3.2.1";
-      hash = "sha256-dcxoA/+skmJcBuo8Z3+zLvINFaG0HsyN3bxrnWotqEw=";
+      hash = "sha256-g8cyn+UshQZ3115dCwyiRTCbl+jsvP3B39xKufrDWzk=";
     };
   };
   v315 = buildECTesterStandalone {
     openssl = {
       version = "3.1.5";
-      hash = "sha256-KZ3f0KUGptN95WOG0VzjDTRNkYhN/JirMzC3wAkCmTE=";
+      hash = "sha256-auAVRn2r8EabE5rakzGTJ74kuYJR/67O2gIhhI3AkmI=";
     };
   };
   v3013 = buildECTesterStandalone {
     openssl = {
       version = "3.0.13";
-      hash = "sha256-50UE7XA1KV7HBisdoWwVtX/yoDzSBkoo2MOUWMrMRfw=";
+      hash = "sha256-iFJXU/edO+wn0vp8ZqoLkrOqlJja/ZPXz6SzeAza4xM=";
     };
   };
   v320 = buildECTesterStandalone {
     openssl = {
       version = "3.2.0";
-      hash = "sha256-qS9tvKl1ZngOyV4ro9SKqNqgkEiqyDksfHxYzJwDx2I=";
+      hash = "sha256-FMgm8Hx+QzcG+1xp+p4l2rlWhIRLTJYqLPG/GD60aQ4=";
     };
   };
   v314 = buildECTesterStandalone {
     openssl = {
       version = "3.1.4";
-      hash = "sha256-cnwwVD/kCugEwZ5tZbB+PlfWRIJtpUtutOveOsQHfZc=";
+      hash = "sha256-hAr1Nmq5tSK95SWCa+PvD7Cvgcap69hMqmAP6hcx7uM=";
     };
   };
   v3012 = buildECTesterStandalone {
     openssl = {
       version = "3.0.12";
-      hash = "sha256-mnpzVfPUtz9DtXMM6ANx+dH5eET/yMSwHHI7oGJdaq0=";
+      hash = "sha256-+Tyejt3l6RZhGd4xdV/Ie0qjSGNmL2fd/LoU0La2m2E=";
     };
   };
   v313 = buildECTesterStandalone {
     openssl = {
       version = "3.1.3";
-      hash = "sha256-+0zy03Hvld8NyiqoXxHgrivbyG95gcv5MM6O/hrKDyg=";
+      hash = "sha256-8DFqLr2J5/I1KXZEVFhon4AwIJN4jEZmkvsqGIsurPY=";
     };
   };
   v3011 = buildECTesterStandalone {
     openssl = {
       version = "3.0.11";
-      hash = "sha256-n6TUFXzWgxk1pUJ5ZxzCDF5U6VlDOOEJy5h5+giV0Qw=";
+      hash = "sha256-s0JdO7SiIY0Gl+tB9/wM3t4BbtGcpJ0Wi3jo2UeIf1U=";
     };
   };
   v312 = buildECTesterStandalone {
     openssl = {
       version = "3.1.2";
-      hash = "sha256-jHdpkxVGUtC7OT9QbYULgRUXyL2NJLEAiu9X++VdPzE=";
+      hash = "sha256-oM5puLl+pqNblodSNapFO5Zro8uory3iNlfYtnZ9ZTk=";
     };
   };
   v3010 = buildECTesterStandalone {
     openssl = {
       version = "3.0.10";
-      hash = "sha256-II8ngfBapaRVxpMOIKXPe5eGoZh7Qlhb4BN/tF4rimQ=";
+      hash = "sha256-F2HU9bE6ECi5tvPUuOF/6wztyTcPav5h1xk9LNzoMyM=";
     };
   };
   v311 = buildECTesterStandalone {
     openssl = {
       version = "3.1.1";
-      hash = "sha256-aLQF6mRSHJhTd3lbW3BdEWwc87+TOE0bvngkf3YBCCI=";
+      hash = "sha256-s6phM0IzuFK2PdsEjfGBF3wsZZ651DdgCBGPnAjQdnQ=";
     };
   };
   v309 = buildECTesterStandalone {
     openssl = {
       version = "3.0.9";
-      hash = "sha256-Luwx8qwOEm/2jYEHiR71NBWcT8+wlTZdTNTcV9gmFu4=";
+      hash = "sha256-6xqwR4FHQ2D3fDGKuJ2MWgOrw45j1lpgPKu/GwCh3JA=";
     };
   };
   v310 = buildECTesterStandalone {
     openssl = {
       version = "3.1.0";
-      hash = "sha256-qG6tXD4lm/F1FN7LMLKQ4L86Y2aDFobP+6z3UN9EFSc=";
+      hash = "sha256-qqklrZgodFxMrZ2e/rJz3sqCDyzc8sOsfXwSErfEl7Q=";
     };
   };
   v308 = buildECTesterStandalone {
     openssl = {
       version = "3.0.8";
-      hash = "sha256-aTPi8dpvI6UOoibuxukbVD0nfSCYAldjtZMc9qfgmcc=";
+      hash = "sha256-bBPSvzj98x6sPOKjRwc2c/XWMmM5jx9p0N9KQSU+Sz4=";
     };
   };
   v307 = buildECTesterStandalone {
     openssl = {
       version = "3.0.7";
-      hash = "sha256-6Pc1kIFYRtsobSFZUP3vm4grtriG1QrLQxwChXgv41s=";
+      hash = "sha256-gwSdBComDmlvYkBqxcCL9wb9hDg/lFzyG9YentlcOW4=";
     };
   };
 }

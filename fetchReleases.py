@@ -111,8 +111,9 @@ def fetch_openssl():
             except ValueError:
                 continue
             flat_version = "v" + "".join(dotted_version.split('.'))
-            download_url = f"https://github.com/{owner}/{repo}/archive/{release['tag_name']}.tar.gz"
+            download_url = f"https://www.openssl.org/source/openssl-{dotted_version}.tar.gz"
             digest = get_source_hash(download_url)
+            print(f"{dotted_version}:{digest}")
 
 
             rendered = single_version_template.render(pkg=pkg, digest=digest, flat_version=flat_version, version=dotted_version).strip()
