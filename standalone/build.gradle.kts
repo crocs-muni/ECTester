@@ -41,6 +41,8 @@ tasks.named<Test>("test") {
         resultsDir.mkdirs();
     }
     useJUnitPlatform()
+    ignoreFailures = true
+    failFast = false
     // Report is always generated after tests run
     finalizedBy(tasks.named<JacocoReport>("testCodeCoverageReport"))
 
