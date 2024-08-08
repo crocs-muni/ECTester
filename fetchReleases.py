@@ -413,6 +413,16 @@ def main():
             fetch_nettle()
         case "libressl":
             fetch_libressl()
+        case "all":
+            fetch_botan()
+            fetch_cryptopp()
+            fetch_openssl()
+            fetch_boringssl()
+            fetch_gcrypt()
+            fetch_mbedtls()
+            fetch_ippcp()
+            fetch_nettle()
+            fetch_libressl()
         case _:
             print("Unknown library")
 
