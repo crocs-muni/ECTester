@@ -1,5 +1,17 @@
 { buildECTesterStandalone }:
 {
+  rb7f5443c = buildECTesterStandalone {
+    boringssl = {
+      rev = "b7f5443cfc1298d77dfb9e6f2eea68035de521a4";
+      hash = "sha256-ojt43tOnQRRLXZL9amoIDk1J7xncpMmiHf4qtgMQ2Po=";
+    };
+  };
+  r1b40d99d = buildECTesterStandalone {
+    boringssl = {
+      rev = "1b40d99d6a90d0039e9021adde5ad4de743cf0ad";
+      hash = "sha256-2z2h71y5MyM5ExL/b8EzVVK4e88z6Q9vbui3Ju/4kpg=";
+    };
+  };
   r5af122c3 = buildECTesterStandalone {
     boringssl = {
       rev = "5af122c3dfc163b5d1859f1f450756e8e320a142";
@@ -586,18 +598,6 @@
     boringssl = {
       rev = "783ae722ed307a3b3782cd253fd4ffb387f38767";
       hash = "sha256-bdhCbLFmXOl07F/yjeYpnoM41F7EkaWDRG45cNOSnVo=";
-    };
-  };
-  r2db0eb3f = buildECTesterStandalone {
-    boringssl = {
-      rev = "2db0eb3f96a5756298dcd7f9319e56a98585bd10";
-      hash = "sha256-+G7BcdtU8AeNMY4NLQgKpgF28/CS9FIjf+vaOd+Wf6o=";
-    };
-  };
-  r70d05d5a = buildECTesterStandalone {
-    boringssl = {
-      rev = "70d05d5a34f6366116e2b0a530ea8d0186bb2a8e";
-      hash = "sha256-aEtH4Efvt+zRGvUD9JAsBU+EfZySk8gU05fek5rbcbM=";
     };
   };
 }
