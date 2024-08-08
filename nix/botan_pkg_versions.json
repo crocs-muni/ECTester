@@ -158,40 +158,5 @@
         "version": "2.9.0",
         "source_extension": "tgz",
         "hash": "sha256-MFVkNSM03WOuY9sDkHfZauUt+lejJIhxCBcZtqny0Rk="
-    },
-    "v300": {
-        "version": "3.0.0",
-        "source_extension": "tar.xz",
-        "hash": "sha256-XaVS4A+hwEepDCLrXwJH7CfnQytot44Qp84JVSacytc="
-    },
-    "v310": {
-        "version": "3.1.0",
-        "source_extension": "tar.xz",
-        "hash": "sha256-ThjnVai7xr+W+skW+/By7NBnQMcqcgF8JxYuTAtHJf4="
-    },
-    "v311": {
-        "version": "3.1.1",
-        "source_extension": "tar.xz",
-        "hash": "sha256-MMhP6RmTapj+9TMfJGxiqiwOTSCFstRREgf2ogr6Oms="
-    },
-    "v320": {
-        "version": "3.2.0",
-        "source_extension": "tar.xz",
-        "hash": "sha256-BJyEeDX89u86niBrM94F3TiZnDJeJHSCdypVmNnl7OM="
-    },
-    "v330": {
-        "version": "3.3.0",
-        "source_extension": "tar.xz",
-        "hash": "sha256-No8R9CbxIFrtuenjI2ihZTXcEb1gNRBm5vZmTsNrhbk="
-    },
-    "v340": {
-        "version": "3.4.0",
-        "source_extension": "tar.xz",
-        "hash": "sha256-cYQ6/MCixYX48z+jBPC1iuS5xdgwb4lGZ7N0YEQndVc="
-    },
-    "v350": {
-        "version": "3.5.0",
-        "source_extension": "tar.xz",
-        "hash": "sha256-Z+ja4cokaNkN5OYByH1fMf9JKzjoq4vL0C3fcQTtip8="
     }
 }
