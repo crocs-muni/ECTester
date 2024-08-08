@@ -653,7 +653,25 @@
               installPhase = ''
                 install -Dm755 $src $out/bin/$pname
               '';
+            };
 
+          buildShims =
+            with pkgs.python3Packages;
+            buildPythonApplication {
+              pname = "buildShims";
+              version = "0.1.0";
+              format = "other";
+
+              propagatedBuildInputs = [
+                ipython
+                pudb
+              ];
+
+              src = ./testing_building_all_shims.py;
+              dontUnpack = true;
+              installPhase = ''
+                install -Dm755 $src $out/bin/$pname
+              '';
             };
 
         };
