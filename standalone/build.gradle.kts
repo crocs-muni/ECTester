@@ -53,6 +53,8 @@ tasks.named<Test>("test") {
         jvmArgs("--add-exports", "java.base/sun.security.ec=ALL-UNNAMED")
     }
 
+    jvmArgs("-Xmx8G", "-Xms2G")
+
     // Add wolfcrypt JNI lib path to LD_LIBRARY_PATH (as our native library loading does not handle it)
     environment(
             "LD_LIBRARY_PATH", "$rootDir/ext/wolfcrypt-jni/lib/:" + System.getenv("LD_LIBRARY_PATH")

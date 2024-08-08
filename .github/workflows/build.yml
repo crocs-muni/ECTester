@@ -218,12 +218,12 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: crocs-muni/ECTester
 
-      - name: Upload code coverage
+      - name: Upload test coverage
         uses: codecov/test-results-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: crocs-muni/ECTester
           files: >-
-            standalone/test-results/test/TEST-cz.crcs.ectester.standalone.AppTests.xml, standalone/test-results/test/TEST-cz.crcs.ectester.standalone.DeterministicTests.xml,
-            standalone/test-results/test/TEST-cz.crcs.ectester.standalone.IdentTests.xml, standalone/test-results/test/TEST-cz.crcs.ectester.standalone.LibTests.xml,
-            standalone/test-results/test/TEST-cz.crcs.ectester.standalone.OutputTests.xml, 
+            standalone/build/test-results/test/TEST-cz.crcs.ectester.standalone.AppTests.xml, standalone/build/test-results/test/TEST-cz.crcs.ectester.standalone.DeterministicTests.xml,
+            standalone/build/test-results/test/TEST-cz.crcs.ectester.standalone.IdentTests.xml, standalone/build/test-results/test/TEST-cz.crcs.ectester.standalone.LibTests.xml,
+            standalone/build/test-results/test/TEST-cz.crcs.ectester.standalone.OutputTests.xml
