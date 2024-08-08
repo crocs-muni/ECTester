@@ -592,6 +592,48 @@
             function = buildECTesterStandalone;
           };
 
+          shim = {
+            tomcrypt = loadVersionsForShim {
+              libName = "tomcrypt";
+              function = tomcryptShimBuilder;
+            };
+            botan = loadVersionsForShim {
+              libName = "botan";
+              function = botanShimBuilder;
+            };
+            cryptopp = loadVersionsForShim {
+              libName = "cryptopp";
+              function = cryptoppShimBuilder;
+            };
+            openssl = loadVersionsForShim {
+              libName = "openssl";
+              function = opensslShimBuilder;
+            };
+            boringssl = loadVersionsForShim {
+              libName = "boringssl";
+              function = boringsslShimBuilder;
+            };
+            gcrypt = loadVersionsForShim {
+              libName = "gcrypt";
+              function = gcryptShimBuilder;
+            };
+            mbedtls = loadVersionsForShim {
+              libName = "mbedtls";
+              function = mbedtlsShimBuilder;
+            };
+            ippcp = loadVersionsForShim {
+              libName = "ippcp";
+              function = ippcpShimBuilder;
+            };
+            nettle = loadVersionsForShim {
+              libName = "nettle";
+              function = nettleShimBuilder;
+            };
+            libressl = loadVersionsForShim {
+              libName = "libressl";
+              function = libresslShimBuilder;
+            };
+          };
 
           fetchReleases =
             with pkgs.python3Packages;
