@@ -533,20 +533,61 @@
 
             }
           );
+        loadVersions =
+          { libName, function }:
+          pkgs.lib.mapAttrs (rev: specs: function { ${libName} = specs; }) (
+            builtins.fromJSON (builtins.readFile ./nix/${libName}_pkg_versions.json)
+          );
+        loadVersionsForShim =
+          { libName, function }:
+          pkgs.lib.mapAttrs (rev: specs: function specs) (
+            builtins.fromJSON (builtins.readFile ./nix/${libName}_pkg_versions.json)
+          );
       in
       {
         packages = rec {
           default = openssl.v331;
-          tomcrypt = pkgs.callPackage ./nix/tomcrypt_pkg_versions.nix { inherit buildECTesterStandalone; };
-          botan = pkgs.callPackage ./nix/botan_pkg_versions.nix { inherit buildECTesterStandalone; };
-          cryptopp = pkgs.callPackage ./nix/cryptopp_pkg_versions.nix { inherit buildECTesterStandalone; };
-          openssl = pkgs.callPackage ./nix/openssl_pkg_versions.nix { inherit buildECTesterStandalone; };
-          boringssl = pkgs.callPackage ./nix/boringssl_pkg_versions.nix { inherit buildECTesterStandalone; };
-          gcrypt = pkgs.callPackage ./nix/gcrypt_pkg_versions.nix { inherit buildECTesterStandalone; };
-          mbedtls = pkgs.callPackage ./nix/mbedtls_pkg_versions.nix { inherit buildECTesterStandalone; };
-          ippcp = pkgs.callPackage ./nix/ippcp_pkg_versions.nix { inherit buildECTesterStandalone; };
-          nettle = pkgs.callPackage ./nix/nettle_pkg_versions.nix { inherit buildECTesterStandalone; };
-          libressl = pkgs.callPackage ./nix/libressl_pkg_versions.nix { inherit buildECTesterStandalone; };
+          tomcrypt = loadVersions {
+            libName = "tomcrypt";
+            function = buildECTesterStandalone;
+          };
+          botan = loadVersions {
+            libName = "botan";
+            function = buildECTesterStandalone;
+          };
+          cryptopp = loadVersions {
+            libName = "cryptopp";
+            function = buildECTesterStandalone;
+          };
+          openssl = loadVersions {
+            libName = "openssl";
+            function = buildECTesterStandalone;
+          };
+          boringssl = loadVersions {
+            libName = "boringssl";
+            function = buildECTesterStandalone;
+          };
+          gcrypt = loadVersions {
+            libName = "gcrypt";
+            function = buildECTesterStandalone;
+          };
+          mbedtls = loadVersions {
+            libName = "mbedtls";
+            function = buildECTesterStandalone;
+          };
+          ippcp = loadVersions {
+            libName = "ippcp";
+            function = buildECTesterStandalone;
+          };
+          nettle = loadVersions {
+            libName = "nettle";
+            function = buildECTesterStandalone;
+          };
+          libressl = loadVersions {
+            libName = "libressl";
+            function = buildECTesterStandalone;
+          };
+
 
           fetchReleases =
             with pkgs.python3Packages;
