@@ -73,6 +73,9 @@ c_utils.o: c_utils.c
 lib_timing.so: c_timing.c
 	$(CC) -o $@ -shared $(CFLAGS) -Wl,-soname,lib_timing.so $<
 
+lib_preload.so: preload.c
+	$(CC) -shared -fPIC -ldl $< -o $@
+
 lib_csignals.so: c_signals.c
 	$(CC) -o $@ -shared $(CFLAGS) -pthread -lpthread -Wl,-soname,lib_csignals.so $<
 
@@ -99,7 +102,7 @@ boringssl: boringssl_provider.so
 lib_boringssl.so:
 	cp $(PROJECT_ROOT_PATH)/ext/boringssl/build/crypto/libcrypto.so lib_boringssl.so
 
-boringssl_provider.so: boringssl.o c_utils.o | lib_timing.so lib_csignals.so lib_boringssl.so
+boringssl_provider.so: boringssl.o c_utils.o | lib_timing.so lib_csignals.so lib_preload.so lib_boringssl.so
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_boringssl.so -l:lib_timing.so -l:lib_csignals.so
 
 boringssl.o: boringssl.c
@@ -109,7 +112,7 @@ boringssl.o: boringssl.c
 # libgcrypt shim
 gcrypt: gcrypt_provider.so
 
-gcrypt_provider.so: gcrypt.o c_utils.o | lib_timing.so lib_csignals.so
+gcrypt_provider.so: gcrypt.o c_utils.o | lib_timing.so lib_csignals.so lib_preload.so
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -pthread -lpthread $(shell libgcrypt-config --libs) -l:lib_timing.so -l:lib_csignals.so
 
 gcrypt.o: gcrypt.c
@@ -192,7 +195,7 @@ libressl: libressl_provider.so
 lib_libressl.so:
 	cp $(PROJECT_ROOT_PATH)/ext/libressl/build/crypto/libcrypto.so lib_libressl.so
 
-libressl_provider.so: libressl.o c_utils.o | lib_timing.so lib_csignals.so lib_libressl.so
+libressl_provider.so: libressl.o c_utils.o | lib_timing.so lib_csignals.so lib_preload.so lib_libressl.so
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_libressl.so -l:lib_timing.so -l:lib_csignals.so
 
 libressl.o: libressl.c

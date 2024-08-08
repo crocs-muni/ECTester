@@ -42,6 +42,7 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
     gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
     //gcry_control(GCRYCTL_SET_DEBUG_FLAGS, 1);
     gcry_control(GCRYCTL_ENABLE_QUICK_RANDOM, 0);
+	gcry_control(GCRYCTL_SET_PREFERRED_RNG_TYPE, GCRY_RNG_TYPE_SYSTEM);
     gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
 
     INIT_PROVIDER(env, provider_class);
