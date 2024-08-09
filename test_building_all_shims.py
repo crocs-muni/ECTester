@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import time
 
 import subprocess as sp
 
@@ -13,11 +14,12 @@ def get_all_versions(library):
 
 def can_build(library, version):
     cmd = ["nix", "build", f".#shim.{library}.{version}"]
+    start = time.time()
     try:
         sp.check_output(cmd, stderr=sp.DEVNULL)
     except sp.CalledProcessError as e:
-        return False
-    return True
+        return False, time.time() - start
+    return True, time.time() - start
 
 def main():
     parser = argparse.ArgumentParser()
