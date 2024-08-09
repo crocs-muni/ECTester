@@ -667,7 +667,7 @@
                 pudb
               ];
 
-              src = ./testing_building_all_shims.py;
+              src = ./test_building_all_shims.py;
               dontUnpack = true;
               installPhase = ''
                 install -Dm755 $src $out/bin/$pname
