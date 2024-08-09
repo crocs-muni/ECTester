@@ -44,10 +44,16 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
     init_classes(env, "Nettle");
 
     yarrow256_init(&yarrow, 0, NULL);
-    uint8_t  file = open("/dev/random", O_RDONLY);
-    yarrow256_seed(&yarrow, YARROW256_SEED_FILE_SIZE, &file);
-    close(file);
-
+	FILE *urandom = fopen("/dev/urandom", "rb");
+	uint8_t seed[YARROW256_SEED_FILE_SIZE];
+	if (urandom) {
+		size_t read = 0;
+		while (read < sizeof(seed)) {
+			read += fread(((uint8_t *)&seed) + read, 1, sizeof(seed) - read, urandom);
+		}
+		fclose(urandom);
+	}
+    yarrow256_seed(&yarrow, YARROW256_SEED_FILE_SIZE, seed);
 }
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_getCurves(JNIEnv *env, jobject self) {
@@ -64,6 +70,24 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_getCur
     }
     
     return result;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_supportsDeterministicPRNG(JNIEnv *env, jobject self) {
+	return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_setupDeterministicPRNG(JNIEnv *env, jobject self, jbyteArray seed) {
+	jsize seed_length = (*env)->GetArrayLength(env, seed);
+	if (seed_length < YARROW256_SEED_FILE_SIZE) {
+        fprintf(stderr, "Error setting seed, needs to be at least %i bytes.\n", YARROW256_SEED_FILE_SIZE);
+        return JNI_FALSE;
+    }
+
+	jbyte *seed_data = (*env)->GetByteArrayElements(env, seed, NULL);
+	yarrow256_init(&yarrow, 0, NULL);
+	yarrow256_seed(&yarrow, YARROW256_SEED_FILE_SIZE, seed_data);
+	(*env)->ReleaseByteArrayElements(env, seed, seed_data, JNI_ABORT);
+	return JNI_TRUE;
 }
 
 static const struct ecc_curve* create_curve_from_name(JNIEnv *env, const char* curve_name) {

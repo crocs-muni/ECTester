@@ -73,11 +73,11 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
                 String type = curve.getField() == javacard.security.KeyPair.ALG_EC_FP ? "FP" : "F2M";
 
                 //try generating a keypair
-                KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
+                KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).random(getRandom()).build();
                 Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
 
                 KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                KeyAgreementTestable testable = new KeyAgreementTestable(ka, kgt, kgt);
+                KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).privateKgt(kgt).publicKgt(kgt).random(getRandom()).build();
                 Test ecdh = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
                 doTest(CompoundTest.function(CompoundTest.EXPECT_ALL_SUCCESS, CompoundTest.RUN_ALL_IF_FIRST, "Wrong curve test of " + curve.getBits()
                         + "b " + type + ". " + curve.getDesc(), generate, ecdh));
@@ -96,7 +96,7 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
         Map<String, EC_Curve> curveMap = EC_Store.getInstance().getObjects(EC_Curve.class, "secg");
         List<EC_Curve> curves = curveMap.entrySet().stream().filter((e) -> e.getKey().endsWith("r1") &&
                 e.getValue().getField() == javacard.security.KeyPair.ALG_EC_FP).map(Map.Entry::getValue).collect(Collectors.toList());
-        Random r = new Random();
+        Random r = getRandom();
         for (EC_Curve curve : curves) {
             short bits = curve.getBits();
             final byte[] originalp = curve.getParam(EC_Consts.PARAMETER_FP)[0];
@@ -233,12 +233,12 @@ public class StandaloneWrongSuite extends StandaloneTestSuite {
 
     private Test ecdhTest(ECParameterSpec spec, String desc) throws NoSuchAlgorithmException {
         //generate KeyPair
-        KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
+        KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).random(getRandom()).build();
         Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.FAILURE);
 
         //perform ECDH
         KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-        KeyAgreementTestable testable = new KeyAgreementTestable(ka, kgt, kgt);
+        KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).privateKgt(kgt).publicKgt(kgt).random(getRandom()).build();
         Test ecdh = KeyAgreementTest.expect(testable, Result.ExpectedValue.FAILURE);
         return CompoundTest.function(CompoundTest.EXPECT_ALL_SUCCESS, CompoundTest.RUN_ALL_IF_FIRST, desc, generate, ecdh);
     }

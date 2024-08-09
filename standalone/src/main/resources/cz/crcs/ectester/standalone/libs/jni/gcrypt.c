@@ -25,6 +25,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_GcryptLib_create
 
     jmethodID init = (*env)->GetMethodID(env, local_provider_class, "<init>", "(Ljava/lang/String;DLjava/lang/String;)V");
 
+	gcry_control(GCRYCTL_SET_PREFERRED_RNG_TYPE, GCRY_RNG_TYPE_FIPS);
     const char *running_with = gcry_check_version(GCRYPT_VERSION);
     if (!running_with) {
         return NULL;
@@ -40,9 +41,8 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_GcryptLib_create
 
 JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_00024Gcrypt_setup(JNIEnv *env, jobject this) {
     gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
-    //gcry_control(GCRYCTL_SET_DEBUG_FLAGS, 1);
-    gcry_control(GCRYCTL_ENABLE_QUICK_RANDOM, 0);
     gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
+    //gcry_control(GCRYCTL_SET_DEBUG_FLAGS, 1);
 
     INIT_PROVIDER(env, provider_class);
 

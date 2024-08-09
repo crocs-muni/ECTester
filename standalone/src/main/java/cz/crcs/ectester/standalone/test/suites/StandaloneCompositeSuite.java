@@ -64,7 +64,7 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
             ECParameterSpec spec = curve.toSpec();
 
             //Generate KeyPair
-            KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, spec);
+            KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).random(getRandom()).build();
             Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
 
             //Perform KeyAgreement tests
@@ -75,7 +75,7 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
                     for (EC_Key.Public pub : curveKeys.getValue()) {
                         ECPublicKey ecpub = ECUtil.toPublicKey(pub);
                         KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                        KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpub, kgt);
+                        KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).publicKey(ecpub).privateKgt(kgt).random(getRandom()).build();
                         Test keyAgreement = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
                         specificKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Composite test of " + curve.getId() + ", with generated private key, " + pub.getDesc(), keyAgreement));
                     }
@@ -133,7 +133,7 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
             }
 
             //generate KeyPair
-            KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, curve.toSpec());
+            KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(curve.toSpec()).build();
             Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
 
             //perform KeyAgreement tests
@@ -141,7 +141,7 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
             for (KeyAgreementIdent kaIdent : cfg.selected.getKAs()) {
                 if (kaAlgo == null || kaIdent.containsAny(kaTypes)) {
                     KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                    KeyAgreementTestable testable = new KeyAgreementTestable(ka, kgt, kgt);
+                    KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).publicKgt(kgt).privateKgt(kgt).random(getRandom()).build();
                     kaTests.add(KeyAgreementTest.expectError(testable, dhValue));
                 }
             }
@@ -154,7 +154,8 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
             for (SignatureIdent sigIdent : cfg.selected.getSigs()) {
                 if (sigAlgo == null || sigIdent.containsAny(sigTypes)) {
                     Signature sig = sigIdent.getInstance(cfg.selected.getProvider());
-                    SignatureTestable testable = new SignatureTestable(sig, kgt, null);
+                    byte[] data = sigIdent.toString().getBytes();
+                    SignatureTestable testable = new SignatureTestable(sig, kgt, data, getRandom());
                     sigTests.add(SignatureTest.expectError(testable, dhValue));
                 }
             }

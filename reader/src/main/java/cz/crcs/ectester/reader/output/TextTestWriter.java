@@ -52,7 +52,8 @@ public class TextTestWriter extends BaseTextTestWriter {
                 sb.append("═══ ").append(Colors.underline("Card ATR:")).append(" ").append(ByteUtil.bytesToHex(cardSuite.getCard().getATR().getBytes(), false)).append(System.lineSeparator());
                 sb.append("═══ ").append(Colors.underline("JavaCard version:")).append(" ").append(info.getJavaCardVersion()).append(System.lineSeparator());
                 sb.append("═══ ").append(Colors.underline("Array sizes (apduBuf, ram, ram2, apduArr):")).append(" ").append(String.format("%d %d %d %d", info.getApduBufferLength(), info.getRamArrayLength(), info.getRamArray2Length(), info.getApduArrayLength())).append(System.lineSeparator());
-                sb.append("═══ ").append(Colors.underline("Test options:")).append(" ").append(String.join(",", cardSuite.getCfg().testOptions)).append(System.lineSeparator());
+                sb.append("═══ ").append(Colors.underline("Test key setup:")).append(" ").append(cardSuite.getCfg().testKeySetup).append(System.lineSeparator());
+                sb.append("═══ ").append(Colors.underline("Test data setup:")).append(" ").append(cardSuite.getCfg().testDataSetup).append(System.lineSeparator());
                 CardMngr.CPLC cplc = cardSuite.getCard().getCPLC();
                 if (!cplc.values().isEmpty()) {
                     sb.append("═══ ").append(Colors.underline("Card CPLC data:")).append(System.lineSeparator());

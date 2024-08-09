@@ -69,19 +69,27 @@ public abstract class ProviderECLibrary implements ECLibrary {
     }
 
     public boolean setNativeTimingType(String type) {
-    	return false;
+        return false;
     }
 
     public long getNativeTimingResolution() {
         return 0;
     }
 
-	public String getNativeTimingUnit() {
-		return null;
-	}
+    public String getNativeTimingUnit() {
+        return null;
+    }
 
     public long getLastNativeTiming() {
         return 0;
+    }
+
+    public boolean supportsDeterministicPRNG() {
+        return false;
+    }
+
+    public boolean setupDeterministicPRNG(byte[] seed) {
+        return false;
     }
 
     @Override

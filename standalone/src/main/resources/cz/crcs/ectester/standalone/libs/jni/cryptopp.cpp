@@ -22,7 +22,11 @@ using CryptoPP::Exception;
 using CryptoPP::byte;
 
 #include "cryptopp/osrng.h"
+using CryptoPP::RandomNumberGenerator;
 using CryptoPP::AutoSeededRandomPool;
+
+#include "cryptopp/mersenne.h"
+using CryptoPP::MT19937;
 
 #include "cryptopp/sha.h"
 using CryptoPP::SHA1;
@@ -89,7 +93,7 @@ using CryptoPP::Integer;
  */
 
 static jclass provider_class;
-static AutoSeededRandomPool rng;
+static std::unique_ptr<RandomNumberGenerator> rng = std::make_unique<AutoSeededRandomPool>();
 
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_createProvider(JNIEnv *env, jobject self) {
@@ -185,6 +189,23 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_getC
     }
 
     return result;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_supportsDeterministicPRNG(JNIEnv *env, jobject self) {
+    return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_setupDeterministicPRNG(JNIEnv *env, jobject self, jbyteArray seed) {
+    jsize seed_length = env->GetArrayLength(seed);
+    if (seed_length > 4) {
+        fprintf(stderr, "Error setting seed, needs to be at most 4 bytes.\n");
+        return JNI_FALSE;
+    }
+    jbyte *seed_data = env->GetByteArrayElements(seed, nullptr);
+    uint32_t seed_int = seed_data[0] | seed_data[1] << 8 | seed_data[2] << 16 | seed_data[3] << 24;
+    rng.reset(new MT19937(seed_int));
+    env->ReleaseByteArrayElements(seed, seed_data, JNI_ABORT);
+    return JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Cryptopp_keysizeSupported(JNIEnv *env, jobject self, jint keysize){
@@ -517,7 +538,7 @@ template <class EC> jobject generate_from_group(JNIEnv *env, DL_GroupParameters_
     SIG_TRY(TIMEOUT) {
         try {
             native_timing_start();
-            ec_domain.GenerateKeyPair(rng, priv, pub);
+            ec_domain.GenerateKeyPair(*rng, priv, pub);
             native_timing_stop();
         } catch (Exception & ex) {
             SIG_DEINIT();
@@ -661,7 +682,7 @@ jbyteArray sign_message(JNIEnv *env, DL_GroupParameters_EC<EC> group, jbyteArray
     size_t len;
     SIG_TRY(TIMEOUT) {
         native_timing_start();
-        len = signer.SignMessage(rng, (byte *)data_bytes, data_length, (byte *)signature.c_str());
+        len = signer.SignMessage(*rng, (byte *)data_bytes, data_length, (byte *)signature.c_str());
         native_timing_stop();
     } SIG_CATCH_HANDLE(env);
     env->ReleaseByteArrayElements(data, data_bytes, JNI_ABORT);

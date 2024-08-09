@@ -40,8 +40,8 @@ tasks.named<Test>("test") {
     doFirst {
         resultsDir.mkdirs();
     }
-    ignoreFailures = true
     useJUnitPlatform()
+
     // Report is always generated after tests run
     finalizedBy(tasks.named<JacocoReport>("testCodeCoverageReport"))
 
@@ -52,9 +52,15 @@ tasks.named<Test>("test") {
         jvmArgs("--add-exports", "java.base/sun.security.ec=ALL-UNNAMED")
     }
 
+    jvmArgs("-Xmx8G", "-Xms2G")
+
     // Add wolfcrypt JNI lib path to LD_LIBRARY_PATH (as our native library loading does not handle it)
     environment(
             "LD_LIBRARY_PATH", "$rootDir/ext/wolfcrypt-jni/lib/:" + System.getenv("LD_LIBRARY_PATH")
+    )
+    // Add our preload to tests, so they do not need to start another process.
+    environment(
+        "LD_PRELOAD", "$rootDir/standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/lib_preload.so"
     )
     // Add a path where we will store our test results.
     environment(

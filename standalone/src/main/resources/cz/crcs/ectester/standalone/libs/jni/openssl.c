@@ -14,6 +14,7 @@
 #include <openssl/err.h>
 #include <openssl/ec.h>
 #include <openssl/ecdsa.h>
+#include <openssl/rand.h>
 
 
 
@@ -67,6 +68,58 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_getCu
     }
 
     return result;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_supportsDeterministicPRNG(JNIEnv *env, jobject self) {
+	return JNI_TRUE;
+}
+
+static int stdlib_rand_seed(const void *buf, int num)
+{
+	unsigned int s = 0;
+	for (int i = 0; i < num && i < sizeof(unsigned int); ++i) {
+		s |= ((unsigned char*)buf)[i] << 8*i;
+	}
+    srand(s);
+    return 1;
+}
+
+// Fill the buffer with random bytes.  For each byte in the buffer, we generate
+// a random number and clamp it to the range of a byte, 0-255.
+static int stdlib_rand_bytes(unsigned char *buf, int num)
+{
+    for (int index = 0; index < num; ++index)
+    {
+        buf[index] = rand() % 256;
+    }
+    return 1;
+}
+
+static void stdlib_rand_cleanup() {}
+static int stdlib_rand_add(const void *buf, int num, double add_entropy)
+{
+    return 1;
+}
+static int stdlib_rand_status()
+{
+    return 1;
+}
+
+RAND_METHOD stdlib_rand_meth = { stdlib_rand_seed,
+                                 stdlib_rand_bytes,
+                                 stdlib_rand_cleanup,
+                                 stdlib_rand_add,
+                                 stdlib_rand_bytes,
+                                 stdlib_rand_status
+};
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_setupDeterministicPRNG(JNIEnv *env, jobject self, jbyteArray seed) {
+	RAND_set_rand_method(&stdlib_rand_meth);
+	jbyte *seed_data = (*env)->GetByteArrayElements(env, seed, NULL);
+	jsize seed_length = (*env)->GetArrayLength(env, seed);
+	RAND_seed(seed_data, seed_length);
+	(*env)->ReleaseByteArrayElements(env, seed, seed_data, JNI_ABORT);
+	return JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Openssl_keysizeSupported(JNIEnv *env, jobject self, jint keysize) {

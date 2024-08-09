@@ -3,6 +3,8 @@ package cz.crcs.ectester.standalone.test.suites;
 import cz.crcs.ectester.common.cli.TreeCommandLine;
 import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.TestSuite;
+import cz.crcs.ectester.common.util.ByteUtil;
+import cz.crcs.ectester.common.util.Util;
 import cz.crcs.ectester.standalone.ECTesterStandalone;
 import cz.crcs.ectester.standalone.consts.Ident;
 import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
@@ -10,6 +12,7 @@ import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
 import cz.crcs.ectester.standalone.consts.SignatureIdent;
 import cz.crcs.ectester.standalone.libs.ProviderECLibrary;
 
+import java.security.SecureRandom;
 import java.util.Optional;
 import java.util.Set;
 
@@ -19,15 +22,32 @@ import java.util.Set;
 public abstract class StandaloneTestSuite extends TestSuite {
     TreeCommandLine cli;
     ECTesterStandalone.Config cfg;
+    SecureRandom random;
+    byte[] seed;
 
     public StandaloneTestSuite(TestWriter writer, ECTesterStandalone.Config cfg, TreeCommandLine cli, String name, String... description) {
         super(writer, name, description);
         this.cfg = cfg;
         this.cli = cli;
+        if (cli != null && cli.hasOption("test.prng-seed")) {
+            String seedString = cli.getOptionValue("test.prng-seed");
+            this.seed = ByteUtil.hexToBytes(seedString, true);
+        } else {
+            seed = new SecureRandom().generateSeed(16);
+        }
+        this.random = Util.getRandom(seed);
     }
 
     public ProviderECLibrary getLibrary() {
         return cfg.selected;
+    }
+
+    public byte[] getSeed() {
+        return seed;
+    }
+
+    SecureRandom getRandom() {
+        return this.random;
     }
 
     private <T extends Ident> T getIdent(Set<T> options, String choice, String identName, String defaultChoice) {

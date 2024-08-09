@@ -15,32 +15,32 @@ public class SignatureTestable extends StandaloneTestable<SignatureTestable.Sign
     private ECPrivateKey signKey;
     private ECPublicKey verifyKey;
     private KeyGeneratorTestable kgt;
+    private SecureRandom random;
     private byte[] data;
     private byte[] signature;
     private boolean verified;
 
-    public SignatureTestable(Signature sig, ECPrivateKey signKey, ECPublicKey verifyKey, byte[] data) {
+    public SignatureTestable(Signature sig, ECPrivateKey signKey, ECPublicKey verifyKey, byte[] data, SecureRandom random) {
         this.sig = sig;
         this.signKey = signKey;
         this.verifyKey = verifyKey;
         this.data = data;
-        if (data == null) {
-            SecureRandom random = new SecureRandom();
-            this.data = new byte[64];
-            random.nextBytes(this.data);
-        }
+        this.random = random;
     }
 
-    public SignatureTestable(Signature sig, ECPublicKey verifyKey, byte[] data, byte[] signature) {
+    public SignatureTestable(Signature sig, ECPublicKey verifyKey, byte[] data, byte[] signature, SecureRandom random) {
         this.sig = sig;
         this.verifyKey = verifyKey;
         this.data = data;
         this.signature = signature;
+        this.random = random;
     }
 
-    public SignatureTestable(Signature sig, KeyGeneratorTestable kgt, byte[] data) {
-        this(sig, (ECPrivateKey) null, null, data);
+    public SignatureTestable(Signature sig, KeyGeneratorTestable kgt, byte[] data, SecureRandom random) {
+        this.sig = sig;
         this.kgt = kgt;
+        this.data = data;
+        this.random = random;
     }
 
     public Signature getSig() {
@@ -71,7 +71,11 @@ public class SignatureTestable extends StandaloneTestable<SignatureTestable.Sign
             if(signKey != null) {
                 stage = SignatureStage.InitSign;
                 try {
-                    sig.initSign(signKey);
+                    if (random != null) {
+                        sig.initSign(signKey, random);
+                    } else {
+                        sig.initSign(signKey);
+                    }
                 } catch (InvalidKeyException e) {
                     failOnException(e);
                     return;

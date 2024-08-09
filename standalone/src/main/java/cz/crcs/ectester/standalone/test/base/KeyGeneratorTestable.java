@@ -3,6 +3,7 @@ package cz.crcs.ectester.standalone.test.base;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
@@ -15,24 +16,17 @@ public class KeyGeneratorTestable extends StandaloneTestable<KeyGeneratorTestabl
     private final KeyPairGenerator kpg;
     private int keysize = 0;
     private AlgorithmParameterSpec spec = null;
+    private SecureRandom random;
 
     public KeyGeneratorTestable(KeyPairGenerator kpg) {
         this.kpg = kpg;
     }
 
-    public KeyGeneratorTestable(KeyPairGenerator kpg, int keysize) {
-        this.kpg = kpg;
-        this.keysize = keysize;
-    }
-
-    public KeyGeneratorTestable(KeyPairGenerator kpg, ECParameterSpec spec) {
-        this.kpg = kpg;
-        this.spec = spec;
-    }
-
-    public KeyGeneratorTestable(KeyPairGenerator kpg, ECGenParameterSpec spec) {
-        this.kpg = kpg;
-        this.spec = spec;
+    KeyGeneratorTestable(Builder builder) {
+        this.kpg = builder.kpg;
+        this.keysize = builder.keysize;
+        this.spec = builder.spec;
+        this.random = builder.random;
     }
 
     public int getKeysize() {
@@ -57,9 +51,17 @@ public class KeyGeneratorTestable extends StandaloneTestable<KeyGeneratorTestabl
             stage = KeyGeneratorStage.Init;
             try {
                 if (spec != null) {
-                    kpg.initialize(spec);
+                    if (random != null) {
+                        kpg.initialize(spec, random);
+                    } else {
+                        kpg.initialize(spec);
+                    }
                 } else if (keysize != 0) {
-                    kpg.initialize(keysize);
+                    if (random != null) {
+                        kpg.initialize(keysize, random);
+                    } else {
+                        kpg.initialize(keysize);
+                    }
                 }
             } catch (InvalidAlgorithmParameterException e) {
                 failOnException(e);
@@ -78,8 +80,56 @@ public class KeyGeneratorTestable extends StandaloneTestable<KeyGeneratorTestabl
         hasRun = true;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public enum KeyGeneratorStage {
         Init,
         GenKeyPair
+    }
+
+    public static class Builder {
+        private KeyPairGenerator kpg;
+        private int keysize = 0;
+        private AlgorithmParameterSpec spec = null;
+        private SecureRandom random;
+
+        public Builder() {}
+
+        public Builder keyPairGenerator(KeyPairGenerator kpg) {
+            this.kpg = kpg;
+            return this;
+        }
+
+        public Builder keysize(int keysize) {
+            this.keysize = keysize;
+            return this;
+        }
+
+        public Builder spec(ECGenParameterSpec spec) {
+            this.spec = spec;
+            return this;
+        }
+
+        public Builder spec(ECParameterSpec spec) {
+            this.spec = spec;
+            return this;
+        }
+
+        public Builder random(SecureRandom random) {
+            this.random = random;
+            return this;
+        }
+
+        public KeyGeneratorTestable build() {
+            if (kpg == null) {
+                throw new NullPointerException("kpg mus be non-null.");
+            }
+            if (spec != null && keysize != 0) {
+                throw new IllegalStateException("Only one of spec and keysize can be set.");
+            }
+            return new KeyGeneratorTestable(this);
+        }
     }
 }
