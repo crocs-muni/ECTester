@@ -6,13 +6,14 @@ import cz.crcs.ectester.reader.command.Command;
 import cz.crcs.ectester.reader.response.Response;
 
 import javax.smartcardio.CardException;
+import java.util.function.Supplier;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class CommandTestable extends BaseTestable {
-    private Command command;
-    private Response response;
+    protected Command command;
+    protected Response response;
 
     public CommandTestable(Command command) {
         this.command = command;
@@ -39,6 +40,21 @@ public class CommandTestable extends BaseTestable {
             error = true;
         } else if (response.successful()) {
             ok = true;
+        }
+    }
+
+    public static class FunctionCommandTestable extends CommandTestable {
+        private Supplier<Command> supplier;
+
+        public FunctionCommandTestable(Supplier<Command> supplier) {
+            super(null);
+            this.supplier = supplier;
+        }
+
+        @Override
+        public void run() {
+            this.command = supplier.get();
+            super.run();
         }
     }
 }

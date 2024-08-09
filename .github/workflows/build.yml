@@ -81,6 +81,12 @@ jobs:
           path: |
             reader/build/libs/ECTesterReader.jar
 
+      - name: Upload code coverage
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: crocs-muni/ECTester
+
   standalone:
     runs-on: ubuntu-latest
     permissions:
@@ -183,7 +189,7 @@ jobs:
         run: ./gradlew standalone:run --args="list-libs"
 
       - name: Test
-        run: ./gradlew standalone:test
+        run: ./gradlew standalone:test --continue
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -199,8 +205,25 @@ jobs:
           path: |
             standalone/build/results/
 
+      - name: Upload tests
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests-standalone-${{ matrix.java }}
+          path: |
+            standalone/build/reports/tests/test/
+
       - name: Upload code coverage
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: crocs-muni/ECTester
+
+      - name: Upload test coverage
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: crocs-muni/ECTester
+          files: >-
+            standalone/build/test-results/test/TEST-cz.crcs.ectester.standalone.AppTests.xml, standalone/build/test-results/test/TEST-cz.crcs.ectester.standalone.DeterministicTests.xml,
+            standalone/build/test-results/test/TEST-cz.crcs.ectester.standalone.IdentTests.xml, standalone/build/test-results/test/TEST-cz.crcs.ectester.standalone.LibTests.xml,
+            standalone/build/test-results/test/TEST-cz.crcs.ectester.standalone.OutputTests.xml

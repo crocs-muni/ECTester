@@ -23,7 +23,7 @@ import java.util.Map;
  */
 public class CardTwistSuite extends CardTestSuite {
     public CardTwistSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager) {
-        super(writer, cfg, cardManager, "twist", null, "The twist test suite tests whether the card correctly rejects points on the quadratic twist of the curve during ECDH.");
+        super(writer, cfg, cardManager, "twist",  "The twist test suite tests whether the card correctly rejects points on the quadratic twist of the curve during ECDH.");
     }
 
     @Override
@@ -34,13 +34,9 @@ public class CardTwistSuite extends CardTestSuite {
             EC_Curve curve = e.getKey();
             List<EC_Key.Public> keys = e.getValue();
 
-            Test allocate = runTest(CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, curve.getBits(), curve.getField()), Result.ExpectedValue.SUCCESS));
-            if (!allocate.ok()) {
-                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "No support for " + curve.getId() + ".", allocate));
-                continue;
-            }
+            Test allocate = CommandTest.expect(new Command.Allocate(this.card, CardConsts.KEYPAIR_BOTH, curve.getBits(), curve.getField()), Result.ExpectedValue.SUCCESS);
             Test set = CommandTest.expect(new Command.Set(this.card, CardConsts.KEYPAIR_BOTH, EC_Consts.CURVE_external, curve.getParams(), curve.flatten()), Result.ExpectedValue.SUCCESS);
-            Test generate = CommandTest.expect(new Command.Generate(this.card, CardConsts.KEYPAIR_LOCAL), Result.ExpectedValue.SUCCESS);
+            Test generate = setupKeypairs(curve, Result.ExpectedValue.SUCCESS, CardConsts.KEYPAIR_LOCAL);
 
             Test prepare = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Prepare and generate keypair on " + curve.getId() + ".", allocate, set, generate);
 

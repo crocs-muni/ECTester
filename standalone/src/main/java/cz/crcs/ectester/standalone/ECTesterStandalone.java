@@ -31,6 +31,7 @@ import cz.crcs.ectester.common.test.TestException;
 import cz.crcs.ectester.common.util.ByteUtil;
 import cz.crcs.ectester.common.util.ECUtil;
 import cz.crcs.ectester.common.util.FileUtil;
+import cz.crcs.ectester.common.util.Util;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
 import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
@@ -71,7 +72,7 @@ public class ECTesterStandalone {
     private ProviderECLibrary[] libs;
     private Config cfg;
 
-    private Options opts = new Options();
+    private final Options opts = new Options();
     private TreeParser optParser;
     private TreeCommandLine cli;
     public static final String VERSION = "v0.3.3";
@@ -104,12 +105,52 @@ public class ECTesterStandalone {
 
             if (!System.getProperty("os.name").startsWith("Windows")) {
                 FileUtil.write(LIB_RESOURCE_DIR + "lib_timing.so", reqs.resolve("lib_timing.so"));
-                System.load(reqs.resolve("lib_timing.so").toString());
-
+                FileUtil.write(LIB_RESOURCE_DIR + "lib_preload.so", reqs.resolve("lib_preload.so"));
+                FileUtil.write(LIB_RESOURCE_DIR + "lib_prng.so", reqs.resolve("lib_prng.so"));
                 FileUtil.write(LIB_RESOURCE_DIR + "lib_csignals.so", reqs.resolve("lib_csignals.so"));
-                System.load(reqs.resolve("lib_csignals.so").toString());
                 FileUtil.write(LIB_RESOURCE_DIR + "lib_cppsignals.so", reqs.resolve("lib_cppsignals.so"));
-                System.load(reqs.resolve("lib_cppsignals.so").toString());
+
+                String preloadLibPath = reqs.resolve("lib_preload.so").toAbsolutePath().toString();
+                String preload = System.getenv("LD_PRELOAD");
+                if (preload == null && !cli.hasOption("no-preload")) {
+                    ProcessBuilder builder = new ProcessBuilder();
+                    Map<String, String> env = builder.environment();
+                    env.put("LD_PRELOAD", preloadLibPath);
+
+                    ProcessHandle.Info info = ProcessHandle.current().info();
+                    List<String> argList = new LinkedList<>();
+                    if (info.command().isPresent()) {
+                        argList.add(info.command().get());
+                    } else {
+                        System.err.println("Cannot locate command to spawn preloaded-subprocess.");
+                        return;
+                    }
+                    if (info.arguments().isPresent()) {
+                        argList.addAll(List.of(info.arguments().get()));
+                    } else {
+                        System.err.println("Cannot locate arguments to spawn preloaded-subprocess.");
+                        return;
+                    }
+                    builder.command(argList);
+                    builder.inheritIO();
+
+                    Process process = builder.start();
+                    int result;
+                    while (true) {
+                        try {
+                            result = process.waitFor();
+                            break;
+                        } catch (InterruptedException ignored) {
+                        }
+                    }
+                    System.exit(result);
+                } else {
+                    // Load the utility libs.
+                    System.load(reqs.resolve("lib_prng.so").toString());
+                    System.load(reqs.resolve("lib_timing.so").toString());
+                    System.load(reqs.resolve("lib_csignals.so").toString());
+                    System.load(reqs.resolve("lib_cppsignals.so").toString());
+                }
             }
 
             List<ProviderECLibrary> libObjects = new LinkedList<>();
@@ -191,7 +232,15 @@ public class ECTesterStandalone {
         Option output = Option.builder("o").longOpt("output").desc("Output into file <output_file>. The file can be prefixed by the format (one of text,yml,xml), such as: xml:<output_file>.").hasArgs().argName("output_file").optionalArg(false).numberOfArgs(1).build();
         Option outputRaw = Option.builder("o").longOpt("output").desc("Output CSV into file <output_file>.").hasArgs().argName("output_file").optionalArg(false).numberOfArgs(1).build();
         Option quiet = Option.builder("q").longOpt("quiet").desc("Do not output to stdout.").build();
-        Option timeSource = Option.builder("ts").longOpt("time-source").desc("Use a given native timing source: {rdtsc, monotonic, monotonic-raw, cputime-process, cputime-thread, perfcount}").hasArgs().argName("source").optionalArg(false).numberOfArgs(1).build();
+        Option timeSource = Option.builder("ts").longOpt("time-source").desc("Use a given native timing source: {rdtsc, monotonic, monotonic-raw, cputime-process, cputime-thread}").hasArgs().argName("source").optionalArg(false).numberOfArgs(1).build();
+        Option prngSeed = Option.builder("ps").longOpt("prng-seed").desc("Use a deterministic PRNG with the given [seed] (hexadecimal) in the library.").hasArgs().argName("seed").optionalArg(false).numberOfArgs(1).build();
+        Option file = Option.builder("f").longOpt("file").hasArg().argName("file").optionalArg(false).desc("Input [file] to sign.").build();
+        Option message = Option.builder("d").longOpt("data").desc("Sign the given [message].").hasArgs().argName("message").optionalArg(false).numberOfArgs(1).build();
+        Option messageSeed = Option.builder("ds").longOpt("data-seed").desc("Use a deterministic PRNG with the given [seed] (hexadecimal) to generate the messages.").hasArgs().argName("seed").optionalArg(false).numberOfArgs(1).build();
+        OptionGroup ecdsaMessage = new OptionGroup();
+        ecdsaMessage.addOption(file);
+        ecdsaMessage.addOption(message);
+        ecdsaMessage.addOption(messageSeed);
 
         Options testOpts = new Options();
         testOpts.addOption(bits);
@@ -199,6 +248,7 @@ public class ECTesterStandalone {
         testOpts.addOption(curveName);
         testOpts.addOption(output);
         testOpts.addOption(quiet);
+        testOpts.addOption(prngSeed);
         testOpts.addOption(Option.builder("gt").longOpt("kpg-type").desc("Set the KeyPairGenerator object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("kt").longOpt("ka-type").desc("Set the KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("st").longOpt("sig-type").desc("Set the Signature object [type].").hasArg().argName("type").optionalArg(false).build());
@@ -215,6 +265,7 @@ public class ECTesterStandalone {
         ecdhOpts.addOption(curveName);
         ecdhOpts.addOption(outputRaw);
         ecdhOpts.addOption(timeSource);
+        ecdhOpts.addOption(prngSeed);
         ecdhOpts.addOption(Option.builder("t").longOpt("type").desc("Set KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdhOpts.addOption(Option.builder().longOpt("key-type").desc("Set the key [algorithm] for which the key should be derived in KeyAgreements with KDF. Default is \"AES\".").hasArg().argName("algorithm").optionalArg(false).build());
         ecdhOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDH [amount] times.").build());
@@ -231,12 +282,13 @@ public class ECTesterStandalone {
         ecdsaOpts.addOption(curveName);
         ecdsaOpts.addOption(outputRaw);
         ecdsaOpts.addOption(timeSource);
+        ecdsaOpts.addOption(prngSeed);
         ecdsaOpts.addOptionGroup(privateKey);
         ecdsaOpts.addOptionGroup(publicKey);
         ecdsaOpts.addOption(Option.builder().longOpt("fixed").desc("Perform all ECDSA with fixed keypair.").build());
         ecdsaOpts.addOption(Option.builder("t").longOpt("type").desc("Set Signature object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdsaOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDSA [amount] times.").build());
-        ecdsaOpts.addOption(Option.builder("f").longOpt("file").hasArg().argName("file").optionalArg(false).desc("Input [file] to sign.").build());
+        ecdsaOpts.addOptionGroup(ecdsaMessage);
         ParserOptions ecdsa = new ParserOptions(new DefaultParser(), ecdsaOpts, "Perform EC based Signature.");
         actions.put("ecdsa", ecdsa);
 
@@ -246,6 +298,7 @@ public class ECTesterStandalone {
         generateOpts.addOption(curveName);
         generateOpts.addOption(outputRaw);
         generateOpts.addOption(timeSource);
+        generateOpts.addOption(prngSeed);
         generateOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Generate [amount] of EC keys.").build());
         generateOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPairGenerator object [type].").build());
         ParserOptions generate = new ParserOptions(new DefaultParser(), generateOpts, "Generate EC keypairs.");
@@ -283,6 +336,7 @@ public class ECTesterStandalone {
         opts.addOption(Option.builder("V").longOpt("version").desc("Print version info.").build());
         opts.addOption(Option.builder("h").longOpt("help").desc("Print help(about <command>).").hasArg().argName("command").optionalArg(true).build());
         opts.addOption(Option.builder("C").longOpt("color").desc("Print stuff with color, requires ANSI terminal.").build());
+        opts.addOption(Option.builder().longOpt("no-preload").desc("Do not use LD_PRELOAD.").build());
 
         return optParser.parse(opts, args);
     }
@@ -307,6 +361,7 @@ public class ECTesterStandalone {
                 System.out.println(Colors.bold("\t\t- Fullname: ") + lib.getProvider().getName());
                 System.out.println(Colors.bold("\t\t- Version: ") + lib.getProvider().getVersionStr());
                 System.out.println(Colors.bold("\t\t- Supports native timing: ") + lib.getNativeTimingSupport().toString());
+                System.out.println(Colors.bold("\t\t- Supports deterministic PRNG: ") + lib.supportsDeterministicPRNG());
                 Set<KeyPairGeneratorIdent> kpgs = lib.getKPGs();
                 if (!kpgs.isEmpty()) {
                     System.out.println(Colors.bold("\t\t- KeyPairGenerators: ") + kpgs.stream().map(KeyPairGeneratorIdent::getName).sorted().collect(Collectors.joining(", ")));
@@ -409,12 +464,25 @@ public class ECTesterStandalone {
             throw new NoSuchAlgorithmException(algo);
         }
 
+        SecureRandom random;
+        if (cli.hasOption("ecdh.prng-seed")) {
+            String seedString = cli.getOptionValue("ecdh.prng-seed");
+            byte[] seed = ByteUtil.hexToBytes(seedString, true);
+            random = Util.getRandom(seed);
+            if (!lib.setupDeterministicPRNG(seed)) {
+                System.err.println("Couldn't set PRNG seed.");
+                return;
+            }
+        } else {
+            random = new SecureRandom();
+        }
+
         KeyAgreement ka = kaIdent.getInstance(lib.getProvider());
         KeyPairGenerator kpg = kpIdent.getInstance(lib.getProvider());
         AlgorithmParameterSpec spec = null;
         if (cli.hasOption("ecdh.bits")) {
             int bits = Integer.parseInt(cli.getOptionValue("ecdh.bits"));
-            kpg.initialize(bits);
+            kpg.initialize(bits, random);
         } else if (cli.hasOption("ecdh.named-curve")) {
             String curveName = cli.getOptionValue("ecdh.named-curve");
             EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
@@ -423,11 +491,15 @@ public class ECTesterStandalone {
                 return;
             }
             spec = curve.toSpec();
-            kpg.initialize(spec);
+            kpg.initialize(spec, random);
         } else if (cli.hasOption("ecdh.curve-name")) {
             String curveName = cli.getOptionValue("ecdh.curve-name");
             spec = new ECGenParameterSpec(curveName);
-            kpg.initialize(spec);
+            kpg.initialize(spec, random);
+        } else if (cli.hasOption("ecdh.prng-seed") && !(lib instanceof NativeECLibrary)) {
+            // TODO: This only happens if at least one of the (pubkey and privkey) needs to be generated.
+            System.err.println("Unable to pass PRNG seed to a non-native library without specifying either key-size, named curve or curve name options.");
+            return;
         }
 
         if (cli.hasOption("ecdh.time-source")) {
@@ -483,9 +555,9 @@ public class ECTesterStandalone {
 
             long elapsed = -System.nanoTime();
             if (spec instanceof ECParameterSpec && lib instanceof NativeECLibrary) {
-                ka.init(privkey, spec);
+                ka.init(privkey, spec, random);
             } else {
-                ka.init(privkey);
+                ka.init(privkey, random);
             }
             ka.doPhase(pubkey, true);
             elapsed += System.nanoTime();
@@ -519,8 +591,24 @@ public class ECTesterStandalone {
      *
      */
     private void ecdsa() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, IOException, SignatureException {
-        byte[] data;
-        String dataString;
+        ProviderECLibrary lib = cfg.selected;
+
+        SecureRandom random;
+        if (cli.hasOption("ecdsa.prng-seed")) {
+            String seedString = cli.getOptionValue("ecdsa.prng-seed");
+            byte[] seed = ByteUtil.hexToBytes(seedString, true);
+            random = Util.getRandom(seed);
+            if (!lib.setupDeterministicPRNG(seed)) {
+                System.err.println("Couldn't set PRNG seed.");
+                return;
+            }
+        } else {
+            random = new SecureRandom();
+        }
+
+        byte[] data = null;
+        String dataString = null;
+        SecureRandom dataRandom = null;
         if (cli.hasOption("ecdsa.file")) {
             String fileName = cli.getOptionValue("ecdsa.file");
             File in = new File(fileName);
@@ -530,13 +618,17 @@ public class ECTesterStandalone {
             }
             data = Files.readAllBytes(in.toPath());
             dataString = "";
+        } else if (cli.hasOption("ecdsa.data")) {
+            dataString = cli.getOptionValue("ecdsa.data");
+            data = ByteUtil.hexToBytes(dataString);
+        } else if (cli.hasOption("ecdsa.data-seed")) {
+            String seedString = cli.getOptionValue("ecdsa.prng-seed");
+            byte[] seed = ByteUtil.hexToBytes(seedString, true);
+            dataRandom = Util.getRandom(seed);
         } else {
-            Random random = new Random();
-            data = new byte[32];
-            random.nextBytes(data);
-            dataString = ByteUtil.bytesToHex(data, false);
+            dataRandom = new SecureRandom();
         }
-        ProviderECLibrary lib = cfg.selected;
+
         String algo = cli.getOptionValue("ecdsa.type", "ECDSA");
         SignatureIdent sigIdent = lib.getSigs().stream()
                 .filter((ident) -> ident.contains(algo))
@@ -571,7 +663,7 @@ public class ECTesterStandalone {
         ECParameterSpec spec = null;
         if (cli.hasOption("ecdsa.bits")) {
             int bits = Integer.parseInt(cli.getOptionValue("ecdsa.bits"));
-            kpg.initialize(bits);
+            kpg.initialize(bits, random);
         } else if (cli.hasOption("ecdsa.named-curve")) {
             String curveName = cli.getOptionValue("ecdsa.named-curve");
             EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
@@ -580,10 +672,14 @@ public class ECTesterStandalone {
                 return;
             }
             spec = curve.toSpec();
-            kpg.initialize(spec);
+            kpg.initialize(spec, random);
         } else if (cli.hasOption("ecdsa.curve-name")) {
             String curveName = cli.getOptionValue("ecdsa.curve-name");
-            kpg.initialize(new ECGenParameterSpec(curveName));
+            kpg.initialize(new ECGenParameterSpec(curveName), random);
+        } else if (cli.hasOption("ecdsa.prng-seed") && !(lib instanceof NativeECLibrary)) {
+            // TODO: This only happens if at least one of the (pubkey and privkey) needs to be generated.
+            System.err.println("Unable to pass PRNG seed to a non-native library without specifying either key-size, named curve or curve name options.");
+            return;
         }
 
         if (cli.hasOption("ecdsa.time-source")) {
@@ -636,7 +732,12 @@ public class ECTesterStandalone {
                 }
             }
 
-            sig.initSign(privkey);
+            if (dataRandom != null) {
+                data = dataRandom.generateSeed(16);
+                dataString = ByteUtil.bytesToHex(data, false);
+            }
+
+            sig.initSign(privkey, random);
             sig.update(data);
 
             long signTime = -System.nanoTime();
@@ -705,10 +806,24 @@ public class ECTesterStandalone {
         if (ident == null) {
             throw new NoSuchAlgorithmException(algo);
         }
+
+        SecureRandom random;
+        if (cli.hasOption("generate.prng-seed")) {
+            String seedString = cli.getOptionValue("generate.prng-seed");
+            byte[] seed = ByteUtil.hexToBytes(seedString, true);
+            random = Util.getRandom(seed);
+            if (!lib.setupDeterministicPRNG(seed)) {
+                System.err.println("Couldn't set PRNG seed.");
+                return;
+            }
+        } else {
+            random = new SecureRandom();
+        }
+
         KeyPairGenerator kpg = ident.getInstance(lib.getProvider());
         if (cli.hasOption("generate.bits")) {
             int bits = Integer.parseInt(cli.getOptionValue("generate.bits"));
-            kpg.initialize(bits);
+            kpg.initialize(bits, random);
         } else if (cli.hasOption("generate.named-curve")) {
             String curveName = cli.getOptionValue("generate.named-curve");
             EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
@@ -716,10 +831,13 @@ public class ECTesterStandalone {
                 System.err.println("Curve not found: " + curveName);
                 return;
             }
-            kpg.initialize(curve.toSpec());
+            kpg.initialize(curve.toSpec(), random);
         } else if (cli.hasOption("generate.curve-name")) {
             String curveName = cli.getOptionValue("generate.curve-name");
-            kpg.initialize(new ECGenParameterSpec(curveName));
+            kpg.initialize(new ECGenParameterSpec(curveName), random);
+        } else if (cli.hasOption("generate.prng-seed") && !(lib instanceof NativeECLibrary)) {
+            System.err.println("Unable to pass PRNG seed to a non-native library without specifying either key-size, named curve or curve name options.");
+            return;
         }
 
         if (cli.hasOption("generate.time-source")) {
@@ -818,6 +936,16 @@ public class ECTesterStandalone {
             testTo = -1;
         }
 
+        ProviderECLibrary lib = cfg.selected;
+        if (cli.hasOption("test.prng-seed")) {
+            String seedString = cli.getOptionValue("test.prng-seed");
+            byte[] seed = ByteUtil.hexToBytes(seedString, true);
+            if (!lib.setupDeterministicPRNG(seed)) {
+                System.err.println("Couldn't set PRNG seed.");
+                return;
+            }
+        }
+
         switch (testSuite) {
             case "test-vectors":
                 suite = new StandaloneTestVectorSuite(writer, cfg, cli);
@@ -903,7 +1031,7 @@ public class ECTesterStandalone {
      *
      */
     public static class Config {
-        private ProviderECLibrary[] libs;
+        private final ProviderECLibrary[] libs;
         public ProviderECLibrary selected = null;
         public boolean color = false;
 
@@ -992,6 +1120,15 @@ public class ECTesterStandalone {
                     String source = cli.getOptionValue(next + ".time-source");
                     if (!selected.getNativeTimingSupport().contains(source)) {
                         System.err.printf("Time source %s unavailable for library %s.%n", source, selected.name());
+                        return false;
+                    }
+                }
+            }
+
+            if (cli.isNext("generate") || cli.isNext("ecdh") || cli.isNext("ecdsa") || cli.isNext("test")) {
+                if (cli.hasOption(next + ".prng-seed")) {
+                    if (!selected.supportsDeterministicPRNG()) {
+                        System.err.printf("Deterministic PRNG is not supported by library %s.%n", selected.name());
                         return false;
                     }
                 }

@@ -136,6 +136,29 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_IppcpLib_getCurv
 	return result;
 }
 
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_IppcpLib_supportsDeterministicPRNG(JNIEnv *env, jobject self) {
+	return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_IppcpLib_setupDeterministicPRNG(JNIEnv *env, jobject self, jbyteArray seed) {
+	jsize seed_length = (*env)->GetArrayLength(env, seed);
+	if (seed_length % 4 != 0) {
+		fprintf(stderr, "Error setting seed, needs to be a multiple of 4 bytes.\n");
+		return JNI_FALSE;
+	}
+	int bn_size;
+	ippsBigNumGetSize(seed_length / 4, &bn_size);
+	uint8_t bn_buf[bn_size];
+	IppsBigNumState *bn = (IppsBigNumState *)bn_buf;
+	ippsBigNumInit(seed_length / 4, bn);
+	jbyte *seed_data = (*env)->GetByteArrayElements(env, seed, NULL);
+	ippsSet_BN(IppsBigNumPOS, seed_length / 4, (Ipp32u *) seed_data, bn);
+	ippsPRNGSetSeed(bn, prng_state);
+	(*env)->ReleaseByteArrayElements(env, seed, seed_data, JNI_ABORT);
+	return JNI_TRUE;
+}
+
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Ippcp_keysizeSupported(JNIEnv *env,
                                                                                                                            jobject this,
                                                                                                                            jint keysize) {

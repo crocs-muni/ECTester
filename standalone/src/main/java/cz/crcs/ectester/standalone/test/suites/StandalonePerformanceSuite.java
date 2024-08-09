@@ -38,9 +38,9 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
 
     @Override
     protected void runTests() throws Exception {
-        String kpgAlgo = cli.getOptionValue("test.kpg-type");
-        String kaAlgo = cli.getOptionValue("test.ka-type");
-        String sigAlgo = cli.getOptionValue("test.sig-type");
+        String kpgAlgo = cli.getOptionValue("test.kpg-type", "EC");
+        String kaAlgo = cli.getOptionValue("test.ka-type", "ECDH");
+        String sigAlgo = cli.getOptionValue("test.sig-type", "ECDSA");
         String keyAlgo = cli.getOptionValue("test.key-type", "AES");
 
         List<String> kpgTypes = kpgAlgo != null ? Arrays.asList(kpgAlgo.split(",")) : new ArrayList<>();
@@ -48,25 +48,15 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
         List<String> sigTypes = sigAlgo != null ? Arrays.asList(sigAlgo.split(",")) : new ArrayList<>();
 
         List<KeyPairGeneratorIdent> kpgIdents = new LinkedList<>();
-        if (kpgAlgo == null) {
-            // try EC, if not, fail with: need to specify kpg algo.
-            Optional<KeyPairGeneratorIdent> kpgIdentOpt = cfg.selected.getKPGs().stream()
-                    .filter((ident) -> ident.contains("EC"))
-                    .findFirst();
-            if (kpgIdentOpt.isPresent()) {
-                kpgIdents.add(kpgIdentOpt.get());
-            } else {
-                System.err.println("The default KeyPairGenerator algorithm type of \"EC\" was not found. Need to specify a type.");
-                return;
+        for (String kpgChoice : kpgTypes) {
+            KeyPairGeneratorIdent ident = getKeyPairGeneratorIdent(kpgChoice);
+            if (ident != null && !kpgIdents.contains(ident)) {
+                kpgIdents.add(ident);
             }
-        } else {
-            // try the specified, if not, fail with: wrong kpg algo/not found.
-            kpgIdents = cfg.selected.getKPGs().stream()
-                    .filter((ident) -> ident.containsAny(kpgTypes)).collect(Collectors.toList());
-            if (kpgIdents.isEmpty()) {
-                System.err.println("No KeyPairGenerator algorithms of specified types were found.");
-                return;
-            }
+        }
+        if (kpgIdents.isEmpty()) {
+            System.err.println("Need some KeyPairGenerators to be able to generate keys. Select at least one supported one using the -gt/--kpg-type option.");
+            return;
         }
 
         KeyGeneratorTestable kgtOne = null;
@@ -77,8 +67,8 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
             KeyPairGenerator kpg = kpgIdent.getInstance(cfg.selected.getProvider());
             if (cli.hasOption("test.bits")) {
                 int bits = Integer.parseInt(cli.getOptionValue("test.bits"));
-                kgtOne = new KeyGeneratorTestable(kpg, bits);
-                kgtOther = new KeyGeneratorTestable(kpg, bits);
+                kgtOne = KeyGeneratorTestable.builder().keyPairGenerator(kpg).keysize(bits).random(getRandom()).build();
+                kgtOther = KeyGeneratorTestable.builder().keyPairGenerator(kpg).keysize(bits).random(getRandom()).build();
             } else if (cli.hasOption("test.named-curve")) {
                 String curveName = cli.getOptionValue("test.named-curve");
                 EC_Curve curve = EC_Store.getInstance().getObject(EC_Curve.class, curveName);
@@ -87,15 +77,15 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
                     return;
                 }
                 spec = curve.toSpec();
-                kgtOne = new KeyGeneratorTestable(kpg, spec);
-                kgtOther = new KeyGeneratorTestable(kpg, spec);
+                kgtOne = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).random(getRandom()).build();
+                kgtOther = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(spec).random(getRandom()).build();
             } else {
-                kgtOne = new KeyGeneratorTestable(kpg);
-                kgtOther = new KeyGeneratorTestable(kpg);
+                kgtOne = KeyGeneratorTestable.builder().keyPairGenerator(kpg).random(getRandom()).build();
+                kgtOther = KeyGeneratorTestable.builder().keyPairGenerator(kpg).random(getRandom()).build();
             }
             kpgTests.add(PerformanceTest.repeat(kgtOne, cfg.selected, kpgIdent.getName(), count));
+            kpgTests.add(PerformanceTest.repeat(kgtOther, cfg.selected, kpgIdent.getName(), count));
         }
-        runTest(KeyGeneratorTest.expect(kgtOther, Result.ExpectedValue.SUCCESS));
         doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "KeyPairGenerator performance tests", kpgTests.toArray(new Test[0])));
 
         List<Test> kaTests = new LinkedList<>();
@@ -104,9 +94,9 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
                 KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
                 KeyAgreementTestable testable;
                 if (kaIdent.requiresKeyAlgo()) {
-                    testable = new KeyAgreementTestable(ka, kgtOne, kgtOther, spec, keyAlgo);
+                    testable = KeyAgreementTestable.builder().ka(ka).privateKgt(kgtOne).publicKgt(kgtOther).spec(spec).random(getRandom()).keyAlgo(keyAlgo).build();
                 } else {
-                    testable = new KeyAgreementTestable(ka, kgtOne, kgtOther, spec);
+                    testable = KeyAgreementTestable.builder().ka(ka).privateKgt(kgtOne).publicKgt(kgtOther).spec(spec).random(getRandom()).build();
                 }
                 kaTests.add(PerformanceTest.repeat(testable, cfg.selected, kaIdent.getName(), count));
             }
@@ -121,10 +111,12 @@ public class StandalonePerformanceSuite extends StandaloneTestSuite {
         for (SignatureIdent sigIdent : cfg.selected.getSigs()) {
             if (sigAlgo == null || sigIdent.containsAny(sigTypes)) {
                 Signature sig = sigIdent.getInstance(cfg.selected.getProvider());
-                sigTests.add(PerformanceTest.repeat(new SignatureTestable(sig, kgtOne, null), cfg.selected, sigIdent.getName(), count));
+                byte[] data = sigIdent.toString().getBytes();
+                sigTests.add(PerformanceTest.repeat(new SignatureTestable(sig, kgtOne, data, getRandom()), cfg.selected, sigIdent.getName(), count));
+                // TODO: The following will always fail as a runTest is not done at this point.
                 if (kgtOne.getKeyPair() != null) {
                     ECPrivateKey signKey = (ECPrivateKey) kgtOne.getKeyPair().getPrivate();
-                    sigTestsNoVerification.add(PerformanceTest.repeat(new SignatureTestable(sig, signKey, null, null), cfg.selected, sigIdent.getName(), count));
+                    sigTestsNoVerification.add(PerformanceTest.repeat(new SignatureTestable(sig, signKey, null, data, getRandom()), cfg.selected, sigIdent.getName(), count));
                 }
             }
         }

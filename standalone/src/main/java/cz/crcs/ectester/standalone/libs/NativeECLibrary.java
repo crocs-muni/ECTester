@@ -86,5 +86,8 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
     @Override
     public native long getLastNativeTiming();
 
+    @Override
+    public native boolean setupDeterministicPRNG(byte[] seed);
+
     abstract Provider createProvider();
 }

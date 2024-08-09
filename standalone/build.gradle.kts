@@ -1,6 +1,7 @@
 plugins {
     application
     jacoco
+    id("jacoco-report-aggregation")
     id("com.google.osdetector") version "1.7.3"
     id("com.adarshr.test-logger") version "4.0.0"
 }
@@ -35,10 +36,10 @@ tasks.named<Test>("test") {
     doFirst {
         resultsDir.mkdirs();
     }
-    ignoreFailures = true
     useJUnitPlatform()
+
     // Report is always generated after tests run
-    finalizedBy(tasks.jacocoTestReport)
+    finalizedBy(tasks.named<JacocoReport>("testCodeCoverageReport"))
 
     if (JavaVersion.current() > JavaVersion.VERSION_1_8 && JavaVersion.current() < JavaVersion.VERSION_22) {
         jvmArgs("--add-exports", "jdk.crypto.ec/sun.security.ec=ALL-UNNAMED"
@@ -47,15 +48,24 @@ tasks.named<Test>("test") {
         jvmArgs("--add-exports", "java.base/sun.security.ec=ALL-UNNAMED")
     }
 
+    jvmArgs("-Xmx8G", "-Xms2G")
+
+    // Add our preload to tests, so they do not need to start another process.
+    environment(
+        "LD_PRELOAD", "$rootDir/standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/lib_preload.so"
+    )
     // Add a path where we will store our test results.
     environment(
             "RESULT_PATH", resultsDir.absolutePath
     )
 }
 
-tasks.jacocoTestReport {
+tasks.named<JacocoReport>("testCodeCoverageReport") {
     reports {
+        html.required = true
+        html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/test/html"))
         xml.required = true
+        xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
     }
 }
 

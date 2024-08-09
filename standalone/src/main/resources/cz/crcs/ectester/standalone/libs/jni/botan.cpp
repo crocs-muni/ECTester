@@ -4,7 +4,9 @@
 #include <botan/version.h>
 #include <botan/rng.h>
 #include <botan/secmem.h>
+#include <botan/system_rng.h>
 #include <botan/auto_rng.h>
+#include <botan/chacha_rng.h>
 
 #include <botan/ec_group.h>
 #include <botan/ecc_key.h>
@@ -23,7 +25,7 @@
  */
 
 static jclass provider_class;
-static Botan::AutoSeeded_RNG rng;
+std::unique_ptr<Botan::RandomNumberGenerator> rng = std::make_unique<Botan::AutoSeeded_RNG>();
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_createProvider(JNIEnv *env, jobject self) {
     /* Create the custom provider. */
@@ -33,12 +35,11 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_createP
     jmethodID init = env->GetMethodID(local_provider_class, "<init>", "(Ljava/lang/String;DLjava/lang/String;)V");
 
     const char* info_str = Botan::version_cstr();
-    const char* v_str = Botan::short_version_cstr();
     std::string name_str = Botan::short_version_string();
     name_str.insert(0, "Botan ");
 
     jstring name = env->NewStringUTF(name_str.c_str());
-    double version = strtod(v_str, nullptr);
+    double version = BOTAN_VERSION_MAJOR + ((double)BOTAN_VERSION_MINOR/100) + ((double)BOTAN_VERSION_PATCH/1000);
     jstring info = env->NewStringUTF(info_str);
 
     return env->NewObject(provider_class, init, name, version, info);
@@ -83,7 +84,7 @@ JNIEXPORT void JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeProvider_
     init_classes(env, "Botan");
 }
 
-JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_getCurves(JNIEnv *env, jobject self){
+JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_getCurves(JNIEnv *env, jobject self) {
     jclass set_class = env->FindClass("java/util/TreeSet");
 
     jmethodID set_ctr = env->GetMethodID(set_class, "<init>", "()V");
@@ -99,6 +100,25 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_getCurv
 
     return result;
 }
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_supportsDeterministicPRNG(JNIEnv *env, jobject self) {
+    return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_setupDeterministicPRNG(JNIEnv *env, jobject self, jbyteArray seed) {
+    jsize seed_length = env->GetArrayLength(seed);
+    if (seed_length < 32) {
+        fprintf(stderr, "Error setting seed, needs to be at least 32 bytes.\n");
+        return JNI_FALSE;
+    }
+    jbyte *seed_data = env->GetByteArrayElements(seed, nullptr);
+    Botan::secure_vector<uint8_t> vec((uint8_t *)seed_data, (uint8_t *)seed_data + seed_length);
+    Botan::ChaCha_RNG *cha = new Botan::ChaCha_RNG(vec);
+    rng.reset(cha);
+    env->ReleaseByteArrayElements(seed, seed_data, JNI_ABORT);
+    return JNI_TRUE;
+}
+
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024Botan_keysizeSupported(JNIEnv *env, jobject self, jint keysize){
     return JNI_TRUE;
@@ -253,13 +273,13 @@ static jobject generate_from_group(JNIEnv* env, jobject self, Botan::EC_Group gr
     try {
         native_timing_start();
         if (type_str == "ECDH") {
-            skey = std::make_unique<Botan::ECDH_PrivateKey>(rng, group);
+            skey = std::make_unique<Botan::ECDH_PrivateKey>(*rng, group);
         } else if (type_str == "ECDSA") {
-            skey = std::make_unique<Botan::ECDSA_PrivateKey>(rng, group);
+            skey = std::make_unique<Botan::ECDSA_PrivateKey>(*rng, group);
         } else if (type_str == "ECKCDSA") {
-            skey = std::make_unique<Botan::ECKCDSA_PrivateKey>(rng, group);
+            skey = std::make_unique<Botan::ECKCDSA_PrivateKey>(*rng, group);
         } else if (type_str == "ECGDSA") {
-            skey = std::make_unique<Botan::ECGDSA_PrivateKey>(rng, group);
+            skey = std::make_unique<Botan::ECGDSA_PrivateKey>(*rng, group);
         }
         native_timing_stop();
     } catch (Botan::Exception & ex) {
@@ -376,7 +396,7 @@ jbyteArray generate_secret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteAr
     Botan::BigInt privkey_scalar((unsigned char *) privkey_data, privkey_length);
     env->ReleaseByteArrayElements(privkey, privkey_data, JNI_ABORT);
 
-    Botan::ECDH_PrivateKey skey(rng, curve_group, privkey_scalar);
+    Botan::ECDH_PrivateKey skey(*rng, curve_group, privkey_scalar);
 
     jsize pubkey_length = env->GetArrayLength(pubkey);
     jbyte *pubkey_data = env->GetByteArrayElements(pubkey, nullptr);
@@ -403,7 +423,7 @@ jbyteArray generate_secret(JNIEnv *env, jobject self, jbyteArray pubkey, jbyteAr
     size_t key_len = (get_kdf_bits(env, algorithm) + 7) / 8;
     std::string kdf = get_kdf(type_str, &key_len);
 
-    Botan::PK_Key_Agreement ka(skey, rng, kdf);
+    Botan::PK_Key_Agreement ka(skey, *rng, kdf);
 
     std::vector<uint8_t> derived;
     try {
@@ -470,11 +490,11 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
     std::unique_ptr<Botan::EC_PrivateKey> skey;
     try {
         if (type_str.find("ECDSA") != std::string::npos) {
-            skey = std::make_unique<Botan::ECDSA_PrivateKey>(rng, curve_group, privkey_scalar);
+            skey = std::make_unique<Botan::ECDSA_PrivateKey>(*rng, curve_group, privkey_scalar);
         } else if (type_str.find("ECKCDSA") != std::string::npos) {
-            skey = std::make_unique<Botan::ECKCDSA_PrivateKey>(rng, curve_group, privkey_scalar);
+            skey = std::make_unique<Botan::ECKCDSA_PrivateKey>(*rng, curve_group, privkey_scalar);
         } else if (type_str.find("ECGDSA") != std::string::npos) {
-            skey = std::make_unique<Botan::ECGDSA_PrivateKey>(rng, curve_group, privkey_scalar);
+            skey = std::make_unique<Botan::ECGDSA_PrivateKey>(*rng, curve_group, privkey_scalar);
         }
     } catch (Botan::Exception & ex) {
         throw_new(env, "java/security/GeneralSecurityException", ex.what());
@@ -496,14 +516,19 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
         emsa = "EMSA1(SHA-512)";
     }
 
+    Botan::Signature_Format sigformat = Botan::Signature_Format::DER_SEQUENCE;
+    if (type_str.find("ECKCDSA") != std::string::npos) {
+        sigformat = Botan::Signature_Format::IEEE_1363;
+    }
+
     jsize data_length = env->GetArrayLength(data);
     jbyte *data_bytes = env->GetByteArrayElements(data, nullptr);
     std::vector<uint8_t> sig;
     try {
-        Botan::PK_Signer signer(*skey, rng, emsa, Botan::DER_SEQUENCE);
+        Botan::PK_Signer signer(*skey, *rng, emsa, sigformat);
 
         native_timing_start();
-        sig = signer.sign_message((uint8_t*) data_bytes, data_length, rng);
+        sig = signer.sign_message((uint8_t*) data_bytes, data_length, *rng);
         native_timing_stop();
     } catch (Botan::Exception & ex) {
         throw_new(env, "java/security/GeneralSecurityException", ex.what());
@@ -581,6 +606,11 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
         emsa = "EMSA1(SHA-512)";
     }
 
+    Botan::Signature_Format sigformat = Botan::Signature_Format::DER_SEQUENCE;
+    if (type_str.find("ECKCDSA") != std::string::npos) {
+        sigformat = Botan::Signature_Format::IEEE_1363;
+    }
+
     jsize data_length = env->GetArrayLength(data);
     jsize sig_length = env->GetArrayLength(signature);
     jbyte *data_bytes = env->GetByteArrayElements(data, nullptr);
@@ -589,7 +619,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
     bool result;
 
     try {
-        Botan::PK_Verifier verifier(*pkey, emsa, Botan::DER_SEQUENCE);
+        Botan::PK_Verifier verifier(*pkey, emsa, sigformat);
 
         native_timing_start();
         result = verifier.verify_message((uint8_t*)data_bytes, data_length, (uint8_t*)sig_bytes, sig_length);

@@ -5,7 +5,9 @@
 #include "native.h"
 #include <stdio.h>
 #include <string.h>
+#include <locale.h>
 #include <tomcrypt.h>
+
 
 static prng_state ltc_prng;
 static jclass provider_class;
@@ -18,7 +20,9 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_crea
     jmethodID init = (*env)->GetMethodID(env, local_provider_class, "<init>", "(Ljava/lang/String;DLjava/lang/String;)V");
 
     jstring name =  (*env)->NewStringUTF(env, "libtomcrypt " SCRYPT);
+    char *locale = setlocale(LC_NUMERIC, "C");
     double version = strtod(SCRYPT, NULL);
+    setlocale(LC_NUMERIC, locale);
 
     return (*env)->NewObject(env, provider_class, init, name, version, name);
 }
@@ -71,6 +75,22 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_getC
 
     return result;
 }
+
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_supportsDeterministicPRNG(JNIEnv *env, jobject self) {
+	return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_setupDeterministicPRNG(JNIEnv *env, jobject self, jbyteArray seed) {
+	yarrow_start(&ltc_prng);
+	jbyte *seed_data = (*env)->GetByteArrayElements(env, seed, NULL);
+	jsize seed_length = (*env)->GetArrayLength(env, seed);
+	yarrow_add_entropy(seed_data, seed_length, &ltc_prng);
+	yarrow_ready(&ltc_prng);
+	(*env)->ReleaseByteArrayElements(env, seed, seed_data, JNI_ABORT);
+	return JNI_TRUE;
+}
+
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024TomCrypt_keysizeSupported(JNIEnv *env, jobject this, jint keysize){
     int key_bytes = (keysize + 7) / 8;

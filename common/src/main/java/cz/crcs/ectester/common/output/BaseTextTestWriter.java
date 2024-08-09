@@ -156,12 +156,16 @@ public abstract class BaseTextTestWriter implements TestWriter {
         for (Throwable t = error; t != null; t = t.getCause()) {
             sb.append("═══ ").append(t.toString()).append(" ═══");
             sb.append(System.lineSeparator());
+            sb.append("═══ Stack trace: ═══").append(System.lineSeparator());
+            for (StackTraceElement s : t.getStackTrace()) {
+                sb.append("═══ ").append(s.toString()).append(" ═══");
+                sb.append(System.lineSeparator());
+            }
+            if (t.getCause() != null) {
+                sb.append("═══ Caused by: ═══").append(System.lineSeparator());
+            }
         }
-        sb.append("═══ Stack trace: ═══").append(System.lineSeparator());
-        for (StackTraceElement s : error.getStackTrace()) {
-            sb.append("═══ ").append(s.toString()).append(" ═══");
-            sb.append(System.lineSeparator());
-        }
+
         return sb.toString();
     }
 

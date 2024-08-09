@@ -69,7 +69,7 @@ public class ECTesterReader {
     public static final String VERSION = "v0.3.3";
     public static String GIT_COMMIT = "";
     private static String DESCRIPTION;
-    private static String LICENSE = "MIT Licensed\nCopyright © 2016-2019 Petr Svenda <petr@svenda.com>\nCopyright © 2016-2019 Jan Jancar  <johny@neuromancer.sk>";
+    private static String LICENSE = "MIT Licensed\nCopyright © 2016-2024 Petr Svenda <petr@svenda.com>\nCopyright © 2016-2024 Jan Jancar  <johny@neuromancer.sk>";
     private static String CLI_HEADER;
     private static String CLI_FOOTER = "\n" + LICENSE;
 
@@ -86,13 +86,15 @@ public class ECTesterReader {
         ClassLoader cl = ECTesterReader.class.getClassLoader();
         try {
             URL url = cl.getResource("META-INF/MANIFEST.MF");
-            Manifest manifest = new Manifest(url.openStream());
-            String commit = manifest.getMainAttributes().getValue("Git-Commit");
-            GIT_COMMIT = (commit == null) ? "" : "(git " + commit + ")";
+            if (url != null) {
+                Manifest manifest = new Manifest(url.openStream());
+                String commit = manifest.getMainAttributes().getValue("Git-Commit");
+                GIT_COMMIT = (commit == null) ? "" : "(git " + commit + ")";
+            }
         } catch (Exception ignored) {
         }
 
-        DESCRIPTION = "ECTesterReader " + VERSION + GIT_COMMIT + ", a javacard Elliptic Curve Cryptography support tester/utility.";
+        DESCRIPTION = "ECTesterReader " + VERSION + GIT_COMMIT + ", a JavaCard Elliptic Curve Cryptography tester/utility.";
         CLI_HEADER = "\n" + DESCRIPTION + "\n\n";
     }
 
@@ -338,10 +340,11 @@ public class ECTesterReader {
         opts.addOption(Option.builder("f").longOpt("fresh").desc("Generate fresh keys (set domain parameters before every generation).").build());
         opts.addOption(Option.builder().longOpt("time").desc("Output better timing values, by running command in dry run mode and normal mode, and subtracting the two.").build());
         opts.addOption(Option.builder().longOpt("time-unit").desc("Use given time unit in measurement, one of: milli, micro, nano.").hasArg().argName("unit").build());
-        opts.addOption(Option.builder().longOpt("cleanup").desc("Send the cleanup command trigerring JCSystem.requestObjectDeletion() after some operations.").build());
+        opts.addOption(Option.builder().longOpt("cleanup").desc("Send the cleanup command triggering JCSystem.requestObjectDeletion() after some operations.").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
         opts.addOption(Option.builder("y").longOpt("yes").desc("Accept all warnings and prompts.").build());
-        opts.addOption(Option.builder("to").longOpt("test-options").desc("Test options to use:\n- preset: Use preset semi-random private keys (derived from curve) instead of generating keypairs on the cards when the test needs one.\n- random: Use fully random private keys instead of generating keypairs.").hasArg().argName("options").build());
+        opts.addOption(Option.builder("tk").longOpt("test-key").desc("Key setup technique to use in test suites:\n- generate (default): Generate keypairs on the card.\n- deterministic: Prepare keypairs deterministically off-card.\n- random: Prepare keypairs randomly off-card.").hasArg().argName("option").build());
+        opts.addOption(Option.builder("td").longOpt("test-data").desc("Data setup technique to use in test suites:\n- random (default): Prepare data randomly off-card.\n- deterministic: Prepare data deterministically off-card.").hasArg().argName("option").build());
 
         opts.addOption(Option.builder("ka").longOpt("ka-type").desc("Set KeyAgreement object [type], corresponds to JC.KeyAgreement constants.").hasArg().argName("type").optionalArg(true).build());
         opts.addOption(Option.builder("sig").longOpt("sig-type").desc("Set Signature object [type], corresponds to JC.Signature constants.").hasArg().argName("type").optionalArg(true).build());
@@ -370,9 +373,6 @@ public class ECTesterReader {
             for (String line : suite.getDescription()) {
                 System.out.println("\t" + line);
             }
-            if (suite.getOptions() != null) {
-                System.out.println("\t" + Colors.underline("Options:") + " " + Arrays.toString(suite.getOptions()));
-            }
         }
         System.out.println();
         System.out.println("For more information, look at the documentation at https://github.com/crocs-muni/ECTester.");
@@ -380,13 +380,13 @@ public class ECTesterReader {
 
     private void info() throws CardException {
         Response.GetInfo info = new Command.GetInfo(cardManager).send();
-        System.out.println(String.format("Card ATR:\t\t\t\t%s", ByteUtil.bytesToHex(cardManager.getATR().getBytes(), false)));
-        System.out.println(String.format("Card protocol:\t\t\t\t%s", cardManager.getProtocol()));
-        System.out.println(String.format("ECTester applet version:\t\t%s", info.getVersion()));
-        System.out.println(String.format("ECTester applet APDU support:\t\t%s", (info.getBase() == CardConsts.BASE_221) ? "basic" : "extended length"));
-        System.out.println(String.format("JavaCard API version:\t\t\t%.1f", info.getJavaCardVersion()));
-        System.out.println(String.format("JavaCard supports system cleanup:\t%s", info.getCleanupSupport()));
-        System.out.println(String.format("Array sizes (apduBuf,ram,ram2,apduArr):\t%d %d %d %d", info.getApduBufferLength(), info.getRamArrayLength(), info.getRamArray2Length(), info.getApduArrayLength()));
+        System.out.printf("Card ATR:\t\t\t\t%s%n", ByteUtil.bytesToHex(cardManager.getATR().getBytes(), false));
+        System.out.printf("Card protocol:\t\t\t\t%s%n", cardManager.getProtocol());
+        System.out.printf("ECTester applet version:\t\t%s%n", info.getVersion());
+        System.out.printf("ECTester applet APDU support:\t\t%s%n", (info.getBase() == CardConsts.BASE_221) ? "basic" : "extended length");
+        System.out.printf("JavaCard API version:\t\t\t%.1f%n", info.getJavaCardVersion());
+        System.out.printf("JavaCard supports system cleanup:\t%s%n", info.getCleanupSupport());
+        System.out.printf("Array sizes (apduBuf,ram,ram2,apduArr):\t%d %d %d %d%n", info.getApduBufferLength(), info.getRamArrayLength(), info.getRamArray2Length(), info.getApduArrayLength());
     }
 
     /**
@@ -866,7 +866,8 @@ public class ECTesterReader {
         public byte ECKAType = EC_Consts.KeyAgreement_ALG_EC_SVDP_DH;
         public int ECDSACount;
         public byte ECDSAType = EC_Consts.Signature_ALG_ECDSA_SHA;
-        public Set<String> testOptions;
+        public String testKeySetup;
+        public String testDataSetup;
 
         /**
          * Reads and validates options, also sets defaults.
@@ -1044,25 +1045,20 @@ public class ECTesterReader {
                     testSuite = selected;
                 }
 
-                String[] opts = cli.getOptionValue("test-options", "").split(",");
-                List<String> validOpts = Arrays.asList("preset", "random");
-                testOptions = new HashSet<>();
-                for (String opt : opts) {
-                    if (opt.equals("")) {
-                        continue;
-                    }
-                    if (!validOpts.contains(opt)) {
-                        System.err.println(Colors.error("Unknown test option " + opt + ". Should be one of: " + Arrays.toString(validOpts.toArray())));
-                        return false;
-                    } else {
-                        testOptions.add(opt);
-                    }
-                }
-
-                if (testOptions.contains("preset") && testOptions.contains("random")) {
-                    System.err.println("Cannot have both preset and random option enabled.");
+                testKeySetup = cli.getOptionValue("test-key", "generate");
+                List<String> testKeyOpts = Arrays.asList("generate", "deterministic", "random");
+                if (!testKeyOpts.contains(testKeySetup)) {
+                    System.err.println(Colors.error("Unknown test option " + testKeySetup + ". Should be one of: " + Arrays.toString(testKeyOpts.toArray())));
                     return false;
                 }
+
+                testDataSetup = cli.getOptionValue("test-data", "random");
+                List<String> testDataOpts = Arrays.asList("deterministic", "random");
+                if (!testDataOpts.contains(testDataSetup)) {
+                    System.err.println(Colors.error("Unknown test option " + testDataSetup + ". Should be one of: " + Arrays.toString(testDataOpts.toArray())));
+                    return false;
+                }
+
             } else if (cli.hasOption("ecdh")) {
                 if (primeField == binaryField) {
                     System.err.print(Colors.error("Need to specify field with -fp or -f2m. (not both)"));

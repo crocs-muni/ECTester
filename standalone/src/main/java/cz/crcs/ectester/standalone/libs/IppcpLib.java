@@ -17,4 +17,10 @@ public class IppcpLib extends NativeECLibrary {
 
     @Override
     public native Set<String> getCurves();
+
+    @Override
+    public native boolean supportsDeterministicPRNG();
+
+    @Override
+    public native boolean setupDeterministicPRNG(byte[] seed);
 }

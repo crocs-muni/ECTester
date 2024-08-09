@@ -10,11 +10,13 @@ import cz.crcs.ectester.common.test.Test;
 import cz.crcs.ectester.common.test.TestSuite;
 import cz.crcs.ectester.common.util.CardConsts;
 import cz.crcs.ectester.common.util.ECUtil;
+import cz.crcs.ectester.common.util.Util;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 
-import java.util.Arrays;
+import java.nio.ByteBuffer;
+import java.security.SecureRandom;
 
 /**
  * @author Jan Jancar johny@neuromancer.sk
@@ -22,13 +24,11 @@ import java.util.Arrays;
 public abstract class CardTestSuite extends TestSuite {
     ECTesterReader.Config cfg;
     CardMngr card;
-    String[] options;
 
-    CardTestSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager, String name, String[] options, String... description) {
+    CardTestSuite(TestWriter writer, ECTesterReader.Config cfg, CardMngr cardManager, String name, String... description) {
         super(writer, name, description);
         this.card = cardManager;
         this.cfg = cfg;
-        this.options = options;
     }
 
     public CardMngr getCard() {
@@ -39,34 +39,16 @@ public abstract class CardTestSuite extends TestSuite {
         return cfg;
     }
 
-    public String[] getOptions() {
-        if (options != null) {
-            return options.clone();
-        } else {
-            return options;
-        }
-    }
-
-    public Test setupKeypairs(EC_Curve curve, Result.ExpectedValue expected, byte keyPair) {
-        if ((Arrays.asList(options).contains("preset") && cfg.testOptions.contains("preset")) || (Arrays.asList(options).contains("random") && cfg.testOptions.contains("random"))) {
+    protected Test setupKeypairs(EC_Curve curve, Result.ExpectedValue expected, byte keyPair) {
+        if (cfg.testKeySetup.equals("deterministic") || cfg.testKeySetup.equals("random")) {
             Test setLocal = null;
             if ((keyPair & CardConsts.KEYPAIR_LOCAL) != 0) {
-                EC_Params priv;
-                if (cfg.testOptions.contains("preset")) {
-                    priv = ECUtil.fixedRandomKey(curve);
-                } else {
-                    priv = ECUtil.fullRandomKey(curve);
-                }
+                EC_Params priv = preparePrivkey(curve);
                 setLocal = CommandTest.expect(new Command.Set(this.card, CardConsts.KEYPAIR_LOCAL, EC_Consts.CURVE_external, priv.getParams(), priv.flatten()), expected);
             }
             Test setRemote = null;
             if ((keyPair & CardConsts.KEYPAIR_REMOTE) != 0) {
-                EC_Params pub;
-                if (cfg.testOptions.contains("preset")) {
-                    pub = ECUtil.fixedRandomPoint(curve);
-                } else {
-                    pub = ECUtil.fullRandomPoint(curve);
-                }
+                EC_Params pub = preparePubkey(curve);
                 if (pub == null) {
                     setRemote = CommandTest.expect(new Command.Generate(this.card, CardConsts.KEYPAIR_REMOTE), expected);
                 } else {
@@ -80,15 +62,49 @@ public abstract class CardTestSuite extends TestSuite {
                 return setRemote;
             } else {
                 String desc;
-                if (cfg.testOptions.contains("preset")) {
-                    desc = "Set semi-random parameters.";
+                if (cfg.testKeySetup.equals("deterministic")) {
+                    desc = "Set deterministic parameters.";
                 } else {
                     desc = "Set fully-random parameters.";
                 }
-                return CompoundTest.all(expected, desc, setLocal, setRemote);
+                return CompoundTest.all(Result.ExpectedValue.SUCCESS, desc, setLocal, setRemote);
             }
         } else {
             return CommandTest.expect(new Command.Generate(this.card, keyPair), expected);
+        }
+    }
+
+    protected EC_Params preparePrivkey(EC_Curve curve) {
+        if (cfg.testKeySetup.equals("deterministic")) {
+            return ECUtil.fixedRandomKey(curve);
+        } else {
+            return ECUtil.fullRandomKey(curve);
+        }
+    }
+
+    protected EC_Params preparePubkey(EC_Curve curve) {
+        if (cfg.testKeySetup.equals("deterministic")) {
+            return ECUtil.fixedRandomPoint(curve);
+        } else {
+            return ECUtil.fullRandomPoint(curve);
+        }
+    }
+
+    protected SecureRandom setupRandom(EC_Curve curve) {
+        if (cfg.testDataSetup.equals("random")) {
+            return new SecureRandom();
+        } else {
+            return Util.getRandom(ECUtil.hashCurve(curve));
+        }
+    }
+
+    protected SecureRandom setupRandom(int seed) {
+        if (cfg.testDataSetup.equals("random")) {
+            return new SecureRandom();
+        } else {
+            ByteBuffer b = ByteBuffer.allocate(4);
+            b.putInt(seed);
+            return Util.getRandom(b.array());
         }
     }
 }

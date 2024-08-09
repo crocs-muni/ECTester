@@ -53,7 +53,7 @@ public abstract class TestSuite {
      * @return The test that was run.
      * @throws TestException
      */
-    protected <T extends Test> T runTest(T t) {
+    private <T extends Test> T runTest(T t) {
         running = t;
         writer.beginTest(t);
         t.run();

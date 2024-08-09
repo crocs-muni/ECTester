@@ -1,6 +1,7 @@
 plugins {
     application
     jacoco
+    id("jacoco-report-aggregation")
     id("com.adarshr.test-logger") version "4.0.0"
 }
 
@@ -35,18 +36,21 @@ application {
 tasks.named<Test>("test") {
     useJUnitPlatform()
     // Report is always generated after tests run
-    finalizedBy(tasks.jacocoTestReport)
+    finalizedBy(tasks.named<JacocoReport>("testCodeCoverageReport"))
 }
 
-tasks.jacocoTestReport {
+tasks.named<JacocoReport>("testCodeCoverageReport") {
     reports {
+        html.required = true
+        html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/test/html"))
         xml.required = true
+        xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
     }
 }
 
 testlogger {
     theme = com.adarshr.gradle.testlogger.theme.ThemeType.MOCHA
-    showStandardStreams = true
+    showStandardStreams = false
 }
 
 tasks.register<Jar>("uberJar") {

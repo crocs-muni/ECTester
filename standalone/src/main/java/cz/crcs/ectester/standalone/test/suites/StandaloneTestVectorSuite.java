@@ -56,7 +56,7 @@ public class StandaloneTestVectorSuite extends StandaloneTestSuite {
 
             KeyAgreementIdent kaIdent = KeyAgreementIdent.get("ECDH");
             KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-            KeyAgreementTestable testable = new KeyAgreementTestable(ka, privkey, pubkey);
+            KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).privateKey(privkey).publicKey(pubkey).random(getRandom()).build();
             doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Test vector " + result.getId(), KeyAgreementTest.match(testable, result.getData(0))));
         }
     }

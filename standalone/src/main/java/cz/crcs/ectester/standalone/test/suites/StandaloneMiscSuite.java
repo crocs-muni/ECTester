@@ -6,6 +6,8 @@ import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.CompoundTest;
 import cz.crcs.ectester.common.test.Result;
 import cz.crcs.ectester.common.test.Test;
+import cz.crcs.ectester.common.util.ByteUtil;
+import cz.crcs.ectester.common.util.ECUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.standalone.ECTesterStandalone;
 import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
@@ -21,6 +23,8 @@ import java.security.Signature;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.util.*;
+
+import static cz.crcs.ectester.common.util.ECUtil.hashCurve;
 
 /**
  * @author David Hofman
@@ -50,30 +54,10 @@ public class StandaloneMiscSuite extends StandaloneTestSuite {
 
         kaTypes = kaAlgo != null ? Arrays.asList(kaAlgo.split(",")) : new ArrayList<>();
         sigTypes = sigAlgo != null ? Arrays.asList(sigAlgo.split(",")) : new ArrayList<>();
-    
-        KeyPairGeneratorIdent kpgIdent;
-        if (kpgAlgo == null) {
-            // try EC, if not, fail with: need to specify kpg algo.
-            Optional<KeyPairGeneratorIdent> kpgIdentOpt = cfg.selected.getKPGs().stream()
-                    .filter((ident) -> ident.contains("EC"))
-                    .findFirst();
-            if (kpgIdentOpt.isPresent()) {
-                kpgIdent = kpgIdentOpt.get();
-            } else {
-                System.err.println("The default KeyPairGenerator algorithm type of \"EC\" was not found. Need to specify a type.");
-                return;
-            }
-        } else {
-            // try the specified, if not, fail with: wrong kpg algo/not found.
-            Optional<KeyPairGeneratorIdent> kpgIdentOpt = cfg.selected.getKPGs().stream()
-                    .filter((ident) -> ident.contains(kpgAlgo))
-                    .findFirst();
-            if (kpgIdentOpt.isPresent()) {
-                kpgIdent = kpgIdentOpt.get();
-            } else {
-                System.err.println("The KeyPairGenerator algorithm type of \"" + kpgAlgo + "\" was not found.");
-                return;
-            }
+
+        KeyPairGeneratorIdent kpgIdent = getKeyPairGeneratorIdent(kpgAlgo);
+        if (kpgIdent == null) {
+            return;
         }
         KeyPairGenerator kpg = kpgIdent.getInstance(cfg.selected.getProvider());
 
@@ -97,30 +81,19 @@ public class StandaloneMiscSuite extends StandaloneTestSuite {
 
     private void testCurve(EC_Curve curve, String catName, KeyPairGenerator kpg, Result.ExpectedValue expected) throws NoSuchAlgorithmException {
         //generate KeyPair
-        KeyGeneratorTestable kgt = new KeyGeneratorTestable(kpg, curve.toSpec());
-        Test generate =  KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
-        runTest(generate);
-        KeyPair kp = kgt.getKeyPair();
-        if(kp == null) {
-            Test generateFail = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generating KeyPair has failed on " + curve.getId() +
-                    ". " + " Other tests will be skipped.", generate);
-            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests over " + curve.getBits() + "b " + catName + " curve: " + curve.getId() + ".", generateFail));
-            return;
-        }
-        Test generateSuccess = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Generate keypair.", generate);
-        ECPrivateKey ecpriv = (ECPrivateKey) kp.getPrivate();
-        ECPublicKey ecpub = (ECPublicKey) kp.getPublic();
+        KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(curve.toSpec()).random(getRandom()).build();
+        Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
 
         //perform KeyAgreement tests
         List<Test> kaTests = new LinkedList<>();
         for (KeyAgreementIdent kaIdent : cfg.selected.getKAs()) {
             if (kaAlgo == null || kaIdent.containsAny(kaTypes)) {
                 KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                KeyAgreementTestable testable = new KeyAgreementTestable(ka, ecpriv, ecpub);
+                KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).publicKgt(kgt).privateKgt(kgt).random(getRandom()).build();
                 kaTests.add(KeyAgreementTest.expectError(testable, expected));
             }
         }
-        if(kaTests.isEmpty()) {
+        if (kaTests.isEmpty()) {
             kaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified KeyAgreement types is supported by the library."));
         }
 
@@ -129,17 +102,18 @@ public class StandaloneMiscSuite extends StandaloneTestSuite {
         for (SignatureIdent sigIdent : cfg.selected.getSigs()) {
             if (sigAlgo == null || sigIdent.containsAny(sigTypes)) {
                 Signature sig = sigIdent.getInstance(cfg.selected.getProvider());
-                SignatureTestable testable = new SignatureTestable(sig, ecpriv, ecpub, null);
+                byte[] data = sigIdent.toString().getBytes();
+                SignatureTestable testable = new SignatureTestable(sig, kgt, data, getRandom());
                 sigTests.add(SignatureTest.expectError(testable, expected));
             }
         }
-        if(sigTests.isEmpty()) {
+        if (sigTests.isEmpty()) {
             sigTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified Signature types is supported by the library."));
         }
 
         Test performKeyAgreements = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform specified KeyAgreements.", kaTests.toArray(new Test[0]));
         Test performSignatures = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform specified Signatures.", sigTests.toArray(new Test[0]));
-        doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests over " + curve.getBits() + "b " + catName + " curve: " + curve.getId() + ".", generateSuccess, performKeyAgreements, performSignatures));
+        doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests over " + curve.getBits() + "b " + catName + " curve: " + curve.getId() + ".", generate, performKeyAgreements, performSignatures));
     }
 
     private void testCurves(Collection<EC_Curve> curves, String catName, KeyPairGenerator kpg, Result.ExpectedValue expected) throws NoSuchAlgorithmException {

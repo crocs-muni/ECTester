@@ -47,6 +47,14 @@ JNIEXPORT jstring JNICALL Java_cz_crcs_ectester_standalone_libs_NativeECLibrary_
 JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_NativeECLibrary_getLastNativeTiming
   (JNIEnv *, jobject);
 
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_NativeECLibrary
+ * Method:    setupDeterministicPRNG
+ * Signature: ([B)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_NativeECLibrary_setupDeterministicPRNG
+  (JNIEnv *, jobject, jbyteArray);
+
 #ifdef __cplusplus
 }
 #endif
@@ -73,6 +81,22 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_crea
  */
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_getCurves
   (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_TomcryptLib
+ * Method:    supportsDeterministicPRNG
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_supportsDeterministicPRNG
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_TomcryptLib
+ * Method:    setupDeterministicPRNG
+ * Signature: ([B)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_TomcryptLib_setupDeterministicPRNG
+  (JNIEnv *, jobject, jbyteArray);
 
 #ifdef __cplusplus
 }
@@ -255,6 +279,22 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_createP
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_getCurves
   (JNIEnv *, jobject);
 
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_BotanLib
+ * Method:    supportsDeterministicPRNG
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_supportsDeterministicPRNG
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_BotanLib
+ * Method:    setupDeterministicPRNG
+ * Signature: ([B)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_BotanLib_setupDeterministicPRNG
+  (JNIEnv *, jobject, jbyteArray);
+
 #ifdef __cplusplus
 }
 #endif
@@ -436,6 +476,22 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_crea
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_getCurves
   (JNIEnv *, jobject);
 
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_CryptoppLib
+ * Method:    supportsDeterministicPRNG
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_supportsDeterministicPRNG
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_CryptoppLib
+ * Method:    setupDeterministicPRNG
+ * Signature: ([B)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_setupDeterministicPRNG
+  (JNIEnv *, jobject, jbyteArray);
+
 #ifdef __cplusplus
 }
 #endif
@@ -616,6 +672,22 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_creat
  */
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_getCurves
   (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_OpensslLib
+ * Method:    supportsDeterministicPRNG
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_supportsDeterministicPRNG
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_OpensslLib
+ * Method:    setupDeterministicPRNG
+ * Signature: ([B)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_OpensslLib_setupDeterministicPRNG
+  (JNIEnv *, jobject, jbyteArray);
 
 #ifdef __cplusplus
 }
@@ -1341,6 +1413,22 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_creat
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_getCurves
   (JNIEnv *, jobject);
 
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_MbedTLSLib
+ * Method:    supportsDeterministicPRNG
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_supportsDeterministicPRNG
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_MbedTLSLib
+ * Method:    setupDeterministicPRNG
+ * Signature: ([B)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_setupDeterministicPRNG
+  (JNIEnv *, jobject, jbyteArray);
+
 #ifdef __cplusplus
 }
 #endif
@@ -1521,6 +1609,22 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_IppcpLib_createP
  */
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_IppcpLib_getCurves
   (JNIEnv *, jobject);
+
+/*
+* Class:     cz_crcs_ectester_standalone_libs_IppcpLib
+* Method:    supportsDeterministicPRNG
+* Signature: ()Z
+*/
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_IppcpLib_supportsDeterministicPRNG
+(JNIEnv *, jobject);
+
+/*
+* Class:     cz_crcs_ectester_standalone_libs_IppcpLib
+* Method:    setupDeterministicPRNG
+* Signature: ([B)Z
+*/
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_IppcpLib_setupDeterministicPRNG
+(JNIEnv *, jobject, jbyteArray);
 
 #ifdef __cplusplus
 }
@@ -1884,6 +1988,21 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_create
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_getCurves
   (JNIEnv *, jobject);
 
+/*
+* Class:     cz_crcs_ectester_standalone_libs_NettleLib
+* Method:    supportsDeterministicPRNG
+* Signature: ()Z
+*/
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_supportsDeterministicPRNG
+(JNIEnv *, jobject);
+
+/*
+* Class:     cz_crcs_ectester_standalone_libs_NettleLib
+* Method:    setupDeterministicPRNG
+* Signature: ([B)Z
+*/
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_NettleLib_setupDeterministicPRNG
+(JNIEnv *, jobject, jbyteArray);
 #ifdef __cplusplus
 }
 #endif

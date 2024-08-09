@@ -440,103 +440,121 @@ To install, place them in `${java.home}/jre/lib/security/`.
 Snippet below shows how the `list-libs` command for well, listing currently supported libraries, behaves if all supported libraries are present (on Linux).
 ```
 > java -jar ECTesterStandalone.jar list-libs
-	- Sun Elliptic Curve provider
-		- Version: 21.000000
+	- SunEC
+		- Fullname: SunEC
+		- Version: 21
 		- Supports native timing: []
-		- KeyPairGenerators: EC
-		- KeyAgreements: ECDH
-		- Signatures: SHA3-256withECDSA, NONEwithECDSA, ECDSA, SHA3-384withECDSA, SHA384withECDSA, SHA3-512withECDSA, SHA224withECDSA, SHA512withECDSA, SHA3-224withECDSA, SHA256withECDSA
+		- Supports deterministic PRNG: true
+		- KeyPairGenerators: EC, Ed25519, Ed448, EdDSA, X25519, X448, XDH
+		- KeyAgreements: ECDH, X25519, X448, XDH
+		- Signatures: ECDSA, Ed25519, Ed448, EdDSA, NONEwithECDSA, SHA224withECDSA, SHA256withECDSA, SHA3-224withECDSA, SHA3-256withECDSA, SHA3-384withECDSA, SHA3-512withECDSA, SHA384withECDSA, SHA512withECDSA
 		- Curves: secp256r1, secp384r1, secp521r1
 
-	- BouncyCastle Security Provider v1.77
-		- Version: 1.770000
+	- BouncyCastle
+		- Fullname: BC
+		- Version: 1.77
 		- Supports native timing: []
-		- KeyPairGenerators: ECDSA, ECMQV, EC, ECDH, ECDHC
-		- KeyAgreements: ECCDHwithSHA384KDF, ECDHwithSHA384KDF, ECDHwithSHA256KDF, ECDHwithSHA1KDF, ECDHwithSHA224KDF, ECDH, ECDHC, ECDHwithSHA512KDF, ECCDHwithSHA1KDF, ECCDHwithSHA512KDF, ECCDHwithSHA224KDF, ECCDHwithSHA256KDF
-		- Signatures: SHA1withCVC-ECDSA, NONEwithECDSA, ECGOST3410, SHA256withECNR, ECGOST3410-2012-512, SHA512withECDDSA, GOST3411-2012-512withECGOST3410-2012-512, SHA3-512withECDSA, SHA384withPLAIN-ECDSA, SHA256withECDSA, SHA256withECDDSA, SHA224withECDDSA, SHA3-256withECDSA, ECDSA, SHA256withPLAIN-ECDSA, SHA224withECNR, SHA384withECDDSA, SHA512withECNR, SHA256withCVC-ECDSA, SHA1withECNR, ECDDSA, SHA1withPLAIN-ECDSA, GOST3411-2012-256withECGOST3410-2012-256, SHA512withPLAIN-ECDSA, SHA384withCVC-ECDSA, SHA224withCVC-ECDSA, SHA3-224withECDSA, SHA3-224withECDDSA, SHA224withPLAIN-ECDSA, SHA3-384withECDDSA, SHA384withECDSA, SHA3-384withECDSA, SHA3-512withECDDSA, SM3withSM2, GOST3411withECGOST3410, ECGOST3410-2012-256, SHA224withECDSA, SHA512withECDSA, RIPEMD160withECDSA, SHA512withCVC-ECDSA, RIPEMD160withPLAIN-ECDSA, SHA3-256withECDDSA
+		- Supports deterministic PRNG: true
+		- KeyPairGenerators: EC, ECDH, ECDHC, ECDSA, ECMQV, Ed25519, Ed448, EdDSA, X25519, X448, XDH
+		- KeyAgreements: ECCDHwithSHA1KDF, ECCDHwithSHA224KDF, ECCDHwithSHA256KDF, ECCDHwithSHA384KDF, ECCDHwithSHA512KDF, ECDH, ECDHC, ECDHwithSHA1KDF, ECDHwithSHA224KDF, ECDHwithSHA256KDF, ECDHwithSHA384KDF, ECDHwithSHA512KDF, X25519, X448, XDH
+		- Signatures: ECDDSA, ECDSA, ECGOST3410, ECGOST3410-2012-256, ECGOST3410-2012-512, Ed25519, Ed448, EdDSA, GOST3411-2012-256withECGOST3410-2012-256, GOST3411-2012-512withECGOST3410-2012-512, GOST3411withECGOST3410, NONEwithECDSA, RIPEMD160withECDSA, RIPEMD160withPLAIN-ECDSA, SHA1withCVC-ECDSA, SHA1withECNR, SHA1withPLAIN-ECDSA, SHA224withCVC-ECDSA, SHA224withECDDSA, SHA224withECDSA, SHA224withECNR, SHA224withPLAIN-ECDSA, SHA256withCVC-ECDSA, SHA256withECDDSA, SHA256withECDSA, SHA256withECNR, SHA256withPLAIN-ECDSA, SHA3-224withECDDSA, SHA3-224withECDSA, SHA3-256withECDDSA, SHA3-256withECDSA, SHA3-384withECDDSA, SHA3-384withECDSA, SHA3-512withECDDSA, SHA3-512withECDSA, SHA384withCVC-ECDSA, SHA384withECDDSA, SHA384withECDSA, SHA384withPLAIN-ECDSA, SHA512withCVC-ECDSA, SHA512withECDDSA, SHA512withECDSA, SHA512withECNR, SHA512withPLAIN-ECDSA, SM3withSM2
 		- Curves: B-163, B-233, B-283, B-409, B-571, FRP256v1, GostR3410-2001-CryptoPro-A, GostR3410-2001-CryptoPro-B, GostR3410-2001-CryptoPro-C, GostR3410-2001-CryptoPro-XchA, GostR3410-2001-CryptoPro-XchB, K-163, K-233, K-283, K-409, K-571, P-192, P-224, P-256, P-384, P-521, Tc26-Gost-3410-12-256-paramSetA, Tc26-Gost-3410-12-512-paramSetA, Tc26-Gost-3410-12-512-paramSetB, Tc26-Gost-3410-12-512-paramSetC, brainpoolP160r1, brainpoolP160t1, brainpoolP192r1, brainpoolP192t1, brainpoolP224r1, brainpoolP224t1, brainpoolP256r1, brainpoolP256t1, brainpoolP320r1, brainpoolP320t1, brainpoolP384r1, brainpoolP384t1, brainpoolP512r1, brainpoolP512t1, c2pnb163v1, c2pnb163v2, c2pnb163v3, c2pnb176w1, c2pnb208w1, c2pnb272w1, c2pnb304w1, c2pnb368w1, c2tnb191v1, c2tnb191v2, c2tnb191v3, c2tnb239v1, c2tnb239v2, c2tnb239v3, c2tnb359v1, c2tnb431r1, prime192v1, prime192v2, prime192v3, prime239v1, prime239v2, prime239v3, prime256v1, secp112r1, secp112r2, secp128r1, secp128r2, secp160k1, secp160r1, secp160r2, secp192k1, secp192r1, secp224k1, secp224r1, secp256k1, secp256r1, secp384r1, secp521r1, sect113r1, sect113r2, sect131r1, sect131r2, sect163k1, sect163r1, sect163r2, sect193r1, sect193r2, sect233k1, sect233r1, sect239k1, sect283k1, sect283r1, sect409k1, sect409r1, sect571k1, sect571r1, sm2p256v1, wapi192v1, wapip192v1
 
-	- libtomcrypt 1.18.2
-		- Version: 1.000000
+	- tomcrypt
+		- Fullname: libtomcrypt 1.18.2
+		- Version: 1.18
 		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
+		- Supports deterministic PRNG: true
 		- KeyPairGenerators: EC
 		- KeyAgreements: ECDH
 		- Signatures: NONEwithECDSA
 		- Curves: ECC-192, ECC-224, ECC-256, ECC-384, ECC-521, SECP112R1, SECP128R1, SECP160R1
 
-	- Botan 2.19.3 (release, dated 20221116, revision git:15dc32f12d05e99a267f0fc47d88b678b71b8b05, distribution unspecified)
-		- Version: 2.000000
+	- Botan
+		- Fullname: Botan 2.19.5
+		- Version: 2.193
 		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
-		- KeyPairGenerators: ECGDSA, ECKCDSA, ECDSA, ECDH
-		- KeyAgreements: ECDHwithSHA384KDF, ECDHwithSHA256KDF, ECDHwithSHA1KDF, ECDHwithSHA224KDF, ECDH, ECDHwithSHA512KDF
-		- Signatures: NONEwithECDSA, NONEwithECKCDSA, SHA256withECKCDSA, SHA512withECGDSA, SHA256withECDSA, NONEwithECGDSA, ECKCDSA, ECDSA, SHA224withECKCDSA, SHA384withECKCDSA, SHA224withECGDSA, SHA384withECDSA, ECGDSA, SHA384withECGDSA, SHA224withECDSA, SHA512withECDSA, SHA512withECKCDSA
+		- Supports deterministic PRNG: true
+		- KeyPairGenerators: ECDH, ECDSA, ECGDSA, ECKCDSA
+		- KeyAgreements: ECDH, ECDHwithSHA1KDF, ECDHwithSHA224KDF, ECDHwithSHA256KDF, ECDHwithSHA384KDF, ECDHwithSHA512KDF
+		- Signatures: ECDSA, ECGDSA, ECKCDSA, NONEwithECDSA, NONEwithECGDSA, NONEwithECKCDSA, SHA224withECDSA, SHA224withECGDSA, SHA224withECKCDSA, SHA256withECDSA, SHA256withECKCDSA, SHA384withECDSA, SHA384withECGDSA, SHA384withECKCDSA, SHA512withECDSA, SHA512withECGDSA, SHA512withECKCDSA
 		- Curves: brainpool160r1, brainpool192r1, brainpool224r1, brainpool256r1, brainpool320r1, brainpool384r1, brainpool512r1, frp256v1, gost_256A, gost_512A, secp160k1, secp160r1, secp160r2, secp192k1, secp192r1, secp224k1, secp224r1, secp256k1, secp256r1, secp384r1, secp521r1, sm2p256v1, x962_p192v2, x962_p192v3, x962_p239v1, x962_p239v2, x962_p239v3
 
-	- Crypto++ 8.9.0
-		- Version: 8.000000
+	- Crypto++
+		- Fullname: Crypto++
+		- Version: 8.0
 		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
-		- KeyPairGenerators: ECDSA, ECDH
+		- Supports deterministic PRNG: true
+		- KeyPairGenerators: ECDH, ECDSA
 		- KeyAgreements: ECDH
-		- Signatures: ECDSA, SHA384withECDSA, SHA224withECDSA, SHA512withECDSA, SHA256withECDSA
+		- Signatures: ECDSA, SHA224withECDSA, SHA256withECDSA, SHA384withECDSA, SHA512withECDSA
 		- Curves: 1.2.156.10197.1.301, 1.2.156.10197.1.301.3.1, 1.2.840.10045.3.1.1, 1.2.840.10045.3.1.7, 1.3.132.0.1, 1.3.132.0.10, 1.3.132.0.15, 1.3.132.0.16, 1.3.132.0.17, 1.3.132.0.2, 1.3.132.0.22, 1.3.132.0.23, 1.3.132.0.24, 1.3.132.0.25, 1.3.132.0.26, 1.3.132.0.27, 1.3.132.0.28, 1.3.132.0.29, 1.3.132.0.3, 1.3.132.0.30, 1.3.132.0.31, 1.3.132.0.32, 1.3.132.0.33, 1.3.132.0.34, 1.3.132.0.35, 1.3.132.0.36, 1.3.132.0.37, 1.3.132.0.38, 1.3.132.0.39, 1.3.132.0.4, 1.3.132.0.5, 1.3.132.0.6, 1.3.132.0.7, 1.3.132.0.8, 1.3.132.0.9, 1.3.36.3.3.2.8.1.1.1, 1.3.36.3.3.2.8.1.1.11, 1.3.36.3.3.2.8.1.1.13, 1.3.36.3.3.2.8.1.1.3, 1.3.36.3.3.2.8.1.1.5, 1.3.36.3.3.2.8.1.1.7, 1.3.36.3.3.2.8.1.1.9
 
-	- OpenSSL 3.2.1 30 Jan 2024
-		- Version: 3.200000
+	- OpenSSL
+		- Fullname: OpenSSL 3.2.1 30 Jan 2024
+		- Version: 3.2
 		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
+		- Supports deterministic PRNG: true
 		- KeyPairGenerators: EC
 		- KeyAgreements: ECDH
 		- Signatures: NONEwithECDSA
 		- Curves: Oakley-EC2N-3, Oakley-EC2N-4, SM2, brainpoolP160r1, brainpoolP160t1, brainpoolP192r1, brainpoolP192t1, brainpoolP224r1, brainpoolP224t1, brainpoolP256r1, brainpoolP256t1, brainpoolP320r1, brainpoolP320t1, brainpoolP384r1, brainpoolP384t1, brainpoolP512r1, brainpoolP512t1, c2pnb163v1, c2pnb163v2, c2pnb163v3, c2pnb176v1, c2pnb208w1, c2pnb272w1, c2pnb304w1, c2pnb368w1, c2tnb191v1, c2tnb191v2, c2tnb191v3, c2tnb239v1, c2tnb239v2, c2tnb239v3, c2tnb359v1, c2tnb431r1, prime192v1, prime192v2, prime192v3, prime239v1, prime239v2, prime239v3, prime256v1, secp112r1, secp112r2, secp128r1, secp128r2, secp160k1, secp160r1, secp160r2, secp192k1, secp224k1, secp224r1, secp256k1, secp384r1, secp521r1, sect113r1, sect113r2, sect131r1, sect131r2, sect163k1, sect163r1, sect163r2, sect193r1, sect193r2, sect233k1, sect233r1, sect239k1, sect283k1, sect283r1, sect409k1, sect409r1, sect571k1, sect571r1, wap-wsg-idm-ecid-wtls1, wap-wsg-idm-ecid-wtls10, wap-wsg-idm-ecid-wtls11, wap-wsg-idm-ecid-wtls12, wap-wsg-idm-ecid-wtls3, wap-wsg-idm-ecid-wtls4, wap-wsg-idm-ecid-wtls5, wap-wsg-idm-ecid-wtls6, wap-wsg-idm-ecid-wtls7, wap-wsg-idm-ecid-wtls8, wap-wsg-idm-ecid-wtls9
 
-	- OpenSSL 1.1.1 (compatible; BoringSSL)
-		- Version: 1.110000
+	- BoringSSL
+		- Fullname: OpenSSL 1.1.1 (compatible; BoringSSL)
+		- Version: 1.11
 		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
+		- Supports deterministic PRNG: false
 		- KeyPairGenerators: EC
 		- KeyAgreements: ECDH
 		- Signatures: NONEwithECDSA
 		- Curves: prime256v1, secp224r1, secp384r1, secp521r1
 
-	- libgcrypt 1.10.3-unknown
-		- Version: 1.000000
+	- libgcrypt
+		- Fullname: libgcrypt 1.11.0-unknown
+		- Version: 1.11
 		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
+		- Supports deterministic PRNG: false
 		- KeyPairGenerators: EC
 		- KeyAgreements: ECDH
-		- Signatures: SHA224withECDDSA, SHA256withECDDSA, NONEwithECDSA, ECDSA, ECDDSA, SHA384withECDSA, SHA512withECDDSA, SHA224withECDSA, SHA512withECDSA, SHA384withECDDSA, SHA256withECDSA
+		- Signatures: ECDDSA, ECDSA, NONEwithECDSA, SHA224withECDDSA, SHA224withECDSA, SHA256withECDDSA, SHA256withECDSA, SHA384withECDDSA, SHA384withECDSA, SHA512withECDDSA, SHA512withECDSA
 		- Curves: Curve25519, Ed25519, Ed448, GOST2001-CryptoPro-A, GOST2001-CryptoPro-B, GOST2001-CryptoPro-C, GOST2001-test, GOST2012-256-A, GOST2012-512-tc26-A, GOST2012-512-tc26-B, GOST2012-512-tc26-C, GOST2012-512-test, NIST P-192, NIST P-224, NIST P-256, NIST P-384, NIST P-521, X448, brainpoolP160r1, brainpoolP192r1, brainpoolP224r1, brainpoolP256r1, brainpoolP320r1, brainpoolP384r1, brainpoolP512r1, secp256k1, sm2p256v1
 
-	- wolfCrypt JCE Provider
-		- Version: 1.500000
-		- Supports native timing: []
-		- KeyAgreements: ECDH
-		- Signatures: ECDSA, SHA384withECDSA, SHA512withECDSA, SHA256withECDSA
-
-	- Mbed TLS 3.5.2
-		- Version: 3.000000
+	- mbedTLS
+		- Fullname: Mbed TLS 3.5.2
+		- Version: 3.52
 		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
+		- Supports deterministic PRNG: true
 		- KeyPairGenerators: EC
 		- KeyAgreements: ECDH
 		- Signatures: NONEwithECDSA
 		- Curves: brainpoolP256r1, brainpoolP384r1, brainpoolP512r1, secp192k1, secp192r1, secp224k1, secp224r1, secp256k1, secp256r1, secp384r1, secp521r1, x25519, x448
 
-	- 2021.7.0 (11.5 ) (-)
-		- Version: 2021.700000
+	- IPPCP
+		- Fullname: ippCP AVX2 (l9)
+		- Version: 2021.7
 		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
+		- Supports deterministic PRNG: true
 		- KeyPairGenerators: EC
 		- KeyAgreements: ECDH
 		- Signatures: NONEwithECDSA
 		- Curves: secp112r1, secp112r2, secp128r1, secp128r2, secp160r1, secp160r2, secp192r1, secp224r1, secp256r1, secp384r1, secp521r1
 
 	- Nettle
-		- Version: 3.900000
+		- Fullname: Nettle
+		- Version: 3.9
 		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
+		- Supports deterministic PRNG: true
 		- KeyPairGenerators: EC
 		- KeyAgreements: ECDH
 		- Signatures: NONEwithECDSA
 		- Curves: secp192r1, secp224r1, secp256r1, secp384r1, secp521r1
 
-	- LibreSSL 3.9.0
-		- Version: 3.900000
+	- LibreSSL
+		- Fullname: LibreSSL 3.9.0
+		- Version: 3.9
 		- Supports native timing: [cputime-processor, cputime-thread, monotonic, monotonic-raw, rdtsc]
+		- Supports deterministic PRNG: false
 		- KeyPairGenerators: EC
 		- KeyAgreements: ECDH
 		- Signatures: NONEwithECDSA
@@ -559,7 +577,7 @@ index;time[nano];pubW;privS
 
 Snippet below demonstrates performing 10 ECDSA signatures, without hashing the message (`-t NONEwithECDSA`) on the `secp256r1` curve, with a fixed keypair throught the process (`--fixed`), utilizing the rdtsc instruction to measure duration (`--time-source`) and using the MatrixSSL library.
 ```
-> java -jar ECTesterStandalone.jar ecdsa -n 10 -t NONEwithECDSA -nc secg/secp256r1 --fixed --time-source rdtsc Matrix
+> java -jar ECTesterStandalone.jar ecdsa -n 10 -t NONEwithECDSA -nc secg/secp256r1 --fixed --time-source rdtsc OpenSSL
 index;signTime[instr];verifyTime[instr];data;pubW;privS;signature[NONE];nonce;verified
 0;6785333;18200703;24b064ff5a4d08df6f982d0e139677fb4e66602bea01e381e16d4d3614fd09d5;0429ef9b52fc5c9b8711c938820f4d15d6aab1dcd8aa5a80e754233f23c622a5a174cca795068aff9c979bff7e6f1345b529612a4d16df6adf56b8ac250a1fafc3;54d06d1a79b2b43dc072b96ca7b9f045fda84ac13f74ef81fab0d561a47d11d1;3045022070ca3dfe2017892d23a2301b2465ab387af7999c79de7dae53ec04d1600a25800221009fc9a6fe20c7930b9d8be40424ab4b08fa641f339efa81e6ccf5497cd71180f0;57ebf83913734ff0a78fa952da12996c48da17fbcf5967e74eb3e2c6b5e726b1;1
 1;8582180;16170010;24b064ff5a4d08df6f982d0e139677fb4e66602bea01e381e16d4d3614fd09d5;0429ef9b52fc5c9b8711c938820f4d15d6aab1dcd8aa5a80e754233f23c622a5a174cca795068aff9c979bff7e6f1345b529612a4d16df6adf56b8ac250a1fafc3;54d06d1a79b2b43dc072b96ca7b9f045fda84ac13f74ef81fab0d561a47d11d1;3045022100efd3efc1bb2ed243eec9bea4bc331966e869c02df1fc8686a7649708c106595a022050e9a2548bac56bb3287f27c1761136947eefaa8a92f31978ed9485a03cb8f3d;0f5d3cc25d3eb69177b7917631f5639a088773873e91c1adb0a2b753987cace8;1
@@ -571,7 +589,7 @@ index;signTime[instr];verifyTime[instr];data;pubW;privS;signature[NONE];nonce;ve
 
 Snippet below demonstrates performing 10000 ECDH key agreements, using the curve name `secp256r1` (`-cn`, the difference between the `-cn` option and the `-nc` option is that the latter looks up the curve in ECTester's database and passes the parameters to the library explicitly, while the former passes the name to the library) using the MbedTLS library.
 ```
-> java -jar ECTesterStandalone.jar ecdh -n 10000 -cn secp256r1 mbed
+> java -jar ECTesterStandalone.jar ecdh -n 10000 -cn secp256r1 mbedTLS
 index;time[nano];pubW;privS;secret[NONE]
 0;5952101;04367ef86b5fbf1b4716bf7822342ebb19a9b6bcfbdb4f4950bf090ba2d1263579dac3e8447c21202432c76f89a0b48a1c16970e4fde67853c8d389da3f02fcdfc;00ecc7b46513149ab19fbeb1c49c1706712dc7da3899add30eb935e18fe5851d79;a94524fa98e0e5b3e139afdb89b73b843e48d5491b19585a5dcae02f20f13088
 1;6099022;0439803db68efddbfc3fba1feae41118b02e35d009670fbb4c5dfe6a56fe20829b42e101d0c55bf905276ac71af7e215714cf41742c1f8a2d102761b9eb307d209;6f43118f50ddfef724288ad4f116354bec4735370cb221547b76b18832daaea9;d1b90ed000ca9542ac2101383397a7180cdcd6896b1ccfb5b719da734ad96bf1
@@ -583,6 +601,24 @@ index;time[nano];pubW;privS;secret[NONE]
 7;6730228;040b235b6b894351305d0c43625cf8eb4640627a506980e9e51d15be8fc3fb677165e95b4e235f3d6909a676b433d996d932840a731d13e0172858ba5e83ce0cc3;008bb99df5b2d1dc91e08eb03f9b5b1f599e00249ac1c0ca17c821e62e2a18d140;c0767fa0cbacee16d0058b5c1c1f7e42e3fcf663c43c76e67d5d2b443d454131
 8;5522559;04acdec418cfa1ae61a3f969602480e362784e45f6c2d05e06ce30e363e616b6dcb00373d266fb9a5f731b88bb265b23683de5d5bbe35d709cafd3f57742fc6abf;00fe4f270444b99adaeae0bc525a857cb57d3075767183a15e5db9bc71aff8cbb2;e1fa8558593e56dd3108493d5171beb41922bbe23a6924525d2e0469c9de0cdb
 ...
+```
+
+Snippet below demonstrates the support for using a deterministic PRNG (`-ps`) in some of the libraries (see the output of `list-libs`):
+```
+> java -jar ECTesterStandalone.jar generate -n 5 -ps 1234 -b 256 Bouncy
+index;time[nano];pubW;privS
+0;33664582;04db8bdd6cb30d08a0355d48b65ddfc123944d29395f9f5e1bc2bfe70b4ee44ad39e4005df1e61251b4e9a9d8d47b78fd4ce98181883d2bfd634743758397f54ae;00e08df38827302c3315b833022189f61af3af9fbcb6e53697724374861f1982ee
+1;3584575;0458bc7baf831c1a316a8deb9fb3109841f10d3cb8828b583b9883a518fa04633488e2fa991e70c98612c989fdfd6aa25118947e8a17bfc36ad1f51a8bdc473e3d;0f5a481f518751bbd2112e4fcc3d1ac60cd66a474af9a57cedbd1e62a52b6bd9
+2;2746750;04827d7247b6d478cc85df313a9ea4f102301b0bd125b18e0111cd02e53b319830b2d0218551504cfc6b1226ac7fa430388f677cab2ea36997e344078328d12207;222898920190d28dac732b8e1fa69dd9907c667604c54db70c41b4815eafc94b
+3;2828535;0473104cec678c5ea20857435f19280975c2a3b2d22e7f8005c33d019de6b707012960b96a80f0f358a69dcd5dd34c748cae3fa9f45b720f5a7d241017010c1af1;3fb2f7c3a15f86f000017e42f79557befe7472ff462d3321bc13a043c251345c
+4;14181365;04854011114eb3e0fcf21f2416e0adbb0fc81d84530860ca40b6a86c85aa4e66b455382b71f8b6144f6294376912334ff1b23bb49da8fe1bda0e0e89ccbe9145f6;65675a954fff3287be1fc61dbb176f6784ece16c6b5675d556c57fd58974b358
+> java -jar ECTesterStandalone.jar generate -n 5 -ps 1234 -b 256 Bouncy
+index;time[nano];pubW;privS
+0;35138528;04db8bdd6cb30d08a0355d48b65ddfc123944d29395f9f5e1bc2bfe70b4ee44ad39e4005df1e61251b4e9a9d8d47b78fd4ce98181883d2bfd634743758397f54ae;00e08df38827302c3315b833022189f61af3af9fbcb6e53697724374861f1982ee
+1;2351304;0458bc7baf831c1a316a8deb9fb3109841f10d3cb8828b583b9883a518fa04633488e2fa991e70c98612c989fdfd6aa25118947e8a17bfc36ad1f51a8bdc473e3d;0f5a481f518751bbd2112e4fcc3d1ac60cd66a474af9a57cedbd1e62a52b6bd9
+2;3315124;04827d7247b6d478cc85df313a9ea4f102301b0bd125b18e0111cd02e53b319830b2d0218551504cfc6b1226ac7fa430388f677cab2ea36997e344078328d12207;222898920190d28dac732b8e1fa69dd9907c667604c54db70c41b4815eafc94b
+3;2883430;0473104cec678c5ea20857435f19280975c2a3b2d22e7f8005c33d019de6b707012960b96a80f0f358a69dcd5dd34c748cae3fa9f45b720f5a7d241017010c1af1;3fb2f7c3a15f86f000017e42f79557befe7472ff462d3321bc13a043c251345c
+4;2060970;04854011114eb3e0fcf21f2416e0adbb0fc81d84530860ca40b6a86c85aa4e66b455382b71f8b6144f6294376912334ff1b23bb49da8fe1bda0e0e89ccbe9145f6;65675a954fff3287be1fc61dbb176f6784ece16c6b5675d556c57fd58974b358
 ```
 
 It is recommended to disable [CPU frequency scaling](https://wiki.archlinux.org/index.php/CPU_frequency_scaling) of your processor before performing collection of timing data, as it adds significant noise to the data as it kicks in. Also, running the collection on very high priority and locked to a single core (`taskset -c 0`) helps as well.
