@@ -44,14 +44,18 @@ public class FileUtil {
 
         if (System.getProperty("os.name").startsWith("Windows")) {
             appData = Paths.get(System.getenv("AppData"));
+            return appData;
         } else {
             if (System.getProperty("os.name").startsWith("Linux")) {
                 String dataHome = System.getenv("XDG_DATA_HOME");
                 if (dataHome != null) {
                     appData = Paths.get(dataHome);
-                } else {
-                    appData = Paths.get(System.getenv("HOME"), ".local", "share");
+                    return appData;
                 }
+            }
+            String userHome = System.getProperty("user.home");
+            if (userHome != null && !userHome.equals("?")) {
+                appData = Paths.get(userHome, ".local", "share");
             } else {
                 appData = Paths.get(System.getenv("HOME"), ".local", "share");
             }
