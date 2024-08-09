@@ -23,7 +23,6 @@
  */
 package cz.crcs.ectester.standalone;
 
-import com.sun.source.tree.StringTemplateTree;
 import cz.crcs.ectester.common.cli.*;
 import cz.crcs.ectester.common.ec.EC_Consts;
 import cz.crcs.ectester.common.ec.EC_Curve;
