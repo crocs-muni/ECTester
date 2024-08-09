@@ -73,8 +73,17 @@ c_utils.o: c_utils.c
 lib_timing.so: c_timing.c
 	$(CC) -o $@ -shared $(CFLAGS) -Wl,-soname,lib_timing.so $<
 
-lib_preload.so: preload.c
-	$(CC) -shared -fPIC -ldl $< -o $@
+prng.o: prng/prng.c
+	$(CC) $(CFLAGS) -c $<
+
+lib_prng.so: c_prng.c
+	$(CC) -o $@ -shared -Wl,-soname,lib_prng.so $(CFLAGS) $<
+
+c_preload.o: c_preload.c
+	$(CC) $(CFLAGS) -c $<
+
+lib_preload.so: c_preload.o prng.o
+	$(CC) -o $@ -shared $(CFLAGS) -ldl -Wl,-soname,lib_preload.so $^
 
 lib_csignals.so: c_signals.c
 	$(CC) -o $@ -shared $(CFLAGS) -pthread -lpthread -Wl,-soname,lib_csignals.so $<
@@ -86,10 +95,14 @@ cpp_utils.o: cpp_utils.cpp
 	$(CXX) $(CXXFLAGS) -c $<
 
 
+clibs: lib_timing.so lib_csignals.so lib_preload.so lib_prng.so
+
+cpplibs: lib_timing.so lib_cppsignals.so lib_preload.so lib_prng.so
+
 # OpenSSL shim
 openssl: openssl_provider.so
 
-openssl_provider.so: openssl.o c_utils.o | lib_timing.so lib_csignals.so lib_preload.so
+openssl_provider.so: openssl.o c_utils.o | clibs
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs openssl) -l:lib_timing.so -l:lib_csignals.so
 
 openssl.o: openssl.c
@@ -102,7 +115,7 @@ boringssl: boringssl_provider.so
 lib_boringssl.so:
 	cp $(PROJECT_ROOT_PATH)/ext/boringssl/build/crypto/libcrypto.so lib_boringssl.so
 
-boringssl_provider.so: boringssl.o c_utils.o | lib_timing.so lib_csignals.so lib_preload.so lib_boringssl.so
+boringssl_provider.so: boringssl.o c_utils.o | clibs lib_boringssl.so
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_boringssl.so -l:lib_timing.so -l:lib_csignals.so
 
 boringssl.o: boringssl.c
@@ -112,7 +125,7 @@ boringssl.o: boringssl.c
 # libgcrypt shim
 gcrypt: gcrypt_provider.so
 
-gcrypt_provider.so: gcrypt.o c_utils.o | lib_timing.so lib_csignals.so lib_preload.so
+gcrypt_provider.so: gcrypt.o c_utils.o | clibs
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -pthread -lpthread $(shell libgcrypt-config --libs) -l:lib_timing.so -l:lib_csignals.so
 
 gcrypt.o: gcrypt.c
@@ -122,7 +135,7 @@ gcrypt.o: gcrypt.c
 # Libtomcrypt shim
 tomcrypt: tomcrypt_provider.so
 
-tomcrypt_provider.so: tomcrypt.o c_utils.o | lib_timing.so lib_csignals.so lib_preload.so
+tomcrypt_provider.so: tomcrypt.o c_utils.o | clibs
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -ltommath $(shell pkg-config --libs libtomcrypt) -l:lib_timing.so -l:lib_csignals.so
 
 tomcrypt.o: tomcrypt.c
@@ -132,7 +145,7 @@ tomcrypt.o: tomcrypt.c
 # Botan-2 shim
 botan: botan_provider.so
 
-botan_provider.so: botan.o cpp_utils.o | lib_timing.so lib_cppsignals.so lib_preload.so
+botan_provider.so: botan.o cpp_utils.o | cpplibs
 	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs botan-2) -l:lib_timing.so -l:lib_cppsignals.so
 
 botan.o: botan.cpp
@@ -146,7 +159,7 @@ ifeq ($(shell pkg-config --exists $(CRYPTOPP_NAME); echo $$?),1)
 endif
 cryptopp: cryptopp_provider.so
 
-cryptopp_provider.so: cryptopp.o cpp_utils.o | lib_timing.so lib_cppsignals.so lib_preload.so
+cryptopp_provider.so: cryptopp.o cpp_utils.o | cpplibs
 	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs $(CRYPTOPP_NAME)) -l:lib_timing.so -l:lib_cppsignals.so
 
 cryptopp.o: cryptopp.cpp
@@ -159,7 +172,7 @@ mbedtls: mbedtls_provider.so
 lib_mbedtls.so:
 	cp $(PROJECT_ROOT_PATH)/ext/mbedtls/build/library/libmbedcrypto.so lib_mbedtls.so
 
-mbedtls_provider.so: mbedtls.o c_utils.o | lib_timing.so lib_csignals.so lib_preload.so lib_mbedtls.so
+mbedtls_provider.so: mbedtls.o c_utils.o | clibs lib_mbedtls.so
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_mbedtls.so -l:lib_timing.so -l:lib_csignals.so
 
 mbedtls.o: mbedtls.c
@@ -172,7 +185,7 @@ ippcp: ippcp_provider.so
 lib_ippcp.so:
 	cp $(PROJECT_ROOT_PATH)/ext/ipp-crypto/build/.build/RELEASE/lib/libippcp.so lib_ippcp.so
 
-ippcp_provider.so: ippcp.o c_utils.o | lib_timing.so lib_csignals.so lib_preload.so lib_ippcp.so
+ippcp_provider.so: ippcp.o c_utils.o | clibs lib_ippcp.so
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_ippcp.so -l:lib_timing.so -l:lib_csignals.so
 
 ippcp.o: ippcp.c
@@ -182,7 +195,7 @@ ippcp.o: ippcp.c
 # Nettle shim
 nettle: nettle_provider.so
 
-nettle_provider.so: nettle.o c_utils.o | lib_timing.so lib_csignals.so lib_preload.so
+nettle_provider.so: nettle.o c_utils.o | clibs
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs nettle) -l:lib_timing.so -l:lib_csignals.so $(shell pkg-config --libs hogweed) -lgmp
 
 nettle.o: nettle.c
@@ -195,7 +208,7 @@ libressl: libressl_provider.so
 lib_libressl.so:
 	cp $(PROJECT_ROOT_PATH)/ext/libressl/build/crypto/libcrypto.so lib_libressl.so
 
-libressl_provider.so: libressl.o c_utils.o | lib_timing.so lib_csignals.so lib_preload.so lib_libressl.so
+libressl_provider.so: libressl.o c_utils.o | clibs lib_libressl.so
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_libressl.so -l:lib_timing.so -l:lib_csignals.so
 
 libressl.o: libressl.c

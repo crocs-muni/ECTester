@@ -14,7 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class DeterministicTests {
 
     static Stream<String> libs() {
-        return Stream.of("Botan", "BouncyCastle", "Crypto++", "IPPCP", "mbedTLS", "Nettle", "OpenSSL", "SunEC", "tomcrypt");
+        return Stream.of("Botan", "BouncyCastle", "Crypto++", "IPPCP", "mbedTLS", "Nettle", "OpenSSL", "SunEC", "tomcrypt", "LibreSSL");
+        // BoringSSL and libgcrypt cannot be easily tested here, because they initialize their RNG only once per process.
     }
 
     @SuppressWarnings("JUnitMalformedDeclaration")
@@ -110,6 +111,7 @@ public class DeterministicTests {
             case "Crypto++":
                 args = new String[]{"ecdsa", "-ps", "12345678", "-d", "1234", "-n", "10", "-nc", "secg/secp256r1", "-t", "ECDSA", libName};
                 break;
+            case "LibreSSL":
             case "mbedTLS":
                 args = new String[]{"ecdsa", "-ps", "12345678", "-d", "1234", "-n", "10", "-nc", "secg/secp256r1", "-t", "NONEwithECDSA", libName};
                 break;

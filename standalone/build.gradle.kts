@@ -58,6 +58,10 @@ tasks.named<Test>("test") {
     environment(
             "LD_LIBRARY_PATH", "$rootDir/ext/wolfcrypt-jni/lib/:" + System.getenv("LD_LIBRARY_PATH")
     )
+    // Add our preload to tests, so they do not need to start another process.
+    environment(
+        "LD_PRELOAD", "$rootDir/standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/lib_preload.so"
+    )
     // Add a path where we will store our test results.
     environment(
             "RESULT_PATH", resultsDir.absolutePath

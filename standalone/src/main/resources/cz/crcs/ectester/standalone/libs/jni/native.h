@@ -47,6 +47,14 @@ JNIEXPORT jstring JNICALL Java_cz_crcs_ectester_standalone_libs_NativeECLibrary_
 JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_NativeECLibrary_getLastNativeTiming
   (JNIEnv *, jobject);
 
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_NativeECLibrary
+ * Method:    setupDeterministicPRNG
+ * Signature: ([B)Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_NativeECLibrary_setupDeterministicPRNG
+  (JNIEnv *, jobject, jbyteArray);
+
 #ifdef __cplusplus
 }
 #endif

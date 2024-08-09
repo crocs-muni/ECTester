@@ -17,4 +17,10 @@ public class GcryptLib extends NativeECLibrary {
 
     @Override
     public native Set<String> getCurves();
+
+    @Override
+    public boolean supportsDeterministicPRNG() {
+        // This is provided by the native preload that hooks all randomness sources.
+        return true;
+    }
 }

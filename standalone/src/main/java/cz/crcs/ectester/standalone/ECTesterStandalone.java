@@ -23,6 +23,7 @@
  */
 package cz.crcs.ectester.standalone;
 
+import com.sun.source.tree.StringTemplateTree;
 import cz.crcs.ectester.common.cli.*;
 import cz.crcs.ectester.common.ec.EC_Consts;
 import cz.crcs.ectester.common.ec.EC_Curve;
@@ -105,12 +106,52 @@ public class ECTesterStandalone {
 
             if (!System.getProperty("os.name").startsWith("Windows")) {
                 FileUtil.write(LIB_RESOURCE_DIR + "lib_timing.so", reqs.resolve("lib_timing.so"));
-                System.load(reqs.resolve("lib_timing.so").toString());
-
+                FileUtil.write(LIB_RESOURCE_DIR + "lib_preload.so", reqs.resolve("lib_preload.so"));
+                FileUtil.write(LIB_RESOURCE_DIR + "lib_prng.so", reqs.resolve("lib_prng.so"));
                 FileUtil.write(LIB_RESOURCE_DIR + "lib_csignals.so", reqs.resolve("lib_csignals.so"));
-                System.load(reqs.resolve("lib_csignals.so").toString());
                 FileUtil.write(LIB_RESOURCE_DIR + "lib_cppsignals.so", reqs.resolve("lib_cppsignals.so"));
-                System.load(reqs.resolve("lib_cppsignals.so").toString());
+
+                String preloadLibPath = reqs.resolve("lib_preload.so").toAbsolutePath().toString();
+                String preload = System.getenv("LD_PRELOAD");
+                if (preload == null && !cli.hasOption("no-preload")) {
+                    ProcessBuilder builder = new ProcessBuilder();
+                    Map<String, String> env = builder.environment();
+                    env.put("LD_PRELOAD", preloadLibPath);
+
+                    ProcessHandle.Info info = ProcessHandle.current().info();
+                    List<String> argList = new LinkedList<>();
+                    if (info.command().isPresent()) {
+                        argList.add(info.command().get());
+                    } else {
+                        System.err.println("Cannot locate command to spawn preloaded-subprocess.");
+                        return;
+                    }
+                    if (info.arguments().isPresent()) {
+                        argList.addAll(List.of(info.arguments().get()));
+                    } else {
+                        System.err.println("Cannot locate arguments to spawn preloaded-subprocess.");
+                        return;
+                    }
+                    builder.command(argList);
+                    builder.inheritIO();
+
+                    Process process = builder.start();
+                    int result;
+                    while (true) {
+                        try {
+                            result = process.waitFor();
+                            break;
+                        } catch (InterruptedException ignored) {
+                        }
+                    }
+                    System.exit(result);
+                } else {
+                    // Load the utility libs.
+                    System.load(reqs.resolve("lib_prng.so").toString());
+                    System.load(reqs.resolve("lib_timing.so").toString());
+                    System.load(reqs.resolve("lib_csignals.so").toString());
+                    System.load(reqs.resolve("lib_cppsignals.so").toString());
+                }
             }
 
             List<ProviderECLibrary> libObjects = new LinkedList<>();
@@ -296,6 +337,7 @@ public class ECTesterStandalone {
         opts.addOption(Option.builder("V").longOpt("version").desc("Print version info.").build());
         opts.addOption(Option.builder("h").longOpt("help").desc("Print help(about <command>).").hasArg().argName("command").optionalArg(true).build());
         opts.addOption(Option.builder("C").longOpt("color").desc("Print stuff with color, requires ANSI terminal.").build());
+        opts.addOption(Option.builder().longOpt("no-preload").desc("Do not use LD_PRELOAD.").build());
 
         return optParser.parse(opts, args);
     }
