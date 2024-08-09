@@ -50,10 +50,10 @@ public class FileUtil {
                 if (dataHome != null) {
                     appData = Paths.get(dataHome);
                 } else {
-                    appData = Paths.get(System.getProperty("user.home"), ".local", "share");
+                    appData = Paths.get(System.getenv("HOME"), ".local", "share");
                 }
             } else {
-                appData = Paths.get(System.getProperty("user.home"), ".local", "share");
+                appData = Paths.get(System.getenv("HOME"), ".local", "share");
             }
         }
         return appData;
