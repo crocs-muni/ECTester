@@ -16,8 +16,9 @@ def can_build(library, version):
     cmd = ["nix", "build", f".#shim.{library}.{version}"]
     start = time.time()
     try:
-        sp.check_output(cmd, stderr=sp.DEVNULL)
+        sp.check_output(cmd, stderr=sp.STDOUT)
     except sp.CalledProcessError as e:
+        print(e.output.decode())
         return False, time.time() - start
     return True, time.time() - start
 
@@ -46,7 +47,7 @@ def main():
                 for version in get_all_versions(lib):
                     print(f"{version}: {can_build(lib, version)}")
         case _:
-            print(f"Library: {lib}")
+            print(f"Library: {library}")
             for version in get_all_versions(library):
                 print(f"{version}: {can_build(library, version)}")
 
