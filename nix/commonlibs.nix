@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
 
   dontUseCmakeConfigure = true;
 
-  libs = "lib_cppsignals.so lib_csignals.so lib_timing.so";
+  libs = "lib_cppsignals.so lib_csignals.so lib_timing.so lib_preload.so lib_prng.so";
 
   buildPhase = ''
     make ${libs}
