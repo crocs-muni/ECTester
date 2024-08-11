@@ -30,9 +30,13 @@
 
         # Altered upstream packages
         boringsslBuilder =
-          { rev, hash }:
+          {
+            rev ? null,
+            hash ? null,
+          }:
           pkgs.boringssl.overrideAttrs (
             final: prev: rec {
+              version = if rev != null then rev else prev.version;
               src =
                 if rev == null then
                   prev.src
@@ -52,94 +56,105 @@
             version ? null,
             hash ? null,
           }:
-          (pkgs.openssl.override { static = true; }).overrideAttrs (
-            final: prev: rec {
-              pname = "openssl";
-              src =
-                if version != null then
-                  pkgs.fetchurl {
-                    url = "https://www.openssl.org/source/openssl-${version}.tar.gz";
-                    hash = hash;
-                  }
-                else
-                  prev.src;
-              # FIXME Removing patches might cause unwanted things; this should be version based!
-              patches = [ ];
-            }
-          );
+          if version == null then
+            (pkgs.openssl.override { static = true; })
+          else
+            (pkgs.openssl.override { static = true; }).overrideAttrs (
+              final: prev: rec {
+                inherit version;
+                src = pkgs.fetchurl {
+                  url = "https://www.openssl.org/source/openssl-${version}.tar.gz";
+                  inherit hash;
+                };
+                # FIXME Removing patches might cause unwanted things; this should be version based!
+                patches = [ ];
+              }
+            );
         botan2Builder =
           {
-            version,
-            source_extension,
-            hash,
+            version ? null,
+            source_extension ? null,
+            hash ? null,
           }:
-          pkgs.botan2.overrideAttrs (
-            final: prev: {
-              src =
-                if (version == null) then
-                  prev.src
-                else
-                  pkgs.fetchurl {
-                    urls = [ "http://botan.randombit.net/releases/Botan-${version}.${source_extension}" ];
-                    inherit hash;
-                  };
-            }
-          );
+          if version == null then
+            pkgs.botan2
+          else
+            pkgs.botan2.overrideAttrs (
+              final: prev: {
+                inherit version;
+                src = pkgs.fetchurl {
+                  urls = [ "http://botan.randombit.net/releases/Botan-${version}.${source_extension}" ];
+                  inherit hash;
+                };
+              }
+            );
 
+        # FIXME we need to build also the correct version of libgpg-error - which is what?
         libgcryptBuilder =
-          { version, hash }:
-          pkgs.libgcrypt.overrideAttrs (
-            final: prev: {
-              configureFlags = (prev.configureFlags or [ ]) ++ [ "--enable-static" ];
-              src =
-                if version == null then
-                  prev.src
-                else
-                  pkgs.fetchurl {
-                    url = "mirror://gnupg/libgcrypt/${prev.pname}-${version}.tar.bz2";
-                    inherit hash;
-                  };
-            }
-          );
+          {
+            version ? null,
+            hash ? null,
+          }:
+          if version == null then
+            pkgs.libgcrypt.overrideAttrs (
+              final: prev: { configureFlags = (prev.configureFlags or [ ]) ++ [ "--enable-static" ]; }
+            )
+          else
+            pkgs.libgcrypt.overrideAttrs (
+              final: prev: {
+                inherit version;
+                configureFlags = (prev.configureFlags or [ ]) ++ [ "--enable-static" ];
+                src = pkgs.fetchurl {
+                  url = "mirror://gnupg/libgcrypt/${prev.pname}-${version}.tar.bz2";
+                  inherit hash;
+                };
+              }
+            );
         libgpg-error = pkgs.libgpg-error.overrideAttrs (
           final: prev: { configureFlags = (prev.configureFlags or [ ]) ++ [ "--enable-static" ]; }
         );
 
         mbedtlsBuilder =
-          { version, hash }:
-          pkgs.mbedtls.overrideAttrs (
-            final: prev: {
-              src =
-                if version == null then
-                  prev.src
-                else
-                  pkgs.fetchFromGitHub {
-                    owner = "Mbed-TLS";
-                    repo = "mbedtls";
-                    rev = "mbedtls-${version}";
-                    inherit hash;
-                    # mbedtls >= 3.6.0 uses git submodules
-                    fetchSubmodules = true;
-                  };
-            }
-          );
+          {
+            version ? null,
+            hash ? null,
+          }:
+          if version == null then
+            pkgs.mbedtls
+          else
+            pkgs.mbedtls.overrideAttrs (
+              final: prev: {
+                inherit version;
+                src = pkgs.fetchFromGitHub {
+                  owner = "Mbed-TLS";
+                  repo = "mbedtls";
+                  rev = "mbedtls-${version}";
+                  inherit hash;
+                  # mbedtls >= 3.6.0 uses git submodules
+                  fetchSubmodules = true;
+                };
+              }
+            );
 
         ipp-cryptoBuilder =
-          { version, hash }:
-          customPkgs.ipp-crypto.overrideAttrs (
-            final: prev: {
-              src =
-                if version == null then
-                  prev.src
-                else
-                  pkgs.fetchFromGitHub {
-                    owner = "intel";
-                    repo = "ipp-crypto";
-                    rev = "ippcp_${version}";
-                    inherit hash;
-                  };
-            }
-          );
+          {
+            version ? null,
+            hash ? null,
+          }:
+          if version == null then
+            customPkgs.ipp-crypto
+          else
+            customPkgs.ipp-crypto.overrideAttrs (
+              final: prev: {
+                inherit version;
+                src = pkgs.fetchFromGitHub {
+                  owner = "intel";
+                  repo = "ipp-crypto";
+                  rev = "ippcp_${version}";
+                  inherit hash;
+                };
+              }
+            );
 
         libtomcryptBuilder =
           {
@@ -239,52 +254,51 @@
           );
         nettleBuilder =
           {
-            version,
-            tag,
-            hash,
+            version ? null,
+            tag ? null,
+            hash ? null,
           }:
-          pkgs.nettle.overrideAttrs (
-            final: prev: {
-              configureFlags = (prev.configureFlags or [ ]) ++ [ "--enable-static" ];
-              src =
-                if version == null then
-                  prev.src
-                else
-                  pkgs.fetchurl {
-                    url = "mirror://gnu/nettle/nettle-${version}.tar.gz";
-                    inherit hash;
-                  };
-            }
-          );
+          if version == null then
+            pkgs.nettle.overrideAttrs (
+              final: prev: { configureFlags = (prev.configureFlags or [ ]) ++ [ "--enable-static" ]; }
+            )
+          else
+            pkgs.nettle.overrideAttrs (
+              final: prev: {
+                inherit version;
+                configureFlags = (prev.configureFlags or [ ]) ++ [ "--enable-static" ];
+                src = pkgs.fetchurl {
+                  url = "mirror://gnu/nettle/nettle-${version}.tar.gz";
+                  inherit hash;
+                };
+              }
+            );
         cryptoppBuilder =
-          { version, hash }:
-          (pkgs.cryptopp.override { enableStatic = true; }).overrideAttrs (
-            final: prev: {
-              src =
-                if version == null then
-                  prev.src
-                else
-                  pkgs.fetchFromGitHub {
-                    owner = "weidai11";
-                    repo = "cryptopp";
-                    rev = "CRYPTOPP_${version}";
-                    inherit hash;
-                  };
-            }
-          );
+          {
+            version ? null,
+            hash ? null,
+          }:
+          if version == null then
+            (pkgs.cryptopp.override { enableStatic = true; })
+          else
+            (pkgs.cryptopp.override { enableStatic = true; }).overrideAttrs (
+              final: prev: {
+                version = pkgs.strings.replaceStrings [ "_" ] [ "." ] version;
+                src = pkgs.fetchFromGitHub {
+                  owner = "weidai11";
+                  repo = "cryptopp";
+                  rev = "CRYPTOPP_${version}";
+                  inherit hash;
+                };
+              }
+            );
         libresslBuilder =
-          { version, hash }:
-          (pkgs.libressl.override { buildShared = false; }).overrideAttrs (
-            final: prev: rec {
-
-              src =
-                if version == null then
-                  prev.src
-                else
-                  pkgs.fetchurl {
-                    url = "mirror://openbsd/LibreSSL/${prev.pname}-${version}.tar.gz";
-                    inherit hash;
-                  };
+          {
+            version ? null,
+            hash ? null,
+          }:
+          if version == null then
+            (pkgs.libressl.override { buildShared = false; }).overrideAttrs ({
               patches =
                 if version == "3.8.2" then
                   [
@@ -296,23 +310,42 @@
                   ]
                 else
                   [ ];
+            })
+          else
+            (pkgs.libressl.override { buildShared = false; }).overrideAttrs (
+              final: prev: rec {
+                src = pkgs.fetchurl {
+                  url = "mirror://openbsd/LibreSSL/${prev.pname}-${version}.tar.gz";
+                  inherit hash;
+                };
+                patches =
+                  if version == "3.8.2" then
+                    [
+                      (pkgs.fetchpatch {
+                        url = "https://github.com/libressl/portable/commit/86e4965d7f20c3a6afc41d95590c9f6abb4fe788.patch";
+                        includes = [ "tests/tlstest.sh" ];
+                        hash = "sha256-XmmKTvP6+QaWxyGFCX6/gDfME9GqBWSx4X8RH8QbDXA=";
+                      })
+                    ]
+                  else
+                    [ ];
 
-              # NOTE: Due to name conflicts between OpenSSL and LibreSSL we need to resolve this manually.
-              #       This is not needed for building the individual shims through Nix, as libresslShim build env does not
-              #       contain OpenSSL at all, but for the interactive shell (started with `nix develop`), when multiple
-              #       lib shims are built alongside each other.
-              postFixup = pkgs.lib.concatLines [
-                (prev.postFixup or "")
-                ''
-                  cp $dev/lib/pkgconfig/libcrypto.pc $dev/lib/pkgconfig/libresslcrypto.pc
-                  sed --in-place --expression 's/-lcrypto/-lresslcrypto/' $dev/lib/pkgconfig/libresslcrypto.pc
-                  ln -s $out/lib/libcrypto.so $out/lib/libresslcrypto.so
-                  ln -s $out/lib/libcrypto.a $out/lib/libresslcrypto.a
-                ''
-              ];
+                # NOTE: Due to name conflicts between OpenSSL and LibreSSL we need to resolve this manually.
+                #       This is not needed for building the individual shims through Nix, as libresslShim build env does not
+                #       contain OpenSSL at all, but for the interactive shell (started with `nix develop`), when multiple
+                #       lib shims are built alongside each other.
+                postFixup = pkgs.lib.concatLines [
+                  (prev.postFixup or "")
+                  ''
+                    cp $dev/lib/pkgconfig/libcrypto.pc $dev/lib/pkgconfig/libresslcrypto.pc
+                    sed --in-place --expression 's/-lcrypto/-lresslcrypto/' $dev/lib/pkgconfig/libresslcrypto.pc
+                    ln -s $out/lib/libcrypto.so $out/lib/libresslcrypto.so
+                    ln -s $out/lib/libcrypto.a $out/lib/libresslcrypto.a
+                  ''
+                ];
 
-            }
-          );
+              }
+            );
         gmp = pkgs.gmp.override { withStatic = true; };
 
         # Custom added packages
@@ -502,27 +535,27 @@
 
               jniLibsPath = "standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/";
 
-		#      shims = [ "tomcrypt" "botan" "cryptopp" "openssl" "boringssl" "gcrypt" "mbedtls" "ippcp" "nettle" "libressl" ];
-		#      copyLib = libName:
-		# ( if ${libName}.version != null then "cp ${libName}Shim.out/lib/libressl_provider.so ${jniLibsPath}" else "" )
+              #      shims = [ "tomcrypt" "botan" "cryptopp" "openssl" "boringssl" "gcrypt" "mbedtls" "ippcp" "nettle" "libressl" ];
+              #      copyLib = libName:
+              # ( if ${libName}.version != null then "cp ${libName}Shim.out/lib/libressl_provider.so ${jniLibsPath}" else "" )
 
-	      # FIXME add conditionally libs using map?
-	      preConfigure = pkgs.lib.concatLines [
-		( if tomcrypt.version != null then "cp ${tomcryptShim.out}/lib/* ${jniLibsPath}" else "" )
-		( if botan.version != null then "cp ${botanShim.out}/lib/* ${jniLibsPath}" else "" )
-		( if cryptopp.version != null then "cp ${cryptoppShim.out}/lib/* ${jniLibsPath}" else "" )
-		( if openssl.version != null then "cp ${opensslShim.out}/lib/* ${jniLibsPath}" else "" )
-		( if boringssl.rev != null then "cp ${boringsslShim.out}/lib/* ${jniLibsPath}" else "" )
-		( if gcrypt.version != null then "cp ${gcryptShim.out}/lib/* ${jniLibsPath}" else "" )
-		( if mbedtls.version != null then "cp ${mbedtlsShim.out}/lib/* ${jniLibsPath}" else "" )
-		( if ippcp.version != null then "cp ${ippcpShim.out}/lib/* ${jniLibsPath}" else "" )
-		( if nettle.version != null then "cp ${nettleShim.out}/lib/* ${jniLibsPath}" else "" )
-		( if libressl.version != null then "cp ${libresslShim.out}/lib/* ${jniLibsPath}" else "" )
-		''
-                cp ${wolfcryptjni}/lib/* ${jniLibsPath}
-                cp ${commonLibs}/lib/* ${jniLibsPath}
-		''
-	      ];
+              # FIXME add conditionally libs using map?
+              preConfigure = pkgs.lib.concatLines [
+                (if tomcrypt.version != null then "cp ${tomcryptShim.out}/lib/* ${jniLibsPath}" else "")
+                (if botan.version != null then "cp ${botanShim.out}/lib/* ${jniLibsPath}" else "")
+                (if cryptopp.version != null then "cp ${cryptoppShim.out}/lib/* ${jniLibsPath}" else "")
+                (if openssl.version != null then "cp ${opensslShim.out}/lib/* ${jniLibsPath}" else "")
+                (if boringssl.rev != null then "cp ${boringsslShim.out}/lib/* ${jniLibsPath}" else "")
+                (if gcrypt.version != null then "cp ${gcryptShim.out}/lib/* ${jniLibsPath}" else "")
+                (if mbedtls.version != null then "cp ${mbedtlsShim.out}/lib/* ${jniLibsPath}" else "")
+                (if ippcp.version != null then "cp ${ippcpShim.out}/lib/* ${jniLibsPath}" else "")
+                (if nettle.version != null then "cp ${nettleShim.out}/lib/* ${jniLibsPath}" else "")
+                (if libressl.version != null then "cp ${libresslShim.out}/lib/* ${jniLibsPath}" else "")
+                ''
+                                  cp ${wolfcryptjni}/lib/* ${jniLibsPath}
+                                  cp ${commonLibs}/lib/* ${jniLibsPath}
+                  		''
+              ];
 
               nativeBuildInputs = [ makeWrapper ];
 
