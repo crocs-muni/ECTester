@@ -502,20 +502,27 @@
 
               jniLibsPath = "standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/";
 
-              preConfigure = ''
-                cp ${tomcryptShim.out}/lib/tomcrypt_provider.so ${jniLibsPath}
-                cp ${botanShim.out}/lib/botan_provider.so ${jniLibsPath}
-                cp ${cryptoppShim.out}/lib/cryptopp_provider.so ${jniLibsPath}
-                cp ${opensslShim.out}/lib/openssl_provider.so ${jniLibsPath}
-                cp ${boringsslShim.out}/lib/boringssl_provider.so ${jniLibsPath}
-                cp ${gcryptShim.out}/lib/gcrypt_provider.so ${jniLibsPath}
-                cp ${mbedtlsShim.out}/lib/mbedtls_provider.so ${jniLibsPath}
-                cp ${ippcpShim.out}/lib/ippcp_provider.so ${jniLibsPath}
-                cp ${nettleShim.out}/lib/nettle_provider.so ${jniLibsPath}
-                cp ${libresslShim.out}/lib/libressl_provider.so ${jniLibsPath}
+		#      shims = [ "tomcrypt" "botan" "cryptopp" "openssl" "boringssl" "gcrypt" "mbedtls" "ippcp" "nettle" "libressl" ];
+		#      copyLib = libName:
+		# ( if ${libName}.version != null then "cp ${libName}Shim.out/lib/libressl_provider.so ${jniLibsPath}" else "" )
+
+	      # FIXME add conditionally libs using map?
+	      preConfigure = pkgs.lib.concatLines [
+		( if tomcrypt.version != null then "cp ${tomcryptShim.out}/lib/* ${jniLibsPath}" else "" )
+		( if botan.version != null then "cp ${botanShim.out}/lib/* ${jniLibsPath}" else "" )
+		( if cryptopp.version != null then "cp ${cryptoppShim.out}/lib/* ${jniLibsPath}" else "" )
+		( if openssl.version != null then "cp ${opensslShim.out}/lib/* ${jniLibsPath}" else "" )
+		( if boringssl.rev != null then "cp ${boringsslShim.out}/lib/* ${jniLibsPath}" else "" )
+		( if gcrypt.version != null then "cp ${gcryptShim.out}/lib/* ${jniLibsPath}" else "" )
+		( if mbedtls.version != null then "cp ${mbedtlsShim.out}/lib/* ${jniLibsPath}" else "" )
+		( if ippcp.version != null then "cp ${ippcpShim.out}/lib/* ${jniLibsPath}" else "" )
+		( if nettle.version != null then "cp ${nettleShim.out}/lib/* ${jniLibsPath}" else "" )
+		( if libressl.version != null then "cp ${libresslShim.out}/lib/* ${jniLibsPath}" else "" )
+		''
                 cp ${wolfcryptjni}/lib/* ${jniLibsPath}
                 cp ${commonLibs}/lib/* ${jniLibsPath}
-              '';
+		''
+	      ];
 
               nativeBuildInputs = [ makeWrapper ];
 
