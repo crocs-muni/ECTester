@@ -620,7 +620,7 @@
           { libName, function }:
           let
             versions = builtins.fromJSON (builtins.readFile ./nix/${libName}_pkg_versions.json);
-            firstVersion = builtins.elemAt (pkgs.lib.attrsets.attrValues versions) 0;
+            firstVersion = pkgs.lib.lists.last (pkgs.lib.attrsets.attrValues versions);
           in
           pkgs.lib.mapAttrs (rev: specs: function { ${libName} = specs; }) versions
           // {
@@ -631,7 +631,7 @@
           { libName, function }:
           let
             versions = builtins.fromJSON (builtins.readFile ./nix/${libName}_pkg_versions.json);
-            firstVersion = builtins.elemAt (pkgs.lib.attrsets.attrValues versions) 0;
+            firstVersion = pkgs.lib.lists.last (pkgs.lib.attrsets.attrValues versions);
           in
           pkgs.lib.mapAttrs (rev: specs: function specs) versions
           // (with pkgs.lib; {
