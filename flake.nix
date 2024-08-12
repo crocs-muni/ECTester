@@ -591,18 +591,29 @@
           );
         loadVersions =
           { libName, function }:
-          pkgs.lib.mapAttrs (rev: specs: function { ${libName} = specs; }) (
-            builtins.fromJSON (builtins.readFile ./nix/${libName}_pkg_versions.json)
-          );
+          let
+            versions = builtins.fromJSON (builtins.readFile ./nix/${libName}_pkg_versions.json);
+            firstVersion = builtins.elemAt (pkgs.lib.attrsets.attrValues versions) 0;
+          in
+          pkgs.lib.mapAttrs (rev: specs: function { ${libName} = specs; }) versions
+          // {
+            default = function { ${libName} = firstVersion; };
+          };
+
         loadVersionsForShim =
           { libName, function }:
-          pkgs.lib.mapAttrs (rev: specs: function specs) (
-            builtins.fromJSON (builtins.readFile ./nix/${libName}_pkg_versions.json)
-          );
+          let
+            versions = builtins.fromJSON (builtins.readFile ./nix/${libName}_pkg_versions.json);
+            firstVersion = builtins.elemAt (pkgs.lib.attrsets.attrValues versions) 0;
+          in
+          pkgs.lib.mapAttrs (rev: specs: function specs) versions
+          // (with pkgs.lib; {
+            default = function firstVersion;
+          });
       in
       {
         packages = rec {
-          default = openssl.v331;
+          default = openssl.default;
           tomcrypt = loadVersions {
             libName = "tomcrypt";
             function = buildECTesterStandalone;
