@@ -87,14 +87,16 @@
                   inherit hash;
                 };
                 patches =
-                  if pkgs.lib.hasPrefix "2.0" version then
-                    (prev.patches or [ ])
-                    ++ [
-                      # Fix missing include https://github.com/randombit/botan/issues/903
-                      ./nix/botan-2.0.0-2.0.1.patch
-                    ]
-                  else
-                    [ ];
+                	{ "2.0.0" = ./nix/botan-2.0.0-2.0.1.patch;
+                	  "2.0.1" = ./nix/botan-2.0.0-2.0.1.patch;
+                	  "2.2.0" = [./nix/botan-fe25519-stdexcept.patch ];
+                	  "2.3.0" = [./nix/botan-fe25519-stdexcept.patch ./nix/botan-types-stdexcept.patch];
+                	  "2.4.0" = [./nix/botan-fe25519-stdexcept.patch ./nix/botan-types-stdexcept.patch];
+                	  "2.5.0" = [./nix/botan-fe25519-stdexcept.patch ./nix/botan-types-stdexcept.patch];
+                	  "2.6.0" = [./nix/botan-fe25519-stdexcept.patch ./nix/botan-types-stdexcept.patch];
+                	  "2.7.0" = [./nix/botan-fe25519-stdexcept.patch ./nix/botan-types-stdexcept.patch];
+                	  "2.8.0" = [./nix/botan-fe25519-stdexcept.patch ./nix/botan-types-stdexcept.patch];}."${version}" or (prev.patches or [ ]);
+                patchFlags = ["-p1" "-r-"];
               }
             );
 

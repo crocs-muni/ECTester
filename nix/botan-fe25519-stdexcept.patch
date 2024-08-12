@@ -1,0 +1,13 @@
+diff --git a/src/lib/pubkey/ed25519/ed25519_fe.h b/src/lib/pubkey/ed25519/ed25519_fe.h
+--- a/src/lib/pubkey/ed25519/ed25519_fe.h
++++ b/src/lib/pubkey/ed25519/ed25519_fe.h
+@@ -11,8 +11,9 @@
+ #ifndef BOTAN_ED25519_FE_H__
+ #define BOTAN_ED25519_FE_H__
+ 
+ #include <botan/mem_ops.h>
++#include <stdexcept>
+ 
+ namespace Botan {
+ 
+ /**

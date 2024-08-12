@@ -1,0 +1,12 @@
+diff --git a/src/lib/utils/types.h b/src/lib/utils/types.h
+--- a/src/lib/utils/types.h
++++ b/src/lib/utils/types.h
+@@ -15,6 +15,8 @@
+ #include <cstddef> // IWYU pragma: export
+ #include <cstdint> // IWYU pragma: export
+ #include <memory> // IWYU pragma: export
++#include <stdexcept>
++#include <string>
+ 
+ namespace Botan {
+
