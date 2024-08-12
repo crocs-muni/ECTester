@@ -252,6 +252,7 @@
               ];
             }
           );
+        # NOTE: should gmp library be also dependent?
         nettleBuilder =
           {
             version ? null,
@@ -672,6 +673,49 @@
             libressl = loadVersionsForShim {
               libName = "libressl";
               function = libresslShimBuilder;
+            };
+          };
+
+          lib = {
+            tomcrypt = loadVersionsForShim {
+              libName = "tomcrypt";
+              function = libtomcryptBuilder;
+            };
+            botan = loadVersionsForShim {
+              libName = "botan";
+              function = botan2Builder;
+            };
+            cryptopp = loadVersionsForShim {
+              libName = "cryptopp";
+              function = cryptoppBuilder;
+            };
+            openssl = loadVersionsForShim {
+              libName = "openssl";
+              function = opensslBuilder;
+            };
+            boringssl = loadVersionsForShim {
+              libName = "boringssl";
+              function = boringsslBuilder;
+            };
+            gcrypt = loadVersionsForShim {
+              libName = "gcrypt";
+              function = libgcryptBuilder;
+            };
+            mbedtls = loadVersionsForShim {
+              libName = "mbedtls";
+              function = mbedtlsBuilder;
+            };
+            ippcp = loadVersionsForShim {
+              libName = "ippcp";
+              function = ipp-cryptoBuilder;
+            };
+            nettle = loadVersionsForShim {
+              libName = "nettle";
+              function = nettleBuilder;
+            };
+            libressl = loadVersionsForShim {
+              libName = "libressl";
+              function = libresslBuilder;
             };
           };
 
