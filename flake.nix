@@ -293,7 +293,7 @@
           else
             (pkgs.cryptopp.override { enableStatic = true; }).overrideAttrs (
               final: prev: {
-                version = pkgs.strings.replaceStrings [ "_" ] [ "." ] version;
+                version = pkgs.lib.strings.replaceStrings [ "_" ] [ "." ] version;
                 src = pkgs.fetchFromGitHub {
                   owner = "weidai11";
                   repo = "cryptopp";
