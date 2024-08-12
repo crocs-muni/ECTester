@@ -14,6 +14,8 @@ stdenv.mkDerivation rec {
     make libressl
   '';
 
+  LIBRESSL_CFLAGS = "-DECTESTER_LIBRESSL_${builtins.replaceStrings ["."] ["_"] libressl.version}=1";
+
   installPhase = ''
     mkdir --parents $out/lib
     cp libressl_provider.so $out/lib

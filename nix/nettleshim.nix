@@ -19,6 +19,8 @@ stdenv.mkDerivation rec {
     make nettle
   '';
 
+  NETTLE_CFLAGS = "-DECTESTER_NETTLE_${builtins.replaceStrings ["."] ["_"] nettle.version}=1";
+
   installPhase = ''
     mkdir --parents $out/lib
     cp nettle_provider.so $out/lib

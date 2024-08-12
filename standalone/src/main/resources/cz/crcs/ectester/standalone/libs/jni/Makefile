@@ -107,7 +107,7 @@ openssl_provider.so: openssl.o c_utils.o | clibs
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -Wl,-Bstatic $(shell pkg-config --libs libcrypto)  -lcrypto -L. -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
 
 openssl.o: openssl.c
-	$(CC) $(shell pkg-config --cflags openssl) $(CFLAGS) -c $<
+	$(CC) $(shell pkg-config --cflags openssl) $(OPENSSL_CFLAGS) $(CFLAGS) -c $<
 
 
 # BoringSSL shim
@@ -127,7 +127,7 @@ gcrypt_provider.so: gcrypt.o c_utils.o | clibs
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -pthread -lpthread -Wl,-Bstatic $(shell libgcrypt-config --libs) -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
 
 gcrypt.o: gcrypt.c
-	$(CC) $(shell libgcrypt-config --cflags) $(CFLAGS) -c $<
+	$(CC) $(shell libgcrypt-config --cflags) $(LIBGCRYPT_CFLAGS) $(CFLAGS) -c $<
 
 
 # Libtomcrypt shim
@@ -147,7 +147,7 @@ botan_provider.so: botan.o cpp_utils.o | cpplibs
 	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic $(shell pkg-config --libs botan-2) -Wl,-Bdynamic -l:lib_timing.so -l:lib_cppsignals.so
 
 botan.o: botan.cpp
-	$(CXX) $(shell pkg-config --cflags botan-2) $(CXXFLAGS) -c $<
+	$(CXX) $(shell pkg-config --cflags botan-2) $(BOTAN_CXXFLAGS) $(CXXFLAGS) -c $<
 
 
 # Crypto++ shim
@@ -161,7 +161,7 @@ cryptopp_provider.so: cryptopp.o cpp_utils.o | cpplibs
 	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic $(shell pkg-config --libs $(CRYPTOPP_NAME)) -Wl,-Bdynamic -l:lib_timing.so -l:lib_cppsignals.so
 
 cryptopp.o: cryptopp.cpp
-	$(CXX) $(shell pkg-config --cflags $(CRYPTOPP_NAME)) $(CXXFLAGS) -c $<
+	$(CXX) $(shell pkg-config --cflags $(CRYPTOPP_NAME)) $(CRYPTOPP_CXXFLAGS) $(CXXFLAGS) -c $<
 
 
 # mbedTLS shim
@@ -171,7 +171,7 @@ mbedtls_provider.so: mbedtls.o c_utils.o | clibs
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic -lmbedcrypto -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
 
 mbedtls.o: mbedtls.c
-	$(CC) $(CFLAGS) -c $<
+	$(CC) $(MBEDTLS_CFLAGS) $(CFLAGS) -c $<
 
 
 # Intel Performance Primitives crypto shim
@@ -192,7 +192,7 @@ nettle_provider.so: nettle.o c_utils.o | clibs
 		-Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
 
 nettle.o: nettle.c
-	$(CC) -Wl,-static $(shell pkg-config --cflags nettle hogweed gmp) $(CFLAGS) -c $<
+	$(CC) -Wl,-static $(shell pkg-config --cflags nettle hogweed gmp) $(NETTLE_CFLAGS) $(CFLAGS) -c $<
 
 
 # LibreSSL shim
@@ -202,7 +202,7 @@ libressl_provider.so: libressl.o c_utils.o | clibs
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic $(shell pkg-config --libs libresslcrypto) -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
 
 libressl.o: libressl.c
-	$(CC) $(shell pkg-config --cflags libresslcrypto) $(CFLAGS) -c $<
+	$(CC) $(shell pkg-config --cflags libresslcrypto) $(LIBRESSL_CFLAGS) $(CFLAGS) -c $<
 
 help:
 	@echo "# This makefile builds the JNI shims necessary to test native libraries."

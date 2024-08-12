@@ -14,6 +14,8 @@ stdenv.mkDerivation {
     make openssl
   '';
 
+  OPENSSL_CFLAGS = "-DECTESTER_OPENSSL_${builtins.replaceStrings ["."] ["_"] openssl.version}=1";
+
   installPhase = ''
     mkdir --parents $out/lib
     cp openssl_provider.so $out/lib/

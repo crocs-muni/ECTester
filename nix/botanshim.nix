@@ -19,6 +19,8 @@ stdenv.mkDerivation {
     make botan
   '';
 
+  BOTAN_CXXFLAGS = "-DECTESTER_BOTAN_${builtins.replaceStrings ["."] ["_"] botan2.version}=1";
+
   installPhase = ''
     mkdir --parents $out/lib
     cp botan_provider.so $out/lib/

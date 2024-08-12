@@ -14,6 +14,8 @@ stdenv.mkDerivation rec {
     make mbedtls
   '';
 
+  MBEDTLS_CFLAGS = "-DECTESTER_MBEDTLS_${builtins.replaceStrings ["."] ["_"] mbedtls.version}=1";
+
   installPhase = ''
     mkdir --parents $out/lib
     cp mbedtls_provider.so $out/lib

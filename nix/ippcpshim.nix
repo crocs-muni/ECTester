@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
     jdk11_headless
   ];
 
-  IPP_CRYPTO_CFLAGS = "-I${ipp-crypto.dev}/include";
+  IPP_CRYPTO_CFLAGS = "-I${ipp-crypto.dev}/include -DECTESTER_IPPCP_VERSION=${ipp-crypto.version}";
   IPP_CRYPTO_LFLAGS = "-L${ipp-crypto}/lib/";
 
   buildPhase = ''

@@ -19,6 +19,8 @@ stdenv.mkDerivation {
     make gcrypt
   '';
 
+  LIBGCRYPT_CFLAGS = "-DECTESTER_LIBGCRYPT_${builtins.replaceStrings ["."] ["_"] libgcrypt.version}=1";
+
   installPhase = ''
     mkdir --parents $out/lib
     cp gcrypt_provider.so $out/lib/

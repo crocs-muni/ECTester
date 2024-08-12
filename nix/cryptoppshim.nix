@@ -14,6 +14,8 @@ stdenv.mkDerivation {
     make cryptopp
   '';
 
+  CRYPTOPP_CXXFLAGS = "-DECTESTER_CRYPTOPP_${cryptopp.version}=1";
+
   installPhase = ''
     mkdir --parents $out/lib
     cp cryptopp_provider.so $out/lib/
