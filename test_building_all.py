@@ -37,7 +37,7 @@ def valid_build_type(value):
     value = value.strip()
     valid_types = ["shim", "lib"]
     if value not in valid_types:
-        raise argparse.ArgumentTypeError(f"'{value}' not from expected {', '.join(valid_types)})")
+        raise argparse.ArgumentTypeError(f"'{value}' not from expected {', '.join(valid_types)}.")
     return value
 
 def save_build_result(library, variant, version, result):
