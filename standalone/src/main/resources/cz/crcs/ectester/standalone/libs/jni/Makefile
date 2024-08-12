@@ -141,13 +141,17 @@ tomcrypt.o: tomcrypt.c
 
 
 # Botan-2 shim
+BOTAN_NAME := "botan-2"
+ifeq ($(shell pkg-config --exists $(BOTAN_NAME); echo $$?),1)
+	BOTAN_NAME := "botan-3"
+endif
 botan: botan_provider.so
 
 botan_provider.so: botan.o cpp_utils.o | cpplibs
-	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic $(shell pkg-config --libs botan-2) -Wl,-Bdynamic -l:lib_timing.so -l:lib_cppsignals.so
+	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic $(shell pkg-config --libs $(BOTAN_NAME)) -Wl,-Bdynamic -l:lib_timing.so -l:lib_cppsignals.so
 
 botan.o: botan.cpp
-	$(CXX) $(shell pkg-config --cflags botan-2) $(BOTAN_CXXFLAGS) $(CXXFLAGS) -c $<
+	$(CXX) $(shell pkg-config --cflags $(BOTAN_NAME)) $(BOTAN_CXXFLAGS) $(CXXFLAGS) -c $<
 
 
 # Crypto++ shim

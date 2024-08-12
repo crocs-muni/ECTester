@@ -66,6 +66,9 @@ def fetch_botan():
             download_link = download_url.format(version=link['href'])
 
             match = re.match(r"Botan-(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)\.(?P<ext>.*)", link.text)
+            if match['major'] == "3":
+                # TODO: Handle Botan-3
+                continue
             version = f"{match['major']}.{match['minor']}.{match['patch']}"
             ext = f"{match['ext']}"
 
@@ -235,11 +238,16 @@ def fetch_mbedtls():
     versions = {}
     for release in resp.json():
         if not release['draft'] and not release['prerelease']:
-            version = release['tag_name']
-            sort_version = version.replace("mbedtls-", "v")
+            tag = release["tag_name"]
+            version = tag.replace("mbedtls-", "v")
             flat_version = version.replace('.', '')
-            download_url = f"https://github.com/{owner}/{repo}/archive/{version}.tar.gz"
-            digest = get_source_hash(download_url, unpack=True)
+            download_url = f"https://github.com/{owner}/{repo}/archive/{tag}.tar.gz"
+            if version == "v3.6.0":
+                # TODO: Special case for the time being
+                digest = "sha256-tCwAKoTvY8VCjcTPNwS3DeitflhpKHLr6ygHZDbR6wQ="
+            else:
+                digest = get_source_hash(download_url, unpack=True)
+
             print(f"{version}:{digest}")
 
             rendered = single_version_template.render(pkg=pkg, digest=digest, flat_version=flat_version, version=version).strip()
@@ -247,7 +255,8 @@ def fetch_mbedtls():
             versions[flat_version] = {
                 "version": version,
                 "hash": digest,
-                "sort": parse_version(sort_version)
+                "tag": tag,
+                "sort": parse_version(version)
             }
     serialize_versions(pkg, renders, versions)
 

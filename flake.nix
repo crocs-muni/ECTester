@@ -156,6 +156,7 @@
           {
             version ? null,
             hash ? null,
+            tag ? null,
           }:
           if version == null then
             pkgs.mbedtls
@@ -163,10 +164,11 @@
             pkgs.mbedtls.overrideAttrs (
               final: prev: {
                 inherit version;
+                inherit tag;
                 src = pkgs.fetchFromGitHub {
                   owner = "Mbed-TLS";
                   repo = "mbedtls";
-                  rev = "mbedtls-${version}";
+                  rev = tag;
                   inherit hash;
                   # mbedtls >= 3.6.0 uses git submodules
                   fetchSubmodules = true;
@@ -465,10 +467,10 @@
             libgcrypt = libgcryptBuilder { inherit version hash; };
           };
         mbedtlsShimBuilder =
-          { version, hash }:
+          { version, hash, tag }:
           import ./nix/mbedtlsshim.nix {
             inherit pkgs;
-            mbedtls = (mbedtlsBuilder { inherit version hash; });
+            mbedtls = (mbedtlsBuilder { inherit version hash tag; });
           };
         ippcpShimBuilder =
           { version, hash }:
@@ -529,6 +531,7 @@
             mbedtls ? {
               version = null;
               hash = null;
+              tag = null;
             },
             ippcp ? {
               version = null;
@@ -557,7 +560,7 @@
               cryptoppShim = cryptoppShimBuilder { inherit (cryptopp) version hash; };
               boringsslShim = boringsslShimBuilder { inherit (boringssl) rev hash; };
               gcryptShim = gcryptShimBuilder { inherit (gcrypt) version hash; };
-              mbedtlsShim = mbedtlsShimBuilder { inherit (mbedtls) version hash; };
+              mbedtlsShim = mbedtlsShimBuilder { inherit (mbedtls) version hash tag; };
               ippcpShim = ippcpShimBuilder { inherit (ippcp) version hash; };
               nettleShim = nettleShimBuilder { inherit (nettle) version tag hash; };
               libresslShim = libresslShimBuilder { inherit (libressl) version hash; };
