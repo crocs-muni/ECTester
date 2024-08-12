@@ -117,7 +117,7 @@ boringssl_provider.so: boringssl.o c_utils.o | clibs
 	$(CC) $(CFLAGS) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic -l:lib_boringssl.a -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
 
 boringssl.o: boringssl.c
-	$(CC) -I$(BORINGSSL_CFLAGS) $(CFLAGS) -c $<
+	$(CC) $(BORINGSSL_CFLAGS) $(CFLAGS) -c $<
 
 
 # libgcrypt shim
@@ -178,10 +178,10 @@ mbedtls.o: mbedtls.c
 ippcp: ippcp_provider.so
 
 ippcp_provider.so: ippcp.o c_utils.o | clibs
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L$(IPP_CRYPTO_LIB) -Wl,-Bstatic -l:libippcp.a -L. -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ $(IPP_CRYPTO_LFLAGS) -Wl,-Bstatic -l:libippcp.a -L. -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
 
 ippcp.o: ippcp.c
-	$(CC) -I$(IPP_CRYPTO_HEADER) $(CFLAGS) -c $<
+	$(CC) $(IPP_CRYPTO_CFLAGS) $(CFLAGS) -c $<
 
 
 # Nettle shim
