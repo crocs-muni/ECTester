@@ -739,10 +739,10 @@
               '';
             };
 
-          buildShims =
+          buildAll =
             with pkgs.python3Packages;
             buildPythonApplication {
-              pname = "buildShims";
+              pname = "buildAll";
               version = "0.1.0";
               format = "other";
 
@@ -751,7 +751,7 @@
                 pudb
               ];
 
-              src = ./test_building_all_shims.py;
+              src = ./test_building_all.py;
               dontUnpack = true;
               installPhase = ''
                 install -Dm755 $src $out/bin/$pname
