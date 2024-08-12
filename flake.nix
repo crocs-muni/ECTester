@@ -779,6 +779,7 @@
                 jinja2
                 requests
                 beautifulsoup4
+                packaging
               ];
 
               src = ./fetchReleases.py;

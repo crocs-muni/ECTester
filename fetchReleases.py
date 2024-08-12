@@ -14,6 +14,7 @@ import subprocess as sp
 
 from base64 import b32encode, b32decode, b64encode, b16decode
 from bs4 import BeautifulSoup
+from packaging.version import parse as parse_version, Version
 
 env = jinja2.Environment()
 
@@ -35,6 +36,16 @@ def get_source_hash(url, unpack=False):
     digest_nixbase32 = sp.check_output(cmd, stderr=sp.DEVNULL).strip()
     digest_sri = sp.check_output(["nix", "hash", "to-sri", "--type", digest_type, digest_nixbase32.decode()], stderr=sp.DEVNULL).strip().decode()
     return digest_sri
+
+def serialize_versions(pkg, renders, versions):
+    sorted_versions = {k: {kk: vv for kk, vv in v.items() if kk != "sort"} for k, v in sorted(versions.items(), key=lambda item: item[1]["sort"], reverse=True)}
+
+    # all_versions = all_versions_template.render(pkg_versions=renders).strip()
+    # with open(f"./nix/{pkg}_pkg_versions.nix", "w") as handle:
+    #     handle.write(all_versions)
+
+    with open(f"./nix/{pkg}_pkg_versions.json", "w") as handle:
+        json.dump(sorted_versions, handle, indent=4)
 
 def fetch_botan():
     pkg = "botan"
@@ -68,15 +79,10 @@ def fetch_botan():
             versions[flat_version] = {
                 "version": version,
                 "source_extension": ext,
-                "hash": digest
+                "hash": digest,
+                "sort": parse_version(version)
             }
-
-    all_versions = all_versions_template.render(pkg_versions=renders).strip()
-    with open(f"./nix/{pkg}_pkg_versions.nix", "w") as handle:
-        handle.write(all_versions)
-
-    with open(f"./nix/{pkg}_pkg_versions.json", "w") as handle:
-        json.dump(versions, handle, indent=4)
+    serialize_versions(pkg, renders, versions)
 
 def fetch_cryptopp():
     pkg = "cryptopp"
@@ -103,15 +109,10 @@ def fetch_cryptopp():
             renders.append(rendered)
             versions[flat_version] = {
                 "version": underscored_version,
-                "hash": digest
+                "hash": digest,
+                "sort": parse_version(underscored_version.replace("_", "."))
             }
-
-    all_versions = all_versions_template.render(pkg_versions=renders).strip()
-    with open(f"./nix/{pkg}_pkg_versions.nix", "w") as handle:
-        handle.write(all_versions)
-
-    with open(f"./nix/{pkg}_pkg_versions.json", "w") as handle:
-        json.dump(versions, handle, indent=4)
+    serialize_versions(pkg, renders, versions)
 
 def fetch_openssl():
     pkg = "openssl"
@@ -137,19 +138,13 @@ def fetch_openssl():
             print(f"{dotted_version}:{digest}")
             versions[flat_version] = {
                 "version": dotted_version,
-                "hash": digest
+                "hash": digest,
+                "sort": parse_version(dotted_version)
             }
-
 
             rendered = single_version_template.render(pkg=pkg, digest=digest, flat_version=flat_version, version=dotted_version).strip()
             renders.append(rendered)
-
-    all_versions = all_versions_template.render(pkg_versions=renders).strip()
-    with open(f"./nix/{pkg}_pkg_versions.nix", "w") as handle:
-        handle.write(all_versions)
-
-    with open(f"./nix/{pkg}_pkg_versions.json", "w") as handle:
-        json.dump(versions, handle, indent=4)
+    serialize_versions(pkg, renders, versions)
 
 
 def fetch_tomcrypt():
@@ -187,17 +182,10 @@ def fetch_gcrypt():
             renders.append(rendered)
             versions[flat_version] = {
                 "version": version,
-                "hash": digest
+                "hash": digest,
+                "sort": parse_version(version)
             }
-
-
-    all_versions = all_versions_template.render(pkg_versions=renders).strip()
-    with open("./nix/gcrypt_pkg_versions.nix", "w") as handle:
-        handle.write(all_versions)
-
-    with open(f"./nix/{pkg}_pkg_versions.json", "w") as handle:
-        json.dump(versions, handle, indent=4)
-
+    serialize_versions(pkg, renders, versions)
 
 def fetch_boringssl():
     pkg = "boringssl"
@@ -228,14 +216,9 @@ def fetch_boringssl():
             versions[f"r{abbrev_commit}"] = {
                 "rev": rev,
                 "hash": digest,
+                "sort": i
             }
-
-    all_versions = all_versions_template.render(pkg_versions=renders).strip()
-    with open(f"./nix/{pkg}_pkg_versions.nix", "w") as handle:
-        handle.write(all_versions)
-
-    with open(f"./nix/{pkg}_pkg_versions.json", "w") as handle:
-        json.dump(versions, handle, indent=4)
+    serialize_versions(pkg, renders, versions)
 
 def fetch_mbedtls():
     # Mbed-TLS/mbedtls
@@ -253,6 +236,7 @@ def fetch_mbedtls():
     for release in resp.json():
         if not release['draft'] and not release['prerelease']:
             version = release['tag_name']
+            sort_version = version.replace("mbedtls-", "v")
             flat_version = version.replace('.', '')
             download_url = f"https://github.com/{owner}/{repo}/archive/{version}.tar.gz"
             digest = get_source_hash(download_url, unpack=True)
@@ -263,14 +247,9 @@ def fetch_mbedtls():
             versions[flat_version] = {
                 "version": version,
                 "hash": digest,
+                "sort": parse_version(sort_version)
             }
-
-    all_versions = all_versions_template.render(pkg_versions=renders).strip()
-    with open(f"./nix/{pkg}_pkg_versions.nix", "w") as handle:
-        handle.write(all_versions)
-
-    with open(f"./nix/{pkg}_pkg_versions.json", "w") as handle:
-        json.dump(versions, handle, indent=4)
+    serialize_versions(pkg, renders, versions)
 
 def fetch_ippcp():
     # https://api.github.com/repos/intel/ipp-crypto/releases
@@ -298,14 +277,9 @@ def fetch_ippcp():
             versions[flat_version] = {
                 "version": version,
                 "hash": digest,
+                "sort": parse_version(version.replace("u", "+u"))
             }
-
-    all_versions = all_versions_template.render(pkg_versions=renders).strip()
-    with open(f"./nix/{pkg}_pkg_versions.nix", "w") as handle:
-        handle.write(all_versions)
-
-    with open(f"./nix/{pkg}_pkg_versions.json", "w") as handle:
-        json.dump(versions, handle, indent=4)
+    serialize_versions(pkg, renders, versions)
 
 def fetch_nettle():
     # https://api.github.com/repos/intel/ipp-crypto/releases
@@ -340,14 +314,9 @@ def fetch_nettle():
             "version": version,
             "tag": tag['name'],
             "hash": digest,
+            "sort": parse_version(version)
         }
-
-    all_versions = all_versions_template.render(pkg_versions=renders).strip()
-    with open(f"./nix/{pkg}_pkg_versions.nix", "w") as handle:
-        handle.write(all_versions)
-
-    with open(f"./nix/{pkg}_pkg_versions.json", "w") as handle:
-        json.dump(versions, handle, indent=4)
+    serialize_versions(pkg, renders, versions)
 
 
 def fetch_libressl():
@@ -378,14 +347,10 @@ def fetch_libressl():
             versions[flat_version] = {
                 "version": version,
                 "hash": digest,
+                "sort": parse_version(version)
             }
+    serialize_versions(pkg, renders, versions)
 
-    all_versions = all_versions_template.render(pkg_versions=renders).strip()
-    with open(f"./nix/{pkg}_pkg_versions.nix", "w") as handle:
-        handle.write(all_versions)
-
-    with open(f"./nix/{pkg}_pkg_versions.json", "w") as handle:
-        json.dump(versions, handle, indent=4)
 
 def main():
     parser = argparse.ArgumentParser()
