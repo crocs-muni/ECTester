@@ -1,0 +1,12 @@
+diff --git a/src/lib/filters/threaded_fork.cpp b/src/lib/filters/threaded_fork.cpp
+index 170264353e..d379eacda2 100644
+--- a/src/lib/filters/threaded_fork.cpp
++++ b/src/lib/filters/threaded_fork.cpp
+@@ -12,6 +12,7 @@
+ 
+ #include <botan/internal/semaphore.h>
+ #include <botan/internal/barrier.h>
++#include <functional>
+ 
+ namespace Botan {
+ 

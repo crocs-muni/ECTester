@@ -86,6 +86,15 @@
                   urls = [ "http://botan.randombit.net/releases/Botan-${version}.${source_extension}" ];
                   inherit hash;
                 };
+                patches =
+                  if pkgs.lib.hasPrefix "2.0" version then
+                    (prev.patches or [ ])
+                    ++ [
+                      # Fix missing include https://github.com/randombit/botan/issues/903
+                      ./nix/botan-2.0.0-2.0.1.patch
+                    ]
+                  else
+                    [ ];
               }
             );
 
