@@ -15,6 +15,7 @@ jobs:
     strategy:
       matrix:
         library: [ "botan", "cryptopp", "openssl", "boringssl", "gcrypt", "mbedtls", "ippcp", "nettle", "libressl" ]
+      fail-fast: false
     name: Build standalone ${{ matrix.library }}
     steps:
       - uses: actions/checkout@v4
