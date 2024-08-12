@@ -4,6 +4,8 @@ import argparse
 import json
 import time
 
+from pathlib import Path
+
 import subprocess as sp
 
 def get_all_versions(library):
@@ -12,15 +14,24 @@ def get_all_versions(library):
 
     return versions
 
-def can_build(library, version, variant):
+def attempt_build(library, version, variant):
     cmd = ["nix", "build", f".#{variant}.{library}.{version}"]
     start = time.time()
+
+    result = {}
     try:
         sp.check_output(cmd, stderr=sp.STDOUT)
+        success = True
+        stderr = ""
     except sp.CalledProcessError as e:
-        print(e.output.decode())
-        return False, time.time() - start
-    return True, time.time() - start
+        stderr = e.output.decode()
+        success = False
+
+    result['build_time'] = time.time() - start
+    result['success'] = success
+    result['stderr'] = stderr.split('\n') if stderr else []
+
+    return result
 
 def valid_build_type(value):
     value = value.strip()
@@ -29,15 +40,29 @@ def valid_build_type(value):
         raise argparse.ArgumentTypeError(f"'{value}' not from expected {', '.join(valid_types)})")
     return value
 
+def save_build_result(library, variant, version, result):
+    resdir = Path(f"build_all/{variant}")
+    resdir.mkdir(parents=True, exist_ok=True)
+    try:
+        # Update previous results
+        with open(resdir / f"{library}.json", "r") as handle:
+            prev_results = json.load(handle)
+    # NOTE this is not ideal as the JSON decoding problem can be other than just an empty file
+    except (FileNotFoundError, json.JSONDecodeError):
+        prev_results = {}
+
+    prev_results[version] = result
+    with open(resdir / f"{library}.json", "w") as handle:
+        json.dump(prev_results, handle, indent=4)
+
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-l", "--library")
-    parser.add_argument("-d", "--variant", default="shim", type=valid_build_type)
+    parser.add_argument("-v", "--variant", default="shim", type=valid_build_type)
     args = parser.parse_args()
     library = args.library
     variant = args.variant
-
 
     libraries = [
          "botan", 
@@ -53,14 +78,22 @@ def main():
 
     match library:
         case None:
+            print("Building all libraries")
+            # Build all libraries by default
             for lib in libraries:
                 print(f"Library: {lib}")
                 for version in get_all_versions(lib):
-                    print(f"{version}: {can_build(lib, version, variant)}")
-        case _:
+                    result = attempt_build(lib, version, variant)
+                    save_build_result(lib, variant, version, result)
+                    print(f"{version}: {result['success']}")
+        case lib if lib in libraries:
             print(f"Library: {library}")
             for version in get_all_versions(library):
-                print(f"{version}: {can_build(library, version, variant)}")
+                result = attempt_build(lib, version, variant)
+                save_build_result(lib, variant, version, result)
+                print(f"{version}: {result['success']}")
+        case _:
+            print(f"Unrecognized library '{library}'. Try one of: {', '.join(libraries)}.")
 
 
 if __name__ == '__main__':
