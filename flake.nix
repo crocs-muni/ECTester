@@ -595,9 +595,9 @@
                 (if nettle.version != null then "cp ${nettleShim.out}/lib/* ${jniLibsPath}" else "")
                 (if libressl.version != null then "cp ${libresslShim.out}/lib/* ${jniLibsPath}" else "")
                 ''
-                                  cp ${wolfcryptjni}/lib/* ${jniLibsPath}
-                                  cp ${commonLibs}/lib/* ${jniLibsPath}
-                  		''
+                  cp ${wolfcryptjni}/lib/* ${jniLibsPath}
+                  cp ${commonLibs}/lib/* ${jniLibsPath}
+                ''
               ];
 
               nativeBuildInputs = [ makeWrapper ];
