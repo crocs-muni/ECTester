@@ -331,6 +331,7 @@
                   rev = "CRYPTOPP_${version}";
                   inherit hash;
                 };
+                installTargets = if pkgs.lib.strings.hasPrefix "8_" version then [ "install-lib" ] else [ "install" ];
               }
             );
         libresslBuilder =
