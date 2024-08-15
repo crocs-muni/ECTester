@@ -3,6 +3,7 @@ with pkgs;
 stdenv.mkDerivation rec {
   name = "MbedTLSShim";
   src = ../standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni;
+  rawVersion = pkgs.lib.strings.removePrefix "v" mbedtls.version;
 
   buildInputs = [
     mbedtls
@@ -14,7 +15,12 @@ stdenv.mkDerivation rec {
     make mbedtls
   '';
 
-  MBEDTLS_CFLAGS = "-DECTESTER_MBEDTLS_${builtins.replaceStrings ["."] ["_"] mbedtls.version}=1";
+  MBEDTLS_CFLAGS = ''
+    -DECTESTER_MBEDTLS_${builtins.replaceStrings ["."] ["_"] rawVersion}=1 \
+    -DECTESTER_MBEDTLS_MAJOR=${pkgs.lib.versions.major rawVersion} \
+    -DECTESTER_MBEDTLS_MINOR=${pkgs.lib.versions.minor rawVersion} \
+    -DECTESTER_MBEDTLS_PATCH=${pkgs.lib.versions.patch rawVersion} \
+  '';
 
   installPhase = ''
     mkdir --parents $out/lib
