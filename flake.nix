@@ -334,7 +334,8 @@
                   rev = "CRYPTOPP_${version}";
                   inherit hash;
                 };
-                installTargets = if pkgs.lib.strings.hasPrefix "8_" version then [ "install-lib" ] else [ "install" ];
+                installTargets =
+                  if pkgs.lib.strings.hasPrefix "8_" version then [ "install-lib" ] else [ "install" ];
               }
             );
         libresslBuilder =
@@ -359,12 +360,14 @@
           else
             (pkgs.libressl.override { buildShared = false; }).overrideAttrs (
               final: prev: rec {
+                inherit version;
                 src = pkgs.fetchurl {
                   url = "mirror://openbsd/LibreSSL/${prev.pname}-${version}.tar.gz";
                   inherit hash;
                 };
+
                 patches =
-                  if version == "3.8.2" then
+                  if (pkgs.lib.strings.versionAtLeast version "3.8.2") then
                     [
                       (pkgs.fetchpatch {
                         url = "https://github.com/libressl/portable/commit/86e4965d7f20c3a6afc41d95590c9f6abb4fe788.patch";
@@ -374,6 +377,19 @@
                     ]
                   else
                     [ ];
+
+                preConfigure = ''
+                    ${pkgs.lib.strings.optionalString (pkgs.lib.strings.versionAtLeast version "2.2.2") ''
+                      	rm configure
+                        substituteInPlace CMakeLists.txt \
+                          --replace 'exec_prefix \''${prefix}' "exec_prefix ${placeholder "bin"}" \
+                          --replace 'libdir      \''${exec_prefix}' 'libdir \''${prefix}'
+                        ''}
+                '';
+
+                postPatch = ''
+                  patchShebangs tests/
+                '';
 
                 # NOTE: Due to name conflicts between OpenSSL and LibreSSL we need to resolve this manually.
                 #       This is not needed for building the individual shims through Nix, as libresslShim build env does not
@@ -471,7 +487,11 @@
             libgcrypt = libgcryptBuilder { inherit version hash; };
           };
         mbedtlsShimBuilder =
-          { version, hash, tag }:
+          {
+            version,
+            hash,
+            tag,
+          }:
           import ./nix/mbedtlsshim.nix {
             inherit pkgs;
             mbedtls = (mbedtlsBuilder { inherit version hash tag; });
