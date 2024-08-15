@@ -173,7 +173,17 @@
                   # mbedtls >= 3.6.0 uses git submodules
                   fetchSubmodules = true;
                 };
-                patches = { "v2.25.0" = ./nix/mbedtls-printf.patch; }."${version}" or (prev.patches or [ ]);
+                patches =
+                  {
+                    "v2.25.0" = ./nix/mbedtls-printf.patch;
+                    "v3.2.0" = (
+                      pkgs.fetchpatch {
+                        url = "https://github.com/Mbed-TLS/mbedtls/commit/c2a938711085813eae11d99550b280c416a8242e.patch";
+                        hash = "sha256-Rq4wEgJoEBzLpp2GdEMO2Ys2WNqN0LXzlKOVpcyVQ0M=";
+                      }
+                    );
+                  }
+                  ."${version}" or (prev.patches or [ ]);
                 # NOTE using previous cmakeFlags might not be desired..
                 cmakeFlags = (prev.cmakeFlags or [ ]) ++ [ "-DSKIP_TEST_SUITES=ssl,x509parse,pkcs7" ];
               }
