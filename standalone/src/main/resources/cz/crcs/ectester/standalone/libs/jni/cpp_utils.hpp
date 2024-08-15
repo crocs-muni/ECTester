@@ -48,3 +48,12 @@ void add_ka(JNIEnv *env, const std::string &type, const std::string &klass, jobj
  * Add a SignatureSpi class to this provider.
  */
 void add_sig(JNIEnv *env, const std::string &type, const std::string &klass, jobject provider, jmethodID put_method);
+
+/**
+ * Version handling.
+ */
+#define VERSION_GT(lib,a,b,c) ((ECTESTER_##lib##_MAJOR == a && ECTESTER_##lib##_MINOR == b && ECTESTER_##lib##_PATCH > c) || (ECTESTER_##lib##_MAJOR == a && ECTESTER_##lib##_MINOR > b) || (ECTESTER_##lib##_MAJOR > a))
+#define VERSION_EQ(lib,a,b,c) (ECTESTER_##lib##_MAJOR == a && ECTESTER_##lib##_MINOR == b && ECTESTER_##lib##_PATCH == c)
+#define VERSION_GE(lib,a,b,c) (VERSION_GT(lib,a,b,c) || VERSION_EQ(lib,a,b,c))
+#define VERSION_LT(lib,a,b,c) !(VERSION_GE(lib,a,b,c))
+#define VERSION_LE(lib,a,b,c) !(VERSION_GT(lib,a,b,c))

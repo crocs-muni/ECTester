@@ -163,7 +163,11 @@ static std::vector<OID> get_all_curve_oids() {
 }
 
 static std::string oid_to_str(const OID &oid) {
+#if VERSION_LT(CRYPTOPP, 8, 0, 0)
+	const std::vector<CryptoPP::word32>& oid_values = oid.m_values;
+#else
     const std::vector<CryptoPP::word32>& oid_values = oid.GetValues();
+#endif
     std::stringstream ss;
     for (size_t i = 0; i < oid_values.size(); ++i) {
         if(i != 0)
