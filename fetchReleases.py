@@ -212,6 +212,7 @@ def fetch_gcrypt():
 
 def fetch_boringssl():
     pkg = "boringssl"
+    upto = "76bb1411acf5cf6935586182a3a037d372ed1636"
 
     single_version_template = env.from_string("""{{ flat_version }} = buildECTesterStandalone {
     {{ pkg }} = { rev="{{ rev }}"; hash="{{ digest }}"; };
@@ -228,7 +229,10 @@ def fetch_boringssl():
         output = sp.check_output(["git", "-C", str(repodir), "--git-dir", str(gitdir / ".git"), "log", "--pretty=format:%H"])
         refs = output.decode().split('\n')
 
-        for i, rev in enumerate(refs[:100]):
+        upto_index = refs.index(upto)
+
+        # pick roughly 100 commits evenly spaced from the "upto" commit
+        for i, rev in enumerate(refs[upto_index:0:-40]):
             sp.run(["git", "-C", str(repodir), "--git-dir", str(gitdir / ".git"), "checkout", rev])
             digest = sp.check_output(["nix", "hash", "path", str(repodir)]).decode().strip()
             print(f"{i + 1: 4d}:{rev}:{digest}")
@@ -239,7 +243,7 @@ def fetch_boringssl():
             versions[f"r{abbrev_commit}"] = {
                 "rev": rev,
                 "hash": digest,
-                "sort": i
+                "sort": -i
             }
     serialize_versions(pkg, renders, versions)
 
