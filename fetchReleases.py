@@ -68,6 +68,7 @@ def fetch_botan():
             match = re.match(r"Botan-(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)\.(?P<ext>.*)", link.text)
             if match['major'] == "3":
                 # TODO: Handle Botan-3
+                print(f"Skipping Botan-3 {match}")
                 continue
             version = f"{match['major']}.{match['minor']}.{match['patch']}"
             ext = f"{match['ext']}"
@@ -122,31 +123,54 @@ def fetch_openssl():
     owner = "openssl"
     repo = "openssl"
     release_url = f"https://api.github.com/repos/{owner}/{repo}/releases"
-    resp = requests.get(release_url)
+    resp_releases = requests.get(release_url)
+    tags_url = f"https://api.github.com/repos/{owner}/{repo}/git/matching-refs/tags"
+    resp_tags = requests.get(tags_url)
+
+    tags = [release["tag_name"] for release in resp_releases.json() if not release["draft"] and not release["prerelease"]]
+    tags += [tag_ref["ref"].split("/")[-1] for tag_ref in resp_tags.json() if tag_ref["ref"].startswith("refs/tags/openssl-") or tag_ref["ref"].startswith("refs/tags/OpenSSL_")]
+    tags = list(filter(lambda tag: "FIPS" not in tag and "reformat" not in tag and "alpha" not in tag and "beta" not in tag and "pre" not in tag, tags))
+    for tag in tags:
+        print(tag)
+    
 
     single_version_template = env.from_string("""{{ flat_version }} = buildECTesterStandalone {
     {{ pkg }} = { version="{{ version }}"; hash="{{ digest }}"; };
   };""")
     renders = []
     versions = {}
-    for release in resp.json():
-        if not release['draft'] and not release['prerelease']:
+    for tag in tags:
+        print(tag)
+        if tag.startswith("OpenSSL_"):
+            match = re.match(r"OpenSSL_(?P<major>\d+)_(?P<minor>\d+)_(?P<patch>\d+)(?P<ext>.*)", tag)
+            sort_version = f"{match['major']}.{match['minor']}.{match['patch']}{'+' + match['ext'] if match['ext'] else ''}"
+            dotted_version = f"{match['major']}.{match['minor']}.{match['patch']}{ match['ext'] if match['ext'] else ''}"
+        else:
             try: 
-                _, dotted_version = release['tag_name'].split('-')
+                _, dotted_version = tag.split('-')
+                sort_version = dotted_version
             except ValueError:
                 continue
-            flat_version = "v" + "".join(dotted_version.split('.'))
-            download_url = f"https://www.openssl.org/source/openssl-{dotted_version}.tar.gz"
+        flat_version = "v" + "".join(dotted_version.split('.'))
+        download_url = f"https://www.openssl.org/source/openssl-{dotted_version}.tar.gz"
+        old_url = f"https://www.openssl.org/source/old/openssl-{dotted_version}.tar.gz"
+        try:
             digest = get_source_hash(download_url)
-            print(f"{dotted_version}:{digest}")
-            versions[flat_version] = {
-                "version": dotted_version,
-                "hash": digest,
-                "sort": parse_version(dotted_version)
-            }
+        except Exception:
+            try:
+                digest = get_source_hash(old_url)
+            except Exception:
+                print(f"Skipping {dotted_version} (unavailable)")
+                continue
+        print(f"{dotted_version}:{digest}")
+        versions[flat_version] = {
+            "version": dotted_version,
+            "hash": digest,
+            "sort": parse_version(sort_version)
+        }
 
-            rendered = single_version_template.render(pkg=pkg, digest=digest, flat_version=flat_version, version=dotted_version).strip()
-            renders.append(rendered)
+        rendered = single_version_template.render(pkg=pkg, digest=digest, flat_version=flat_version, version=dotted_version).strip()
+        renders.append(rendered)
     serialize_versions(pkg, renders, versions)
 
 
