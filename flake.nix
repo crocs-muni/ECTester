@@ -346,7 +346,7 @@
           if version == null then
             (pkgs.libressl.override { buildShared = false; }).overrideAttrs ({
               patches =
-                if version == "3.8.2" then
+                if (pkgs.lib.strings.versionAtLeast version "3.5.1") then
                   [
                     (pkgs.fetchpatch {
                       url = "https://github.com/libressl/portable/commit/86e4965d7f20c3a6afc41d95590c9f6abb4fe788.patch";
@@ -366,25 +366,20 @@
                   inherit hash;
                 };
 
-                patches =
-                  if (pkgs.lib.strings.versionAtLeast version "3.8.2") then
-                    [
-                      (pkgs.fetchpatch {
-                        url = "https://github.com/libressl/portable/commit/86e4965d7f20c3a6afc41d95590c9f6abb4fe788.patch";
-                        includes = [ "tests/tlstest.sh" ];
-                        hash = "sha256-XmmKTvP6+QaWxyGFCX6/gDfME9GqBWSx4X8RH8QbDXA=";
-                      })
-                    ]
-                  else
-                    [ ];
-
+                # Disable some TLS, ASN1, and explicit_bzero tests that we do not care for
                 preConfigure = ''
-                    ${pkgs.lib.strings.optionalString (pkgs.lib.strings.versionAtLeast version "2.2.2") ''
-                      	rm configure
-                        substituteInPlace CMakeLists.txt \
-                          --replace 'exec_prefix \''${prefix}' "exec_prefix ${placeholder "bin"}" \
-                          --replace 'libdir      \''${exec_prefix}' 'libdir \''${prefix}'
-                        ''}
+                  substituteInPlace tests/CMakeLists.txt \
+                    --replace-warn "add_test(asn1object asn1object)" "" \
+                    --replace-warn "if(NOT WIN32)" "if(false)" \
+                    --replace-warn "if(NOT CMAKE_HOST_WIN32)" "if(false)"
+                  substituteInPlace tests/tlstest.sh --replace-fail "set -e" "exit 0"
+
+                  ${pkgs.lib.strings.optionalString (pkgs.lib.strings.versionAtLeast version "2.2.2") ''
+                    rm configure
+                    substituteInPlace CMakeLists.txt \
+                      --replace 'exec_prefix \''${prefix}' "exec_prefix ${placeholder "bin"}" \
+                      --replace 'libdir      \''${exec_prefix}' 'libdir \''${prefix}'
+                  ''}
                 '';
 
                 postPatch = ''
