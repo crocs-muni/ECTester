@@ -73,8 +73,20 @@
                   # FIXME Removing patches might cause unwanted things; this should be version based!
                   patches = [ ];
 
-                  configureFlags = if pkgs.lib.versionOlder version "1.1.2" then (pkgs.lib.lists.remove "no-module" prev.configureFlags) else prev.configureFlags;
-                  }
+                  configureFlags =
+                    if pkgs.lib.versionOlder version "1.1.2" then
+                      (pkgs.lib.lists.remove "no-module" prev.configureFlags)
+                    else
+                      prev.configureFlags;
+
+                  preConfigure =
+                    if pkgs.lib.versionOlder version "1.1.0h" && pkgs.lib.versionAtLeast version "1.1.0" then
+                      ''
+                        substituteInPlace Configure test/build.info test/run_tests.pl test/recipes/90-test_fuzz.t test/recipes/80-test_ssl_new.t test/recipes/40-test_rehash.t util/process_docs.pl --replace-fail "qw/glob/" "qw/bsd_glob/"
+                      ''
+                    else
+                      "";
+                }
               );
         botan2Builder =
           {
