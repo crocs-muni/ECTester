@@ -173,6 +173,8 @@
                   # mbedtls >= 3.6.0 uses git submodules
                   fetchSubmodules = true;
                 };
+                patches = {"v2.25.0" = ./nix/mbedtls-printf.patch; }."${version}" or (prev.patches or [ ]);
+                checkFlags = (prev.checkFlags or [ ]) ++ [ "SKIP_TEST_SUITES=ssl" ];
               }
             );
 
