@@ -16,28 +16,14 @@ def get_all_versions(library):
 def build_results_to_latex(library):
     versions = get_all_versions(library)
     lib_results = get_results(library, "lib")
+    lib_rows = [r"{\color{blue}\cmark}" if lib_results[ver]["success"] else r"{\color{red}\xmark}" for ver in versions.keys()]
+
     shim_results = get_results(library, "shim")
-
-    pruned_versions = []
-    pruned_libs = []
-    pruned_shims = []
-    prev = [None, None]
-    for ver in versions.keys():
-        row = [lib_results[ver]["success"], shim_results[ver]["success"]]
-        if row == prev:
-            continue
-        pruned_versions.append(ver)
-        pruned_libs.append(r"{\color{blue}\cmark}" if lib_results[ver]["success"] else r"{\color{red}\xmark}")
-        pruned_shims.append(r"{\color{blue}\cmark}" if shim_results[ver]["success"] else r"{\color{red}\xmark}")
-        prev = row
-
-
-    # lib_rows = [r"{\color{blue}\cmark}" if lib_results[ver]["success"] else r"{\color{red}\xmark}" for ver in versions.keys()]
-
-    # shim_rows = [r"{\color{blue}\cmark}" if shim_results[ver]["success"] else r"{\color{red}\xmark}" for ver in versions.keys()]
+    shim_rows = [r"{\color{blue}\cmark}" if shim_results[ver]["success"] else r"{\color{red}\xmark}" for ver in versions.keys()]
     # shim_rows = [shim_results[ver] for ver in versions.keys()]
 
-    df = pd.DataFrame(dict(Versions=pruned_versions, Library=pruned_libs, Shim=pruned_shims))
+    cleaned_versions = [v.replace('_', r"{\_}") for v in versions.keys()]
+    df = pd.DataFrame(dict(Versions=cleaned_versions, Library=lib_rows, Shim=shim_rows))
     # FIXME there should be a translation from `openssl` -> `OpenSSL` etc.
     tabledir = Path(f"./build_all/tables")
     tabledir.mkdir(parents=True, exist_ok=True)
