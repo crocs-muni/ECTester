@@ -11,8 +11,14 @@ repositories {
 }
 
 dependencies {
-    val wolfcryptLibPath = System.getenv("WOLFCRYPT_LIB_PATH") + "/wolfcrypt-jni.jar";
-    implementation(files(wolfcryptLibPath))
+	// First see if Nix gave us a path, then try the ext build, then the bundled.
+	if (System.getenv("WOLFCRYPT_LIB_PATH") != null) {
+		implementation(files(System.getenv("WOLFCRYPT_LIB_PATH") + "/wolfcrypt-jni.jar"));
+	} else if (file("$rootDir/ext/wolfcrypt-jni/lib/wolfcrypt-jni.jar").exists()) {
+        implementation(files("$rootDir/ext/wolfcrypt-jni/lib/wolfcrypt-jni.jar"))
+    } else {
+        implementation(files("$rootDir/ext/wolfcrypt-jni.jar"))
+    }
     implementation(project(":common"))
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
@@ -102,7 +108,7 @@ tasks.register<Exec>("libs") {
     if (osdetector.os == "windows") {
         commandLine("makefile.bat", "/c", libName)
     } else if (osdetector.os == "linux") {
-        commandLine("make", "-k", "-B", libName)
+        commandLine("make", "-f", "Makefile.ext", "-k", "-B", libName)
     }
 }
 

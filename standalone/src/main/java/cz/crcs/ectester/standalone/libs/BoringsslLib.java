@@ -8,7 +8,7 @@ import java.util.Set;
  */
 public class BoringsslLib extends NativeECLibrary {
     public BoringsslLib() {
-        super("BoringSSL", "boringssl_provider");
+        super("BoringSSL", "boringssl_provider", "lib_boringssl.so");
     }
 
     @Override

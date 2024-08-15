@@ -9,7 +9,7 @@ import java.util.Set;
 public class MbedTLSLib extends NativeECLibrary {
 
     public MbedTLSLib() {
-        super("mbedTLS", "mbedtls_provider");
+        super("mbedTLS", "mbedtls_provider", "lib_mbedtls.so");
     }
 
     @Override

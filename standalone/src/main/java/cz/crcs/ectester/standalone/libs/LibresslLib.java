@@ -8,7 +8,7 @@ import java.util.Set;
  */
 public class LibresslLib extends NativeECLibrary {
     public LibresslLib() {
-        super("LibreSSL", "libressl_provider");
+        super("LibreSSL", "libressl_provider", "lib_libressl.so");
     }
 
     @Override
