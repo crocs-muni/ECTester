@@ -129,10 +129,7 @@ def fetch_openssl():
 
     tags = [release["tag_name"] for release in resp_releases.json() if not release["draft"] and not release["prerelease"]]
     tags += [tag_ref["ref"].split("/")[-1] for tag_ref in resp_tags.json() if tag_ref["ref"].startswith("refs/tags/openssl-") or tag_ref["ref"].startswith("refs/tags/OpenSSL_")]
-    tags = list(filter(lambda tag: "FIPS" not in tag and "reformat" not in tag and "alpha" not in tag and "beta" not in tag and "pre" not in tag, tags))
-    for tag in tags:
-        print(tag)
-    
+    tags = list(filter(lambda tag: "FIPS" not in tag and "reformat" not in tag and "alpha" not in tag and "beta" not in tag and "pre" not in tag, tags))    
 
     single_version_template = env.from_string("""{{ flat_version }} = buildECTesterStandalone {
     {{ pkg }} = { version="{{ version }}"; hash="{{ digest }}"; };
@@ -140,7 +137,6 @@ def fetch_openssl():
     renders = []
     versions = {}
     for tag in tags:
-        print(tag)
         if tag.startswith("OpenSSL_"):
             match = re.match(r"OpenSSL_(?P<major>\d+)_(?P<minor>\d+)_(?P<patch>\d+)(?P<ext>.*)", tag)
             sort_version = f"{match['major']}.{match['minor']}.{match['patch']}{'+' + match['ext'] if match['ext'] else ''}"
@@ -329,6 +325,9 @@ def fetch_nettle():
     versions = {}
     for tag in resp.json():
         if tag['name'] == 'release_nettle_0.2.20010617':
+            continue
+        if tag['name'] == 'nettle_3.5_release_20190626':
+            # broken upstream! https://git.lysator.liu.se/nettle/nettle/-/commit/ee5d62898cf070f08beedc410a8d7c418588bd95
             continue
         version = tag['name'].split('_')[1]
         # NOTE skip release candidates

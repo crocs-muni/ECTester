@@ -39,11 +39,6 @@
         "tag": "nettle_3.5.1_release_20190627",
         "hash": "sha256-dcyhmYdhsC4W8ttW2lKZKu9iK/VaO0XsU4vC7trclBk="
     },
-    "v3_5": {
-        "version": "3.5",
-        "tag": "nettle_3.5_release_20190626",
-        "hash": "sha256-Qy2Y3NNBy9BjqWMCVSQSI2jB8u6cchu2jXcdXjRnS08="
-    },
     "v3_4_1": {
         "version": "3.4.1",
         "tag": "nettle_3.4.1_release_20181204",
