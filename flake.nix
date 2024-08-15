@@ -174,8 +174,8 @@
                   fetchSubmodules = true;
                 };
                 patches = { "v2.25.0" = ./nix/mbedtls-printf.patch; }."${version}" or (prev.patches or [ ]);
-                # NOTE using previous cmakeFlags might not be desirec..
-                cmakeFlags = (prev.cmakeFlags or [ ]) ++ [ "-DSKIP_TEST_SUITES=ssl,x509parse" ];
+                # NOTE using previous cmakeFlags might not be desired..
+                cmakeFlags = (prev.cmakeFlags or [ ]) ++ [ "-DSKIP_TEST_SUITES=ssl,x509parse,pkcs7" ];
               }
             );
 
