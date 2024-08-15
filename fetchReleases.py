@@ -243,7 +243,7 @@ def fetch_boringssl():
             versions[f"r{abbrev_commit}"] = {
                 "rev": rev,
                 "hash": digest,
-                "sort": -i
+                "sort": i
             }
     serialize_versions(pkg, renders, versions)
 
