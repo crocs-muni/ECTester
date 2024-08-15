@@ -815,6 +815,25 @@
               '';
             };
 
+          plotVersions =
+            with pkgs.python3Packages;
+            buildPythonApplication {
+              pname = "buildAll";
+              version = "0.1.0";
+              format = "other";
+
+              propagatedBuildInputs = [
+                pandas
+                jinja2
+              ];
+
+              src = ./plot_versions.py;
+              dontUnpack = true;
+              installPhase = ''
+                install -Dm755 $src $out/bin/$pname
+              '';
+            };
+
         };
         devShells.default =
           with pkgs;
