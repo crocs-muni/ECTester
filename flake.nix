@@ -59,17 +59,23 @@
           if version == null then
             (pkgs.openssl.override { static = true; })
           else
-            (pkgs.openssl.override { static = true; }).overrideAttrs (
-              final: prev: rec {
-                inherit version;
-                src = pkgs.fetchurl {
-                  url = "https://www.openssl.org/source/openssl-${version}.tar.gz";
-                  inherit hash;
-                };
-                # FIXME Removing patches might cause unwanted things; this should be version based!
-                patches = [ ];
-              }
-            );
+            (pkgs.openssl.override {
+              static = true;
+              enableKTLS = false;
+            }).overrideAttrs
+              (
+                final: prev: rec {
+                  inherit version;
+                  src = pkgs.fetchurl {
+                    url = "https://www.openssl.org/source/openssl-${version}.tar.gz";
+                    inherit hash;
+                  };
+                  # FIXME Removing patches might cause unwanted things; this should be version based!
+                  patches = [ ];
+
+                  configureFlags = if pkgs.lib.versionOlder version "1.1.2" then (pkgs.lib.lists.remove "no-module" prev.configureFlags) else prev.configureFlags;
+                  }
+              );
         botan2Builder =
           {
             version ? null,
@@ -176,17 +182,17 @@
                 patches =
                   {
                     "v2.25.0" = pkgs.fetchpatch {
-                    	url = "https://github.com/Mbed-TLS/mbedtls/pull/4237/commits/29b641688d038143a193c69eac4d6e8eacc934d8.patch";
-                    	hash = "sha256-i8Kn+QVCeJbrm0z6d60FbzCZ5t0oP2EhdYw8w3nV8b8=";
+                      url = "https://github.com/Mbed-TLS/mbedtls/pull/4237/commits/29b641688d038143a193c69eac4d6e8eacc934d8.patch";
+                      hash = "sha256-i8Kn+QVCeJbrm0z6d60FbzCZ5t0oP2EhdYw8w3nV8b8=";
                     };
                     "v2.26.0" = [
                       (pkgs.fetchpatch {
-                    	url = "https://github.com/Mbed-TLS/mbedtls/pull/4237/commits/2065a8d8af27c6cb1e40c9462b5933336dca7434.patch";
-                    	hash = "sha256-gLMiozagnzARt6jRhklUYqZgdvrKySBXTkuQ2Xm3lJs=";
+                        url = "https://github.com/Mbed-TLS/mbedtls/pull/4237/commits/2065a8d8af27c6cb1e40c9462b5933336dca7434.patch";
+                        hash = "sha256-gLMiozagnzARt6jRhklUYqZgdvrKySBXTkuQ2Xm3lJs=";
                       })
-					  (pkgs.fetchpatch {
-                    	url = "https://github.com/Mbed-TLS/mbedtls/pull/4237/commits/29b641688d038143a193c69eac4d6e8eacc934d8.patch";
-                    	hash = "sha256-i8Kn+QVCeJbrm0z6d60FbzCZ5t0oP2EhdYw8w3nV8b8=";
+                      (pkgs.fetchpatch {
+                        url = "https://github.com/Mbed-TLS/mbedtls/pull/4237/commits/29b641688d038143a193c69eac4d6e8eacc934d8.patch";
+                        hash = "sha256-i8Kn+QVCeJbrm0z6d60FbzCZ5t0oP2EhdYw8w3nV8b8=";
                       })
                     ];
                     "v3.2.0" = (
