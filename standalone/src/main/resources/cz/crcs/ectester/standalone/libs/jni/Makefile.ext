@@ -210,7 +210,7 @@ libressl: libressl_provider.so
 
 lib_libressl.so:
 	cp $(PROJECT_ROOT_PATH)/ext/libressl/build/crypto/libcrypto.so lib_libressl.so
-	patchelf --set-soname lib_libressl.co lib_libressl.so
+	patchelf --set-soname lib_libressl.so lib_libressl.so
 
 libressl_provider.so: libressl.o c_utils.o | clibs lib_libressl.so
 	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_libressl.so -l:lib_timing.so -l:lib_csignals.so
