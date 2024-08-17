@@ -330,16 +330,16 @@ Install [Nix](https://nixos.org/download/), then to build:
 
 ```shell
 # To build a library in a given version run (example OpenSSL 3.3.1):
-nix build ".#lib.openssl.v331"
+nix build "#lib.openssl.v331"
 # To build a shim using a given version of a library (example mbedTLS 3.5):
-nix build ".#shim.mbedtls.v35"
+nix build "#shim.mbedtls.v35"
 # To build ECTesterStandalone.jar with a given version of a library (example libgcrypt 1.9.4):
-nix build "?submodules=1.#gcrypt.v194"
+nix build "?submodules=1#gcrypt.v194"
 
 # The available versions of the libraries are in the nix/*_pkg_versions.json files.
 # The "default" version always points to the most recent version.
 # To build ECTesterStandalone with all the libraries in default versions:
-nix build "?submodules=1."
+nix build "?submodules=1#"
 ```
 
 Each of the build steps above puts (symlinks really) its results into `./result` directory.
@@ -348,7 +348,7 @@ with a given library version and arguments do:
 
 ```shell
 # This runs the default test-suite agains LibreSSL 3.9.2
-nix run "?submodules=1.#libressl.v392" --- test default LibreSSL
+nix run "?submodules=1#libressl.v392" --- test default LibreSSL
 ```
 
 #### Gradle
