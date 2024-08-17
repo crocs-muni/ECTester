@@ -66,8 +66,11 @@ def test_library(library, test_suite, version):
     opts = base_options(library)
     opts.extend(globals()[f"{test_suite.replace('-', '_')}_options"](library))
     command = ["nix", "run", f"?submodules=1#{library}.{version}", "--", "test", f"-oyml:results/{library}_{test_suite}_{version}.yml", *opts, test_suite, library]
-    print(command)
-    process = sp.run(command)
+    print(" ".join(command))
+    try:
+        sp.run(command, timeout=60)
+    except sp.TimeoutExpired:
+        print(f"{library} {test_suite} {version} timed-out!")
 
 
 def main():
