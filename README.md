@@ -7,7 +7,7 @@ cryptographic libraries. It consists of four separate parts:
 
  - The ECTester applet, a JavaCard applet that provides the testing interface
  - The ECTesterReader app, a reader app that works with the applet
- - The ECTesterStandalone app, which works with software libraries
+ - The ECTesterStandalone app, which tests software cryptographic libraries
  - Jupyter notebooks for analysis and visualization of data from the apps
 
 For more information on ECC support on JavaCards see the [GitHub page](https://crocs-muni.github.io/ECTester/), with results, tables and docs.
@@ -50,10 +50,9 @@ git submodule update --init --recursive       # To initialize submodules (JavaCa
 The applet comes in several flavors, targeting JavaCard `2.2.1`, `2.2.2` and `3.0.5`. The `2.2.2` and later flavors
 support extended length APDUs which are necessary for some commands to work properly.
 
-The `:standalone:libs` task invokes a Makefile in `standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni`, which tries to build the
-C/C++ shim libraries required for ECTester to test the actual native cryptographic libraries from Java.
-The Makefile uses pkg-config to locate the libraries installed, thus if non-standard location of the tested libraries is
-used, the Makefile or your pkg-config needs some changes to work.
+To build the standalone part, which involves numerous cryptographic libraries, one has two options.
+ - Install these cryptographic libraries system-wide and let the build use those.
+ - Use [Nix](https://nixos.org/) to build the tool part with given library versions.
 
 See the section on [setup](#setup-1) of standalone library testing for more details.
 
@@ -309,6 +308,48 @@ For more information on ECC libraries see [LIBS](docs/LIBS.md).
 
 ### Setup
 
+ECTester interfaces with native libraries by using custom shim libraries that expose the functionality via the
+[Java Native Interface](https://en.wikipedia.org/wiki/Java_Native_Interface), these can be found in the
+[standalone/src/main/java/cz/crcs/ectester/standalone/libs/jni](standalone/src/main/java/cz/crcs/ectester/standalone/libs/jni) directory along with a Makefile
+(Makefile.bat for Windows). The shim library will depend on the native library, and have a name like
+`boringssl_provider.so`, `botan_provider.so`, `cryptopp_provider.so` and `openssl_provider.so`.
+The Makefile has a target for every library that it supports that builds its shim, see the `help`
+target for more info.
+
+However, building these shims and in general the target libraries can be tricky to do so reliably across
+systems and setups. Thus ECTester offers two ways of doing so.
+
+ - The first way is to install the libraries system-wide and rely on pkg-config to find proper configuration
+   for the shims and link them dynamically.
+ - The second way is to use [Nix](https://nixos.org/) to build the given versions of the libraries and shims and
+   link them statically.
+
+#### Nix
+
+Install [Nix](https://nixos.org/download/), then to build:
+
+```shell
+# To build a library in a given version run (example OpenSSL 3.3.1):
+nix build ".#lib.openssl.v331"
+# To build a shim using a given version of a library (example mbedTLS 3.5):
+nix build ".#shim.mbedtls.v35"
+# To build ECTesterStandalone.jar with a given version of a library (example libgcrypt 1.9.4):
+nix build ".#gcrypt.v194"
+# The available versions of the libraries are in the nix/*_pkg_versions.json files.
+# The "default" version always points to the most recent version.
+```
+
+Each of the build steps above puts (symlinks really) its results into `./result` directory.
+However, subsequent builds then replace that with their own results. To run ECTesterStandalone
+with a given library version and arguments do:
+
+```shell
+# This runs the default test-suite agains LibreSSL 3.9.2
+nix run ".#libressl.v392" --- test default LibreSSL
+```
+
+#### Gradle
+
 ```shell
 ./gradlew :standalone:libs                    # To build the native library shims.
 ./gradlew :standalone:uberJar                 # To build the standalone tool (jar) -> "standalone/build/libs/ECTesterStandalone.jar"
@@ -324,16 +365,22 @@ successfully or that the actual native library couldn't be found and loaded on r
 build errors during the ant run in the `libs-try` step, for the latter, if the library is in an non-standard location
 specifying `LD_LIBRARY_PATH` will help load it. Consulting the next sections should help solve both.
 
-#### Native
+The `:standalone:libs` task invokes the Makefile, which tries to build the
+C/C++ shim libraries required for ECTester to test the actual native cryptographic libraries from Java.
+The Makefile uses pkg-config to locate the libraries installed, thus if non-standard location of the tested libraries is
+used, the Makefile or your pkg-config needs some changes to work.
 
-ECTester interfaces with native libraries by using custom shim libraries that expose the functionality via the [Java Native Interface](https://en.wikipedia.org/wiki/Java_Native_Interface), these can be found in the [standalone/src/main/java/cz/crcs/ectester/standalone/libs/jni](standalone/src/main/java/cz/crcs/ectester/standalone/libs/jni) directory along with a Makefile (Makefile.bat for Windows). The shim library will depend on the native library, and have a name like `boringssl_provider.so`, `botan_provider.so`, `cryptopp_provider.so` and `openssl_provider.so`. The Makefile has a target for every library that it supports that builds its shim, see the `help` target for more info. The Makefile is automatically ran when the `:standalone:libs` gradle task is triggered, so if all is setup correctly, you do not need to deal with the Makefile while building.
-
-There are two important environmental variables that should be set in your environment. First, you should set `JAVA_HOME` which should point to your JDK. The tooling uses `JAVA_HOME` to locate native Java library headers, like `jni.h`. Second, ECTester uses pkg-config to locate the native libraries, if your pkg-config files are in an unusual place the pkg-config command would not find them by default, you should set `PKG_CONFIG_PATH` to the directory containing the `*.pc` files. If pkg-config files are unavailable for the library you are trying to test, you will need to change the Makefile manually to apply the correct options to the commands (CFLAGS, include options, linker options...).
+There are two important environmental variables that should be set in your environment. First, you should set
+`JAVA_HOME` which should point to your JDK. The tooling uses `JAVA_HOME` to locate native Java library headers,
+like `jni.h`. Second, ECTester uses pkg-config to locate the native libraries, if your pkg-config files are in an
+unusual place the pkg-config command would not find them by default, you should set `PKG_CONFIG_PATH` to the directory
+containing the `*.pc` files. If pkg-config files are unavailable for the library you are trying to test, you will need
+to change the Makefile manually to apply the correct options to the commands (CFLAGS, include options, linker options...).
 
 Below you can see how a full build with all the libraries currently supported on Linux looks
 ```
 > cd standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni
-> make
+> make -f Makefile.ext
 cc -DLTM_DESC  -fPIC -I"/usr/lib/jvm/java-21-openjdk/include" -I"/usr/lib/jvm/java-21-openjdk/include/linux" -I. -Wno-deprecated-declarations -O2 -c tomcrypt.c
 cc -fPIC -I"/usr/lib/jvm/java-21-openjdk/include" -I"/usr/lib/jvm/java-21-openjdk/include/linux" -I. -Wno-deprecated-declarations -O2 -c c_utils.c
 cc -o lib_timing.so -shared -fPIC -I"/usr/lib/jvm/java-21-openjdk/include" -I"/usr/lib/jvm/java-21-openjdk/include/linux" -I. -Wno-deprecated-declarations -O2 -Wl,-soname,lib_timing.so c_timing.c
@@ -420,20 +467,6 @@ on `LD_LIBRARY_PATH`.
 
 Consult the GitHub CI [build script](.github/workflows/build.yml) for an example that runs on Ubuntu 22.04.
 
-
-#### Java
-
-OpenJDK JRE is required to test ECDH on Windows properly, as Oracle JRE requires the Java Cryptography Providers
-for certain classes (such as a [KeyAgreement](https://docs.oracle.com/javase/8/docs/api/javax/crypto/KeyAgreement.html))
-to be signed by keys that are signed by their JCA Code Signing Authority. ECTester internally uses Java Cryptography Provider
-API to expose and test native libraries.
-
-Installing the Java Cryptography Extension Unlimited Strength policy files is necessary to do testing
-(for Java 8) with quite a lot of practical key sizes, they are available for download:
-
- - [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html)
-
-To install, place them in `${java.home}/jre/lib/security/`.
 
 ### Examples
 
