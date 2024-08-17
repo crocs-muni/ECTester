@@ -683,6 +683,15 @@
 
             }
           );
+
+        defaultVersion =
+          # Default version is the last one, aka the newest that we fetched
+          libName:
+          let
+            versions = builtins.fromJSON (builtins.readFile ./nix/${libName}_pkg_versions.json);
+          in
+          pkgs.lib.lists.last (pkgs.lib.attrsets.attrValues versions);
+
         loadVersions =
           { libName, function }:
           let
@@ -707,7 +716,18 @@
       in
       {
         packages = rec {
-          default = openssl.default;
+          default = buildECTesterStandalone {
+            # FIXME tomcrypt is missing!
+            botan = defaultVersion "botan";
+            cryptopp = defaultVersion "cryptopp";
+            openssl = defaultVersion "openssl";
+            boringssl = defaultVersion "boringssl";
+            gcrypt = defaultVersion "gcrypt";
+            mbedtls = defaultVersion "mbedtls";
+            ippcp = defaultVersion "ippcp";
+            nettle = defaultVersion "nettle";
+            libressl = defaultVersion "libressl";
+          };
           tomcrypt = loadVersions {
             libName = "tomcrypt";
             function = buildECTesterStandalone;
