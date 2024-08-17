@@ -45,7 +45,7 @@
                     url = "https://boringssl.googlesource.com/boringssl";
                     inherit rev hash;
                   };
-              env.NIX_CFLAGS_COMPILE = "-Wno-error=stringop-overflow -Wno-error=array-parameter=2 -Wno-error=maybe-uninitialized";
+              env.NIX_CFLAGS_COMPILE = "-Wno-error=stringop-overflow -Wno-error=array-parameter=2 -Wno-error=maybe-uninitialized -Wno-error=ignored-attributes";
               postFixup = ''
                 cp $out/lib/libcrypto.a $out/lib/lib_boringssl.a
               '';
