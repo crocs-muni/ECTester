@@ -10,7 +10,7 @@ stdenv.mkDerivation {
   buildInputs = [
     cryptopp
     pkg-config
-    jdk11_headless
+    jdk
   ];
 
   buildPhase = ''

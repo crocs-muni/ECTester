@@ -2,8 +2,7 @@
   stdenv,
   botan2,
   pkg-config,
-  # NOTE change to jdk17?
-  jdk11_headless,
+  jdk,
 }:
 stdenv.mkDerivation {
   name = "BotanShim";
@@ -12,7 +11,7 @@ stdenv.mkDerivation {
   buildInputs = [
     botan2
     pkg-config
-    jdk11_headless
+    jdk
   ];
 
   buildPhase = ''

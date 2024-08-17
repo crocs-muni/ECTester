@@ -7,7 +7,7 @@ stdenv.mkDerivation {
   buildInputs = [
     boringssl
     pkg-config
-    jdk11_headless
+    jdk
   ];
 
   buildPhase = ''

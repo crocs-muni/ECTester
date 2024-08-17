@@ -634,6 +634,7 @@
               pname = "ECTesterStandalone";
               version = "0.3.3";
               lockFile = ./gradle.lock;
+              buildJdk = pkgs.jdk;
 
               # NOTE: the shims are built separately, therefore no need to call build `libs` target
               gradleBuildFlags = [ ":standalone:uberJar" ];
@@ -676,8 +677,8 @@
 
               postFixup = ''
                 makeWrapper \
-                  ${jdk17_headless}/bin/java $out/bin/${pname} \
-                  --add-flags "-jar $out/build/libs/${pname}.jar" \
+                  ${jdk}/bin/java $out/bin/${pname} \
+                  --add-flags "-Dstdout.encoding=UTF8 -Dstderr.encoding=UTF8 -jar $out/build/libs/${pname}.jar" \
                   --set LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:$LD_LIBRARY_PATH
               '';
 

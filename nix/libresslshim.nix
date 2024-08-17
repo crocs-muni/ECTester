@@ -7,7 +7,7 @@ stdenv.mkDerivation rec {
   buildInputs = [
     libressl
     pkg-config
-    jdk11_headless
+    jdk
   ];
 
   buildPhase = ''

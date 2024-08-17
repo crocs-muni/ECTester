@@ -7,7 +7,7 @@ stdenv.mkDerivation rec {
   buildInputs = [
     ipp-crypto
     pkg-config
-    jdk11_headless
+    jdk
   ];
 
   IPP_CRYPTO_CFLAGS = "-I${ipp-crypto.dev}/include -DECTESTER_IPPCP_VERSION=${ipp-crypto.version}";

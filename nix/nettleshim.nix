@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
     nettle
     gmp
     pkg-config
-    jdk11_headless
+    jdk
   ];
 
   buildPhase = ''

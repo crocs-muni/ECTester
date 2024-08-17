@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
   buildInputs = [
     mbedtls
     pkg-config
-    jdk11_headless
+    jdk
   ];
 
   buildPhase = ''
