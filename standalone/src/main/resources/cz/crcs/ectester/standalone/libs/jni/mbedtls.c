@@ -21,6 +21,14 @@ static mbedtls_entropy_context fixed_entropy;
 static jclass provider_class;
 
 
+// Fallback to newest
+#if !(defined(ECTESTER_MBEDTLS_MAJOR) && defined(ECTESTER_MBEDTLS_MINOR) && defined(ECTESTER_MBEDTLS_PATCH))
+#define ECTESTER_MBEDTLS_MAJOR 99
+#define ECTESTER_MBEDTLS_MINOR 99
+#define ECTESTER_MBEDTLS_PATCH 99
+#endif
+
+
 #if VERSION_LT(MBEDTLS, 3, 0, 0)
 #define MBEDTLS_PRIVATE(member) member
 #else

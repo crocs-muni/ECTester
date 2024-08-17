@@ -95,6 +95,13 @@ using CryptoPP::Integer;
 static jclass provider_class;
 static std::unique_ptr<RandomNumberGenerator> rng = std::make_unique<AutoSeededRandomPool>();
 
+// Fallback to newest
+#if !(defined(ECTESTER_CRYPTOPP_MAJOR) && defined(ECTESTER_CRYPTOPP_MINOR) && defined(ECTESTER_CRYPTOPP_PATCH))
+#define ECTESTER_CRYPTOPP_MAJOR 99
+#define ECTESTER_CRYPTOPP_MINOR 99
+#define ECTESTER_CRYPTOPP_PATCH 99
+#endif
+
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_createProvider(JNIEnv *env, jobject self) {
     /* Create the custom provider. */
