@@ -870,7 +870,7 @@
                 packaging
               ];
 
-              src = ./fetchReleases.py;
+              src = ./nix/fetch_releases.py;
               dontUnpack = true;
               installPhase = ''
                 install -Dm755 $src $out/bin/$pname
@@ -889,7 +889,7 @@
                 pudb
               ];
 
-              src = ./test_building_all.py;
+              src = ./nix/build_all.py;
               dontUnpack = true;
               installPhase = ''
                 install -Dm755 $src $out/bin/$pname
@@ -908,7 +908,7 @@
                 jinja2
               ];
 
-              src = ./plot_versions.py;
+              src = ./nix/plot_versions.py;
               dontUnpack = true;
               installPhase = ''
                 install -Dm755 $src $out/bin/$pname
