@@ -1,0 +1,15 @@
+diff --git a/makefile b/makefile
+index bee51a1..b36a13a 100644
+--- a/makefile
++++ b/makefile
+@@ -90,6 +90,10 @@ install: $(LIBNAME)
+ 	install -d $(DESTDIR)$(INCPATH)
+ 	install -m 644 $(LIBNAME) $(DESTDIR)$(LIBPATH)
+ 	install -m 644 $(HEADERS_PUB) $(DESTDIR)$(INCPATH)
++	sed -e 's,^prefix=.*,prefix=$(PREFIX),' -e 's,^Version:.*,Version: $(VERSION_PC),' -e 's,@CMAKE_INSTALL_LIBDIR@,lib,' \
++		-e 's,@CMAKE_INSTALL_INCLUDEDIR@,include,' libtommath.pc.in > libtommath.pc
++	install -d $(DESTDIR)$(LIBPATH)/pkgconfig
++	install -m 644 libtommath.pc $(DESTDIR)$(LIBPATH)/pkgconfig/
+ 
+ uninstall:
+ 	rm $(DESTDIR)$(LIBPATH)/$(LIBNAME)

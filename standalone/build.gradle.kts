@@ -11,8 +11,10 @@ repositories {
 }
 
 dependencies {
-    // Fallback to bundled wolfcrypt-jni if the submodule one is not built.
-    if (file("$rootDir/ext/wolfcrypt-jni/lib/wolfcrypt-jni.jar").exists()) {
+	// First see if Nix gave us a path, then try the ext build, then the bundled.
+	if (System.getenv("WOLFCRYPT_LIB_PATH") != null) {
+		implementation(files(System.getenv("WOLFCRYPT_LIB_PATH") + "/wolfcrypt-jni.jar"));
+	} else if (file("$rootDir/ext/wolfcrypt-jni/lib/wolfcrypt-jni.jar").exists()) {
         implementation(files("$rootDir/ext/wolfcrypt-jni/lib/wolfcrypt-jni.jar"))
     } else {
         implementation(files("$rootDir/ext/wolfcrypt-jni.jar"))
@@ -54,10 +56,6 @@ tasks.named<Test>("test") {
 
     jvmArgs("-Xmx8G", "-Xms2G")
 
-    // Add wolfcrypt JNI lib path to LD_LIBRARY_PATH (as our native library loading does not handle it)
-    environment(
-            "LD_LIBRARY_PATH", "$rootDir/ext/wolfcrypt-jni/lib/:" + System.getenv("LD_LIBRARY_PATH")
-    )
     // Add our preload to tests, so they do not need to start another process.
     environment(
         "LD_PRELOAD", "$rootDir/standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/lib_preload.so"
@@ -110,7 +108,7 @@ tasks.register<Exec>("libs") {
     if (osdetector.os == "windows") {
         commandLine("makefile.bat", "/c", libName)
     } else if (osdetector.os == "linux") {
-        commandLine("make", "-k", "-B", libName)
+        commandLine("make", "-f", "Makefile.ext", "-k", "-B", libName)
     }
 }
 

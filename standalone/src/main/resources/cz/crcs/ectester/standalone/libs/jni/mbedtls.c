@@ -21,6 +21,32 @@ static mbedtls_entropy_context fixed_entropy;
 static jclass provider_class;
 
 
+// Fallback to newest
+#if !(defined(ECTESTER_MBEDTLS_MAJOR) && defined(ECTESTER_MBEDTLS_MINOR) && defined(ECTESTER_MBEDTLS_PATCH))
+#define ECTESTER_MBEDTLS_MAJOR 99
+#define ECTESTER_MBEDTLS_MINOR 99
+#define ECTESTER_MBEDTLS_PATCH 99
+#endif
+
+
+#if VERSION_LT(MBEDTLS, 3, 0, 0)
+#define MBEDTLS_PRIVATE(member) member
+#else
+#define MBEDTLS_PRIVATE(member) private_##member
+#endif
+
+
+#if VERSION_LT(MBEDTLS, 3, 1, 0)
+#define CURVE_GRP_ID(curve_info) curve_info->MBEDTLS_PRIVATE(grp_id)
+#define CURVE_NAME(curve_info) curve_info->MBEDTLS_PRIVATE(name)
+#define CURVE_BIT_SIZE(curve_info) curve_info->MBEDTLS_PRIVATE(bit_size)
+#else
+#define CURVE_GRP_ID(curve_info) curve_info->grp_id
+#define CURVE_NAME(curve_info) curve_info->name
+#define CURVE_BIT_SIZE(curve_info) curve_info->bit_size
+#endif
+
+
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_createProvider(JNIEnv *env, jobject this) {
     /* Create the custom provider. */
     jclass local_provider_class = (*env)->FindClass(env, "cz/crcs/ectester/standalone/libs/jni/NativeProvider$MbedTLS");
@@ -104,10 +130,10 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_getCu
 
     jobject result = (*env)->NewObject(env, hash_set_class, hash_set_ctr);
     for (const mbedtls_ecp_curve_info *curve_info = mbedtls_ecp_curve_list();
-         curve_info->grp_id != MBEDTLS_ECP_DP_NONE;
+         CURVE_GRP_ID(curve_info) != MBEDTLS_ECP_DP_NONE;
          curve_info++) {
 
-        jstring curve_name = (*env)->NewStringUTF(env, curve_info->name);
+        jstring curve_name = (*env)->NewStringUTF(env, CURVE_NAME(curve_info));
         (*env)->CallBooleanMethod(env, result, hash_set_add, curve_name);
     }
     return result;
@@ -132,7 +158,8 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_setu
 
     mbedtls_entropy_init(&fixed_entropy);
     // This is NASTY! We are accessing something the library does not want us to.
-    fixed_entropy.private_source_count = 0;
+
+	fixed_entropy.MBEDTLS_PRIVATE(source_count) = 0;
     mbedtls_entropy_add_source(&fixed_entropy, fixed_random, NULL, 32, MBEDTLS_ENTROPY_SOURCE_STRONG);
     mbedtls_ctr_drbg_seed(&ctr_drbg, mbedtls_entropy_func, &fixed_entropy, NULL, 0);
 
@@ -141,9 +168,9 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_MbedTLSLib_setu
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024MbedTLS_keysizeSupported(JNIEnv *env, jobject this, jint keysize) {
     for (const mbedtls_ecp_curve_info *curve_info = mbedtls_ecp_curve_list();
-         curve_info->grp_id != MBEDTLS_ECP_DP_NONE;
+         CURVE_GRP_ID(curve_info) != MBEDTLS_ECP_DP_NONE;
          curve_info++) {
-        if (keysize == curve_info->bit_size) {
+        if (keysize == CURVE_BIT_SIZE(curve_info)) {
             return JNI_TRUE;
         }
     }
@@ -170,9 +197,9 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
         jstring name = (*env)->CallObjectMethod(env, params, get_name);
         const char *utf_name = (*env)->GetStringUTFChars(env, name, NULL);
         for (const mbedtls_ecp_curve_info *curve_info = mbedtls_ecp_curve_list();
-             curve_info->grp_id != MBEDTLS_ECP_DP_NONE;
+             CURVE_GRP_ID(curve_info) != MBEDTLS_ECP_DP_NONE;
              curve_info++) {
-            if (strcasecmp(utf_name, curve_info->name) == 0) {
+            if (strcasecmp(utf_name, CURVE_NAME(curve_info)) == 0) {
                 (*env)->ReleaseStringUTFChars(env, name, utf_name);
                 return JNI_TRUE;
             }
@@ -243,6 +270,13 @@ static void mpi_from_biginteger(JNIEnv* env, jobject biginteger, mbedtls_mpi *mp
     mbedtls_mpi_read_binary(mpi, (unsigned char *) byte_data, byte_length);
     (*env)->ReleaseByteArrayElements(env, byte_array, byte_data, JNI_ABORT);
 }
+
+#if (VERSION_LT(MBEDTLS, 3, 5, 0) && VERSION_GE(MBEDTLS, 3, 0, 0)) || VERSION_LT(MBEDTLS, 2, 28, 5)
+static inline int mbedtls_ecp_group_a_is_minus_3(const mbedtls_ecp_group *grp)
+{
+    return grp->A.MBEDTLS_PRIVATE(p) == NULL;
+}
+#endif
 
 static jobject create_ec_param_spec(JNIEnv *env, const mbedtls_ecp_group *group) {
     jobject p = biginteger_from_mpi(env, &group->P);
@@ -402,7 +436,7 @@ static jobject generate_from_curve(JNIEnv *env, mbedtls_ecp_group *group) {
 static jobject generate_from_curve_info(JNIEnv *env, const mbedtls_ecp_curve_info *curve) {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
-    mbedtls_ecp_group_load(&group, curve->grp_id);
+    mbedtls_ecp_group_load(&group, CURVE_GRP_ID(curve));
     jobject result = generate_from_curve(env, &group);
     mbedtls_ecp_group_free(&group);
     return result;
@@ -411,9 +445,9 @@ static jobject generate_from_curve_info(JNIEnv *env, const mbedtls_ecp_curve_inf
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPairGeneratorSpi_00024MbedTLS_generate__ILjava_security_SecureRandom_2(JNIEnv *env, jobject this, jint keysize, jobject random) {
     const mbedtls_ecp_curve_info *curve = NULL;
     for (const mbedtls_ecp_curve_info *curve_info = mbedtls_ecp_curve_list();
-         curve_info->grp_id != MBEDTLS_ECP_DP_NONE;
+         CURVE_GRP_ID(curve_info) != MBEDTLS_ECP_DP_NONE;
          curve_info++) {
-        if (keysize == curve_info->bit_size) {
+        if (keysize == CURVE_BIT_SIZE(curve_info)) {
             curve = curve_info;
             break;
         }
@@ -443,9 +477,9 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPai
         const char *utf_name = (*env)->GetStringUTFChars(env, name, NULL);
         const mbedtls_ecp_curve_info *curve = NULL;
         for (const mbedtls_ecp_curve_info *curve_info = mbedtls_ecp_curve_list();
-             curve_info->grp_id != MBEDTLS_ECP_DP_NONE;
+             CURVE_GRP_ID(curve_info) != MBEDTLS_ECP_DP_NONE;
              curve_info++) {
-            if (strcasecmp(utf_name, curve_info->name) == 0) {
+            if (strcasecmp(utf_name, CURVE_NAME(curve_info)) == 0) {
                 (*env)->ReleaseStringUTFChars(env, name, utf_name);
                 curve = curve_info;
                 break;

@@ -1,0 +1,162 @@
+{
+    "v2195": {
+        "version": "2.19.5",
+        "source_extension": "tar.xz",
+        "hash": "sha256-3+6g4KbybWckxK8B2pp7iEh62y2Bunxy/K9S21IsmtQ="
+    },
+    "v2194": {
+        "version": "2.19.4",
+        "source_extension": "tar.xz",
+        "hash": "sha256-WjqI72Qz6XvKsO+h7WDGGX5K2p2dMLwcR0N7+JuX8nY="
+    },
+    "v2193": {
+        "version": "2.19.3",
+        "source_extension": "tar.xz",
+        "hash": "sha256-2uBH85nFpH8IfbXT2dno8RrkmF0UySjXHaGv+AGALVU="
+    },
+    "v2192": {
+        "version": "2.19.2",
+        "source_extension": "tar.xz",
+        "hash": "sha256-OvXxdhXGtc2Lgy0mn7bLTVTsZPnrCd2/Gt1Qk5QbTXU="
+    },
+    "v2191": {
+        "version": "2.19.1",
+        "source_extension": "tar.xz",
+        "hash": "sha256-4m4Az+/aZAgq/dVA08U3kk9kXWpnSv7SzRcQBd7/VWA="
+    },
+    "v2190": {
+        "version": "2.19.0",
+        "source_extension": "tar.xz",
+        "hash": "sha256-JA2eVuasuR70zwaoocbA8QHGHUDPSMzPE5+u+CHXBAs="
+    },
+    "v2182": {
+        "version": "2.18.2",
+        "source_extension": "tar.xz",
+        "hash": "sha256-VBo7E/G50w+XfGwa5Me/39p2PNpuRN6Ac2nc559CMH4="
+    },
+    "v2181": {
+        "version": "2.18.1",
+        "source_extension": "tar.xz",
+        "hash": "sha256-+Me0YiKoVxaKdUpcwym7eAUEEisnABjdpTBMmNsorik="
+    },
+    "v2180": {
+        "version": "2.18.0",
+        "source_extension": "tar.xz",
+        "hash": "sha256-zGSFLh4MW7MOzQUuShLVE2ElqM5cO+LvtvsGHIZ34yc="
+    },
+    "v2173": {
+        "version": "2.17.3",
+        "source_extension": "tar.xz",
+        "hash": "sha256-eRI7ZURFpKu6SG4JpDF4hUXHCCNzgqPnZWZMn1WwO4g="
+    },
+    "v2172": {
+        "version": "2.17.2",
+        "source_extension": "tar.xz",
+        "hash": "sha256-6+J9/itV1+Ar9SDpJmBsSLdrIvrLSDJWsTqzjgGOHmw="
+    },
+    "v2171": {
+        "version": "2.17.1",
+        "source_extension": "tar.xz",
+        "hash": "sha256-dBNYs/FjjtfZsvWbTjRKpG9JZrFZWLVDTArBWA3wwME="
+    },
+    "v2170": {
+        "version": "2.17.0",
+        "source_extension": "tar.xz",
+        "hash": "sha256-uXBEsxKqcYNJr3hRMxsGS8e9U1JADV+AeTus5CfQE0M="
+    },
+    "v2160": {
+        "version": "2.16.0",
+        "source_extension": "tar.xz",
+        "hash": "sha256-ku1uvJGNhr0bBCIcpRivTPKcwybEdgdAvS0i5hzqJig="
+    },
+    "v2150": {
+        "version": "2.15.0",
+        "source_extension": "tar.xz",
+        "hash": "sha256-2IrxMH8f76x5qk8vUkaZR41pzhWoV88tCpCsa/KlAAk="
+    },
+    "v2140": {
+        "version": "2.14.0",
+        "source_extension": "tar.xz",
+        "hash": "sha256-DBDxK0JKQO4ZveACkgmOIB10mFNcBi2NW1htB4YaVLU="
+    },
+    "v2130": {
+        "version": "2.13.0",
+        "source_extension": "tar.xz",
+        "hash": "sha256-9XrkKkHhCRvKWPRPQa3evZo5C2UWA5UsiB7InVAYfpA="
+    },
+    "v2121": {
+        "version": "2.12.1",
+        "source_extension": "tar.xz",
+        "hash": "sha256-fgNfFCpR/KE1lwV5JieigkVtSXSb9io3qOSDddQbqqk="
+    },
+    "v2120": {
+        "version": "2.12.0",
+        "source_extension": "tar.xz",
+        "hash": "sha256-Hq79RZ1S8n3hgFz/jGh5LgYQkZZI7pjhAZgOlO25CmM="
+    },
+    "v2110": {
+        "version": "2.11.0",
+        "source_extension": "tar.xz",
+        "hash": "sha256-94dNoq64wBj9d99AshN4eb+Qtm9ViUkMmR6D+z6AlL4="
+    },
+    "v2100": {
+        "version": "2.10.0",
+        "source_extension": "tgz",
+        "hash": "sha256-iEgZl1eMJ5JHJP6nZhDUPZ9ZyZ7f5WHUGAO7yYhxrTE="
+    },
+    "v290": {
+        "version": "2.9.0",
+        "source_extension": "tgz",
+        "hash": "sha256-MFVkNSM03WOuY9sDkHfZauUt+lejJIhxCBcZtqny0Rk="
+    },
+    "v280": {
+        "version": "2.8.0",
+        "source_extension": "tgz",
+        "hash": "sha256-5xWbEn6R4MFYJF1hxjjFDUQ+x7RAtrAWEyjEezq6OWA="
+    },
+    "v270": {
+        "version": "2.7.0",
+        "source_extension": "tgz",
+        "hash": "sha256-5C35FVYxdYjGyg5Bv3lvm9XsXHDgZo5sl8YIxpfCSpA="
+    },
+    "v260": {
+        "version": "2.6.0",
+        "source_extension": "tgz",
+        "hash": "sha256-wfJhVVu6cCxzYI3ee9dD7y1jd6QaHClZFbJcW6uvXMU="
+    },
+    "v250": {
+        "version": "2.5.0",
+        "source_extension": "tgz",
+        "hash": "sha256-uKMf4D5/BIpb05Z+zQS2pIlmIV54eS3wbjM7Du3k+xs="
+    },
+    "v240": {
+        "version": "2.4.0",
+        "source_extension": "tgz",
+        "hash": "sha256-7ZRk4qXP7kzT2b16j4BnO0XIoHGNshgac/VGWmBmCKU="
+    },
+    "v230": {
+        "version": "2.3.0",
+        "source_extension": "tgz",
+        "hash": "sha256-Oflw/uWYakw+QlAwrvUKwoTaGFlsAE0anM52iMTm1Hw="
+    },
+    "v220": {
+        "version": "2.2.0",
+        "source_extension": "tgz",
+        "hash": "sha256-x5TbLsRvb/iPN652gl8MJY8HiAuGW2cHsmrPzEVnuCQ="
+    },
+    "v210": {
+        "version": "2.1.0",
+        "source_extension": "tgz",
+        "hash": "sha256-Rg8tcgWu0RP4mN9JR7H2bM+NCA7sfawinvC3VMmtYpQ="
+    },
+    "v201": {
+        "version": "2.0.1",
+        "source_extension": "tgz",
+        "hash": "sha256-oTjtMW0RRQqEBUUbnJZkuOZAqbethNPzrTToBx82Tgs="
+    },
+    "v200": {
+        "version": "2.0.0",
+        "source_extension": "tgz",
+        "hash": "sha256-AxZZzKD4CGnp2XogkX7b4hZM7bwHnoxT4Oe9m+oVNxo="
+    }
+}

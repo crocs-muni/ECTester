@@ -1,0 +1,5 @@
+
+pkgconfig-patch:
+ 	sed -e 's,^prefix=.*,prefix=$(PREFIX),' -e 's,^Version:.*,Version: $(VERSION_PC),' libtomcrypt.pc.in > libtomcrypt.pc
+ 	install -p -d $(DESTDIR)$(LIBPATH)/pkgconfig
+ 	install -p -m 644 libtomcrypt.pc $(DESTDIR)$(LIBPATH)/pkgconfig/

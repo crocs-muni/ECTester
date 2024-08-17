@@ -1,0 +1,26 @@
+diff --git a/src/build-data/buildh.in b/src/build-data/buildh.in
+index e65aa3ed3a..de2b5c8b52 100644
+--- a/src/build-data/buildh.in
++++ b/src/build-data/buildh.in
+@@ -27,7 +27,7 @@
+ %{unsafe_fuzzer_mode_define}
+
+ #define BOTAN_INSTALL_PREFIX R"(%{prefix})"
+-#define BOTAN_INSTALL_HEADER_DIR "%{includedir}/botan-%{version_major}.%{version_minor}"
++#define BOTAN_INSTALL_HEADER_DIR "%{includedir}/botan-%{version_major}"
+ #define BOTAN_INSTALL_LIB_DIR "%{libdir}"
+ #define BOTAN_LIB_LINK "%{link_to}"
+
+diff --git a/src/scripts/install.py b/src/scripts/install.py
+index 0045be844d..e03e5c22c3 100755
+--- a/src/scripts/install.py
++++ b/src/scripts/install.py
+@@ -130,7 +130,7 @@ class PercentSignTemplate(string.Template):
+                                   'botan-%d.%d.%d' % (ver_major, ver_minor, ver_patch))
+     target_include_dir = os.path.join(options.destdir,
+                                       options.includedir,
+-                                      'botan-%d.%d' % (ver_major, ver_minor),
++                                      'botan-%d' % (ver_major),
+                                       'botan')
+
+     out_dir = process_template('%{out_dir}')

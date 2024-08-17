@@ -1,0 +1,14 @@
+diff --git a/makefile b/makefile
+index cd94b86f..ffb65402 100644
+--- a/makefile
++++ b/makefile
+@@ -79,6 +79,9 @@ $(foreach demo, $(strip $(DEMOS)), $(eval $(call DEMO_template,$(demo))))
+ #as root in order to have a high enough permission to write to the correct
+ #directories and to set the owner and group to root.
+ install: $(call print-help,install,Installs the library and headers) .common_install
++	sed -e 's,^prefix=.*,prefix=$(PREFIX),' -e 's,^Version:.*,Version: $(VERSION_PC),' libtomcrypt.pc.in > libtomcrypt.pc
++	install -p -d $(DESTDIR)$(LIBPATH)/pkgconfig
++	install -p -m 644 libtomcrypt.pc $(DESTDIR)$(LIBPATH)/pkgconfig/
+ 
+ install_bins: $(call print-help,install_bins,Installs the useful demos ($(USEFUL_DEMOS))) .common_install_bins
+            '')

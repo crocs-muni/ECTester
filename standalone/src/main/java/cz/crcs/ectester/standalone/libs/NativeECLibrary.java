@@ -38,25 +38,13 @@ public abstract class NativeECLibrary extends ProviderECLibrary {
                 return false;
             }
 
-            /* Load the requirements, if they are bundled, write them in and load them. */
-            try {
-                for (String requirement : requriements) {
-                    if (requirement.endsWith(suffix)) {
-                        /* The requirement is bundled, write it */
-                        Path reqPath = libReqDir.resolve(requirement);
-                        found = FileUtil.write(ECTesterStandalone.LIB_RESOURCE_DIR + requirement, reqPath);
-                        if (!found) {
-                            return false;
-                        }
-                        System.load(reqPath.toString());
-                    } else {
-                        System.loadLibrary(requirement);
-                    }
+            /* Load the requirements, if they are bundled, write them in. */
+            for (String requirement : requriements) {
+                if (requirement.endsWith(suffix)) {
+                    /* The requirement is bundled, write it */
+                    Path reqPath = libReqDir.resolve(requirement);
+                    FileUtil.write(ECTesterStandalone.LIB_RESOURCE_DIR + requirement, reqPath);
                 }
-            } catch (UnsatisfiedLinkError ule) {
-                System.err.println(resource);
-                ule.printStackTrace();
-                return false;
             }
 
             System.load(libPath.toString());

@@ -99,59 +99,58 @@ clibs: lib_timing.so lib_csignals.so lib_preload.so lib_prng.so
 
 cpplibs: lib_timing.so lib_cppsignals.so lib_preload.so lib_prng.so
 
-
 # OpenSSL shim
 openssl: openssl_provider.so
 
 openssl_provider.so: openssl.o c_utils.o | clibs
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -Wl,-Bstatic $(shell pkg-config --libs libcrypto)  -lcrypto -L. -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs openssl) -l:lib_timing.so -l:lib_csignals.so
 
 openssl.o: openssl.c
-	$(CC) $(shell pkg-config --cflags openssl) $(OPENSSL_CFLAGS) $(CFLAGS) -c $<
+	$(CC) $(shell pkg-config --cflags openssl) $(CFLAGS) -c $<
 
 
 # BoringSSL shim
 boringssl: boringssl_provider.so
 
-boringssl_provider.so: boringssl.o c_utils.o | clibs
-	$(CC) $(CFLAGS) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic -l:lib_boringssl.a -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
+lib_boringssl.so:
+	cp $(PROJECT_ROOT_PATH)/ext/boringssl/build/crypto/libcrypto.so lib_boringssl.so
+	patchelf --set-soname lib_boringssl.so lib_boringssl.so
+
+boringssl_provider.so: boringssl.o c_utils.o | clibs lib_boringssl.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_boringssl.so -l:lib_timing.so -l:lib_csignals.so
 
 boringssl.o: boringssl.c
-	$(CC) $(BORINGSSL_CFLAGS) $(CFLAGS) -c $<
+	$(CC) -I$(PROJECT_ROOT_PATH)/ext/boringssl/include/ $(CFLAGS) -c $<
 
 
 # libgcrypt shim
 gcrypt: gcrypt_provider.so
 
 gcrypt_provider.so: gcrypt.o c_utils.o | clibs
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -pthread -lpthread -Wl,-Bstatic $(shell libgcrypt-config --libs) -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -pthread -lpthread $(shell libgcrypt-config --libs) -l:lib_timing.so -l:lib_csignals.so
 
 gcrypt.o: gcrypt.c
-	$(CC) $(shell libgcrypt-config --cflags) $(LIBGCRYPT_CFLAGS) $(CFLAGS) -c $<
+	$(CC) $(shell libgcrypt-config --cflags) $(CFLAGS) -c $<
 
 
 # Libtomcrypt shim
 tomcrypt: tomcrypt_provider.so
 
 tomcrypt_provider.so: tomcrypt.o c_utils.o | clibs
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic $(shell pkg-config --libs libtomcrypt libtommath) -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -ltommath $(shell pkg-config --libs libtomcrypt) -l:lib_timing.so -l:lib_csignals.so
 
 tomcrypt.o: tomcrypt.c
 	$(CC) -DLTM_DESC $(shell pkg-config --cflags libtomcrypt) $(CFLAGS) -c $<
 
 
 # Botan-2 shim
-BOTAN_NAME := "botan-2"
-ifeq ($(shell pkg-config --exists $(BOTAN_NAME); echo $$?),1)
-	BOTAN_NAME := "botan-3"
-endif
 botan: botan_provider.so
 
 botan_provider.so: botan.o cpp_utils.o | cpplibs
-	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic $(shell pkg-config --libs $(BOTAN_NAME)) -Wl,-Bdynamic -l:lib_timing.so -l:lib_cppsignals.so
+	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs botan-2) -l:lib_timing.so -l:lib_cppsignals.so
 
 botan.o: botan.cpp
-	$(CXX) $(shell pkg-config --cflags $(BOTAN_NAME)) $(BOTAN_CXXFLAGS) $(CXXFLAGS) -c $<
+	$(CXX) $(shell pkg-config --cflags botan-2) $(CXXFLAGS) -c $<
 
 
 # Crypto++ shim
@@ -162,51 +161,63 @@ endif
 cryptopp: cryptopp_provider.so
 
 cryptopp_provider.so: cryptopp.o cpp_utils.o | cpplibs
-	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic $(shell pkg-config --libs $(CRYPTOPP_NAME)) -Wl,-Bdynamic -l:lib_timing.so -l:lib_cppsignals.so
+	$(CXX) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs $(CRYPTOPP_NAME)) -l:lib_timing.so -l:lib_cppsignals.so
 
 cryptopp.o: cryptopp.cpp
-	$(CXX) $(shell pkg-config --cflags $(CRYPTOPP_NAME)) $(CRYPTOPP_CXXFLAGS) $(CXXFLAGS) -c $<
+	$(CXX) $(shell pkg-config --cflags $(CRYPTOPP_NAME)) $(CXXFLAGS) -c $<
 
 
 # mbedTLS shim
 mbedtls: mbedtls_provider.so
 
-mbedtls_provider.so: mbedtls.o c_utils.o | clibs
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic -lmbedcrypto -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
+lib_mbedtls.so:
+	cp $(PROJECT_ROOT_PATH)/ext/mbedtls/build/library/libmbedcrypto.so lib_mbedtls.so
+	patchelf --set-soname lib_mbedtls.so lib_mbedtls.so
+
+mbedtls_provider.so: mbedtls.o c_utils.o | clibs lib_mbedtls.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_mbedtls.so -l:lib_timing.so -l:lib_csignals.so
 
 mbedtls.o: mbedtls.c
-	$(CC) $(MBEDTLS_CFLAGS) $(CFLAGS) -c $<
+	$(CC) -I$(PROJECT_ROOT_PATH)/ext/mbedtls/build/include/ $(CFLAGS) -c $<
 
 
 # Intel Performance Primitives crypto shim
 ippcp: ippcp_provider.so
 
-ippcp_provider.so: ippcp.o c_utils.o | clibs
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ $(IPP_CRYPTO_LFLAGS) -Wl,-Bstatic -l:libippcp.a -L. -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
+lib_ippcp.so:
+	cp $(PROJECT_ROOT_PATH)/ext/ipp-crypto/build/.build/RELEASE/lib/libippcp.so lib_ippcp.so
+	patchelf --set-soname lib_ippcp.so lib_ippcp.so
+
+ippcp_provider.so: ippcp.o c_utils.o | clibs lib_ippcp.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_ippcp.so -l:lib_timing.so -l:lib_csignals.so
 
 ippcp.o: ippcp.c
-	$(CC) $(IPP_CRYPTO_CFLAGS) $(CFLAGS) -c $<
+	$(CC) -I$(PROJECT_ROOT_PATH)/ext/ipp-crypto/build/.build/RELEASE/include/ $(CFLAGS) -c $<
 
 
 # Nettle shim
 nettle: nettle_provider.so
 
 nettle_provider.so: nettle.o c_utils.o | clibs
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic $(shell pkg-config --libs nettle hogweed gmp) \
-		-Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. $(shell pkg-config --libs nettle) -l:lib_timing.so -l:lib_csignals.so $(shell pkg-config --libs hogweed) -lgmp
 
 nettle.o: nettle.c
-	$(CC) -Wl,-static $(shell pkg-config --cflags nettle hogweed gmp) $(NETTLE_CFLAGS) $(CFLAGS) -c $<
+	$(CC) $(shell pkg-config --cflags nettle) $(shell pkg-config --libs hogweed) -lgmp $(CFLAGS) -c $<
 
 
 # LibreSSL shim
 libressl: libressl_provider.so
 
-libressl_provider.so: libressl.o c_utils.o | clibs
-	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. -Wl,-Bstatic $(shell pkg-config --libs libresslcrypto) -Wl,-Bdynamic -l:lib_timing.so -l:lib_csignals.so
+lib_libressl.so:
+	cp $(PROJECT_ROOT_PATH)/ext/libressl/build/crypto/libcrypto.so lib_libressl.so
+	patchelf --set-soname lib_libressl.so lib_libressl.so
+
+libressl_provider.so: libressl.o c_utils.o | clibs lib_libressl.so
+	$(CC) $(LFLAGS) -o $@ -Wl,-rpath,'$$ORIGIN/lib' $^ -L. lib_libressl.so -l:lib_timing.so -l:lib_csignals.so
 
 libressl.o: libressl.c
-	$(CC) $(shell pkg-config --cflags libresslcrypto) $(LIBRESSL_CFLAGS) $(CFLAGS) -c $<
+	$(CC) -I$(PROJECT_ROOT_PATH)/ext/libressl/build/include/ $(CFLAGS) -c $<
+
 
 help:
 	@echo "# This makefile builds the JNI shims necessary to test native libraries."

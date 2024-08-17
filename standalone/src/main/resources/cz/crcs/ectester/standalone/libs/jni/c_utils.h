@@ -66,3 +66,13 @@ char *biginteger_to_hex(JNIEnv *env, jobject big, jint bytes);
 #define ADD_KPG(env, self, kpg_name, kpg_class)       ADD_PROPERTY(env, self, "KeyPairGenerator.", "cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$", kpg_name, kpg_class)
 #define ADD_KA(env, self, ka_name, ka_class)          ADD_PROPERTY(env, self, "KeyAgreement.", "cz.crcs.ectester.standalone.libs.jni.NativeKeyAgreementSpi$", ka_name, ka_class)
 #define ADD_SIG(env, self, sig_name, sig_class)       ADD_PROPERTY(env, self, "Signature.", "cz.crcs.ectester.standalone.libs.jni.NativeSignatureSpi$", sig_name, sig_class)
+
+
+/**
+ * Version handling.
+ */
+#define VERSION_GT(lib,a,b,c) ((ECTESTER_##lib##_MAJOR == a && ECTESTER_##lib##_MINOR == b && ECTESTER_##lib##_PATCH > c) || (ECTESTER_##lib##_MAJOR == a && ECTESTER_##lib##_MINOR > b) || (ECTESTER_##lib##_MAJOR > a))
+#define VERSION_EQ(lib,a,b,c) (ECTESTER_##lib##_MAJOR == a && ECTESTER_##lib##_MINOR == b && ECTESTER_##lib##_PATCH == c)
+#define VERSION_GE(lib,a,b,c) (VERSION_GT(lib,a,b,c) || VERSION_EQ(lib,a,b,c))
+#define VERSION_LT(lib,a,b,c) !(VERSION_GE(lib,a,b,c))
+#define VERSION_LE(lib,a,b,c) !(VERSION_GT(lib,a,b,c))

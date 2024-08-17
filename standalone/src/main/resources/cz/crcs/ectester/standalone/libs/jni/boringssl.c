@@ -6,6 +6,7 @@
 #include <strings.h>
 
 #include <openssl/conf.h>
+#include <openssl/crypto.h>
 #include <openssl/opensslv.h>
 #include <openssl/objects.h>
 #include <openssl/obj_mac.h>

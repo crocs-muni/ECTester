@@ -1,0 +1,53 @@
+name: Nix
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  standalone:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    strategy:
+      matrix:
+        library: [ "botan", "cryptopp", "openssl", "boringssl", "gcrypt", "mbedtls", "ippcp", "nettle", "libressl" ]
+      fail-fast: false
+    name: Build standalone ${{ matrix.library }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-tags: true
+          fetch-depth: -1
+
+      - name: Setup libraries
+        run: |  
+          sudo apt update
+          sudo apt install
+
+      - uses: DeterminateSystems/nix-installer-action@v13
+        with:
+          diagnostic-endpoint: ""
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v7
+        with:
+          diagnostic-endpoint: ""
+
+      - name: Build library
+        run: |
+          nix build ".#lib.${{ matrix.library }}.default"
+
+      - name: Build shim
+        run: |
+          nix build ".#shim.${{ matrix.library }}.default"
+
+      - name: Build standalone
+        run: |
+          nix build ".?submodules=1#${{ matrix.library }}.default"
+
+      - name: List library
+        run: nix run ".?submodules=1#${{ matrix.library }}.default" -- list-libs

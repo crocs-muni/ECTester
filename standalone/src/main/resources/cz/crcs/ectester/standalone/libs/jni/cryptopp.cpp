@@ -95,6 +95,13 @@ using CryptoPP::Integer;
 static jclass provider_class;
 static std::unique_ptr<RandomNumberGenerator> rng = std::make_unique<AutoSeededRandomPool>();
 
+// Fallback to newest
+#if !(defined(ECTESTER_CRYPTOPP_MAJOR) && defined(ECTESTER_CRYPTOPP_MINOR) && defined(ECTESTER_CRYPTOPP_PATCH))
+#define ECTESTER_CRYPTOPP_MAJOR 99
+#define ECTESTER_CRYPTOPP_MINOR 99
+#define ECTESTER_CRYPTOPP_PATCH 99
+#endif
+
 
 JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_createProvider(JNIEnv *env, jobject self) {
     /* Create the custom provider. */
@@ -115,7 +122,7 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_CryptoppLib_crea
     }
 
     jstring name = env->NewStringUTF(lib_name.c_str());
-    double version = lib_version / 100;
+    double version = lib_version / 100.0;
     jstring info = env->NewStringUTF(ss.str().c_str());
 
     return env->NewObject(provider_class, init, name, version, info);
@@ -163,7 +170,11 @@ static std::vector<OID> get_all_curve_oids() {
 }
 
 static std::string oid_to_str(const OID &oid) {
+#if VERSION_LT(CRYPTOPP, 7, 0, 0)
+	const std::vector<CryptoPP::word32>& oid_values = oid.m_values;
+#else
     const std::vector<CryptoPP::word32>& oid_values = oid.GetValues();
+#endif
     std::stringstream ss;
     for (size_t i = 0; i < oid_values.size(); ++i) {
         if(i != 0)
