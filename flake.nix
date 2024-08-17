@@ -884,12 +884,21 @@
               version = "0.1.0";
               format = "other";
 
-              propagatedBuildInputs = [
-                ipython
-                pudb
-              ];
-
               src = ./nix/build_all.py;
+              dontUnpack = true;
+              installPhase = ''
+                install -Dm755 $src $out/bin/$pname
+              '';
+            };
+
+          testAll =
+            with pkgs.python3Packages;
+            buildPythonApplication {
+              pname = "testAll";
+              version = "0.1.0";
+              format = "other";
+
+              src = ./nix/test_all.py;
               dontUnpack = true;
               installPhase = ''
                 install -Dm755 $src $out/bin/$pname
