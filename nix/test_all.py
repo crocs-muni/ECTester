@@ -74,7 +74,7 @@ def test_library(library, test_suite, version):
     opts.extend(globals()[f"{test_suite.replace('-', '_')}_options"](library))
     command = ["./result/bin/ECTesterStandalone", "test",
                f"-oyml:results/yml/{library}_{test_suite}_{version}.yml",
-               f"-otxt:results/txt/{library}_{test_suite}_{version}.txt",
+               f"-otext:results/txt/{library}_{test_suite}_{version}.txt",
                f"-oxml:results/xml/{library}_{test_suite}_{version}.xml",
                "-q", *opts, test_suite, library]
     try:
