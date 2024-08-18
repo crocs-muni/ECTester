@@ -64,7 +64,7 @@ def wrong_options(library):
     return default_options(library)
 
 def build_library(library, version):
-    command = ["nix", "build", "--quiet", f"?submodules=1#{library}.{version}"]
+    command = ["nix", "build", "--log-format", "raw", f"?submodules=1#{library}.{version}"]
     result = sp.run(command, check=False)
     print(f"build {library} {version} = {result.returncode}")
     return result.returncode == 0
