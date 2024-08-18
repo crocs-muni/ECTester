@@ -130,9 +130,9 @@ def main():
     else:
         suites2test = [suite]
 
-    os.makedirs("results/yml/", exist_of=True)
-    os.makedirs("results/txt/", exist_of=True)
-    os.makedirs("results/xml/", exist_of=True)
+    os.makedirs("results/yml/", exist_ok=True)
+    os.makedirs("results/txt/", exist_ok=True)
+    os.makedirs("results/xml/", exist_ok=True)
 
     for library in libraries2test:
         with open(f"./nix/{library}_pkg_versions.json", "r") as f:
