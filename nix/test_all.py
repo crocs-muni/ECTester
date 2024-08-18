@@ -3,6 +3,7 @@
 import argparse
 import json
 import time
+import os
 
 from pathlib import Path
 
@@ -65,18 +66,22 @@ def wrong_options(library):
 def build_library(library, version):
     command = ["nix", "build", f"?submodules=1#{library}.{version}"]
     result = sp.run(command, check=False)
+    print(f"build {library} {version} = {result.returncode}")
     return result.returncode == 0
 
 def test_library(library, test_suite, version):
     opts = base_options(library)
     opts.extend(globals()[f"{test_suite.replace('-', '_')}_options"](library))
-    command = ["./result/bin/ECTesterStandalone", "test", f"-oyml:results/{library}_{test_suite}_{version}.yml", "-q", *opts, test_suite, library]
-    print(" ".join(command))
+    command = ["./result/bin/ECTesterStandalone", "test",
+               f"-oyml:results/yml/{library}_{test_suite}_{version}.yml",
+               f"-otxt:results/txt/{library}_{test_suite}_{version}.txt",
+               f"-oxml:results/xml/{library}_{test_suite}_{version}.xml",
+               "-q", *opts, test_suite, library]
     try:
         result = sp.run(command, timeout=60, check=False)
-        print(f"{library} {test_suite} {version} = {result.returncode}")
+        print(f"run {library} {test_suite} {version} = {result.returncode}")
     except sp.TimeoutExpired:
-        print(f"{library} {test_suite} {version} timed-out!")
+        print(f"run {library} {test_suite} {version} timed-out!")
     
 
 def main():
@@ -124,6 +129,10 @@ def main():
         suites2test = suites
     else:
         suites2test = [suite]
+
+    os.makedirs("results/yml/", exist_of=True)
+    os.makedirs("results/txt/", exist_of=True)
+    os.makedirs("results/xml/", exist_of=True)
 
     for library in libraries2test:
         with open(f"./nix/{library}_pkg_versions.json", "r") as f:
