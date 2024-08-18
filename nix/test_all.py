@@ -64,7 +64,7 @@ def wrong_options(library):
     return default_options(library)
 
 def build_library(library, version):
-    command = ["nix", "build", f"?submodules=1#{library}.{version}"]
+    command = ["nix", "build", "--quiet", f"?submodules=1#{library}.{version}"]
     result = sp.run(command, check=False)
     print(f"build {library} {version} = {result.returncode}")
     return result.returncode == 0
@@ -82,7 +82,6 @@ def test_library(library, test_suite, version):
         print(f"run {library} {test_suite} {version} = {result.returncode}")
     except sp.TimeoutExpired:
         print(f"run {library} {test_suite} {version} timed-out!")
-    
 
 def main():
     parser = argparse.ArgumentParser()
@@ -139,8 +138,9 @@ def main():
             versions = list(json.load(f).keys())
         for version in versions:
             built = build_library(library, version)
-            for suite in suites2test:
-                test_library(library, suite, version)
+            if built:
+                for suite in suites2test:
+                    test_library(library, suite, version)
 
 
 if __name__ == '__main__':
