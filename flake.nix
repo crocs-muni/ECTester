@@ -349,13 +349,21 @@
           }:
           if version == null then
             pkgs.nettle.overrideAttrs (
-              final: prev: { configureFlags = (prev.configureFlags or [ ]) ++ [ "--enable-static" ]; }
+              final: prev: {
+                configureFlags = (prev.configureFlags or [ ]) ++ [
+                  "--enable-static"
+                  "--disable-shared"
+                ];
+              }
             )
           else
             pkgs.nettle.overrideAttrs (
               final: prev: {
                 inherit version;
-                configureFlags = (prev.configureFlags or [ ]) ++ [ "--enable-static" ];
+                configureFlags = (prev.configureFlags or [ ]) ++ [
+                  "--enable-static"
+                  "--disable-shared"
+                ];
                 src = pkgs.fetchurl {
                   url = "mirror://gnu/nettle/nettle-${version}.tar.gz";
                   inherit hash;
