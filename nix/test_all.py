@@ -10,6 +10,27 @@ from pathlib import Path
 import subprocess as sp
 
 
+def library_name(library):
+    match library:
+        case "cryptopp":
+            return "Crypto++"
+        case "boringssl":
+            return "BoringSSL"
+        case "openssl":
+            return "OpenSSL"
+        case "botan":
+            return "Botan"
+        case "ippcp":
+            return "IPPCP"
+        case "libressl":
+            return "LibreSSL"
+        case "nettle":
+            return "Nettle"
+        case "gcrypt":
+            return "libgcrypt"
+        case "mbedtls":
+            return "mbedTLS"
+
 def base_options(library):
     match library:
         case "openssl" | "botan" | "boringssl" | "ippcp" | "libressl" | "gcrypt" | "nettle":
@@ -72,11 +93,12 @@ def build_library(library, version):
 def test_library(library, test_suite, version):
     opts = base_options(library)
     opts.extend(globals()[f"{test_suite.replace('-', '_')}_options"](library))
+    lib_name = library_name(library)
     command = ["./result/bin/ECTesterStandalone", "test",
                f"-oyml:results/yml/{library}_{test_suite}_{version}.yml",
                f"-otext:results/txt/{library}_{test_suite}_{version}.txt",
                f"-oxml:results/xml/{library}_{test_suite}_{version}.xml",
-               "-q", *opts, test_suite, library]
+               "-q", *opts, test_suite, lib_name]
     try:
         result = sp.run(command, timeout=60, check=False)
         print(f"run {library} {test_suite} {version} = {result.returncode}")
