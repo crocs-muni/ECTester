@@ -62,16 +62,22 @@ def edge_cases_options(library):
 def wrong_options(library):
     return default_options(library)
 
+def build_library(library, version):
+    command = ["nix", "build", f"?submodules=1#{library}.{version}"]
+    result = sp.run(command, check=False)
+    return result.returncode == 0
+
 def test_library(library, test_suite, version):
     opts = base_options(library)
     opts.extend(globals()[f"{test_suite.replace('-', '_')}_options"](library))
-    command = ["nix", "run", f"?submodules=1#{library}.{version}", "--", "test", f"-oyml:results/{library}_{test_suite}_{version}.yml", *opts, test_suite, library]
+    command = ["./result/bin/ECTesterStandalone", "test", f"-oyml:results/{library}_{test_suite}_{version}.yml", "-q", *opts, test_suite, library]
     print(" ".join(command))
     try:
-        sp.run(command, timeout=60)
+        result = sp.run(command, timeout=60, check=False)
+        print(f"{library} {test_suite} {version} = {result.returncode}")
     except sp.TimeoutExpired:
         print(f"{library} {test_suite} {version} timed-out!")
-
+    
 
 def main():
     parser = argparse.ArgumentParser()
@@ -123,6 +129,7 @@ def main():
         with open(f"./nix/{library}_pkg_versions.json", "r") as f:
             versions = list(json.load(f).keys())
         for version in versions:
+            built = build_library(library, version)
             for suite in suites2test:
                 test_library(library, suite, version)
 
