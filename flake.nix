@@ -642,17 +642,13 @@
               pname = "ECTesterStandalone";
               version = "0.3.3";
               lockFile = ./gradle.lock;
-              buildJdk = pkgs.jdk;
+              buildJdk = pkgs.jdk21_headless;
 
               # NOTE: the shims are built separately, therefore no need to call build `libs` target
               gradleBuildFlags = [ ":standalone:uberJar" ];
               src = ./.;
 
               jniLibsPath = "standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/";
-
-              #      shims = [ "tomcrypt" "botan" "cryptopp" "openssl" "boringssl" "gcrypt" "mbedtls" "ippcp" "nettle" "libressl" ];
-              #      copyLib = libName:
-              # ( if ${libName}.version != null then "cp ${libName}Shim.out/lib/libressl_provider.so ${jniLibsPath}" else "" )
 
               # FIXME add conditionally libs using map?
               preConfigure = pkgs.lib.concatLines [
@@ -685,7 +681,7 @@
 
               postFixup = ''
                 makeWrapper \
-                  ${jdk}/bin/java $out/bin/${pname} \
+                  ${jdk21_headless}/bin/java $out/bin/${pname} \
                   --add-flags "-Dstdout.encoding=UTF8 -Dstderr.encoding=UTF8 -jar $out/build/libs/${pname}.jar" \
                   --set LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:$LD_LIBRARY_PATH
               '';
