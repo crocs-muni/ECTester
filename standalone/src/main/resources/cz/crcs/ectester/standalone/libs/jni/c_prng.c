@@ -2,8 +2,24 @@
 #include <stdbool.h>
 #include "prng/prng.h"
 
+#ifdef DUMMY_PRELOAD
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_NativeECLibrary_supportsDeterministicPRNG(JNIEnv *env, jobject self) {
+	return JNI_FALSE;
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_NativeECLibrary_setupDeterministicPRNG(JNIEnv *env, jobject self, jbyteArray seed) {
+	return JNI_FALSE;
+}
+
+#else
+
 extern prng_state preload_prng_state;
 extern bool preload_prng_enabled;
+
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_NativeECLibrary_supportsDeterministicPRNG(JNIEnv *env, jobject self) {
+	return JNI_TRUE;
+}
 
 JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_NativeECLibrary_setupDeterministicPRNG(JNIEnv *env, jobject self, jbyteArray seed) {
 	jsize seed_length = (*env)->GetArrayLength(env, seed);
@@ -16,3 +32,5 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_NativeECLibrary
 	(*env)->ReleaseByteArrayElements(env, seed, seed_data, JNI_ABORT);
 	return JNI_TRUE;
 }
+#endif
+

@@ -107,6 +107,7 @@ public class ECTesterStandalone {
                 FileUtil.write(LIB_RESOURCE_DIR + "lib_timing.so", reqs.resolve("lib_timing.so"));
                 FileUtil.write(LIB_RESOURCE_DIR + "lib_preload.so", reqs.resolve("lib_preload.so"));
                 FileUtil.write(LIB_RESOURCE_DIR + "lib_prng.so", reqs.resolve("lib_prng.so"));
+                FileUtil.write(LIB_RESOURCE_DIR + "lib_prng_dummy.so", reqs.resolve("lib_prng_dummy.so"));
                 FileUtil.write(LIB_RESOURCE_DIR + "lib_csignals.so", reqs.resolve("lib_csignals.so"));
                 FileUtil.write(LIB_RESOURCE_DIR + "lib_cppsignals.so", reqs.resolve("lib_cppsignals.so"));
 
@@ -146,7 +147,13 @@ public class ECTesterStandalone {
                     System.exit(result);
                 } else {
                     // Load the utility libs.
-                    System.load(reqs.resolve("lib_prng.so").toString());
+                    if (cli.hasOption("no-preload")) {
+                        System.err.println("Loading dummy");
+                        System.load(reqs.resolve("lib_prng_dummy.so").toString());
+                    } else {
+                        System.err.println("Loading right");
+                        System.load(reqs.resolve("lib_prng.so").toString());
+                    }
                     System.load(reqs.resolve("lib_timing.so").toString());
                     System.load(reqs.resolve("lib_csignals.so").toString());
                     System.load(reqs.resolve("lib_cppsignals.so").toString());

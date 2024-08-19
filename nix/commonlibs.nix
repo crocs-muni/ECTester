@@ -8,12 +8,12 @@ stdenv.mkDerivation rec {
     pkg-config
     cmake
     which
-    jdk17_headless
+    jdk
   ];
 
   dontUseCmakeConfigure = true;
 
-  libs = "lib_cppsignals.so lib_csignals.so lib_timing.so lib_preload.so lib_prng.so";
+  libs = "lib_cppsignals.so lib_csignals.so lib_timing.so lib_preload.so lib_prng.so lib_prng_dummy.so";
 
   buildPhase = ''
     make ${libs}

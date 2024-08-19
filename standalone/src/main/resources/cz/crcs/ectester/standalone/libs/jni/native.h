@@ -49,6 +49,14 @@ JNIEXPORT jlong JNICALL Java_cz_crcs_ectester_standalone_libs_NativeECLibrary_ge
 
 /*
  * Class:     cz_crcs_ectester_standalone_libs_NativeECLibrary
+ * Method:    supportsDeterministicPRNG
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_NativeECLibrary_supportsDeterministicPRNG
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     cz_crcs_ectester_standalone_libs_NativeECLibrary
  * Method:    setupDeterministicPRNG
  * Signature: ([B)Z
  */

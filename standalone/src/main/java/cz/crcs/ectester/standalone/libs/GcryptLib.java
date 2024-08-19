@@ -9,7 +9,7 @@ import java.util.Set;
 public class GcryptLib extends NativeECLibrary {
 
     public GcryptLib() {
-        super("libgcrypt","gcrypt_provider");
+        super("libgcrypt", "gcrypt_provider");
     }
 
     @Override
@@ -17,10 +17,4 @@ public class GcryptLib extends NativeECLibrary {
 
     @Override
     public native Set<String> getCurves();
-
-    @Override
-    public boolean supportsDeterministicPRNG() {
-        // This is provided by the native preload that hooks all randomness sources.
-        return true;
-    }
 }
