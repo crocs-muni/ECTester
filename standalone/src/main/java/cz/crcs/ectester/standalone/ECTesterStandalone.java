@@ -256,7 +256,8 @@ public class ECTesterStandalone {
         testOpts.addOption(Option.builder().longOpt("key-type").desc("Set the key [algorithm] for which the key should be derived in KeyAgreements with KDF. Default is \"AES\".").hasArg().argName("algorithm").optionalArg(false).build());
         List<Argument> testArgs = new LinkedList<>();
         testArgs.add(new Argument("test-suite", "The test suite to run.", true));
-        ParserOptions test = new ParserOptions(new TreeParser(Collections.emptyMap(), true, testArgs), testOpts, "Test a library.");
+        testArgs.add(new Argument("lib", "What library to use.", true));
+        ParserOptions test = new ParserOptions(new TreeParser(Collections.emptyMap(), false, testArgs), testOpts, "Test a library.");
         actions.put("test", test);
 
         Options ecdhOpts = new Options();
@@ -273,7 +274,9 @@ public class ECTesterStandalone {
         ecdhOpts.addOption(Option.builder().longOpt("fixed-private").desc("Perform ECDH with fixed private key.").build());
         ecdhOpts.addOptionGroup(privateKey);
         ecdhOpts.addOption(Option.builder().longOpt("fixed-public").desc("Perform ECDH with fixed public key.").build());
-        ParserOptions ecdh = new ParserOptions(new DefaultParser(), ecdhOpts, "Perform EC based KeyAgreement.");
+        List<Argument> ecdhArgs = new LinkedList<>();
+        ecdhArgs.add(new Argument("lib", "What library to use.", true));
+        ParserOptions ecdh = new ParserOptions(new TreeParser(Collections.emptyMap(), false, ecdhArgs), ecdhOpts, "Perform EC based KeyAgreement.");
         actions.put("ecdh", ecdh);
 
         Options ecdsaOpts = new Options();
@@ -289,7 +292,9 @@ public class ECTesterStandalone {
         ecdsaOpts.addOption(Option.builder("t").longOpt("type").desc("Set Signature object [type].").hasArg().argName("type").optionalArg(false).build());
         ecdsaOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDSA [amount] times.").build());
         ecdsaOpts.addOptionGroup(ecdsaMessage);
-        ParserOptions ecdsa = new ParserOptions(new DefaultParser(), ecdsaOpts, "Perform EC based Signature.");
+        List<Argument> ecdsaArgs = new LinkedList<>();
+        ecdsaArgs.add(new Argument("lib", "What library to use.", true));
+        ParserOptions ecdsa = new ParserOptions(new TreeParser(Collections.emptyMap(), false, ecdsaArgs), ecdsaOpts, "Perform EC based Signature.");
         actions.put("ecdsa", ecdsa);
 
         Options generateOpts = new Options();
@@ -301,14 +306,18 @@ public class ECTesterStandalone {
         generateOpts.addOption(prngSeed);
         generateOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Generate [amount] of EC keys.").build());
         generateOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPairGenerator object [type].").build());
-        ParserOptions generate = new ParserOptions(new DefaultParser(), generateOpts, "Generate EC keypairs.");
+        List<Argument> generateArgs = new LinkedList<>();
+        generateArgs.add(new Argument("lib", "What library to use.", true));
+        ParserOptions generate = new ParserOptions(new TreeParser(Collections.emptyMap(), false, generateArgs), generateOpts, "Generate EC keypairs.");
         actions.put("generate", generate);
 
         Options exportOpts = new Options();
         exportOpts.addOption(bits);
         exportOpts.addOption(outputRaw);
         exportOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPair object [type].").build());
-        ParserOptions export = new ParserOptions(new DefaultParser(), exportOpts, "Export default curve parameters.");
+        List<Argument> exportArgs = new LinkedList<>();
+        exportArgs.add(new Argument("lib", "What library to use.", true));
+        ParserOptions export = new ParserOptions(new TreeParser(Collections.emptyMap(), false, exportArgs), exportOpts, "Export default curve parameters.");
         actions.put("export", export);
 
         Options listDataOpts = new Options();
@@ -318,7 +327,9 @@ public class ECTesterStandalone {
         actions.put("list-data", listData);
 
         Options listLibsOpts = new Options();
-        ParserOptions listLibs = new ParserOptions(new DefaultParser(), listLibsOpts, "List supported libraries.");
+        List<Argument> listLibsArgs = new LinkedList<>();
+        listLibsArgs.add(new Argument("lib", "What library to use.", false));
+        ParserOptions listLibs = new ParserOptions(new TreeParser(Collections.emptyMap(), false, listLibsArgs), listLibsOpts, "List supported libraries.");
         actions.put("list-libs", listLibs);
 
         Options listSuitesOpts = new Options();
@@ -329,9 +340,7 @@ public class ECTesterStandalone {
         ParserOptions listIdents = new ParserOptions(new DefaultParser(), listIdentsOpts, "List KeyPairGenerator, KeyAgreement and Signature types.");
         actions.put("list-types", listIdents);
 
-        List<Argument> baseArgs = new LinkedList<>();
-        baseArgs.add(new Argument("lib", "What library to use.", false));
-        optParser = new TreeParser(actions, false, baseArgs);
+        optParser = new TreeParser(actions, false);
 
         opts.addOption(Option.builder("V").longOpt("version").desc("Print version info.").build());
         opts.addOption(Option.builder("h").longOpt("help").desc("Print help(about <command>).").hasArg().argName("command").optionalArg(true).build());

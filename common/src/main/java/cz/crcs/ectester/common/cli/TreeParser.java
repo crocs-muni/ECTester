@@ -52,9 +52,12 @@ public class TreeParser implements CommandLineParser {
     public TreeCommandLine parse(Options options, String[] arguments, Properties properties, boolean stopAtNonOption) throws ParseException {
         DefaultParser thisParser = new DefaultParser();
         CommandLine cli = thisParser.parse(options, arguments, properties, true);
+        //System.err.println("arguments " + Arrays.toString(arguments));
+        //System.err.println("args " + Arrays.toString(args.stream().map(Argument::getName).collect(Collectors.toList()).toArray()));
 
         CommandLine subCli = null;
         String[] cliArgs = cli.getArgs();
+        //System.err.println(Arrays.toString(cliArgs));
         String sub = null;
         if (cliArgs.length != 0) {
             sub = cliArgs[0];
@@ -74,6 +77,7 @@ public class TreeParser implements CommandLineParser {
             if (matches.size() == 1) {
                 sub = matches.get(0);
                 ParserOptions subparser = parsers.get(sub);
+                //System.err.println("found sub ->" + sub);
                 String[] remainingArgs = new String[cliArgs.length - 1];
                 System.arraycopy(cliArgs, 1, remainingArgs, 0, cliArgs.length - 1);
                 subCli = subparser.getParser().parse(subparser.getOptions(), remainingArgs, true);
@@ -92,37 +96,35 @@ public class TreeParser implements CommandLineParser {
 
         if (subCli instanceof TreeCommandLine) {
             TreeCommandLine subTreeCli = (TreeCommandLine) subCli;
-
-            TreeCommandLine lastCli = subTreeCli;
-            while (lastCli.getNext() != null) {
-                lastCli = lastCli.getNext();
-            }
-
-            if (lastCli.getArgs().length < requiredArgs) {
-                throw new MissingArgumentException("Not enough arguments: " + reqArgs);
-            }
-            //else if (lastCli.getArgs().length > maxArgs) {
-            //    throw new MissingArgumentException("Too many arguments.");
-            //}
-
             subTreeCli.setName(sub);
             return new TreeCommandLine(cli, subTreeCli);
         } else if (subCli != null) {
+            //System.err.println("subCli " + subCli.getArgs().length + " maxArgs " + maxArgs);
             if (subCli.getArgs().length < requiredArgs) {
                 throw new MissingArgumentException("Not enough arguments: " + reqArgs);
             } else if (subCli.getArgs().length > maxArgs) {
-                throw new MissingArgumentException("Too many arguments.");
+                for (String arg : subCli.getArgs()) {
+                    if (arg.startsWith("-")) {
+                        throw new UnrecognizedOptionException("Option " + arg + " not recognized.");
+                    }
+                }
+                throw new MissingArgumentException("Too many arguments: " + Arrays.toString(cliArgs));
             }
 
             TreeCommandLine subTreeCli = new TreeCommandLine(sub, subCli, null);
             return new TreeCommandLine(cli, subTreeCli);
         } else {
+            //System.err.println("cliArgs " + cliArgs.length + " maxArgs " + maxArgs);
             if (cliArgs.length < requiredArgs) {
                 throw new MissingArgumentException("Not enough arguments: " + reqArgs);
+            } else if (cliArgs.length > maxArgs) {
+                for (String arg : cliArgs) {
+                    if (arg.startsWith("-")) {
+                        throw new UnrecognizedOptionException("Option " + arg + " not recognized.");
+                    }
+                }
+                throw new MissingArgumentException("Too many arguments: " + Arrays.toString(cliArgs));
             }
-            //else if (cliArgs.length > maxArgs) {
-            //    throw new MissingArgumentException("Too many arguments.");
-            //}
 
             return new TreeCommandLine(cli, null);
         }

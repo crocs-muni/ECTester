@@ -11,13 +11,9 @@ public class ParserOptions {
     private Options options;
     private String description;
 
-    public ParserOptions(CommandLineParser parser, Options options) {
+    public ParserOptions(CommandLineParser parser, Options options, String description) {
         this.parser = parser;
         this.options = options;
-    }
-
-    public ParserOptions(CommandLineParser parser, Options options, String description) {
-        this(parser, options);
         this.description = description;
     }
 
