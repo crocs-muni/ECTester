@@ -111,6 +111,7 @@ public abstract class BaseXMLTestWriter implements TestWriter {
         if (index != -1) {
             testElem.setAttribute("index", String.valueOf(index));
         }
+        testElem.setAttribute("duration", String.valueOf(t.getDuration()));
 
         return testElem;
     }

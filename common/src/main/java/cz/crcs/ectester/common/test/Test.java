@@ -10,6 +10,7 @@ import static cz.crcs.ectester.common.test.Result.Value;
 public abstract class Test implements Testable, Cloneable {
     protected boolean hasRun;
     protected boolean hasStarted;
+    protected long duration;
     protected Result result;
 
     public Result getResult() {
@@ -48,6 +49,10 @@ public abstract class Test implements Testable, Cloneable {
         return hasStarted;
     }
 
+    public long getDuration() {
+        return duration;
+    }
+
     @Override
     public void reset() {
         hasRun = false;
@@ -68,7 +73,10 @@ public abstract class Test implements Testable, Cloneable {
             return;
         try {
             hasStarted = true;
+            long elapsed = -System.nanoTime();
             runSelf();
+            elapsed += System.nanoTime();
+            duration = elapsed;
             hasRun = true;
         } catch (TestException e) {
             result = new Result(Value.ERROR, e);

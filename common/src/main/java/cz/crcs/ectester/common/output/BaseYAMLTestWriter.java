@@ -87,6 +87,7 @@ public abstract class BaseYAMLTestWriter implements TestWriter {
         if (index != -1) {
             testObj.put("index", index);
         }
+        testObj.put("duration", t.getDuration());
 
         return testObj;
     }

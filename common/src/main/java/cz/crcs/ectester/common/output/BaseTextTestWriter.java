@@ -6,7 +6,9 @@ import cz.crcs.ectester.common.test.*;
 import java.io.PrintStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * An absctract basis of a TextTestWriter, which outputs in a human readable format, into console.
@@ -58,13 +60,13 @@ public abstract class BaseTextTestWriter implements TestWriter {
 
         String line = "";
         if (root) {
-            char[] charLine = new char[BASE_WIDTH + 24];
-            new String(new char[BASE_WIDTH + 24]).replace("\0", "━").getChars(0, charLine.length - 1, charLine, 0);
+            char[] charLine = new char[BASE_WIDTH + 26];
+            new String(new char[BASE_WIDTH + 26]).replace("\0", "━").getChars(0, charLine.length - 1, charLine, 0);
             charLine[0] = '■';
             charLine[4] = '┳';
             charLine[BASE_WIDTH + 1] = '┳';
             charLine[BASE_WIDTH + 13] = '┳';
-            charLine[BASE_WIDTH + 23] = '┓';
+            charLine[BASE_WIDTH + 25] = '┓';
             line = new String(charLine) + System.lineSeparator();
         }
 
@@ -95,6 +97,24 @@ public abstract class BaseTextTestWriter implements TestWriter {
             valueColor = Colors.Foreground.YELLOW;
         }
         out.append(Colors.colored(String.format("%-9s", result.getValue().name()), Colors.Attribute.BOLD, valueColor));
+        out.append(" ┃ ");
+        long totalNanos = t.getDuration();
+        double totalSeconds = totalNanos / 1e9;
+        double totalMillis = totalNanos / 1e6;
+        double totalMicros = totalNanos / 1e3;
+        if (totalSeconds < 1) {
+            if (totalMillis < 1) {
+                if (totalMicros < 1) {
+                    out.append(String.format("%7d ns", totalNanos));
+                } else {
+                    out.append(String.format("%6.2f µs", totalMicros));
+                }
+            } else {
+                out.append(String.format("%6.2f ms", totalMillis));
+            }
+        } else {
+            out.append(String.format("%6.2f s", totalSeconds));
+        }
         out.append(" ┃ ");
 
         if (compound) {

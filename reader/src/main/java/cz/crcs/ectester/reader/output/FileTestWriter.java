@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  */
 public class FileTestWriter extends BaseFileTestWriter {
 
-    private static final Pattern PREFIX = Pattern.compile("(text|xml|yaml|yml):.+");
+    private static final Pattern PREFIX = Pattern.compile("(text|txt|xml|yaml|yml):.+");
 
     public FileTestWriter(String defaultFormat, boolean systemOut, String[] files) throws ParserConfigurationException, FileNotFoundException {
         super(defaultFormat, systemOut, files);
@@ -37,6 +37,7 @@ public class FileTestWriter extends BaseFileTestWriter {
         }
         switch (format) {
             case "text":
+            case "txt":
                 return new TextTestWriter(out);
             case "xml":
                 return new XMLTestWriter(out);
