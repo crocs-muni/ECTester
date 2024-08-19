@@ -148,10 +148,8 @@ public class ECTesterStandalone {
                 } else {
                     // Load the utility libs.
                     if (cli.hasOption("no-preload")) {
-                        System.err.println("Loading dummy");
                         System.load(reqs.resolve("lib_prng_dummy.so").toString());
                     } else {
-                        System.err.println("Loading right");
                         System.load(reqs.resolve("lib_prng.so").toString());
                     }
                     System.load(reqs.resolve("lib_timing.so").toString());
