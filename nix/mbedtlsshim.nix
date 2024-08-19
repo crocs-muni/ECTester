@@ -1,14 +1,17 @@
 { pkgs, mbedtls }:
 with pkgs;
-stdenv.mkDerivation rec {
-  name = "MbedTLSShim";
-  src = ../standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni;
+let
   rawVersion = pkgs.lib.strings.removePrefix "v" mbedtls.version;
+in
+stdenv.mkDerivation rec {
+  name = "MbedTLSShim-${mbedtls.version}";
+  src = ../standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni;
+
 
   buildInputs = [
     mbedtls
     pkg-config
-    jdk
+    pkgs.jdk_headless
   ];
 
   buildPhase = ''

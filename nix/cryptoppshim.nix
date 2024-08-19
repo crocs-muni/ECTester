@@ -4,13 +4,13 @@ let
   dotVersion = builtins.replaceStrings ["_"] ["."] cryptopp.version;
 in
 stdenv.mkDerivation {
-  name = "Crypto++ Shim";
+  name = "Crypto++Shim-${cryptopp.version}";
   src = ../standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni;
 
   buildInputs = [
     cryptopp
     pkg-config
-    jdk
+    pkgs.jdk_headless
   ];
 
   buildPhase = ''

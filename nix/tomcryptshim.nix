@@ -5,14 +5,14 @@
 }:
 with pkgs;
 stdenv.mkDerivation {
-  name = "TomCryptShim";
+  name = "TomCryptShim-${libtomcrypt.version}";
   src = ../standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni;
 
   buildInputs = [
     libtommath
     libtomcrypt
     pkg-config
-    jdk
+    pkgs.jdk_headless
   ];
 
   buildPhase = ''

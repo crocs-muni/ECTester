@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
     pkg-config
     cmake
     which
-    jdk
+    pkgs.jdk_headless
   ];
 
   dontUseCmakeConfigure = true;
