@@ -69,7 +69,7 @@ public class StandaloneCofactorSuite extends StandaloneTestSuite {
                         KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
                         KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).publicKey(ecpub).privateKgt(kgt).random(getRandom()).build();
                         Test keyAgreement = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
-                        specificKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " cofactor key test.", keyAgreement));
+                        specificKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " cofactor key test (" + pub.getDesc() + ").", keyAgreement));
                     }
                     allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform " + kaIdent.getName() + " with public points on non-generator subgroup.", specificKaTests.toArray(new Test[0])));
                 }
