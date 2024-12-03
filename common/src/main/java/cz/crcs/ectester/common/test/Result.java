@@ -49,21 +49,25 @@ public class Result {
      * A result value of a Test.
      */
     public enum Value {
-        SUCCESS(true, "Expected success."),
-        FAILURE(false, "Unexpected failure."),
-        UXSUCCESS(false, "Unexpected success."),
-        XFAILURE(true, "Expected failure."),
-        ERROR(false, "Error.");
+        SUCCESS(true, true, "Expected success."),
+        FAILURE(false, false, "Unexpected failure."),
+        UXSUCCESS(false, true, "Unexpected success."),
+        XFAILURE(true, false, "Expected failure."),
+        OKSUCCESS(true, true, "Any result is OK."),
+        OKFAILURE(true, false, "Any result is OK."),
+        ERROR(false, false, "Error.");
 
         private boolean ok;
+        private boolean successful;
         private String desc;
 
-        Value(boolean ok) {
+        Value(boolean ok, boolean successful) {
             this.ok = ok;
+            this.successful = successful;
         }
 
-        Value(boolean ok, String desc) {
-            this(ok);
+        Value(boolean ok, boolean successful, String desc) {
+            this(ok, successful);
             this.desc = desc;
         }
 
@@ -74,7 +78,7 @@ public class Result {
                 case FAILURE:
                     return successful ? UXSUCCESS : XFAILURE;
                 case ANY:
-                    return successful ? SUCCESS : XFAILURE;
+                    return successful ? OKSUCCESS : OKFAILURE;
             }
             return SUCCESS;
         }
@@ -88,6 +92,10 @@ public class Result {
 
         public boolean ok() {
             return ok;
+        }
+
+        public boolean successful() {
+            return successful;
         }
 
         public String description() {

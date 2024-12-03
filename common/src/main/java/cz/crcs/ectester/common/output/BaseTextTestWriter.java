@@ -6,9 +6,7 @@ import cz.crcs.ectester.common.test.*;
 import java.io.PrintStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * An absctract basis of a TextTestWriter, which outputs in a human readable format, into console.
@@ -89,7 +87,9 @@ public abstract class BaseTextTestWriter implements TestWriter {
         out.append(String.format(widthSpec, desc));
         out.append(" ┃ ");
         Colors.Foreground valueColor;
-        if (result.getValue().ok()) {
+        if (result.getValue().equals(Result.Value.OKSUCCESS) || result.getValue().equals(Result.Value.OKFAILURE)) {
+            valueColor = Colors.Foreground.WHITE;
+        } else if (result.getValue().ok()) {
             valueColor = Colors.Foreground.GREEN;
         } else if (result.getValue().equals(Result.Value.ERROR)) {
             valueColor = Colors.Foreground.RED;
