@@ -94,6 +94,13 @@ public class CardIntegerPaddingTests {
                         } catch (AssertionFailedError e) {
                             errors.add(e);
                         }
+                        byte[][] field = curve.getParam(EC_Consts.PARAMETER_FP);
+                        byte[] p = field[0];
+                        try {
+                            assertEquals(bytes, p.length, "Curve: " + category.getName() + "/" + curve.getId() + " (p)");
+                        } catch (AssertionFailedError e) {
+                            errors.add(e);
+                        }
                     }
                 }
             }

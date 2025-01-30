@@ -1,12 +1,12 @@
 package cz.crcs.ectester.reader.command;
 
+import cz.crcs.ectester.common.ec.EC_Consts;
 import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.common.ec.EC_Params;
-import cz.crcs.ectester.common.ec.EC_Consts;
 import cz.crcs.ectester.common.util.ByteUtil;
+import cz.crcs.ectester.common.util.CardConsts;
 import cz.crcs.ectester.common.util.CardUtil;
 import cz.crcs.ectester.common.util.ECUtil;
-import cz.crcs.ectester.common.util.CardConsts;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
@@ -19,7 +19,6 @@ import javax.smartcardio.ResponseAPDU;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -372,6 +371,25 @@ public abstract class Command implements Cloneable {
             ByteUtil.setShort(data, 0, params);
             if (external != null) {
                 System.arraycopy(external, 0, data, 2, external.length);
+                if ((params & EC_Consts.PARAMETER_FP) != 0) {
+                    EC_Params par = new EC_Params(params);
+                    par.readBytes(external);
+                    byte[][] prime = par.getParam(EC_Consts.PARAMETER_FP);
+                    byte[] p = prime[0];
+                    int bytes = p.length;
+                    if ((params & EC_Consts.PARAMETER_G) != 0) {
+                        byte[][] generator = par.getParam(EC_Consts.PARAMETER_G);
+                        if (generator[0].length != bytes || generator[1].length != bytes) {
+                            throw new IllegalArgumentException("Generator point does not match prime field size.");
+                        }
+                    }
+                    if ((params & EC_Consts.PARAMETER_W) != 0) {
+                        byte[][] w = par.getParam(EC_Consts.PARAMETER_W);
+                        if (w[0].length != bytes || w[1].length != bytes) {
+                            throw new IllegalArgumentException("Public key point does not match prime field size.");
+                        }
+                    }
+                }
             }
 
             this.cmd = new CommandAPDU(CardConsts.CLA_ECTESTERAPPLET, CardConsts.INS_SET, keyPair, curve, data);
