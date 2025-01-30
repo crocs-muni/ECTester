@@ -373,13 +373,18 @@ public abstract class Command implements Cloneable {
                 System.arraycopy(external, 0, data, 2, external.length);
                 if ((params & EC_Consts.PARAMETER_FP) != 0) {
                     EC_Params par = new EC_Params(params);
-                    par.readBytes(external);
+                    boolean read = par.inflate(external);
+                    if (!read) {
+                        throw new IllegalArgumentException("External curve data does not match parameters.");
+                    }
                     byte[][] prime = par.getParam(EC_Consts.PARAMETER_FP);
                     byte[] p = prime[0];
                     int bytes = p.length;
                     if ((params & EC_Consts.PARAMETER_G) != 0) {
                         byte[][] generator = par.getParam(EC_Consts.PARAMETER_G);
                         if (generator[0].length != bytes || generator[1].length != bytes) {
+                            System.err.println("Generator x length: " + generator[0].length + " vs " + bytes);
+                            System.err.println("Generator y length: " + generator[1].length + " vs " + bytes);
                             throw new IllegalArgumentException("Generator point does not match prime field size.");
                         }
                     }

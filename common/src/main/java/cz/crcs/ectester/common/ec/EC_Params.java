@@ -1,6 +1,7 @@
 package cz.crcs.ectester.common.ec;
 
 import cz.crcs.ectester.common.util.ByteUtil;
+import cz.crcs.ectester.common.util.CardUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -200,6 +201,68 @@ public class EC_Params extends EC_Data {
         }
 
         return (out.size() == 0) ? null : out.toByteArray();
+    }
+
+    public boolean inflate(byte[] flattened) {
+        short paramMask = EC_Consts.PARAMETER_FP;
+        int i = 0;
+        int offset = 0;
+        while (paramMask <= EC_Consts.PARAMETER_S) {
+            short masked = (short) (this.params & paramMask);
+            if (masked != 0) {
+                short length = ByteUtil.getShort(flattened, offset);
+                offset += 2;
+                byte[] param = new byte[length];
+                System.arraycopy(flattened, offset, param, 0, length);
+                offset += length;
+                //System.out.println(CardUtil.getParams(masked) + " Length: " + length + " Param: " + ByteUtil.bytesToHex(param, false));
+                //System.out.println();
+                if (masked == EC_Consts.PARAMETER_F2M) {
+                    data[i] = new byte[2];
+                    data[i + 1] = new byte[2];
+                    data[i + 2] = new byte[2];
+                    data[i + 3] = new byte[2];
+                    if (length == 4) {
+                        // only m and e_1, other e are zero
+                        System.arraycopy(param, 0, data[i], 0, 2);
+                        System.arraycopy(param, 2, data[i + 1], 0, 2);
+                    } else if (length == 8) {
+                        // all m, e_1, e_2, e_3 are specified
+                        System.arraycopy(param, 0, data[i], 0, 2);
+                        System.arraycopy(param, 2, data[i + 1], 0, 2);
+                        System.arraycopy(param, 4, data[i + 2], 0, 2);
+                        System.arraycopy(param, 6, data[i + 3], 0, 2);
+                    }
+                } else if (masked == EC_Consts.PARAMETER_G || masked == EC_Consts.PARAMETER_W) {
+                    if ((length - 1) % 2 != 0) {
+                        return false;
+                    }
+                    int half = (length - 1) / 2;
+                    data[i] = new byte[half];
+                    data[i + 1] = new byte[half];
+                    System.arraycopy(param, 1, data[i], 0, half);
+                    System.arraycopy(param, 1 + half, data[i + 1], 0, half);
+                } else {
+                    data[i] = param;
+                }
+            }
+
+            if (masked == EC_Consts.PARAMETER_F2M) {
+                i += 4;
+            } else if (masked == EC_Consts.PARAMETER_G || masked == EC_Consts.PARAMETER_W) {
+                i += 2;
+            } else if (masked != 0) {
+                i++;
+            }
+            paramMask = (short) (paramMask << 1);
+        }
+        return true;
+    }
+
+    public static EC_Params inflate(short params, byte[] flattened) {
+        EC_Params p = new EC_Params(params);
+        p.inflate(flattened);
+        return p;
     }
 
     @Override

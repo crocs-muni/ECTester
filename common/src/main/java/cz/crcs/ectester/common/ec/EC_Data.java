@@ -152,6 +152,7 @@ public abstract class EC_Data implements Comparable<EC_Data> {
                 return false;
             }
             short paramLength = ByteUtil.getShort(bytes, offset);
+            System.out.println("paramLength: " + paramLength);
             offset += 2;
             if (bytes.length < offset + paramLength) {
                 return false;
