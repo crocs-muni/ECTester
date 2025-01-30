@@ -8,7 +8,7 @@ on:
 
 jobs:
   applet:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
 
@@ -46,7 +46,7 @@ jobs:
             applet/build/javacard/*.cap
 
   reader:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
 
@@ -88,7 +88,7 @@ jobs:
           slug: crocs-muni/ECTester
 
   standalone:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
 
