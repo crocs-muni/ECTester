@@ -14,7 +14,7 @@
 
     <pubkey>
         <id>compression/128/non-residue</id>
-        <inline>0xb6707fa8afeddf79b9579e8dda4eaf51,0x000000000000000000000000000000</inline>
+        <inline>0xb6707fa8afeddf79b9579e8dda4eaf51,0x0000000000000000000000000000000</inline>
         <curve>secg/secp128r1</curve>
     </pubkey>
     <pubkey>

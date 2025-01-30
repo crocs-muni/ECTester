@@ -55,7 +55,7 @@
 </pubkey>
 <pubkey>
     <id>k233/9</id>
-    <inline>0x0193d8ff00ac50effd52134acd2f15c51e452727a948b310c367328dcc,0x01bed4420061e99f86f9e4f87092dde4f9a0f8ffb91164f175619ed01f8d</inline>
+    <inline>0x00193d8ff00ac50effd52134acd2f15c51e452727a948b310c367328dcc,0x01bed4420061e99f86f9e4f87092dde4f9a0f8ffb91164f175619ed01f8d</inline>
     <curve>nist/K-233</curve>
     <desc>invalid order = 29</desc>
 </pubkey>

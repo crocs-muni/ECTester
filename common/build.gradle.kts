@@ -20,6 +20,11 @@ dependencies {
     api("org.yaml:snakeyaml:2.2")
     // https://mvnrepository.com/artifact/com.klinec/jcardsim
     api("com.klinec:jcardsim:3.0.5.11")
+
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit-pioneer:junit-pioneer:2.2.0")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 java {
