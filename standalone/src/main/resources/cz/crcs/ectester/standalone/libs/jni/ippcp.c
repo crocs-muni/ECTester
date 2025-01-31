@@ -27,6 +27,7 @@ typedef struct {
 	const char name[128];
 	IppECCType id;
 	int size;
+	const IppsGFpMethod* (*gfp_method_func)(void);
 	IppStatus (*context_size_func)(int *);
 	IppStatus (*init_func)(IppsECCPState *);
 	IppStatus (*set_func)(IppsECCPState *);
@@ -36,15 +37,15 @@ typedef struct {
 static const ippcp_curve CURVES[] = {
     {"secp112r1", IppECCPStd112r1, 112, NULL, NULL, NULL, NULL},
     {"secp112r2", IppECCPStd112r2, 112, NULL, NULL, NULL, NULL},
-    {"secp128r1", IppECCPStd128r1, 128, ippsECCPGetSizeStd128r1, ippsECCPInitStd128r1, ippsECCPSetStd128r1, NULL},
-    {"secp128r2", IppECCPStd128r2, 128, ippsECCPGetSizeStd128r2, ippsECCPInitStd128r2, ippsECCPSetStd128r2, NULL},
+    {"secp128r1", IppECCPStd128r1, 128, NULL, NULL, NULL, NULL},
+    {"secp128r2", IppECCPStd128r2, 128, NULL, NULL, NULL, NULL},
     {"secp160r1", IppECCPStd160r1, 160, NULL, NULL, NULL, NULL},
     {"secp160r2", IppECCPStd160r2, 160, NULL, NULL, NULL, NULL},
-    {"secp192r1", IppECCPStd192r1, 192, ippsECCPGetSizeStd192r1, ippsECCPInitStd192r1, ippsECCPSetStd192r1, ippsECCPBindGxyTblStd192r1},
-    {"secp224r1", IppECCPStd224r1, 224, ippsECCPGetSizeStd224r1, ippsECCPInitStd224r1, ippsECCPSetStd224r1, ippsECCPBindGxyTblStd224r1},
-    {"secp256r1", IppECCPStd256r1, 256, ippsECCPGetSizeStd256r1, ippsECCPInitStd256r1, ippsECCPSetStd256r1, ippsECCPBindGxyTblStd256r1},
-    {"secp384r1", IppECCPStd384r1, 384, ippsECCPGetSizeStd384r1, ippsECCPInitStd384r1, ippsECCPSetStd384r1, ippsECCPBindGxyTblStd384r1},
-    {"secp521r1", IppECCPStd521r1, 521, ippsECCPGetSizeStd521r1, ippsECCPInitStd521r1, ippsECCPSetStd521r1, ippsECCPBindGxyTblStd521r1}};
+    {"secp192r1", IppECCPStd192r1, 192, ippsGFpMethod_p192r1, NULL, NULL, NULL},
+    {"secp224r1", IppECCPStd224r1, 224, ippsGFpMethod_p224r1, NULL, NULL, NULL},
+    {"secp256r1", IppECCPStd256r1, 256, ippsGFpMethod_p256r1, NULL, NULL, NULL},
+    {"secp384r1", IppECCPStd384r1, 384, ippsGFpMethod_p384r1, NULL, NULL, NULL},
+    {"secp521r1", IppECCPStd521r1, 521, ippsGFpMethod_p521r1, NULL, NULL, NULL}};
 
 static const int NUM_CURVES = sizeof(CURVES) / sizeof(ippcp_curve);
 
@@ -55,10 +56,10 @@ JNIEXPORT jobject JNICALL Java_cz_crcs_ectester_standalone_libs_IppcpLib_createP
 
 	jmethodID init = (*env)->GetMethodID(env, local_provider_class, "<init>", "(Ljava/lang/String;DLjava/lang/String;)V");
 
-	const IppLibraryVersion *lib = ippcpGetLibVersion();
-	jstring name = (*env)->NewStringUTF(env, lib->Name);
+	const CryptoLibraryVersion *lib = cryptoGetLibVersion();
+	jstring name = (*env)->NewStringUTF(env, lib->name);
 	double version = (double)lib->major + ((double)lib->minor / 10);
-	jstring info = (*env)->NewStringUTF(env, lib->Version);
+	jstring info = (*env)->NewStringUTF(env, lib->strVersion);
 
 	return (*env)->NewObject(env, provider_class, init, name, version, info);
 }
@@ -205,17 +206,19 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
 }
 
 
-static IppsECCPPointState *new_point(int size) {
+static IppsGFpECPoint *new_point(IppsGFpECState *ec) {
 	int point_size;
-	ippsECCPPointGetSize(size, &point_size);
-	IppsECCPPointState *point = malloc(point_size);
-	ippsECCPPointInit(size, point);
+	ippsGFpECPointGetSize(ec, &point_size);
+	IppsGFpECPoint *point = malloc(point_size);
+	ippsGFpECPointInit(NULL, NULL, point, ec);
 	return point;
 }
 
+#define BITS_TO_I32(bits) ((bits + 7) / 8) / sizeof(Ipp32u)
+
 static IppsBigNumState *new_bn(int bits) {
 	int bn_size;
-	int len = ((bits + 7) / 8) / sizeof(Ipp32u);
+	int len = BITS_TO_I32(bits);
 	ippsBigNumGetSize(len, &bn_size);
 	IppsBigNumState *bn = malloc(bn_size);
 	ippsBigNumInit(len, bn);
@@ -256,6 +259,24 @@ static IppsBigNumState *biginteger_to_bn(JNIEnv *env, jobject bigint) {
 	return result;
 }
 
+static IppsGFpElement *biginteger_to_gfp_elem(JNIEnv *env, jobject bigint, IppsGFpState *gf, jint bits, int elem_size) {
+	IppsBigNumState *bn = biginteger_to_bn(env, bigint);
+	IppsGFpElement *result = malloc(elem_size);
+	ippsGFpSetElementRegular(bn, result, gf);
+	return result;
+}
+
+static jobject gfp_elem_to_biginteger(JNIEnv *env, const IppsGFpElement *elem, IppsGFpState *gf, jint bits) {
+	int bn_size = BITS_TO_I32(bits) * sizeof(Ipp32u);
+	jmethodID biginteger_init = (*env)->GetMethodID(env, biginteger_class, "<init>", "(I[B)V");
+	jbyteArray bytes = (*env)->NewByteArray(env, bn_size);
+	jbyte *data = (*env)->GetByteArrayElements(env, bytes, NULL);
+	ippsGFpGetElementOctString(elem, data, bn_size, gf);
+	(*env)->ReleaseByteArrayElements(env, bytes, data, 0);
+	jobject result = (*env)->NewObject(env, biginteger_class, biginteger_init, 1, bytes);
+	return result;
+}
+
 /*
 static void biginteger_print(JNIEnv *env, jobject bigint) {
     jmethodID to_string = (*env)->GetMethodID(env, biginteger_class, "toString", "(I)Ljava/lang/String;");
@@ -288,24 +309,55 @@ static IppsECCPState *create_curve(JNIEnv *env, jobject params, int *keysize) {
     jobject p = (*env)->CallObjectMethod(env, field, get_p);
 	IppsBigNumState *p_bn = biginteger_to_bn(env, p);
 
+	const IppsGFpMethod *method = ippsGFpMethod_pArb();
+	int gfp_size;
+	IppStatus err = ippsGFpGetSize(bits, &gfp_size);
+	if (err != ippStsNoErr) {
+		goto err_out;
+	}
+	IppsGFpState *gf = malloc(gfp_size);
+	err = ippsGFpInit(p_bn, bits, method, gf);
+	if (err != ippStsNoErr) {
+		free(gf);
+		goto err_out;
+	}
+	int elem_size;
+	err = ippsGFpElementGetSize(gf, &elem_size);
+	if (err != ippStsNoErr) {
+		free(gf);
+		goto err_out;
+	}
+
 	jmethodID get_a = (*env)->GetMethodID(env, elliptic_curve_class, "getA", "()Ljava/math/BigInteger;");
     jobject a = (*env)->CallObjectMethod(env, curve, get_a);
-    IppsBigNumState *a_bn = biginteger_to_bn(env, a);
+    IppsGFpElement *a_elem = biginteger_to_gfp_elem(env, a, gf, bits, elem_size);
+    if (!a_elem) {
+		goto err_out;
+    }
 
     jmethodID get_b = (*env)->GetMethodID(env, elliptic_curve_class, "getB", "()Ljava/math/BigInteger;");
     jobject b = (*env)->CallObjectMethod(env, curve, get_b);
-    IppsBigNumState *b_bn = biginteger_to_bn(env, b);
+    IppsGFpElement *b_elem = biginteger_to_gfp_elem(env, b, gf, bits, elem_size);
+    if (!b_elem) {
+		goto err_out;
+    }
 
 	jmethodID get_g = (*env)->GetMethodID(env, ec_parameter_spec_class, "getGenerator", "()Ljava/security/spec/ECPoint;");
     jobject g = (*env)->CallObjectMethod(env, params, get_g);
 
     jmethodID get_x = (*env)->GetMethodID(env, point_class, "getAffineX", "()Ljava/math/BigInteger;");
     jobject gx = (*env)->CallObjectMethod(env, g, get_x);
-    IppsBigNumState *gx_bn = biginteger_to_bn(env, gx);
+    IppsGFpElement *gx_elem = biginteger_to_gfp_elem(env, gx, gf, bits, elem_size);
+    if (!gx_elem) {
+		goto err_out;
+    }
 
     jmethodID get_y = (*env)->GetMethodID(env, point_class, "getAffineY", "()Ljava/math/BigInteger;");
     jobject gy = (*env)->CallObjectMethod(env, g, get_y);
-    IppsBigNumState *gy_bn = biginteger_to_bn(env, gy);
+    IppsGFpElement *gy_elem = biginteger_to_gfp_elem(env, gy, gf, bits, elem_size);
+    if (!gy_elem) {
+		goto err_out;
+    }
 
 	jmethodID get_n = (*env)->GetMethodID(env, ec_parameter_spec_class, "getOrder", "()Ljava/math/BigInteger;");
     jobject n = (*env)->CallObjectMethod(env, params, get_n);
@@ -313,71 +365,109 @@ static IppsECCPState *create_curve(JNIEnv *env, jobject params, int *keysize) {
 
 	jmethodID get_h = (*env)->GetMethodID(env, ec_parameter_spec_class, "getCofactor", "()I");
 	jint h = (*env)->CallIntMethod(env, params, get_h);
+	IppsBigNumState *h_bn = new_bn(32);
+	ippsSet_BN(IppsBigNumPOS, 1, (Ipp32u *) &h, h_bn);
 
 	if (keysize) {
 		*keysize = bits;
 	}
 
 	int size;
-	IppStatus err = ippsECCPGetSize(bits, &size);
+	err = ippsGFpECGetSize(gf, &size);
 	if (err != ippStsNoErr) {
 		goto err_out;
 	}
-	IppsECCPState *result = malloc(size);
-	err = ippsECCPInit(bits, result);
-	if (err != ippStsNoErr) {
-		free(result);
-		goto err_out;
-	}
-	err = ippsECCPSet(p_bn, a_bn, b_bn, gx_bn, gy_bn, n_bn, h, result);
+	IppsGFpECState *result = malloc(size);
+	err = ippsGFpECInit(gf, a_elem, b_elem, result);
 	if (err != ippStsNoErr) {
 		free(result);
 		goto err_out;
 	}
-	return result;
+	err = ippsGFpECSetSubgroup(gx_elem, gy_elem, n_bn, h_bn, result);
+	if (err != ippStsNoErr) {
+		free(result);
+		goto err_out;
+	}
 
+	return result;
 err_out:
-	free(p_bn);
-	free(a_bn);
-	free(b_bn);
-	free(gx_bn);
-	free(gy_bn);
-	free(n_bn);
+	if (p_bn)
+		free(p_bn);
+	if (a_elem)
+		free(a_elem);
+	if (b_elem)
+		free(b_elem);
+	if (gx_elem)
+		free(gx_elem);
+	if (gy_elem)
+		free(gy_elem);
+	if (n_bn)
+		free(n_bn);
+	if (h_bn)
+		free(h_bn);
 	return NULL;
 }
 
-static jobject create_ec_param_spec(JNIEnv *env, int keysize, IppsECCPState *curve) {
-	IppsBigNumState *p_bn = new_bn(keysize);
-	IppsBigNumState *a_bn = new_bn(keysize);
-	IppsBigNumState *b_bn = new_bn(keysize);
-	int ord_bits;
-	ippsECCPGetOrderBitSize(&ord_bits, curve);
-	IppsBigNumState *gx_bn = new_bn(ord_bits);
-	IppsBigNumState *gy_bn = new_bn(ord_bits);
-	IppsBigNumState *order_bn = new_bn(ord_bits);
-	int cofactor;
+static jobject create_ec_param_spec(JNIEnv *env, int keysize, IppsGFpECState *curve) {
+	IppStatus err;
 
-	ippsECCPGet(p_bn, a_bn, b_bn, gx_bn, gy_bn, order_bn, &cofactor, curve);
+	IppsGFpState *gf;
+
+	err = ippsGFpECGet(&gf, NULL, NULL, curve);
+	int elem_size;
+	err = ippsGFpElementGetSize(gf, &elem_size);
+	jmethodID biginteger_valueof = (*env)->GetStaticMethodID(env, biginteger_class, "valueOf", "(J)Ljava/math/BigInteger;");
+	jobject zero = (*env)->CallStaticObjectMethod(env, biginteger_class, biginteger_valueof, (jlong)0);
+	jobject one = (*env)->CallStaticObjectMethod(env, biginteger_class, biginteger_valueof, (jlong)1);
+	IppsGFpElement *zero_elem = biginteger_to_gfp_elem(env, zero, gf, keysize, elem_size);
+	IppsGFpElement *one_elem = biginteger_to_gfp_elem(env, one, gf, keysize, elem_size);
+	IppsGFpElement *pm1_elem = malloc(elem_size);
+	ippsGFpElementInit(NULL, 0, pm1_elem, gf);
+	ippsGFpSub(zero_elem, one_elem, pm1_elem, gf);
+	free(zero_elem);
+	free(one_elem);
+
+	jobject pm1 = gfp_elem_to_biginteger(env, pm1_elem, gf, keysize);
+	free(pm1_elem);
+	jmethodID biginteger_add = (*env)->GetMethodID(env, biginteger_class, "add", "(Ljava/math/BigInteger;)Ljava/math/BigInteger;");
+	jobject p = (*env)->CallObjectMethod(env, pm1, biginteger_add, one);
+
+	IppsGFpElement *a_elem = malloc(elem_size);
+	ippsGFpElementInit(NULL, 0, a_elem, gf);
+	IppsGFpElement *b_elem = malloc(elem_size);
+	ippsGFpElementInit(NULL, 0, b_elem, gf);
+	err = ippsGFpECGet(&gf, a_elem, b_elem, curve);
+
+	IppsGFpElement *gx_elem = malloc(elem_size);
+	ippsGFpElementInit(NULL, 0, gx_elem, gf);
+	IppsGFpElement *gy_elem = malloc(elem_size);
+	ippsGFpElementInit(NULL, 0, gy_elem, gf);
+
+	int ord_size;
+	ippsBigNumGetSize((keysize + 32) / 32, &ord_size);
+	IppsBigNumState *order_bn = malloc(ord_size);
+	ippsBigNumInit(ord_size, order_bn);
+	IppsBigNumState *cofactor_bn = malloc(4);
+	ippsBigNumInit(4, cofactor_bn);
+	err = ippsGFpECGetSubgroup(&gf, gx_elem, gy_elem, order_bn, cofactor_bn, curve);
 	
-	jobject p = bn_to_biginteger(env, p_bn);
     jmethodID fp_field_init = (*env)->GetMethodID(env, fp_field_class, "<init>", "(Ljava/math/BigInteger;)V");
     jobject field = (*env)->NewObject(env, fp_field_class, fp_field_init, p);
-	free(p_bn);
 	
-	jobject a = bn_to_biginteger(env, a_bn);
-	jobject b = bn_to_biginteger(env, b_bn);
-	free(a_bn);
-	free(b_bn);
+	jobject a = gfp_elem_to_biginteger(env, a_elem, gf, keysize);
+	jobject b = gfp_elem_to_biginteger(env, b_elem, gf, keysize);
+	free(a_elem);
+	free(b_elem);
 
 	jmethodID elliptic_curve_init = (*env)->GetMethodID(env, elliptic_curve_class, "<init>", "(Ljava/security/spec/ECField;Ljava/math/BigInteger;Ljava/math/BigInteger;)V");
     jobject elliptic_curve = (*env)->NewObject(env, elliptic_curve_class, elliptic_curve_init, field, a, b);
 
-	jobject gx = bn_to_biginteger(env, gx_bn);
-	jobject gy = bn_to_biginteger(env, gy_bn);
+	jobject gx = gfp_elem_to_biginteger(env, gx_elem, gf, keysize);
+	jobject gy = gfp_elem_to_biginteger(env, gy_elem, gf, keysize);
 	jmethodID point_init = (*env)->GetMethodID(env, point_class, "<init>", "(Ljava/math/BigInteger;Ljava/math/BigInteger;)V");
     jobject g = (*env)->NewObject(env, point_class, point_init, gx, gy);
-	free(gx_bn);
-	free(gy_bn);
+	free(gx_elem);
+	free(gy_elem);
 
 	jobject n = bn_to_biginteger(env, order_bn);
 	free(order_bn);
@@ -667,7 +757,7 @@ JNIEXPORT jbyteArray JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSig
 			throw_new(env, "java/security/GeneralSecurityException", ippcpGetStatusString(err));
 			goto error;
 		}
-		err = ippsECCPSignDSA(data_bn, priv_bn, r, s, curve);
+		err = ippsGFpECSignDSA(data_bn, priv_bn, r, s, curve);
 		if (err != ippStsNoErr) {
 			SIG_DEINIT();
 			throw_new(env, "java/security/GeneralSecurityException", ippcpGetStatusString(err));
@@ -701,7 +791,11 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 
 	if (VALIDATE_CURVE) {
 		IppECResult validation;
-		ippsECCPValidate(50, &validation, curve, ippsPRNGen, prng_state);
+		int buffer_size;
+		ippsGFpECScratchBufferSize(4, curve, &buffer_size);
+		Ipp8u *scratch = malloc(buffer_size);
+		ippsGFpECVerify(&validation, curve, scratach);
+		free(scratch);
 		if (validation != ippECValid) {
 			throw_new(env, "java/security/GeneralSecurityException", ippsECCGetResultString(validation));
 			free(curve);
@@ -712,7 +806,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeSigna
 
 	if (VALIDATE_POINT) {
 		IppECResult validation;
-		ippsECCPCheckPoint(pub, &validation, curve);
+		ippsGFpECTstPoint(pub, &validation, curve);
 		if (validation != ippECValid) {
 			throw_new(env, "java/security/GeneralSecurityException", ippsECCGetResultString(validation));
 			free(curve);
