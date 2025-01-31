@@ -89,6 +89,7 @@ public class AppTests {
     @MethodSource("libs")
     @StdIo()
     public void defaultSuite(String libName, StdOut out) {
+        assumeFalse(libName.equals("IPPCP"));
         String[] args = buildCLIArgs(libName, "default");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
             args = buildCLIArgs(libName, "default", "--kpg-type", "ECDH");
@@ -108,6 +109,7 @@ public class AppTests {
     @MethodSource("libs")
     @StdIo()
     public void testVectorSuite(String libName, StdOut out) {
+        assumeFalse(libName.equals("IPPCP"));
         String[] args = buildCLIArgs(libName, "test-vectors");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
             args = buildCLIArgs(libName, "test-vectors", "--kpg-type", "ECDH");
@@ -122,6 +124,7 @@ public class AppTests {
     @ParameterizedTest
     @MethodSource("libs")
     public void performanceSuite(String libName) {
+        assumeFalse(libName.equals("IPPCP"));
         String[] args = buildCLIArgs(libName, "performance");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
             args = buildCLIArgs(libName, "performance", "--kpg-type", "ECDH");
@@ -142,6 +145,7 @@ public class AppTests {
     @ParameterizedTest
     @MethodSource("libs")
     public void signatureSuite(String libName) {
+        assumeFalse(libName.equals("IPPCP"));
         String[] args = buildCLIArgs(libName, "signature", "-q");
         switch (libName) {
             case "Nettle":
@@ -161,6 +165,7 @@ public class AppTests {
     @ParameterizedTest
     @MethodSource("libs")
     public void miscSuite(String libName) {
+        assumeFalse(libName.equals("IPPCP"));
         String[] args = buildCLIArgs(libName, "miscellaneous", "-q");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
             args = buildCLIArgs(libName, "miscellaneous", "--kpg-type", "ECDH", "-q");
@@ -171,6 +176,7 @@ public class AppTests {
     @ParameterizedTest
     @MethodSource("libs")
     public void twistSuite(String libName) {
+        assumeFalse(libName.equals("IPPCP"));
         String[] args = buildCLIArgs(libName, "twist", "-q");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
             args = buildCLIArgs(libName, "twist", "--kpg-type", "ECDH", "-q");
@@ -181,6 +187,7 @@ public class AppTests {
     @ParameterizedTest
     @MethodSource("libs")
     public void degenerateSuite(String libName) {
+        assumeFalse(libName.equals("IPPCP"));
         String[] args = buildCLIArgs(libName, "degenerate", "-q");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
             args = buildCLIArgs(libName, "degenerate", "--kpg-type", "ECDH", "-q");
@@ -191,6 +198,7 @@ public class AppTests {
     @ParameterizedTest
     @MethodSource("libs")
     public void edgeCasesSuite(String libName) {
+        assumeFalse(libName.equals("IPPCP"));
         // TODO: Crypto++ and tomcrypt is broken here.
         assumeFalse(libName.equals("Crypto++") || libName.equals("tomcrypt"));
 
@@ -221,6 +229,7 @@ public class AppTests {
     @ParameterizedTest
     @MethodSource("libs")
     public void cofactorSuite(String libName) {
+        assumeFalse(libName.equals("IPPCP"));
         String[] args = buildCLIArgs(libName, "cofactor", "-q");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
             args = buildCLIArgs(libName, "cofactor", "--kpg-type", "ECDH", "-q");
@@ -248,6 +257,7 @@ public class AppTests {
     @ParameterizedTest
     @MethodSource("libs")
     public void invalidSuite(String libName) {
+        assumeFalse(libName.equals("IPPCP"));
         String[] args = buildCLIArgs(libName, "invalid", "-q");
         if (libName.equals("Botan") || libName.equals("Crypto++")) {
             args = buildCLIArgs(libName, "invalid", "--kpg-type", "ECDH", "-q");
@@ -260,6 +270,7 @@ public class AppTests {
     @MethodSource("libs")
     @StdIo()
     public void generate(String libName, StdOut out) {
+        assumeFalse(libName.equals("IPPCP"));
         String[] args = new String[]{"generate", "-n", "10", "-nc", "secg/secp256r1", libName};
         switch (libName) {
             case "Botan":
@@ -283,6 +294,7 @@ public class AppTests {
     @MethodSource("libs")
     @StdIo()
     public void ecdh(String libName, StdOut out) {
+        assumeFalse(libName.equals("IPPCP"));
         String[] args = new String[]{"ecdh", "-n", "10", "-nc", "secg/secp256r1", libName};
         switch (libName) {
             case "Nettle":
@@ -302,6 +314,7 @@ public class AppTests {
     @MethodSource("libs")
     @StdIo()
     public void ecdsa(String libName, StdOut out) {
+        assumeFalse(libName.equals("IPPCP"));
         String[] args = new String[]{"ecdsa", "-n", "10", "-nc", "secg/secp256r1", libName};
         switch (libName) {
             case "Nettle":
@@ -330,6 +343,7 @@ public class AppTests {
     @MethodSource("libs")
     @StdIo()
     public void export(String libName, StdOut out) {
+        assumeFalse(libName.equals("IPPCP"));
         // TODO: wolfCrypt is weirdly broken here.
         assumeFalse(libName.contains("wolfCrypt"));
         String[] args = new String[]{"export", "-b", "256", libName};

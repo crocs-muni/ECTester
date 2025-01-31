@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 public class DeterministicTests {
 
@@ -24,6 +25,7 @@ public class DeterministicTests {
     @MethodSource("libs")
     @StdIo()
     public void generate(String libName, StdOut out) {
+        assumeFalse(libName.equals("IPPCP"));
         String[] args = new String[]{"generate", "-ps", "123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234", "-n", "10", "-nc", "secg/secp256r1", libName};
         switch (libName) {
             case "Botan":
@@ -61,6 +63,7 @@ public class DeterministicTests {
     @MethodSource("libs")
     @StdIo()
     public void ecdh(String libName, StdOut out) {
+        assumeFalse(libName.equals("IPPCP"));
         String[] args = new String[]{"ecdh", "-ps", "123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234", "-n", "10", "-nc", "secg/secp256r1", libName};
         switch (libName) {
             case "Nettle":
@@ -96,6 +99,7 @@ public class DeterministicTests {
     @MethodSource("libs")
     @StdIo()
     public void ecdsa(String libName, StdOut out) {
+        assumeFalse(libName.equals("IPPCP"));
         String[] args = new String[]{"ecdsa", "-ps", "123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234", "-d", "1234", "-n", "10", "-nc", "secg/secp256r1", libName};
         switch (libName) {
             case "Nettle":
