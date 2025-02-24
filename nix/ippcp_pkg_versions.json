@@ -1,4 +1,12 @@
 {
+    "v1_0_1": {
+        "version": "v1.0.1",
+        "hash": "sha256-C8Leh892xaaLS94u3X6d9dedoYDt5Pmbkpxpfd1AQvg="
+    },
+    "v1_0_0": {
+        "version": "v1.0.0",
+        "hash": "sha256-LEew4xtMZazUQFvWBeDyhLFKZzU1nW5+/H9BDfJJbOY="
+    },
     "v2021_12_1": {
         "version": "2021.12.1",
         "hash": "sha256-voxjx9Np/8jy9XS6EvUK4aW18/DGQGaPpTKm9RzuCU8="

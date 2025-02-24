@@ -299,8 +299,14 @@ def fetch_ippcp():
     versions = {}
     for release in resp.json():
         if not release['draft'] and not release['prerelease']:
-            version = release['tag_name'].split('_')[1]
-            flat_version = "v" + version.replace('.', '_')
+            if "_" in release["tag_name"]:
+                version = release['tag_name'].split('_')[1]
+                flat_version = "v" + version.replace('.', '_')
+            else:
+                version = release["tag_name"]
+                flat_version = version.replace('.', '_')
+            parsed = parse_version(version.replace("u", "+u"))
+
             download_url = f"https://github.com/{owner}/{repo}/archive/{release['tag_name']}.tar.gz"
             digest = get_source_hash(download_url, unpack=True)
             print(f"{version}:{digest}")
@@ -310,7 +316,7 @@ def fetch_ippcp():
             versions[flat_version] = {
                 "version": version,
                 "hash": digest,
-                "sort": parse_version(version.replace("u", "+u"))
+                "sort": (1, parsed) if parsed.major < 2000 else (0, parsed)
             }
     serialize_versions(pkg, renders, versions)
 
