@@ -1,4 +1,48 @@
 {
+    "r2be18f5d": {
+        "rev": "2be18f5d6ef6163042dd89522a3f7ecb78a7621a",
+        "hash": "sha256-jZo6cU/tCTXsVfLByDanFDfy+UowVbOha1zrnbfTO60="
+    },
+    "r5823b5e1": {
+        "rev": "5823b5e1b1e964ef0d1f5be2be907ded3feaf155",
+        "hash": "sha256-kOeXrBvUKK4oHhKCJsJU+8oOprPc+y2qv98FUhVwQ6g="
+    },
+    "r626749c0": {
+        "rev": "626749c0db8f0f42d5799158d9658a122d5fea38",
+        "hash": "sha256-qJF/+WIO7vpUbH5mRC8xZ+3nPEJG6dxjYAuG6kbU98s="
+    },
+    "r168777fb": {
+        "rev": "168777fbc49296eeb54b5da8fc7dfcae1a4d3e27",
+        "hash": "sha256-U3eU4brBwwSoh2CbB3e3POjrzZlwSbQW0zd70lsedGU="
+    },
+    "rc1ecbd11": {
+        "rev": "c1ecbd11c76380cfa86648b566d7cc44e1730c86",
+        "hash": "sha256-inrnIlIwczUsDOXJejIDntvT4mUEaKr/dyi0Q8ToEsQ="
+    },
+    "r451626ed": {
+        "rev": "451626ed1dc2710ad5bd06112abdfabf7fb422f1",
+        "hash": "sha256-HVVIjCNGum8Cetx+qHNPSMm6rGlWuT2pt0ySBDCU5N0="
+    },
+    "r5b03c8fd": {
+        "rev": "5b03c8fd1c54397eded6bf84ef52ac610d79bddd",
+        "hash": "sha256-y2HQ7j9twkKbLEVJifBgEInP3ad8RwmMRWnRpsz0Sdw="
+    },
+    "rce572d6e": {
+        "rev": "ce572d6e9bde836016b200169abf81e71b2a55bf",
+        "hash": "sha256-hs49OMj1WsVjpoU2+dImUcriz/sIzvrnp8RnBKCgePc="
+    },
+    "r3dee4114": {
+        "rev": "3dee41147a4631018649c690da373a7208cdec5b",
+        "hash": "sha256-dKF+NDEmhaN06+Jodm+E3HlkA78SA9T48QtnB3uKT5Y="
+    },
+    "r642e8e56": {
+        "rev": "642e8e56de35590ba56046a880b8e3620d11ec9b",
+        "hash": "sha256-aw6re6dRmOPsCfIXfJPJhLppYB/M9Q7gQCXbY9LVrWI="
+    },
+    "r824867d1": {
+        "rev": "824867d11061b2e7d03bd88c700093d3098373f8",
+        "hash": "sha256-bMAaoslhjk+STG4zEH27ppMeCozvAsZpmAlLCn8vm9s="
+    },
     "r41754d58": {
         "rev": "41754d58e549d45762f906ba9e0da6ccf28c7b3f",
         "hash": "sha256-vFuLW2eNrvH4X4rwOi2wPSPoeG+qmfbnq8lsePgGMFo="

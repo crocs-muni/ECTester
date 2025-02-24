@@ -1,4 +1,14 @@
 {
+    "v362": {
+        "version": "v3.6.2",
+        "hash": "sha256-CigOAezxk79SSTX6Z7rDnt64qI6nkCD0piY9ZVNy+e0=",
+        "tag": "mbedtls-3.6.2"
+    },
+    "v361": {
+        "version": "v3.6.1",
+        "hash": "sha256-NzOElWVRyypKHWDIfzFqSVQpa7CDz+miPcyZM3JnnHk=",
+        "tag": "mbedtls-3.6.1"
+    },
     "v360": {
         "version": "v3.6.0",
         "hash": "sha256-tCwAKoTvY8VCjcTPNwS3DeitflhpKHLr6ygHZDbR6wQ=",
@@ -53,6 +63,11 @@
         "version": "v3.0.0",
         "hash": "sha256-M4PQwsa856Hy3QXKwnNRp4alk5oVJBGkDEjZWf6vT4s=",
         "tag": "v3.0.0"
+    },
+    "v2289": {
+        "version": "v2.28.9",
+        "hash": "sha256-/Bm05CvS9t7WSh4qoMconCaD7frlmA/H9YDyJOuGuFE=",
+        "tag": "mbedtls-2.28.9"
     },
     "v2288": {
         "version": "v2.28.8",
@@ -114,11 +129,6 @@
         "hash": "sha256-UQ0z374ptC1m7Ezomj7BuMG2+yYg+ByOGYI9zKzlceQ=",
         "tag": "v2.25.0"
     },
-    "v2240": {
-        "version": "v2.24.0",
-        "hash": "sha256-zO65lsM/nw0NfqvRGT+n8sRT2hpdvMzcJR4nve7F0SM=",
-        "tag": "v2.24.0"
-    },
     "v21612": {
         "version": "v2.16.12",
         "hash": "sha256-EjIbPWiqq0Xif1sXV59mM0qfDjsHuOomDlRWrFKlt6Q=",
@@ -134,19 +144,9 @@
         "hash": "sha256-ar1JVepzNjD6jgp9V0G/YNajO7s0sxYe3t0v8O0sVs4=",
         "tag": "v2.16.10"
     },
-    "v2169": {
-        "version": "v2.16.9",
-        "hash": "sha256-jhWJh4gKU0JOERANiYSI3me0oMDTRJ7ZQaKhNc6w51c=",
-        "tag": "v2.16.9"
-    },
     "v2719": {
         "version": "v2.7.19",
         "hash": "sha256-0GAoJMq6O0j8WwwhknD486XcaCALZ3TW5mxKcliISmY=",
         "tag": "v2.7.19"
-    },
-    "v2718": {
-        "version": "v2.7.18",
-        "hash": "sha256-SkAK9lTqdc3VbJyu8VNHR1PPUlt/+swIJl/R5l7zhUg=",
-        "tag": "v2.7.18"
     }
 }

@@ -1,4 +1,8 @@
 {
+    "v400": {
+        "version": "4.0.0",
+        "hash": "sha256-TYQZVfCsw9/HHQ49018oOvRhIiNQ4mhD/qlzHAJGoeQ="
+    },
     "v392": {
         "version": "3.9.2",
         "hash": "sha256-ewMdrGSlnrbuMwT3/7ddrTOrjJ0nnIR/ksifuEYGj5c="
