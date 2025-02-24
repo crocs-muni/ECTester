@@ -1,12 +1,12 @@
 {
     "v362": {
         "version": "v3.6.2",
-        "hash": "sha256-CigOAezxk79SSTX6Z7rDnt64qI6nkCD0piY9ZVNy+e0=",
+        "hash": "sha256-tSWhF8i0Tx9QSFmyDEHdd2xveZvpyd+HXR+8xYj2Syo=",
         "tag": "mbedtls-3.6.2"
     },
     "v361": {
         "version": "v3.6.1",
-        "hash": "sha256-NzOElWVRyypKHWDIfzFqSVQpa7CDz+miPcyZM3JnnHk=",
+        "hash": "sha256-SVWz2uOvGIplnBr4g6nwfxKMWVpzdZjusseAhw6GOJ8=",
         "tag": "mbedtls-3.6.1"
     },
     "v360": {

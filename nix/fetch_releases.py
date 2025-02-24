@@ -212,7 +212,7 @@ def fetch_gcrypt():
 
 def fetch_boringssl():
     pkg = "boringssl"
-    upto = "76bb1411acf5cf6935586182a3a037d372ed1636"
+    upto = "76bb1411acf5cf6935586182a3a037d372ed1636"   
 
     single_version_template = env.from_string("""{{ flat_version }} = buildECTesterStandalone {
     {{ pkg }} = { rev="{{ rev }}"; hash="{{ digest }}"; };
@@ -231,7 +231,9 @@ def fetch_boringssl():
 
         upto_index = refs.index(upto)
 
-        # pick roughly 100 commits evenly spaced from the "upto" commit
+        # pick roughly every 40th commit from the "upto" commit
+        # this picks out roughly 100 commits as of January 2025, but will grow over time
+
         for i, rev in enumerate(refs[upto_index:0:-40]):
             sp.run(["git", "-C", str(repodir), "--git-dir", str(gitdir / ".git"), "checkout", rev])
             digest = sp.check_output(["nix", "hash", "path", str(repodir)]).decode().strip()
@@ -266,9 +268,13 @@ def fetch_mbedtls():
             version = tag.replace("mbedtls-", "v")
             flat_version = version.replace('.', '')
             download_url = f"https://github.com/{owner}/{repo}/archive/{tag}.tar.gz"
+            # TODO: Special case for the time being, not sure what is broken.
             if version == "v3.6.0":
-                # TODO: Special case for the time being
                 digest = "sha256-tCwAKoTvY8VCjcTPNwS3DeitflhpKHLr6ygHZDbR6wQ="
+            elif version == "v3.6.1":
+                digest = "sha256-SVWz2uOvGIplnBr4g6nwfxKMWVpzdZjusseAhw6GOJ8="
+            elif version == "v3.6.2":
+                digest = "sha256-tSWhF8i0Tx9QSFmyDEHdd2xveZvpyd+HXR+8xYj2Syo="
             else:
                 digest = get_source_hash(download_url, unpack=True)
 
