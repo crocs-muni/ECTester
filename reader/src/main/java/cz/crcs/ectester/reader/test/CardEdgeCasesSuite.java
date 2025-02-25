@@ -242,7 +242,7 @@ public class CardEdgeCasesSuite extends CardTestSuite {
                 Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY);
                 tests.add(cleanup);
             }
-            tests.addFirst(setup);
+            tests.add(0, setup);
             doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with edge-case private key values over " + curve.getId() + ".", tests.toArray(new Test[0])));
         }
 
@@ -313,7 +313,7 @@ public class CardEdgeCasesSuite extends CardTestSuite {
             tests160.addAll(Arrays.asList(zeroTest, pTest, rTest));
         }
         Collections.shuffle(tests160);
-        tests160.addFirst(setup);
+        tests160.add(0, setup);
         if (cfg.cleanup) {
             tests160.add(CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY));
         }
