@@ -14,6 +14,8 @@ import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -33,13 +35,19 @@ public class CardSignatureSuite extends CardTestSuite {
         List<EC_SigResult> nok = groups.entrySet().stream().filter((e) -> e.getKey().equals("nok")).findFirst().get().getValue();
 
         byte[] data = "Some stuff that is not the actual data".getBytes();
-        for (EC_SigResult sig : nok) {
-            ecdsaTest(sig, Result.ExpectedValue.FAILURE, data);
+        for (int i = 0; i < cfg.number; ++i) {
+            Collections.shuffle(nok);
+            for (EC_SigResult sig : nok) {
+                ecdsaTest(sig, Result.ExpectedValue.FAILURE, data);
+            }
         }
 
         List<EC_SigResult> ok = groups.entrySet().stream().filter((e) -> e.getKey().equals("ok")).findFirst().get().getValue();
-        for (EC_SigResult sig : ok) {
-            ecdsaTest(sig, Result.ExpectedValue.SUCCESS, null);
+        for (int i = 0; i < cfg.number; ++i) {
+            Collections.shuffle(ok);
+            for (EC_SigResult sig : ok) {
+                ecdsaTest(sig, Result.ExpectedValue.SUCCESS, null);
+            }
         }
     }
 

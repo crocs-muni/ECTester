@@ -14,6 +14,7 @@ import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +54,11 @@ public class CardInvalidSuite extends CardTestSuite {
                 Test objectEcdh = CompoundTest.any(Result.ExpectedValue.SUCCESS, CardUtil.getKATypeString(EC_Consts.KeyAgreement_ALG_EC_SVDP_DH) + " test with invalid pubkey.", setPub, ecdh);
                 Command ecdhCommand = new Command.ECDH_direct(this.card, CardConsts.KEYPAIR_LOCAL, CardConsts.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH, pub.flatten());
                 Test rawEcdh = CommandTest.expect(ecdhCommand, ExpectedValue.FAILURE, "Card correctly rejected point on invalid curve.", "Card incorrectly accepted point on invalid curve.");
-                ecdhTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " invalid key test.", objectEcdh, rawEcdh));
+                for (int i = 0; i < cfg.number; ++i) {
+                    ecdhTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " invalid key test.", objectEcdh, rawEcdh));
+                }
             }
+            Collections.shuffle(ecdhTests);
             Test ecdh = CompoundTest.all(ExpectedValue.SUCCESS, "Perform ECDH with invalid public points.", ecdhTests.toArray(new Test[0]));
 
             if (cfg.cleanup) {

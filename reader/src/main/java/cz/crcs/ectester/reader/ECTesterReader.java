@@ -324,10 +324,10 @@ public class ECTesterReader {
 
         OptionGroup key = new OptionGroup();
         key.addOption(Option.builder("nk").longOpt("named-key").desc("Use keyPair from KeyDB: <cat/id>").hasArg().argName("cat/id").build());
-        key.addOption(Option.builder("k").longOpt("key").desc("Use keyPair from file <key_file> (wx,wy,s).").hasArg().argName("key_file").build());
+        key.addOption(Option.builder("k").longOpt("key").desc("Use keyPair from file <key_file> (wx,wy,s).").hasArg().argName("key_file").build());
         opts.addOptionGroup(key);
 
-        opts.addOption(Option.builder("i").longOpt("input").desc("Input from file <input_file>, for ECDSA signing.").hasArg().argName("input_file").build());
+        opts.addOption(Option.builder("i").longOpt("input").desc("Input from file <input_file>, for ECDSA signing.").hasArg().argName("input_file").build());
         opts.addOption(Option.builder("o").longOpt("output").desc("Output into file <output_file>. The file can be prefixed by the format (one of text,yml,xml), such as: xml:<output_file>.").hasArgs().argName("output_file").build());
         opts.addOption(Option.builder("l").longOpt("log").desc("Log output into file [log_file].").hasArg().argName("log_file").optionalArg(true).build());
         opts.addOption(Option.builder("v").longOpt("verbose").desc("Turn on verbose logging.").build());
@@ -341,6 +341,7 @@ public class ECTesterReader {
         opts.addOption(Option.builder().longOpt("time").desc("Output better timing values, by running command in dry run mode and normal mode, and subtracting the two.").build());
         opts.addOption(Option.builder().longOpt("time-unit").desc("Use given time unit in measurement, one of: milli, micro, nano.").hasArg().argName("unit").build());
         opts.addOption(Option.builder().longOpt("cleanup").desc("Send the cleanup command triggering JCSystem.requestObjectDeletion() after some operations.").build());
+        opts.addOption(Option.builder("n").longOpt("number").desc("Number of repeats during testing.").hasArg().argName("number").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
         opts.addOption(Option.builder("y").longOpt("yes").desc("Accept all warnings and prompts.").build());
         opts.addOption(Option.builder("tk").longOpt("test-key").desc("Key setup technique to use in test suites:\n- generate (default): Generate keypairs on the card.\n- deterministic: Prepare keypairs deterministically off-card.\n- random: Prepare keypairs randomly off-card.").hasArg().argName("option").build());
@@ -852,6 +853,7 @@ public class ECTesterReader {
         public String timeUnit;
         public boolean cleanup = false;
         public boolean simulate = false;
+        public int number = 1;
         public boolean yes = false;
         public String format;
         public boolean color;
@@ -914,6 +916,7 @@ public class ECTesterReader {
             time = cli.hasOption("time");
             cleanup = cli.hasOption("cleanup");
             simulate = cli.hasOption("simulate");
+            number = Integer.parseInt(cli.getOptionValue("number", "1"));
             yes = cli.hasOption("yes");
             color = cli.hasOption("color");
             Colors.enabled = color;

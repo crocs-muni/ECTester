@@ -97,8 +97,11 @@ public class CardEdgeCasesSuite extends CardTestSuite {
                     Test ka = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Do", ecdhPreTest, ecdh);
 
                     Test one = CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Test " + id + ".", prepare, ka);
-                    curveTests.add(one);
+                    for (int i = 0; i < cfg.number; ++i) {
+                        curveTests.add(one);
+                    }
                 }
+                Collections.shuffle(curveTests);
 
                 if (cfg.cleanup) {
                     curveTests.add(CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY));
@@ -229,12 +232,18 @@ public class CardEdgeCasesSuite extends CardTestSuite {
             EC_Params krp1Params = makeParams(krp1);
             Test krp1S = ecdhTest(new Command.Set(this.card, CardConsts.KEYPAIR_REMOTE, EC_Consts.CURVE_external, krp1Params.getParams(), krp1Params.flatten()), "ECDH with S = (k * r) + 1.", Result.ExpectedValue.ANY, Result.ExpectedValue.ANY);
 
+            List<Test> tests = new LinkedList<>();
+            for (int i = 0; i < cfg.number; ++i) {
+                tests.addAll(Arrays.asList(zeroS, oneS, alternateS, alternateOtherS, fullS, smallerS, exactS, largerS, rm1S, rp1S, krS, krm1S, krp1S));
+            }
+            Collections.shuffle(tests);
+
             if (cfg.cleanup) {
                 Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY);
-                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with edge-case private key values over " + curve.getId() + ".", setup, zeroS, oneS, alternateS, alternateOtherS, fullS, smallerS, exactS, largerS, rm1S, rp1S, krS, krm1S, krp1S, cleanup));
-            } else {
-                doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with edge-case private key values over " + curve.getId() + ".", setup, zeroS, oneS, alternateS, alternateOtherS, fullS, smallerS, exactS, largerS, rm1S, rp1S, krS, krm1S, krp1S));
+                tests.add(cleanup);
             }
+            tests.addFirst(setup);
+            doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Tests with edge-case private key values over " + curve.getId() + ".", tests.toArray(new Test[0])));
         }
 
         EC_Curve secp160r1 = EC_Store.getInstance().getObject(EC_Curve.class, "secg/secp160r1");
@@ -298,7 +307,17 @@ public class CardEdgeCasesSuite extends CardTestSuite {
             }
         }
         Test rTest = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Near r.", rTests);
-        doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Test private key values near zero, near p and near/larger than the order.", setup, zeroTest, pTest, rTest));
+
+        List<Test> tests160 = new LinkedList<>();
+        for (int j = 0; j < cfg.number; ++j) {
+            tests160.addAll(Arrays.asList(zeroTest, pTest, rTest));
+        }
+        Collections.shuffle(tests160);
+        tests160.addFirst(setup);
+        if (cfg.cleanup) {
+            tests160.add(CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY));
+        }
+        doTest(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Test private key values near zero, near p and near/larger than the order.", tests160.toArray(new Test[0])));
     }
 
     private Test ecdhTestBoth(Command setPriv, String desc, Result.ExpectedValue setExpect, Result.ExpectedValue ecdhExpect) {

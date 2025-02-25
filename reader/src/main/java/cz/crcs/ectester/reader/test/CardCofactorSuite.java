@@ -1,18 +1,19 @@
 package cz.crcs.ectester.reader.test;
 
+import cz.crcs.ectester.common.ec.EC_Consts;
 import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.common.ec.EC_Key;
-import cz.crcs.ectester.common.ec.EC_Consts;
 import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.test.CompoundTest;
 import cz.crcs.ectester.common.test.Test;
-import cz.crcs.ectester.common.util.CardUtil;
 import cz.crcs.ectester.common.util.CardConsts;
+import cz.crcs.ectester.common.util.CardUtil;
 import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.reader.CardMngr;
 import cz.crcs.ectester.reader.ECTesterReader;
 import cz.crcs.ectester.reader.command.Command;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -49,8 +50,11 @@ public class CardCofactorSuite extends CardTestSuite {
                 Test objectEcdh = CompoundTest.any(ExpectedValue.SUCCESS, CardUtil.getKATypeString(EC_Consts.KeyAgreement_ALG_EC_SVDP_DH) + " test with cofactor pubkey.", setPub, ecdh);
                 Command ecdhCommand = new Command.ECDH_direct(this.card, CardConsts.KEYPAIR_LOCAL, CardConsts.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH, pub.flatten());
                 Test rawEcdh = CommandTest.expect(ecdhCommand, ExpectedValue.FAILURE, "Card correctly rejected point on non-generator subgroup.", "Card incorrectly accepted point on non-generator subgroup.");
-                ecdhTests.add(CompoundTest.all(ExpectedValue.SUCCESS, pub.getId() + " cofactor key test.", objectEcdh, rawEcdh));
+                for (int i = 0; i < cfg.number; ++i) {
+                    ecdhTests.add(CompoundTest.all(ExpectedValue.SUCCESS, pub.getId() + " cofactor key test.", objectEcdh, rawEcdh));
+                }
             }
+            Collections.shuffle(ecdhTests);
             Test ecdh = CompoundTest.all(ExpectedValue.SUCCESS, "Perform ECDH with public points on non-generator subgroup.", ecdhTests.toArray(new Test[0]));
 
             if (cfg.cleanup) {
