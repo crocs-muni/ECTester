@@ -52,7 +52,8 @@ public class CardTwistSuite extends CardTestSuite {
                     ecdhTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " twist key test.", objectEcdh, rawEcdh));
                 }
             }
-            Collections.shuffle(ecdhTests);
+            if (cfg.testShuffle)
+                Collections.shuffle(ecdhTests);
             Test ecdh = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform ECDH with public points on twist.", ecdhTests.toArray(new Test[0]));
 
             Test tests = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Do tests.", ecdh);

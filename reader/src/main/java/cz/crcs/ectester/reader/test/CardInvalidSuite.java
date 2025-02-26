@@ -58,7 +58,8 @@ public class CardInvalidSuite extends CardTestSuite {
                     ecdhTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " invalid key test.", objectEcdh, rawEcdh));
                 }
             }
-            Collections.shuffle(ecdhTests);
+            if (cfg.testShuffle)
+                Collections.shuffle(ecdhTests);
             Test ecdh = CompoundTest.all(ExpectedValue.SUCCESS, "Perform ECDH with invalid public points.", ecdhTests.toArray(new Test[0]));
 
             if (cfg.cleanup) {

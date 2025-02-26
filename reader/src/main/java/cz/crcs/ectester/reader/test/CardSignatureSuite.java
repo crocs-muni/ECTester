@@ -36,7 +36,8 @@ public class CardSignatureSuite extends CardTestSuite {
 
         byte[] data = "Some stuff that is not the actual data".getBytes();
         for (int i = 0; i < cfg.number; ++i) {
-            Collections.shuffle(nok);
+            if (cfg.testShuffle)
+                Collections.shuffle(nok);
             for (EC_SigResult sig : nok) {
                 ecdsaTest(sig, Result.ExpectedValue.FAILURE, data);
             }
@@ -44,7 +45,8 @@ public class CardSignatureSuite extends CardTestSuite {
 
         List<EC_SigResult> ok = groups.entrySet().stream().filter((e) -> e.getKey().equals("ok")).findFirst().get().getValue();
         for (int i = 0; i < cfg.number; ++i) {
-            Collections.shuffle(ok);
+            if (cfg.testShuffle)
+                Collections.shuffle(ok);
             for (EC_SigResult sig : ok) {
                 ecdsaTest(sig, Result.ExpectedValue.SUCCESS, null);
             }

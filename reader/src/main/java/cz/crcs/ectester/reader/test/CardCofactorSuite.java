@@ -54,7 +54,8 @@ public class CardCofactorSuite extends CardTestSuite {
                     ecdhTests.add(CompoundTest.all(ExpectedValue.SUCCESS, pub.getId() + " cofactor key test.", objectEcdh, rawEcdh));
                 }
             }
-            Collections.shuffle(ecdhTests);
+            if (cfg.testShuffle)
+                Collections.shuffle(ecdhTests);
             Test ecdh = CompoundTest.all(ExpectedValue.SUCCESS, "Perform ECDH with public points on non-generator subgroup.", ecdhTests.toArray(new Test[0]));
 
             if (cfg.cleanup) {

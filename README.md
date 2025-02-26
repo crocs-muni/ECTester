@@ -105,6 +105,10 @@ To select which tests will be performed, it is possible to enter the test suite 
 which specifies the number of the first test to be run, and optionally the number of the last test to be run as `-t <test_suite>[:start_index[:stop_index]]`.
 
 Use with `-o / --output [out_type:]<out_file>` to output the test results to a file.
+Use `-n / --number` to repeat tests multiple times (for example if you want more information on timings).
+Use `-ts / --test-shuffle` to shuffle the tests in the test suite.
+Use `--cleanup` to issue a JavaCard cleanup command after each group of tests (`JCSystem.requestObjectDeletion()`).
+
 For possible formats of this file see [FORMAT](docs/FORMAT.md).
 For more info about the test suites see [TESTS](docs/TESTS.md).
 
@@ -122,6 +126,7 @@ Generates batch of EC keypairs and exports them.
 
 Use with `-o / --output [out_file]` to output the generated keys to a file.
 Use with `--time` to measure time as a difference of real duration of the operation and the dry-run duration of the operation.
+Use `--time-unit [milli, micro, nano]` to specify the time unit of the output.
 For format of this file see [FORMAT](docs/FORMAT.md).
 
 #### ECDH
@@ -131,6 +136,7 @@ Performs ECDH.
 
 Use with `-o / --output [out_file]` to output into a file.
 Use with `--time` to measure time as a difference of real duration of the operation and the dry-run duration of the operation.
+Use `--time-unit [milli, micro, nano]` to specify the time unit of the output.
 For format of this file see [FORMAT](docs/FORMAT.md).
 Respects the KeyAgreement type specified in `-ka / --ka-type [type]`.
 
@@ -142,6 +148,7 @@ Performs ECDSA.
 Useful with `-i / --input [in_file]` to sign the contents of a file.
 Use with `-o / --output [out_file]` to output into a file.
 Use with `--time` to measure time as a difference of real duration of the operation and the dry-run duration of the operation.
+Use `--time-unit [milli, micro, nano]` to specify the time unit of the output.
 For format of these files see [FORMAT](docs/FORMAT.md).
 Respects the Signature type specified in `-sig / --sig-type [type]`.
 

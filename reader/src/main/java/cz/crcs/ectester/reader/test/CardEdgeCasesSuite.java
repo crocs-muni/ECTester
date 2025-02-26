@@ -101,7 +101,8 @@ public class CardEdgeCasesSuite extends CardTestSuite {
                         curveTests.add(one);
                     }
                 }
-                Collections.shuffle(curveTests);
+                if (cfg.testShuffle)
+                    Collections.shuffle(curveTests);
 
                 if (cfg.cleanup) {
                     curveTests.add(CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY));
@@ -236,7 +237,8 @@ public class CardEdgeCasesSuite extends CardTestSuite {
             for (int i = 0; i < cfg.number; ++i) {
                 tests.addAll(Arrays.asList(zeroS, oneS, alternateS, alternateOtherS, fullS, smallerS, exactS, largerS, rm1S, rp1S, krS, krm1S, krp1S));
             }
-            Collections.shuffle(tests);
+            if (cfg.testShuffle)
+                Collections.shuffle(tests);
 
             if (cfg.cleanup) {
                 Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY);
@@ -312,7 +314,8 @@ public class CardEdgeCasesSuite extends CardTestSuite {
         for (int j = 0; j < cfg.number; ++j) {
             tests160.addAll(Arrays.asList(zeroTest, pTest, rTest));
         }
-        Collections.shuffle(tests160);
+        if (cfg.testShuffle)
+            Collections.shuffle(tests160);
         tests160.add(0, setup);
         if (cfg.cleanup) {
             tests160.add(CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY));

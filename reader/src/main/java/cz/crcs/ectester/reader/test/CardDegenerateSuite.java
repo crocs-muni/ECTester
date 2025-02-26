@@ -55,7 +55,8 @@ public class CardDegenerateSuite extends CardTestSuite {
                 }
                 //TODO: actually get the result of ECDH here, as well as export privkey and compare to exponentiation in Fp^*.
             }
-            Collections.shuffle(ecdhTests);
+            if (cfg.testShuffle)
+                Collections.shuffle(ecdhTests);
             Test ecdh = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform ECDH with degenerate public points.", ecdhTests.toArray(new Test[0]));
             if (cfg.cleanup) {
                 Test cleanup = CommandTest.expect(new Command.Cleanup(this.card), Result.ExpectedValue.ANY);

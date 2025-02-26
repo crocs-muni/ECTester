@@ -341,9 +341,10 @@ public class ECTesterReader {
         opts.addOption(Option.builder().longOpt("time").desc("Output better timing values, by running command in dry run mode and normal mode, and subtracting the two.").build());
         opts.addOption(Option.builder().longOpt("time-unit").desc("Use given time unit in measurement, one of: milli, micro, nano.").hasArg().argName("unit").build());
         opts.addOption(Option.builder().longOpt("cleanup").desc("Send the cleanup command triggering JCSystem.requestObjectDeletion() after some operations.").build());
-        opts.addOption(Option.builder("n").longOpt("number").desc("Number of repeats during testing.").hasArg().argName("number").build());
         opts.addOption(Option.builder("s").longOpt("simulate").desc("Simulate a card with jcardsim instead of using a terminal.").build());
         opts.addOption(Option.builder("y").longOpt("yes").desc("Accept all warnings and prompts.").build());
+        opts.addOption(Option.builder("n").longOpt("number").desc("Number of repeats during testing.").hasArg().argName("number").build());
+        opts.addOption(Option.builder("ts").longOpt("test-shuffle").desc("Shuffle the test suite before running it.").build());
         opts.addOption(Option.builder("tk").longOpt("test-key").desc("Key setup technique to use in test suites:\n- generate (default): Generate keypairs on the card.\n- deterministic: Prepare keypairs deterministically off-card.\n- random: Prepare keypairs randomly off-card.").hasArg().argName("option").build());
         opts.addOption(Option.builder("td").longOpt("test-data").desc("Data setup technique to use in test suites:\n- random (default): Prepare data randomly off-card.\n- deterministic: Prepare data deterministically off-card.").hasArg().argName("option").build());
 
@@ -853,7 +854,6 @@ public class ECTesterReader {
         public String timeUnit;
         public boolean cleanup = false;
         public boolean simulate = false;
-        public int number = 1;
         public boolean yes = false;
         public String format;
         public boolean color;
@@ -868,6 +868,8 @@ public class ECTesterReader {
         public byte ECKAType = EC_Consts.KeyAgreement_ALG_EC_SVDP_DH;
         public int ECDSACount;
         public byte ECDSAType = EC_Consts.Signature_ALG_ECDSA_SHA;
+        public int number = 1;
+        public boolean testShuffle;
         public String testKeySetup;
         public String testDataSetup;
 
@@ -916,7 +918,6 @@ public class ECTesterReader {
             time = cli.hasOption("time");
             cleanup = cli.hasOption("cleanup");
             simulate = cli.hasOption("simulate");
-            number = Integer.parseInt(cli.getOptionValue("number", "1"));
             yes = cli.hasOption("yes");
             color = cli.hasOption("color");
             Colors.enabled = color;
@@ -999,6 +1000,9 @@ public class ECTesterReader {
                     binaryField = true;
                     primeField = true;
                 }
+
+                number = Integer.parseInt(cli.getOptionValue("number", "1"));
+                testShuffle = cli.hasOption("test-shuffle");
 
                 String suiteOpt = cli.getOptionValue("test", "default").toLowerCase();
                 if (suiteOpt.contains(":")) {
