@@ -48,8 +48,9 @@ public class CardTwistSuite extends CardTestSuite {
                 Test objectEcdh = CompoundTest.any(Result.ExpectedValue.SUCCESS, CardUtil.getKATypeString(EC_Consts.KeyAgreement_ALG_EC_SVDP_DH) + " test with twist pubkey.", setPub, ecdh);
                 Command ecdhCommand = new Command.ECDH_direct(this.card, CardConsts.KEYPAIR_LOCAL, CardConsts.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH, pub.flatten());
                 Test rawEcdh = CommandTest.expect(ecdhCommand, Result.ExpectedValue.FAILURE, "Card correctly rejected point on twist.", "Card incorrectly accepted point on twist.");
+                Test test =  CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " twist key test.", objectEcdh, rawEcdh);
                 for (int i = 0; i < cfg.number; ++i) {
-                    ecdhTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " twist key test.", objectEcdh, rawEcdh));
+                    ecdhTests.add(test.clone());
                 }
             }
             if (cfg.testShuffle)

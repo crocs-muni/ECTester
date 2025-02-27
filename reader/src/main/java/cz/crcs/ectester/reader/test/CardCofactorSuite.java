@@ -50,8 +50,9 @@ public class CardCofactorSuite extends CardTestSuite {
                 Test objectEcdh = CompoundTest.any(ExpectedValue.SUCCESS, CardUtil.getKATypeString(EC_Consts.KeyAgreement_ALG_EC_SVDP_DH) + " test with cofactor pubkey.", setPub, ecdh);
                 Command ecdhCommand = new Command.ECDH_direct(this.card, CardConsts.KEYPAIR_LOCAL, CardConsts.EXPORT_FALSE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH, pub.flatten());
                 Test rawEcdh = CommandTest.expect(ecdhCommand, ExpectedValue.FAILURE, "Card correctly rejected point on non-generator subgroup.", "Card incorrectly accepted point on non-generator subgroup.");
+                Test test = CompoundTest.all(ExpectedValue.SUCCESS, pub.getId() + " cofactor key test.", objectEcdh, rawEcdh);
                 for (int i = 0; i < cfg.number; ++i) {
-                    ecdhTests.add(CompoundTest.all(ExpectedValue.SUCCESS, pub.getId() + " cofactor key test.", objectEcdh, rawEcdh));
+                    ecdhTests.add(test.clone());
                 }
             }
             if (cfg.testShuffle)

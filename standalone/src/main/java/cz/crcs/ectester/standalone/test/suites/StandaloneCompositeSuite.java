@@ -75,8 +75,9 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
                         Test keyAgreement = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
                         specificKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Composite test of " + curve.getId() + ", with generated private key, " + pub.getDesc(), keyAgreement));
                     }
+                    Test test = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform " + kaIdent.getName() + " with various public points.", specificKaTests.toArray(new Test[0]));
                     for (int i = 0; i < getNumRepeats(); i++) {
-                        allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform " + kaIdent.getName() + " with various public points.", specificKaTests.toArray(new Test[0])));
+                        allKaTests.add(test.clone());
                     }
                 }
             }

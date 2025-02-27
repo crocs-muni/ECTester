@@ -225,6 +225,11 @@ public class CompoundTest extends Test implements Cloneable {
 
     @Override
     public CompoundTest clone() throws CloneNotSupportedException {
-        return (CompoundTest) super.clone();
+        CompoundTest clone = (CompoundTest) super.clone();
+        clone.tests = new Test[tests.length];
+        for (int i = 0; i < tests.length; i++) {
+            clone.tests[i] = tests[i].clone();
+        }
+        return clone;
     }
 }

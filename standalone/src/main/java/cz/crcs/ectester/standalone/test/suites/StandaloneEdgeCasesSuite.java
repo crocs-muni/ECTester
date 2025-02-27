@@ -181,13 +181,14 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
 
             List<Test> tests = new LinkedList<>();
             for (int i = 0; i < getNumRepeats(); ++i) {
-                tests.addAll(Arrays.asList(zeroS, oneS, alternateS, alternateOtherS, fullS, smallerS, exactS, largerS, rm1S, rp1S, krS, krm1S, krp1S));
+                tests.addAll(Arrays.asList(zeroS.clone(), oneS.clone(), alternateS.clone(), alternateOtherS.clone(),
+                        fullS.clone(), smallerS.clone(), exactS.clone(), largerS.clone(), rm1S.clone(), rp1S.clone(),
+                        krS.clone(), krm1S.clone(), krp1S.clone()));
             }
             if (cli.hasOption("test.shuffle"))
                 Collections.shuffle(tests);
             tests.add(0, generate);
-            doTest(CompoundTest.function(CompoundTest.EXPECT_ALL_SUCCESS, CompoundTest.RUN_ALL_IF_FIRST, "Tests with edge-case private key values over " + curve.getId() + ".",
-                    generate, zeroS, oneS, alternateS, alternateOtherS, fullS, smallerS, exactS, largerS, rm1S, rp1S, krS, krm1S, krp1S));
+            doTest(CompoundTest.function(CompoundTest.EXPECT_ALL_SUCCESS, CompoundTest.RUN_ALL_IF_FIRST, "Tests with edge-case private key values over " + curve.getId() + ".", tests.toArray(new Test[0])));
         }
 
         EC_Curve secp160r1 = EC_Store.getInstance().getObject(EC_Curve.class, "secg/secp160r1");
@@ -251,7 +252,7 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
 
         List<Test> tests160 = new LinkedList<>();
         for (int j = 0; j < getNumRepeats(); ++j) {
-            tests160.addAll(Arrays.asList(zeroTest, pTest, rTest));
+            tests160.addAll(Arrays.asList(zeroTest.clone(), pTest.clone(), rTest.clone()));
         }
         if (cli.hasOption("test.shuffle"))
             Collections.shuffle(tests160);

@@ -98,7 +98,7 @@ public class CardEdgeCasesSuite extends CardTestSuite {
 
                     Test one = CompoundTest.greedyAllTry(Result.ExpectedValue.SUCCESS, "Test " + id + ".", prepare, ka);
                     for (int i = 0; i < cfg.number; ++i) {
-                        curveTests.add(one);
+                        curveTests.add(one.clone());
                     }
                 }
                 if (cfg.testShuffle)
@@ -235,7 +235,9 @@ public class CardEdgeCasesSuite extends CardTestSuite {
 
             List<Test> tests = new LinkedList<>();
             for (int i = 0; i < cfg.number; ++i) {
-                tests.addAll(Arrays.asList(zeroS, oneS, alternateS, alternateOtherS, fullS, smallerS, exactS, largerS, rm1S, rp1S, krS, krm1S, krp1S));
+                tests.addAll(Arrays.asList(zeroS.clone(), oneS.clone(), alternateS.clone(), alternateOtherS.clone(),
+                        fullS.clone(), smallerS.clone(), exactS.clone(), largerS.clone(), rm1S.clone(), rp1S.clone(),
+                        krS.clone(), krm1S.clone(), krp1S.clone()));
             }
             if (cfg.testShuffle)
                 Collections.shuffle(tests);
@@ -312,7 +314,7 @@ public class CardEdgeCasesSuite extends CardTestSuite {
 
         List<Test> tests160 = new LinkedList<>();
         for (int j = 0; j < cfg.number; ++j) {
-            tests160.addAll(Arrays.asList(zeroTest, pTest, rTest));
+            tests160.addAll(Arrays.asList(zeroTest.clone(), pTest.clone(), rTest.clone()));
         }
         if (cfg.testShuffle)
             Collections.shuffle(tests160);
