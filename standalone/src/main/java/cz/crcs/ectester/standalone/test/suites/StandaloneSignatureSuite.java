@@ -42,13 +42,21 @@ public class StandaloneSignatureSuite extends StandaloneTestSuite {
         List<EC_SigResult> nok = groups.entrySet().stream().filter((e) -> e.getKey().equals("nok")).findFirst().get().getValue();
 
         byte[] data = "Some stuff that is not the actual data".getBytes();
-        for (EC_SigResult sig : nok) {
-            ecdsaTest(sig, sigIdent, Result.ExpectedValue.FAILURE, data);
+        for (int i = 0; i < getNumRepeats(); ++i) {
+            if (cli.hasOption("test.shuffle"))
+                Collections.shuffle(nok);
+            for (EC_SigResult sig : nok) {
+                ecdsaTest(sig, sigIdent, Result.ExpectedValue.FAILURE, data);
+            }
         }
 
         List<EC_SigResult> ok = groups.entrySet().stream().filter((e) -> e.getKey().equals("ok")).findFirst().get().getValue();
-        for (EC_SigResult sig : ok) {
-            ecdsaTest(sig, sigIdent, Result.ExpectedValue.SUCCESS, null);
+        for (int i = 0; i < getNumRepeats(); ++i) {
+            if (cli.hasOption("test.shuffle"))
+                Collections.shuffle(ok);
+            for (EC_SigResult sig : ok) {
+                ecdsaTest(sig, sigIdent, Result.ExpectedValue.SUCCESS, null);
+            }
         }
     }
 

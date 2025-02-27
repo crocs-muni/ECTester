@@ -39,6 +39,7 @@ public abstract class StandaloneForeignSuite extends StandaloneTestSuite {
     protected void runTests() throws Exception {
         String kpgAlgo = cli.getOptionValue("test.kpg-type");
         String kaAlgo = cli.getOptionValue("test.ka-type");
+
         List<String> kaTypes = kaAlgo != null ? Arrays.asList(kaAlgo.split(",")) : new ArrayList<>();
 
         KeyPairGeneratorIdent kpgIdent = getKeyPairGeneratorIdent(kpgAlgo);
@@ -160,8 +161,13 @@ public abstract class StandaloneForeignSuite extends StandaloneTestSuite {
                         Test keyAgreement = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
                         specificKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, pub.getId() + " invalid key test.", keyAgreement));
                     }
-                    allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform " + kaIdent.getName() + " with invalid public points.", specificKaTests.toArray(new Test[0])));
+                    for (int i = 0; i < getNumRepeats(); i++) {
+                        allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform " + kaIdent.getName() + " with invalid public points.", specificKaTests.toArray(new Test[0])));
+                    }
                 }
+            }
+            if (cli.hasOption("test.shuffle")) {
+                Collections.shuffle(allKaTests);
             }
             if (allKaTests.isEmpty()) {
                 allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified key agreement types is supported by the library."));

@@ -12,14 +12,10 @@ import cz.crcs.ectester.data.EC_Store;
 import cz.crcs.ectester.standalone.ECTesterStandalone;
 import cz.crcs.ectester.standalone.consts.KeyAgreementIdent;
 import cz.crcs.ectester.standalone.consts.KeyPairGeneratorIdent;
-import cz.crcs.ectester.standalone.consts.SignatureIdent;
 import cz.crcs.ectester.standalone.test.base.*;
 
 import javax.crypto.KeyAgreement;
-import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.Signature;
-import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECParameterSpec;
 import java.util.*;
@@ -79,8 +75,13 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
                         Test keyAgreement = KeyAgreementTest.expectError(testable, Result.ExpectedValue.FAILURE);
                         specificKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Composite test of " + curve.getId() + ", with generated private key, " + pub.getDesc(), keyAgreement));
                     }
-                    allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform " + kaIdent.getName() + " with various public points.", specificKaTests.toArray(new Test[0])));
+                    for (int i = 0; i < getNumRepeats(); i++) {
+                        allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform " + kaIdent.getName() + " with various public points.", specificKaTests.toArray(new Test[0])));
+                    }
                 }
+            }
+            if (cli.hasOption("test.shuffle")) {
+                Collections.shuffle(allKaTests);
             }
             if (allKaTests.isEmpty()) {
                 allKaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified key agreement types is supported by the library."));
@@ -123,7 +124,7 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
         testGroup(rg0Curves, kpg, null, Result.ExpectedValue.ANY);
     }
 
-    private void testGroup(List<EC_Curve> curves, KeyPairGenerator kpg, String testName, Result.ExpectedValue dhValue) throws Exception {
+    private void testGroup(List<EC_Curve> curves, KeyPairGenerator kpg, String testName, Result.ExpectedValue expected) throws Exception {
         for (EC_Curve curve : curves) {
             String description;
             if (testName == null) {
@@ -131,41 +132,7 @@ public class StandaloneCompositeSuite extends StandaloneTestSuite {
             } else {
                 description = testName + " test of " + curve.getId() + ".";
             }
-
-            //generate KeyPair
-            KeyGeneratorTestable kgt = KeyGeneratorTestable.builder().keyPairGenerator(kpg).spec(curve.toSpec()).build();
-            Test generate = KeyGeneratorTest.expectError(kgt, Result.ExpectedValue.ANY);
-
-            //perform KeyAgreement tests
-            List<Test> kaTests = new LinkedList<>();
-            for (KeyAgreementIdent kaIdent : cfg.selected.getKAs()) {
-                if (kaAlgo == null || kaIdent.containsAny(kaTypes)) {
-                    KeyAgreement ka = kaIdent.getInstance(cfg.selected.getProvider());
-                    KeyAgreementTestable testable = KeyAgreementTestable.builder().ka(ka).publicKgt(kgt).privateKgt(kgt).random(getRandom()).build();
-                    kaTests.add(KeyAgreementTest.expectError(testable, dhValue));
-                }
-            }
-            if (kaTests.isEmpty()) {
-                kaTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified KeyAgreement types is supported by the library."));
-            }
-
-            //perform Signature tests
-            List<Test> sigTests = new LinkedList<>();
-            for (SignatureIdent sigIdent : cfg.selected.getSigs()) {
-                if (sigAlgo == null || sigIdent.containsAny(sigTypes)) {
-                    Signature sig = sigIdent.getInstance(cfg.selected.getProvider());
-                    byte[] data = sigIdent.toString().getBytes();
-                    SignatureTestable testable = new SignatureTestable(sig, kgt, data, getRandom());
-                    sigTests.add(SignatureTest.expectError(testable, dhValue));
-                }
-            }
-            if (sigTests.isEmpty()) {
-                sigTests.add(CompoundTest.all(Result.ExpectedValue.SUCCESS, "None of the specified Signature types is supported by the library."));
-            }
-
-            Test performKeyAgreements = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform specified KeyAgreements.", kaTests.toArray(new Test[0]));
-            Test performSignatures = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Perform specified Signatures.", sigTests.toArray(new Test[0]));
-            doTest(CompoundTest.function(CompoundTest.EXPECT_ALL_SUCCESS, CompoundTest.RUN_ALL_IF_FIRST, description, generate, performKeyAgreements, performSignatures));
+            testCurve(curve, kpg, expected, description, kaAlgo, sigAlgo, kaTypes, sigTypes);
         }
     }
 }

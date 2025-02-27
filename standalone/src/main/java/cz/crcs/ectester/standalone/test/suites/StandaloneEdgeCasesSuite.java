@@ -163,7 +163,7 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
             Test fullS = ecdhTest(kgt, full, spec, "ECDH with S = 111111111...11111 (but < r).", Result.ExpectedValue.SUCCESS);
             Test smallerS = ecdhTest(kgt, smaller, spec, "ECDH with S < r.", Result.ExpectedValue.SUCCESS);
             Test exactS = ecdhTest(kgt, R, spec, "ECDH with S = r.", Result.ExpectedValue.FAILURE);
-            Test largeS = ecdhTest(kgt, larger, spec, "ECDH with S > r.", Result.ExpectedValue.ANY);
+            Test largerS = ecdhTest(kgt, larger, spec, "ECDH with S > r.", Result.ExpectedValue.ANY);
             Test rm1S = ecdhTest(kgt, rm1, spec, "ECDH with S = r - 1.", Result.ExpectedValue.SUCCESS);
             Test rp1S = ecdhTest(kgt, rp1, spec, "ECDH with S = r + 1.", Result.ExpectedValue.ANY);
 
@@ -179,8 +179,15 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
             Test krm1S = ecdhTest(kgt, krm1, spec, "ECDH with S = (k * r) - 1.", kExpected);
             Test krp1S = ecdhTest(kgt, krp1, spec, "ECDH with S = (k * r) + 1.", Result.ExpectedValue.ANY);
 
+            List<Test> tests = new LinkedList<>();
+            for (int i = 0; i < getNumRepeats(); ++i) {
+                tests.addAll(Arrays.asList(zeroS, oneS, alternateS, alternateOtherS, fullS, smallerS, exactS, largerS, rm1S, rp1S, krS, krm1S, krp1S));
+            }
+            if (cli.hasOption("test.shuffle"))
+                Collections.shuffle(tests);
+            tests.add(0, generate);
             doTest(CompoundTest.function(CompoundTest.EXPECT_ALL_SUCCESS, CompoundTest.RUN_ALL_IF_FIRST, "Tests with edge-case private key values over " + curve.getId() + ".",
-                    generate, zeroS, oneS, alternateS, alternateOtherS, fullS, smallerS, exactS, largeS, rm1S, rp1S, krS, krm1S, krp1S));
+                    generate, zeroS, oneS, alternateS, alternateOtherS, fullS, smallerS, exactS, largerS, rm1S, rp1S, krS, krm1S, krp1S));
         }
 
         EC_Curve secp160r1 = EC_Store.getInstance().getObject(EC_Curve.class, "secg/secp160r1");
@@ -241,7 +248,16 @@ public class StandaloneEdgeCasesSuite extends StandaloneTestSuite {
             }
         }
         Test rTest = CompoundTest.all(Result.ExpectedValue.SUCCESS, "Near r.", rTests);
-        doTest(CompoundTest.function(CompoundTest.EXPECT_ALL_SUCCESS, CompoundTest.RUN_ALL_IF_FIRST, "Test private key values near zero, near p and near/larger than the order.", generate, zeroTest, pTest, rTest));
+
+        List<Test> tests160 = new LinkedList<>();
+        for (int j = 0; j < getNumRepeats(); ++j) {
+            tests160.addAll(Arrays.asList(zeroTest, pTest, rTest));
+        }
+        if (cli.hasOption("test.shuffle"))
+            Collections.shuffle(tests160);
+        tests160.add(0, generate);
+
+        doTest(CompoundTest.function(CompoundTest.EXPECT_ALL_SUCCESS, CompoundTest.RUN_ALL_IF_FIRST, "Test private key values near zero, near p and near/larger than the order.", tests160.toArray(new Test[0])));
     }
 
     private Test ecdhTest(KeyGeneratorTestable kgt, BigInteger SParam, ECParameterSpec spec, String desc, Result.ExpectedValue expect) throws NoSuchAlgorithmException {

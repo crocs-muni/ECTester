@@ -258,6 +258,8 @@ public class ECTesterStandalone {
         testOpts.addOption(Option.builder("kt").longOpt("ka-type").desc("Set the KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("st").longOpt("sig-type").desc("Set the Signature object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("f").longOpt("format").desc("Set the output format, one of text,yaml,xml.").hasArg().argName("format").optionalArg(false).build());
+        testOpts.addOption(Option.builder("n").longOpt("number").desc("Number of repeats during testing.").hasArg().argName("number").optionalArg(false).build());
+        testOpts.addOption(Option.builder("s").longOpt("shuffle").desc("Shuffle the test suite before running it.").build());
         testOpts.addOption(Option.builder().longOpt("key-type").desc("Set the key [algorithm] for which the key should be derived in KeyAgreements with KDF. Default is \"AES\".").hasArg().argName("algorithm").optionalArg(false).build());
         List<Argument> testArgs = new LinkedList<>();
         testArgs.add(new Argument("test-suite", "The test suite to run.", true));
