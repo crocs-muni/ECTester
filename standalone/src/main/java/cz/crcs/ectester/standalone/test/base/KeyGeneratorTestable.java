@@ -1,9 +1,7 @@
 package cz.crcs.ectester.standalone.test.base;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.SecureRandom;
+import javax.crypto.KeyAgreement;
+import java.security.*;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
@@ -12,11 +10,12 @@ import java.security.spec.ECParameterSpec;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class KeyGeneratorTestable extends StandaloneTestable<KeyGeneratorTestable.KeyGeneratorStage> {
-    private KeyPair kp;
-    private final KeyPairGenerator kpg;
+    private KeyPairGenerator kpg;
     private int keysize = 0;
     private AlgorithmParameterSpec spec = null;
     private SecureRandom random;
+
+    private KeyPair kp;
 
     public KeyGeneratorTestable(KeyPairGenerator kpg) {
         this.kpg = kpg;
@@ -80,6 +79,32 @@ public class KeyGeneratorTestable extends StandaloneTestable<KeyGeneratorTestabl
         hasRun = true;
     }
 
+    @Override
+    public void reset() {
+        super.reset();
+        try {
+            kpg = KeyPairGenerator.getInstance(kpg.getAlgorithm(), kpg.getProvider());
+        } catch (NoSuchAlgorithmException e) {
+        }
+        kp = null;
+    }
+
+    @Override
+    public KeyGeneratorTestable clone() {
+        try {
+            KeyGeneratorTestable kgt = builder()
+                    .keyPairGenerator(KeyPairGenerator.getInstance(kpg.getAlgorithm(), kpg.getProvider()))
+                    .keysize(keysize)
+                    .spec(spec)
+                    .random(random)
+                    .build();
+            kgt.kp = kp;
+            return kgt;
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -104,6 +129,11 @@ public class KeyGeneratorTestable extends StandaloneTestable<KeyGeneratorTestabl
 
         public Builder keysize(int keysize) {
             this.keysize = keysize;
+            return this;
+        }
+
+        public Builder spec(AlgorithmParameterSpec spec) {
+            this.spec = spec;
             return this;
         }
 

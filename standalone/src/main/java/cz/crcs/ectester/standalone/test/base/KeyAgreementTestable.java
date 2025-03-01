@@ -140,6 +140,27 @@ public class KeyAgreementTestable extends StandaloneTestable<KeyAgreementTestabl
         }
     }
 
+    @Override
+    public KeyAgreementTestable clone() {
+        try {
+            KeyAgreementTestable kat = builder()
+                    .ka(KeyAgreement.getInstance(ka.getAlgorithm(), ka.getProvider()))
+                    .privateKey(privateKey)
+                    .publicKey(publicKey)
+                    .privateKgt(kgtPrivate) // Do not clone the kgts?
+                    .publicKgt(kgtPublic) // Do not clone the kgts?
+                    .spec(spec)
+                    .keyAlgo(keyAlgo)
+                    .random(random)
+                    .build();
+            kat.secret = secret;
+            kat.derived = derived;
+            return kat;
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static Builder builder() {
         return new Builder();
     }

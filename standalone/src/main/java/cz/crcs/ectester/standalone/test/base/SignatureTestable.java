@@ -1,9 +1,6 @@
 package cz.crcs.ectester.standalone.test.base;
 
-import java.security.InvalidKeyException;
-import java.security.SecureRandom;
-import java.security.Signature;
-import java.security.SignatureException;
+import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 
@@ -11,12 +8,13 @@ import java.security.interfaces.ECPublicKey;
  * @author Jan Jancar johny@neuromancer.sk
  */
 public class SignatureTestable extends StandaloneTestable<SignatureTestable.SignatureStage> {
-    private final Signature sig;
+    private Signature sig;
     private ECPrivateKey signKey;
     private ECPublicKey verifyKey;
     private KeyGeneratorTestable kgt;
     private SecureRandom random;
     private byte[] data;
+
     private byte[] signature;
     private boolean verified;
 
@@ -59,6 +57,31 @@ public class SignatureTestable extends StandaloneTestable<SignatureTestable.Sign
         return verified;
     }
 
+    
+    @Override
+    public void reset() {
+        super.reset();
+        try {
+            sig = Signature.getInstance(sig.getAlgorithm(), sig.getProvider());
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        signature = null;
+        verified = false;
+    }
+
+    @Override
+    public SignatureTestable clone() throws CloneNotSupportedException {
+        SignatureTestable sig = (SignatureTestable) super.clone();
+        try {
+            sig.sig = Signature.getInstance(this.sig.getAlgorithm(), this.sig.getProvider());
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        sig.kgt = kgt; // Do not clone the kgts?
+        return sig;
+    }
+
     @Override
     public void run() {
         try {
@@ -68,7 +91,7 @@ public class SignatureTestable extends StandaloneTestable<SignatureTestable.Sign
                 verifyKey = (ECPublicKey) kgt.getKeyPair().getPublic();
             }
 
-            if(signKey != null) {
+            if (signKey != null) {
                 stage = SignatureStage.InitSign;
                 try {
                     if (random != null) {

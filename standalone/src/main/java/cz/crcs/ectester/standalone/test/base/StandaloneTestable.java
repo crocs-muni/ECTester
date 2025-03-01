@@ -22,4 +22,11 @@ public abstract class StandaloneTestable<T extends Enum<T>> extends BaseTestable
         hasRun = true;
         exception = ex;
     }
+
+    @Override
+    public void reset() {
+        super.reset();
+        stage = null;
+        exception = null;
+    }
 }
