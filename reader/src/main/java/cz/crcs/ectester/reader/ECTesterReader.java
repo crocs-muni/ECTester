@@ -333,7 +333,7 @@ public class ECTesterReader {
         opts.addOption(Option.builder("v").longOpt("verbose").desc("Turn on verbose logging.").build());
         opts.addOption(Option.builder().longOpt("format").desc("Output format to use. One of: text,yml,xml.").hasArg().argName("format").build());
 
-        opts.addOption(Option.builder("kb").longOpt("key-builder").desc("Allocate KeyPair using KeyBuilder.").build());
+        opts.addOption(Option.builder().longOpt("alloc-keypair").desc("Use KeyPair allocation method, one of: keypair, keybuilder, any.").hasArg().argName("method").build());
         opts.addOption(Option.builder().longOpt("fixed").desc("Generate key(s) only once, keep them for later operations.").build());
         opts.addOption(Option.builder().longOpt("fixed-private").desc("Generate private key only once, keep it for later ECDH.").build());
         opts.addOption(Option.builder().longOpt("fixed-public").desc("Generate public key only once, keep it for later ECDH.").build());
@@ -905,7 +905,20 @@ public class ECTesterReader {
             fixedKey = cli.hasOption("fixed");
             fixedPrivate = cli.hasOption("fixed-private");
             fixedPublic = cli.hasOption("fixed-public");
-            keyBuilder = cli.hasOption("key-builder") ? CardConsts.BUILD_KEYBUILDER : CardConsts.BUILD_KEYPAIR;
+
+            if (cli.hasOption("alloc-keypair")) {
+                String method = cli.getOptionValue("alloc-keypair");
+                if (method.equals("keypair")) {
+                    keyBuilder = CardConsts.BUILD_KEYPAIR;
+                } else if (method.equals("keybuilder")) {
+                    keyBuilder = CardConsts.BUILD_KEYBUILDER;
+                } else if (method.equals("any")) {
+                    keyBuilder = CardConsts.BUILD_KEYBUILDER | CardConsts.BUILD_KEYPAIR;
+                } else {
+                    System.err.println(Colors.error("Invalid keypair allocation method: " + method));
+                    return false;
+                }
+            }
 
             if (cli.hasOption("log")) {
                 log = cli.getOptionValue("log", String.format("ECTESTER_log_%d.log", System.currentTimeMillis() / 1000));
