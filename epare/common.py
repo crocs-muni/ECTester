@@ -3,7 +3,7 @@ import inspect
 import tempfile
 import sys
 import os
-
+from datetime import timedelta
 
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -90,6 +90,8 @@ class MultIdent:
 class MultResults:
     multiplications: list[set[int]]
     samples: int
+    duration: Optional[float] = None
+    kind: Optional[str] = None
 
     def merge(self, other: "MultResults"):
         self.multiplications.extend(other.multiplications)
@@ -105,7 +107,9 @@ class MultResults:
         return self.multiplications[i]
 
     def __str__(self):
-        return f"MultResults({self.samples})"
+        duration = timedelta(seconds=int(self.duration)) if self.duration is not None else ""
+        kind = self.kind if self.kind is not None else ""
+        return f"MultResults({self.samples},{duration},{kind})"
 
     def __repr__(self):
         return str(self)
