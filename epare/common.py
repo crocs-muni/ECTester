@@ -68,7 +68,7 @@ class MultIdent:
         elif self.countermeasure == "euclidean":
             return lambda *args, **kwargs: EuclideanSplitting(func(*args, **kwargs))
 
-    def with_countermeasure(self, countermeasure: str):
+    def with_countermeasure(self, countermeasure: str | None):
         if countermeasure not in (None, "gsr", "additive", "multiplicative", "euclidean"):
             raise ValueError(f"Unknown countermeasure: {countermeasure}")
         return MultIdent(self.klass, *self.args, **self.kwargs, countermeasure=countermeasure)
@@ -156,8 +156,8 @@ class ProbMap:
             raise ValueError("Enriching can only work on equal amount of samples (same run, different divisors)")
         self.probs.update(other.probs)
 
-# All dbl-and-add multipliers from https://github.com/J08nY/pyecsca/blob/master/pyecsca/ec/mult
 
+# All dbl-and-add multipliers from https://github.com/J08nY/pyecsca/blob/master/pyecsca/ec/mult
 window_mults = [
     MultIdent(SlidingWindowMultiplier, width=3),
     MultIdent(SlidingWindowMultiplier, width=4),
