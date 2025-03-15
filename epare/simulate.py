@@ -103,7 +103,7 @@ if __name__ == "__main__":
                 mwc = mult.with_countermeasure(countermeasure)
                 pool.submit_task(mwc,
                                  get_small_scalar_multiples,
-                                 mwc, params, bits, samples, seed=chunk_id)
+                                 mwc, params, bits, samples, seed=chunk_id, kind=kind)
         for mult, future in tqdm(pool.as_completed(), desc="Computing small scalar distributions.", total=len(pool.tasks), smoothing=0):
             if error := future.exception():
                 print("Error", mult, error)
