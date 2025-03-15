@@ -31,6 +31,7 @@ from pyecsca.misc.utils import TaskExecutor
 
 from common import *
 
+
 def get_general_multiples(bits: int, samples: int = 1000) -> MultResults:
     from random import randint
     results = []
@@ -38,6 +39,7 @@ def get_general_multiples(bits: int, samples: int = 1000) -> MultResults:
         big_scalar = randint(1, 2**bits)
         results.append({big_scalar})
     return MultResults(results, samples)
+
 
 def get_general_n_multiples(bits: int, n: int, samples: int = 1000) -> MultResults:
     from random import randint
@@ -49,6 +51,7 @@ def get_general_n_multiples(bits: int, n: int, samples: int = 1000) -> MultResul
             smult.add(randint(2**b,2**(b+1)))
         results.append(smult)
     return MultResults(results, samples)
+
 
 def get_small_scalar_multiples(mult: MultIdent,
                                params: DomainParameters,
@@ -76,7 +79,7 @@ def get_small_scalar_multiples(mult: MultIdent,
         # Use a list for less memory usage.
         results.append(list(multiples_computed(scalar, params, mult.klass, mult.partial, use_init, use_multiply, kind=kind)))
     duration += time.perf_counter()
-    return MultResults(results, samples), duration
+    return MultResults(results, samples, duration=duration, kind=kind)
 
 
 if __name__ == "__main__":
@@ -86,11 +89,12 @@ if __name__ == "__main__":
     num_workers = int(sys.argv[1]) if len(sys.argv) > 1 else 32
     bits = params.order.bit_length()
     samples = int(sys.argv[2]) if len(sys.argv) > 2 else 100
+    kind = sys.argv[3] if len(sys.argv) > 3 else "precomp+necessary"
     selected_mults = all_mults
     shuffle(selected_mults)
 
     print(f"Running on {num_workers} cores, doing {samples} samples.")
-    
+
     multiples_mults = {}
     chunk_id = randbytes(6).hex()
     with TaskExecutor(max_workers=num_workers) as pool:
@@ -100,24 +104,18 @@ if __name__ == "__main__":
                 pool.submit_task(mwc,
                                  get_small_scalar_multiples,
                                  mwc, params, bits, samples, seed=chunk_id)
-        for mult, future in tqdm(pool.as_completed(), desc="Computing small scalar distributions.", total=len(pool.tasks)):
+        for mult, future in tqdm(pool.as_completed(), desc="Computing small scalar distributions.", total=len(pool.tasks), smoothing=0):
             if error := future.exception():
                 print("Error", mult, error)
                 raise error
-            res, duration = future.result()
-            res.__class__ = MultResults
-            res.__module__ = "common"
-            print(f"Got {mult} in {duration} s.")
+            res = future.result()
+            print(f"Got {mult} in {res.duration}.")
             if mult not in multiples_mults:
                 multiples_mults[mult] = res
             else:
                 # Accumulate
                 multiples_mults[mult].merge(res)
-            with open(f"multiples_{category}_{curve}_{bits}_ctr_chunk{chunk_id}.pickle","wb") as h:
+            with open(f"multiples_{bits}_{kind}_chunk{chunk_id}.pickle","wb") as h:
                 pickle.dump(multiples_mults, h)
-        # Handle the enable_spawn trick that messes up class modules.
-        for k, v in multiples_mults.items():
-            v.__class__ = MultResults
-            v.__module__ = "common"
-    with open(f"multiples_{category}_{curve}_{bits}_ctr_chunk{chunk_id}.pickle","wb") as h:
+    with open(f"multiples_{bits}_{kind}_chunk{chunk_id}.pickle","wb") as h:
         pickle.dump(multiples_mults, h)
