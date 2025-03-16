@@ -74,6 +74,8 @@ if __name__ == "__main__":
     divisor_name = sys.argv[2] if len(sys.argv) > 2 else "all"
     kind = sys.argv[3] if len(sys.argv) > 3 else "precomp+necessary"
     files = sorted(glob.glob(f"multiples_{bits}_{kind}_chunk*.pickle"))
+
+    selected_divisors = divisor_map[divisor_name]
     
     with TaskExecutor(max_workers=num_workers) as pool:
         for fname in files:
