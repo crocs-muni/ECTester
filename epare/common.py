@@ -119,6 +119,7 @@ class MultResults:
 class ProbMap:
     probs: dict[int, float]
     samples: int
+    kind: Optional[str] = None
 
     def __len__(self):
         return len(self.probs)
@@ -139,6 +140,8 @@ class ProbMap:
         return self.probs.items()
 
     def merge(self, other: "ProbMap"):
+        if self.kind != other.kind:
+            raise ValueError("Merging ProbMaps of different kinds leads to unexpected results.")
         new_keys = set(self.keys()).union(other.keys())
         result = {}
         for key in new_keys:
@@ -154,6 +157,8 @@ class ProbMap:
     def enrich(self, other: "ProbMap"):
         if self.samples != other.samples:
             raise ValueError("Enriching can only work on equal amount of samples (same run, different divisors)")
+        if self.kind != other.kind:
+            raise ValueError("Enriching ProbMaps of different kinds leads to unexpected results.")
         self.probs.update(other.probs)
 
 
