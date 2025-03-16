@@ -23,7 +23,7 @@ def process_small_scalars(scalar_results: MultResults, divisors: set[int]) -> Pr
             if divides_any(divisor, smult):
                 count += 1
         result[divisor] = count / scalar_results.samples
-    return ProbMap(result, scalar_results.samplesm, scalar_results.kind)
+    return ProbMap(result, scalar_results.samples, scalar_results.kind)
 
 def load_chunk(fname: str, divisors: set[int], kind: str) -> dict[MultIdent, ProbMap]:
     with open(fname, "rb") as f:
