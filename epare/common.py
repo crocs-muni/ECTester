@@ -15,7 +15,7 @@ from enum import Enum
 
 from pyecsca.ec.params import DomainParameters, get_params
 from pyecsca.ec.mult import *
-from pyecsca.ec.countermeasures import GroupScalarRandomization, AdditiveSplitting, MultiplicativeSplitting, EuclideanSplitting
+from pyecsca.ec.countermeasures import GroupScalarRandomization, AdditiveSplitting, MultiplicativeSplitting, EuclideanSplitting, BrumleyTuveri
 
 
 spawn_context = multiprocessing.get_context("spawn")
@@ -67,9 +67,11 @@ class MultIdent:
             return lambda *args, **kwargs: MultiplicativeSplitting(func(*args, **kwargs))
         elif self.countermeasure == "euclidean":
             return lambda *args, **kwargs: EuclideanSplitting(func(*args, **kwargs))
+        elif self.countermeasure == "bt":
+            return lambda *args, **kwargs: BrumleyTuveri(func(*args, **kwargs))
 
     def with_countermeasure(self, countermeasure: str | None):
-        if countermeasure not in (None, "gsr", "additive", "multiplicative", "euclidean"):
+        if countermeasure not in (None, "gsr", "additive", "multiplicative", "euclidean", "bt"):
             raise ValueError(f"Unknown countermeasure: {countermeasure}")
         return MultIdent(self.klass, *self.args, **self.kwargs, countermeasure=countermeasure)
 
@@ -167,19 +169,30 @@ class ProbMap:
 
 # All dbl-and-add multipliers from https://github.com/J08nY/pyecsca/blob/master/pyecsca/ec/mult
 window_mults = [
-    MultIdent(SlidingWindowMultiplier, width=3),
-    MultIdent(SlidingWindowMultiplier, width=4),
-    MultIdent(SlidingWindowMultiplier, width=5),
-    MultIdent(SlidingWindowMultiplier, width=6),
+    MultIdent(SlidingWindowMultiplier, width=2, recoding_direction=ProcessingDirection.LTR),
+    MultIdent(SlidingWindowMultiplier, width=3, recoding_direction=ProcessingDirection.LTR),
+    MultIdent(SlidingWindowMultiplier, width=4, recoding_direction=ProcessingDirection.LTR),
+    MultIdent(SlidingWindowMultiplier, width=5, recoding_direction=ProcessingDirection.LTR),
+    MultIdent(SlidingWindowMultiplier, width=6, recoding_direction=ProcessingDirection.LTR),
+    MultIdent(SlidingWindowMultiplier, width=2, recoding_direction=ProcessingDirection.RTL),
+    MultIdent(SlidingWindowMultiplier, width=3, recoding_direction=ProcessingDirection.RTL),
+    MultIdent(SlidingWindowMultiplier, width=4, recoding_direction=ProcessingDirection.RTL),
+    MultIdent(SlidingWindowMultiplier, width=5, recoding_direction=ProcessingDirection.RTL),
+    MultIdent(SlidingWindowMultiplier, width=6, recoding_direction=ProcessingDirection.RTL),
+    MultIdent(FixedWindowLTRMultiplier, m=2**1),
+    MultIdent(FixedWindowLTRMultiplier, m=2**2),
+    MultIdent(FixedWindowLTRMultiplier, m=2**3),
     MultIdent(FixedWindowLTRMultiplier, m=2**4),
     MultIdent(FixedWindowLTRMultiplier, m=2**5),
     MultIdent(FixedWindowLTRMultiplier, m=2**6),
+    MultIdent(WindowBoothMultiplier, width=2),
     MultIdent(WindowBoothMultiplier, width=3),
     MultIdent(WindowBoothMultiplier, width=4),
     MultIdent(WindowBoothMultiplier, width=5),
     MultIdent(WindowBoothMultiplier, width=6)
 ]
 naf_mults = [
+    MultIdent(WindowNAFMultiplier, width=2),
     MultIdent(WindowNAFMultiplier, width=3),
     MultIdent(WindowNAFMultiplier, width=4),
     MultIdent(WindowNAFMultiplier, width=5),
@@ -188,11 +201,16 @@ naf_mults = [
     MultIdent(BinaryNAFMultiplier, direction=ProcessingDirection.RTL)
 ]
 comb_mults = [
-    MultIdent(CombMultiplier, width=2),
-    MultIdent(CombMultiplier, width=3),
-    MultIdent(CombMultiplier, width=4),
-    MultIdent(CombMultiplier, width=5),
-    MultIdent(CombMultiplier, width=6),
+    MultIdent(CombMultiplier, width=2, complete=True),
+    MultIdent(CombMultiplier, width=3, complete=True),
+    MultIdent(CombMultiplier, width=4, complete=True),
+    MultIdent(CombMultiplier, width=5, complete=True),
+    MultIdent(CombMultiplier, width=6, complete=True),
+    MultIdent(CombMultiplier, width=2, complete=False),
+    MultIdent(CombMultiplier, width=3, complete=False),
+    MultIdent(CombMultiplier, width=4, complete=False),
+    MultIdent(CombMultiplier, width=5, complete=False),
+    MultIdent(CombMultiplier, width=6, complete=False),
     MultIdent(BGMWMultiplier, width=2, direction=ProcessingDirection.LTR),
     MultIdent(BGMWMultiplier, width=3, direction=ProcessingDirection.LTR),
     MultIdent(BGMWMultiplier, width=4, direction=ProcessingDirection.LTR),
@@ -205,17 +223,24 @@ comb_mults = [
     MultIdent(BGMWMultiplier, width=6, direction=ProcessingDirection.RTL)
 ]
 binary_mults = [
-    MultIdent(LTRMultiplier, always=False),
-    MultIdent(LTRMultiplier, always=True),
-    MultIdent(RTLMultiplier, always=False),
-    MultIdent(RTLMultiplier, always=True),
+    MultIdent(LTRMultiplier, always=False, complete=True),
+    MultIdent(LTRMultiplier, always=True,  complete=True),
+    MultIdent(RTLMultiplier, always=False, complete=True),
+    MultIdent(RTLMultiplier, always=True,  complete=True),
+    MultIdent(LTRMultiplier, always=False, complete=False),
+    MultIdent(LTRMultiplier, always=True,  complete=False),
+    MultIdent(RTLMultiplier, always=False, complete=False),
+    MultIdent(RTLMultiplier, always=True,  complete=False),
     MultIdent(CoronMultiplier)
 ]
 other_mults = [
-    MultIdent(FullPrecompMultiplier, always=False),
-    MultIdent(FullPrecompMultiplier, always=True),
+    MultIdent(FullPrecompMultiplier, always=False, complete=True),
+    MultIdent(FullPrecompMultiplier, always=True,  complete=True),
+    MultIdent(FullPrecompMultiplier, always=False, complete=False),
+    MultIdent(FullPrecompMultiplier, always=True,  complete=False),
     MultIdent(SimpleLadderMultiplier, complete=True),
     MultIdent(SimpleLadderMultiplier, complete=False)
 ]
 
 all_mults = window_mults + naf_mults + binary_mults + other_mults + comb_mults
+all_mults_with_ctr = [mult.with_countermeasure(ctr) for mult in all_mults for ctr in (None, "gsr", "additive", "multiplicative", "euclidean", "bt")]
