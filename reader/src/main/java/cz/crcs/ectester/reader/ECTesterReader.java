@@ -28,6 +28,7 @@ import cz.crcs.ectester.common.cli.CLITools;
 import cz.crcs.ectester.common.cli.Colors;
 import cz.crcs.ectester.common.ec.EC_Curve;
 import cz.crcs.ectester.common.ec.EC_Consts;
+import cz.crcs.ectester.common.ec.EC_Params;
 import cz.crcs.ectester.common.output.OutputLogger;
 import cz.crcs.ectester.common.output.TestWriter;
 import cz.crcs.ectester.common.util.*;
@@ -333,6 +334,7 @@ public class ECTesterReader {
         opts.addOption(Option.builder("v").longOpt("verbose").desc("Turn on verbose logging.").build());
         opts.addOption(Option.builder().longOpt("format").desc("Output format to use. One of: text,yml,xml.").hasArg().argName("format").build());
 
+        opts.addOption(Option.builder().longOpt("external").desc("Use external key in ECDH.").build());
         opts.addOption(Option.builder().longOpt("alloc-keypair").desc("Use KeyPair allocation method, one of: keypair, keybuilder, any.").hasArg().argName("method").build());
         opts.addOption(Option.builder().longOpt("fixed").desc("Generate key(s) only once, keep them for later operations.").build());
         opts.addOption(Option.builder().longOpt("fixed-private").desc("Generate private key only once, keep it for later ECDH.").build());
@@ -600,10 +602,23 @@ public class ECTesterReader {
 
         Response gen = new Command.Generate(cardManager, CardConsts.KEYPAIR_BOTH).send();
         respWriter.outputResponse(gen);
-        if (cfg.anyPublicKey || cfg.anyKey) {
-            Response prep = Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, CardConsts.KEYPAIR_REMOTE, EC_Consts.PARAMETER_W).send();
-            respWriter.outputResponse(prep);
+        EC_Params keypair = null;
+        if (!cfg.external) {
+            if (cfg.anyPublicKey || cfg.anyKey) {
+                Response prep = Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, CardConsts.KEYPAIR_REMOTE, EC_Consts.PARAMETER_W).send();
+                respWriter.outputResponse(prep);
+            }
+        } else {
+            if (cfg.key != null || cfg.namedKey != null) {
+                keypair = ECUtil.loadParams(EC_Consts.PARAMETERS_KEYPAIR, cfg.namedKey, cfg.key);
+            } else if (cfg.publicKey != null || cfg.namedPublicKey != null) {
+                keypair = ECUtil.loadParams(EC_Consts.PARAMETER_W, cfg.namedPublicKey, cfg.publicKey);
+            } else {
+                System.err.println(Colors.error("No key provided for external ECDH."));
+                return;
+            }
         }
+
         if (cfg.anyPrivateKey || cfg.anyKey) {
             Response prep = Command.prepareKey(cardManager, EC_Store.getInstance(), cfg, CardConsts.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S).send();
             respWriter.outputResponse(prep);
@@ -633,21 +648,34 @@ public class ECTesterReader {
                 respWriter.outputResponse(regen);
             }
 
-            Response.Export exportRemote = new Command.Export(cardManager, CardConsts.KEYPAIR_REMOTE, EC_Consts.KEY_PUBLIC, EC_Consts.PARAMETER_W).send();
-            respWriter.outputResponse(exportRemote);
-            Response.Export exportLocal = new Command.Export(cardManager, CardConsts.KEYPAIR_LOCAL, EC_Consts.KEY_PRIVATE, EC_Consts.PARAMETER_S).send();
-            respWriter.outputResponse(exportLocal);
-            byte[] pubkey_bytes = exportRemote.getParameter(CardConsts.KEYPAIR_REMOTE, EC_Consts.PARAMETER_W);
-            byte[] privkey_bytes = exportLocal.getParameter(CardConsts.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S);
+            byte[] privkey_bytes;
+            byte[] pubkey_bytes;
+            Command perform;
+            if (cfg.external) {
+                Response.Export exportLocal = new Command.Export(cardManager, CardConsts.KEYPAIR_LOCAL, EC_Consts.KEY_PRIVATE, EC_Consts.PARAMETER_S).send();
+                respWriter.outputResponse(exportLocal);
+                privkey_bytes = exportLocal.getParameter(CardConsts.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S);
+                pubkey_bytes = ECUtil.toX962Uncompressed(keypair.getParam(EC_Consts.PARAMETER_W));
 
-            Command.ECDH perform = new Command.ECDH(cardManager, CardConsts.KEYPAIR_REMOTE, CardConsts.KEYPAIR_LOCAL, CardConsts.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, cfg.ECKAType);
+                perform = new Command.ECDH_direct(cardManager, CardConsts.KEYPAIR_LOCAL, CardConsts.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, cfg.ECKAType, pubkey_bytes);
+            } else {
+                Response.Export exportRemote = new Command.Export(cardManager, CardConsts.KEYPAIR_REMOTE, EC_Consts.KEY_PUBLIC, EC_Consts.PARAMETER_W).send();
+                respWriter.outputResponse(exportRemote);
+                Response.Export exportLocal = new Command.Export(cardManager, CardConsts.KEYPAIR_LOCAL, EC_Consts.KEY_PRIVATE, EC_Consts.PARAMETER_S).send();
+                respWriter.outputResponse(exportLocal);
+                pubkey_bytes = exportRemote.getParameter(CardConsts.KEYPAIR_REMOTE, EC_Consts.PARAMETER_W);
+                privkey_bytes = exportLocal.getParameter(CardConsts.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S);
+
+                perform = new Command.ECDH(cardManager, CardConsts.KEYPAIR_REMOTE, CardConsts.KEYPAIR_LOCAL, CardConsts.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, cfg.ECKAType);
+            }
+
 
             long time = 0;
             if (cfg.time) {
                 time = -Command.dryRunTime(cardManager, perform, 2, respWriter);
             }
 
-            Response.ECDH result = perform.send();
+            Response.ECDH result = (Response.ECDH) perform.send();
             respWriter.outputResponse(result);
 
             if (!result.successful() || !result.hasSecret()) {
@@ -842,7 +870,7 @@ public class ECTesterReader {
         public boolean fixedKey = false;
         public boolean fixedPrivate = false;
         public boolean fixedPublic = false;
-        public byte keyBuilder;
+        public byte keyBuilder = CardConsts.BUILD_KEYBUILDER | CardConsts.BUILD_KEYPAIR;
 
         public String log;
 
@@ -859,6 +887,7 @@ public class ECTesterReader {
         public boolean color;
 
         //Action-related options
+        public boolean external;
         public String listNamed;
         public String testSuite;
         public int testFrom;
@@ -1080,6 +1109,12 @@ public class ECTesterReader {
                 }
 
             } else if (cli.hasOption("ecdh")) {
+                external = cli.hasOption("external");
+                if (external && !(anyPublicKey || anyKey)) {
+                    System.err.print(Colors.error("Need to specify public key with -pub or -named-public (or key with -key or -named-key) when specifying --external."));
+                    return false;
+                }
+
                 if (primeField == binaryField) {
                     System.err.print(Colors.error("Need to specify field with -fp or -f2m. (not both)"));
                     return false;
