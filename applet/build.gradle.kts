@@ -99,6 +99,7 @@ javacard {
                 version(version)
                 aid(pkgAID)
                 output("applet221.cap")
+                verify(false)
 
                 //excludes("ECTesterAppletExtended.*")
 
