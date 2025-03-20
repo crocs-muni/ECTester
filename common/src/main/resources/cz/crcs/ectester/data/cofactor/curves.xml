@@ -762,10 +762,4 @@
         <field>prime</field>
         <file>secretcofactor256p199.csv</file>
     </curve>
-    <curve>
-        <id>cofactor192p1831</id>
-        <bits>192</bits>
-        <field>prime</field>
-        <file>cofactor192p1831.csv</file>
-    </curve>
 </curves>
