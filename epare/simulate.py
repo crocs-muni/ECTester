@@ -99,7 +99,7 @@ if __name__ == "__main__":
     chunk_id = randbytes(6).hex()
     with TaskExecutor(max_workers=num_workers) as pool:
         for mult in selected_mults:
-            for countermeasure in (None, "gsr", "additive", "multiplicative", "euclidean"):
+            for countermeasure in (None, "gsr", "additive", "multiplicative", "euclidean", "bt"):
                 mwc = mult.with_countermeasure(countermeasure)
                 pool.submit_task(mwc,
                                  get_small_scalar_multiples,
