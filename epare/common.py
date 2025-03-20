@@ -139,7 +139,10 @@ class ProbMap:
     def items(self):
         return self.probs.items()
 
-    def merge(self, other: "ProbMap"):
+    def narrow(self, divisors: set[int]):
+        self.probs = {k:v for k, v in self.probs.items() if k in divisors}
+
+    def merge(self, other: "ProbMap") -> None:
         if self.kind != other.kind:
             raise ValueError("Merging ProbMaps of different kinds leads to unexpected results.")
         new_keys = set(self.keys()).union(other.keys())
@@ -154,7 +157,7 @@ class ProbMap:
         self.probs = result
         self.samples += other.samples
 
-    def enrich(self, other: "ProbMap"):
+    def enrich(self, other: "ProbMap") -> None:
         if self.samples != other.samples:
             raise ValueError("Enriching can only work on equal amount of samples (same run, different divisors)")
         if self.kind != other.kind:
