@@ -15,6 +15,7 @@ def divides_any(l: int, small_scalars: set[int]) -> bool:
             return True
     return False
 
+
 def process_small_scalars(scalar_results: MultResults, divisors: set[int]) -> ProbMap:
     result = {}
     for divisor in divisors:
@@ -25,17 +26,26 @@ def process_small_scalars(scalar_results: MultResults, divisors: set[int]) -> Pr
         result[divisor] = count / scalar_results.samples
     return ProbMap(result, scalar_results.samples, scalar_results.kind)
 
+
 def load_chunk(fname: str, divisors: set[int], kind: str) -> dict[MultIdent, ProbMap]:
     with open(fname, "rb") as f:
-        multiples = pickle.load(f)
+        multiples = {}
+        while True:
+            try:
+                mult, distr = pickle.load(f)
+                multiples[mult] = distr
+            except EOFError:
+                break
         res = {}
         for mult, results in multiples.items():
             results.kind = kind
             res[mult] = process_small_scalars(results, divisors)
     return res
 
+
 def powers_of(k, max_power=20):
     return [k**i for i in range(1, max_power)]
+
 
 def prod_combine(one, other):
     return [a * b for a, b in itertools.product(one, other)]
