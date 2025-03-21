@@ -117,5 +117,5 @@ if __name__ == "__main__":
                 raise error
             res = future.result()
             print(f"Got {mult} in {res.duration}.")
-            with (outdir / f"multiples_{bits}_{kind}_chunk{chunk_id}.pickle").open("ab") as f:
+            with (outdir / f"multiples_{bits}_{kind}_{'init' if use_init else 'noinit'}_{'mult' if use_multiply else 'nomult'}_chunk{chunk_id}.pickle").open("ab") as f:
                 pickle.dump((mult, res), f)

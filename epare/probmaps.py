@@ -83,7 +83,9 @@ if __name__ == "__main__":
     num_workers = int(sys.argv[1]) if len(sys.argv) > 1 else 32
     divisor_name = sys.argv[2] if len(sys.argv) > 2 else "all"
     kind = sys.argv[3] if len(sys.argv) > 3 else "precomp+necessary"
-    files = sorted(glob.glob(f"multiples_{bits}_{kind}_chunk*.pickle"))
+    use_init = (sys.argv[4].lower() == "true") if len(sys.argv) > 4 else True
+    use_multiply = (sys.argv[5].lower() == "true") if len(sys.argv) > 5 else True
+    files = sorted(glob.glob(f"multiples_{bits}_{kind}_{'init' if use_init else 'noinit'}_{'mult' if use_multiply else 'nomult'}_chunk*.pickle"))
 
     selected_divisors = divisor_map[divisor_name]
     
@@ -91,7 +93,7 @@ if __name__ == "__main__":
         for fname in files:
             pool.submit_task(fname,
                              load_chunk,
-                             fname, selected_divisors, kind)
+                             fname, selected_divisors, kind, use_init, use_multiply)
         for fname, future in tqdm(pool.as_completed(), total=len(pool.tasks), smoothing=0):
             if error := future.exception():
                 print(f"Error {fname}, {error}")
