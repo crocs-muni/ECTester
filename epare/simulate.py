@@ -10,6 +10,7 @@ import glob
 import random
 import sys
 import time
+import os
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -90,12 +91,18 @@ if __name__ == "__main__":
     bits = params.order.bit_length()
     samples = int(sys.argv[2]) if len(sys.argv) > 2 else 100
     kind = sys.argv[3] if len(sys.argv) > 3 else "precomp+necessary"
+    use_init = (sys.argv[4].lower() == "true") if len(sys.argv) > 4 else True
+    use_multiply = (sys.argv[5].lower() == "true") if len(sys.argv) > 5 else True
     selected_mults = all_mults
     shuffle(selected_mults)
 
+    if (scratch := os.getenv("SCRATCHDIR")) is not None:
+        outdir = Path(scratch)
+    else:
+        outdir = Path.cwd()
+
     print(f"Running on {num_workers} cores, doing {samples} samples.")
 
-    multiples_mults = {}
     chunk_id = randbytes(6).hex()
     with TaskExecutor(max_workers=num_workers) as pool:
         for mult in selected_mults:
@@ -103,19 +110,12 @@ if __name__ == "__main__":
                 mwc = mult.with_countermeasure(countermeasure)
                 pool.submit_task(mwc,
                                  get_small_scalar_multiples,
-                                 mwc, params, bits, samples, seed=chunk_id, kind=kind)
+                                 mwc, params, bits, samples, use_init=use_init, use_multiply=use_multiply, seed=chunk_id, kind=kind)
         for mult, future in tqdm(pool.as_completed(), desc="Computing small scalar distributions.", total=len(pool.tasks), smoothing=0):
             if error := future.exception():
                 print("Error", mult, error)
                 raise error
             res = future.result()
             print(f"Got {mult} in {res.duration}.")
-            if mult not in multiples_mults:
-                multiples_mults[mult] = res
-            else:
-                # Accumulate
-                multiples_mults[mult].merge(res)
-            with open(f"multiples_{bits}_{kind}_chunk{chunk_id}.pickle","wb") as h:
-                pickle.dump(multiples_mults, h)
-    with open(f"multiples_{bits}_{kind}_chunk{chunk_id}.pickle","wb") as h:
-        pickle.dump(multiples_mults, h)
+            with (outdir / f"multiples_{bits}_{kind}_chunk{chunk_id}.pickle").open("ab") as f:
+                pickle.dump((mult, res), f)
