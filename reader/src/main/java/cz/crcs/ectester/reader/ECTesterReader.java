@@ -655,7 +655,7 @@ public class ECTesterReader {
                 Response.Export exportLocal = new Command.Export(cardManager, CardConsts.KEYPAIR_LOCAL, EC_Consts.KEY_PRIVATE, EC_Consts.PARAMETER_S).send();
                 respWriter.outputResponse(exportLocal);
                 privkey_bytes = exportLocal.getParameter(CardConsts.KEYPAIR_LOCAL, EC_Consts.PARAMETER_S);
-                pubkey_bytes = ECUtil.toX962Uncompressed(keypair.getParam(EC_Consts.PARAMETER_W));
+                pubkey_bytes = keypair.flatten(EC_Consts.PARAMETER_W);
 
                 perform = new Command.ECDH_direct(cardManager, CardConsts.KEYPAIR_LOCAL, CardConsts.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, cfg.ECKAType, pubkey_bytes);
             } else {
