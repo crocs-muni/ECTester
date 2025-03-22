@@ -93,7 +93,7 @@ if __name__ == "__main__":
         for fname in files:
             pool.submit_task(fname,
                              load_chunk,
-                             fname, selected_divisors, kind, use_init, use_multiply)
+                             fname, selected_divisors, kind)
         for fname, future in tqdm(pool.as_completed(), total=len(pool.tasks), smoothing=0):
             if error := future.exception():
                 print(f"Error {fname}, {error}")
@@ -104,9 +104,6 @@ if __name__ == "__main__":
                     distributions_mults[mult].merge(prob_map)
                 else:
                     distributions_mults[mult] = prob_map
-            # Save intermediate.
-            with open(f"{divisor_name}_intermediate_{kind}_distrs.pickle", "wb") as f:
-                pickle.dump(distributions_mults, f)
     for mult, prob_map in distributions_mults.items():
         print(f"Got {prob_map.samples} for {mult}.")
     # Save
