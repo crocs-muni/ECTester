@@ -1,0 +1,126 @@
+-----------------------------------------------------------------------------------------------------------
+S1/S2 (TAiSYS SIMoME VAULT)
+
+CPLC: ICFabricator=FFFF
+      ICType=FFFF
+      OperatingSystemID=FFFF
+      OperatingSystemReleaseDate=FFFF (invalid date format)
+      OperatingSystemReleaseLevel=FFFF
+      ICFabricationDate=6194 (2016-07-12)
+      ICSerialNumber=EA7F2188
+      ICBatchIdentifier=665D
+      ICModuleFabricator=FFFF
+      ICModulePackagingDate=FFFF (invalid date format)
+      ICCManufacturer=FFFF
+      ICEmbeddingDate=FFFF (invalid date format)
+      ICPrePersonalizer=FFFF
+      ICPrePersonalizationEquipmentDate=FFFF (invalid date format)
+      ICPrePersonalizationEquipmentID=FFFFFFFF
+      ICPersonalizer=FFFF
+      ICPersonalizationDate=FFFF (invalid date format)
+      ICPersonalizationEquipmentID=FFFFFFFF
+
+IIN: 42074953445F49494E
+CIN: 45074953445F43494E
+KDD: CF0A112233445566778899AA
+SSC: C10200E9
+Card Data: 
+Tag 6: 1.2.840.114283.1
+-> Global Platform card
+Tag 60: 1.2.840.114283.2.2.2
+-> GP Version: 2.2
+Tag 63: 1.2.840.114283.3
+-> GP card is uniquely identified by the Issuer Identification Number (IIN) and Card Image Number (CIN)
+Tag 6: 1.2.840.114283.4.2.85
+-> GP SCP02 (i=55)
+Tag 66: 1.3.6.1.4.1.42.2.110.1.16
+Card Capabilities: 
+
+-----------------------------------------------------------------------------------------------------------
+N3 (NXP JCOP v2.4.2 R3 J2E145G)
+
+Not responding.
+
+
+-----------------------------------------------------------------------------------------------------------
+N2 (NXP JCOP v2.4.1R3)
+
+CPLC: ICFabricator=4790
+      ICType=5167
+      OperatingSystemID=4791
+      OperatingSystemReleaseDate=0078 (2020-03-18)
+      OperatingSystemReleaseLevel=3400
+      ICFabricationDate=2240 (2022-08-28)
+      ICSerialNumber=00032096
+      ICBatchIdentifier=2581
+      ICModuleFabricator=4812
+      ICModulePackagingDate=2247 (2022-09-04)
+      ICCManufacturer=0000
+      ICEmbeddingDate=0000 (invalid date format)
+      ICPrePersonalizer=0938
+      ICPrePersonalizationEquipmentDate=0C30 (invalid date format)
+      ICPrePersonalizationEquipmentID=30333230
+      ICPersonalizer=0000
+      ICPersonalizationDate=0000 (invalid date format)
+      ICPersonalizationEquipmentID=00000000
+
+KDD: CF0A00002240000320962581
+SSC: C1020166
+Card Data: 
+Tag 6: 1.2.840.114283.1
+-> Global Platform card
+Tag 60: 1.2.840.114283.2.2.1.1
+-> GP Version: 2.1.1
+Tag 63: 1.2.840.114283.3
+-> GP card is uniquely identified by the Issuer Identification Number (IIN) and Card Image Number (CIN)
+Tag 6: 1.2.840.114283.4.2.21
+-> GP SCP02 (i=15)
+Tag 66: 1.3.6.1.4.1.42.2.110.1.2
+-> JavaCard v2
+
+-----------------------------------------------------------------------------------------------------------
+F2 (Javacos JC30M48 CR)
+
+KDD: CF0A00000000000000000000
+SSC: C1020019
+Card Data:
+
+https://github.com/crocs-muni/jcalgtest_results/blob/main/javacard/Profiles/results/JavaCardOS_Infineon_JC30M48CR_ALGSUPPORT__3b_80_80_01_01_(provided_by_JavaCardOS_and_Thotheolh_Tay).csv
+
+Likely no keygen?
+
+-----------------------------------------------------------------------------------------------------------
+F1 (Javacos A22 CR)
+
+CPLC: ICFabricator=4090
+      ICType=7892
+      OperatingSystemID=86AA
+      OperatingSystemReleaseDate=7068 (2027-03-09)
+      OperatingSystemReleaseLevel=0154
+      ICFabricationDate=9191 (2019-07-10)
+      ICSerialNumber=09011064
+      ICBatchIdentifier=0552
+      ICModuleFabricator=4090
+      ICModulePackagingDate=9191 (2019-07-10)
+      ICCManufacturer=86AA
+      ICEmbeddingDate=9191 (2019-07-10)
+      ICPrePersonalizer=86AA
+      ICPrePersonalizationEquipmentDate=9191 (2019-07-10)
+      ICPrePersonalizationEquipmentID=00000000
+      ICPersonalizer=0000
+      ICPersonalizationDate=0000 (invalid date format)
+      ICPersonalizationEquipmentID=00000000
+
+KDD: CF0A00007068090110640552
+SSC: C102000E
+Card Data: 
+Tag 6: 1.2.840.114283.1
+-> Global Platform card
+Tag 60: 1.2.840.114283.2.2.1.1
+-> GP Version: 2.1.1
+Tag 63: 1.2.840.114283.3
+-> GP card is uniquely identified by the Issuer Identification Number (IIN) and Card Image Number (CIN)
+Tag 6: 1.2.840.114283.4.2.85
+-> GP SCP02 (i=55)
+Tag 66: 1.3.6.1.4.1.42.2.110.1.2
+-> JavaCard v2
