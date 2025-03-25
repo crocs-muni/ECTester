@@ -124,3 +124,530 @@ Tag 6: 1.2.840.114283.4.2.85
 -> GP SCP02 (i=55)
 Tag 66: 1.3.6.1.4.1.42.2.110.1.2
 -> JavaCard v2
+
+-----------------------------------------------------------------------------------------------------------
+A1 (ATHENA IDPROTECT)
+Card ATR: 3B D5 18 FF 81 91 FE 1F C3 80 73 C8 21 13 09 
+
+
+GlobalPlatformPro v20.01.23-0-g5ad373b
+Running on Linux 6.8.0-52-generic amd64, Java 17.0.14 by Ubuntu
+Reader: Gemalto PC Twin Reader 00 00
+ATR: 3BD518FF8191FE1FC38073C8211309
+More information about your card:
+    http://smartcard-atr.appspot.com/parse?ATR=3BD518FF8191FE1FC38073C8211309
+
+CPLC: ICFabricator=4180
+      ICType=010B
+      OperatingSystemID=8211
+      OperatingSystemReleaseDate=0352 (2010-12-18)
+      OperatingSystemReleaseLevel=0005
+      ICFabricationDate=3831 (invalid date format)
+      ICSerialNumber=00062C2B
+      ICBatchIdentifier=484A
+      ICModuleFabricator=0000
+      ICModulePackagingDate=0000 (2010-01-01)
+      ICCManufacturer=0000
+      ICEmbeddingDate=0000 (2010-01-01)
+      ICPrePersonalizer=0000
+      ICPrePersonalizationEquipmentDate=0000 (2010-01-01)
+      ICPrePersonalizationEquipmentID=00000000
+      ICPersonalizer=0000
+      ICPersonalizationDate=0000 (2010-01-01)
+      ICPersonalizationEquipmentID=00000000
+
+IIN: 420100
+CIN: 45080000000000000000
+Card Data: 
+Tag 6: 1.2.840.114283.1
+-> Global Platform card
+Tag 60: 1.2.840.114283.2.2.1.1
+-> GP Version: 2.1.1
+Tag 63: 1.2.840.114283.3
+Tag 64: 1.2.840.114283.4.1.5
+-> GP SCP01 i=05
+Tag 66: 1.3.6.1.4.1.42.2.110.1.2
+-> JavaCard v2
+Card Capabilities: 
+Version: 255 (0xFF) ID:   1 (0x01) type: DES3 length:  16 
+Version: 255 (0xFF) ID:   2 (0x02) type: DES3 length:  16 
+Version: 255 (0xFF) ID:   3 (0x03) type: DES3 length:  16 
+Key version suggests factory keys
+
+-----------------------------------------------------------------------------------------------------------
+
+G1 (GXD 7.0, black usb)
+Card ATR: 3B F9 96 00 00 81 31 FE 45 53 43 45 37 20 0E 00 20 20 28 
+
+GlobalPlatformPro v20.01.23-0-g5ad373b
+Running on Linux 6.8.0-52-generic amd64, Java 17.0.14 by Ubuntu
+Reader: Giesecke & Devrient GmbH StarSign CUT S [.] (03170802004922) 00 00
+ATR: 3BF99600008131FE4553434537200E00202028
+More information about your card:
+    http://smartcard-atr.appspot.com/parse?ATR=3BF99600008131FE4553434537200E00202028
+
+CPLC: ICFabricator=0005
+      ICType=0056
+      OperatingSystemID=D001
+      OperatingSystemReleaseDate=4212 (2014-07-31)
+      OperatingSystemReleaseLevel=0102
+      ICFabricationDate=059C (invalid date format)
+      ICSerialNumber=0034002D
+      ICBatchIdentifier=4D0F
+      ICModuleFabricator=0000
+      ICModulePackagingDate=0000 (2010-01-01)
+      ICCManufacturer=0000
+      ICEmbeddingDate=0000 (2010-01-01)
+      ICPrePersonalizer=0000
+      ICPrePersonalizationEquipmentDate=0000 (2010-01-01)
+      ICPrePersonalizationEquipmentID=00000000
+      ICPersonalizer=0000
+      ICPersonalizationDate=0000 (2010-01-01)
+      ICPersonalizationEquipmentID=00000000
+
+Card Data: 
+Tag 6: 1.2.840.114283.1
+-> Global Platform card
+Tag 60: 1.2.840.114283.2.2.2.1
+-> GP Version: 2.2.1
+Tag 63: 1.2.840.114283.3
+Tag 64: 1.2.840.114283.4.3.16
+-> GP SCP03 i=10
+Tag 65: 1.3.656.840.100.2.1.3
+Tag 66: 1.3.6.1.4.1.42.2.110.1.3
+-> JavaCard v3
+Card Capabilities: 
+Supports: SCP03 i=00 i=10 i=20 i=30 i=60 i=70 with AES-128 AES-196 AES-256
+Supports: SCP02 i=15 i=55
+Supported DOM privileges: SecurityDomain, DelegatedManagement, CardLock, CardTerminate, CardReset, CVMManagement, MandatedDAPVerification, TrustedPath, GlobalDelete, GlobalLock, GlobalRegistry, FinalApplication
+Supported APP privileges: CardLock, CardTerminate, CardReset, CVMManagement, GlobalDelete, GlobalRegistry, FinalApplication
+Supported LFDB hash: 02
+Supported Token Verification ciphers: FF02
+Supported Receipt Generation ciphers: FF02
+Supported DAP Verification ciphers: FF02
+Version: 255 (0xFF) ID:   1 (0x01) type: AES  length:  16 (AES-128)
+Version: 255 (0xFF) ID:   2 (0x02) type: AES  length:  16 (AES-128)
+Version: 255 (0xFF) ID:   3 (0x03) type: AES  length:  16 (AES-128)
+Key version suggests factory keys
+
+-----------------------------------------------------------------------------------------------------------
+I1 (SECORA ID S, SLJ52GDT120CS)
+Card ATR: 3B B8 96 00 C0 08 31 FE 45 FF FF 11 54 30 50 23 00 6A 
+
+GlobalPlatformPro v20.01.23-0-g5ad373b
+Running on Linux 6.8.0-52-generic amd64, Java 17.0.14 by Ubuntu
+Reader: Gemalto PC Twin Reader 00 00
+ATR: 3BB89600C00831FE45FFFF1154305023006A
+More information about your card:
+    http://smartcard-atr.appspot.com/parse?ATR=3BB89600C00831FE45FFFF1154305023006A
+
+CPLC: ICFabricator=4090
+      ICType=1912
+      OperatingSystemID=4090
+      OperatingSystemReleaseDate=9078 (2019-03-19)
+      OperatingSystemReleaseLevel=0100
+      ICFabricationDate=7287 (2017-10-14)
+      ICSerialNumber=A7178551
+      ICBatchIdentifier=A065
+      ICModuleFabricator=0000
+      ICModulePackagingDate=0000 (2010-01-01)
+      ICCManufacturer=0000
+      ICEmbeddingDate=0000 (2010-01-01)
+      ICPrePersonalizer=0000
+      ICPrePersonalizationEquipmentDate=0000 (2010-01-01)
+      ICPrePersonalizationEquipmentID=00000000
+      ICPersonalizer=0000
+      ICPersonalizationDate=0000 (2010-01-01)
+      ICPersonalizationEquipmentID=00000000
+
+IIN: 4206000000000000
+CIN: 45080000000000000000
+Card Data: 
+Tag 6: 1.2.840.114283.1
+-> Global Platform card
+Tag 60: 1.2.840.114283.2.2.2
+-> GP Version: 2.2
+Tag 63: 1.2.840.114283.3
+Tag 64: 1.2.840.114283.4.3.16
+-> GP SCP03 i=10
+Tag 65: 1.2.840.114283.5.5
+Tag 66: 1.3.6.1.4.1.42.2.110.1.3
+-> JavaCard v3
+Card Capabilities: 
+Supports: SCP03 i=00 i=10 with AES-128 AES-196 AES-256
+Supports: SCP02 i=15 i=55
+Supported DOM privileges: SecurityDomain, DelegatedManagement, CardLock, CardTerminate, CardReset, CVMManagement, MandatedDAPVerification, TrustedPath, GlobalLock, GlobalRegistry, FinalApplication
+Supported APP privileges: CardLock, CardTerminate, CardReset, CVMManagement, TrustedPath, GlobalRegistry, FinalApplication
+Supported LFDB hash: 02
+Supported Token Verification ciphers: 03
+Supported Receipt Generation ciphers: 3C
+Supported DAP Verification ciphers: 03
+Version: 255 (0xFF) ID:   1 (0x01) type: AES  length:  32 (AES-256)
+Version: 255 (0xFF) ID:   2 (0x02) type: AES  length:  32 (AES-256)
+Version: 255 (0xFF) ID:   3 (0x03) type: AES  length:  32 (AES-256)
+Key version suggests factory keys
+
+-----------------------------------------------------------------------------------------------------------
+I2 (CJTOP80K INF SLJ 52GLA080AL M84)
+Card ATR: 3B FE 18 00 00 80 31 FE 45 80 31 80 66 40 90 A5 10 2E 10 83 01 90 00 F2 
+
+GlobalPlatformPro v20.01.23-0-g5ad373b
+Running on Linux 6.8.0-52-generic amd64, Java 17.0.14 by Ubuntu
+Reader: Gemalto PC Twin Reader 00 00
+ATR: 3BFE1800008031FE45803180664090A5102E1083019000F2
+More information about your card:
+    http://smartcard-atr.appspot.com/parse?ATR=3BFE1800008031FE45803180664090A5102E1083019000F2
+
+CPLC: ICFabricator=4090
+      ICType=7165
+      OperatingSystemID=544C
+      OperatingSystemReleaseDate=2151 (2012-05-30)
+      OperatingSystemReleaseLevel=2E10
+      ICFabricationDate=2001 (2012-01-01)
+      ICSerialNumber=00020724
+      ICBatchIdentifier=4FC2
+      ICModuleFabricator=4092
+      ICModulePackagingDate=2339 (2012-12-04)
+      ICCManufacturer=4093
+      ICEmbeddingDate=2339 (2012-12-04)
+      ICPrePersonalizer=0000
+      ICPrePersonalizationEquipmentDate=0000 (2010-01-01)
+      ICPrePersonalizationEquipmentID=00000000
+      ICPersonalizer=0000
+      ICPersonalizationDate=0000 (2010-01-01)
+      ICPersonalizationEquipmentID=00000000
+
+IIN: 420100
+CIN: 45080000000000000000
+Card Data: 
+Tag 6: 1.2.840.114283.1
+-> Global Platform card
+Tag 60: 1.2.840.114283.2.2.2
+-> GP Version: 2.2
+Tag 63: 1.2.840.114283.3
+Tag 64: 1.2.840.114283.4.2.85
+-> GP SCP02 i=55
+Tag 65: 1.2.840.114283.5.5
+Tag 66: 1.3.6.1.4.1.42.2.110.1.3
+-> JavaCard v3
+Card Capabilities: 
+Supports: SCP02 i=55
+Supported DOM privileges: SecurityDomain, DelegatedManagement, CardLock, CardTerminate, CardReset, CVMManagement, MandatedDAPVerification, TrustedPath, GlobalDelete, GlobalLock, GlobalRegistry, FinalApplication
+Supported APP privileges: CardLock, CardTerminate, CardReset, CVMManagement, TrustedPath, GlobalRegistry, FinalApplication
+Supported LFDB hash: 02
+Supported Token Verification ciphers: 49
+Supported Receipt Generation ciphers: 08
+Supported DAP Verification ciphers: 49
+Version: 255 (0xFF) ID:   1 (0x01) type: DES3 length:  16 
+Version: 255 (0xFF) ID:   2 (0x02) type: DES3 length:  16 
+Version: 255 (0xFF) ID:   3 (0x03) type: DES3 length:  16 
+Key version suggests factory keys
+-----------------------------------------------------------------------------------------------------------
+N1 (NXP J3A081 JCOP v 2.4.1)
+Card ATR: 3B F8 18 00 FF 81 31 FE 45 4A 43 4F 50 76 32 34 31 43 
+
+
+GlobalPlatformPro v20.01.23-0-g5ad373b
+Running on Linux 6.8.0-52-generic amd64, Java 17.0.14 by Ubuntu
+Reader: Gemalto PC Twin Reader 00 00
+ATR: 3BF81800FF8131FE454A434F507632343143
+More information about your card:
+    http://smartcard-atr.appspot.com/parse?ATR=3BF81800FF8131FE454A434F507632343143
+
+CPLC: ICFabricator=4790
+      ICType=5168
+      OperatingSystemID=4791
+      OperatingSystemReleaseDate=0078 (2010-03-19)
+      OperatingSystemReleaseLevel=3400
+      ICFabricationDate=1329 (2011-11-25)
+      ICSerialNumber=01447395
+      ICBatchIdentifier=7689
+      ICModuleFabricator=4812
+      ICModulePackagingDate=1336 (2011-12-02)
+      ICCManufacturer=0000
+      ICEmbeddingDate=0000 (2010-01-01)
+      ICPrePersonalizer=092C
+      ICPrePersonalizationEquipmentDate=2D31 (invalid date format)
+      ICPrePersonalizationEquipmentID=34343733
+      ICPersonalizer=0000
+      ICPersonalizationDate=0000 (2010-01-01)
+      ICPersonalizationEquipmentID=00000000
+
+Card Data: 
+Tag 6: 1.2.840.114283.1
+-> Global Platform card
+Tag 60: 1.2.840.114283.2.2.1.1
+-> GP Version: 2.1.1
+Tag 63: 1.2.840.114283.3
+Tag 64: 1.2.840.114283.4.2.21
+-> GP SCP02 i=15
+Tag 65: 1.3.656.840.100.2.1.3
+Tag 66: 1.3.6.1.4.1.42.2.110.1.2
+-> JavaCard v2
+Card Capabilities: 
+Version: 255 (0xFF) ID:   1 (0x01) type: DES3 length:  16 
+Version: 255 (0xFF) ID:   2 (0x02) type: DES3 length:  16 
+Version: 255 (0xFF) ID:   3 (0x03) type: DES3 length:  16 
+Key version suggests factory keys
+-----------------------------------------------------------------------------------------------------------
+N10 (NXP J3H145 JCOP3 SECID P60)
+Card ATR: 3B 94 95 81 01 46 54 56 01 C4 
+
+
+GlobalPlatformPro v20.01.23-0-g5ad373b
+Running on Linux 6.8.0-52-generic amd64, Java 17.0.14 by Ubuntu
+Reader: Gemalto PC Twin Reader 00 00
+ATR: 3B9495810146545601C4
+More information about your card:
+    http://smartcard-atr.appspot.com/parse?ATR=3B9495810146545601C4
+
+CPLC: ICFabricator=4790
+      ICType=0503
+      OperatingSystemID=8211
+      OperatingSystemReleaseDate=6351 (2016-12-16)
+      OperatingSystemReleaseLevel=0302
+      ICFabricationDate=8359 (2018-12-25)
+      ICSerialNumber=01891207
+      ICBatchIdentifier=4673
+      ICModuleFabricator=4E30
+      ICModulePackagingDate=5038 (2015-02-07)
+      ICCManufacturer=3532
+      ICEmbeddingDate=4246 (2014-09-03)
+      ICPrePersonalizer=4A31
+      ICPrePersonalizationEquipmentDate=3031 (2013-01-31)
+      ICPrePersonalizationEquipmentID=38393132
+      ICPersonalizer=0600
+      ICPersonalizationDate=0123 (2010-05-03)
+      ICPersonalizationEquipmentID=B148EF84
+
+IIN: 420100
+CIN: 45080000000000000000
+Card Data: 
+Tag 6: 1.2.840.114283.1
+-> Global Platform card
+Tag 60: 1.2.840.114283.2.2.1.1
+-> GP Version: 2.1.1
+Tag 63: 1.2.840.114283.3
+Tag 64: 1.2.840.114283.4.2.85
+-> GP SCP02 i=55
+Tag 66: 1.3.6.1.4.1.42.2.110.1.2
+-> JavaCard v2
+Card Capabilities: 
+Supports: SCP02 i=55
+Supports: SCP03 i=00 i=10 with AES-128 AES-196 AES-256
+Supported DOM privileges: SecurityDomain, CardLock, CardTerminate, CardReset, CVMManagement, TrustedPath, AuthorizedManagement, TokenVerification, GlobalDelete, GlobalLock, GlobalRegistry, FinalApplication, ReceiptGeneration
+Supported APP privileges: CardLock, CardTerminate, CardReset, CVMManagement, FinalApplication, GlobalService
+Supported LFDB hash: 02
+Supported Token Verification ciphers: 01020840
+Supported Receipt Generation ciphers: 0408
+Supported DAP Verification ciphers: 01020840
+Supported ECC Key Parameters: 0102030405
+Version: 255 (0xFF) ID:   1 (0x01) type: DES3 length:  16 
+Version: 255 (0xFF) ID:   2 (0x02) type: DES3 length:  16 
+Version: 255 (0xFF) ID:   3 (0x03) type: DES3 length:  16 
+Key version suggests factory keys
+-----------------------------------------------------------------------------------------------------------
+N4 
+Not responding.
+Card ATR: 3B 94 95 81 01 46 54 56 01 C4 
+
+
+GlobalPlatformPro v20.01.23-0-g5ad373b
+Running on Linux 6.8.0-52-generic amd64, Java 17.0.14 by Ubuntu
+Reader: Gemalto PC Twin Reader 00 00
+ATR: 3B9495810146545601C4
+More information about your card:
+    http://smartcard-atr.appspot.com/parse?ATR=3B9495810146545601C4
+
+CPLC: ICFabricator=4790
+      ICType=0503
+      OperatingSystemID=8211
+      OperatingSystemReleaseDate=6351 (2016-12-16)
+      OperatingSystemReleaseLevel=0302
+      ICFabricationDate=8359 (2018-12-25)
+      ICSerialNumber=01498607
+      ICBatchIdentifier=4673
+      ICModuleFabricator=4E30
+      ICModulePackagingDate=5038 (2015-02-07)
+      ICCManufacturer=3532
+      ICEmbeddingDate=4246 (2014-09-03)
+      ICPrePersonalizer=4A31
+      ICPrePersonalizationEquipmentDate=3031 (2013-01-31)
+      ICPrePersonalizationEquipmentID=34393836
+      ICPersonalizer=0600
+      ICPersonalizationDate=0123 (2010-05-03)
+      ICPersonalizationEquipmentID=B1BB6E97
+
+IIN: 420100
+CIN: 45080000000000000000
+Card Data: 
+Tag 6: 1.2.840.114283.1
+-> Global Platform card
+Tag 60: 1.2.840.114283.2.2.1.1
+-> GP Version: 2.1.1
+Tag 63: 1.2.840.114283.3
+Tag 64: 1.2.840.114283.4.2.85
+-> GP SCP02 i=55
+Tag 66: 1.3.6.1.4.1.42.2.110.1.2
+-> JavaCard v2
+Card Capabilities: 
+Supports: SCP02 i=55
+Supports: SCP03 i=00 i=10 with AES-128 AES-196 AES-256
+Supported DOM privileges: SecurityDomain, CardLock, CardTerminate, CardReset, CVMManagement, TrustedPath, AuthorizedManagement, TokenVerification, GlobalDelete, GlobalLock, GlobalRegistry, FinalApplication, ReceiptGeneration
+Supported APP privileges: CardLock, CardTerminate, CardReset, CVMManagement, FinalApplication, GlobalService
+Supported LFDB hash: 02
+Supported Token Verification ciphers: 01020840
+Supported Receipt Generation ciphers: 0408
+Supported DAP Verification ciphers: 01020840
+Supported ECC Key Parameters: 0102030405
+Version: 255 (0xFF) ID:   1 (0x01) type: DES3 length:  16 
+Version: 255 (0xFF) ID:   2 (0x02) type: DES3 length:  16 
+Version: 255 (0xFF) ID:   3 (0x03) type: DES3 length:  16 
+Key version suggests factory keys
+-----------------------------------------------------------------------------------------------------------
+N6
+Not responding.
+Card ATR: 3B D5 18 FF 81 91 FE 1F C3 80 73 C8 21 10 0A 
+
+GlobalPlatformPro v20.01.23-0-g5ad373b
+Running on Linux 6.8.0-52-generic amd64, Java 17.0.14 by Ubuntu
+Reader: Gemalto PC Twin Reader 00 00
+ATR: 3BD518FF8191FE1FC38073C821100A
+More information about your card:
+    http://smartcard-atr.appspot.com/parse?ATR=3BD518FF8191FE1FC38073C821100A
+
+CPLC: ICFabricator=4790
+      ICType=D321
+      OperatingSystemID=4700
+      OperatingSystemReleaseDate=0000 (2010-01-01)
+      OperatingSystemReleaseLevel=0000
+      ICFabricationDate=0136 (2010-05-16)
+      ICSerialNumber=27339899
+      ICBatchIdentifier=5382
+      ICModuleFabricator=0000
+      ICModulePackagingDate=0000 (2010-01-01)
+      ICCManufacturer=0000
+      ICEmbeddingDate=0000 (2010-01-01)
+      ICPrePersonalizer=0C0E
+      ICPrePersonalizationEquipmentDate=5937 (invalid date format)
+      ICPrePersonalizationEquipmentID=33333938
+      ICPersonalizer=0000
+      ICPersonalizationDate=0000 (2010-01-01)
+      ICPersonalizationEquipmentID=00000000
+
+Card Data: 
+Tag 6: 1.2.840.114283.1
+-> Global Platform card
+Tag 60: 1.2.840.114283.2.2.3
+-> GP Version: 2.3
+Tag 63: 1.2.840.114283.3
+Tag 64: 1.2.840.114283.4.3.112
+-> GP SCP03 i=70
+Tag 65: 1.2.840.114283.5.7.2.0.0
+Tag 66: 1.3.6.1.4.1.42.2.110.1.3
+-> JavaCard v3
+Card Capabilities: 
+Supports: SCP03 i=00 i=10 i=20 i=60 i=70 with AES-128 AES-196 AES-256
+Supported DOM privileges: SecurityDomain, DelegatedManagement, CardReset, MandatedDAPVerification, TrustedPath, TokenVerification, GlobalDelete, GlobalLock, GlobalRegistry, FinalApplication, ReceiptGeneration, CipheredLoadFileDataBlock
+Supported APP privileges: CardLock, CardTerminate, CardReset, CVMManagement, FinalApplication, GlobalService
+Supported LFDB hash: 02
+Supported Token Verification ciphers: 7B
+Supported Receipt Generation ciphers: 0C
+Supported DAP Verification ciphers: 7B
+Version:  49 (0x31) ID:   1 (0x01) type: AES  length:  16 (AES-128)
+Version:  49 (0x31) ID:   2 (0x02) type: AES  length:  16 (AES-128)
+Version:  49 (0x31) ID:   3 (0x03) type: AES  length:  16 (AES-128)
+-----------------------------------------------------------------------------------------------------------
+N8 (blue usb)
+Card ATR: 3B F9 13 00 00 81 31 FE 45 4A 43 4F 50 32 34 32 52 33 A2 
+
+GlobalPlatformPro v20.01.23-0-g5ad373b
+Running on Linux 6.8.0-52-generic amd64, Java 17.0.14 by Ubuntu
+Reader: OMNIKEY AG 6121 USB mobile 00 00
+ATR: 3BF91300008131FE454A434F503234325233A2
+More information about your card:
+    http://smartcard-atr.appspot.com/parse?ATR=3BF91300008131FE454A434F503234325233A2
+
+CPLC: ICFabricator=4790
+      ICType=5167
+      OperatingSystemID=4791
+      OperatingSystemReleaseDate=2348 (2012-12-13)
+      OperatingSystemReleaseLevel=4000
+      ICFabricationDate=6007 (2016-01-07)
+      ICSerialNumber=00148398
+      ICBatchIdentifier=1963
+      ICModuleFabricator=4812
+      ICModulePackagingDate=6014 (2016-01-14)
+      ICCManufacturer=0000
+      ICEmbeddingDate=0000 (2010-01-01)
+      ICPrePersonalizer=0127
+      ICPrePersonalizationEquipmentDate=1530 (invalid date format)
+      ICPrePersonalizationEquipmentID=31343833
+      ICPersonalizer=0000
+      ICPersonalizationDate=0000 (2010-01-01)
+      ICPersonalizationEquipmentID=00000000
+
+Card Data: 
+Tag 6: 1.2.840.114283.1
+-> Global Platform card
+Tag 60: 1.2.840.114283.2.2.2
+-> GP Version: 2.2
+Tag 63: 1.2.840.114283.3
+Tag 64: 1.2.840.114283.4.2.85
+-> GP SCP02 i=55
+Tag 65: 1.3.656.840.100.2.1.3
+Tag 66: 1.3.6.1.4.1.42.2.110.1.2
+-> JavaCard v2
+Card Capabilities: 
+Version: 255 (0xFF) ID:   1 (0x01) type: DES3 length:  16 
+Version: 255 (0xFF) ID:   2 (0x02) type: DES3 length:  16 
+Version: 255 (0xFF) ID:   3 (0x03) type: DES3 length:  16 
+Key version suggests factory keys
+
+-----------------------------------------------------------------------------------------------------------
+N9 (NXP JCOP31 v2.4.1 72k)
+Card ATR: 3B F8 13 00 00 81 31 FE 45 4A 43 4F 50 76 32 34 31 B7 
+
+
+GlobalPlatformPro v20.01.23-0-g5ad373b
+Running on Linux 6.8.0-52-generic amd64, Java 17.0.14 by Ubuntu
+Reader: Gemalto PC Twin Reader 00 00
+ATR: 3BF81300008131FE454A434F5076323431B7
+More information about your card:
+    http://smartcard-atr.appspot.com/parse?ATR=3BF81300008131FE454A434F5076323431B7
+
+CPLC: ICFabricator=4790
+      ICType=5040
+      OperatingSystemID=4791
+      OperatingSystemReleaseDate=8102 (2018-04-12)
+      OperatingSystemReleaseLevel=3100
+      ICFabricationDate=1035 (2011-02-04)
+      ICSerialNumber=00216995
+      ICBatchIdentifier=4830
+      ICModuleFabricator=0000
+      ICModulePackagingDate=0000 (2010-01-01)
+      ICCManufacturer=0000
+      ICEmbeddingDate=0000 (2010-01-01)
+      ICPrePersonalizer=0721
+      ICPrePersonalizationEquipmentDate=2630 (invalid date format)
+      ICPrePersonalizationEquipmentID=32313639
+      ICPersonalizer=0000
+      ICPersonalizationDate=0000 (2010-01-01)
+      ICPersonalizationEquipmentID=00000000
+
+Card Data: 
+Tag 6: 1.2.840.114283.1
+-> Global Platform card
+Tag 60: 1.2.840.114283.2.2.1.1
+-> GP Version: 2.1.1
+Tag 63: 1.2.840.114283.3
+Tag 64: 1.2.840.114283.4.2.21
+-> GP SCP02 i=15
+Tag 65: 1.3.656.840.100.2.1.3
+Tag 66: 1.3.6.1.4.1.42.2.110.1.2
+-> JavaCard v2
+Card Capabilities: 
+Version: 255 (0xFF) ID:   1 (0x01) type: DES3 length:  16 
+Version: 255 (0xFF) ID:   2 (0x02) type: DES3 length:  16 
+Version: 255 (0xFF) ID:   3 (0x03) type: DES3 length:  16 
+Key version suggests factory keys
