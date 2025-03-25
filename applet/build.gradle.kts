@@ -6,13 +6,10 @@ buildscript {
         maven("https://mvn.javacard.pro/maven")
         maven("https://deadcode.me/mvn")
     }
-    dependencies {
-        classpath("com.klinec:gradle-javacard:1.8.0")
-    }
 }
 
 plugins {
-    id("com.klinec.gradle.javacard") version "1.8.0"
+    id("sk.neuromancer.gradle.javacard") version "1.8.1"
     id("java")
 }
 
@@ -45,13 +42,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    // Include plugin as it has bundled GP & other tools.
-    // Alternative: include GP manually, but the included
-    // version has to be compatible with the plugin.
-    runtimeOnly("com.klinec:gradle-javacard:1.8.0") {
-        // Exclude old BouncyCastle (we have newer).
-        exclude(group = "org.bouncycastle", module="bcpkix-jdk15on")
-    }
     runtimeOnly("org.bouncycastle:bcpkix-jdk18on:1.77")
 }
 
@@ -90,9 +80,7 @@ javacard {
         addImplicitJcardSimJunit(false)
 
         if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
-            /*
-            // Exclude for the time being, as the "excludes" param is not properly implemented upstream.
-            // https://github.com/ph4r05/javacard-gradle-plugin/pull/11
+
             cap {
                 jckit(sdks["JC221"]!!.first)
                 packageName("cz.crcs.ectester.applet")
@@ -101,14 +89,14 @@ javacard {
                 output("applet221.cap")
                 verify(false)
 
-                //excludes("ECTesterAppletExtended.*")
+                excludes("**/ECTesterAppletExtended.java")
 
                 applet {
                     className("cz.crcs.ectester.applet.ECTesterApplet")
                     aid("454354657374657230333320323231")
                 }
             }
-        */
+
 
             cap {
                 jckit(sdks["JC222"]!!.first)
@@ -117,7 +105,7 @@ javacard {
                 aid(pkgAID)
                 output("applet222.cap")
 
-                //excludes("ECTesterApplet.*")
+                excludes("**/ECTesterApplet.java")
 
                 applet {
                     className("cz.crcs.ectester.applet.ECTesterAppletExtended")
@@ -134,7 +122,7 @@ javacard {
                 aid(pkgAID)
                 output("applet305.cap")
 
-                //excludes("ECTesterApplet.*")
+                excludes("**/ECTesterApplet.java")
 
                 applet {
                     className("cz.crcs.ectester.applet.ECTesterAppletExtended")
@@ -153,7 +141,7 @@ javacard {
                 aid(pkgAID)
                 output("applet320.cap")
 
-                //excludes("ECTesterApplet.*")
+                excludes("**/ECTesterApplet.java")
 
                 applet {
                     className("cz.crcs.ectester.applet.ECTesterAppletExtended")
