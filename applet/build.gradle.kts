@@ -3,7 +3,7 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven("https://javacard.pro/maven")
+        maven("https://mvn.javacard.pro/maven")
         maven("https://deadcode.me/mvn")
     }
 }
@@ -24,7 +24,7 @@ repositories {
     // mavenLocal() // for local maven repository if needed
 
     // Repository with JCardSim, Globalplatform, etc, ...
-    maven("https://javacard.pro/maven")
+    maven("https://mvn.javacard.pro/maven")
     maven("https://deadcode.me/mvn")
 
     // Local lib repository
