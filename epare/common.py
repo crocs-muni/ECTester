@@ -76,10 +76,14 @@ class MultIdent:
         return MultIdent(self.klass, *self.args, **self.kwargs, countermeasure=countermeasure)
 
     def __str__(self):
+        name = self.klass.__name__.replace("Multiplier", "")
         args = ("_" + ",".join(list(map(str, self.args)))) if self.args else ""
-        kwargs = ("_" + ",".join(f"{str(k)}:{v.name if isinstance(v, Enum) else str(v)}" for k,v in self.kwargs.items())) if self.kwargs else ""
+        kwmap = {"recoding_direction": "recode",
+                 "direction": "dir",
+                 "width": "w"}
+        kwargs = ("_" + ",".join(f"{kwmap.get(k, k)}:{v.name if isinstance(v, Enum) else str(v)}" for k,v in self.kwargs.items())) if self.kwargs else ""
         countermeasure = f"+{self.countermeasure}" if self.countermeasure is not None else ""
-        return f"{self.klass.__name__}{args}{kwargs}{countermeasure}"
+        return f"{name}{args}{kwargs}{countermeasure}"
 
     def __repr__(self):
         return str(self)
@@ -225,10 +229,10 @@ comb_mults = [
 binary_mults = [
     MultIdent(LTRMultiplier, always=False, complete=True),
     MultIdent(LTRMultiplier, always=True,  complete=True),
-    MultIdent(RTLMultiplier, always=False, complete=True),
-    MultIdent(RTLMultiplier, always=True,  complete=True),
     MultIdent(LTRMultiplier, always=False, complete=False),
     MultIdent(LTRMultiplier, always=True,  complete=False),
+    MultIdent(RTLMultiplier, always=False, complete=True),
+    MultIdent(RTLMultiplier, always=True,  complete=True),
     MultIdent(RTLMultiplier, always=False, complete=False),
     MultIdent(RTLMultiplier, always=True,  complete=False),
     MultIdent(CoronMultiplier)
