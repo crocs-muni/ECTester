@@ -210,7 +210,7 @@ naf_mults = [
     MultIdent(WindowNAFMultiplier, width=5),
     MultIdent(WindowNAFMultiplier, width=6),
     MultIdent(BinaryNAFMultiplier, always=False, direction=ProcessingDirection.LTR),
-    MultIdent(BinaryNAFMultiplier, always=False, direction=ProcessingDirection.RTL)
+    MultIdent(BinaryNAFMultiplier, always=False, direction=ProcessingDirection.RTL),
     MultIdent(BinaryNAFMultiplier, always=True, direction=ProcessingDirection.LTR),
     MultIdent(BinaryNAFMultiplier, always=True, direction=ProcessingDirection.RTL)
 ]
