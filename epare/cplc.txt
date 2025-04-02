@@ -347,9 +347,12 @@ Version: 255 (0xFF) ID:   2 (0x02) type: DES3 length:  16
 Version: 255 (0xFF) ID:   3 (0x03) type: DES3 length:  16 
 Key version suggests factory keys
 -----------------------------------------------------------------------------------------------------------
-N1 (NXP J3A081 JCOP v 2.4.1)
-Card ATR: 3B F8 18 00 FF 81 31 FE 45 4A 43 4F 50 76 32 34 31 43 
+N1 (NXP J3A081 JCOP v2.4.1)
 
+J2 -> concact
+J3 -> dual
+A/D/E/H -> versions
+Card ATR: 3B F8 18 00 FF 81 31 FE 45 4A 43 4F 50 76 32 34 31 43 
 
 GlobalPlatformPro v20.01.23-0-g5ad373b
 Running on Linux 6.8.0-52-generic amd64, Java 17.0.14 by Ubuntu
@@ -393,63 +396,7 @@ Version: 255 (0xFF) ID:   1 (0x01) type: DES3 length:  16
 Version: 255 (0xFF) ID:   2 (0x02) type: DES3 length:  16 
 Version: 255 (0xFF) ID:   3 (0x03) type: DES3 length:  16 
 Key version suggests factory keys
------------------------------------------------------------------------------------------------------------
-N10 (NXP J3H145 JCOP3 SECID P60)
-Card ATR: 3B 94 95 81 01 46 54 56 01 C4 
 
-
-GlobalPlatformPro v20.01.23-0-g5ad373b
-Running on Linux 6.8.0-52-generic amd64, Java 17.0.14 by Ubuntu
-Reader: Gemalto PC Twin Reader 00 00
-ATR: 3B9495810146545601C4
-More information about your card:
-    http://smartcard-atr.appspot.com/parse?ATR=3B9495810146545601C4
-
-CPLC: ICFabricator=4790
-      ICType=0503
-      OperatingSystemID=8211
-      OperatingSystemReleaseDate=6351 (2016-12-16)
-      OperatingSystemReleaseLevel=0302
-      ICFabricationDate=8359 (2018-12-25)
-      ICSerialNumber=01891207
-      ICBatchIdentifier=4673
-      ICModuleFabricator=4E30
-      ICModulePackagingDate=5038 (2015-02-07)
-      ICCManufacturer=3532
-      ICEmbeddingDate=4246 (2014-09-03)
-      ICPrePersonalizer=4A31
-      ICPrePersonalizationEquipmentDate=3031 (2013-01-31)
-      ICPrePersonalizationEquipmentID=38393132
-      ICPersonalizer=0600
-      ICPersonalizationDate=0123 (2010-05-03)
-      ICPersonalizationEquipmentID=B148EF84
-
-IIN: 420100
-CIN: 45080000000000000000
-Card Data: 
-Tag 6: 1.2.840.114283.1
--> Global Platform card
-Tag 60: 1.2.840.114283.2.2.1.1
--> GP Version: 2.1.1
-Tag 63: 1.2.840.114283.3
-Tag 64: 1.2.840.114283.4.2.85
--> GP SCP02 i=55
-Tag 66: 1.3.6.1.4.1.42.2.110.1.2
--> JavaCard v2
-Card Capabilities: 
-Supports: SCP02 i=55
-Supports: SCP03 i=00 i=10 with AES-128 AES-196 AES-256
-Supported DOM privileges: SecurityDomain, CardLock, CardTerminate, CardReset, CVMManagement, TrustedPath, AuthorizedManagement, TokenVerification, GlobalDelete, GlobalLock, GlobalRegistry, FinalApplication, ReceiptGeneration
-Supported APP privileges: CardLock, CardTerminate, CardReset, CVMManagement, FinalApplication, GlobalService
-Supported LFDB hash: 02
-Supported Token Verification ciphers: 01020840
-Supported Receipt Generation ciphers: 0408
-Supported DAP Verification ciphers: 01020840
-Supported ECC Key Parameters: 0102030405
-Version: 255 (0xFF) ID:   1 (0x01) type: DES3 length:  16 
-Version: 255 (0xFF) ID:   2 (0x02) type: DES3 length:  16 
-Version: 255 (0xFF) ID:   3 (0x03) type: DES3 length:  16 
-Key version suggests factory keys
 -----------------------------------------------------------------------------------------------------------
 N4 
 Not responding.
@@ -509,7 +456,11 @@ Version: 255 (0xFF) ID:   2 (0x02) type: DES3 length:  16
 Version: 255 (0xFF) ID:   3 (0x03) type: DES3 length:  16 
 Key version suggests factory keys
 -----------------------------------------------------------------------------------------------------------
-N6
+N5 NXP JCOP3 P60
+HW athena, SW NXP
+Dead
+-----------------------------------------------------------------------------------------------------------
+N6/N7 NXP JCOP J3R280 P71
 Not responding.
 Card ATR: 3B D5 18 FF 81 91 FE 1F C3 80 73 C8 21 10 0A 
 
@@ -562,7 +513,8 @@ Version:  49 (0x31) ID:   1 (0x01) type: AES  length:  16 (AES-128)
 Version:  49 (0x31) ID:   2 (0x02) type: AES  length:  16 (AES-128)
 Version:  49 (0x31) ID:   3 (0x03) type: AES  length:  16 (AES-128)
 -----------------------------------------------------------------------------------------------------------
-N8 (blue usb)
+N8 (blue usb) J2E (same as N3? check CPLC)
+
 Card ATR: 3B F9 13 00 00 81 31 FE 45 4A 43 4F 50 32 34 32 52 33 A2 
 
 GlobalPlatformPro v20.01.23-0-g5ad373b
@@ -655,3 +607,275 @@ Version: 255 (0xFF) ID:   1 (0x01) type: DES3 length:  16
 Version: 255 (0xFF) ID:   2 (0x02) type: DES3 length:  16 
 Version: 255 (0xFF) ID:   3 (0x03) type: DES3 length:  16 
 Key version suggests factory keys
+
+-----------------------------------------------------------------------------------------------------------
+N10 (NXP J3H145 JCOP3 SECID P60)
+Card ATR: 3B 94 95 81 01 46 54 56 01 C4 
+
+
+GlobalPlatformPro v20.01.23-0-g5ad373b
+Running on Linux 6.8.0-52-generic amd64, Java 17.0.14 by Ubuntu
+Reader: Gemalto PC Twin Reader 00 00
+ATR: 3B9495810146545601C4
+More information about your card:
+    http://smartcard-atr.appspot.com/parse?ATR=3B9495810146545601C4
+
+CPLC: ICFabricator=4790
+      ICType=0503
+      OperatingSystemID=8211
+      OperatingSystemReleaseDate=6351 (2016-12-16)
+      OperatingSystemReleaseLevel=0302
+      ICFabricationDate=8359 (2018-12-25)
+      ICSerialNumber=01891207
+      ICBatchIdentifier=4673
+      ICModuleFabricator=4E30
+      ICModulePackagingDate=5038 (2015-02-07)
+      ICCManufacturer=3532
+      ICEmbeddingDate=4246 (2014-09-03)
+      ICPrePersonalizer=4A31
+      ICPrePersonalizationEquipmentDate=3031 (2013-01-31)
+      ICPrePersonalizationEquipmentID=38393132
+      ICPersonalizer=0600
+      ICPersonalizationDate=0123 (2010-05-03)
+      ICPersonalizationEquipmentID=B148EF84
+
+IIN: 420100
+CIN: 45080000000000000000
+Card Data: 
+Tag 6: 1.2.840.114283.1
+-> Global Platform card
+Tag 60: 1.2.840.114283.2.2.1.1
+-> GP Version: 2.1.1
+Tag 63: 1.2.840.114283.3
+Tag 64: 1.2.840.114283.4.2.85
+-> GP SCP02 i=55
+Tag 66: 1.3.6.1.4.1.42.2.110.1.2
+-> JavaCard v2
+Card Capabilities: 
+Supports: SCP02 i=55
+Supports: SCP03 i=00 i=10 with AES-128 AES-196 AES-256
+Supported DOM privileges: SecurityDomain, CardLock, CardTerminate, CardReset, CVMManagement, TrustedPath, AuthorizedManagement, TokenVerification, GlobalDelete, GlobalLock, GlobalRegistry, FinalApplication, ReceiptGeneration
+Supported APP privileges: CardLock, CardTerminate, CardReset, CVMManagement, FinalApplication, GlobalService
+Supported LFDB hash: 02
+Supported Token Verification ciphers: 01020840
+Supported Receipt Generation ciphers: 0408
+Supported DAP Verification ciphers: 01020840
+Supported ECC Key Parameters: 0102030405
+Version: 255 (0xFF) ID:   1 (0x01) type: DES3 length:  16 
+Version: 255 (0xFF) ID:   2 (0x02) type: DES3 length:  16 
+Version: 255 (0xFF) ID:   3 (0x03) type: DES3 length:  16 
+Key version suggests factory keys
+
+
+-----------------------------------------------------------------------------------------------------------
+
+C1 (ACS ACOSJ 40k)
+
+Card ATR: 3B 89 80 01 41 43 4F 53 4A 76 32 30 34 1C
+
+KDD: CF0A00000265018303953662
+SSC: C1020005
+Card Data: 
+Tag 6: 1.2.840.114283.1
+-> Global Platform card
+Tag 60: 1.2.840.114283.2.2.2.1
+-> GP Version: 2.2.1
+Tag 63: 1.2.840.114283.3
+-> GP card is uniquely identified by the Issuer Identification Number (IIN) and Card Image Number (CIN)
+Tag 6: 1.2.840.114283.4.2.85
+-> GP SCP02 (i=55)
+Tag 66: 1.3.6.1.4.1.42.2.110.1.3
+-> JavaCard v3
+Card Capabilities: 
+Version:  32 (0x20) ID:   1 (0x01) type: DES3         length:  16
+Version:  32 (0x20) ID:   2 (0x02) type: DES3         length:  16
+Version:  32 (0x20) ID:   3 (0x03) type: DES3         length:  16
+
+
+-----------------------------------------------------------------------------------------------------------
+
+E1 (Gemalto IDClassic 230) same as E2 likely
+
+Card ATR: 3B 95 95 40 FF AE 01 03 00 00
+
+CPLC: ICFabricator=4090
+      ICType=6145
+      OperatingSystemID=2041
+      OperatingSystemReleaseDate=4275 (2024-10-01)
+      OperatingSystemReleaseLevel=0103
+      ICFabricationDate=4043 (2024-02-12)
+      ICSerialNumber=24162B41
+      ICBatchIdentifier=52D4
+      ICModuleFabricator=1942
+      ICModulePackagingDate=4297 (2024-10-23)
+      ICCManufacturer=2003
+      ICEmbeddingDate=4312 (2024-11-07)
+      ICPrePersonalizer=2004
+      ICPrePersonalizationEquipmentDate=4312 (2024-11-07)
+      ICPrePersonalizationEquipmentID=00010044
+      ICPersonalizer=FFFF
+      ICPersonalizationDate=FFFF (invalid date format)
+      ICPersonalizationEquipmentID=FFFFFFFF
+
+[WARN] GPData - GET DATA(IIN) not supported
+[WARN] GPData - GET DATA(CIN) not supported
+[WARN] GPData - GET DATA(KDD) not supported
+[WARN] GPData - GET DATA(SSC) not supported
+Card Data: 
+[WARN] GPData - GET DATA(Card Data) not supported
+Card Capabilities: 
+[WARN] GPData - GET DATA(Card Capabilities) not supported
+[WARN] GPData - GET DATA(Key Info Template) not supported
+
+-----------------------------------------------------------------------------------------------------------
+
+E2 (Gemalto IDClassic 230) same as E1 likely
+
+Card ATR: 3B 95 95 40 FF AE 01 03 00 00
+
+CPLC: ICFabricator=4090
+      ICType=6145
+      OperatingSystemID=2041
+      OperatingSystemReleaseDate=4275 (2024-10-01)
+      OperatingSystemReleaseLevel=0103
+      ICFabricationDate=1071 (2021-03-12)
+      ICSerialNumber=2103362C
+      ICBatchIdentifier=6311
+      ICModuleFabricator=1942
+      ICModulePackagingDate=2023 (2022-01-23)
+      ICCManufacturer=1943
+      ICEmbeddingDate=2023 (2022-01-23)
+      ICPrePersonalizer=1944
+      ICPrePersonalizationEquipmentDate=2023 (2022-01-23)
+      ICPrePersonalizationEquipmentID=0000BA01
+      ICPersonalizer=FFFF
+      ICPersonalizationDate=FFFF (invalid date format)
+      ICPersonalizationEquipmentID=FFFFFFFF
+
+IIN: 4206FFFFFFFFFFFF
+CIN: 4508FFFFFFFFFFFFFFFF
+[WARN] GPData - GET DATA(KDD) not supported
+[WARN] GPData - GET DATA(SSC) not supported
+Card Data: 
+[WARN] GPData - GET DATA(Card Data) not supported
+Card Capabilities: 
+[WARN] GPData - GET DATA(Card Capabilities) not supported
+[WARN] GPData - GET DATA(Key Info Template) not supported
+
+-----------------------------------------------------------------------------------------------------------
+
+G2 (G&D Smartcafe 6.0)
+
+Card ATR: 3B FE 18 00 00 80 31 FE 45 53 43 45 36 30 2D 43 44 30 38 31 2D 6E 46 A9
+
+CPLC: ICFabricator=4790
+      ICType=5037
+      OperatingSystemID=1671
+      OperatingSystemReleaseDate=1146 (2021-05-26)
+      OperatingSystemReleaseLevel=4003
+      ICFabricationDate=5024 (2025-01-24)
+      ICSerialNumber=970069A3
+      ICBatchIdentifier=7271
+      ICModuleFabricator=4792
+      ICModulePackagingDate=0144 (2020-05-23)
+      ICCManufacturer=1673
+      ICEmbeddingDate=0283 (2020-10-09)
+      ICPrePersonalizer=1674
+      ICPrePersonalizationEquipmentDate=5092 (2015-04-02)
+      ICPrePersonalizationEquipmentID=00000A01
+      ICPersonalizer=0000
+      ICPersonalizationDate=0000 (invalid date format)
+      ICPersonalizationEquipmentID=00000000
+
+KDD: CF0A00005024970069A37271
+SSC: C1020000
+Card Data: 
+Tag 6: 1.2.840.114283.1
+-> Global Platform card
+Tag 60: 1.2.840.114283.2.2.1.1
+-> GP Version: 2.1.1
+Tag 63: 1.2.840.114283.3
+-> GP card is uniquely identified by the Issuer Identification Number (IIN) and Card Image Number (CIN)
+Tag 6: 1.2.840.114283.4.3.0
+-> GP SCP03
+Tag 66: 1.3.6.1.4.1.42.2.110.1.2
+-> JavaCard v2
+Card Capabilities: 
+Version:   1 (0x01) ID:   1 (0x01) type: DES3         length:  16
+Version:   1 (0x01) ID:   2 (0x02) type: DES3         length:  16
+Version:   1 (0x01) ID:   3 (0x03) type: DES3         length:  16
+
+-----------------------------------------------------------------------------------------------------------
+
+O1 (Oberthur ID-One Cosmo 64)
+
+Card ATR: 3B 7B 18 00 00 00 31 C0 64 77 E9 10 00 01 90 00
+
+CPLC: ICFabricator=2050
+      ICType=5000
+      OperatingSystemID=4041
+      OperatingSystemReleaseDate=5273 (2015-09-30)
+      OperatingSystemReleaseLevel=0060
+      ICFabricationDate=7031 (2027-01-31)
+      ICSerialNumber=3091D362
+      ICBatchIdentifier=0000
+      ICModuleFabricator=1912
+      ICModulePackagingDate=7031 (2027-01-31)
+      ICCManufacturer=1913
+      ICEmbeddingDate=7031 (2027-01-31)
+      ICPrePersonalizer=1914
+      ICPrePersonalizationEquipmentDate=7031 (2027-01-31)
+      ICPrePersonalizationEquipmentID=00115221
+      ICPersonalizer=0000
+      ICPersonalizationDate=0000 (invalid date format)
+      ICPersonalizationEquipmentID=00000000
+
+Card Data: 
+Tag 6: 1.2.840.114283.1
+-> Global Platform card
+Tag 60: 1.2.840.114283.2.2.1.1
+-> GP Version: 2.1.1
+Tag 63: 1.2.840.114283.3
+-> GP card is uniquely identified by the Issuer Identification Number (IIN) and Card Image Number (CIN)
+Tag 6: 1.2.840.114283.4.1.5
+-> GP SCP01 (i=05)
+Card Capabilities: 
+Version: 255 (0xFF) ID:   1 (0x01) type: DES3_RESERVED length:  16 (factory key)
+
+-----------------------------------------------------------------------------------------------------------
+
+O2 (Oberthur Cosmo Dual 72)
+
+Card ATR: 3B 7B 18 00 00 00 31 C0 64 77 E3 03 00 82 90 00
+
+CPLC: ICFabricator=2050
+      ICType=5000
+      OperatingSystemID=4041
+      OperatingSystemReleaseDate=4091 (2024-03-31)
+      OperatingSystemReleaseLevel=005F
+      ICFabricationDate=7157 (2017-06-06)
+      ICSerialNumber=000002E7
+      ICBatchIdentifier=0000
+      ICModuleFabricator=1912
+      ICModulePackagingDate=7157 (2017-06-06)
+      ICCManufacturer=1913
+      ICEmbeddingDate=7157 (2017-06-06)
+      ICPrePersonalizer=0000
+      ICPrePersonalizationEquipmentDate=0000 (invalid date format)
+      ICPrePersonalizationEquipmentID=00000000
+      ICPersonalizer=0000
+      ICPersonalizationDate=0000 (invalid date format)
+      ICPersonalizationEquipmentID=00000000
+
+SSC: C1020000
+Card Data: 
+Tag 6: 1.2.840.114283.1
+-> Global Platform card
+Tag 60: 1.2.840.114283.2.2.1.1
+-> GP Version: 2.1.1
+Tag 63: 1.2.840.114283.3
+-> GP card is uniquely identified by the Issuer Identification Number (IIN) and Card Image Number (CIN)
+Tag 6: 1.2.840.114283.4.1.5
+-> GP SCP01 (i=05)
+Card Capabilities: 
+Version: 255 (0xFF) ID:   1 (0x01) type: DES3         length:  16 (factory key)
