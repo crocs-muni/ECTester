@@ -355,7 +355,7 @@ with a given library version and arguments do:
 
 ```shell
 # This runs the default test-suite agains LibreSSL 3.9.2
-nix run "?submodules=1#libressl.v392" --- test default LibreSSL
+nix run "?submodules=1#libressl.v392" -- test default LibreSSL
 ```
 
 #### Gradle
