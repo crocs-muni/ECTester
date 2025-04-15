@@ -1,0 +1,7 @@
+Curve with order 11n (also claimed), generator has order 11 and so does the point.
+
+
+java -jar gp.jar --uninstall applet/build/javacard/applet222.cap;    sleep 1;    java -jar gp.jar --install applet/build/javacard/applet222.cap;    sleep 1;    java -jar reader/build/libs/ECTesterReader.jar -dh 500 -fp -b 256 -c epare/curves/testinverse/cofactor256p11_full.csv -priv epare/curves/testinverse/key.csv  -pub epare/curves/testinverse/point_11n.csv -o epare/cards/${CARD}/testinverse/out_500_11.csv | tee epare/cards/${CARD}/testinverse/out_500_11.txt
+
+
+java -jar gp.jar --uninstall applet/build/javacard/applet222.cap;    sleep 1;    java -jar gp.jar --install applet/build/javacard/applet222.cap;    sleep 1;    java -jar reader/build/libs/ECTesterReader.jar --ecdsa 500 -fp -b 256 -c epare/curves/testinverse/cofactor256p11_full.csv -o epare/cards/${CARD}/testinverse/ecdsa_500_11.csv | tee epare/cards/${CARD}/testinverse/ecdsa_500_11.txt
