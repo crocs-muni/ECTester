@@ -18,3 +18,8 @@ __pycache__/
 # Ignore Gradle build output directory
 build
 build_all
+
+# Ignore nix outputs
+result
+result-bin
+result-man
