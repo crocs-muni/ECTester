@@ -1,6 +1,10 @@
+pyecsca
 numpy
 scipy
+pandas
 matplotlib
 asn1crypto
 tabulate
-pyecsca
+tqdm
+statsmodels
+anytree

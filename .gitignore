@@ -12,6 +12,7 @@
 __pycache__/
 .ipynb_checkpoints/
 *.pickle
+.mypy_cache/
 
 # Ignore Gradle project-specific cache directory
 .gradle
