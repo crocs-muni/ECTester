@@ -1,45 +1,16 @@
-# Built artifacts in /dist and /applet.
-/build/
-/dist/lib/
-/dist/ECTesterReader.jar
-/dist/ECTesterReader-dist.jar
-/dist/ectester-reader.sh
-/dist/ectester-reader.bat
-/dist/ECTesterStandalone.jar
-/dist/ECTesterStandalone-dist.jar
-/applet/ectester.cap
-/applet/ectester221.cap
-/applet/ectester222.cap
-/applet/ectester304.cap
-
-# Test runs in /dist
-/dist/*.default
-/dist/*.test-vectors
-/dist/*.compression
-/dist/*.cofactor
-/dist/*.composite
-/dist/*.wrong
-/dist/*.invalid
-/dist/*.twist
-/dist/*.miscellaneous
-/dist/*.degenerate
-/dist/*.edge-cases
-/dist/*.xml
-/dist/*.yml
-
 # Built binaries in /src.
-/src/**/*.a
-/src/**/*.o
-/src/**/*.obj
-/src/**/*.so
-/src/**/*.dll
-/src/**/*.exp
-/src/**/*.lib
-/src/**/*.pdb
+/standalone/src/**/*.a
+/standalone/src/**/*.o
+/standalone/src/**/*.obj
+/standalone/src/**/*.so
+/standalone/src/**/*.dll
+/standalone/src/**/*.exp
+/standalone/src/**/*.lib
+/standalone/src/**/*.pdb
 
 # Python stuff
-/util/__pycache__/
-/util/.ipynb_checkpoints/
+__pycache__/
+.ipynb_checkpoints/
 
 # Ignore Gradle project-specific cache directory
 .gradle
