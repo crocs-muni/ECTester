@@ -122,6 +122,7 @@ jobs:
           wget https://github.com/netwide-assembler/nasm/archive/refs/tags/nasm-2.16.03.tar.gz
           tar -xzvf nasm-2.16.03.tar.gz
           cd nasm-nasm-2.16.03
+            ./autogen.sh
             ./configure
             make -j4
             sudo make install
