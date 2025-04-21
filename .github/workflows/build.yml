@@ -125,6 +125,7 @@ jobs:
             ./autogen.sh
             ./configure
             make -j4
+            make manpages
             sudo make install
           cd ..
           echo "BORINGSSL_VERSION=$(git submodule status ext/boringssl | cut -f2 -d' ' | cut -c1-10)" >> $GITHUB_ENV
