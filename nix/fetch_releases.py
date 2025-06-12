@@ -1,31 +1,16 @@
 #!/usr/bin/env python3
 
 import argparse
-
 import json
-import jinja2
 import re
 import requests
 import shutil
 import tempfile
-
 import pathlib
 import subprocess as sp
-
 from base64 import b32encode, b32decode, b64encode, b16decode
 from bs4 import BeautifulSoup
 from packaging.version import parse as parse_version, Version
-
-env = jinja2.Environment()
-
-all_versions_template = env.from_string(
-    """{
-  buildECTesterStandalone
-}:
-{ {% for version in pkg_versions %}
-  {{ version }} {% endfor %}
-}"""
-)
 
 
 def get_source_hash(url, unpack=False):
@@ -48,17 +33,13 @@ def get_source_hash(url, unpack=False):
     return digest_sri
 
 
-def serialize_versions(pkg, renders, versions):
+def serialize_versions(pkg, versions):
     sorted_versions = {
         k: {kk: vv for kk, vv in v.items() if kk != "sort"}
         for k, v in sorted(
             versions.items(), key=lambda item: item[1]["sort"], reverse=True
         )
     }
-
-    # all_versions = all_versions_template.render(pkg_versions=renders).strip()
-    # with open(f"./nix/{pkg}_pkg_versions.nix", "w") as handle:
-    #     handle.write(all_versions)
 
     with open(f"./nix/{pkg}_pkg_versions.json", "w") as handle:
         json.dump(sorted_versions, handle, indent=4)
@@ -72,13 +53,6 @@ def fetch_botan():
     resp = requests.get(release_list)
     soup = BeautifulSoup(resp.content, "html.parser")
 
-    single_version_template = env.from_string(
-        """{{ flat_version }} = buildECTesterStandalone {
-    {{ pkg }} = { version="{{ version }}"; source_extension="{{ ext }}"; hash="{{ digest }}"; };
-  };"""
-    )
-
-    renders = []
     versions = {}
     for link in soup.find_all("a"):
         if link.text.startswith("Botan") and not link.text.endswith(".asc"):
@@ -100,21 +74,13 @@ def fetch_botan():
             flat_version = f"v{match['major']}{match['minor']}{match['patch']}"
             print(f"{version}:{digest}")
 
-            rendered = single_version_template.render(
-                pkg=pkg,
-                digest=digest,
-                ext=ext,
-                flat_version=flat_version,
-                version=version,
-            ).strip()
-            renders.append(rendered)
             versions[flat_version] = {
                 "version": version,
                 "source_extension": ext,
                 "hash": digest,
                 "sort": parse_version(version),
             }
-    serialize_versions(pkg, renders, versions)
+    serialize_versions(pkg, versions)
 
 
 def fetch_cryptopp():
@@ -129,7 +95,6 @@ def fetch_cryptopp():
     {{ pkg }} = { version="{{ version }}"; hash="{{ digest }}"; };
   };"""
     )
-    renders = []
     versions = {}
     for release in resp.json():
         if not release["draft"] and not release["prerelease"]:
@@ -140,19 +105,12 @@ def fetch_cryptopp():
             digest = get_source_hash(download_url, unpack=True)
             print(f"{underscored_version}:{digest}")
 
-            rendered = single_version_template.render(
-                pkg=pkg,
-                digest=digest,
-                flat_version=flat_version,
-                version=underscored_version,
-            ).strip()
-            renders.append(rendered)
             versions[flat_version] = {
                 "version": underscored_version,
                 "hash": digest,
                 "sort": parse_version(underscored_version.replace("_", ".")),
             }
-    serialize_versions(pkg, renders, versions)
+    serialize_versions(pkg, versions)
 
 
 def fetch_openssl():
@@ -186,12 +144,6 @@ def fetch_openssl():
         )
     )
 
-    single_version_template = env.from_string(
-        """{{ flat_version }} = buildECTesterStandalone {
-    {{ pkg }} = { version="{{ version }}"; hash="{{ digest }}"; };
-  };"""
-    )
-    renders = []
     versions = {}
     for tag in tags:
         if tag.startswith("OpenSSL_"):
@@ -223,12 +175,7 @@ def fetch_openssl():
             "hash": digest,
             "sort": parse_version(sort_version),
         }
-
-        rendered = single_version_template.render(
-            pkg=pkg, digest=digest, flat_version=flat_version, version=dotted_version
-        ).strip()
-        renders.append(rendered)
-    serialize_versions(pkg, renders, versions)
+    serialize_versions(pkg, versions)
 
 
 def fetch_tomcrypt():
@@ -243,53 +190,32 @@ def fetch_gcrypt():
     resp = requests.get(release_list)
     soup = BeautifulSoup(resp.content, "html.parser")
 
-    single_version_template = env.from_string(
-        """{{ flat_version }} = buildECTesterStandalone {
-    {{ pkg }} = { version="{{ version }}";  hash="{{ digest }}"; };
-  };"""
-    )
-
-    renders = []
     versions = {}
     for link in soup.find_all("a"):
         if link.text.startswith("libgcrypt") and link.text.endswith("tar.bz2"):
             download_link = download_url.format(version=link["href"])
-
             match = re.match(
                 r"libgcrypt-(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<dont>_do_not_use)?\.(?P<ext>.*)",
                 link.text,
             )
             version = f"{match['major']}.{match['minor']}.{match['patch']}"
-
             digest = get_source_hash(download_link)
             print(f"{version}:{digest}")
-
             flat_version = f"v{match['major']}{match['minor']}{match['patch']}"
             if match["dont"]:
                 flat_version += "_do_not_use"
-
-            rendered = single_version_template.render(
-                pkg=pkg, digest=digest, flat_version=flat_version, version=version
-            ).strip()
-            renders.append(rendered)
             versions[flat_version] = {
                 "version": version,
                 "hash": digest,
                 "sort": parse_version(version),
             }
-    serialize_versions(pkg, renders, versions)
+    serialize_versions(pkg, versions)
 
 
 def fetch_boringssl():
     pkg = "boringssl"
     upto = "76bb1411acf5cf6935586182a3a037d372ed1636"
 
-    single_version_template = env.from_string(
-        """{{ flat_version }} = buildECTesterStandalone {
-    {{ pkg }} = { rev="{{ rev }}"; hash="{{ digest }}"; };
-  };"""
-    )
-    renders = []
     versions = {}
     with (
         tempfile.TemporaryDirectory() as repodir,
@@ -302,7 +228,6 @@ def fetch_boringssl():
         )
         # NOTE: we need to get rid of the .git so that it is not included in the derivation hash
         shutil.move(repodir / ".git", gitdir)
-
         output = sp.check_output(
             [
                 "git",
@@ -315,7 +240,6 @@ def fetch_boringssl():
             ]
         )
         refs = output.decode().split("\n")
-
         upto_index = refs.index(upto)
 
         # pick roughly every 40th commit from the "upto" commit
@@ -338,13 +262,8 @@ def fetch_boringssl():
             )
             print(f"{i + 1: 4d}:{rev}:{digest}")
             abbrev_commit = str(rev[:8])
-
-            rendered = single_version_template.render(
-                pkg=pkg, digest=digest, flat_version=f"r{abbrev_commit}", rev=rev
-            ).strip()
-            renders.append(rendered)
             versions[f"r{abbrev_commit}"] = {"rev": rev, "hash": digest, "sort": i}
-    serialize_versions(pkg, renders, versions)
+    serialize_versions(pkg, versions)
 
 
 def fetch_mbedtls():
@@ -355,12 +274,6 @@ def fetch_mbedtls():
     release_url = f"https://api.github.com/repos/{owner}/{repo}/releases"
     resp = requests.get(release_url)
 
-    single_version_template = env.from_string(
-        """{{ flat_version }} = buildECTesterStandalone {
-    {{ pkg }} = { version="{{ version }}"; hash="{{ digest }}"; };
-  };"""
-    )
-    renders = []
     versions = {}
     for release in resp.json():
         if not release["draft"] and not release["prerelease"]:
@@ -377,20 +290,14 @@ def fetch_mbedtls():
                 digest = "sha256-tSWhF8i0Tx9QSFmyDEHdd2xveZvpyd+HXR+8xYj2Syo="
             else:
                 digest = get_source_hash(download_url, unpack=True)
-
             print(f"{version}:{digest}")
-
-            rendered = single_version_template.render(
-                pkg=pkg, digest=digest, flat_version=flat_version, version=version
-            ).strip()
-            renders.append(rendered)
             versions[flat_version] = {
                 "version": version,
                 "hash": digest,
                 "tag": tag,
                 "sort": parse_version(version),
             }
-    serialize_versions(pkg, renders, versions)
+    serialize_versions(pkg, versions)
 
 
 def fetch_ippcp():
@@ -401,12 +308,6 @@ def fetch_ippcp():
     release_url = f"https://api.github.com/repos/{owner}/{repo}/releases"
     resp = requests.get(release_url)
 
-    single_version_template = env.from_string(
-        """{{ flat_version }} = buildECTesterStandalone {
-    {{ pkg }} = { version="{{ version }}"; hash="{{ digest }}"; };
-  };"""
-    )
-    renders = []
     versions = {}
     for release in resp.json():
         if not release["draft"] and not release["prerelease"]:
@@ -422,16 +323,12 @@ def fetch_ippcp():
             digest = get_source_hash(download_url, unpack=True)
             print(f"{version}:{digest}")
 
-            rendered = single_version_template.render(
-                pkg=pkg, digest=digest, flat_version=flat_version, version=version
-            ).strip()
-            renders.append(rendered)
             versions[flat_version] = {
                 "version": version,
                 "hash": digest,
                 "sort": (1, parsed) if parsed.major < 2000 else (0, parsed),
             }
-    serialize_versions(pkg, renders, versions)
+    serialize_versions(pkg, versions)
 
 
 def fetch_nettle():
@@ -442,12 +339,6 @@ def fetch_nettle():
     release_url = f"https://api.github.com/repos/{owner}/{repo}/tags"
     resp = requests.get(release_url)
 
-    single_version_template = env.from_string(
-        """{{ flat_version }} = buildECTesterStandalone {
-    {{ pkg }} = { version="{{ version }}"; tag="{{ tag }}"; hash="{{ digest }}"; };
-  };"""
-    )
-    renders = []
     versions = {}
     for tag in resp.json():
         if tag["name"] == "release_nettle_0.2.20010617":
@@ -465,21 +356,13 @@ def fetch_nettle():
         digest = get_source_hash(download_url, unpack=False)
         print(f"{version}:{digest}")
 
-        rendered = single_version_template.render(
-            pkg=pkg,
-            digest=digest,
-            flat_version=flat_version,
-            tag=tag["name"],
-            version=version,
-        ).strip()
-        renders.append(rendered)
         versions[flat_version] = {
             "version": version,
             "tag": tag["name"],
             "hash": digest,
             "sort": parse_version(version),
         }
-    serialize_versions(pkg, renders, versions)
+    serialize_versions(pkg, versions)
 
 
 def fetch_libressl():
@@ -489,13 +372,6 @@ def fetch_libressl():
     resp = requests.get(release_list)
     soup = BeautifulSoup(resp.content, "html.parser")
 
-    single_version_template = env.from_string(
-        """{{ flat_version }} = buildECTesterStandalone {
-    {{ pkg }} = { version="{{ version }}"; hash="{{ digest }}"; };
-  };"""
-    )
-
-    renders = []
     versions = {}
     for link in soup.find_all("a"):
         if link.text.startswith("libressl") and link.text.endswith(".tar.gz"):
@@ -509,17 +385,12 @@ def fetch_libressl():
             print(f"{version}:{digest}")
             # NOTE: use underscore to separate the versions?
             flat_version = f"v{match['major']}{match['minor']}{match['patch']}"
-
-            rendered = single_version_template.render(
-                pkg=pkg, digest=digest, flat_version=flat_version, version=version
-            ).strip()
-            renders.append(rendered)
             versions[flat_version] = {
                 "version": version,
                 "hash": digest,
                 "sort": parse_version(version),
             }
-    serialize_versions(pkg, renders, versions)
+    serialize_versions(pkg, versions)
 
 
 def main():
