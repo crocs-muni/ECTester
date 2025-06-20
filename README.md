@@ -358,6 +358,26 @@ with a given library version and arguments do:
 nix run "?submodules=1#libressl.v392" -- test default LibreSSL
 ```
 
+To build the JavaCard applets:
+```shell
+nix build "?submodules=1#applets"
+# or individually
+nix build "?submodules=1#applet222"
+nix build "?submodules=1#applet305"
+nix build "?submodules=1#applet320"
+```
+
+To build or run the reader you can:
+```shell
+nix build '.?submodules=1#reader'
+nix run '.?submodules=1#reader'
+```
+
+If needed, you can also build the `common` library:
+```shell
+nix build '.?submodules=1#common'
+```
+
 #### Gradle
 
 ```shell
