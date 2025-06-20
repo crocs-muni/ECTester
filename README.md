@@ -14,6 +14,11 @@ For more information on ECC support on JavaCards see the [GitHub page](https://c
 
 This project is developed by the [Centre for Research On Cryptography and Security](https://crocs.fi.muni.cz) at Faculty of Informatics, Masaryk University.
 
+
+> [!NOTE]
+> The artifact for the CHES 2025 paper "*ECTester: Reverse-engineering side-channel countermeasures of ECC implementations*" is under the [analysis/countermeasures/](analysis/countermeasures/) directory.
+
+
 ## Contents
 
  - [Setup](#setup)
