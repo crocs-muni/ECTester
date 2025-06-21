@@ -690,10 +690,10 @@
           );
 
         buildReader =
-          {
-            jdkVersion ? pkgs.jdk17_headless,
-          }:
           with pkgs;
+          {
+            jdkVersion ? jdk17_headless,
+          }:
           gradle2nix.builders.${system}.buildGradlePackage rec {
             pname = "ECTesterReader";
             version = "0.3.3";
@@ -717,10 +717,10 @@
           };
 
         buildApplet =
-          {
-            jdkVersion ? pkgs.jdk8_headless,
-          }:
           with pkgs;
+          {
+            jdkVersion ? jdk8_headless,
+          }:
           gradle2nix.builders.${system}.buildGradlePackage rec {
             pname = "applet";
             # since the gradle target builds applets for multiple JC SDKs, the
@@ -735,15 +735,13 @@
               mkdir --parents $out
               cp --recursive applet/build/* $out
             '';
-
-            nativeBuildInputs = [ makeWrapper ];
           };
 
         buildCommon =
-          {
-            jdkVersion ? pkgs.jdk17_headless,
-          }:
           with pkgs;
+          {
+            jdkVersion ? jdk17_headless,
+          }:
           gradle2nix.builders.${system}.buildGradlePackage rec {
             pname = "common";
             version = "0.3.3";
@@ -756,8 +754,6 @@
               mkdir --parents $out
               cp --recursive common/build/* $out
             '';
-
-            nativeBuildInputs = [ makeWrapper ];
           };
 
         defaultVersion =
