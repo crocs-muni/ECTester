@@ -87,7 +87,7 @@ jobs:
 
     strategy:
       matrix:
-        sdk: [ "222", "305", "320" ]
+        sdk: [ "222", "305", "320", "All" ]
       fail-fast: false
 
     name: Build applet ${{ matrix.sdk }}
@@ -109,23 +109,3 @@ jobs:
       - name: Build applet
         run: |
           nix build ".?submodules=1#applet${{ matrix.sdk }}"
-
-    name: Build all applets at once
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          fetch-tags: true
-          fetch-depth: -1
-
-      - uses: DeterminateSystems/nix-installer-action@v13
-        with:
-          diagnostic-endpoint: ""
-
-      - uses: DeterminateSystems/magic-nix-cache-action@v7
-        with:
-          diagnostic-endpoint: ""
-
-      - name: Build all applets
-        run: |
-          nix build ".?submodules=1#applets"

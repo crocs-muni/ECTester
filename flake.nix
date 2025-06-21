@@ -833,7 +833,7 @@
 
           reader = buildReader {};
           common = buildCommon {};
-          applets = pkgs.buildEnv {
+          appletAll = pkgs.buildEnv {
             name = "applets";
             paths = [
               applet222
