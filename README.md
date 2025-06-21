@@ -349,9 +349,9 @@ nix build "?submodules=1#gcrypt.v194"
 nix build "?submodules=1#"
 ```
 
-Each of the build steps above puts (symlinks really) its results into `./result` directory.
-However, subsequent builds then replace that with their own results. To run ECTesterStandalone
-with a given library version and arguments do:
+Each of the build steps above puts (symlinks really) its results into `./result` directory (use `-o/--out-link {path}`
+to change that directory). However, subsequent builds then replace that with their own results. To run
+ECTesterStandalone with a given library version and arguments do:
 
 ```shell
 # This runs the default test-suite agains LibreSSL 3.9.2
