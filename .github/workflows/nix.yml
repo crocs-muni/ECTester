@@ -78,4 +78,4 @@ jobs:
 
       - name: Show reader --help
         run: |
-          nix build ".?submodules=1#reader" -- --help
+          nix run ".?submodules=1#reader" -- --help
