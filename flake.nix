@@ -689,62 +689,76 @@
             }
           );
 
-        buildReader = { jdkVersion ? pkgs.jdk17_headless }: with pkgs; gradle2nix.builders.${system}.buildGradlePackage rec {
-          pname = "ECTesterReader";
-          version = "0.3.3";
-          lockFile = ./gradle.lock;
-          buildJdk = pkgs.jdk_headless;
-          gradleBuildFlags = [ ":reader:uberJar" ];
-          src = ./.;
+        buildReader =
+          {
+            jdkVersion ? pkgs.jdk17_headless,
+          }:
+          with pkgs;
+          gradle2nix.builders.${system}.buildGradlePackage rec {
+            pname = "ECTesterReader";
+            version = "0.3.3";
+            lockFile = ./gradle.lock;
+            buildJdk = pkgs.jdk_headless;
+            gradleBuildFlags = [ ":reader:uberJar" ];
+            src = ./.;
 
-          installPhase = ''
-            mkdir -p $out
-            cp -r reader/build $out
-          '';
+            installPhase = ''
+              mkdir -p $out
+              cp -r reader/build $out
+            '';
 
-          nativeBuildInputs = [ makeWrapper ];
+            nativeBuildInputs = [ makeWrapper ];
 
-          postFixup = ''
-            makeWrapper \
-              ${jdk_headless}/bin/java $out/bin/${pname} \
-              --add-flags "-Dstdout.encoding=UTF8 -Dstderr.encoding=UTF8 -jar $out/build/libs/${pname}.jar"
-          '';
-        };
+            postFixup = ''
+              makeWrapper \
+                ${jdk_headless}/bin/java $out/bin/${pname} \
+                --add-flags "-Dstdout.encoding=UTF8 -Dstderr.encoding=UTF8 -jar $out/build/libs/${pname}.jar"
+            '';
+          };
 
-        buildApplet = { jdkVersion ? pkgs.jdk8_headless }: with pkgs; gradle2nix.builders.${system}.buildGradlePackage rec {
-          pname = "applet";
-          # since the gradle target builds applets for multiple JC SDKs, the
-          # single version cannot reflet that
-          version = "0.3.3";
-          lockFile = ./gradle.lock;
-          buildJdk = jdkVersion;
-          gradleBuildFlags = [ ":applet:buildJavaCard" ];
-          src = ./.;
+        buildApplet =
+          {
+            jdkVersion ? pkgs.jdk8_headless,
+          }:
+          with pkgs;
+          gradle2nix.builders.${system}.buildGradlePackage rec {
+            pname = "applet";
+            # since the gradle target builds applets for multiple JC SDKs, the
+            # single version cannot reflet that
+            version = "0.3.3";
+            lockFile = ./gradle.lock;
+            buildJdk = jdkVersion;
+            gradleBuildFlags = [ ":applet:buildJavaCard" ];
+            src = ./.;
 
-          installPhase = ''
-            mkdir --parents $out
-            cp --recursive applet/build/* $out
-          '';
+            installPhase = ''
+              mkdir --parents $out
+              cp --recursive applet/build/* $out
+            '';
 
-          nativeBuildInputs = [ makeWrapper ];
-        };
+            nativeBuildInputs = [ makeWrapper ];
+          };
 
-        buildCommon = { jdkVersion ? pkgs.jdk17_headless }: with pkgs; gradle2nix.builders.${system}.buildGradlePackage rec {
-          pname = "common";
-          version = "0.3.3";
-          lockFile = ./gradle.lock;
-          buildJdk = jdkVersion;
-          gradleBuildFlags = [ ":common:build" ];
-          src = ./.;
+        buildCommon =
+          {
+            jdkVersion ? pkgs.jdk17_headless,
+          }:
+          with pkgs;
+          gradle2nix.builders.${system}.buildGradlePackage rec {
+            pname = "common";
+            version = "0.3.3";
+            lockFile = ./gradle.lock;
+            buildJdk = jdkVersion;
+            gradleBuildFlags = [ ":common:build" ];
+            src = ./.;
 
-          installPhase = ''
-            mkdir --parents $out
-            cp --recursive common/build/* $out
-          '';
+            installPhase = ''
+              mkdir --parents $out
+              cp --recursive common/build/* $out
+            '';
 
-          nativeBuildInputs = [ makeWrapper ];
-        };
-
+            nativeBuildInputs = [ makeWrapper ];
+          };
 
         defaultVersion =
           # Default version is the last one, aka the newest that we fetched
@@ -831,8 +845,8 @@
             function = buildECTesterStandalone;
           };
 
-          reader = buildReader {};
-          common = buildCommon {};
+          reader = buildReader { };
+          common = buildCommon { };
           appletAll = pkgs.buildEnv {
             name = "applets";
             paths = [
