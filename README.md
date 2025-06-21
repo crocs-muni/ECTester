@@ -341,21 +341,41 @@ nix build "#lib.openssl.v331"
 # To build a shim using a given version of a library (example mbedTLS 3.5):
 nix build "#shim.mbedtls.v35"
 # To build ECTesterStandalone.jar with a given version of a library (example libgcrypt 1.9.4):
-nix build "?submodules=1#gcrypt.v194"
+nix build ".?submodules=1#gcrypt.v194"
 
 # The available versions of the libraries are in the nix/*_pkg_versions.json files.
 # The "default" version always points to the most recent version.
 # To build ECTesterStandalone with all the libraries in default versions:
-nix build "?submodules=1#"
+nix build ".?submodules=1#"
 ```
 
-Each of the build steps above puts (symlinks really) its results into `./result` directory.
-However, subsequent builds then replace that with their own results. To run ECTesterStandalone
-with a given library version and arguments do:
+Each of the build steps above puts (symlinks really) its results into `./result` directory (use `-o/--out-link {path}`
+to change that directory). However, subsequent builds then replace that with their own results. To run
+ECTesterStandalone with a given library version and arguments do:
 
 ```shell
 # This runs the default test-suite agains LibreSSL 3.9.2
-nix run "?submodules=1#libressl.v392" -- test default LibreSSL
+nix run ".?submodules=1#libressl.v392" -- test default LibreSSL
+```
+
+To build the JavaCard applets:
+```shell
+nix build ".?submodules=1#applets"
+# or individually
+nix build ".?submodules=1#applet222"
+nix build ".?submodules=1#applet305"
+nix build ".?submodules=1#applet320"
+```
+
+To build or run the reader you can:
+```shell
+nix build '.?submodules=1#reader'
+nix run '.?submodules=1#reader'
+```
+
+If needed, you can also build the `common` library:
+```shell
+nix build '.?submodules=1#common'
 ```
 
 #### Gradle
