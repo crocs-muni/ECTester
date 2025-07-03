@@ -1,2 +1,3 @@
 pyecsca
 cypari2
+jupyter

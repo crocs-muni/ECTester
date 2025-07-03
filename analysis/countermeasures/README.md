@@ -29,6 +29,8 @@ The general structure is as follows:
     the ECTester applet installed on it.
     - `results.ipynb`: A Jupyter notebook that evaluates the results of tests run (by the `measure` notebook)
     on a smartcard.
+    - `CARDS.md`: A text file that contains descriptions of cards we tested, including CPLC data, ATR and their
+    names, to the best of our knowledge.
     - `utils.py`: Various utility functions used by the notebooks.
     - `tests/`: A directory that contains the test data (inputs) for our tests:
     Test 3n, Test composite, Test k=10, Test n + e.
