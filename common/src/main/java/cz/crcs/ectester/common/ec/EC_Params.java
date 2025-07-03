@@ -5,6 +5,7 @@ import cz.crcs.ectester.common.util.CardUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -263,6 +264,29 @@ public class EC_Params extends EC_Data {
         EC_Params p = new EC_Params(params);
         p.inflate(flattened);
         return p;
+    }
+
+    public static EC_Params merge(EC_Params p1, EC_Params p2) {
+        if ((p1.params & p2.params) != 0) {
+            throw new IllegalArgumentException("Cannot merge EC_Params with overlapping parameters.");
+        }
+        short params = (short) (p1.params | p2.params);
+        List<byte[]> dataList = new ArrayList<>();
+        short paramMask = EC_Consts.PARAMETER_FP;
+        while (paramMask <= EC_Consts.PARAMETER_S) {
+            byte[][] paramData;
+            if ((p1.params & paramMask) != 0) {
+                paramData = p1.getParam(paramMask);
+            } else if ((p2.params & paramMask) != 0) {
+                paramData = p2.getParam(paramMask);
+            } else {
+                throw new IllegalArgumentException("Cannot merge EC_Params with overlapping parameters.");
+            }
+            dataList.addAll(Arrays.asList(paramData));
+            paramMask = (short) (paramMask << 1);
+        }
+
+        return new EC_Params(params, dataList.toArray(new byte[dataList.size()][]));
     }
 
     @Override

@@ -1,0 +1,8 @@
+Exception in thread "main" java.security.GeneralSecurityException: Invalid Base Point order
+	at cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi$Ippcp.generate(Native Method)
+	at cz.crcs.ectester.standalone.libs.jni.NativeKeyPairGeneratorSpi.generateKeyPair(NativeKeyPairGeneratorSpi.java:57)
+	at java.base/java.security.KeyPairGenerator$Delegate.generateKeyPair(KeyPairGenerator.java:722)
+	at java.base/java.security.KeyPairGenerator.genKeyPair(KeyPairGenerator.java:496)
+	at cz.crcs.ectester.standalone.ECTesterStandalone.ecdh(ECTesterStandalone.java:558)
+	at cz.crcs.ectester.standalone.ECTesterStandalone.run(ECTesterStandalone.java:199)
+	at cz.crcs.ectester.standalone.ECTesterStandalone.main(ECTesterStandalone.java:1052)

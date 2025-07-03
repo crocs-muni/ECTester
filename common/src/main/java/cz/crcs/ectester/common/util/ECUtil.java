@@ -71,6 +71,13 @@ public class ECUtil {
         return toX962Compressed(point, spec.getCurve().getField().getFieldSize());
     }
 
+    public static byte[] toX962Uncompressed(byte[][] point) {
+        if (point.length != 2) {
+            return null;
+        }
+        return ByteUtil.concatenate(new byte[]{(byte) (0x04)}, point[0], point[1]);
+    }
+
     public static byte[] toX962Uncompressed(ECPoint point, int bits) {
         if (point.equals(ECPoint.POINT_INFINITY)) {
             return new byte[]{0};
