@@ -52,8 +52,10 @@ git submodule update --init --recursive       # To initialize submodules (JavaCa
 ./gradlew :standalone:libs                    # To build the native library shims.
 ./gradlew :standalone:uberJar                 # To build the standalone tool (jar) -> "standalone/build/libs/ECTesterStandalone.jar"
 ```
-The applet comes in several flavors, targeting JavaCard `2.2.1`, `2.2.2` and `3.0.5`. The `2.2.2` and later flavors
+The applet comes in several flavors, targeting JavaCard `2.2.1`, `2.2.2`, `3.0.5`, and `3.2.0`. The `2.2.2` and later flavors
 support extended length APDUs which are necessary for some commands to work properly.
+Which flavor you can build depends on which Java JDK version you have, see [this list](https://github.com/martinpaljak/ant-javacard/wiki/JavaCard-SDK-and-JDK-version-compatibility)
+or the [applet build.gradle](applet/build.gradle.kts).
 
 To build the standalone part, which involves numerous cryptographic libraries, one has two options.
  - Install these cryptographic libraries system-wide and let the build use those.
@@ -65,7 +67,7 @@ See the section on [setup](#setup-1) of standalone library testing for more deta
 
 The JavaCard part of ECTester targets testing elliptic curve cryptography implementations in programmable smart cards of the JavaCard platform, version 2.2.1 and up. The reader app supports many actions, the main one being [testing](#test): the running of predetermined test suites that test the JavaCard for support, performance and vulnerabilities. The other actions focus on data collection, [generating keys](#generate), [signing data](#ecdsa), [performing key agreement](#ecdh) or [exporting the preset curves](#export), output of the mentioned actions can then be analyzed using the Jupyter notebooks, see [analysis](#analysis).
 
-1. Upload `applet/build/applet/ectester[221,222,305].cap` using your favorite tool (e.g., [GlobalPlatformPro tool](https://github.com/martinpaljak/GlobalPlatform)).
+1. Upload `applet/build/applet/ectester[221,222,305,320].cap` using your favorite tool (e.g., [GlobalPlatformPro tool](https://github.com/martinpaljak/GlobalPlatform)).
 2. Run `java -jar reader/build/libs/ECTesterReader.jar -t` or other data collection commands.
 3. Inspect output log with annotated results.
 

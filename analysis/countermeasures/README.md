@@ -56,6 +56,10 @@ are described in the [main README](../../README.md) in section **Setup**. Please
 steps to build ECTester components. Note that, the standalone tool has additional setup instructions
 in the README.
 
+Optionally, you can download pre-built versions of the applet and reader tool from our CI
+or releases. However, the standalone tool is dependent on the ECC library versions it targets and thus
+a version built in CI may be useless/not work for you.
+
 
 ### Python
 
@@ -86,14 +90,14 @@ data collection for our tests.
 3. You can run our results evaluation that takes in either our provided results
 from smartcards or those you produced in the previous step.
 4. You can "play around" with the standalone tool and observe test results
-on software ECC libraries.
+on ECC libraries.
 
 See subsections below for more details.
 
 
 ### Simulation
 
-> This step supports *section 6* of the paper, mainly Table 4.
+> This step supports *Section 6* of the paper, mainly Table 4.
 
 1. Run the `simulation.ipynb` notebook.
 2. Examine the test results and how they correspond to Table 4.
@@ -101,22 +105,33 @@ See subsections below for more details.
 
 ### Measurement on JavaCards
 
-> This step supports *subsection 6.6* of the paper.
+> This step supports *Subsection 6.6* of the paper.
 
 Note that, this step is not necessary, is time consuming and requires access
 to suitable JavaCard smartcards (which it may permanently destroy).
 
-1. Build applet for correct platform version.
+1. Build applet for correct platform version:
 2. Install applet (e.g. gp-pro)
-3. Run measure notebook.
+3. Run `measure.ipynb` notebook.
+
 
 ### Evalution of results
--> (Subsection 6.6)
 
-1. Run results notebook.
+> This step supports *Subsection 6.6* of the paper, mainly Table 5.
+
+1. Run `results.ipynb` notebook on chosen card results.
+2. Examine how the results correspond to Table 5.
+
 
 ### Playing around with libraries
--> (Section 5)
+
+> This step supports (part of) *Section 5* of the paper.
+
+Our analysis of ECC libraries and its results in Section 5 of the paper
+required manual effort in evaluating and understanding the results provided
+by the test-suites. Thus, we do not provide a script or a guide here, merely
+point towards the standalone tool and its documentation in the main README.
+
 
 ## Cards
 
