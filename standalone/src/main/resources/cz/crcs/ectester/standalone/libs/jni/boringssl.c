@@ -199,7 +199,7 @@ JNIEXPORT jboolean JNICALL Java_cz_crcs_ectester_standalone_libs_jni_NativeKeyPa
 
     if ((*env)->IsInstanceOf(env, params, ec_parameter_spec_class)) {
         EC_GROUP *curve = create_curve(env, params);
-        jboolean result = !curve;
+        jboolean result = (curve != NULL) ? JNI_TRUE : JNI_FALSE;
 		if (curve)
         	EC_GROUP_free(curve);
         return result;

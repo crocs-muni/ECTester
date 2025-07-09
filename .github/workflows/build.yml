@@ -117,12 +117,15 @@ jobs:
       - name: Setup libraries
         run: |
           sudo apt update
-          sudo apt install libtomcrypt-dev libtommath-dev libssl-dev libcrypto++-dev libgcrypt20-dev nettle-dev libbotan-2-dev libwolfssl-dev
-          wget https://www.nasm.us/pub/nasm/releasebuilds/2.16.03/nasm-2.16.03.tar.gz
+          sudo apt install asciidoc xmlto libtomcrypt-dev libtommath-dev libssl-dev libcrypto++-dev libgcrypt20-dev nettle-dev libbotan-2-dev libwolfssl-dev
+          #wget https://www.nasm.us/pub/nasm/releasebuilds/2.16.03/nasm-2.16.03.tar.gz
+          wget https://github.com/netwide-assembler/nasm/archive/refs/tags/nasm-2.16.03.tar.gz
           tar -xzvf nasm-2.16.03.tar.gz
-          cd nasm-2.16.03
+          cd nasm-nasm-2.16.03
+            ./autogen.sh
             ./configure
             make -j4
+            make manpages
             sudo make install
           cd ..
           echo "BORINGSSL_VERSION=$(git submodule status ext/boringssl | cut -f2 -d' ' | cut -c1-10)" >> $GITHUB_ENV

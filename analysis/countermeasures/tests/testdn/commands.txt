@@ -1,0 +1,3 @@
+weakcurve_32_n_1 defines a curve with an order equal to a product of 8 roughly 32-bit primes, but the claimed order is the .next_prime(). The real order is saved in realn.csv
+
+

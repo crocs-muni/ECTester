@@ -1,0 +1,8 @@
+curve.csv is used for ECDSA and Keygen. It has a curve with cardinality 3n but claimed order is n and cofactor is 1. The generator has order 3n. 
+
+For ecdsa there is also ecdsa_fixed with fixed key key.csv and corresponding public key key_point.csv
+
+curve_prime_gen.csv is the same as curve.csv but the order of the generator is n. Used for ECDH together with point_3n.csv. This is used as the public key point and has order 3n. The point is the same as the generator from curve.csv.
+
+
+

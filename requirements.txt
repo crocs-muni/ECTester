@@ -3,3 +3,4 @@ scipy
 matplotlib
 asn1crypto
 tabulate
+pyecsca

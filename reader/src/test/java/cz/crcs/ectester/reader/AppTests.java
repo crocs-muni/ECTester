@@ -36,81 +36,98 @@ public class AppTests {
         assertTrue(s.contains("secg"));
     }
 
-    // Add StdIo to all the suite tests when this is resolved: https://github.com/junit-pioneer/junit-pioneer/issues/822
-
     @Test
     @XFail(value = "JCardSim sometimes times-out.")
-    public void defaultSuite() {
+    @StdIo()
+    public void defaultSuite(StdOut out) {
         assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "default", "-s"}));
     }
 
     @Test
     @XFail(value = "JCardSim sometimes times-out.")
+    @StdIo()
+    public void defaultSuitePart(StdOut out) {
+        assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "default:3:5", "-s"}));
+    }
+
+    @Test
+    @XFail(value = "JCardSim sometimes times-out.")
     @Disabled
-    public void testVectorSuite() {
+    @StdIo()
+    public void testVectorSuite(StdOut out) {
         assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "test-vectors", "-s"}));
     }
 
     @Test
     @XFail(value = "JCardSim sometimes times-out.")
-    public void compressionSuite() {
+    @StdIo()
+    public void compressionSuite(StdOut out) {
         assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "compression", "-s"}));
     }
 
     @Test
     @XFail(value = "JCardSim sometimes times-out.")
     @Disabled
-    public void wrongSuite() {
+    @StdIo()
+    public void wrongSuite(StdOut out) {
         assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "wrong", "-s", "-y"}));
     }
 
     @Test
     @XFail(value = "JCardSim sometimes times-out.")
-    public void degenerateSuite() {
+    @StdIo()
+    public void degenerateSuite(StdOut out) {
         assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "degenerate", "-s", "-y"}));
     }
 
     @Test
     @XFail(value = "JCardSim sometimes times-out.")
     @Disabled
-    public void cofactorSuite() {
+    @StdIo()
+    public void cofactorSuite(StdOut out) {
         assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "cofactor", "-s", "-y"}));
     }
 
     @Test
     @XFail(value = "JCardSim sometimes times-out.")
     @Disabled
-    public void compositeSuite() {
+    @StdIo()
+    public void compositeSuite(StdOut out) {
         assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "composite", "-s", "-y"}));
     }
 
     @Test
     @XFail(value = "JCardSim sometimes times-out.")
-    public void invalidSuite() {
+    @StdIo()
+    public void invalidSuite(StdOut out) {
         assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "invalid", "-s", "-y"}));
     }
 
     @Test
     @XFail(value = "JCardSim sometimes times-out.")
-    public void edgeCasesSuite() {
+    @StdIo()
+    public void edgeCasesSuite(StdOut out) {
         assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "edge-cases", "-s", "-y"}));
     }
 
     @Test
     @XFail(value = "JCardSim sometimes times-out.")
-    public void signatureSuite() {
+    @StdIo()
+    public void signatureSuite(StdOut out) {
         assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "signature", "-s"}));
     }
 
     @Test
     @XFail(value = "JCardSim sometimes times-out.")
-    public void twistSuite() {
+    @StdIo()
+    public void twistSuite(StdOut out) {
         assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "twist", "-s", "-y"}));
     }
 
     @Test
     @XFail(value = "JCardSim sometimes times-out.")
-    public void miscellaneousSuite() {
+    @StdIo()
+    public void miscellaneousSuite(StdOut out) {
         assertTimeoutPreemptively(Duration.ofSeconds(60), () -> ECTesterReader.main(new String[]{"-t", "miscellaneous", "-s", "-y"}));
     }
 
@@ -120,22 +137,40 @@ public class AppTests {
     }
 
     @Test
-    public void ecdh() {
+    @StdIo()
+    public void ecdh(StdOut out) {
         ECTesterReader.main(new String[]{"-dh", "-fp", "-b", "256", "-s"});
+        String s = out.capturedString();
+        assertTrue(s.contains("OK"));
+        assertTrue(s.contains("ALG_EC_SVDP_DH of remote pubkey and local privkey"));
     }
 
     @Test
-    public void ecdsa() {
+    @StdIo()
+    public void ecdh_external(StdOut out) {
+        ECTesterReader.main(new String[]{"-dh", "-fp", "--external", "--named-curve", "secg/secp256r1", "--named-public", "invalid/secp256r1/0", "-b", "256", "-s"});
+        String s = out.capturedString();
+        assertTrue(s.contains("OK"));
+        assertTrue(s.contains("ALG_EC_SVDP_DH of external pubkey and local privkey"));
+    }
+
+    @Test
+    @StdIo()
+    public void ecdsa(StdOut out) {
         ECTesterReader.main(new String[]{"-dsa", "-fp", "-b", "256", "-s"});
+        String s = out.capturedString();
+        System.err.println(s);
     }
 
     @Test
-    public void export() {
+    @StdIo()
+    public void export(StdOut out) {
         ECTesterReader.main(new String[]{"-e", "-fp", "-b", "256", "-s", "-o", "/dev/null"});
     }
 
     @Test
-    public void info() {
+    @StdIo()
+    public void info(StdOut out) {
         ECTesterReader.main(new String[]{"-nf", "-s"});
     }
 }
