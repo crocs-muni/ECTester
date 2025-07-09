@@ -25,6 +25,8 @@ The general structure is as follows:
     scalar randomization countermeasures under our tests (Test 3n, Test composite, Test k=10, Test n + e).
     This notebook also implements mask recovery for the two countermeasures where we are able to do so:
     GSR and multiplicative.
+    - `combinations.ipynb`: A Jupyter notebook that contains simulations of the behavior of combinations
+    of scalar randomization countermeasures.
     - `measure.ipynb`: A Jupyter notebook that runs our tests on a given JavaCard by interacting with
     the ECTester applet installed on it.
     - `results.ipynb`: A Jupyter notebook that evaluates the results of tests run (by the `measure` notebook)
@@ -58,9 +60,8 @@ are described in the [main README](../../README.md) in section **Setup**. Please
 steps to build ECTester components. Note that, the standalone tool has additional setup instructions
 in the README.
 
-Optionally, you can download pre-built versions of the applet and reader tool from our CI
-or releases. However, the standalone tool is dependent on the ECC library versions it targets and thus
-a version built in CI may be useless/not work for you.
+Optionally, you can download pre-built versions of the applet and reader tool from our [CI](https://nightly.link/crocs-muni/ECTester/workflows/build/master) or releases. However, the standalone tool is dependent on
+the ECC library versions it targets and thus a version built in CI may be useless/not work for you.
 
 
 ### Python
@@ -93,6 +94,7 @@ data collection for our tests.
 from smartcards or those you produced in the previous step.
 4. You can "play around" with the standalone tool and observe test results
 on ECC libraries.
+5. You can examine the behavior of combinations of countermeasures under our tests.
 
 See subsections below for more details.
 
@@ -101,7 +103,7 @@ See subsections below for more details.
 
 > This step supports *Section 6* of the paper, mainly Table 4.
 
-1. Run the `simulation.ipynb` notebook.
+1. Run the `simulate.ipynb` notebook.
 2. Examine the test results and how they correspond to Table 4.
 
 
@@ -112,7 +114,7 @@ See subsections below for more details.
 Note that, this step is not necessary, is time consuming and requires access
 to suitable JavaCard smartcards (which it may permanently destroy).
 
-1. Build applet for correct platform version:
+1. Build applet for correct platform version.
 2. Install applet (e.g. gp-pro)
 3. Run `measure.ipynb` notebook.
 
@@ -134,7 +136,10 @@ required manual effort in evaluating and understanding the results provided
 by the test-suites. Thus, we do not provide a script or a guide here, merely
 point towards the standalone tool and its documentation in the main README.
 
+### Combinations of countermeasures
 
-## Cards
+> This step supports (part of) *Section 7* and *the appendix* of the paper.
 
-TODO: card summary identification
+1. Run `combinations.ipynb` notebook.
+2. Examine how the results correspond to Table 7 in the appendix.
+
