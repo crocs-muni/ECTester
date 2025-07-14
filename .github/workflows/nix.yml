@@ -50,3 +50,62 @@ jobs:
 
       - name: List library
         run: nix run ".?submodules=1#${{ matrix.library }}.default" -- list-libs
+
+  reader:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    name: Build reader
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-tags: true
+          fetch-depth: -1
+
+      - uses: DeterminateSystems/nix-installer-action@v13
+        with:
+          diagnostic-endpoint: ""
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v7
+        with:
+          diagnostic-endpoint: ""
+
+      - name: Build reader
+        run: |
+          nix build ".?submodules=1#reader"
+
+      - name: Show reader --help
+        run: |
+          nix run ".?submodules=1#reader" -- --help
+
+  applet:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    strategy:
+      matrix:
+        sdk: [ "222", "305", "320", "All" ]
+      fail-fast: false
+
+    name: Build applet ${{ matrix.sdk }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-tags: true
+          fetch-depth: -1
+
+      - uses: DeterminateSystems/nix-installer-action@v13
+        with:
+          diagnostic-endpoint: ""
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v7
+        with:
+          diagnostic-endpoint: ""
+
+      - name: Build applet
+        run: |
+          nix build ".?submodules=1#applet${{ matrix.sdk }}"
