@@ -157,7 +157,7 @@ class Test3n(CounterTest):
             r,s = signature["signature"]
             nonce = signature["nonce"]
             compare = lambda point: int(point.to_affine().x)%self.n==r%self.n
-            remainders[key%self.cofactor][self.find_mod(nonce,compare)]+=1
+            remainders[nonce%self.cofactor][self.find_mod(nonce,compare)]+=1
         self.print_statistics(remainders)
 
 
