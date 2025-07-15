@@ -162,9 +162,11 @@ public class CardTestVectorSuite extends CardTestSuite {
                         }
                         if (secret.length != derived.length) {
                             if (secret.length < derived.length) {
-                                return new Result(Value.FAILURE, String.format("Derived secret was shorter than expected: %d vs %d (expected).", secret.length, derived.length));
+                                int diff = ByteUtil.diffBytes(derived, 0, secret, 0, secret.length);
+                                return new Result(Value.FAILURE, String.format("Derived secret was shorter than expected: %d vs %d (expected), matched up to byte %d.", secret.length, derived.length, diff));
                             } else {
-                                return new Result(Value.FAILURE, String.format("Derived secret was longer than expected: %d vs %d (expected).", secret.length, derived.length));
+                                int diff = ByteUtil.diffBytes(derived, 0, secret, 0, derived.length);
+                                return new Result(Value.FAILURE, String.format("Derived secret was longer than expected: %d vs %d (expected), matched up to byte %d.", secret.length, derived.length, diff));
                             }
                         }
                         int diff = ByteUtil.diffBytes(derived, 0, secret, 0, secret.length);
@@ -178,8 +180,20 @@ public class CardTestVectorSuite extends CardTestSuite {
                     }
                 }
             };
+            Test alloc = CommandTest.expect(new Command.AllocateKeyAgreement(this.card, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH), ExpectedValue.SUCCESS);
             Test ecdhTest = CommandTest.function(new Command.ECDH(this.card, CardConsts.KEYPAIR_LOCAL, CardConsts.KEYPAIR_REMOTE, CardConsts.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH), kaCallback);
+            Test ecdh = CompoundTest.greedyAll(ExpectedValue.SUCCESS, "Test DH", alloc, ecdhTest);
+            Test allocRaw = CommandTest.expect(new Command.AllocateKeyAgreement(this.card, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH_PLAIN), ExpectedValue.SUCCESS);
             Test ecdhRawTest = CommandTest.function(new Command.ECDH(this.card, CardConsts.KEYPAIR_LOCAL, CardConsts.KEYPAIR_REMOTE, CardConsts.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DH_PLAIN), kaCallback);
+            Test ecdhRaw = CompoundTest.greedyAll(ExpectedValue.SUCCESS, "Test DH_PLAIN", allocRaw, ecdhRawTest);
+
+            Test allocCofactor = CommandTest.expect(new Command.AllocateKeyAgreement(this.card, EC_Consts.KeyAgreement_ALG_EC_SVDP_DHC), ExpectedValue.SUCCESS);
+            Test ecdhTestCofactor = CommandTest.function(new Command.ECDH(this.card, CardConsts.KEYPAIR_LOCAL, CardConsts.KEYPAIR_REMOTE, CardConsts.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DHC), kaCallback);
+            Test ecdhCofactor = CompoundTest.greedyAll(ExpectedValue.SUCCESS, "Test DHC", allocCofactor, ecdhTestCofactor);
+            Test allocRawCofactor = CommandTest.expect(new Command.AllocateKeyAgreement(this.card, EC_Consts.KeyAgreement_ALG_EC_SVDP_DHC_PLAIN), ExpectedValue.SUCCESS);
+            Test ecdhRawTestCofactor = CommandTest.function(new Command.ECDH(this.card, CardConsts.KEYPAIR_LOCAL, CardConsts.KEYPAIR_REMOTE, CardConsts.EXPORT_TRUE, EC_Consts.TRANSFORMATION_NONE, EC_Consts.KeyAgreement_ALG_EC_SVDP_DHC_PLAIN), kaCallback);
+            Test ecdhRawCofactor = CompoundTest.greedyAll(ExpectedValue.SUCCESS, "Test DHC_PLAIN", allocRawCofactor, ecdhRawTestCofactor);
+
             byte[] data = new byte[32];
             TestCallback<CommandTestable> sigCallback = new TestCallback<CommandTestable>() {
                 @Override
@@ -212,7 +226,7 @@ public class CardTestVectorSuite extends CardTestSuite {
                 }
             };
             Test ecdsaTest = CommandTest.function(new Command.ECDSA_sign(this.card, CardConsts.KEYPAIR_LOCAL, EC_Consts.Signature_ALG_ECDSA_SHA, CardConsts.EXPORT_TRUE, data), sigCallback);
-            testVector.add(CompoundTest.all(ExpectedValue.SUCCESS, "Test.", ecdhTest, ecdhRawTest, ecdsaTest));
+            testVector.add(CompoundTest.all(ExpectedValue.SUCCESS, "Test.", ecdh, ecdhCofactor, ecdhRaw, ecdhRawCofactor, ecdsaTest)); //
             if (cfg.cleanup) {
                 testVector.add(CommandTest.expect(new Command.Cleanup(this.card), ExpectedValue.ANY));
             }

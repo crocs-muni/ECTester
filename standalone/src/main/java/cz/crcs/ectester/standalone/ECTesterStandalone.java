@@ -575,16 +575,26 @@ public class ECTesterStandalone {
             } else {
                 ka.init(privkey, random);
             }
-            ka.doPhase(pubkey, true);
-            elapsed += System.nanoTime();
             SecretKey derived;
             byte[] result;
+            try {
+            ka.doPhase(pubkey, true);
+            elapsed += System.nanoTime();
+            
             elapsed -= System.nanoTime();
+            
             if (kaIdent.requiresKeyAlgo()) {
                 derived = ka.generateSecret(keyAlgo);
                 result = derived.getEncoded();
             } else {
                 result = ka.generateSecret();
+            }} catch (Exception e){
+                String pub = ByteUtil.bytesToHex(ECUtil.pubkeyToBytes(pubkey), false);
+                String priv = ByteUtil.bytesToHex(ECUtil.privkeyToBytes(privkey), false);
+                out.printf("%d;%d;%s;%s;%d%n", i, 0, pub, priv, 0);
+                ka = kaIdent.getInstance(lib.getProvider());
+                continue;
+
             }
             elapsed += System.nanoTime();
             if (!lib.getNativeTimingSupport().isEmpty()) {
