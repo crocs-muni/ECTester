@@ -1,44 +1,15 @@
-import multiprocessing
-import inspect
-import tempfile
-import sys
-import os
+import itertools
 from datetime import timedelta
 
-from contextlib import contextmanager
 from dataclasses import dataclass
 from functools import partial, cached_property, total_ordering
-from importlib import import_module, invalidate_caches
-from pathlib import Path
-from typing import Type, Any, Optional
-from enum import Enum
+from typing import Any, Optional, Type
 
 from statsmodels.stats.proportion import proportion_confint
 
-from pyecsca.ec.params import DomainParameters, get_params
 from pyecsca.ec.mult import *
 from pyecsca.ec.countermeasures import GroupScalarRandomization, AdditiveSplitting, MultiplicativeSplitting, EuclideanSplitting, BrumleyTuveri
 
-
-spawn_context = multiprocessing.get_context("spawn")
-
-# Allow to use "spawn" multiprocessing method for function defined in a Jupyter notebook.
-# https://neuromancer.sk/article/35
-@contextmanager
-def enable_spawn(func):
-    invalidate_caches()
-    source = inspect.getsource(func)
-    current_file_path = os.path.abspath(__file__)
-    with open(current_file_path, 'r') as self, tempfile.NamedTemporaryFile(suffix=".py", mode="w") as f:
-        f.write(self.read())
-        f.write(source)
-        f.flush()
-        path = Path(f.name)
-        directory = str(path.parent)
-        sys.path.append(directory)
-        module = import_module(str(path.stem))
-        yield getattr(module, func.__name__)
-        sys.path.remove(directory)
 
 
 @dataclass(frozen=True)
