@@ -1,15 +1,100 @@
 import itertools
 from datetime import timedelta
+from enum import Enum
+from operator import itemgetter
 
 from dataclasses import dataclass
 from functools import partial, cached_property, total_ordering
-from typing import Any, Optional, Type
+from typing import Any, Optional, Type, Union, Literal
 
 from statsmodels.stats.proportion import proportion_confint
 
+from pyecsca.sca.re.rpa import MultipleContext
 from pyecsca.ec.mult import *
+from pyecsca.ec.point import Point
 from pyecsca.ec.countermeasures import GroupScalarRandomization, AdditiveSplitting, MultiplicativeSplitting, EuclideanSplitting, BrumleyTuveri
 
+
+def check_equal_multiples(k, l, q):
+    return (k % q) == (l % q)
+
+
+def check_divides(k, l, q):
+    return (k % q == 0) or (l % q == 0)
+
+
+def check_half_add(k, l, q):
+    return (q % 2 == 0) and ((k+l) % (q//2)) == 0
+
+
+def check_affine(k, q):
+    return k % q == 0
+
+
+def check_any(*checks, q=None):
+    def check_func(k, l):
+        for check in checks:
+            if check(k, l, q):
+                return True
+        return False
+    return check_func
+
+
+checks_add = {
+    "equal_multiples": check_equal_multiples,
+    "divides": check_divides,
+    "half_add": check_half_add
+}
+
+checks_affine = {
+    "affine": check_affine
+}
+
+
+@dataclass(frozen=True)
+@total_ordering
+class ErrorModel:
+    checks: set[str]
+    check_condition: Union[Literal["all"], Literal["necessary"]]
+    precomp_to_affine: bool
+
+    def __init__(self, checks: set[str], check_condition: Union[Literal["all"], Literal["necessary"]], precomp_to_affine: bool):
+        for check in checks:
+            if check not in checks_add:
+                raise ValueError(f"Unknown check: {check}")
+        checks = set(checks)
+        checks.add("affine") # always done in our model
+        object.__setattr__(self, "checks", checks)
+        if check_condition not in ("all", "necessary"):
+            raise ValueError("Wrong check_condition")
+        object.__setattr__(self, "check_condition", check_condition)
+        object.__setattr__(self, "precomp_to_affine", precomp_to_affine)
+
+    def check_add(self, q):
+        if self.checks == {"affine"}:
+            return lambda k, l: False
+        return check_any(*map(lambda name: checks_add[name], filter(lambda check: check in checks_add, self.checks)), q=q)
+
+    def check_affine(self, q):
+        return partial(check_affine, q=q)
+
+    def __lt__(self, other):
+        if not isinstance(other, ErrorModel):
+            return NotImplemented
+        return str(self) < str(other)
+
+    def __str__(self):
+        cs = []
+        if "equal_multiples" in self.checks:
+            cs.append("em")
+        if "divides" in self.checks:
+            cs.append("d")
+        if "half_add" in self.checks:
+            cs.append("ha")
+        if "affine" in self.checks:
+            cs.append("a")
+        precomp = "+pre" if self.precomp_to_affine else ""
+        return f"({','.join(cs)}+{self.check_condition}{precomp})"
 
 
 @dataclass(frozen=True)
@@ -19,6 +104,7 @@ class MultIdent:
     args: list[Any]
     kwargs: dict[str, Any]
     countermeasure: Optional[str] = None
+    error_model: Optional[ErrorModel] = None
 
     def __init__(self, klass: Type[ScalarMultiplier], *args, **kwargs):
         object.__setattr__(self, "klass", klass)
@@ -26,6 +112,9 @@ class MultIdent:
         if kwargs is not None and "countermeasure" in kwargs:
             object.__setattr__(self, "countermeasure", kwargs["countermeasure"])
             del kwargs["countermeasure"]
+        if kwargs is not None and "error_model" in kwargs:
+            object.__setattr__(self, "error_model", kwargs["error_model"])
+            del kwargs["error_model"]
         object.__setattr__(self, "kwargs", kwargs if kwargs is not None else {})
     
     @cached_property
@@ -49,6 +138,11 @@ class MultIdent:
             raise ValueError(f"Unknown countermeasure: {countermeasure}")
         return MultIdent(self.klass, *self.args, **self.kwargs, countermeasure=countermeasure)
 
+    def with_error_model(self, error_model: ErrorModel | None):
+        if not (isinstance(error_model, ErrorModel) or error_model is None):
+            raise ValueError("Unknown error model.")
+        return MultIdent(self.klass, *self.args, **self.kwargs, error_model=error_model)
+
     def __str__(self):
         name = self.klass.__name__.replace("Multiplier", "")
         args = ("_" + ",".join(list(map(str, self.args)))) if self.args else ""
@@ -57,7 +151,8 @@ class MultIdent:
                  "width": "w"}
         kwargs = ("_" + ",".join(f"{kwmap.get(k, k)}:{v.name if isinstance(v, Enum) else str(v)}" for k,v in self.kwargs.items())) if self.kwargs else ""
         countermeasure = f"+{self.countermeasure}" if self.countermeasure is not None else ""
-        return f"{name}{args}{kwargs}{countermeasure}"
+        error_model = f"+{self.error_model}" if self.error_model is not None else ""
+        return f"{name}{args}{kwargs}{countermeasure}{error_model}"
 
     def __lt__(self, other):
         if not isinstance(other, MultIdent):
@@ -68,15 +163,14 @@ class MultIdent:
         return str(self)
 
     def __hash__(self):
-        return hash((self.klass, self.countermeasure, tuple(self.args), tuple(self.kwargs.keys()), tuple(self.kwargs.values())))
+        return hash((self.klass, self.countermeasure, self.error_model, tuple(self.args), tuple(self.kwargs.keys()), tuple(self.kwargs.values())))
 
 
 @dataclass
 class MultResults:
-    multiplications: list[set[int]]
+    multiplications: list[tuple[MultipleContext, Point]]
     samples: int
     duration: Optional[float] = None
-    kind: Optional[str] = None
 
     def merge(self, other: "MultResults"):
         self.multiplications.extend(other.multiplications)
@@ -93,8 +187,7 @@ class MultResults:
 
     def __str__(self):
         duration = timedelta(seconds=int(self.duration)) if self.duration is not None else ""
-        kind = self.kind if self.kind is not None else ""
-        return f"MultResults({self.samples},{duration},{kind})"
+        return f"MultResults({self.samples},{duration})"
 
     def __repr__(self):
         return str(self)
@@ -103,8 +196,8 @@ class MultResults:
 @dataclass
 class ProbMap:
     probs: dict[int, float]
+    divisors_hash: bytes
     samples: int
-    kind: Optional[str] = None
 
     def __len__(self):
         return len(self.probs)
@@ -113,7 +206,7 @@ class ProbMap:
         yield from self.probs
 
     def __getitem__(self, i):
-        return self.probs[i]
+        return self.probs[i] if i in self.probs else 0.0
 
     def keys(self):
         return self.probs.keys()
@@ -128,8 +221,7 @@ class ProbMap:
         self.probs = {k:v for k, v in self.probs.items() if k in divisors}
 
     def merge(self, other: "ProbMap") -> None:
-        if self.kind != other.kind:
-            raise ValueError("Merging ProbMaps of different kinds leads to unexpected results.")
+        # TODO: This may not be correct now that ProbMaps may not store zero probability items
         new_keys = set(self.keys()).union(other.keys())
         result = {}
         for key in new_keys:
@@ -145,8 +237,7 @@ class ProbMap:
     def enrich(self, other: "ProbMap") -> None:
         if self.samples != other.samples:
             raise ValueError("Enriching can only work on equal amount of samples (same run, different divisors)")
-        if self.kind != other.kind:
-            raise ValueError("Enriching ProbMaps of different kinds leads to unexpected results.")
+        # TODO: Check distinct divisors.
         self.probs.update(other.probs)
 
 
@@ -236,6 +327,11 @@ def powers_of(k, max_power=20):
 
 def prod_combine(one, other):
     return [a * b for a, b in itertools.product(one, other)]
+
+def powerset(iterable):
+    s = list(iterable)
+    return map(set, itertools.chain.from_iterable(itertools.combinations(s, r) for r in range(len(s)+1)))
+
 
 small_primes = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199]
 medium_primes = [211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397]
