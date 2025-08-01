@@ -51,6 +51,17 @@ checks_affine = {
 }
 
 
+def powers_of(k, max_power=20):
+    return [k**i for i in range(1, max_power)]
+
+def prod_combine(one, other):
+    return [a * b for a, b in itertools.product(one, other)]
+
+def powerset(iterable):
+    s = list(iterable)
+    return map(set, itertools.chain.from_iterable(itertools.combinations(s, r) for r in range(len(s)+1)))
+
+
 @dataclass(frozen=True)
 @total_ordering
 class ErrorModel:
@@ -95,6 +106,17 @@ class ErrorModel:
             cs.append("a")
         precomp = "+pre" if self.precomp_to_affine else ""
         return f"({','.join(cs)}+{self.check_condition}{precomp})"
+
+    def __hash__(self):
+        return hash((tuple(sorted(self.checks)), self.check_condition, self.precomp_to_affine))
+
+
+all_error_models = []
+for checks in powerset(checks_add):
+    for precomp_to_affine in (True, False):
+        for check_condition in ("all", "necessary"):
+            error_model = ErrorModel(checks, check_condition=check_condition, precomp_to_affine=precomp_to_affine)
+            all_error_models.append(error_model)
 
 
 @dataclass(frozen=True)
@@ -141,7 +163,7 @@ class MultIdent:
     def with_error_model(self, error_model: ErrorModel | None):
         if not (isinstance(error_model, ErrorModel) or error_model is None):
             raise ValueError("Unknown error model.")
-        return MultIdent(self.klass, *self.args, **self.kwargs, error_model=error_model)
+        return MultIdent(self.klass, *self.args, **self.kwargs, countermeasure=self.countermeasure, error_model=error_model)
 
     def __str__(self):
         name = self.klass.__name__.replace("Multiplier", "")
@@ -322,15 +344,7 @@ all_mults = window_mults + naf_mults + binary_mults + other_mults + comb_mults
 all_mults_with_ctr = [mult.with_countermeasure(ctr) for mult in all_mults for ctr in (None, "gsr", "additive", "multiplicative", "euclidean", "bt")]
 
 
-def powers_of(k, max_power=20):
-    return [k**i for i in range(1, max_power)]
 
-def prod_combine(one, other):
-    return [a * b for a, b in itertools.product(one, other)]
-
-def powerset(iterable):
-    s = list(iterable)
-    return map(set, itertools.chain.from_iterable(itertools.combinations(s, r) for r in range(len(s)+1)))
 
 
 small_primes = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199]
