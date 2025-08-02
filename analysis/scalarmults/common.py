@@ -236,6 +236,9 @@ class ProbMap:
     def __getitem__(self, i):
         return self.probs[i] if i in self.probs else 0.0
 
+    def __contains__(self, item):
+        return item in self.probs
+
     def keys(self):
         return self.probs.keys()
 
@@ -249,23 +252,22 @@ class ProbMap:
         self.probs = {k:v for k, v in self.probs.items() if k in divisors}
 
     def merge(self, other: "ProbMap") -> None:
-        # TODO: This may not be correct now that ProbMaps may not store zero probability items
+        if self.divisors_hash != other.divisors_hash:
+            raise ValueError("Merging can only work on probmaps created for same divisors.")
         new_keys = set(self.keys()).union(other.keys())
         result = {}
         for key in new_keys:
-            if key in self and key in other:
-                result[key] = (self[key] * self.samples + other[key] * other.samples) / (self.samples + other.samples)
-            elif key in self:
-                result[key] = self[key]
-            elif key in other:
-                result[key] = other[key]
+            sk = self[key]
+            ok = other[key]
+            result[key] = (sk * self.samples + ok * other.samples) / (self.samples + other.samples)
         self.probs = result
         self.samples += other.samples
 
     def enrich(self, other: "ProbMap") -> None:
         if self.samples != other.samples:
-            raise ValueError("Enriching can only work on equal amount of samples (same run, different divisors)")
-        # TODO: Check distinct divisors.
+            raise ValueError("Enriching can only work on equal amount of samples (same run, different divisors).")
+        if self.divisors_hash == other.divisors_hash or set(self.keys()) & set(other.keys()):
+            raise ValueError("Enriching can only work on distinct divisors.")
         self.probs.update(other.probs)
 
 
