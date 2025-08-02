@@ -176,6 +176,12 @@ class MultIdent:
         error_model = f"+{self.error_model}" if self.error_model is not None else ""
         return f"{name}{args}{kwargs}{countermeasure}{error_model}"
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        # Remove cached properties
+        state.pop("partial", None)
+        return state
+
     def __lt__(self, other):
         if not isinstance(other, MultIdent):
             return NotImplemented
