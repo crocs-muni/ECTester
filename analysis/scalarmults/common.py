@@ -1,4 +1,5 @@
 import itertools
+import hashlib
 from datetime import timedelta
 from enum import Enum
 from operator import itemgetter
@@ -249,7 +250,13 @@ class ProbMap:
         return self.probs.items()
 
     def narrow(self, divisors: set[int]):
-        self.probs = {k:v for k, v in self.probs.items() if k in divisors}
+        divisors_hash = hashlib.blake2b(str(sorted(divisors)).encode(), digest_size=8).digest()
+        if self.divisors_hash == divisors_hash:
+            # Already narrow.
+            return
+        for kdel in set(self.probs.keys()).difference(divisors):
+            del self.probs[kdel]
+        self.divisors_hash = divisors_hash
 
     def merge(self, other: "ProbMap") -> None:
         if self.divisors_hash != other.divisors_hash:

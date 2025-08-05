@@ -8,3 +8,4 @@ tabulate
 tqdm
 statsmodels
 anytree
+scikit-learn
