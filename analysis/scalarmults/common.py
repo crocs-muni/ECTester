@@ -27,7 +27,7 @@ def check_divides(k, l, q):
 
 
 def check_half_add(k, l, q):
-    return (q % 2 == 0) and ((k+l) % (q//2)) == 0
+    return (q % 2 == 0) and ((k-l) % (q//2)) == 0
 
 
 def check_affine(k, q):
