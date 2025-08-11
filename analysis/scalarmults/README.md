@@ -1,2 +1,9 @@
 # Unravelling scalar multipliers
-![](unravelling.svg)
+
+## Simulation
+
+![](unravelling_simulate.svg)
+
+## Distinguishing
+
+![](unravelling_distinguish.svg)
