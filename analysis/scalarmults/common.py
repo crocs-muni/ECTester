@@ -23,7 +23,7 @@ def check_equal_multiples(k, l, q):
 
 def check_divides(k, l, q):
     """Checks whether q (the order of the base) divides any of the multiples input into the formula."""
-    return (k % q == 0) or (l % q == 0)
+    return (k != 0) and (l != 0) and (k % q == 0) or (l % q == 0)
 
 
 def check_half_add(k, l, q):
