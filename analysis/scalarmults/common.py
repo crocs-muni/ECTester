@@ -235,11 +235,12 @@ class MultIdent:
 class MultResults:
     """
     A MultResults instance represents many simulated scalar multiplciation computations, which were tracked
-    using a `MultipleContext`. Generally, these would be for one MultIdent only, but that should be handled
-    separately, for example in a dict[MultIdent, MultResults]. The `samples` describe how many computations
+    using a `MultipleContext` (i.e. the outputs of the :func:`pyecsca.sca.re.rpa.multiple_graph` function).
+    Generally, these would be for one MultIdent only, but that should be handled separately, for example
+    in a dict[MultIdent, MultResults]. The `samples` describe how many computations
     are contained and must correspond to the length of the `multiplications` list.
     """
-    multiplications: list[tuple[MultipleContext, Point]]
+    multiplications: list[tuple[MultipleContext, MultipleContext, Point]]
     samples: int
     duration: Optional[float] = None
 
