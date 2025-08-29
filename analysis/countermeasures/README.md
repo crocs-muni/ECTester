@@ -42,9 +42,11 @@ The general structure is as follows:
 ## Requirements
 
 What you need in terms of environment depends on what you want to do with ECTester and/or
-this artifact. If you want to build and use the tools from the root ECTester repository
+this artifact.
+
+ - If you want to build and use the tools from the root ECTester repository
 (applet, reader tool, standalone tool) then you need to setup Java with appropriate versions.
-If you want to run the Jupyter notebooks that analyze data from this artifact then you
+ - If you want to run the Jupyter notebooks that analyze data from this artifact then you
 need to setup Python with some packages.
 
 Do not forget to check-out the repository with submodules before doing anything with it:
@@ -68,17 +70,17 @@ the ECC library versions it targets and thus a version built in CI may be useles
 
 We use the [**pyecsca**](https://pyecsca.org/) toolkit heavily and implemented several parts of our work
 directly upstream (such as the countermeasures themselves). Furthermore, some of the analysis notebooks
-use the [cypari2](https://pypi.org/project/cypari2/) Python bindings to libpari, which you also need
-to have installed.
+use the [cypari2](https://pypi.org/project/cypari2/) Python bindings to **libpari** ([pari-gp](https://pari.math.u-bordeaux.fr/)),
+which you also need to have installed.
 
-To install the Python requirements in a new virtual environment do:
+To install the Python requirements (of both the root project and this artifact) in a new virtual environment do:
 ```shell
 python -m venv virt
 . virt/bin/activate                    # Or {.fish,.csh,.ps1} depending on your shell
 pip install -r ../../requirements.txt  # Install base ECTester requirements
 pip install -r requirements.txt        # Install artifact requirements
 ```
-
+https://pari.math.u-bordeaux.fr/
 
 ## Evalutation
 

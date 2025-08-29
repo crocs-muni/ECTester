@@ -1,4 +1,4 @@
-pyecsca
 cypari2
 jupyter
+ipympl
 pyasn1
