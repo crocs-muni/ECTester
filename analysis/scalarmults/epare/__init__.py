@@ -2,20 +2,15 @@ import itertools
 from statsmodels.stats.proportion import proportion_confint
 
 from pyecsca.ec.mult import (
-    DoubleAndAddMultiplier,
     LTRMultiplier,
     RTLMultiplier,
-    LadderMultiplier,
     BinaryNAFMultiplier,
     WindowNAFMultiplier,
     SimpleLadderMultiplier,
-    DifferentialLadderMultiplier,
     CoronMultiplier,
     FixedWindowLTRMultiplier,
     FullPrecompMultiplier,
     ProcessingDirection,
-    AccumulationOrder,
-    ScalarMultiplier,
     SlidingWindowMultiplier,
     BGMWMultiplier,
     CombMultiplier,
@@ -160,7 +155,7 @@ def _all_mults_with_ctr():
                 other_ctr = CountermeasureIdent(other_ctr_class, *mults)
                 result.append(other_ctr)
                 continue
-                
+
             mults = [mult] * other_ctr_class.nmults
             other_ctr = CountermeasureIdent(other_ctr_class, *mults)
             for i in range(1, 2**one_ctr_class.nmults):

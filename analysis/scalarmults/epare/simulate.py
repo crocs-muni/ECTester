@@ -1,20 +1,26 @@
+import hashlib
 import random
 import pickle
+
 from functools import partial
 
 from .config import Config
 from .mult_results import MultResults
+from .prob_map import ProbMap
 
 from pyecsca.ec.params import DomainParameters
 from pyecsca.ec.mod import mod
 from pyecsca.sca.re.rpa import multiple_graph
+from pyecsca.sca.re.epa import graph_to_check_inputs, evaluate_checks
 
 
-def simulate_multiples(mult: Config,
-                       params: DomainParameters,
-                       bits: int,
-                       samples: int = 100,
-                       seed: bytes | None = None) -> MultResults:
+def simulate_multiples(
+    mult: Config,
+    params: DomainParameters,
+    bits: int,
+    samples: int = 100,
+    seed: bytes | None = None,
+) -> MultResults:
     """
     Takes a Config, which specifies a scalar multiplier (with optional countermeasures)
     and simulates `samples` scalar multiplications, while tracking which multiples of the
@@ -34,16 +40,22 @@ def simulate_multiples(mult: Config,
         scalars = [one for _ in range(samples)]
 
     for scalar in scalars:
-        results.append(multiple_graph(scalar, params, mult.mult.klass, partial(mult.partial, rng=rng)))
+        results.append(
+            multiple_graph(
+                scalar, params, mult.mult.klass, partial(mult.partial, rng=rng)
+            )
+        )
     return MultResults(results, samples)
 
 
-def simulate_multiples_direct(mult: Config,
-                              params: DomainParameters,
-                              bits: int,
-                              fname: str,
-                              samples: int = 100,
-                              seed: bytes | None = None) -> str:
+def simulate_multiples_direct(
+    mult: Config,
+    params: DomainParameters,
+    bits: int,
+    fname: str,
+    samples: int = 100,
+    seed: bytes | None = None,
+) -> str:
     """
     Like the `simulate_multiples` function above, but stores the pickled output directly
     into a file named `fname`.
@@ -54,11 +66,13 @@ def simulate_multiples_direct(mult: Config,
     return fname
 
 
-def evaluate_multiples(mult: Config,
-                       res: MultResults,
-                       divisors: set[int],
-                       use_init: bool = True,
-                       use_multiply: bool = True):
+def evaluate_multiples(
+    mult: Config,
+    res: MultResults,
+    divisors: set[int],
+    use_init: bool = True,
+    use_multiply: bool = True,
+):
     """
     Takes MultIdent and MultResults and a set of divisors (base point orders `q`) and
     evaluates them using the error model from the MultIdent. Note that the MultIdent
@@ -66,16 +80,27 @@ def evaluate_multiples(mult: Config,
     """
     errors = {divisor: 0 for divisor in divisors}
     samples = len(res)
-    divisors_hash = hashlib.blake2b(str(sorted(divisors)).encode(), digest_size=8).digest()
+    divisors_hash = hashlib.blake2b(
+        str(sorted(divisors)).encode(), digest_size=8
+    ).digest()
     for precomp_ctx, full_ctx, out in res:
-        check_inputs = graph_to_check_inputs(precomp_ctx, full_ctx, out,
-                                             check_condition=mult.error_model.check_condition,
-                                             precomp_to_affine=mult.error_model.precomp_to_affine,
-                                             use_init=use_init,
-                                             use_multiply=use_multiply)
+        check_inputs = graph_to_check_inputs(
+            precomp_ctx,
+            full_ctx,
+            out,
+            check_condition=mult.error_model.check_condition,
+            precomp_to_affine=mult.error_model.precomp_to_affine,
+            use_init=use_init,
+            use_multiply=use_multiply,
+        )
         for q in divisors:
-            error = evaluate_checks(check_funcs={"add": mult.error_model.check_add(q), "affine": mult.error_model.check_affine(q)},
-                                    check_inputs=check_inputs)
+            error = evaluate_checks(
+                check_funcs={
+                    "add": mult.error_model.check_add(q),
+                    "affine": mult.error_model.check_affine(q),
+                },
+                check_inputs=check_inputs,
+            )
             errors[q] += error
     # Make probmaps smaller. Do not store zero probabilities.
     probs = {}
@@ -85,12 +110,14 @@ def evaluate_multiples(mult: Config,
     return ProbMap(probs, divisors_hash, samples)
 
 
-def evaluate_multiples_direct(mult: Config,
-                              fname: str,
-                              offset: int,
-                              divisors: set[int],
-                              use_init: bool = True,
-                              use_multiply: bool = True):
+def evaluate_multiples_direct(
+    mult: Config,
+    fname: str,
+    offset: int,
+    divisors: set[int],
+    use_init: bool = True,
+    use_multiply: bool = True,
+):
     """
     Like `evaluate_multiples`, but instead reads the MultResults from a file named `fname`
     at an `offset`. Still returns the ProbMap, which is significantly smaller and easier

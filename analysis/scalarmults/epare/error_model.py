@@ -14,7 +14,7 @@ def check_divides(k, l, q):
 
 
 def check_half_add(k, l, q):
-    return (q % 2 == 0) and ((k-l) % (q//2)) == 0
+    return (q % 2 == 0) and ((k - l) % (q // 2)) == 0
 
 
 def check_affine(k, q):
@@ -24,11 +24,13 @@ def check_affine(k, q):
 
 def check_any(*checks, q=None):
     """Merge multiple checks together. The returned check function no longer takes the `q` parameter."""
+
     def check_func(k, l):
         for check in checks:
             if check(k, l, q):
                 return True
         return False
+
     return check_func
 
 
@@ -36,13 +38,12 @@ def check_any(*checks, q=None):
 checks_add = {
     "equal_multiples": check_equal_multiples,
     "divides": check_divides,
-    "half_add": check_half_add
+    "half_add": check_half_add,
 }
 
 # This check can be applied to conversion to affine.
-checks_affine = {
-    "affine": check_affine
-}
+checks_affine = {"affine": check_affine}
+
 
 @dataclass(frozen=True)
 @total_ordering
@@ -61,16 +62,22 @@ class ErrorModel:
     to affine form. If it does, it means that additional checks on all outputs of the precomputation are done as
     they have to be "convertible" to affine form.
     """
+
     checks: set[str]
     check_condition: Union[Literal["all"], Literal["necessary"]]
     precomp_to_affine: bool
 
-    def __init__(self, checks: set[str], check_condition: Union[Literal["all"], Literal["necessary"]], precomp_to_affine: bool):
+    def __init__(
+        self,
+        checks: set[str],
+        check_condition: Union[Literal["all"], Literal["necessary"]],
+        precomp_to_affine: bool,
+    ):
         for check in checks:
             if check not in checks_add:
                 raise ValueError(f"Unknown check: {check}")
         checks = set(checks)
-        checks.add("affine") # always done in our model
+        checks.add("affine")  # always done in our model
         object.__setattr__(self, "checks", checks)
         if check_condition not in ("all", "necessary"):
             raise ValueError("Wrong check_condition")
@@ -81,7 +88,13 @@ class ErrorModel:
         """Get the add formula check function for the given q."""
         if self.checks == {"affine"}:
             return lambda k, l: False
-        return check_any(*map(lambda name: checks_add[name], filter(lambda check: check in checks_add, self.checks)), q=q)
+        return check_any(
+            *map(
+                lambda name: checks_add[name],
+                filter(lambda check: check in checks_add, self.checks),
+            ),
+            q=q,
+        )
 
     def check_affine(self, q):
         """Get the to-affine check function for the given q."""
@@ -106,4 +119,6 @@ class ErrorModel:
         return f"({','.join(cs)}+{self.check_condition}{precomp})"
 
     def __hash__(self):
-        return hash((tuple(sorted(self.checks)), self.check_condition, self.precomp_to_affine))
+        return hash(
+            (tuple(sorted(self.checks)), self.check_condition, self.precomp_to_affine)
+        )

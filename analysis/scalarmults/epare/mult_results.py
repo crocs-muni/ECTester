@@ -15,6 +15,7 @@ class MultResults:
     in a dict[Config, MultResults]. The `samples` describe how many computations
     are contained and must correspond to the length of the `multiplications` list.
     """
+
     multiplications: list[tuple[MultipleContext, MultipleContext, Point]]
     samples: int
     duration: Optional[float] = None
@@ -33,7 +34,9 @@ class MultResults:
         return self.multiplications[i]
 
     def __str__(self):
-        duration = timedelta(seconds=int(self.duration)) if self.duration is not None else ""
+        duration = (
+            timedelta(seconds=int(self.duration)) if self.duration is not None else ""
+        )
         return f"MultResults({self.samples},{duration})"
 
     def __repr__(self):

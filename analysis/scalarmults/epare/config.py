@@ -1,11 +1,20 @@
 from dataclasses import dataclass
 from enum import Enum
-from functools import partial, total_ordering
+from functools import total_ordering
 from typing import Any, Optional, Type
 
-from pyecsca.ec.countermeasures import GroupScalarRandomization, AdditiveSplitting, MultiplicativeSplitting, EuclideanSplitting, BrumleyTuveri, PointBlinding, ScalarMultiplierCountermeasure
+from pyecsca.ec.countermeasures import (
+    GroupScalarRandomization,
+    AdditiveSplitting,
+    MultiplicativeSplitting,
+    EuclideanSplitting,
+    BrumleyTuveri,
+    PointBlinding,
+    ScalarMultiplierCountermeasure,
+)
 from pyecsca.ec.mult import ScalarMultiplier
 from .error_model import ErrorModel
+
 
 class Composable:
     klass: Type
@@ -56,9 +65,6 @@ class Composable:
             return NotImplemented
         return str(self) < str(other)
 
-    def __hash__(self):
-        return hash((self.klass, tuple(self.args)), tuple(self.kwargs.keys()), tuple(self.kwargs.values()))
-
 
 @dataclass(frozen=True)
 @total_ordering
@@ -99,18 +105,42 @@ class CountermeasureIdent(Composable):
         else:
             name = "?"
         # Only print other Composables as Countermeasures do not have interesting arguments
-        args = (",".join(list(map(str, filter(lambda arg: isinstance(arg, Composable), self.args))))) if self.args else ""
+        args = (
+            (
+                ",".join(
+                    list(
+                        map(
+                            str,
+                            filter(lambda arg: isinstance(arg, Composable), self.args),
+                        )
+                    )
+                )
+            )
+            if self.args
+            else ""
+        )
         # Same for kwargs
-        kwargs = (",".join(f"{k}={v}" for k, v in self.kwargs if isinstance(v, Composable))) if self.kwargs else ""
+        kwargs = (
+            (",".join(f"{k}={v}" for k, v in self.kwargs if isinstance(v, Composable)))
+            if self.kwargs
+            else ""
+        )
         return f"{name}({args}{',' if args and kwargs else ''}{kwargs})"
 
     def __repr__(self):
         return str(self)
 
     def __hash__(self):
-        return hash((self.klass, tuple(self.args), tuple(self.kwargs.keys()), tuple(self.kwargs.values())))
+        return hash(
+            (
+                self.klass,
+                tuple(self.args),
+                tuple(self.kwargs.keys()),
+                tuple(self.kwargs.values()),
+            )
+        )
 
-    
+
 @dataclass(frozen=True)
 @total_ordering
 class MultIdent(Composable):
@@ -133,17 +163,31 @@ class MultIdent(Composable):
     def __str__(self):
         name = self.klass.__name__.replace("Multiplier", "")
         args = (",".join(list(map(str, self.args)))) if self.args else ""
-        kwmap = {"recoding_direction": "recode",
-                 "direction": "dir",
-                 "width": "w"}
-        kwargs = (",".join(f"{kwmap.get(k, k)}:{v.name if isinstance(v, Enum) else str(v)}" for k,v in self.kwargs.items())) if self.kwargs else ""
+        kwmap = {"recoding_direction": "recode", "direction": "dir", "width": "w"}
+        kwargs = (
+            (
+                ",".join(
+                    f"{kwmap.get(k, k)}:{v.name if isinstance(v, Enum) else str(v)}"
+                    for k, v in self.kwargs.items()
+                )
+            )
+            if self.kwargs
+            else ""
+        )
         return f"{name}({args}{',' if args and kwargs else ''}{kwargs})"
 
     def __repr__(self):
         return str(self)
 
     def __hash__(self):
-        return hash((self.klass, tuple(self.args), tuple(self.kwargs.keys()), tuple(self.kwargs.values())))
+        return hash(
+            (
+                self.klass,
+                tuple(self.args),
+                tuple(self.kwargs.keys()),
+                tuple(self.kwargs.values()),
+            )
+        )
 
 
 @dataclass(frozen=True)
@@ -161,6 +205,7 @@ class Config:
     implementation we care about when reverse-engineering: the multiplier and the countermeasure, we do not
     really care about the error model, yet need it when simulating.
     """
+
     composition: Composable
     error_model: Optional[ErrorModel] = None
 

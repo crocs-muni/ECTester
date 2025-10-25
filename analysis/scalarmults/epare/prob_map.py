@@ -16,6 +16,7 @@ class ProbMap:
     same divisor set and updates the probabilities to a weighted average of the two probability maps
     (the weight is the number of samples).
     """
+
     probs: dict[int, float]
     divisors_hash: bytes
     samples: int
@@ -54,12 +55,16 @@ class ProbMap:
     def merge(self, other: "ProbMap") -> None:
         """Merge the `other` probability map into this one (must share the divisor set)."""
         if self.divisors_hash != other.divisors_hash:
-            raise ValueError("Merging can only work on probmaps created for same divisors.")
+            raise ValueError(
+                "Merging can only work on probmaps created for same divisors."
+            )
         new_keys = set(self.keys()).union(other.keys())
         result = {}
         for key in new_keys:
             sk = self[key]
             ok = other[key]
-            result[key] = (sk * self.samples + ok * other.samples) / (self.samples + other.samples)
+            result[key] = (sk * self.samples + ok * other.samples) / (
+                self.samples + other.samples
+            )
         self.probs = result
         self.samples += other.samples
