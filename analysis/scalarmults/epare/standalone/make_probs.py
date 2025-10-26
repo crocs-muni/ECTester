@@ -2,10 +2,12 @@
 Make the probs file from a given multiples file.
 """
 import atexit
+import gc
 import pickle
 import sys
 
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import click
 
@@ -13,7 +15,7 @@ from tqdm import tqdm
 
 from pyecsca.ec.params import get_params
 from pyecsca.misc.utils import TaskExecutor
-from epare import all_error_models, evaluate_multiples_compressed, divisor_map
+from .. import all_configs, all_error_models, evaluate_multiples_compressed, divisor_map
 
 
 if sys.version_info >= (3, 14):
@@ -34,20 +36,21 @@ def main(temp, workers, seed):
 
     if temp is None:
         tmp = TemporaryDirectory()
-        temp = Path(tmp)
-        atexit.register(tmp.close)
+        temp = Path(tmp.name)
+        atexit.register(tmp.cleanup)
 
     use_init = True
     use_multiply = True
 
     in_path = Path(f"multiples_{seed}.zpickle")
-    out_path = Path(f"probs_{seed}.pickle")
+    out_path = Path(f"probs_{seed}.zpickle")
 
-    with zstd.open(in_path, "rb") as f, out_path.open("wb") as h:
+    with zstd.open(in_path, "rb") as f, zstd.open(out_path, "wb") as h, TaskExecutor(max_workers=workers) as pool, tqdm(total=len(all_configs), desc=f"Generating probability maps.", smoothing=0) as bar:
         while True:
             try:
                 start = f.tell()
-                mult, vals = pickle.load(f)
+                bar.update(1)
+                mult, _ = pickle.load(f)
                 for error_model in all_error_models:
                     full = mult.with_error_model(error_model)
                     # Pass the file name and offset to speed up computation start.
@@ -75,4 +78,4 @@ def main(temp, workers, seed):
 
 
 if __name__ == "__main__":
-    pass
+    main()

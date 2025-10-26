@@ -3,19 +3,28 @@ Merge all probs files into one.
 """
 
 import pickle
+import sys
 
 import click
 
 from pathlib import Path
 
-from epare import ProbMap
+from tqdm import tqdm
+
+from .. import ProbMap
+
+
+if sys.version_info >= (3, 14):
+    from compression import zstd
+else:
+    from backports import zstd
 
 
 @click.command()
 def main():
     maps = {}
-    for file in Path().glob("probs_*.pickle"):
-        with file.open("rb") as h:
+    for file in tqdm(Path().glob("probs_*.zpickle"), desc="Merging probmaps.", smoothing=0):
+        with zstd.open(file, "rb") as h:
             while True:
                 try:
                     full, prob_map = pickle.load(h)

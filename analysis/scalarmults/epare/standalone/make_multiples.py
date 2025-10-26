@@ -19,7 +19,7 @@ from tqdm import tqdm
 
 from pyecsca.ec.params import get_params
 from pyecsca.misc.utils import TaskExecutor
-from epare import all_configs, simulate_multiples_direct
+from .. import all_configs, simulate_multiples_direct
 
 
 if sys.version_info >= (3, 14):
@@ -41,8 +41,8 @@ def main(temp, workers, seed, samples):
 
     if temp is None:
         tmp = TemporaryDirectory()
-        temp = Path(tmp)
-        atexit.register(tmp.close)
+        temp = Path(tmp.name)
+        atexit.register(tmp.cleanup)
 
     output = f"multiples_{seed}.zpickle"
 
@@ -64,7 +64,7 @@ def main(temp, workers, seed, samples):
                     h.write(f.read())
                 fpath.unlink()
                 if (i % 100) == 0:
-                    time.sleep(5)
+                    time.sleep(1)
 
 
 if __name__ == "__main__":

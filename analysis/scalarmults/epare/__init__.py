@@ -31,6 +31,13 @@ from .config import MultIdent, CountermeasureIdent, Config
 from .error_model import ErrorModel, checks_add
 from .mult_results import MultResults
 from .prob_map import ProbMap
+from .simulate import (
+    simulate_multiples,
+    simulate_multiples_direct,
+    evaluate_multiples,
+    evaluate_multiples_direct,
+    evaluate_multiples_compressed
+)
 
 
 
