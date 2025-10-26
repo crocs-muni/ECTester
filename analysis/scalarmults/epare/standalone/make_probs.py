@@ -45,11 +45,10 @@ def main(temp, workers, seed):
     in_path = Path(f"multiples_{seed}.zpickle")
     out_path = Path(f"probs_{seed}.zpickle")
 
-    with zstd.open(in_path, "rb") as f, zstd.open(out_path, "wb") as h, TaskExecutor(max_workers=workers) as pool, tqdm(total=len(all_configs), desc=f"Generating probability maps.", smoothing=0) as bar:
+    with zstd.open(in_path, "rb") as f, zstd.open(out_path, "wb") as h, TaskExecutor(max_workers=workers) as pool, tqdm(total=len(all_configs) * len(all_error_models), desc=f"Generating probability maps.", smoothing=0) as bar:
         while True:
             try:
                 start = f.tell()
-                bar.update(1)
                 mult, _ = pickle.load(f)
                 for error_model in all_error_models:
                     full = mult.with_error_model(error_model)
@@ -59,19 +58,21 @@ def main(temp, workers, seed):
                                      full, in_path, start, divisor_map["all"], use_init, use_multiply)
                 gc.collect()
                 for full, future in pool.as_completed(wait=False):
+                    bar.update(1)
                     if error := future.exception():
-                        print("Error!", full, error)
+                        click.echo("Error!", full, error)
                         continue
                     res = future.result()
                     pickle.dump((full, res), h)
             except EOFError:
                 break
             except pickle.UnpicklingError:
-                print("Bad unpickling, the multiples file is likely truncated.")
+                click.echo("Bad unpickling, the multiples file is likely truncated.")
                 break
         for full, future in pool.as_completed():
+            bar.update(1)
             if error := future.exception():
-                print("Error!", full, error)
+                click.echo("Error!", full, error)
                 continue
             res = future.result()
             pickle.dump((full, res), h)

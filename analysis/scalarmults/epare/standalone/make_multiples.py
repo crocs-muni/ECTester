@@ -57,7 +57,7 @@ def main(temp, workers, seed, samples):
             for mult, future in tqdm(pool.as_completed(), desc="Computing multiple graphs.", total=len(pool.tasks)):
                 i += 1
                 if error := future.exception():
-                    print("Error!", mult, error)
+                    click.echo("Error!", mult, error)
                     continue
                 fpath = future.result()
                 with fpath.open("rb") as f:

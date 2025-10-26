@@ -7,7 +7,7 @@ from functools import partial
 
 from .config import Config
 from .mult_results import MultResults
-from .prob_map import ProbMap
+from .prob_map import ProbMap, hash_divisors
 
 from pyecsca.ec.params import DomainParameters
 from pyecsca.ec.mod import mod
@@ -81,15 +81,14 @@ def evaluate_multiples(
     use_multiply: bool = True,
 ):
     """
-    Takes MultIdent and MultResults and a set of divisors (base point orders `q`) and
-    evaluates them using the error model from the MultIdent. Note that the MultIdent
+    Takes a Config and MultResults and a set of divisors (base point orders `q`) and
+    evaluates them using the error model from the Config. Note that the Config
     must have an error model in this case. Returns the ProbMap.
     """
+    if not mult.has_error_model:
+        raise ValueError("Invalid config")
     errors = {divisor: 0 for divisor in divisors}
-    samples = len(res)
-    divisors_hash = hashlib.blake2b(
-        str(sorted(divisors)).encode(), digest_size=8
-    ).digest()
+    check_funcs = {q: mult.error_model.make_check_funcs(q) for q in divisors}
     for precomp_ctx, full_ctx, out in res:
         check_inputs = graph_to_check_inputs(
             precomp_ctx,
@@ -102,10 +101,7 @@ def evaluate_multiples(
         )
         for q in divisors:
             error = evaluate_checks(
-                check_funcs={
-                    "add": mult.error_model.check_add(q),
-                    "affine": mult.error_model.check_affine(q),
-                },
+                check_funcs=check_funcs[q],
                 check_inputs=check_inputs,
             )
             errors[q] += error
@@ -114,7 +110,9 @@ def evaluate_multiples(
     for q, error in errors.items():
         if error != 0:
             probs[q] = error / samples
-    return ProbMap(probs, divisors_hash, samples)
+    samples = len(res)
+    dhash = hash_divisors(divisors)
+    return ProbMap(probs, dhash, samples)
 
 
 def evaluate_multiples_direct(

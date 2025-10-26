@@ -22,18 +22,6 @@ def check_affine(k, q):
     return k % q == 0
 
 
-def check_any(*checks, q=None):
-    """Merge multiple checks together. The returned check function no longer takes the `q` parameter."""
-
-    def check_func(k, l):
-        for check in checks:
-            if check(k, l, q):
-                return True
-        return False
-
-    return check_func
-
-
 # These checks can be applied to add formulas. See the formulas notebook for background on them.
 checks_add = {
     "equal_multiples": check_equal_multiples,
@@ -84,21 +72,22 @@ class ErrorModel:
         object.__setattr__(self, "check_condition", check_condition)
         object.__setattr__(self, "precomp_to_affine", precomp_to_affine)
 
-    def check_add(self, q):
-        """Get the add formula check function for the given q."""
-        if self.checks == {"affine"}:
-            return lambda k, l: False
-        return check_any(
-            *map(
-                lambda name: checks_add[name],
-                filter(lambda check: check in checks_add, self.checks),
-            ),
-            q=q,
-        )
+    def make_check_funcs(self, q: int):
+        """Make the check_funcs for a given q."""
+        def affine(k):
+            return check_affine(k, q)
 
-    def check_affine(self, q):
-        """Get the to-affine check function for the given q."""
-        return partial(check_affine, q=q)
+        add_checks = [checks_add[check] for check in self.checks if check in checks_add]
+        def add(k, l):
+            for check in add_checks:
+                if check(k, l, q):
+                    return True
+            return False
+
+        return {
+            "affine": affine,
+            "add": add
+        }
 
     def __lt__(self, other):
         if not isinstance(other, ErrorModel):
