@@ -9,3 +9,4 @@ tqdm
 statsmodels
 anytree
 scikit-learn
+backports.zstd ; python_version<'3.14'

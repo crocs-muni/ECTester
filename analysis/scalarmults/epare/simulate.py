@@ -14,6 +14,12 @@ from pyecsca.sca.re.rpa import multiple_graph
 from pyecsca.sca.re.epa import graph_to_check_inputs, evaluate_checks
 
 
+if sys.version_info >= (3, 14):
+    from compression import zstd
+else:
+    from backports import zstd
+
+
 def simulate_multiples(
     mult: Config,
     params: DomainParameters,
@@ -127,3 +133,24 @@ def evaluate_multiples_direct(
         f.seek(offset)
         _, res = pickle.load(f)
     return evaluate_multiples(mult, res, divisors, use_init, use_multiply)
+
+
+def evaluate_multiples_compressed(
+    mult: Config,
+    fname: str,
+    offset: int,
+    divisors: set[int],
+    use_init: bool = True,
+    use_multiply: bool = True,
+):
+    """
+    Like `evaluate_multiples`, but instead reads the MultResults from a file named `fname`
+    at an `offset` that is a zstd compressed file.
+    Still returns the ProbMap, which is significantly smaller and easier
+    to pickle than the MultResults.
+    """
+    with zstd.open(fname, "rb") as f:
+        f.seek(offset)
+        _, res = pickle.load(f)
+    return evaluate_multiples(mult, res, divisors, use_init, use_multiply)
+
