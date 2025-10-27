@@ -11,8 +11,8 @@ from pathlib import Path
 
 from tqdm import tqdm
 
-from .. import all_configs, all_error_models
-
+from ..error_model import all_error_models
+from ..config import all_configs
 
 if sys.version_info >= (3, 14):
     from compression import zstd

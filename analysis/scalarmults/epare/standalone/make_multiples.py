@@ -7,7 +7,6 @@ around 300 GB for samples = 1000.
 """
 
 import atexit
-import pickle
 import sys
 import time
 
@@ -20,8 +19,8 @@ from tqdm import tqdm
 
 from pyecsca.ec.params import get_params
 from pyecsca.misc.utils import TaskExecutor
-from .. import all_configs, simulate_multiples_direct
-
+from ..simulate import simulate_multiples_direct
+from scalarmults.epare.config import all_configs
 
 if sys.version_info >= (3, 14):
     from compression import zstd

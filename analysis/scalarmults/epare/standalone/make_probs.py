@@ -15,8 +15,10 @@ import click
 from tqdm import tqdm
 
 from pyecsca.misc.utils import TaskExecutor
-from .. import all_configs, all_error_models, evaluate_multiples_all, divisor_map
-
+from ..simulate import evaluate_multiples_all
+from ..divisors import divisor_map
+from scalarmults.epare.error_model import all_error_models
+from scalarmults.epare.config import all_configs
 
 if sys.version_info >= (3, 14):
     from compression import zstd

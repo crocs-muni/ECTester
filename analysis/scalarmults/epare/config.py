@@ -1,3 +1,4 @@
+import itertools
 from dataclasses import dataclass
 from enum import Enum
 from functools import total_ordering
@@ -10,9 +11,25 @@ from pyecsca.ec.countermeasures import (
     EuclideanSplitting,
     BrumleyTuveri,
     PointBlinding,
+    MultPointBlinding,
     ScalarMultiplierCountermeasure,
 )
-from pyecsca.ec.mult import ScalarMultiplier
+from pyecsca.ec.mult import (
+    ScalarMultiplier,
+    SlidingWindowMultiplier,
+    ProcessingDirection,
+    FixedWindowLTRMultiplier,
+    WindowBoothMultiplier,
+    WindowNAFMultiplier,
+    BinaryNAFMultiplier,
+    CombMultiplier,
+    BGMWMultiplier,
+    LTRMultiplier,
+    RTLMultiplier,
+    CoronMultiplier,
+    FullPrecompMultiplier,
+    SimpleLadderMultiplier,
+)
 from .error_model import ErrorModel
 
 
@@ -102,6 +119,8 @@ class CountermeasureIdent(Composable):
             name = "bt"
         elif issubclass(self.klass, PointBlinding):
             name = "blind"
+        elif issubclass(self.klass, MultPointBlinding):
+            name = "mblind"
         else:
             name = "?"
         # Only print other Composables as Countermeasures do not have interesting arguments
@@ -249,3 +268,122 @@ class Config:
 
     def __hash__(self):
         return hash((self.composition, self.error_model))
+
+
+# We can enumerate all mults and countermeasures here.
+def _all_mults_with_ctr():
+    result = []
+    for mult in all_mults:
+        for one_ctr_class, other_ctr_class in itertools.product(
+            (
+                GroupScalarRandomization,
+                AdditiveSplitting,
+                MultiplicativeSplitting,
+                EuclideanSplitting,
+                BrumleyTuveri,
+                None,
+            ),
+            repeat=2,
+        ):
+            if one_ctr_class is None and other_ctr_class is None:
+                result.append(mult)
+                continue
+            if other_ctr_class is None:
+                continue
+            if one_ctr_class is None:
+                mults = [mult] * other_ctr_class.nmults
+                other_ctr = CountermeasureIdent(other_ctr_class, *mults)
+                result.append(other_ctr)
+                continue
+
+            mults = [mult] * other_ctr_class.nmults
+            other_ctr = CountermeasureIdent(other_ctr_class, *mults)
+            for i in range(1, 2**one_ctr_class.nmults):
+                bits = format(i, f"0{one_ctr_class.nmults}b")
+                args = [other_ctr if bit == "1" else mult for bit in bits]
+                ctr = CountermeasureIdent(one_ctr_class, *args)
+                result.append(ctr)
+    return result
+
+
+# fmt: off
+# All dbl-and-add multipliers from https://github.com/J08nY/pyecsca/blob/master/pyecsca/ec/mult
+window_mults = [
+    MultIdent(SlidingWindowMultiplier, width=2, recoding_direction=ProcessingDirection.LTR),
+    MultIdent(SlidingWindowMultiplier, width=3, recoding_direction=ProcessingDirection.LTR),
+    MultIdent(SlidingWindowMultiplier, width=4, recoding_direction=ProcessingDirection.LTR),
+    MultIdent(SlidingWindowMultiplier, width=5, recoding_direction=ProcessingDirection.LTR),
+    MultIdent(SlidingWindowMultiplier, width=6, recoding_direction=ProcessingDirection.LTR),
+    MultIdent(SlidingWindowMultiplier, width=2, recoding_direction=ProcessingDirection.RTL),
+    MultIdent(SlidingWindowMultiplier, width=3, recoding_direction=ProcessingDirection.RTL),
+    MultIdent(SlidingWindowMultiplier, width=4, recoding_direction=ProcessingDirection.RTL),
+    MultIdent(SlidingWindowMultiplier, width=5, recoding_direction=ProcessingDirection.RTL),
+    MultIdent(SlidingWindowMultiplier, width=6, recoding_direction=ProcessingDirection.RTL),
+    MultIdent(FixedWindowLTRMultiplier, m=2**1),
+    MultIdent(FixedWindowLTRMultiplier, m=2**2),
+    MultIdent(FixedWindowLTRMultiplier, m=2**3),
+    MultIdent(FixedWindowLTRMultiplier, m=2**4),
+    MultIdent(FixedWindowLTRMultiplier, m=2**5),
+    MultIdent(FixedWindowLTRMultiplier, m=2**6),
+    MultIdent(WindowBoothMultiplier, width=2),
+    MultIdent(WindowBoothMultiplier, width=3),
+    MultIdent(WindowBoothMultiplier, width=4),
+    MultIdent(WindowBoothMultiplier, width=5),
+    MultIdent(WindowBoothMultiplier, width=6)
+]
+naf_mults = [
+    MultIdent(WindowNAFMultiplier, width=2),
+    MultIdent(WindowNAFMultiplier, width=3),
+    MultIdent(WindowNAFMultiplier, width=4),
+    MultIdent(WindowNAFMultiplier, width=5),
+    MultIdent(WindowNAFMultiplier, width=6),
+    MultIdent(BinaryNAFMultiplier, always=False, direction=ProcessingDirection.LTR),
+    MultIdent(BinaryNAFMultiplier, always=False, direction=ProcessingDirection.RTL),
+    MultIdent(BinaryNAFMultiplier, always=True, direction=ProcessingDirection.LTR),
+    MultIdent(BinaryNAFMultiplier, always=True, direction=ProcessingDirection.RTL)
+]
+comb_mults = [
+    MultIdent(CombMultiplier, width=2, always=True),
+    MultIdent(CombMultiplier, width=3, always=True),
+    MultIdent(CombMultiplier, width=4, always=True),
+    MultIdent(CombMultiplier, width=5, always=True),
+    MultIdent(CombMultiplier, width=6, always=True),
+    MultIdent(CombMultiplier, width=2, always=False),
+    MultIdent(CombMultiplier, width=3, always=False),
+    MultIdent(CombMultiplier, width=4, always=False),
+    MultIdent(CombMultiplier, width=5, always=False),
+    MultIdent(CombMultiplier, width=6, always=False),
+    MultIdent(BGMWMultiplier, width=2, direction=ProcessingDirection.LTR),
+    MultIdent(BGMWMultiplier, width=3, direction=ProcessingDirection.LTR),
+    MultIdent(BGMWMultiplier, width=4, direction=ProcessingDirection.LTR),
+    MultIdent(BGMWMultiplier, width=5, direction=ProcessingDirection.LTR),
+    MultIdent(BGMWMultiplier, width=6, direction=ProcessingDirection.LTR),
+    MultIdent(BGMWMultiplier, width=2, direction=ProcessingDirection.RTL),
+    MultIdent(BGMWMultiplier, width=3, direction=ProcessingDirection.RTL),
+    MultIdent(BGMWMultiplier, width=4, direction=ProcessingDirection.RTL),
+    MultIdent(BGMWMultiplier, width=5, direction=ProcessingDirection.RTL),
+    MultIdent(BGMWMultiplier, width=6, direction=ProcessingDirection.RTL)
+]
+binary_mults = [
+    MultIdent(LTRMultiplier, always=False, complete=True),
+    MultIdent(LTRMultiplier, always=True,  complete=True),
+    MultIdent(LTRMultiplier, always=False, complete=False),
+    MultIdent(LTRMultiplier, always=True,  complete=False),
+    MultIdent(RTLMultiplier, always=False, complete=True),
+    MultIdent(RTLMultiplier, always=True,  complete=True),
+    MultIdent(RTLMultiplier, always=False, complete=False),
+    MultIdent(RTLMultiplier, always=True,  complete=False),
+    MultIdent(CoronMultiplier)
+]
+other_mults = [
+    MultIdent(FullPrecompMultiplier, always=False, complete=True),
+    MultIdent(FullPrecompMultiplier, always=True,  complete=True),
+    MultIdent(FullPrecompMultiplier, always=False, complete=False),
+    MultIdent(FullPrecompMultiplier, always=True,  complete=False),
+    MultIdent(SimpleLadderMultiplier, complete=True),
+    MultIdent(SimpleLadderMultiplier, complete=False)
+]
+all_mults = window_mults + naf_mults + binary_mults + other_mults + comb_mults
+all_mults_with_ctr = _all_mults_with_ctr()
+all_configs = [Config(mult, None) for mult in all_mults_with_ctr]
+# fmt: on

@@ -1,6 +1,8 @@
 from dataclasses import dataclass
-from functools import partial, total_ordering
-from typing import Any, Optional, Type, Union, Literal
+from functools import total_ordering
+from typing import Union, Literal
+
+from .utils import powerset
 
 
 def check_equal_multiples(k, l, q):
@@ -74,20 +76,19 @@ class ErrorModel:
 
     def make_check_funcs(self, q: int):
         """Make the check_funcs for a given q."""
+
         def affine(k):
             return check_affine(k, q)
 
         add_checks = [checks_add[check] for check in self.checks if check in checks_add]
+
         def add(k, l):
             for check in add_checks:
                 if check(k, l, q):
                     return True
             return False
 
-        return {
-            "affine": affine,
-            "add": add
-        }
+        return {"affine": affine, "add": add}
 
     def __lt__(self, other):
         if not isinstance(other, ErrorModel):
@@ -111,3 +112,21 @@ class ErrorModel:
         return hash(
             (tuple(sorted(self.checks)), self.check_condition, self.precomp_to_affine)
         )
+
+
+# All error models are a simple cartesian product of the individual options.
+def _all_error_models():
+    result = []
+    for checks in powerset(checks_add):
+        for precomp_to_affine in (True, False):
+            for check_condition in ("all", "necessary"):
+                error_model = ErrorModel(
+                    checks,
+                    check_condition=check_condition,
+                    precomp_to_affine=precomp_to_affine,
+                )
+                result.append(error_model)
+    return result
+
+
+all_error_models = _all_error_models()

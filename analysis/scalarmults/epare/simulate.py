@@ -4,7 +4,7 @@ import sys
 
 from functools import partial
 
-from . import all_error_models
+from .error_model import all_error_models
 from .config import Config
 from .mult_results import MultResults
 from .prob_map import ProbMap, hash_divisors
