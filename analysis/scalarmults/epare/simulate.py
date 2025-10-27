@@ -79,7 +79,7 @@ def evaluate_multiples(
     divisors: set[int],
     use_init: bool = True,
     use_multiply: bool = True,
-):
+) -> ProbMap:
     """
     Takes a Config and MultResults and a set of divisors (base point orders `q`) and
     evaluates them using the error model from the Config. Note that the Config
@@ -122,7 +122,7 @@ def evaluate_multiples_direct(
     divisors: set[int],
     use_init: bool = True,
     use_multiply: bool = True,
-):
+) -> ProbMap:
     """
     Like `evaluate_multiples`, but instead reads the MultResults from a file named `fname`
     at an `offset`. Still returns the ProbMap, which is significantly smaller and easier
@@ -141,7 +141,7 @@ def evaluate_multiples_compressed(
     divisors: set[int],
     use_init: bool = True,
     use_multiply: bool = True,
-):
+) -> ProbMap:
     """
     Like `evaluate_multiples`, but instead reads the MultResults from a file named `fname`
     at an `offset` that is a zstd compressed file.
@@ -161,7 +161,7 @@ def evaluate_multiples_all(
     divisors: set[int],
     use_init: bool = True,
     use_multiply: bool = True,
-):
+) -> list[tuple[Config, ProbMap]]:
     """Like `evaluate_multiples_compressed`, but evaluates all error models."""
     with zstd.open(fname, "rb") as f:
         f.seek(offset)

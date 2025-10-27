@@ -17,8 +17,10 @@ from tqdm import tqdm
 from pyecsca.misc.utils import TaskExecutor
 from ..simulate import evaluate_multiples_all
 from ..divisors import divisor_map
+from ..mult_results import MultResults
 from ..error_model import all_error_models
-from ..config import all_configs
+from ..config import all_configs, Config
+from ..prob_map import ProbMap
 
 if sys.version_info >= (3, 14):
     from compression import zstd
@@ -53,7 +55,7 @@ def main(temp, workers, seed):
         zstd.open(out_path, "wb") as h,
         TaskExecutor(max_workers=workers) as pool,
         tqdm(
-            total=len(all_configs) * len(all_error_models),
+            total=len(all_configs),
             desc=f"Generating probability maps.",
             smoothing=0,
         ) as bar,
@@ -61,7 +63,10 @@ def main(temp, workers, seed):
         file_map = {}
         while True:
             try:
+                mult: Config
+                vals: MultResults
                 mult, vals = pickle.load(f)
+
                 # Store the mult and vals into a temporary compressed file.
                 file = temp / f"v{hash(mult)}.zpickle"
                 file_map[mult] = file
@@ -79,14 +84,15 @@ def main(temp, workers, seed):
                     use_init,
                     use_multiply,
                 )
-                gc.collect()
+
+                # Process any results already done.
                 for mult, future in pool.as_completed(wait=False):
                     bar.update(1)
                     file_map[mult].unlink()
                     if error := future.exception():
                         click.echo(f"Error! {mult} {error}")
                         continue
-                    res = future.result()
+                    res: list[tuple[Config, ProbMap]] = future.result()
                     for full, probmap in res:
                         pickle.dump((full, probmap), h)
             except EOFError:
@@ -101,7 +107,7 @@ def main(temp, workers, seed):
                 click.echo(f"Error! {mult} {error}")
                 continue
             res = future.result()
-            for full, probmap in res.items():
+            for full, probmap in res:
                 pickle.dump((full, probmap), h)
 
 
