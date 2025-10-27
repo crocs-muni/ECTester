@@ -1,10 +1,10 @@
-import hashlib
 import random
 import pickle
 import sys
 
 from functools import partial
 
+from . import all_error_models
 from .config import Config
 from .mult_results import MultResults
 from .prob_map import ProbMap, hash_divisors
@@ -105,12 +105,12 @@ def evaluate_multiples(
                 check_inputs=check_inputs,
             )
             errors[q] += error
+    samples = len(res)
     # Make probmaps smaller. Do not store zero probabilities.
     probs = {}
     for q, error in errors.items():
         if error != 0:
             probs[q] = error / samples
-    samples = len(res)
     dhash = hash_divisors(divisors)
     return ProbMap(probs, dhash, samples)
 
@@ -153,3 +153,22 @@ def evaluate_multiples_compressed(
         _, res = pickle.load(f)
     return evaluate_multiples(mult, res, divisors, use_init, use_multiply)
 
+
+def evaluate_multiples_all(
+    mult: Config,
+    fname: str,
+    offset: int,
+    divisors: set[int],
+    use_init: bool = True,
+    use_multiply: bool = True,
+):
+    """Like `evaluate_multiples_compressed`, but evaluates all error models."""
+    with zstd.open(fname, "rb") as f:
+        f.seek(offset)
+        mult, res = pickle.load(f)
+    results = []
+    for error_model in all_error_models:
+        full = mult.with_error_model(error_model)
+        prob_map = evaluate_multiples(full, res, divisors, use_init, use_multiply)
+        results.append((full, prob_map))
+    return results

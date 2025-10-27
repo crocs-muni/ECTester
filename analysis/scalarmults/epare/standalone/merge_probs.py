@@ -11,7 +11,7 @@ from pathlib import Path
 
 from tqdm import tqdm
 
-from .. import all_configs, all_error_models, ProbMap
+from .. import all_configs, all_error_models
 
 
 if sys.version_info >= (3, 14):
@@ -21,7 +21,9 @@ else:
 
 
 @click.command()
-@click.option("-z", "--compressed", is_flag=True, help="Whether to load the probmaps compressed.")
+@click.option(
+    "-z", "--compressed", is_flag=True, help="Whether to load the probmaps compressed."
+)
 def main(compressed):
     maps = {}
     if compressed:
@@ -37,9 +39,14 @@ def main(compressed):
     click.echo(f"Found {len(found)} probmap files.")
     if not found:
         return
-    
+
     for file in tqdm(found, desc="Merging probmaps.", smoothing=0):
-        with opener(file, "rb") as h, tqdm(total=len(all_configs) * len(all_error_models), desc=f"Loading probmap {file}.", smoothing=0, leave=False) as bar:
+        with opener(file, "rb") as h, tqdm(
+            total=len(all_configs) * len(all_error_models),
+            desc=f"Loading probmap {file}.",
+            smoothing=0,
+            leave=False,
+        ) as bar:
             i = 0
             while True:
                 try:
@@ -53,7 +60,9 @@ def main(compressed):
                 except EOFError:
                     break
                 except pickle.UnpicklingError:
-                    click.echo(f"Bad unpickling, the probs file {file} is likely truncated.")
+                    click.echo(
+                        f"Bad unpickling, the probs file {file} is likely truncated."
+                    )
                     break
             click.echo(f"Loaded {i} probmaps from {file}.")
     with opener(out, "wb") as f:

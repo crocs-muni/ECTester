@@ -5,6 +5,7 @@ The file is rather large as it stores the full multiple graphs
 as pickles for a number of samples for each config. For now this is
 around 300 GB for samples = 1000.
 """
+
 import atexit
 import pickle
 import sys
@@ -29,7 +30,13 @@ else:
 
 
 @click.command()
-@click.option("temp", "--temp", envvar="SCRATCHDIR", type=click.Path(file_okay=False, dir_okay=True, path_type=Path), default=None)
+@click.option(
+    "temp",
+    "--temp",
+    envvar="SCRATCHDIR",
+    type=click.Path(file_okay=False, dir_okay=True, path_type=Path),
+    default=None,
+)
 @click.option("workers", "--workers", type=int, required=True)
 @click.option("seed", "--seed", required=True)
 @click.option("samples", "--samples", type=int, default=100)
@@ -44,27 +51,37 @@ def main(temp, workers, seed, samples):
         temp = Path(tmp.name)
         atexit.register(tmp.cleanup)
 
-    output = f"multiples_{seed}.zpickle"
+    output = Path(f"multiples_{seed}.zpickle")
 
-    with TaskExecutor(max_workers=workers) as pool:
+    with TaskExecutor(max_workers=workers) as pool, zstd.open(output, "wb") as h:
         for i, mult in enumerate(all_configs):
-            pool.submit_task(mult,
-                             simulate_multiples_direct,
-                             mult, params, bits, temp / f"m{seed}_{i}.pickle", samples, seed=seed)
-        with zstd.open(output, "wb") as h:
-            # TODO: This may not read the results fast enough and the scratchdir may fill up if it is not capable of storing enough temps
-            i = 0
-            for mult, future in tqdm(pool.as_completed(), desc="Computing multiple graphs.", total=len(pool.tasks)):
-                i += 1
-                if error := future.exception():
-                    click.echo("Error!", mult, error)
-                    continue
-                fpath = future.result()
-                with fpath.open("rb") as f:
-                    h.write(f.read())
-                fpath.unlink()
-                if (i % 100) == 0:
-                    time.sleep(1)
+            pool.submit_task(
+                mult,
+                simulate_multiples_direct,
+                mult,
+                params,
+                bits,
+                temp / f"m{seed}_{i}.pickle",
+                samples,
+                seed=seed,
+            )
+
+        i = 0
+        for mult, future in tqdm(
+            pool.as_completed(),
+            desc="Computing multiple graphs.",
+            total=len(pool.tasks),
+        ):
+            i += 1
+            if error := future.exception():
+                click.echo(f"Error! {mult} {error}")
+                continue
+            fpath = future.result()
+            with fpath.open("rb") as f:
+                h.write(f.read())
+            fpath.unlink()
+            if (i % 100) == 0:
+                time.sleep(1)
 
 
 if __name__ == "__main__":

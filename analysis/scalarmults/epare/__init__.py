@@ -36,7 +36,8 @@ from .simulate import (
     simulate_multiples_direct,
     evaluate_multiples,
     evaluate_multiples_direct,
-    evaluate_multiples_compressed
+    evaluate_multiples_compressed,
+    evaluate_multiples_all
 )
 
 

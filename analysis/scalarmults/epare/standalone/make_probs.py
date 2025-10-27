@@ -1,6 +1,7 @@
 """
 Make the probs file from a given multiples file.
 """
+
 import atexit
 import gc
 import pickle
@@ -13,9 +14,8 @@ import click
 
 from tqdm import tqdm
 
-from pyecsca.ec.params import get_params
 from pyecsca.misc.utils import TaskExecutor
-from .. import all_configs, all_error_models, evaluate_multiples_compressed, divisor_map
+from .. import all_configs, all_error_models, evaluate_multiples_all, divisor_map
 
 
 if sys.version_info >= (3, 14):
@@ -25,15 +25,16 @@ else:
 
 
 @click.command()
-@click.option("temp", "--temp", envvar="SCRATCHDIR", type=click.Path(file_okay=False, dir_okay=True, path_type=Path), default=None)
+@click.option(
+    "temp",
+    "--temp",
+    envvar="SCRATCHDIR",
+    type=click.Path(file_okay=False, dir_okay=True, path_type=Path),
+    default=None,
+)
 @click.option("workers", "--workers", type=int, required=True)
 @click.option("seed", "--seed", required=True)
 def main(temp, workers, seed):
-    category = "secg"
-    curve = "secp256r1"
-    params = get_params(category, curve, "projective")
-    bits = params.order.bit_length()
-
     if temp is None:
         tmp = TemporaryDirectory()
         temp = Path(tmp.name)
@@ -45,25 +46,47 @@ def main(temp, workers, seed):
     in_path = Path(f"multiples_{seed}.zpickle")
     out_path = Path(f"probs_{seed}.zpickle")
 
-    with zstd.open(in_path, "rb") as f, zstd.open(out_path, "wb") as h, TaskExecutor(max_workers=workers) as pool, tqdm(total=len(all_configs) * len(all_error_models), desc=f"Generating probability maps.", smoothing=0) as bar:
+    with (
+        zstd.open(in_path, "rb") as f,
+        zstd.open(out_path, "wb") as h,
+        TaskExecutor(max_workers=workers) as pool,
+        tqdm(
+            total=len(all_configs) * len(all_error_models),
+            desc=f"Generating probability maps.",
+            smoothing=0,
+        ) as bar,
+    ):
+        file_map = {}
         while True:
             try:
-                start = f.tell()
-                mult, _ = pickle.load(f)
-                for error_model in all_error_models:
-                    full = mult.with_error_model(error_model)
-                    # Pass the file name and offset to speed up computation start.
-                    pool.submit_task(full,
-                                     evaluate_multiples_compressed,
-                                     full, in_path, start, divisor_map["all"], use_init, use_multiply)
+                mult, vals = pickle.load(f)
+                # Store the mult and vals into a temporary compressed file.
+                file = temp / f"v{hash(mult)}.zpickle"
+                file_map[mult] = file
+                with zstd.open(file, "wb") as mult_f:
+                    pickle.dump((mult, vals), mult_f)
+
+                # Pass the file name and offset to speed up computation start.
+                pool.submit_task(
+                    mult,
+                    evaluate_multiples_all,
+                    mult,
+                    file,
+                    0,
+                    divisor_map["all"],
+                    use_init,
+                    use_multiply,
+                )
                 gc.collect()
-                for full, future in pool.as_completed(wait=False):
+                for mult, future in pool.as_completed(wait=False):
                     bar.update(1)
+                    file_map[mult].unlink()
                     if error := future.exception():
-                        click.echo("Error!", full, error)
+                        click.echo(f"Error! {mult} {error}")
                         continue
                     res = future.result()
-                    pickle.dump((full, res), h)
+                    for full, probmap in res.items():
+                        pickle.dump((full, probmap), h)
             except EOFError:
                 break
             except pickle.UnpicklingError:
@@ -71,11 +94,13 @@ def main(temp, workers, seed):
                 break
         for full, future in pool.as_completed():
             bar.update(1)
+            file_map[mult].unlink()
             if error := future.exception():
-                click.echo("Error!", full, error)
+                click.echo(f"Error! {mult} {error}")
                 continue
             res = future.result()
-            pickle.dump((full, res), h)
+            for full, probmap in res.items():
+                pickle.dump((full, probmap), h)
 
 
 if __name__ == "__main__":
