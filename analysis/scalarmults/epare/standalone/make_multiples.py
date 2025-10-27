@@ -20,7 +20,7 @@ from tqdm import tqdm
 from pyecsca.ec.params import get_params
 from pyecsca.misc.utils import TaskExecutor
 from ..simulate import simulate_multiples_direct
-from scalarmults.epare.config import all_configs
+from ..config import all_configs
 
 if sys.version_info >= (3, 14):
     from compression import zstd
