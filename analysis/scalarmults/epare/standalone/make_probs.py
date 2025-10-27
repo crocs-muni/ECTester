@@ -87,7 +87,7 @@ def main(temp, workers, seed):
                         click.echo(f"Error! {mult} {error}")
                         continue
                     res = future.result()
-                    for full, probmap in res.items():
+                    for full, probmap in res:
                         pickle.dump((full, probmap), h)
             except EOFError:
                 break
