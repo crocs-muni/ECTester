@@ -100,7 +100,7 @@ def main(temp, workers, seed):
             except pickle.UnpicklingError:
                 click.echo("Bad unpickling, the multiples file is likely truncated.")
                 break
-        for full, future in pool.as_completed():
+        for mult, future in pool.as_completed():
             bar.update(1)
             file_map[mult].unlink()
             if error := future.exception():
