@@ -69,7 +69,6 @@ def main(temp, workers, seed):
         tqdm(
             total=len(all_configs),
             desc=f"Generating probability maps.",
-            smoothing=0,
         ) as bar,
     ):
         file_map = {}
