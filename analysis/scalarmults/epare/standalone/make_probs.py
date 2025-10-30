@@ -3,7 +3,6 @@ Make the probs file from a given multiples file.
 """
 
 import atexit
-import gc
 import pickle
 import sys
 
@@ -18,7 +17,6 @@ from pyecsca.misc.utils import TaskExecutor
 from ..simulate import evaluate_multiples_all
 from ..divisors import divisor_map
 from ..mult_results import MultResults
-from ..error_model import all_error_models
 from ..config import all_configs, Config
 from ..prob_map import ProbMap
 
@@ -50,9 +48,23 @@ def main(temp, workers, seed):
     in_path = Path(f"multiples_{seed}.zpickle")
     out_path = Path(f"probs_{seed}.zpickle")
 
+    done = set()
+    if out_path.exists():
+        mode = "ab"
+        with zstd.open(out_path, "rb") as h:
+            # Skip already done.
+            try:
+                while True:
+                    full, probs = pickle.load(h)
+                    done.add(full.with_error_model(None))
+            except EOFError:
+                pass
+    else:
+        mode = "wb"
+
     with (
         zstd.open(in_path, "rb") as f,
-        zstd.open(out_path, "wb") as h,
+        zstd.open(out_path, mode) as h,
         TaskExecutor(max_workers=workers) as pool,
         tqdm(
             total=len(all_configs),
@@ -66,6 +78,9 @@ def main(temp, workers, seed):
                 mult: Config
                 vals: MultResults
                 mult, vals = pickle.load(f)
+                if mult in done:
+                    bar.update(1)
+                    continue
 
                 # Store the mult and vals into a temporary compressed file.
                 file = temp / f"v{hash(mult)}.zpickle"
