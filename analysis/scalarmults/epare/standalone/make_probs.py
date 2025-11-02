@@ -53,18 +53,18 @@ def main(temp, workers, seed):
     done = set()
     if out_path.exists():
         mode = "ab"
-        with zstd.open(out_path, "rb") as h:
+        out_path_tmp = out_path.replace(out_path.with_suffix(".prev"))
+        with zstd.open(out_path_tmp, "rb") as h, zstd.open(out_path, "wb") as w:
             # Skip already done.
-            last = 0
             try:
                 while True:
-                    last = h.tell()
                     full, probs = pickle.load(h)
+                    pickle.dump((full, probs), w)
                     done.add(full.with_error_model(None))
-            except ZstdError:
-                h.truncate(last)
-            except EOFError:
+            except:
                 pass
+        out_path_tmp.unlink()
+        click.echo(f"Already done multiples: {len(done)}.")
     else:
         mode = "wb"
 
