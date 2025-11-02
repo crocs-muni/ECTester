@@ -22,8 +22,10 @@ from ..prob_map import ProbMap
 
 if sys.version_info >= (3, 14):
     from compression import zstd
+    from compression.zstd import ZstdError
 else:
     from backports import zstd
+    from backports.zstd import ZstdError
 
 
 @click.command()
@@ -53,10 +55,14 @@ def main(temp, workers, seed):
         mode = "ab"
         with zstd.open(out_path, "rb") as h:
             # Skip already done.
+            last = 0
             try:
                 while True:
+                    last = h.tell()
                     full, probs = pickle.load(h)
                     done.add(full.with_error_model(None))
+            except ZstdError:
+                h.truncate(last)
             except EOFError:
                 pass
     else:
