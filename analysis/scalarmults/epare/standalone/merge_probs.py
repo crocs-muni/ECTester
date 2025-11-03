@@ -59,9 +59,9 @@ def main(compressed):
                         maps[full].merge(prob_map)
                 except EOFError:
                     break
-                except pickle.UnpicklingError:
+                except (pickle.UnpicklingError, zstd.ZstdError):
                     click.echo(
-                        f"Bad unpickling, the probs file {file} is likely truncated."
+                        f"Bad unpickling/decompression, the probs file {file} is likely truncated."
                     )
                     break
             click.echo(f"Loaded {i} probmaps from {file}.")
