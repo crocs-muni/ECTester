@@ -33,6 +33,14 @@ class ProbMap:
     def __contains__(self, item):
         return item in self.probs
 
+    def __eq__(self, other):
+        if not isinstance(other, ProbMap):
+            return False
+        return self.divisors_hash == other.divisors_hash and self.probs == other.probs
+
+    def id(self):
+        return hash((frozenset(self.probs.items()), self.divisors_hash))
+
     def keys(self):
         return self.probs.keys()
 
