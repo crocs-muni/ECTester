@@ -38,13 +38,7 @@ def simulate_multiples(
         random.seed(seed)
     rng = lambda n: mod(random.randrange(n), n)
 
-    # If no countermeasure is used, we have fully random scalars.
-    # Otherwise, fix one per chunk.
-    if not mult.has_countermeasure:
-        scalars = [random.randint(1, 2**bits) for _ in range(samples)]
-    else:
-        one = random.randint(1, 2**bits)
-        scalars = [one for _ in range(samples)]
+    scalars = [random.randint(1, 2**bits) for _ in range(samples)]
 
     for scalar in scalars:
         results.append(
