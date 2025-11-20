@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from enum import Enum
 from functools import total_ordering
 from typing import Any, Optional, Type
+from anytree import Node
 
 from pyecsca.ec.countermeasures import (
     GroupScalarRandomization,
@@ -43,7 +44,11 @@ class Composable:
         """
         Extract the MultIdent out of the Composable.
 
-        We assume there is only one somewhere in the tree (at the leafs).
+        We assume there is only one somewhere in the tree
+        (in all the leafs). We also assume the Composable only has up to 3 layers:
+          Countermeasure(Countermeasure(Mult)), or
+          Countermeasure(Mult), or
+          Mult
         """
         if isinstance(self, MultIdent):
             return self
@@ -53,6 +58,30 @@ class Composable:
         for kwarg in self.kwargs.values():
             if isinstance(kwarg, Composable):
                 return kwarg.mult
+
+    def walk(self, callback):
+        """
+        Recursively walk the Composable, applying the callback.
+        """
+        callback(self)
+        for arg in self.args:
+            if isinstance(arg, Composable):
+                arg.walk(callback)
+        for kwarg in self.kwargs.values():
+            if isinstance(kwarg, Composable):
+                kwarg.walk(callback)
+
+    def tree(self) -> Node:
+        me = Node(self)
+        children = []
+        for arg in self.args:
+            if isinstance(arg, Composable):
+                children.append(arg.tree())
+        for kwarg in self.kwargs.values():
+            if isinstance(kwarg, Composable):
+                children.append(kwarg.tree())
+        me.children = children
+        return me
 
     def construct(self, *mult_args, **mult_kwargs):
         """Recursively construct this composable."""
@@ -241,6 +270,13 @@ class Config:
     @property
     def has_countermeasure(self):
         return isinstance(self.composition, CountermeasureIdent)
+
+    @property
+    def countermeasures(self) -> set[CountermeasureIdent]:
+        r = set()
+        if not self.has_countermeasure:
+            return r
+        self.composition.walk(lambda c: r.add(c) if isinstance(c, CountermeasureIdent) else None)
 
     @property
     def has_error_model(self):
