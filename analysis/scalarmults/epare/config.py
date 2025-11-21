@@ -169,7 +169,7 @@ class CountermeasureIdent(Composable):
         )
         # Same for kwargs
         kwargs = (
-            (",".join(f"{k}={v}" for k, v in self.kwargs if isinstance(v, Composable)))
+            (",".join(f"{k}={v}" for k, v in self.kwargs.items() if isinstance(v, Composable)))
             if self.kwargs
             else ""
         )
@@ -277,6 +277,7 @@ class Config:
         if not self.has_countermeasure:
             return r
         self.composition.walk(lambda c: r.add(c) if isinstance(c, CountermeasureIdent) else None)
+        return r
 
     @property
     def has_error_model(self):
@@ -307,7 +308,16 @@ class Config:
 
 
 # We can enumerate all mults and countermeasures here.
-def _all_mults_with_ctr():
+def make_all_mults_with_ctr(arg_map: Optional[dict[Type[ScalarMultiplierCountermeasure], dict[Any, Any]]] = None) -> list[MultIdent | CountermeasureIdent]:
+    """
+    Enumerate all countermeasure pairs for all mults.
+
+    Optionally, pass a default argument for a particular countermeasure via the arg_map:
+
+    >>> make_all_mults_with_ctr({GroupScalarRandomization: {"rand_bits": 64}})
+    """
+    if arg_map is None:
+        arg_map = {}
     result = []
     for mult in all_mults:
         for one_ctr_class, other_ctr_class in itertools.product(
@@ -328,16 +338,16 @@ def _all_mults_with_ctr():
                 continue
             if one_ctr_class is None:
                 mults = [mult] * other_ctr_class.nmults
-                other_ctr = CountermeasureIdent(other_ctr_class, *mults)
+                other_ctr = CountermeasureIdent(other_ctr_class, *mults, **arg_map.get(other_ctr_class, {}))
                 result.append(other_ctr)
                 continue
 
             mults = [mult] * other_ctr_class.nmults
-            other_ctr = CountermeasureIdent(other_ctr_class, *mults)
+            other_ctr = CountermeasureIdent(other_ctr_class, *mults, **arg_map.get(other_ctr_class, {}))
             for i in range(1, 2**one_ctr_class.nmults):
                 bits = format(i, f"0{one_ctr_class.nmults}b")
                 args = [other_ctr if bit == "1" else mult for bit in bits]
-                ctr = CountermeasureIdent(one_ctr_class, *args)
+                ctr = CountermeasureIdent(one_ctr_class, *args, **arg_map.get(one_ctr_class, {}))
                 result.append(ctr)
     return result
 
@@ -420,6 +430,6 @@ other_mults = [
     MultIdent(SimpleLadderMultiplier, complete=False)
 ]
 all_mults = window_mults + naf_mults + binary_mults + other_mults + comb_mults
-all_mults_with_ctr = _all_mults_with_ctr()
+all_mults_with_ctr = make_all_mults_with_ctr()
 all_configs = [Config(mult, None) for mult in all_mults_with_ctr]
 # fmt: on
