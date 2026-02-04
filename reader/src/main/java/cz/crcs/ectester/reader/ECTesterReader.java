@@ -151,9 +151,9 @@ public class ECTesterReader {
                 byte[] versionByte = AID_CURRENT_VERSION.clone();
                 boolean selected = false;
                 for (int i = 0; i < TRY_VERSIONS; ++i) {
-                    // Try 301 CAP version
-                    byte[] select301 = ByteUtil.concatenate(SELECT_PREFIX, AID_PREFIX, versionByte, AID_SUFFIX_305);
-                    ResponseAPDU selectResp = cardManager.send(select301);
+                    // Try 305 CAP version
+                    byte[] select305 = ByteUtil.concatenate(SELECT_PREFIX, AID_PREFIX, versionByte, AID_SUFFIX_305);
+                    ResponseAPDU selectResp = cardManager.send(select305);
                     if ((short) selectResp.getSW() != CardUtil.ISO7816.SW_NO_ERROR) {
                         // Try 222 CAP version
                         byte[] select222 = ByteUtil.concatenate(SELECT_PREFIX, AID_PREFIX, versionByte, AID_SUFFIX_222);
