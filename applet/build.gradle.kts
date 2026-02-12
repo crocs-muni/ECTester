@@ -126,7 +126,7 @@ javacard {
 
                 applet {
                     className("cz.crcs.ectester.applet.ECTesterAppletExtended")
-                    aid("454354657374657230333320323035")
+                    aid("454354657374657230333320333035")
                 }
             }
         }
