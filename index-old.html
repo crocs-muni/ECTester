@@ -1,0 +1,1442 @@
+---
+---
+
+<h1><i class="far fa-credit-card" style="color: black;"></i> ECTester</h1>
+<a href="https://travis-ci.org/crocs-muni/ECTester"><img src="https://api.travis-ci.org/crocs-muni/ECTester.svg?branch=master" alt="Build status"></a> <a href="https://ci.appveyor.com/project/J08nY/ectester-cm6ng"><img src="https://ci.appveyor.com/api/projects/status/02kcaf52op89910u?svg=true" alt="Build status"></a>  <a href="https://github.com/crocs-muni/ECTester/releases"><img src="https://img.shields.io/github/release/crocs-muni/ECTEster.svg" alt="GitHub release"></a>  <a href="https://github.com/crocs-muni/ECTester/blob/master/LICENSE"><img src="https://img.shields.io/github/license/crocs-muni/ECTester.svg" alt="license"></a>
+
+<p>Tests support and behavior of elliptic curve cryptography implementations on JavaCards (<code>TYPE_EC_FP</code> and <code>TYPE_EC_F2M</code>) and on selected software libraries. See our <a href="https://github.com/crocs-muni/ECTester">github</a> for more info. </p>
+
+<style>
+#sticky-bar {
+  transition: transform 0.2s;
+}
+
+#sticky-bar.js-is-stuck a {
+  font-size: 1em;
+  transition: transform 0.2s, background-color 0.1s;
+  background-color: white;
+  width: 100%;
+  padding: 1em;
+  margin-left: 1em;
+}
+#sticky-bar.js-is-stuck a:hover {
+  background-color: rgba(0,0,0,0.1);
+}
+
+@media screen and (max-width: 42em) {
+
+}
+
+@media screen and (min-width: 42em) and (max-width: 64em) {
+
+}
+
+@media screen and (min-width: 64em) {
+	#sticky-bar.js-is-stuck {
+	  transform: translateX(-340px);
+	  width: 30%;
+	  height: 50px;
+	}
+	
+	#sticky-bar.js-is-stuck a:nth-child(1) {
+	  transform: none;
+	}
+	
+	#sticky-bar.js-is-stuck a:nth-child(2) {
+	  transform: translateY(1.2em);
+	}
+	
+	#sticky-bar.js-is-stuck a:nth-child(3) {
+	  transform: translateY(2.4em);
+	}
+	
+	#sticky-bar.js-is-stuck a:nth-child(4) {
+	  transform: translateY(3.6em);
+	}
+}
+
+#sticky-bar .btn {
+  margin: 0.2em;
+}
+
+#sticky-bar.js-is-stuck ~ #sticky-hr {
+  /* margin-top: -150px; */
+}
+</style>
+
+<div id="sticky-bar">
+	<a href="#algo_support" class="btn body-btn sticky-btn"><i class="fas fa-table"></i> Support table</a> <a href="#implementation_guide" class="btn body-btn sticky-btn"><i class="fas fa-code"></i> Implementation guide</a> <a href="#test_runs" class="btn body-btn sticky-btn"><i class="far fa-file-alt"></i> Test runs</a> <a href="#docs" class="btn body-btn sticky-btn"><i class="fas fa-book"></i> Documentation</a>
+</div>
+<hr id="sticky-hr"/>
+
+<script>
+if (window.matchMedia("(min-width: 64em)").matches) {
+  $("#sticky-bar").stickybits({useStickyClasses: true, stickyBitStickyOffset: 80});	
+
+  $(window).on("load", function() {
+  	if (location.hash || $(window).scrollTop() > 270) {
+  	  $("#sticky-bar").addClass("js-is-stuck").removeClass("js-is-sticky");
+  	}
+  });
+  
+  var hash = "";
+  $(window).on("hashchange",  function() {
+  	if (location.hash != hash) {
+  	  hash = location.hash;
+  	  $("#sticky-bar").addClass("js-is-stuck").removeClass("js-is-sticky");
+  	}
+  });
+}
+</script>
+
+<h2 id="algo_support">JavaCard Elliptic curve algorithm support<a href="#algo_support">#</a></h2>
+The <a href="https://docs.oracle.com/javacard/3.0.5/api/index.html">JavaCard API</a> has support for basic Elliptic Curve Cryptography, such as ECDH and ECDSA. However not many cards actually support these algorithms. The table below displays support and performance obtained by ECTester for common curve sizes. For detailed support and implementation tests see <a href="#test_runs">test runs</a>.
+
+<style>
+.yes {
+  background-color: rgba(0, 255, 0, 0.2);
+}
+
+.some {
+  background-color: rgba(194, 194, 0, 0.2);
+}
+
+.no {
+  background-color: rgba(255, 0, 0, 0.2);
+}
+
+.none {
+  background-color: rgba(0,0,0,0.1);
+}
+
+.legend {
+  float: left;
+  margin: 10pt;
+}
+
+.small_atr {
+	font-size: small;
+	color: 	rgba(30, 107, 184, 0.4);
+}
+
+#support_table, #perf_table, #curve_table {
+  text-align: center;
+}
+
+td.split, tr.split td {
+  border-top: 2px solid !important;
+}
+
+td.bottom, tr.bottom td {
+  border-bottom: 2px solid !important;
+}
+
+#perf_table {
+  border-collapse: separate !important;
+}
+
+#perf_table tr td:nth-of-type(2n) {
+  border-right: 2px solid !important;
+}
+
+#perf_table tr td:first-child {
+  border-left: 2px solid !important;
+}
+
+#perf_table td {
+  padding: 0.4rem 0.7rem;
+}
+
+#curve_table td ~ td {
+  font-size: 0.7em;
+  padding: 0.2rem 0.5rem;
+}
+
+#curve_table td ~ td:not(.yes) {
+  background-color: rgba(0,0,0,0.05);
+}
+
+#tests_table, #curve_table {
+  margin-top: 1em;
+}
+
+#tests_table th:not(:first-child) {
+  height: 100px;
+  white-space: nowrap;
+  border: none;
+}
+
+#tests_table th:not(:first-child) > div {
+  transform: translate(0, 35px) rotate(315deg);
+  width: 30px;
+}
+
+#tests_table th:not(:first-child) > div > span {
+  padding: 5px 10px;
+}
+
+#tests_table th:first-child {
+  border: none;
+  transform: translate(0, 35px);
+}
+
+#tests_table td:not(:first-child) {
+  text-align: center;
+}
+</style>
+
+<h3>Legend</h3>
+<div class="legend" id="ecdh_types">
+    ∗ <strong>ECDH types</strong>
+    <ol>
+        <li>ALG_EC_SVDP_DH</li>
+        <li>ALG_EC_SVDP_DHC</li>
+        <li>ALG_EC_SVDP_DH_PLAIN</li>
+        <li>ALG_EC_SVDP_DHC_PLAIN</li>
+        <li>ALG_EC_PACE_GM</li>
+        <li>ALG_EC_SVDP_DH_PLAIN_XY</li>
+    </ol>
+</div>
+<div class="legend" id="ecdsa_types">
+    † <strong>ECDSA types</strong>
+    <ol type="a">
+        <li>ALG_ECDSA_SHA</li>
+        <li>ALG_ECDSA_SHA_224</li>
+        <li>ALG_ECDSA_SHA_256</li>
+        <li>ALG_ECDSA_SHA_384</li>
+        <li>ALG_ECDSA_SHA_512</li>
+    </ol>
+</div>
+<div class="legend" id="color_types">
+    ‡ <strong>Colors</strong>
+    <ul>
+        <li class="yes">Full support</li>
+        <li class="some">Some support</li>
+        <li class="no">No support</li>
+        <li class="none">Not defined</li>
+    </ul>
+</div>
+<div style="clear:both"></div>
+
+<h3>Card list</h3>
+
+This page contains results for the following cards:</br>
+<ul>
+	<li>ACS ACOSJ 40K <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3b69000241434f534a76313031">3b69000241434f534a76313031</a></li>
+	<li>Athena IDProtect <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bd518ff8191fe1fc38073c8211309">3bd518ff8191fe1fc38073c8211309</a></li>
+	<li>Feitian A22CR <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3b9c9580811f039067464a01003504f272fe00a1">3b9c9580811f039067464a01003504f272fe00a1</a></li>
+	<li>G&D SmartCafe 6.0 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bfe1800008031fe4553434536302d43443038312d6e46a9">3bfe1800008031fe4553434536302d43443038312d6e46a9</a></li>
+	<li>G&D SmartCafe 7.0 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bf99600008031fe4553434537200000202027">3bf99600008031fe4553434537200000202027</a></li>
+	<li>Infineon CJTOP 80K INF SLJ 52GLA080AL M8.4 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bfe1800008031fe45803180664090a5102e1083019000f2">3bfe1800008031fe45803180664090a5102e1083019000f2</a></li>
+	<li>Infineon SLE78 Universal JCard <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bfd9600008131fe45534c4a353247444c313238435257">3bfd9600008131fe45534c4a353247444c313238435257</a></li>
+	<li>NXP JCOP31 v2.4.1 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bf81300008131fe454a434f5076323431b7">3bf81300008131fe454a434f5076323431b7</a></li>
+	<li>NXP JCOP CJ2A081 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bf81300008131fe454a434f5076323431b7">3bf81300008131fe454a434f5076323431b7</a></li>
+	<li>NXP JCOP v2.4.2 R2 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bf91300008131fe454a434f503234325232a3">3bf91300008131fe454a434f503234325232a3</a></li>
+	<li>NXP JCOP v2.4.2 R3 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bf01300008131fe45e8">3bf01300008131fe45e8</a></li>
+	<li>Oberthur Cosmo v7 <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3bdb960080b1fe451f830031c064c308010001900095">3bdb960080b1fe451f830031c064c308010001900095</a></li>
+	<li>TaiSYS SIMoME VAULT <a class="small_atr" href="http://smartcard-atr.appspot.com/parse?ATR=3b9f95803fc7a08031e073fa21106300000083f09000bb">3b9f95803fc7a08031e073fa21106300000083f09000bb</a></li>
+</ul>
+
+<h3>$ \mathbb{F}_p $ support</h3>
+
+<table id="support_table">
+    <colgroup>
+        <col span="1" style="width: 28%">
+        <col span="1" style="width: 9%">
+        <col span="1" style="width: 9%">
+        <col span="1" style="width: 9%">
+        <col span="1" style="width: 9%">
+        <col span="1" style="width: 9%">
+        <col span="1" style="width: 9%">
+        <col span="1" style="width: 9%">
+        <col span="1" style="width: 9%">
+    </colgroup>
+    <tr>
+        <th rowspan="2">Card<sup><a href="#ecdh_types">∗</a><a href="#ecdsa_types">†</a><a href="#color_types">‡</a></sup></th>
+        <th colspan="2">192b</th>
+        <th colspan="2">256b</th>
+        <th colspan="2">384b</th>
+        <th colspan="2">521b</th>
+    </tr>
+    <tr>
+        <th>ECDH</th>
+        <th>ECDSA</th>
+        <th>ECDH</th>
+        <th>ECDSA</th>
+        <th>ECDH</th>
+        <th>ECDSA</th>
+        <th>ECDH</th>
+        <th>ECDSA</th>
+    </tr>
+    <tr>
+    	<td><a href="{{ site.baseurl }}/results/default/ACS_ACOSJ_40K/">ACS ACOSJ 40K</a></td>
+    	<td class="yes">1,2,3,4</td>
+    	<td class="yes">a,b,c,d,e</td>
+    	<td class="yes">1,2,3,4</td>
+    	<td class="yes">a,b,c,d,e</td>
+    	<td class="yes">1,2,3,4</td>
+    	<td class="yes">a,b,c,d,e</td>
+    	<td class="no">✘</td>
+    	<td class="no">✘</td>
+    </tr>
+    <tr>
+    	<td><a href="{{ site.baseurl }}/results/default/Athena_IDProtect/">Athena IDProtect</a></td>
+    	<td class="yes">1,2,3,4</td>
+    	<td class="yes">a,b,c</td>
+    	<td class="yes">1,2,3,4</td>
+    	<td class="yes">a,b,c</td>
+    	<td class="yes">1,2,3,4</td>
+    	<td class="yes">a,b,c</td>
+    	<td class="yes">1,2,3,4</td>
+    	<td class="yes">a,b,c</td>
+    </tr>
+    <tr>
+        <td><a href="{{ site.baseurl }}/results/default/Feitian_A22CR/">Feitian A22CR</a></td>
+        <td class="some"></td>
+        <td></td>
+        <td class="some"></td>
+        <td></td>
+        <td class="some"></td>
+        <td></td>
+        <td class="some"></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><a href="{{ site.baseurl }}/results/default/G&D_Smartcafe_6.0/">G&D SmartCafe 6.0</a></td>
+        <td class="yes">1,2,3,4</td>
+        <td class="yes">a,b,c,d,e</td>
+        <td class="yes">1,2,4,3</td>
+        <td class="yes">a,b,c,d,e</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+    </tr>
+    <tr>
+        <td><a href="{{ site.baseurl }}/results/default/G&D_Smartcafe_7.0/">G&D SmartCafe 7.0</a></td>
+        <td class="yes">1,2,3,4</td>
+        <td class="yes">a,b,c,d,e</td>
+        <td class="yes">1,2,4,3</td>
+        <td class="yes">a,b,c,d,e</td>
+        <td class="yes">1,2,3,4</td>
+        <td class="yes">a,b,c,d,e</td>
+        <td class="yes">1,2,3,4</td>
+        <td class="yes">a,b,c,d,e</td>
+    </tr>
+    <tr>
+       	<td><a href="{{ site.baseurl }}/results/default/Infineon_CJTOP/">Infineon CJTOP 80k</a></td>
+       	<td class="yes">1,2,3,4</td>
+       	<td class="yes">a,b,c,d,e</td>
+       	<td class="yes">1,2,3,4</td>
+       	<td class="yes">a,b,c,d,e</td>
+       	<td class="yes">1,2,3,4</td>
+       	<td class="yes">a,b,c,d,e</td>
+        <td class="no">✘</td>
+		<td class="no">✘</td>
+       </tr>
+    <tr>
+       	<td><a href="{{ site.baseurl }}/results/default/Infineon_SLE78/">Infineon SLE78</a></td>
+       	<td class="yes">1,2,3,4</td>
+       	<td class="yes">a,b,c,d,e</td>
+       	<td class="yes">1,2,3,4</td>
+       	<td class="yes">a,b,c,d,e</td>
+       	<td class="yes">1,2,3,4</td>
+       	<td class="yes">a,b,c,d,e</td>
+        <td class="yes">1,2,3,4</td>
+		<td class="yes">a,b,c,d,e</td>
+       </tr>
+    <tr>
+        <td><a href="{{ site.baseurl }}/results/default/NXP_JCOP31_v2.4.1/">NXP JCOP31 v2.4.1</a></td>
+        <td class="yes">1,2</td>
+        <td class="yes">a</td>
+        <td class="yes">1,2</td>
+        <td class="yes">a</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+    </tr>
+    <tr>
+        <td><a href="{{ site.baseurl }}/results/default/NXP_JCOP_CJ2A081/">NXP JCOP CJ2A081</a></td>
+        <td class="yes">1,2</td>
+        <td class="yes">a</td>
+        <td class="yes">1,2</td>
+        <td class="yes">a</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+    </tr>
+    <tr>
+        <td><a href="{{ site.baseurl }}/results/default/NXP_JCOP_v2.4.2_R2/">NXP JCOP v2.4.2 R2</a></td>
+        <td class="yes">1,3</td>
+        <td class="yes">a,b,c</td>
+        <td class="yes">1,3</td>
+        <td class="yes">a,b,c</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+    </tr>
+    <tr>
+        <td><a href="{{ site.baseurl }}/results/default/NXP_JCOP_v2.4.2_R3/">NXP JCOP v2.4.2 R3</a></td>
+        <td class="yes">1,3</td>
+        <td class="yes">a,b,c</td>
+        <td class="yes">1,3</td>
+        <td class="yes">a,b,c</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+        <td class="no">✘</td>
+    </tr>
+	<tr>
+        <td><a href="{{ site.baseurl }}/results/default/Oberthur_Cosmo_v7/">Oberthur Cosmo v7</a></td>
+        <td class="yes">1,2</td>
+        <td class="yes">a</td>
+        <td class="yes">1,2</td>
+        <td class="yes">a</td>
+        <td class="yes">1,2</td>
+        <td class="yes">a</td>
+        <td class="yes">1,2</td>
+        <td class="yes">a</td>
+    </tr>
+	<tr>
+        <td><a href="{{ site.baseurl }}/results/default/TaiSYS_SIMoME_VAULT/">TaiSYS SIMoME VAULT</a></td>
+        <td class="yes">1,2,3,4</td>
+        <td class="yes">a,b,c,d,e</td>
+        <td class="yes">1,2,3,4</td>
+        <td class="yes">a,b,c,d,e</td>
+        <td class="yes">1,2,3,4</td>
+        <td class="yes">a,b,c,d,e</td>
+        <td class="yes">1,2,3,4</td>
+        <td class="yes">a,b,c,d,e</td>
+    </tr>
+</table>
+
+<h3>$ \mathbb{F}_p $ performance</h3>
+The following table shows performance of tested cards in ECDH and ECDSA over popular $ \mathbb{F}_p $ curve sizes. Key generation
+performance is similar to ECDH performance. ECDSA timings are split for sign+verify operations. Times are in milliseconds.
+<br/>
+
+<table id="perf_table">
+    <colgroup>
+        <col span="1" style="width: 12%">
+        <col span="1" style="width: 2%">
+        <col span="1" style="width: 2%">
+        <col span="1" style="width: 8%">
+        <col span="1" style="width: 9%">
+        <col span="1" style="width: 8%">
+        <col span="1" style="width: 9%">
+        <col span="1" style="width: 8%">
+        <col span="1" style="width: 9%">
+        <col span="1" style="width: 8%">
+        <col span="1" style="width: 9%">
+    </colgroup>
+    <tr>
+        <th rowspan="2">Card<sup><a href="#color_types">‡</a></sup></th>
+        <th colspan="2">Type</th>
+        <th colspan="2">192b</th>
+        <th colspan="2">256b</th>
+        <th colspan="2">384b</th>
+        <th colspan="2">521b</th>
+    </tr>
+    <tr>
+        <th><sup><a href="#ecdh_types">∗</a></sup></th>
+        <th><sup><a href="#ecdsa_types">†</a></sup></th>
+        <th>ECDH</th>
+        <th>ECDSA</th>
+        <th>ECDH</th>
+        <th>ECDSA</th>
+        <th>ECDH</th>
+        <th>ECDSA</th>
+        <th>ECDH</th>
+        <th>ECDSA</th>
+    </tr>
+    <tr>
+    	<td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/ACS_ACOSJ_40K/">ACS ACOSJ 40K</a></td>   	
+    </tr>
+    <tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">172</td>
+       	<td class="yes">254+257</td>
+       	<td class="yes">209</td>
+       	<td class="yes">311+315</td>
+       	<td class="yes">360</td>
+       	<td class="yes">503+536</td>
+       	<td class="no">✘</td>
+       	<td class="no">✘</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">172</td>
+    	<td class="yes">255+256</td>
+    	<td class="yes">209</td>
+    	<td class="yes">311+316</td>
+    	<td class="yes">360</td>
+    	<td class="yes">505+535</td>
+    	<td class="no">✘</td>
+    	<td class="no">✘</td>
+    </tr>
+	<tr><td>3</td><td>c</td>
+		<td class="yes">172</td>
+		<td class="yes">254+257</td>
+		<td class="yes">209</td>
+		<td class="yes">311+315</td>
+		<td class="yes">360</td>
+		<td class="yes">505+537</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="yes">172</td>
+		<td class="yes">255+261</td>
+		<td class="yes">210</td>
+		<td class="yes">310+316</td>
+		<td class="yes">360</td>
+		<td class="yes">505+537</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="yes">255+260</td>
+		<td class="no">✘</td>
+		<td class="yes">311+315</td>
+		<td class="no">✘</td>
+		<td class="yes">505+538</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
+    <tr>
+    	<td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/Athena_IDProtect/">Athena IDProtect</a></td>   	
+    </tr>
+    <tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">147</td>
+       	<td class="yes">110+163</td>
+       	<td class="yes">209</td>
+       	<td class="yes">148+228</td>
+       	<td class="yes">448</td>
+       	<td class="yes">279+473</td>
+       	<td class="yes">937</td>
+       	<td class="yes">537+970</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">147</td>
+    	<td class="yes">113+167</td>
+    	<td class="yes">209</td>
+    	<td class="yes">150+230</td>
+    	<td class="yes">448</td>
+    	<td class="yes">281+477</td>
+    	<td class="yes">938</td>
+    	<td class="yes">540+973</td>
+    </tr>
+	<tr><td>3</td><td>c</td>
+		<td class="yes">148</td>
+		<td class="yes">114+165</td>
+		<td class="yes">209</td>
+		<td class="yes">150+231</td>
+		<td class="yes">448</td>
+		<td class="yes">281+475</td>
+		<td class="yes">937</td>
+		<td class="yes">540+972</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="yes">146</td>
+		<td class="no">✘</td>
+		<td class="yes">209</td>
+		<td class="no">✘</td>
+		<td class="yes">448</td>
+		<td class="no">✘</td>
+		<td class="yes">938</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
+    <tr>
+        <td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/Feitian_A22CR/">Feitian A22CR</a></td>
+    </tr>
+	<tr class="split"><td>1</td><td>a</td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+    </tr>
+   	<tr><td>3</td><td>c</td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+   	</tr>
+   	<tr><td>4</td><td>d</td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+   	</tr>
+   	<tr><td>5</td><td>e</td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+      	<td class="some"></td>
+      	<td></td>
+	</tr>
+   	<tr><td>6</td><td class="none"></td>
+      	<td class="some"></td>
+      	<td class="none"></td>
+      	<td class="some"></td>
+      	<td class="none"></td>
+      	<td class="some"></td>
+      	<td class="none"></td>
+      	<td class="some"></td>
+      	<td class="none"></td>
+	</tr>
+    <tr>
+        <td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/G&D_Smartcafe_6.0/">G&D SmartCafe 6.0</a></td>
+    </tr>
+	<tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">128</td>
+       	<td class="yes">110+135</td>
+       	<td class="yes">192</td>
+       	<td class="yes">145+197</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">128</td>
+    	<td class="yes">122+147</td>
+    	<td class="yes">193</td>
+    	<td class="yes">158+210</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>3</td><td>c</td>
+		<td class="yes">126</td>
+		<td class="yes">123+147</td>
+		<td class="yes">190</td>
+		<td class="yes">158+209</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="yes">126</td>
+		<td class="yes">127+152</td>
+		<td class="yes">191</td>
+		<td class="yes">162+214</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="yes">127+152</td>
+		<td class="no">✘</td>
+		<td class="yes">162+214</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
+	<tr>
+        <td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/G&D_Smartcafe_7.0/">G&D SmartCafe 7.0</a></td>
+    </tr>
+	<tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">67</td>
+       	<td class="yes">69+80</td>
+       	<td class="yes">94</td>
+       	<td class="yes">85+108</td>
+		<td class="yes">161</td>
+		<td class="yes">123+176</td>
+		<td class="yes">254</td>
+		<td class="yes">174+273</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">67</td>
+    	<td class="yes">71+82</td>
+    	<td class="yes">94</td>
+    	<td class="yes">87+111</td>
+		<td class="yes">161</td>
+		<td class="yes">128+180</td>
+		<td class="yes">255</td>
+		<td class="yes">177+275</td>
+	</tr>
+	<tr><td>3</td><td>c</td>
+		<td class="yes">66</td>
+		<td class="yes">71+83</td>
+		<td class="yes">93</td>
+		<td class="yes">88+110</td>
+		<td class="yes">160</td>
+		<td class="yes">126+180</td>
+		<td class="yes">253</td>
+		<td class="yes">175+275</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="yes">66</td>
+		<td class="yes">72+83</td>
+		<td class="yes">93</td>
+		<td class="yes">87+111</td>
+		<td class="yes">161</td>
+		<td class="yes">126+180</td>
+		<td class="yes">253</td>
+		<td class="yes">177+276</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="yes">72+83</td>
+		<td class="no">✘</td>
+		<td class="yes">88+111</td>
+		<td class="no">✘</td>
+		<td class="yes">126+180</td>
+		<td class="no">✘</td>
+		<td class="yes">178+276</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
+    <tr>
+       	<td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/Infineon_CJTOP/">Infineon CJTOP 80k</a></td>
+    </tr>
+	<tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">138</td>
+       	<td class="yes">144+113</td>
+       	<td class="yes">167</td>
+       	<td class="yes">175+138</td>
+		<td class="yes">240</td>
+		<td class="yes">254+202</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">208</td>
+    	<td class="yes">151+120</td>
+    	<td class="yes">267</td>
+    	<td class="yes">183+144</td>
+		<td class="yes">414</td>
+		<td class="yes">262+207</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>3</td><td>c</td>
+		<td class="yes">207</td>
+		<td class="yes">151+121</td>
+		<td class="yes">263</td>
+		<td class="yes">182+145</td>
+		<td class="yes">408</td>
+		<td class="yes">261+207</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="yes">205</td>
+		<td class="yes">176+145</td>
+		<td class="yes">264</td>
+		<td class="yes">207+169</td>
+		<td class="yes">408</td>
+		<td class="yes">286+232</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="yes">175+145</td>
+		<td class="no">✘</td>
+		<td class="yes">208+171</td>
+		<td class="no">✘</td>
+		<td class="yes">287+233</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
+    <tr>
+       	<td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/Infineon_SLE78/">Infineon SLE78</a></td>
+    </tr>
+	<tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">83</td>
+       	<td class="yes">170+201</td>
+       	<td class="yes">109</td>
+       	<td class="yes">226+275</td>
+		<td class="yes">177</td>
+		<td class="yes">367+467</td>
+		<td class="yes">315</td>
+		<td class="yes">650+806</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">83</td>
+    	<td class="yes">188+220</td>
+    	<td class="yes">109</td>
+    	<td class="yes">243+293</td>
+		<td class="yes">177</td>
+		<td class="yes">384+483</td>
+		<td class="yes">315</td>
+		<td class="yes">667+827</td>
+	</tr>
+	<tr><td>3</td><td>c</td>
+		<td class="yes">79</td>
+		<td class="yes">188+219</td>
+		<td class="yes">105</td>
+		<td class="yes">243+293</td>
+		<td class="yes">173</td>
+		<td class="yes">384+482</td>
+		<td class="yes">308</td>
+		<td class="yes">667+826</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="yes">79</td>
+		<td class="yes">208+240</td>
+		<td class="yes">105</td>
+		<td class="yes">263+313</td>
+		<td class="yes">173</td>
+		<td class="yes">405+504</td>
+		<td class="yes">308</td>
+		<td class="yes">688+846</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="yes">208+241</td>
+		<td class="no">✘</td>
+		<td class="yes">264+314</td>
+		<td class="no">✘</td>
+		<td class="yes">405+503</td>
+		<td class="no">✘</td>
+		<td class="yes">688+847</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
+    <tr>
+        <td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/NXP_JCOP31_v2.4.1/">NXP JCOP31 v2.4.1</a></td>
+    </tr>
+	<tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">122</td>
+       	<td class="yes">140+167</td>
+       	<td class="yes">190</td>
+       	<td class="yes">192+260</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">123</td>
+    	<td class="no">✘</td>
+    	<td class="yes">191</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>3</td><td>c</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
+    <tr>
+        <td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/NXP_JCOP_CJ2A081/">NXP JCOP CJ2A081</a></td>
+    </tr>
+	<tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">76</td>
+       	<td class="yes">93+107</td>
+       	<td class="yes">124</td>
+       	<td class="yes">129+168</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">76</td>
+    	<td class="no">✘</td>
+		<td class="yes">124</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>3</td><td>c</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
+    <tr>
+        <td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/NXP_JCOP_v2.4.2_R3/">NXP JCOP v2.4.2 R3</a></td>
+    </tr>
+	<tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">101</td>
+       	<td class="yes">111+111</td>
+       	<td class="yes">154</td>
+       	<td class="yes">151+172</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">96</td>
+    	<td class="yes">114+113</td>
+		<td class="no">✘</td>
+		<td class="yes">154+178</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>3</td><td>c</td>
+		<td class="no">✘</td>
+		<td class="yes">114+114</td>
+		<td class="no">✘</td>
+		<td class="yes">154+176</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
+    <tr>
+    	<td rowspan="7" class="split"><a href="{{ site.baseurl }}/results/default/Oberthur_Cosmo_v7/">Oberthur Cosmo v7</a></td>   	
+    </tr>
+    <tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">881</td>
+       	<td class="yes">806+925</td>
+       	<td class="yes">1183</td>
+       	<td class="yes">1067+1256</td>
+       	<td class="yes">2190</td>
+       	<td class="yes">1907+2399</td>
+       	<td class="yes">4246</td>
+       	<td class="yes">3612+4790</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">793</td>
+    	<td class="no">✘</td>
+       	<td class="yes">1051</td>
+       	<td class="no">✘</td>
+       	<td class="yes">1889</td>
+       	<td class="no">✘</td>
+       	<td class="yes">3593</td>
+       	<td class="no">✘</td>
+    </tr>
+	<tr><td>3</td><td>c</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+		<td class="no">✘</td>
+	</tr>
+	<tr><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
+    <tr>
+    	<td rowspan="7" class="split bottom"><a href="{{ site.baseurl }}/results/default/TaiSYS_SIMoME_VAULT/">TaiSYS SIMoME VAULT</a></td>   	
+    </tr>
+    <tr class="split"><td>1</td><td>a</td>
+       	<td class="yes">109</td>
+       	<td class="yes">217+288</td>
+       	<td class="yes">132</td>
+       	<td class="yes">267+352</td>
+       	<td class="yes">202</td>
+       	<td class="yes">439+585</td>
+       	<td class="yes">340</td>
+       	<td class="yes">935+1220</td>
+    </tr>
+    <tr><td>2</td><td>b</td>
+    	<td class="yes">108</td>
+    	<td class="yes">211+282</td>
+    	<td class="yes">135</td>
+    	<td class="yes">251+340</td>
+    	<td class="yes">201</td>
+    	<td class="yes">443+590</td>
+    	<td class="yes">346</td>
+    	<td class="yes">922+1201</td>
+    </tr>
+	<tr><td>3</td><td>c</td>
+		<td class="yes">105</td>
+		<td class="yes">226+293</td>
+		<td class="yes">130</td>
+		<td class="yes">271+356</td>
+		<td class="yes">198</td>
+		<td class="yes">460+586</td>
+		<td class="yes">341</td>
+		<td class="yes">923+1202</td>
+	</tr>
+	<tr><td>4</td><td>d</td>
+		<td class="yes">106</td>
+		<td class="yes">222+289</td>
+		<td class="yes">125</td>
+		<td class="yes">259+348</td>
+		<td class="yes">198</td>
+		<td class="yes">433+579</td>
+		<td class="yes">341</td>
+		<td class="yes">913+1202</td>
+	</tr>
+	<tr><td>5</td><td>e</td>
+		<td class="no">✘</td>
+		<td class="yes">221+282</td>
+		<td class="no">✘</td>
+		<td class="yes">261+349</td>
+		<td class="no">✘</td>
+		<td class="yes">447+576</td>
+		<td class="no">✘</td>
+		<td class="yes">912+1200</td>
+	</tr>
+	<tr class="bottom"><td>6</td><td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+		<td class="no">✘</td>
+		<td class="none"></td>
+	</tr>
+</table>
+
+<h3>$ \mathbb{F}_p $ default curves</h3>
+The JavaCard API allows cards to specify default curves to be used when generating EC keys using the <code class="java">KeyPair</code> class.
+<span style="background-color: rgba(0,0,0,0.05);">Grey</span> background shows that no default curve is present and one should be specified after creating
+the keypair, see the <a href="#implementation_guide">implementation guide</a>.
+
+<table id="curve_table">
+    <colgroup>
+        <col span="1" style="width: 30%">
+        <col span="1" style="width: 7%">
+        <col span="1" style="width: 7%">
+        <col span="1" style="width: 7%">
+        <col span="1" style="width: 7%">
+        <col span="1" style="width: 7%">
+        <col span="1" style="width: 7%">
+        <col span="1" style="width: 7%">
+        <col span="1" style="width: 7%">
+    </colgroup>
+	<tr>
+	<th>Card</th><th>112b</th><th>128b</th><th>160b</th><th>192b</th><th>224b</th><th>256b</th><th>384b</th><th>521b</th>
+	</tr>
+	<tr>
+	<td>Athena IDProtect</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>Feitian A22 CR</td><td class="yes">secp112r1</td><td class="yes">secp128r1</td><td class="yes">secp160r1</td><td class="yes">P-192</br>secp192r1</td><td class="yes">P-224</br>secp224r1</td><td class="yes">SMP256V1</td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>FeitianFeitian A22</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>G&D Smartcafe 6.0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>G&D Smartcafe 7.0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>Infineon CJTOP 80k</td><td></td><td></td><td class="yes">brainpoolP160r1</td><td class="yes">brainpoolP192r</td><td class="yes">brainpoolP224r1</td><td class="yes">brainpoolP256r1</td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>Infineon SLE78</td><td></td><td></td><td></td><td></td><td></td><td class="yes">brainpoolP256r1</td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>NXP JCOP31 v2.4.1</td><td></td><td class="yes">secp128r1</td><td class="yes">secp160r1</td><td class="yes">P-192</br>secp192r1</td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>NXP JCOP CJ2A081</td><td></td><td class="yes">secp128r1</td><td class="yes">secp160r1</td><td class="yes">P-192</br>secp192r1</td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>NXP JCOP v2.4.2 R2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>NXP JCOP v2.4.2 R3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>NXP JCOP v2.4.2 R3 J2E145G</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+	<tr>
+	<td>TaiSYS SIMoME VAULT</td><td class="yes">secp112r1</td><td class="yes">secp128r1</td><td class="yes">secp160r1</td><td class="yes">secp192r1</td><td class="yes">secp224r1</td><td class="yes">secp256r1</td><td></td><td></td>
+	</tr>
+</table>
+
+<h3>$ \mathbb{F}_{2^m} $</h3>
+Support for binary field curves on cards is very weak, very little cards have any. For more information see <a href="https://www.fi.muni.cz/~xsvenda/jcalgtest/table.html">JCAlgTest</a> support table.
+
+<h2 id="implementation_guide">Implementation guide<a href="#implementation_guide">#</a></h2>
+A basic example of EC KeyPair generation is visible below, for a more complete example see <a href="{{ site.baseurl}}/assets/ECExample.java">ECExample.java</a>.
+<pre>
+    <code class="java">
+    // secp256r1 from http://www.secg.org/sec2-v2.pdf
+    byte[] EC256_FP_P = new byte[]{
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01,
+            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+    byte[] EC256_FP_A = new byte[]{
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01,
+            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFC};
+    byte[] EC256_FP_B = new byte[]{
+            (byte) 0x5A, (byte) 0xC6, (byte) 0x35, (byte) 0xD8, (byte) 0xAA, (byte) 0x3A, (byte) 0x93, (byte) 0xE7,
+            (byte) 0xB3, (byte) 0xEB, (byte) 0xBD, (byte) 0x55, (byte) 0x76, (byte) 0x98, (byte) 0x86, (byte) 0xBC,
+            (byte) 0x65, (byte) 0x1D, (byte) 0x06, (byte) 0xB0, (byte) 0xCC, (byte) 0x53, (byte) 0xB0, (byte) 0xF6,
+            (byte) 0x3B, (byte) 0xCE, (byte) 0x3C, (byte) 0x3E, (byte) 0x27, (byte) 0xD2, (byte) 0x60, (byte) 0x4B};
+    byte[] EC256_FP_G = new byte[]{
+            (byte) 0x04,
+            (byte) 0x6B, (byte) 0x17, (byte) 0xD1, (byte) 0xF2, (byte) 0xE1, (byte) 0x2C, (byte) 0x42, (byte) 0x47,
+            (byte) 0xF8, (byte) 0xBC, (byte) 0xE6, (byte) 0xE5, (byte) 0x63, (byte) 0xA4, (byte) 0x40, (byte) 0xF2,
+            (byte) 0x77, (byte) 0x03, (byte) 0x7D, (byte) 0x81, (byte) 0x2D, (byte) 0xEB, (byte) 0x33, (byte) 0xA0,
+            (byte) 0xF4, (byte) 0xA1, (byte) 0x39, (byte) 0x45, (byte) 0xD8, (byte) 0x98, (byte) 0xC2, (byte) 0x96,
+            (byte) 0x4F, (byte) 0xE3, (byte) 0x42, (byte) 0xE2, (byte) 0xFE, (byte) 0x1A, (byte) 0x7F, (byte) 0x9B,
+            (byte) 0x8E, (byte) 0xE7, (byte) 0xEB, (byte) 0x4A, (byte) 0x7C, (byte) 0x0F, (byte) 0x9E, (byte) 0x16,
+            (byte) 0x2B, (byte) 0xCE, (byte) 0x33, (byte) 0x57, (byte) 0x6B, (byte) 0x31, (byte) 0x5E, (byte) 0xCE,
+            (byte) 0xCB, (byte) 0xB6, (byte) 0x40, (byte) 0x68, (byte) 0x37, (byte) 0xBF, (byte) 0x51, (byte) 0xF5};
+    byte[] EC256_FP_R = new byte[]{
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+            (byte) 0xBC, (byte) 0xE6, (byte) 0xFA, (byte) 0xAD, (byte) 0xA7, (byte) 0x17, (byte) 0x9E, (byte) 0x84,
+            (byte) 0xF3, (byte) 0xB9, (byte) 0xCA, (byte) 0xC2, (byte) 0xFC, (byte) 0x63, (byte) 0x25, (byte) 0x51};
+    short EC256_FP_K = 1;
+
+    // 1. Allocate the KeyPair object.
+    // ! This should be done in the Applet constructor !
+    KeyPair example = new KeyPair(KeyPair.ALG_EC_FP, (short) 256);
+
+    // 2. If the key parts are not available, call genKeyPair.
+    if (example.getPrivate() == null || example.getPublic() == null) {
+        // Sometimes cards require this so we have the keyparts, to
+        // set parameters on.
+        try {
+            example.genKeyPair();
+        } catch (Exception ignored) {}
+    }
+
+    // 3. Get the key parts and set custom domain parameters on them.
+    ECPrivateKey priv = (ECPrivateKey) example.getPrivate();
+    ECPublicKey pub = (ECPublicKey) example.getPublic();
+
+    priv.setFieldFP(EC256_FP_P, (short) 0, EC256_FP_P.length);
+    pub.setFieldFP(EC256_FP_P, (short) 0, EC256_FP_P.length);
+
+    priv.setA(EC256_FP_A, (short) 0, EC256_FP_A.length);
+    pub.setA(EC256_FP_A, (short) 0, EC256_FP_A.length);
+
+    priv.setB(EC256_FP_B, (short) 0, EC256_FP_B.length);
+    pub.setB(EC256_FP_B, (short) 0, EC256_FP_B.length);
+
+    priv.setG(EC256_FP_G, (short) 0, EC256_FP_G.length);
+    pub.set(EC256_FP_G, (short) 0, EC256_FP_G.length);
+
+    priv.setR(EC256_FP_R, (short) 0, EC256_FP_R.length);
+    pub.setR(EC256_FP_R, (short) 0, EC256_FP_R.length);
+
+    priv.setK(EC256_FP_K);
+    pub.setK(EC256_FP_K);
+
+    // 4. Generate the KeyPair over the custom set domain parameters.
+    example.genKeyPair();
+    // Now, the example keypair is ready for use.
+    </code>
+</pre>
+
+<h2>Common JavaCard ECC usage pitfalls</h2>
+The JavaCard ECC API is quite general in its requirements for implementations, which means different cards can behave
+differently and cause errors.
+
+<h3>No curve is set by default</h3>
+KeyPairs allocated with <code class="java">new KeyPair(type, size)</code> might or might not have set some default domain parameters.
+Which means using <code class="java">keypair.genKeyPair()</code> just after allocating a KeyPair object will probably result in an exception.
+Thus, it is always better to explicitly setup custom domain parameters, using a known/standard curve, before trying to generate the KeyPair.
+
+<h3>genKeyPair() required to get key parts</h3>
+On some cards a newly allocated KeyPair does not yet contain the individual key parts (the <code>ECPublicKey</code> and <code>ECPrivateKey</code>).
+Thus doing <code class="java">keypair.getPrivate()</code> or <code class="java">keypair.getPublic()</code> will return <code>null</code>. Which makes setting
+custom domain parameters on the key parts harder. This can usually be fixed by calling <code>keypair.genKeyPair()</code>, which however might throw an exception,
+and then setting the custom domain parameters on the now accessible key parts.
+
+<h3>clearKey() behaviour</h3>
+The <code>keypair.clearKey()</code> method might clear out the set domain parameters of the keypair as well as the key contents.
+
+<h3>getK() behaviour</h3>
+The <code>ECKey.getK()</code> method might throw an exception if the card does not support working with the cofactor value.
+
+<h2 id="test_runs">Test suite runs<a href="#test_runs">#</a></h2>
+The results of various <a href="tests.html">test suites</a>, run on a set of cards are available below:
+
+{% assign result_categories = site.results | group_by:"category" %}
+{% assign cards = site.results | group_by_exp:"item", "item.path | split: '/' | shift | shift | sample | split: '.' | pop | join: '.' " %}
+<table id="tests_table">
+    <tr>
+        <th><div><span>Card name</span></div></th>
+        {% for cat in result_categories %}
+        <th><div><span>{{ cat.name }}</span></div></th>
+        {% endfor %}
+    </tr>
+    {% for card in cards %}
+    <tr>
+        <td>{{ card.name | replace: '_', ' ' }}</td>
+        {% for cat in result_categories %}
+        <td>
+            {% for document in card.items %}
+		        {% if document.category == cat.name %}
+	            <a href="{{ site.baseurl }}{{ document.url }}"><i class="far fa-file-alt"></i></a>
+	            {% endif %}
+            {% endfor %}
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+
+
+{% assign ecdh = site.performance | where:"category","ECDH performance" %}
+{% if ecdh.size > 0 %}
+<h3>ECDH performance</h3>
+    <ul>
+        {% for report in ecdh %}
+        <li><a href="{{ report.url }}">{{ report.id | split: "/" | shift | shift | shift}}</a></li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% assign ecdsa = site.performance | where:"category","ECDSA performance" %}
+{% if ecdsa.size > 0 %}
+    <h3>ECDSA performance</h3>
+    <ul>
+        {% for report in ecdsa %}
+        <li><a href="{{ report.url }}">{{ report.id | split: "/" | shift | shift | shift}}</a></li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% assign keygen = site.performance | where:"category","Key generation performance" %}
+{% if keygen.size > 0 %}
+    <h3>Key generation performance</h3>
+    <ul>
+        {% for report in keygen %}
+        <li><a href="{{ report.url }}">{{ report.id | split: "/" | shift | shift | shift}}</a></li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<h2 id="docs">Docs<a href="#docs">#</a></h2>
+
+<ul>
+    <li><a href="tests.html">Test suites</a> - Contains a list of implemented test suites and their descriptions.</li>
+    <li><a href="curves.html">Curve categories</a> - Contains a list of known curve categories and their descriptions.</li>
+    <li><a href="libs.html">Libraries</a> - Contains a list of software libraries with support for ECC, a brief description of their implementation and whether ECTester supports them.</li>
+	<li><a href="impls.html">Implementations</a> - Contains information on implementing ECC, curve models, scalar multiplication, coordinates and implementation choices between them.</li>
+</ul>
