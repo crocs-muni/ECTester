@@ -6,6 +6,7 @@
     flake-utils.url = "github:numtide/flake-utils";
     gradle2nix.url = "github:tadfisher/gradle2nix/03c1b713ad139eb6dfc8d463b5bd348368125cf1";
     custom-nixpkgs.url = "github:quapka/nixpkgs/customPkgs";
+    self.submodules = true;
   };
 
   outputs =
