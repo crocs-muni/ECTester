@@ -646,7 +646,7 @@
               buildJdk = pkgs.jdk_headless;
 
               # NOTE: the shims are built separately, therefore no need to call build `libs` target
-              gradleBuildFlags = [ ":standalone:uberJar" ];
+              gradleBuildFlags = [ "--configure-on-demand" ":standalone:uberJar" ];
               src = ./.;
 
               jniLibsPath = "standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/";
