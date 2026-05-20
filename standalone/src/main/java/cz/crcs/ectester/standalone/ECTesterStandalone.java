@@ -50,6 +50,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.OutputStream;
+import java.io.FileOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.nio.file.Files;
@@ -234,7 +236,7 @@ public class ECTesterStandalone {
         privateKey.addOption(filePrivate);
         Option curveName = Option.builder("cn").longOpt("curve-name").desc("Use a named curve, search from curves supported by the library: <name>").hasArg().argName("name").optionalArg(false).numberOfArgs(1).build();
         Option bits = Option.builder("b").longOpt("bits").hasArg().argName("n").optionalArg(false).desc("What size of curve to use.").numberOfArgs(1).build();
-        Option output = Option.builder("o").longOpt("output").desc("Output into file <output_file>. The file can be prefixed by the format (one of text,yml,xml), such as: xml:<output_file>.").hasArgs().argName("output_file").optionalArg(false).numberOfArgs(1).build();
+        Option output = Option.builder("o").longOpt("output").desc("Output into file <output_file>. The file can be prefixed by the format (one of text, yml, or xml), such as: xml:<output_file>.").hasArgs().argName("output_file").optionalArg(false).numberOfArgs(1).build();
         Option outputRaw = Option.builder("o").longOpt("output").desc("Output CSV into file <output_file>.").hasArgs().argName("output_file").optionalArg(false).numberOfArgs(1).build();
         Option quiet = Option.builder("q").longOpt("quiet").desc("Do not output to stdout.").build();
         Option timeSource = Option.builder("ts").longOpt("time-source").desc("Use a given native timing source: {rdtsc, monotonic, monotonic-raw, cputime-process, cputime-thread}").hasArgs().argName("source").optionalArg(false).numberOfArgs(1).build();
@@ -257,7 +259,7 @@ public class ECTesterStandalone {
         testOpts.addOption(Option.builder("gt").longOpt("kpg-type").desc("Set the KeyPairGenerator object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("kt").longOpt("ka-type").desc("Set the KeyAgreement object [type].").hasArg().argName("type").optionalArg(false).build());
         testOpts.addOption(Option.builder("st").longOpt("sig-type").desc("Set the Signature object [type].").hasArg().argName("type").optionalArg(false).build());
-        testOpts.addOption(Option.builder("f").longOpt("format").desc("Set the output format, one of text,yaml,xml.").hasArg().argName("format").optionalArg(false).build());
+        testOpts.addOption(Option.builder("f").longOpt("format").desc("Set the stdout format to text (the default), yaml, or xml.").hasArg().argName("format").optionalArg(false).build());
         testOpts.addOption(Option.builder("n").longOpt("number").desc("Number of repeats during testing.").hasArg().argName("number").optionalArg(false).build());
         testOpts.addOption(Option.builder("s").longOpt("shuffle").desc("Shuffle the test suite before running it.").build());
         testOpts.addOption(Option.builder().longOpt("key-type").desc("Set the key [algorithm] for which the key should be derived in KeyAgreements with KDF. Default is \"AES\".").hasArg().argName("algorithm").optionalArg(false).build());
@@ -1043,8 +1045,25 @@ public class ECTesterStandalone {
         } else {
             System.out.println(params);
             EC_Curve curve = EC_Curve.fromSpec(params);
-            curve.writeCSV(System.out);
+
+            curve.writeCSV(getExportStream());
         }
+    }
+
+    private OutputStream getExportStream() {
+        OutputStream outStream = System.out;
+        String outputPath = cli.getOptionValue("export.output");
+
+        if ( outputPath != null ) {
+            try {
+                outStream = new FileOutputStream(outputPath);
+            } catch (IOException e) {
+                System.err.println(
+                    String.format("Error: Default to the STDOUT as opening '%s' caused the exception '%s'", outputPath, e)
+                );
+            }
+        }
+        return outStream;
     }
 
     public static void main(String[] args) {
