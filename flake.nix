@@ -2,7 +2,8 @@
   description = "ECTester";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     gradle2nix.url = "github:tadfisher/gradle2nix/03c1b713ad139eb6dfc8d463b5bd348368125cf1";
     custom-nixpkgs.url = "github:quapka/nixpkgs/customPkgs";
@@ -13,6 +14,7 @@
     {
       self,
       nixpkgs,
+      nixpkgs-unstable,
       custom-nixpkgs,
       flake-utils,
       gradle2nix,
@@ -23,6 +25,7 @@
       let
         overlays = [ ];
         pkgs = import nixpkgs { inherit system overlays; };
+        unstablePkgs = import nixpkgs-unstable { inherit system overlays; };
         customPkgs = import custom-nixpkgs { inherit system overlays; };
 
         # removes the patch/revision from the version. E.g. getMajorMinor "1.2.3" = "1.2"
@@ -570,6 +573,11 @@
 
         commonLibs = import ./nix/commonlibs.nix { pkgs = pkgs; };
 
+        softhsmBuilder = { }: pkgs.callPackage ./nix/softhsm2 {
+          softhsm = unstablePkgs.softhsm;
+          ectester = buildECTesterStandalone { softhsm = unstablePkgs.softhsm; };
+        };
+
         buildECTesterStandalone =
           {
             tomcrypt ? {
@@ -619,6 +627,7 @@
               version = null;
               hash = null;
             },
+            softhsm
           }:
           (
             let
@@ -650,6 +659,7 @@
               src = ./.;
 
               jniLibsPath = "standalone/src/main/resources/cz/crcs/ectester/standalone/libs/jni/";
+              pkcs11LibsPath = "standalone/src/main/resources/cz/crcs/ectester/standalone/libs/pkcs11/";
 
               # FIXME add conditionally libs using map?
               preConfigure = pkgs.lib.concatLines [
@@ -663,6 +673,7 @@
                 (if ippcp.version != null then "cp ${ippcpShim.out}/lib/* ${jniLibsPath}" else "")
                 (if nettle.version != null then "cp ${nettleShim.out}/lib/* ${jniLibsPath}" else "")
                 (if libressl.version != null then "cp ${libresslShim.out}/lib/* ${jniLibsPath}" else "")
+                (if softhsm != null then "cp ${softhsm.out}/lib/softhsm/* ${pkcs11LibsPath}SoftHSMv2/SoftHSMv2-OPENSSL/" else "")
                 ''
                   cp ${wolfcryptjni}/lib/* ${jniLibsPath}
                   cp ${commonLibs}/lib/* ${jniLibsPath}
@@ -841,6 +852,7 @@
             libName = "libressl";
             function = buildECTesterStandalone;
           };
+          softhsm = softhsmBuilder { };
 
           reader = buildReader { };
           common = buildCommon { };

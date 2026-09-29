@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+export SOFTHSM2_CONF=/etc/softhsm2-openssl.conf
+java -jar standalone/build/libs/ECTesterStandalone.jar --pkcs11 "/usr/local/lib/softhsm-openssl/libsofthsm2.so;SoftHSMv2-OPENSSL" --pkcs11-login 1234 $1

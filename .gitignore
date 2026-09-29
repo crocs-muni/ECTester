@@ -24,3 +24,21 @@ build_all
 result
 result-bin
 result-man
+
+# Ignore PKCS#11 logs
+pkcs11-resources/logs/*
+pkcs11-resources/log
+
+standalone/src/main/resources/cz/crcs/ectester/standalone/libs/pkcs11/logs
+standalone/src/main/resources/cz/crcs/ectester/standalone/libs/pkcs11/tmp_pkcs11.cfg
+standalone/src/main/resources/cz/crcs/ectester/standalone/libs/pkcs11/wolfPKCS11
+standalone/src/main/resources/cz/crcs/ectester/standalone/libs/pkcs11/SoftHSMv2/SoftHSMv2-BOTAN
+standalone/src/main/resources/cz/crcs/ectester/standalone/libs/pkcs11/SoftHSMv2/SoftHSMv2-OPENSSL
+!standalone/src/main/resources/cz/crcs/ectester/standalone/libs/pkcs11/wolfPKCS11/libwolfpkcs11.so
+!standalone/src/main/resources/cz/crcs/ectester/standalone/libs/pkcs11/SoftHSMv2/SoftHSMv2-BOTAN/libsofthsm2.so
+!standalone/src/main/resources/cz/crcs/ectester/standalone/libs/pkcs11/SoftHSMv2/SoftHSMv2-OPENSSL/libsofthsm2.so
+!standalone/src/main/resources/cz/crcs/ectester/standalone/libs/pkcs11/SoftHSMv2/SoftHSMv2-BOTAN/softhsm2-botan.conf
+!standalone/src/main/resources/cz/crcs/ectester/standalone/libs/pkcs11/SoftHSMv2/SoftHSMv2-OPENSSL/softhsm2-openssl.conf
+
+# Ignore IDE stuff
+.idea/

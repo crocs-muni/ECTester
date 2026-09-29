@@ -41,6 +41,8 @@ import cz.crcs.ectester.standalone.libs.jni.SignalException;
 import cz.crcs.ectester.standalone.libs.jni.TimeoutException;
 import cz.crcs.ectester.standalone.output.FileTestWriter;
 import cz.crcs.ectester.standalone.test.suites.*;
+import cz.crcs.ectester.standalone.util.PKCS11Config;
+import cz.crcs.ectester.standalone.util.PKCS11ConfigWriter;
 import org.apache.commons.cli.*;
 
 import javax.crypto.KeyAgreement;
@@ -161,8 +163,13 @@ public class ECTesterStandalone {
             }
 
             List<ProviderECLibrary> libObjects = new LinkedList<>();
-            Class<?>[] libClasses = new Class[]{SunECLib.class,
+            Class<?>[] libClasses = new Class[]{
+                    SunECLib.class,
                     BouncyCastleLib.class,
+                    SoftHSMv2LibOPENSSL.class,
+                    // BOTAN SoftHSM backend is currently not supported
+                    // SoftHSMv2LibBOTAN.class,
+                    WolfPKCS11Lib.class,
                     TomcryptLib.class,
                     BotanLib.class,
                     CryptoppLib.class,
@@ -174,7 +181,8 @@ public class ECTesterStandalone {
                     MbedTLSLib.class,
                     IppcpLib.class,
                     NettleLib.class,
-                    LibresslLib.class};
+                    LibresslLib.class
+            };
             for (Class<?> c : libClasses) {
                 try {
                     libObjects.add((ProviderECLibrary) c.getDeclaredConstructor().newInstance());
@@ -183,7 +191,6 @@ public class ECTesterStandalone {
                 }
             }
             libs = libObjects.toArray(new ProviderECLibrary[0]);
-
             cfg = new Config(libs);
             if (!cfg.readOptions(cli)) {
                 return;
@@ -265,7 +272,7 @@ public class ECTesterStandalone {
         testOpts.addOption(Option.builder().longOpt("key-type").desc("Set the key [algorithm] for which the key should be derived in KeyAgreements with KDF. Default is \"AES\".").hasArg().argName("algorithm").optionalArg(false).build());
         List<Argument> testArgs = new LinkedList<>();
         testArgs.add(new Argument("test-suite", "The test suite to run.", true));
-        testArgs.add(new Argument("lib", "What library to use.", true));
+        testArgs.add(new Argument("lib", "What library to use.", false));
         ParserOptions test = new ParserOptions(new TreeParser(Collections.emptyMap(), false, testArgs), testOpts, "Test a library.");
         actions.put("test", test);
 
@@ -284,7 +291,7 @@ public class ECTesterStandalone {
         ecdhOpts.addOptionGroup(privateKey);
         ecdhOpts.addOption(Option.builder().longOpt("fixed-public").desc("Perform ECDH with fixed public key.").build());
         List<Argument> ecdhArgs = new LinkedList<>();
-        ecdhArgs.add(new Argument("lib", "What library to use.", true));
+        ecdhArgs.add(new Argument("lib", "What library to use.", false));
         ParserOptions ecdh = new ParserOptions(new TreeParser(Collections.emptyMap(), false, ecdhArgs), ecdhOpts, "Perform EC based KeyAgreement.");
         actions.put("ecdh", ecdh);
 
@@ -302,7 +309,7 @@ public class ECTesterStandalone {
         ecdsaOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Do ECDSA [amount] times.").build());
         ecdsaOpts.addOptionGroup(ecdsaMessage);
         List<Argument> ecdsaArgs = new LinkedList<>();
-        ecdsaArgs.add(new Argument("lib", "What library to use.", true));
+        ecdsaArgs.add(new Argument("lib", "What library to use.", false));
         ParserOptions ecdsa = new ParserOptions(new TreeParser(Collections.emptyMap(), false, ecdsaArgs), ecdsaOpts, "Perform EC based Signature.");
         actions.put("ecdsa", ecdsa);
 
@@ -316,7 +323,7 @@ public class ECTesterStandalone {
         generateOpts.addOption(Option.builder("n").longOpt("amount").hasArg().argName("amount").optionalArg(false).desc("Generate [amount] of EC keys.").build());
         generateOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPairGenerator object [type].").build());
         List<Argument> generateArgs = new LinkedList<>();
-        generateArgs.add(new Argument("lib", "What library to use.", true));
+        generateArgs.add(new Argument("lib", "What library to use.", false));
         ParserOptions generate = new ParserOptions(new TreeParser(Collections.emptyMap(), false, generateArgs), generateOpts, "Generate EC keypairs.");
         actions.put("generate", generate);
 
@@ -325,7 +332,7 @@ public class ECTesterStandalone {
         exportOpts.addOption(outputRaw);
         exportOpts.addOption(Option.builder("t").longOpt("type").hasArg().argName("type").optionalArg(false).desc("Set KeyPair object [type].").build());
         List<Argument> exportArgs = new LinkedList<>();
-        exportArgs.add(new Argument("lib", "What library to use.", true));
+        exportArgs.add(new Argument("lib", "What library to use.", false));
         ParserOptions export = new ParserOptions(new TreeParser(Collections.emptyMap(), false, exportArgs), exportOpts, "Export default curve parameters.");
         actions.put("export", export);
 
@@ -355,7 +362,20 @@ public class ECTesterStandalone {
         opts.addOption(Option.builder("h").longOpt("help").desc("Print help(about <command>).").hasArg().argName("command").optionalArg(true).build());
         opts.addOption(Option.builder("C").longOpt("color").desc("Print stuff with color, requires ANSI terminal.").build());
         opts.addOption(Option.builder().longOpt("no-preload").desc("Do not use LD_PRELOAD.").build());
-
+        opts.addOption(Option.builder().longOpt("pkcs11-name").desc("Specify PKCS#11 implementation name.")
+                .hasArg()
+                .argName("implementationName")
+                .build());
+        opts.addOption(Option.builder().longOpt("pkcs11-path").desc("Run the specified action on the following PKCS#11 path.")
+                .hasArg()
+                .argName("implementationPath")
+                .build());
+        opts.addOption(Option.builder().longOpt("pkcs11-login")
+                .desc("Specify the PIN used for the PKCS#11 implementation.")
+                .hasArg().argName("PIN").build());
+        opts.addOption(Option.builder().longOpt("pkcs11-cfg")
+                        .desc("Specify the SunPKCS11 config file. (ignores the --pkcs-<> args)")
+                .hasArg().argName("configPath").build());
         return optParser.parse(opts, args);
     }
 
@@ -363,10 +383,16 @@ public class ECTesterStandalone {
      *
      */
     private void listLibraries() {
+        boolean pkcs11Outputted = false;
         for (ProviderECLibrary lib : libs) {
-            if (cfg.selected == null || lib == cfg.selected) {
+            if (cfg.selected == null || lib == cfg.selected || (cfg.selected.getClass() == PKCS11Lib.class && !pkcs11Outputted)) {
+                if (cfg.selected != null && cfg.selected.getClass() == PKCS11Lib.class)  {
+                    pkcs11Outputted = true;
+                    lib = cfg.selected;
+                }
+
                 try {
-                    if (!lib.initialize()) {
+                    if (!lib.isInitialized() && !lib.initialize()) {
                         continue;
                     }
                 } catch (Exception ex) {
@@ -1091,8 +1117,8 @@ public class ECTesterStandalone {
             String next = cli.getNextName();
 
             if (cli.isNext("generate") || cli.isNext("export") || cli.isNext("ecdh") || cli.isNext("ecdsa") || cli.isNext("test")) {
-                if (!cli.hasArg(-1)) {
-                    System.err.println("Missing library name argument.");
+                if (!cli.hasArg(-1) && !cli.hasOption("pkcs11-cfg") &&  !cli.hasOption("pkcs11-path")) {
+                    System.err.println("Missing library name argument or PKCS#11 implementation (--pkcs11-name and --pkcs11-path options).");
                     return false;
                 }
 
@@ -1110,7 +1136,7 @@ public class ECTesterStandalone {
                 }
             }
 
-            if (!cli.isNext("list-data") && !cli.isNext("list-suites") && !cli.isNext("list-types")) {
+            if (!cli.isNext("list-data") && !cli.isNext("list-suites") && !cli.isNext("list-types") && !cli.hasOption("pkcs11-path") && !cli.hasOption("pkcs11-cfg")) {
                 String libraryName = cli.getArg(-1);
                 if (libraryName != null) {
                     List<ProviderECLibrary> matchedLibs = new LinkedList<>();
@@ -1134,6 +1160,33 @@ public class ECTesterStandalone {
                             System.err.println(ex.getMessage());
                         }
                     }
+                }
+            } else if (cli.hasOption("pkcs11-path") || cli.hasOption("pkcs11-cfg")) {
+                String configPath;
+                String name = null;
+                if (!cli.hasOption("pkcs11-cfg")) {
+                    name = cli.getOptionValue("pkcs11-name");
+                    PKCS11Config config = PKCS11Config.defaultConfig(cli.getOptionValue("pkcs11-name"),
+                            cli.getOptionValue("pkcs11-path"));
+                    if (!PKCS11ConfigWriter.write(config)) {
+                        System.err.println("Error creating the default SunPKCS11 config.");
+                        return false;
+                    }
+                    configPath = PKCS11ConfigWriter.getConfigPath();
+                } else {
+                    configPath = cli.getOptionValue("pkcs11-cfg");
+                }
+
+
+                selected = new PKCS11Lib(name,
+                        configPath,
+                        cli.hasOption("pkcs11-login") ? cli.getOptionValue("pkcs11-login") : null);
+                try {
+                    selected.initialize();
+                } catch (Exception ex) {
+                    System.err.println("Error initializing " + selected.fullName());
+                    System.err.println(ex.getMessage());
+                    return false;
                 }
             }
 
