@@ -17,7 +17,7 @@ If not provided, ECTester assumes the implementation does not require logging in
 * Usage similiar to other SW libraries supported by ECTester with few specialities specified bellow
 * Compiled shared objects are part of the tool, located in `standalone/src/main/resources/cz/crcs/ectester/standalone/libs/pkcs11/`
 * Run the tool using the standard command `java -jar standalone/build/libs/ECTesterStandalone.jar <options> [one of the following lib names]`
-* Another way to run the tool is using Nix with `nix run .#softhsm -- <options>`, for example:
+* Another way to run the tool is using Nix with `nix run .#softhsm -- <options>`, which does not require any further installation apart from Nix. For example, to generate 10 random ECDSA signatures using the SHA3-256 hash function and SECP256k1 curve:
 
     ```
     nix run .#softhsm -- ecdsa --amount 10 --curve-name secp256k1 --type SHA3-256withECDSA softhsm
