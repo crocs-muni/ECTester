@@ -16,7 +16,12 @@ If not provided, ECTester assumes the implementation does not require logging in
 
 * Usage similiar to other SW libraries supported by ECTester with few specialities specified bellow
 * Compiled shared objects are part of the tool, located in `standalone/src/main/resources/cz/crcs/ectester/standalone/libs/pkcs11/`
-* `java -jar standalone/build/libs/ECTesterStandalone.jar <options> [one of the following lib names]`
+* Run the tool using the standard command `java -jar standalone/build/libs/ECTesterStandalone.jar <options> [one of the following lib names]`
+* Another way to run the tool is using Nix with `nix run .#softhsm -- <options>`, for example:
+
+    ```
+    nix run .#softhsm -- ecdsa --amount 10 --curve-name secp256k1 --type SHA3-256withECDSA softhsm
+    ```
 
 ### 2.1 SoftHSMv2-OPENSSL
 
