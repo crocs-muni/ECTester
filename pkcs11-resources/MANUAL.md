@@ -38,6 +38,7 @@ In that case we assume you manage your own cryptoki, and therefore you need to s
 * If `SOFTHSM2_CONF` is set to our location, ECTester initializes a fresh cryptoki for each run, to izolate test runs
 * Botan backend SEG faults after our testing and creates an error log (even after being just initialized, therefore is commented out from the libs in source code, to prevent the SEG fault after just listing libs)
 * NOTE: it SEG faults even when called using its C api, therefore problem is probably in the library itself (issue is double free of memory on cleanup)
+* The support for Botan backend is not guaranteed, because Botan 2.x is EOL and Botan 3.x support is [yet to be implemented](https://github.com/softhsm/SoftHSMv2/issues/792) in SoftHSM.
 
 ### 2.3 wolfPKCS11
 
