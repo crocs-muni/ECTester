@@ -11,7 +11,10 @@ public class PKCS11Util {
 
     public static String getAbsoluteResourcePath(String resourcePath) {
         try {
-            File tmp = File.createTempFile("ECTester-pkcs11-lib-", FileUtil.getLibSuffix());
+            String libSuffix = FileUtil.getLibSuffix();
+            String suffix = libSuffix.startsWith(".") ? libSuffix : "." + libSuffix;
+
+            File tmp = File.createTempFile("ECTester-pkcs11-lib-", suffix);
             tmp.deleteOnExit();
             if (FileUtil.write(PKCS11_RESOURCES_PATH + resourcePath, tmp.toPath())) {
                 return tmp.getAbsolutePath();
