@@ -504,6 +504,16 @@ on `LD_LIBRARY_PATH`.
 
 Consult the GitHub CI [build script](.github/workflows/build.yml) for an example that runs on Ubuntu 22.04.
 
+To build SoftHSMv2 with the OpenSSL backend (note the `--prefix`):
+```bash
+pushd ext/SoftHSMv2
+mkdir --parents build
+sh autogen.sh
+./configure --enable-ecc --enable-sha3 --with-crypto-backend=openssl --prefix=$(realpath ./build)
+make -j$(nproc)
+make install
+popd
+```
 
 ### Examples
 

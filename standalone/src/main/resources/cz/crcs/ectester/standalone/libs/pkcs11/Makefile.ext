@@ -1,0 +1,6 @@
+PROJECT_ROOT_PATH ?= ../../../../../../../../../..
+
+all: softhsmv2-openssl
+
+softhsmv2-openssl:
+	cp $(PROJECT_ROOT_PATH)/ext/SoftHSMv2/build/lib/softhsm/libsofthsm2.so ./SoftHSMv2/SoftHSMv2-OPENSSL/libsofthsm2.so
