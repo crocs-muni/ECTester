@@ -112,6 +112,25 @@ tasks.register<Exec>("libs") {
     }
 }
 
+tasks.register<Exec>("pkcs11") {
+    workingDir("src/main/resources/cz/crcs/ectester/standalone/libs/pkcs11")
+    environment("PROJECT_ROOT_PATH", rootDir.absolutePath)
+
+    val pkcs11Name = findProperty("pkcs11Name") ?: "all"
+    if ( pkcs11Name == "" ) {
+        println("Building all PKCS#11 targets")
+    } else {
+        println("Buidling ${pkcs11Name}")
+    }
+
+    if (osdetector.os == "windows") {
+        // FIXME not tested
+        commandLine("makefile.bat", "/c", pkcs11Name)
+    } else if (osdetector.os == "linux") {
+        commandLine("make", "-f", "Makefile.ext", "-k", "-B", pkcs11Name)
+    }
+}
+
 tasks.register<Jar>("uberJar") {
     archiveFileName = "ECTesterStandalone.jar"
     duplicatesStrategy = DuplicatesStrategy.WARN
