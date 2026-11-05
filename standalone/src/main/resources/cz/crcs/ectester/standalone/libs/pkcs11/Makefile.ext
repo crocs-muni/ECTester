@@ -3,4 +3,6 @@ PROJECT_ROOT_PATH ?= ../../../../../../../../../..
 all: softhsmv2-openssl
 
 softhsmv2-openssl:
-	cp $(PROJECT_ROOT_PATH)/ext/SoftHSMv2/build/lib/softhsm/libsofthsm2.so ./SoftHSMv2/SoftHSMv2-OPENSSL/libsofthsm2.so
+	cp $(PROJECT_ROOT_PATH)/ext/SoftHSMv2/src/lib/.libs/libsofthsm2.so ./SoftHSMv2/SoftHSMv2-OPENSSL/libsofthsm2.so
+	# TODO copy also softhsm2-util for token initialization?
+	# cp $(PROJECT_ROOT_PATH)/ext/SoftHSMv2/src/bin/util/softhsm2-util ./SoftHSMv2/SoftHSMv2-OPENSSL/softhsm2-util
