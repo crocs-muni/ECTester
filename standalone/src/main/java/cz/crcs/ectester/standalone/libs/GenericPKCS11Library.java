@@ -15,6 +15,8 @@ import java.util.Enumeration;
 
 import org.bouncycastle.jce.ECNamedCurveTable;
 
+import cz.crcs.ectester.standalone.util.PKCS11Config;
+
 /**
  * Class for representing a generic PKCS11 implementation, configured by a HW or a SW PKCS11 module.
  *
@@ -25,6 +27,8 @@ public abstract class GenericPKCS11Library extends ProviderECLibrary {
     private final String PIN;
 
     private String providerConfigPath;
+
+    private PKCS11Config pkcs11Config;
 
     public GenericPKCS11Library(String name) {
         this(name, null);
@@ -43,15 +47,34 @@ public abstract class GenericPKCS11Library extends ProviderECLibrary {
         this.providerConfigPath = providerConfigPath;
     }
 
+    public void setProviderConfiguration(PKCS11Config config) {
+        this.pkcs11Config = config;
+    }
+
     @Override
     public boolean initialize() {
         boolean initialized;
         try {
-            if (this.providerConfigPath == null)
-                throw new IllegalArgumentException("Provider config path must be set before initialization.");
+            if ( this.pkcs11Config != null && this.providerConfigPath != null ) {
+                throw new IllegalArgumentException("The pkcs11Config or providerConfigPath are mutually exclusive, set only one.");
+            }
 
             // configure SunPKCS11 by a config, which provides .so
-            this.provider = this.provider.configure(this.providerConfigPath);
+            if ( this.pkcs11Config != null ) {
+                // Prepending the `--` to the configuration makes it read as if it was the configuration itself
+                // and not a filepath to the file that holds the configuration
+                String config = this.pkcs11Config.toString();
+                config = config.startsWith("--") ? config : "--" + config;
+                this.provider = this.provider.configure(config);
+            }
+            if ( this.providerConfigPath != null ) {
+                this.provider = this.provider.configure(this.providerConfigPath);
+            }
+
+            if ( !this.provider.isConfigured() ) {
+                throw new IllegalArgumentException("Either pkcs11Config or providerConfigPath must be set for provider configuration.");
+            }
+
             initialized = super.initialize();
             if (!initialized || this.PIN == null) return initialized;
 

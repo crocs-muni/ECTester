@@ -80,6 +80,7 @@ public class PKCS11Config {
     }
 
     public String export() {
+        // FIXME rename to the toString overriden method?
         StringBuilder result = new StringBuilder();
         result.append("name = ").append(this.name).append(System.lineSeparator());
         result.append("library = ").append(this.implementationPath).append(System.lineSeparator());
@@ -92,6 +93,11 @@ public class PKCS11Config {
         }
 
         return result.toString();
+    }
+
+    @Override
+    public String toString() {
+        return export();
     }
 
     public enum KeyObject {
