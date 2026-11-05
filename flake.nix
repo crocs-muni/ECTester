@@ -626,7 +626,7 @@
               version = null;
               hash = null;
             },
-            softhsm ? null
+            softhsm ? null,
           }:
           (
             let
@@ -1020,7 +1020,6 @@
                 install -Dm755 $src $out/bin/$pname
               '';
             };
-
         };
       }
     );
