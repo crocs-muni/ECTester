@@ -21,6 +21,7 @@ import java.util.Objects;
  */
 public abstract class SoftHSMv2Lib extends GenericPKCS11Library {
 
+    // FIXME Use multiline string?
     private static final String config = "# SoftHSM v2 configuration file\n" +
             "\n" +
             "directories.tokendir = %s\n" +
@@ -127,6 +128,7 @@ public abstract class SoftHSMv2Lib extends GenericPKCS11Library {
             // write the softhsm2.conf file with the temp directory as token backend
             if (!this.writeConfig()) return false;
 
+            // FIXME use softhsm2-util from the resources directory
             // create a new process to initialize the token in the tmp directory
             ProcessBuilder pb = new ProcessBuilder("softhsm2-util",
                     "--module", SoftHSMv2Lib.getResource(this.backend), "--init-token", "--label",
