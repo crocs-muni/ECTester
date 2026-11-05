@@ -521,9 +521,8 @@ To build SoftHSMv2 with the OpenSSL backend (note the `--prefix`):
 pushd ext/SoftHSMv2
 mkdir --parents build
 sh autogen.sh
-./configure --enable-ecc --enable-sha3 --with-crypto-backend=openssl --prefix=$(realpath ./build)
+./configure --enable-ecc --enable-sha3 --with-crypto-backend=openssl
 make -j$(nproc)
-make install
 popd
 ```
 
