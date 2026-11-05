@@ -49,34 +49,57 @@ writeShellApplication {
 
   runtimeInputs = [ softhsmPkg ];
 
+  # FIXME Only do the setup when we don't receive any tokens In case the
+  # SOFTHSM2_CONF is not set, we create both the SoftHSMv2 configuration and
+  # also initialize the token. It is done for each invocation, thus there is no
+  # persistence between the tokens with this invocation.
+
   text = ''
-    SOFTHSM2_TEMPDIR=$(mktemp --directory)
-    SOFTHSM2_CONF="$HOME/.local/share/ECTesterStandalone/SoftHSMv2-OPENSSL.conf"
-    SOFTHSM2_LIB="${softhsmPkg}/lib/softhsm/libsofthsm2.so"
-    PIN=1234
+    create_softhsm_config () {
+      cat <<EOF > "$SOFTHSM2_CONF"
+      directories.tokendir = $SOFTHSM2_TOKEN_DIR
+      objectstore.backend = file
+      objectstore.umask = 0077
 
-    export SOFTHSM2_CONF SOFTHSM2_LIB PIN ECTESTER_NIX
+      # ERROR, WARNING, INFO, DEBUG
+      log.level = ERROR
 
-    cat <<EOF > "$SOFTHSM2_TEMPDIR"/softhsm2.conf
-    directories.tokendir = $SOFTHSM2_TEMPDIR/tokens
-    objectstore.backend = file
-    objectstore.umask = 0077
+      # If CKF_REMOVABLE_DEVICE flag should be set
+      slots.removable = false
 
-    # ERROR, WARNING, INFO, DEBUG
-    log.level = ERROR
+      # Enable and disable PKCS#11 mechanisms using slots.mechanisms.
+      slots.mechanisms = ALL
 
-    # If CKF_REMOVABLE_DEVICE flag should be set
-    slots.removable = false
-
-    # Enable and disable PKCS#11 mechanisms using slots.mechanisms.
-    slots.mechanisms = ALL
-
-    # If the library should reset the state on fork
-    library.reset_on_fork = false
+      # If the library should reset the state on fork
+      library.reset_on_fork = false
     EOF
+    }
 
+    if [ -z "''${SOFTHSM2_CONF:-}" ]; then
+      printf "SOFTHSM2_CONF is empty or not set, creating ephemeral SoftHSMv2 configuration and token.\n" >&2
+
+      SOFTHSM2_TEMPDIR=$(mktemp --directory)
+      SOFTHSM2_TOKEN_DIR="$SOFTHSM2_TEMPDIR/tokens"
+      SOFTHSM2_CONF="$SOFTHSM2_TEMPDIR/softhsmv2.conf"
+      SOFTHSM2_LIB="${softhsmPkg}/lib/softhsm/libsofthsm2.so"
+      SOFTHSM2_PIN=1234
+
+      export SOFTHSM2_CONF SOFTHSM2_LIB SOFTHSM2_PIN ECTESTER_NIX
+      mkdir --parents "$SOFTHSM2_TOKEN_DIR"
+
+      # shellcheck disable=SC2329  # it's a TRAP
+      cleanup() {
+          rm --recursive --force "$SOFTHSM2_TEMPDIR"
+      }
+      trap cleanup EXIT
+
+      create_softhsm_config
+
+      softhsm2-util --module "$SOFTHSM2_LIB" \
+        --init-token --label "ECTester-SoftHSMv2-OPENSSL" \
+        --slot 0 --so-pin "$SOFTHSM2_PIN" --pin "$SOFTHSM2_PIN" > /dev/null
+    fi
 
     ${ectester.outPath}/bin/ECTesterStandalone "$@"
-    rm --recursive --force "$SOFTHSM2_TEMPDIR"
   '';
 }
