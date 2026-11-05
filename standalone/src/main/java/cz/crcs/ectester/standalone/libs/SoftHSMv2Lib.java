@@ -44,6 +44,7 @@ public abstract class SoftHSMv2Lib extends GenericPKCS11Library {
     private String tokenDir;
 
     private final Path confPath;
+    private PKCS11Config pkcs11Config;
 
     public SoftHSMv2Lib(Backend backend) {
         super("SoftHSMv2-" + backend,
@@ -64,17 +65,16 @@ public abstract class SoftHSMv2Lib extends GenericPKCS11Library {
             if (!this.initToken()) return false;
         }
 
-        PKCS11Config config;
+        // PKCS11Config config;
         try {
-            config = PKCS11Config.SoftHSMv2Config(this.backend);
+            pkcs11Config = PKCS11Config.SoftHSMv2Config(this.backend);
         } catch (IllegalArgumentException e) {
             // happens in case config path was not set and here that can happen only if IOException happened
             return false;
         }
-
-        boolean success = PKCS11ConfigWriter.write(config);
-        this.setProviderConfigPath(PKCS11ConfigWriter.getConfigPath());
-        return success && super.initialize();
+        //
+        this.setProviderConfiguration(pkcs11Config);
+        return super.initialize();
     }
 
     public static String getResource(Backend backend) {
