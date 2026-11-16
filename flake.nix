@@ -401,7 +401,7 @@
             hash ? null,
           }:
           if version == null then
-            (pkgs.libressl.override { buildShared = false; }).overrideAttrs ({
+            (pkgs.libressl_4_2.override { libressl_buildShared = false; }).overrideAttrs ({
               patches =
                 if (pkgs.lib.strings.versionAtLeast version "3.5.1") then
                   [
@@ -415,7 +415,7 @@
                   [ ];
             })
           else
-            (pkgs.libressl.override { buildShared = false; }).overrideAttrs (
+            (pkgs.libressl_4_2.override { buildShared = false; }).overrideAttrs (
               final: prev: rec {
                 inherit version;
                 src = pkgs.fetchurl {
@@ -452,7 +452,6 @@
                   ''
                     cp $dev/lib/pkgconfig/libcrypto.pc $dev/lib/pkgconfig/libresslcrypto.pc
                     sed --in-place --expression 's/-lcrypto/-lresslcrypto/' $dev/lib/pkgconfig/libresslcrypto.pc
-                    ln -s $out/lib/libcrypto.so $out/lib/libresslcrypto.so
                     ln -s $out/lib/libcrypto.a $out/lib/libresslcrypto.a
                   ''
                 ];
