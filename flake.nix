@@ -627,7 +627,7 @@
               version = null;
               hash = null;
             },
-            softhsm
+            softhsm ? null
           }:
           (
             let
