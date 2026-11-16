@@ -1141,7 +1141,7 @@ public class ECTesterStandalone {
                 if (libraryName != null) {
                     List<ProviderECLibrary> matchedLibs = new LinkedList<>();
                     for (ProviderECLibrary lib : libs) {
-                        if (lib.name().toLowerCase().contains(libraryName.toLowerCase())) {
+                        if (lib.name().toLowerCase().startsWith(libraryName.toLowerCase())) {
                             matchedLibs.add(lib);
                         }
                     }
