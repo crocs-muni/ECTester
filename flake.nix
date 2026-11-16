@@ -649,7 +649,7 @@
             with pkgs;
             gradle2nix.builders.${system}.buildGradlePackage rec {
               pname = "ECTesterStandalone";
-              version = "0.3.3";
+              version = "0.4.1";
               lockFile = ./gradle.lock;
               buildJdk = pkgs.jdk_headless;
 
