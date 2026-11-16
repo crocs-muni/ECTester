@@ -44,13 +44,25 @@ Windows as well, although testing of standalone libraries will be limited to Jav
 The ECTester parts require different Java versions. Reader and standalone parts require Java >= 15 while the applet build
 will be able to target different JavaCard versions based on the Java version, see [this list](https://github.com/martinpaljak/ant-javacard/wiki/JavaCard-SDK-and-JDK-version-compatibility).
 
-To build ECTester simply do:
+The very first time, to clone and initialize the repository at once, do:
 ```bash
-git submodule update --init --recursive       # To initialize submodules (JavaCard SDKs, Microsoft CNG, BoringSSL, ...)
-./gradlew :applet:buildJavaCard               # To build the applet (cap) -> "applet/build/javacard/applet[221,222,305].cap".
-./gradlew :reader:uberJar                     # To build the reader tool (jar) -> "reader/build/libs/ECTesterReader.jar"
-./gradlew :standalone:libs                    # To build the native library shims.
-./gradlew :standalone:uberJar                 # To build the standalone tool (jar) -> "standalone/build/libs/ECTesterStandalone.jar"
+git clone --recurse-submodules https://github.com/crocs-muni/ectester.git
+cd ectester
+```
+
+Or, if you've cloned the repository in the past with `git clone https://github.com/crocs-muni/ectester.git`,
+you can initialize the submodules, i.e., JavaCard SDKs, Microsoft CNG, BoringSSL, etc., with:
+```bash
+cd ectester
+git submodule update --init --recursive
+```
+
+Then, to build ECTester do:
+```bash
+./gradlew :applet:buildJavaCard       # To build the applet (cap) -> "applet/build/javacard/applet[221,222,305].cap".
+./gradlew :reader:uberJar             # To build the reader tool (jar) -> "reader/build/libs/ECTesterReader.jar"
+./gradlew :standalone:libs            # To build the native library shims.
+./gradlew :standalone:uberJar         # To build the standalone tool (jar) -> "standalone/build/libs/ECTesterStandalone.jar"
 ```
 The applet comes in several flavors, targeting JavaCard `2.2.1`, `2.2.2`, `3.0.5`, and `3.2.0`. The `2.2.2` and later flavors
 support extended length APDUs which are necessary for some commands to work properly.
