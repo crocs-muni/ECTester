@@ -668,7 +668,7 @@
                 # (if botan.version != null then "cp ${botanShim.out}/lib/* ${jniLibsPath}" else "")
                 (if cryptopp.version != null then "cp ${cryptoppShim.out}/lib/* ${jniLibsPath}" else "")
                 (if openssl.version != null then "cp ${opensslShim.out}/lib/* ${jniLibsPath}" else "")
-                # (if boringssl.rev != null then "cp ${boringsslShim.out}/lib/* ${jniLibsPath}" else "")
+                (if boringssl.rev != null then "cp ${boringsslShim.out}/lib/* ${jniLibsPath}" else "")
                 (if gcrypt.version != null then "cp ${gcryptShim.out}/lib/* ${jniLibsPath}" else "")
                 (if mbedtls.version != null then "cp ${mbedtlsShim.out}/lib/* ${jniLibsPath}" else "")
                 (if ippcp.version != null then "cp ${ippcpShim.out}/lib/* ${jniLibsPath}" else "")
