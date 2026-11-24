@@ -68,7 +68,7 @@ The `libsofthsm2.so` should be available in `ext/SoftHSMv2/src/lib/.libs/libsoft
 4. SunPKCS11 provider that is used in ECTester requires it's own configuration. Create an exaple one for SoftHSMv2:
 
     ```bash
-    cat <<EOF > sunpkcs11.cfg
+    cat <<EOF > sunpkcs11-softhsm.cfg
     name = softhsm
     library = $(realpath ./ext/SoftHSMv2/src/lib/.libs/libsofthsm2.so)
     attributes(generate, CKO_PRIVATE_KEY, *) = {
@@ -92,7 +92,7 @@ The `libsofthsm2.so` should be available in `ext/SoftHSMv2/src/lib/.libs/libsoft
 
     ```bash
     nix run .# -- --pkcs11-path $(realpath ./ext/SoftHSMv2/src/lib/.libs/libsofthsm2.so) \
-        --pkcs11-name softhsm --pkcs11-login 1234 --pkcs11-cfg customConfig.cfg \
+        --pkcs11-name softhsm --pkcs11-login 1234 --pkcs11-cfg sunpkcs11-softhsm.cfg \
         ecdsa --amount 10 --curve-name secp256k1 --type SHA3-256withECDSA softhsm
     ```
 
@@ -101,7 +101,7 @@ The `libsofthsm2.so` should be available in `ext/SoftHSMv2/src/lib/.libs/libsoft
     ```bash
     nix build
     ./result/bin/ECTesterStandalone --pkcs11-path $(realpath ./ext/SoftHSMv2/src/lib/.libs/libsofthsm2.so) \
-        --pkcs11-name softhsm --pkcs11-login 1234 --pkcs11-cfg customConfig.cfg \
+        --pkcs11-name softhsm --pkcs11-login 1234 --pkcs11-cfg sunpkcs11-softhsm.cfg \
         ecdsa --amount 10 --curve-name secp256k1 --type SHA3-256withECDSA softhsm
     ```
 
