@@ -575,6 +575,7 @@
         softhsmBuilder = { }: pkgs.callPackage ./nix/softhsm2 {
           softhsm = unstablePkgs.softhsm;
           ectester = buildECTesterStandalone { softhsm = unstablePkgs.softhsm; };
+          # backend = "botan";
         };
 
         buildECTesterStandalone =
@@ -587,11 +588,11 @@
               version = null;
               hash = null;
             },
-            botan ? {
-              version = null;
-              source_extension = null;
-              hash = null;
-            },
+            # botan ? {
+            #   version = null;
+            #   source_extension = null;
+            #   hash = null;
+            # },
             cryptopp ? {
               version = null;
               hash = null;
@@ -637,7 +638,7 @@
                 tmHash = tommath.hash;
               };
               opensslShim = (opensslShimBuilder { inherit (openssl) version hash; });
-              botanShim = botanShimBuilder { inherit (botan) version source_extension hash; };
+              # botanShim = botanShimBuilder { inherit (botan) version source_extension hash; };
               cryptoppShim = cryptoppShimBuilder { inherit (cryptopp) version hash; };
               boringsslShim = boringsslShimBuilder { inherit (boringssl) rev hash; };
               gcryptShim = gcryptShimBuilder { inherit (gcrypt) version hash; };
@@ -663,7 +664,7 @@
               # FIXME add conditionally libs using map?
               preConfigure = pkgs.lib.concatLines [
                 (if tomcrypt.version != null then "cp ${tomcryptShim.out}/lib/* ${jniLibsPath}" else "")
-                (if botan.version != null then "cp ${botanShim.out}/lib/* ${jniLibsPath}" else "")
+                # (if botan.version != null then "cp ${botanShim.out}/lib/* ${jniLibsPath}" else "")
                 (if cryptopp.version != null then "cp ${cryptoppShim.out}/lib/* ${jniLibsPath}" else "")
                 (if openssl.version != null then "cp ${opensslShim.out}/lib/* ${jniLibsPath}" else "")
                 (if boringssl.rev != null then "cp ${boringsslShim.out}/lib/* ${jniLibsPath}" else "")
@@ -801,7 +802,7 @@
         packages = rec {
           default = buildECTesterStandalone {
             # FIXME tomcrypt is missing!
-            botan = defaultVersion "botan";
+            # botan = defaultVersion "botan";
             cryptopp = defaultVersion "cryptopp";
             openssl = defaultVersion "openssl";
             boringssl = defaultVersion "boringssl";
