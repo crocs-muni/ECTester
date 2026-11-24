@@ -710,7 +710,7 @@
           }:
           gradle2nix.builders.${system}.buildGradlePackage rec {
             pname = "ECTesterReader";
-            version = "0.3.3";
+            version = "0.4.1";
             lockFile = ./gradle.lock;
             buildJdk = pkgs.jdk_headless;
             gradleBuildFlags = [ ":reader:uberJar" ];
@@ -746,7 +746,7 @@
             pname = "applet";
             # since the gradle target builds applets for multiple JC SDKs, the
             # single version cannot reflet that
-            version = "0.3.3";
+            version = "0.4.1";
             lockFile = ./gradle.lock;
             buildJdk = jdkVersion;
             gradleBuildFlags = [ ":applet:buildJavaCard" ];
