@@ -1,6 +1,6 @@
 # ECTester PKCS#11 manual
 
-## 1. Arbitrary PKCS#11 implementation usage
+## Arbitrary PKCS#11 implementation usage
 
 * `--pkcs11-path < implementationPath >`
 <br> Specify the path to .so (or .dll for Windows). If own configuration is provided, the path is ignored.
@@ -122,7 +122,7 @@ The `libsofthsm2.so` should be available in `ext/SoftHSMv2/src/lib/.libs/libsoft
     rm --recursive --force ./tokens
     ```
 
-## 2. Supported PKCS#11 implementations usage
+## Supported PKCS#11 implementations usage
 
 * Usage similiar to other SW libraries supported by ECTester with few specialities specified bellow
 * Compiled shared objects are part of the tool, located in `standalone/src/main/resources/cz/crcs/ectester/standalone/libs/pkcs11/`
@@ -133,14 +133,14 @@ The `libsofthsm2.so` should be available in `ext/SoftHSMv2/src/lib/.libs/libsoft
     nix run .#softhsm -- ecdsa --amount 10 --curve-name secp256k1 --type SHA3-256withECDSA softhsm
     ```
 
-### 2.1 SoftHSMv2-OPENSSL
+### SoftHSMv2-OPENSSL
 
 * Compiled using OpenSSL backend
 * Assumes `SOFTHSM2_CONF` is set to `~/.local/share/ECTesterStandalone/SoftHSMv2-OPENSSL.conf` or your own SoftHSMv2 configuration.
 In that case we assume you manage your own cryptoki, and therefore you need to set `SOFTHSM2_PIN` to PIN of the initialized cryptoki.
 * If `SOFTHSM2_CONF` is set to our location, ECTester initializes a fresh cryptoki for each run, to isolate test runs
 
-### 2.2 SoftHSMv2-BOTAN
+### SoftHSMv2-BOTAN
 
 * Compiled using Botan backend
 * Assumes `SOFTHSM2_CONF` is set to `~/.local/share/ECTesterStandalone/SoftHSMv2-OPENSSL.conf` or your own SoftHSMv2 configuration.
@@ -150,7 +150,7 @@ In that case we assume you manage your own cryptoki, and therefore you need to s
 * NOTE: it SEG faults even when called using its C api, therefore problem is probably in the library itself (issue is double free of memory on cleanup)
 * The support for Botan backend is not guaranteed, because Botan 2.x is EOL and Botan 3.x support is [yet to be implemented](https://github.com/softhsm/SoftHSMv2/issues/792) in SoftHSM.
 
-### 2.3 wolfPKCS11
+### WolfPKCS11
 
 * Compiled using WolfSSL backend
 * Pre-configured token, no PIN required
