@@ -778,20 +778,25 @@
           };
 
         defaultVersion =
-          # Default version is the last one, aka the newest that we fetched
+          # Default version is specified by "default" key, or falls back to last from attrValues
           libName:
           let
             versions = builtins.fromJSON (builtins.readFile ./nix/${libName}_pkg_versions.json);
           in
-          pkgs.lib.lists.last (pkgs.lib.attrsets.attrValues versions);
+          if builtins.hasAttr "default" versions then
+            versions.${versions.default}
+          else
+            pkgs.lib.lists.last (pkgs.lib.attrsets.attrValues versions);
 
         loadVersions =
           { libName, function }:
           let
             versions = builtins.fromJSON (builtins.readFile ./nix/${libName}_pkg_versions.json);
-            firstVersion = pkgs.lib.lists.last (pkgs.lib.attrsets.attrValues versions);
+            # Filter out the "default" key if it exists (it's not a version entry)
+            versionSpecs = pkgs.lib.attrsets.filterAttrs (k: v: k != "default") versions;
+            firstVersion = defaultVersion libName;
           in
-          pkgs.lib.mapAttrs (rev: specs: function { ${libName} = specs; }) versions
+          pkgs.lib.mapAttrs (rev: specs: function { ${libName} = specs; }) versionSpecs
           // {
             default = function { ${libName} = firstVersion; };
           };
@@ -800,9 +805,11 @@
           { libName, function }:
           let
             versions = builtins.fromJSON (builtins.readFile ./nix/${libName}_pkg_versions.json);
-            firstVersion = pkgs.lib.lists.last (pkgs.lib.attrsets.attrValues versions);
+            # Filter out the "default" key if it exists (it's not a version entry)
+            versionSpecs = pkgs.lib.attrsets.filterAttrs (k: v: k != "default") versions;
+            firstVersion = defaultVersion libName;
           in
-          pkgs.lib.mapAttrs (rev: specs: function specs) versions
+          pkgs.lib.mapAttrs (rev: specs: function specs) versionSpecs
           // (with pkgs.lib; {
             default = function firstVersion;
           });
