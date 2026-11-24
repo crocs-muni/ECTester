@@ -722,10 +722,17 @@
 
             nativeBuildInputs = [ makeWrapper ];
 
+            buildInputs = [ pcsclite ];
+
+            defineFlags = lib.concatStringsSep " " [
+              "-Dstdout.encoding=UTF8"
+              "-Dstderr.encoding=UTF8"
+              "-Dsun.security.smartcardio.library=${pcsclite.lib}/lib/libpcsclite.so"
+            ];
             postFixup = ''
               makeWrapper \
                 ${jdk_headless}/bin/java $out/bin/${pname} \
-                --add-flags "-Dstdout.encoding=UTF8 -Dstderr.encoding=UTF8 -jar $out/build/libs/${pname}.jar"
+                --add-flags "${defineFlags} -jar $out/build/libs/${pname}.jar" \
             '';
           };
 
