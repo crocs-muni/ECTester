@@ -166,7 +166,7 @@ public class ECTesterStandalone {
             Class<?>[] libClasses = new Class[]{
                     SunECLib.class,
                     BouncyCastleLib.class,
-                    // SoftHSMv2LibOPENSSL.class,
+                    SoftHSMv2LibOPENSSL.class,
                     // BOTAN SoftHSM backend is currently not supported
                     // SoftHSMv2LibBOTAN.class,
                     // WolfPKCS11Lib.class,
