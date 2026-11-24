@@ -681,7 +681,7 @@
                 ''
               ];
 
-              nativeBuildInputs = [ makeWrapper ];
+              nativeBuildInputs = [ makeWrapper jdk pkg-config pkgs.softhsm ];
 
               LD_LIBRARY_PATH = lib.makeLibraryPath [ wolfcryptjni ];
 
