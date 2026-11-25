@@ -140,7 +140,7 @@ The `libsofthsm2.so` should be available in `ext/SoftHSMv2/src/lib/.libs/libsoft
 In that case we assume you manage your own cryptoki, and therefore you need to set `SOFTHSM2_PIN` to PIN of the initialized cryptoki.
 * If `SOFTHSM2_CONF` is set to our location, ECTester initializes a fresh cryptoki for each run, to isolate test runs
 
-### SoftHSMv2-BOTAN
+### SoftHSMv2-BOTAN (Currently unsupported)
 
 * Compiled using Botan backend
 * Assumes `SOFTHSM2_CONF` is set to `~/.local/share/ECTesterStandalone/SoftHSMv2-OPENSSL.conf` or your own SoftHSMv2 configuration.
@@ -150,7 +150,7 @@ In that case we assume you manage your own cryptoki, and therefore you need to s
 * NOTE: it SEG faults even when called using its C api, therefore problem is probably in the library itself (issue is double free of memory on cleanup)
 * The support for Botan backend is not guaranteed, because Botan 2.x is EOL and Botan 3.x support is [yet to be implemented](https://github.com/softhsm/SoftHSMv2/issues/792) in SoftHSM.
 
-### WolfPKCS11
+### WolfPKCS11 (currently unsupported)
 
 * Compiled using WolfSSL backend
 * Pre-configured token, no PIN required

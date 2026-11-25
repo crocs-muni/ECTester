@@ -33,6 +33,7 @@ This project is developed by the [Centre for Research On Cryptography and Securi
  - [FORMAT](docs/FORMAT.md): Description of input and output formats used by ECTester.
  - [LIBS](docs/LIBS.md): List of cryptographic libraries supported by ECTester and their characteristics.
  - [VULNS](docs/VULNS.md): List of vulnerabilities discovered using ECTester.
+ - [PKCS#11](pkcs11-resources/MANUAL.md): Manual on how to use PKCS#11.
 
 ## Setup
 
